@@ -34,9 +34,9 @@ class DriveEntity(NestedSet):
 		elif self.flags.changed_name:
 			changed_path = self.flags.changed_name
 			changed_path.rename(get_entity_path(self.name))
-		else:
-			self.flags.on_rollback = True
-			self.on_trash()
+		elif self.flags.save_path:
+			path = self.flags.save_path
+			shutil.rmtree(path) if self.is_group else path.unlink()
 
 
 	def move_entity(self, destination_folder):
@@ -49,7 +49,7 @@ class DriveEntity(NestedSet):
 			raise FileExistsError()
 		shutil.move(source_path, destination_path)
 		self.parent_drive_entity = destination_folder
-		self.flags.moved_path = destination_path
+		self.flags.moved_path = destination_path / source_path.name
 		frappe.local.rollback_observers.append(self)
 		self.save()
 
@@ -61,7 +61,7 @@ class DriveEntity(NestedSet):
 			raise FileExistsError()
 		shutil.move(source_path, destination_path)
 		self.parent_drive_entity = ''
-		self.flags.moved_path = destination_path
+		self.flags.moved_path = destination_path / source_path.name
 		frappe.local.rollback_observers.append(self)
 		self.save()
 
@@ -112,6 +112,7 @@ def upload_file():
 				'file_size': file_size,
 				'mime_type': mime_type
 			})
+			drive_entity_doc.flags.save_path = save_path
 			frappe.local.rollback_observers.append(drive_entity_doc)
 			drive_entity_doc.save()
 			return drive_entity_doc
@@ -131,6 +132,7 @@ def create_folder(parent, folder_name):
 		'is_group': 1,
 		'title': secure_filename(folder_name)
 	})
+	drive_entity_doc.flags.save_path = save_path
 	frappe.local.rollback_observers.append(drive_entity_doc)
 	drive_entity_doc.save()
 	return drive_entity_doc
