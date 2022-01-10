@@ -78,3 +78,21 @@ class DriveEntity(NestedSet):
 		self.flags.changed_name = new_path
 		frappe.local.rollback_observers.append(self)
 		self.save()
+
+
+	def share(self, user, write=0, share=0, everyone=0, notify=1):
+		if self.is_group:
+			for child in self.get_children():
+				child.share(user, write, share, everyone, 0)
+			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, everyone=everyone, notify=notify)
+		else:
+			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, everyone=everyone, notify=notify)
+
+
+	def unshare(self, user):
+		if self.is_group:
+			for child in self.get_children():
+				child.unshare(user)
+			frappe.share.remove('Drive Entity', self.name, user)
+		else:
+			frappe.share.remove('Drive Entity', self.name, user)
