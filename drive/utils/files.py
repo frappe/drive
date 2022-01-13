@@ -7,7 +7,9 @@ from pathlib import Path
 from werkzeug.utils import secure_filename
 import hashlib
 
-def get_user_directory_path(user=frappe.session.user):
+def get_user_directory_path(user=None):
+	if not user:
+		user = frappe.session.user
 	user_directory_name = hashlib.md5(user.encode('utf-8')).hexdigest()
 	return Path(frappe.get_site_path('private'), user_directory_name)
 
