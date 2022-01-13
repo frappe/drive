@@ -56,7 +56,7 @@ class DriveEntity(NestedSet):
 
 	def move_to_root(self):
 		source_path = get_entity_path(self.name)
-		destination_path = get_user_directory_path()
+		destination_path = get_user_directory_path(self.owner)
 		if (destination_path / source_path.name).exists():
 			raise FileExistsError()
 		shutil.move(source_path, destination_path)
