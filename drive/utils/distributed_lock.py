@@ -15,16 +15,15 @@ class DistributedLock(object):
 
 
 	def acquire(self):
-		if frappe.cache().get_value(self.path, expires=True) is not None:
+		key = frappe.cache().make_key(self.path)
+		if not self._add(key, self.lock_id, self.ttl):
 			raise FileLockedError()
-		frappe.cache().set_value(self.path, self.lock_id, expires_in_sec=self.ttl)
 		self.acquired = True
 
 
 	def release(self):
-		lock = frappe.cache().get_value(self.path, expires=True)
-		if lock and lock == self.lock_id:
-			frappe.cache().delete_value(self.path)
+		key = frappe.cache().make_key(self.path)
+		self._check_and_delete(key, self.lock_id)
 		self.acquired = False
 
 
@@ -39,3 +38,38 @@ class DistributedLock(object):
 			self.release()
 
 
+	def _add(self, key, value, ttl):
+		'''Returns true if key does not already exist and value is set'''
+		return frappe.cache().set(key, value, ex=ttl, nx=True)
+
+
+	def _check_and_set(self, key, expected_val, new_val, ttl):
+		'''Atomic transaction to set value if current value matches the expected value'''
+		with frappe.cache().pipeline() as pipe:
+			while True:
+				try:
+					pipe.watch(key)
+					current_val = pipe.get(key)
+					if current_val and current_val.decode() != expected_val:
+						return False
+					pipe.multi()
+					pipe.set(key, new_val, ex=ttl)
+					return pipe.execute()[0]
+				except WatchError:
+					continue
+
+
+	def _check_and_delete(self, key, expected_val):
+		'''Atomic transaction to delete the key if current value matches the expected value'''
+		with frappe.cache().pipeline() as pipe:
+			while True:
+				try:
+					pipe.watch(key)
+					current_val = pipe.get(key)
+					if current_val and current_val.decode() != expected_val:
+						return False
+					pipe.multi()
+					pipe.delete(key)
+					return pipe.execute()[0]
+				except WatchError:
+					continue
