@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 from werkzeug.utils import secure_filename
 from drive.utils.files import get_entity_path, get_user_directory_path
+from drive.locks.drive_entity_lock import DriveEntityLock
 
 class DriveEntity(NestedSet):
 	nsm_parent_field = 'parent_drive_entity'
@@ -21,10 +22,12 @@ class DriveEntity(NestedSet):
 			for child in self.get_children():
 				child.delete()
 			path = get_entity_path(self.name)
-			shutil.rmtree(path)
+			with DriveEntityLock(self.name, exclusive=True):
+				shutil.rmtree(path)
 		else:
 			path = get_entity_path(self.name)
-			path.unlink()
+			with DriveEntityLock(self.name, exclusive=True):
+				path.unlink()
 		super().on_trash(True)
 
 
@@ -47,11 +50,13 @@ class DriveEntity(NestedSet):
 		destination_path = get_entity_path(destination_folder)
 		if (destination_path / source_path.name).exists():
 			raise FileExistsError()
-		shutil.move(source_path, destination_path)
-		self.parent_drive_entity = destination_folder
-		self.flags.moved_path = destination_path / source_path.name
-		frappe.local.rollback_observers.append(self)
-		self.save()
+		with DriveEntityLock(self.name, exclusive=True):
+			with DriveEntityLock(destination_folder, exclusive=False):
+				shutil.move(source_path, destination_path)
+				self.parent_drive_entity = destination_folder
+				self.flags.moved_path = destination_path / source_path.name
+				frappe.local.rollback_observers.append(self)
+				self.save()
 
 
 	def move_to_root(self):
@@ -59,11 +64,12 @@ class DriveEntity(NestedSet):
 		destination_path = get_user_directory_path(self.owner)
 		if (destination_path / source_path.name).exists():
 			raise FileExistsError()
-		shutil.move(source_path, destination_path)
-		self.parent_drive_entity = ''
-		self.flags.moved_path = destination_path / source_path.name
-		frappe.local.rollback_observers.append(self)
-		self.save()
+		with DriveEntityLock(self.name, exclusive=True):
+			shutil.move(source_path, destination_path)
+			self.parent_drive_entity = ''
+			self.flags.moved_path = destination_path / source_path.name
+			frappe.local.rollback_observers.append(self)
+			self.save()
 
 
 	def rename(self, new_title):
@@ -73,11 +79,12 @@ class DriveEntity(NestedSet):
 		new_path = entity_path.parent / new_title
 		if new_path.exists():
 			raise FileExistsError()
-		entity_path.rename(new_path)
-		self.title = new_title
-		self.flags.changed_name = new_path
-		frappe.local.rollback_observers.append(self)
-		self.save()
+		with DriveEntityLock(self.name, exclusive=True):
+			entity_path.rename(new_path)
+			self.title = new_title
+			self.flags.changed_name = new_path
+			frappe.local.rollback_observers.append(self)
+			self.save()
 
 
 	def share(self, user, write=0, share=0, everyone=0, notify=1):
