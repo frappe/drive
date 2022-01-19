@@ -3,7 +3,7 @@
 
 from frappe.utils.nestedset import get_ancestors_of
 from drive.utils.files import get_entity_path
-from drive.utils.distributed_lock import DistributedLock
+from drive.locks.distributed_lock import DistributedLock
 
 class DriveEntityLock(DistributedLock):
 	def __init__(self, entity_name, exclusive, ttl=60):
