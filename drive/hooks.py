@@ -7,7 +7,7 @@ app_description = "An easy to use, document sharing and management solution."
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
 app_email = "mituldavid@gmail.com"
-app_license = "MIT"
+app_license = ""
 
 # Includes in <head>
 # ------------------
