@@ -12,6 +12,7 @@
   "is_group",
   "old_parent",
   "parent_drive_entity",
+  "path",
   "file_size",
   "mime_type",
   "version"
@@ -53,6 +54,11 @@
    "options": "Drive Entity"
   },
   {
+    "fieldname": "path",
+    "fieldtype": "Data",
+    "label": "Path"
+  },
+  {
    "fieldname": "file_size",
    "fieldtype": "Int",
    "label": "File Size",
@@ -83,7 +89,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-01-05 10:56:43.926096",
+ "modified": "2022-01-24 17:13:16.090616",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Entity",
