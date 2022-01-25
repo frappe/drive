@@ -2,36 +2,60 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils.nestedset import get_ancestors_of
 from pathlib import Path
-from werkzeug.utils import secure_filename
 import hashlib
 
-def get_user_directory_path(user=None):
+def create_user_directory():
+	"""
+	Create user directory on disk, and insert corresponding DriveEntity doc
+
+	:raises FileExistsError: If user directory already exists
+	:return: Dictionary containing the document-name and path
+	:rtype: frappe._dict
+	"""
+
+	user_directory_name = _get_user_directory_name()
+	user_directory_path = Path(frappe.get_site_path('private'), user_directory_name)
+	user_directory_path.mkdir(exist_ok=False)
+
+	full_name = frappe.get_value('User', frappe.session.user, 'full_name')
+	user_directory = frappe.get_doc({
+		'doctype': 'Drive Entity',
+		'name': user_directory_name,
+		'title': f"{full_name}'s Drive",
+		'is_group': 1,
+		'path': user_directory_path
+	})
+	user_directory.flags.file_created = True
+	frappe.local.rollback_observers.append(user_directory)
+	user_directory.insert()
+	return frappe._dict({'name': user_directory.name, 'path': user_directory.path})
+
+
+def get_user_directory(user=None):
+	"""
+	Return the document-name, and path of the specified user's user directory
+
+	:param user: User whose directory details should be returned. Defaults to the current user
+	:raises FileNotFoundError: If user directory does not exist
+	:return: Dictionary containing the document-name and path
+	:rtype: frappe._dict
+	"""
+
+	user_directory_name = _get_user_directory_name(user)
+	user_directory = frappe.db.get_value(
+		'Drive Entity',
+		user_directory_name,
+		['name', 'path'],
+		as_dict=1
+	)
+	if user_directory is None:
+		raise FileNotFoundError('User directory does not exist')
+	return user_directory
+
+
+def _get_user_directory_name(user=None):
+	"""Returns user directory name from user's unique id"""
 	if not user:
 		user = frappe.session.user
-	user_directory_name = hashlib.md5(user.encode('utf-8')).hexdigest()
-	return Path(frappe.get_site_path('private'), user_directory_name)
-
-
-def get_entity_path(entity_name):
-	if not frappe.db.exists('Drive Entity', entity_name):
-		raise ValueError('This entity does not exist')
-	owner = frappe.db.get_value('Drive Entity', entity_name, 'owner')
-	path = get_user_directory_path(owner)
-	parents = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
-	for parent in parents:
-		path = path / frappe.db.get_value('Drive Entity', parent, 'title')
-	path = path / frappe.db.get_value('Drive Entity', entity_name, 'title')
-	return path
-
-
-def get_save_path(parent, name):
-	user_directory_path = get_user_directory_path()
-	if not user_directory_path.exists():
-		user_directory_path.mkdir()
-	name = secure_filename(name)
-	save_path = user_directory_path / name
-	if parent:
-		save_path = get_entity_path(parent) / name
-	return save_path
+	return hashlib.md5(user.encode('utf-8')).hexdigest()
