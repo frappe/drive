@@ -3,63 +3,69 @@
 
 import frappe
 import unittest
-from werkzeug.utils import secure_filename
+import uuid
+from pathlib import Path
 from drive.api.files import create_folder
-from drive.utils.files import get_save_path, get_entity_path
+from drive.utils.files import get_user_directory
 
-def create_text_file(parent, filename):
-	save_path = get_save_path(parent, filename)
-	with open(save_path, "w") as f:
+def create_text_file(filename, parent=None):
+	try:
+		user_directory = get_user_directory()
+	except FileNotFoundError:
+		user_directory = create_user_directory()
+	parent = parent or user_directory.name
+	name = uuid.uuid4().hex
+	path = Path(user_directory.path) / f'{name}.txt'
+	with open(path, "w") as f:
 		f.write("This is a test file")
-	drive_entity_doc = frappe.get_doc({
+	drive_entity = frappe.get_doc({
 		'doctype': 'Drive Entity',
+		'name': name,
+		'title': filename,
 		'parent_drive_entity': parent,
-		'title': secure_filename(filename),
-		'file_size': save_path.stat().st_size,
+		'path': path,
+		'file_size': path.stat().st_size,
 		'mime_type': 'text/plain'
 	})
-	drive_entity_doc.flags.save_path = save_path
-	frappe.local.rollback_observers.append(drive_entity_doc)
-	drive_entity_doc.save()
-	return drive_entity_doc
+	drive_entity.flags.file_created = True
+	frappe.local.rollback_observers.append(drive_entity)
+	drive_entity.insert()
+	return drive_entity
 
 
 class TestDriveEntity(unittest.TestCase):
 	def setUp(self):
-		self.test_folder1_doc = create_folder('', 'TestFolder1')
-		self.test_file1_doc = create_text_file('', 'Test1.txt')
-		self.test_file2_doc = create_text_file(self.test_folder1_doc.name, 'Test2.txt')
+		self.test_file1 = create_text_file('Test1.txt')
+		self.test_folder1 = create_folder('TestFolder1')
+		self.test_file2 = create_text_file('Test2.txt', self.test_folder1.name)
 
 
 	def test_simple_move(self):
-		original_path = get_entity_path(self.test_file1_doc.name)
-		self.test_file1_doc.move(self.test_folder1_doc.name)
-		moved_path = get_entity_path(self.test_file1_doc.name)
-		self.assertNotEqual(original_path, moved_path)
-		self.assertEqual(moved_path.parent, get_entity_path(self.test_folder1_doc.name))
-		self.assertFalse(original_path.exists())
-		self.assertTrue(moved_path.exists())
+		self.test_file1.move(self.test_folder1.name)
+		self.assertEqual(self.test_file1.parent_drive_entity, self.test_folder1.name)
+
+
+	def test_move_to_user_directory(self):
+		self.test_file2.move()
+		self.assertEqual(self.test_file2.parent_drive_entity, get_user_directory().name)
 
 
 	def test_move_to_file(self):
-		original_path = get_entity_path(self.test_file1_doc.name)
 		with self.assertRaises(NotADirectoryError):
-			self.test_file1_doc.move(self.test_file2_doc.name)
-		moved_path = get_entity_path(self.test_file1_doc.name)
-		self.assertTrue(original_path.exists())
-		self.assertEqual(original_path, moved_path)
+			self.test_file1.move(self.test_file2.name)
 
 
 	def test_move_to_non_existent_dest(self):
-		original_path = get_entity_path(self.test_file1_doc.name)
 		with self.assertRaises(NotADirectoryError):
-			self.test_file1_doc.move('test')
-		moved_path = get_entity_path(self.test_file1_doc.name)
-		self.assertTrue(original_path.exists())
-		self.assertEqual(original_path, moved_path)
+			self.test_file1.move('test')
+
+
+	def test_move_to_same_parent_folder(self):
+		with self.assertRaises(FileExistsError):
+			self.test_file2.move(self.test_folder1.name)
 
 
 	def tearDown(self):
-		self.test_folder1_doc.delete()
-		self.test_file1_doc.delete()
-		self.test_file2_doc.delete()
+		self.test_folder1.delete()
+		self.test_file1.delete()
+		self.test_file2.delete()
