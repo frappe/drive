@@ -65,6 +65,23 @@ class TestDriveEntity(unittest.TestCase):
 			self.test_file2.move(self.test_folder1.name)
 
 
+	def test_simple_rename(self):
+		self.test_file1.rename('renamed_file.txt')
+		self.assertEqual(self.test_file1.title, 'renamed_file.txt')
+
+
+	def test_rename_to_existing(self):
+		self.test_file1.move(self.test_folder1.name)
+		with self.assertRaises(FileExistsError):
+			self.test_file1.rename(self.test_file2.title)
+
+
+	def test_version_update(self):
+		prev_version_no = self.test_file1.version
+		self.test_file1.rename('renamed_file.txt')
+		self.assertEqual(self.test_file1.version, prev_version_no + 1)
+
+
 	def tearDown(self):
 		self.test_folder1.delete()
 		self.test_file1.delete()
