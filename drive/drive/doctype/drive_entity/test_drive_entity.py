@@ -122,6 +122,21 @@ class TestDriveEntity(unittest.TestCase):
 		self.assertFalse(frappe.has_permission(doc=self.test_file2, user='test_drive@example.com'))
 
 
+	def test_delete_file(self):
+		self.assertTrue(Path(self.test_file1.path).exists())
+		self.test_file1.delete()
+		self.assertFalse(frappe.db.exists('Drive Entity', self.test_file1.name))
+		self.assertFalse(Path(self.test_file1.path).exists())
+
+
+	def test_delete_folder(self):
+		self.assertTrue(Path(self.test_file2.path).exists())
+		self.test_folder1.delete()
+		self.assertFalse(frappe.db.exists('Drive Entity', self.test_folder1.name))
+		self.assertFalse(frappe.db.exists('Drive Entity', self.test_file2.name))
+		self.assertFalse(Path(self.test_file2.path).exists())
+
+
 	def tearDown(self):
 		self.test_folder1.delete()
 		self.test_file1.delete()
