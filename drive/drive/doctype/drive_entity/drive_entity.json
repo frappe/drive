@@ -79,7 +79,7 @@
    "read_only": 1
   },
   {
-   "default": "1",
+   "default": "0",
    "fieldname": "version",
    "fieldtype": "Int",
    "label": "Version",
@@ -89,7 +89,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-01-25 10:56:54.745725",
+ "modified": "2022-01-26 18:27:28.327255",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Entity",

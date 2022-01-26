@@ -3,7 +3,6 @@
 
 import frappe
 from frappe.utils.nestedset import NestedSet
-import frappe.share
 from pathlib import Path
 import shutil
 from drive.utils.files import get_user_directory
@@ -11,8 +10,11 @@ from drive.utils.files import get_user_directory
 class DriveEntity(NestedSet):
 	nsm_parent_field = 'parent_drive_entity'
 	def on_update(self):
-		self.version = self.version + 1
 		super().on_update()
+
+
+	def before_save(self):
+		self.version = self.version + 1
 
 
 	def on_trash(self):
@@ -71,7 +73,7 @@ class DriveEntity(NestedSet):
 
 		entity_exists = frappe.db.exists({
 			'doctype': 'Drive Entity',
-			'parent_drive_entity': self.parent,
+			'parent_drive_entity': self.parent_drive_entity,
 			'title': new_title
 		})
 		if entity_exists:
