@@ -82,6 +82,46 @@ class TestDriveEntity(unittest.TestCase):
 		self.assertEqual(self.test_file1.version, prev_version_no + 1)
 
 
+	def test_share_file(self):
+		self.assertFalse(frappe.has_permission(doc=self.test_file1, user='test_drive@example.com'))
+		self.test_file1.share('test_drive@example.com')
+		self.assertTrue(frappe.has_permission(doc=self.test_file1, user='test_drive@example.com'))
+
+
+	def test_share_folder(self):
+		self.assertFalse(frappe.has_permission(doc=self.test_folder1, user='test_drive@example.com'))
+		self.assertFalse(frappe.has_permission(doc=self.test_file2, user='test_drive@example.com'))
+		self.test_folder1.share('test_drive@example.com')
+		self.assertTrue(frappe.has_permission(doc=self.test_folder1, user='test_drive@example.com'))
+		self.assertTrue(frappe.has_permission(doc=self.test_file2, user='test_drive@example.com'))
+
+
+	def test_share_options(self):
+		self.assertFalse(frappe.has_permission(doc=self.test_file1, ptype='read', user='test_drive@example.com'))
+		self.assertFalse(frappe.has_permission(doc=self.test_file1, ptype='write', user='test_drive@example.com'))
+		self.assertFalse(frappe.has_permission(doc=self.test_file1, ptype='share', user='test_drive@example.com'))
+		self.test_file1.share('Administrator', write=1, share=1, everyone=1)
+		self.assertTrue(frappe.has_permission(doc=self.test_file1, ptype='read', user='test_drive@example.com'))
+		self.assertTrue(frappe.has_permission(doc=self.test_file1, ptype='write', user='test_drive@example.com'))
+		self.assertTrue(frappe.has_permission(doc=self.test_file1, ptype='share', user='test_drive@example.com'))
+
+
+	def test_unshare_file(self):
+		self.test_file1.share('test_drive@example.com')
+		self.assertTrue(frappe.has_permission(doc=self.test_file1, user='test_drive@example.com'))
+		self.test_file1.unshare('test_drive@example.com')
+		self.assertFalse(frappe.has_permission(doc=self.test_file1, user='test_drive@example.com'))
+
+
+	def test_unshare_folder(self):
+		self.test_folder1.share('test_drive@example.com')
+		self.assertTrue(frappe.has_permission(doc=self.test_folder1, user='test_drive@example.com'))
+		self.assertTrue(frappe.has_permission(doc=self.test_file2, user='test_drive@example.com'))
+		self.test_folder1.unshare('test_drive@example.com')
+		self.assertFalse(frappe.has_permission(doc=self.test_folder1, user='test_drive@example.com'))
+		self.assertFalse(frappe.has_permission(doc=self.test_file2, user='test_drive@example.com'))
+
+
 	def tearDown(self):
 		self.test_folder1.delete()
 		self.test_file1.delete()

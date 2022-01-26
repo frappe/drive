@@ -1,0 +1,9 @@
+[
+   {
+      "doctype": "User",
+      "email": "test_drive@example.com",
+      "enabled": 1,
+      "first_name": "_Test_Drive",
+      "new_password": "!@%@%$4!72$*"
+   }
+]
