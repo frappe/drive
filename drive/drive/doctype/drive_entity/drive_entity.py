@@ -112,3 +112,27 @@ class DriveEntity(NestedSet):
 			frappe.share.remove('Drive Entity', self.name, user)
 		else:
 			frappe.share.remove('Drive Entity', self.name, user)
+
+
+	@frappe.whitelist()
+	def list_folder_contents(self, fields=None, order_by='title'):
+		"""
+		Return list of DriveEntity records present in this folder
+
+		:param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'is_group', 'owner', 'modified', 'file_size']
+		:param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
+		:raises NotADirectoryError: If this DriveEntity doc is not a folder
+		:return: List of DriveEntity records
+		:rtype: list
+		"""
+
+		if not self.is_group:
+			raise NotADirectoryError
+		fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size']
+		return frappe.db.get_list('Drive Entity',
+			filters={
+				'parent_drive_entity': self.name
+			},
+			fields=fields,
+			order_by=order_by
+		)
