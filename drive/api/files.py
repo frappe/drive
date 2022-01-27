@@ -3,9 +3,12 @@
 
 import frappe
 from pathlib import Path
+from werkzeug.wrappers import Response
+from werkzeug.wsgi import wrap_file
 import uuid
 import mimetypes
 from drive.utils.files import get_user_directory, create_user_directory
+from drive.locks.distributed_lock import DistributedLock
 
 @frappe.whitelist()
 def upload_file():
@@ -109,3 +112,47 @@ def create_folder(title, parent=None):
 	})
 	drive_entity.insert()
 	return drive_entity
+
+
+@frappe.whitelist()
+def get_file_content(entity_name):
+	"""
+	Stream file content
+
+	:param entity_name: Document-name of the file whose content is to be streamed
+	:raises ValueError: If the DriveEntity doc does not exist or is not a file
+	:raises FileLockedError: If the file has been writer-locked
+	"""
+
+	drive_entity = frappe.get_value('Drive Entity', entity_name, ['is_group', 'path', 'title', 'mime_type', 'file_size'], as_dict=1)
+	if not drive_entity or drive_entity.is_group:
+		raise ValueError
+	with DistributedLock(drive_entity.path, exclusive=False):
+		file = open(drive_entity.path, 'rb')
+		response = Response(wrap_file(frappe.request.environ, file), direct_passthrough=True)
+		response.mimetype = drive_entity.mime_type or 'application/octet-stream'
+		response.headers.add('Content-Disposition', 'inline', filename=drive_entity.title.encode("utf-8"))
+		response.headers.add('Content-Length', str(drive_entity.file_size))
+		return response
+
+
+@frappe.whitelist()
+def download_file(entity_name):
+	"""
+	Stream file content and trigger the "Save As" dialog
+
+	:param entity_name: Document-name of the file whose content is to be streamed
+	:raises ValueError: If the DriveEntity doc does not exist or is not a file
+	:raises FileLockedError: If the file has been writer-locked
+	"""
+
+	drive_entity = frappe.get_value('Drive Entity', entity_name, ['is_group', 'path', 'title', 'mime_type', 'file_size'], as_dict=1)
+	if not drive_entity or drive_entity.is_group:
+		raise ValueError
+	with DistributedLock(drive_entity.path, exclusive=False):
+		file = open(drive_entity.path, 'rb')
+		response = Response(wrap_file(frappe.request.environ, file), direct_passthrough=True)
+		response.mimetype = drive_entity.mime_type or 'application/octet-stream'
+		response.headers.add('Content-Disposition', 'attachment', filename=drive_entity.title.encode("utf-8"))
+		response.headers.add('Content-Length', str(drive_entity.file_size))
+		return response
