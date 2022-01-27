@@ -100,7 +100,7 @@ class TestDriveEntity(unittest.TestCase):
 		self.assertFalse(frappe.has_permission(doc=self.test_file1, ptype='read', user='test_drive@example.com'))
 		self.assertFalse(frappe.has_permission(doc=self.test_file1, ptype='write', user='test_drive@example.com'))
 		self.assertFalse(frappe.has_permission(doc=self.test_file1, ptype='share', user='test_drive@example.com'))
-		self.test_file1.share('Administrator', write=1, share=1, everyone=1)
+		self.test_file1.share('test_drive@example.com', write=1, share=1)
 		self.assertTrue(frappe.has_permission(doc=self.test_file1, ptype='read', user='test_drive@example.com'))
 		self.assertTrue(frappe.has_permission(doc=self.test_file1, ptype='write', user='test_drive@example.com'))
 		self.assertTrue(frappe.has_permission(doc=self.test_file1, ptype='share', user='test_drive@example.com'))

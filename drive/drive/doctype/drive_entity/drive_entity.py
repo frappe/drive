@@ -21,7 +21,7 @@ class DriveEntity(NestedSet):
 		if self.is_group:
 			for child in self.get_children():
 				child.delete()
-		super().on_trash(True)
+		super().on_trash()
 
 
 	def after_delete(self):
@@ -84,16 +84,28 @@ class DriveEntity(NestedSet):
 		return self
 
 
-	def share(self, user, write=0, share=0, everyone=0, notify=1):
+	def share(self, user, write=0, share=0, notify=1):
+		"""
+		Share this file or folder with the specified user.
+		If it has already been shared, update permissions.
+
+		:param user: User with whom this is to be shared
+		:param write: 1 if write permission is to be granted. Defaults to 0
+		:param share: 1 if share permission is to be granted. Defaults to 0
+		:param notify: 1 if the user should be notified. Defaults to 1
+		"""
+
 		if self.is_group:
 			for child in self.get_children():
-				child.share(user, write, share, everyone, 0)
-			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, everyone=everyone, notify=notify)
+				child.share(user, write, share, 0)
+			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify)
 		else:
-			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, everyone=everyone, notify=notify)
+			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify)
 
 
 	def unshare(self, user):
+		"""Unshare this file or folder with the specified user"""
+
 		if self.is_group:
 			for child in self.get_children():
 				child.unshare(user)
