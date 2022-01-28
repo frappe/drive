@@ -20,3 +20,24 @@ def revoke_access(entity_name, user):
 	drive_entity_doc = frappe.get_doc('Drive Entity', entity_name)
 	drive_entity_doc.unshare(user)
 
+
+@frappe.whitelist()
+def get_shared_with_list(entity_name):
+	"""
+	Return the list of users with whom this file or folder has been shared
+
+	:param entity_name: Document-name of this file or folder
+	:raises PermissionError: If the user does not have edit permissions
+	:return: List of users, with permissions and last modified datetime
+	:rtype: list[frappe._dict]
+	"""
+
+	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='edit', user=frappe.session.user):
+		raise frappe.PermissionError
+	return frappe.db.get_list('DocShare',
+		filters={
+			'share_doctype': 'Drive Entity',
+			'share_name': entity_name
+		},
+		fields=['user', 'read', 'write', 'share', 'everyone', 'modified']
+	)
