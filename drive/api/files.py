@@ -5,6 +5,7 @@ import frappe
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
+from werkzeug.utils import secure_filename
 import uuid
 import mimetypes
 from drive.utils.files import get_user_directory, create_user_directory
@@ -23,15 +24,11 @@ def upload_file():
 	:param chunk_byte_offset: Position in the file at which the current chunk starts
 	:param total_file_size: Total size of the file in bytes
 	:raises FileExistsError: If a file with the same name already exists in the specified parent folder
-	:raises ValueError: If file is not present in the request
 	:raises ValueError: If the size of the stored file does not match the specified filesize
 	:return: DriveEntity doc once entire file has been uploaded
 	"""
 
 	file = frappe.request.files['file']
-	if not file:
-		raise ValueError('File is not present in the request')
-
 	try:
 		user_directory = get_user_directory()
 	except FileNotFoundError:
@@ -45,7 +42,7 @@ def upload_file():
 		'parent_drive_entity': parent,
 		'title': file.filename
 	})
-	save_path = Path(user_directory.path) / f'{parent}_{file.filename}'
+	save_path = Path(user_directory.path) / f'{parent}_{secure_filename(file.filename)}'
 
 	if current_chunk == 0 and (entity_exists or save_path.exists()):
 		raise FileExistsError()
