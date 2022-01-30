@@ -6,8 +6,9 @@ import unittest
 import filecmp
 from unittest.mock import MagicMock
 from pathlib import Path
-from drive.api.files import upload_file, create_folder
+from drive.api.files import upload_file, create_folder, get_file_content
 from drive.utils.files import get_user_directory
+from drive.locks.distributed_lock import DistributedLock, FileLockedError
 
 def read_in_chunks(file_obj, chunk_size):
 	chunk_index = 0
@@ -19,7 +20,7 @@ def read_in_chunks(file_obj, chunk_size):
 		chunk_index += 1
 
 
-class TestUploadAPI(unittest.TestCase):
+class TestFilesAPI(unittest.TestCase):
 	def mock_chunked_upload_request(self, file_path, file_size, parent='', chunk_size=None, total_file_size=None):
 		chunk_size = chunk_size or file_size // 4
 		# ceil division to calculate total_chunk_count
@@ -110,3 +111,62 @@ class TestUploadAPI(unittest.TestCase):
 		with self.assertRaises(FileExistsError):
 			create_folder('Test Folder')
 		folder.delete()
+
+
+	def test_get_file_content(self):
+		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
+		file_content = get_file_content(doc.name)
+		headers = file_content.headers
+		self.assertEqual(file_content.status_code, 200)
+		self.assertEqual(file_content.content_length, file_size)
+		self.assertEqual(file_content.content_type, 'text/plain; charset=utf-8')
+		self.assertEqual(headers.get('Content-Disposition'), 'inline; filename=sample_text_file.txt')
+		doc.delete()
+
+
+	def test_download_file(self):
+		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
+		file_content = get_file_content(doc.name, trigger_download=1)
+		headers = file_content.headers
+		self.assertEqual(file_content.status_code, 200)
+		self.assertEqual(file_content.content_length, file_size)
+		self.assertEqual(file_content.content_type, 'text/plain; charset=utf-8')
+		self.assertEqual(headers.get('Content-Disposition'), 'attachment; filename=sample_text_file.txt')
+		doc.delete()
+
+
+	def test_get_non_existent_file_content(self):
+		with self.assertRaises(ValueError):
+			file_content = get_file_content('test')
+
+
+	def test_get_content_of_folder(self):
+		folder = create_folder('Test Folder')
+		with self.assertRaises(ValueError):
+			file_content = get_file_content(folder.name)
+		folder.delete()
+
+
+	def test_unauthorized_get_file_content(self):
+		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
+		frappe.set_user('Guest')
+		with self.assertRaises(frappe.PermissionError):
+			file_content = get_file_content(doc.name)
+		frappe.set_user('Administrator')
+		doc.delete()
+
+
+	def test_get_locked_file_content(self):
+		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
+		with DistributedLock(doc.path, exclusive=True):
+			with self.assertRaises(FileLockedError):
+				file_content = get_file_content(doc.name)
+		doc.delete()
