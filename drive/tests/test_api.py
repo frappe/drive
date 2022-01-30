@@ -2,108 +2,84 @@
 # See license.txt
 
 import frappe
-from frappe.utils import get_site_url
 import unittest
-import json
-import requests
+import filecmp
+from unittest.mock import MagicMock
 from pathlib import Path
+from drive.api.files import upload_file
 from drive.utils.files import get_user_directory
-from drive.api.files import create_folder
+
+def read_in_chunks(file_obj, chunk_size):
+	chunk_index = 0
+	while True:
+		chunk = file_obj.read(chunk_size)
+		if not chunk:
+			break
+		yield chunk_index, chunk
+		chunk_index += 1
+
 
 class TestUploadAPI(unittest.TestCase):
-	BASE_URL = get_site_url(frappe.local.site)
-
-	@property
-	def sid(self):
-		if not getattr(self, '_sid', None):
-			self._sid = requests.post(
-				f'{self.BASE_URL}/api/method/login',
-				data={
-					'usr': 'test_drive@example.com',
-					'pwd': '!@%@%$4!72$*',
-				}
-			).cookies.get('sid')
-		return self._sid
-
-
-	def POST(self, method, data, files=None):
-		response = requests.post(
-			f'{self.BASE_URL}/api/method/{method}?sid={self.sid}',
-			data=data,
-			files=files
-		)
-		return response
-
-
-	def call_upload_file(self, file_path, parent=''):
-		file_name = file_path.name
-		file_size = file_path.stat().st_size
-		chunk_size = file_size // 2
+	def mock_chunked_upload_request(self, file_path, file_size, parent='', chunk_size=None, total_file_size=None):
+		chunk_size = chunk_size or file_size // 4
 		# ceil division to calculate total_chunk_count
 		total_chunk_count = - (file_size // - chunk_size)
-		index = 0
-		with open(file_path, 'rb') as f:
-			while True:
-				chunk = f.read(chunk_size)
-				if not chunk:
-					return response
+		f = open(file_path, 'rb')
 
-				response = self.POST(
-					'drive.api.files.upload_file',
-					data={
-						'parent': parent,
-						'chunk_index': index,
-						'total_chunk_count': total_chunk_count,
-						'chunk_byte_offset': index * chunk_size,
-						'total_file_size': file_size
-					},
-					files={
-						'file': (file_name, chunk)
-					}
-				)
-				if response.status_code != requests.codes.ok:
-					return response
-				index = index + 1
+		for chunk_index, chunk in read_in_chunks(f, chunk_size):
+			# mock request object and form_dict
+			frappe.local.request = MagicMock()
+			frappe.local.request.files['file'] = MagicMock()
+			frappe.local.request.files['file'].stream.read.return_value = chunk
+			frappe.local.request.files['file'].filename = file_path.name
+			frappe.form_dict = MagicMock()
+			frappe.form_dict = frappe._dict({
+				'parent': parent,
+				'chunk_index': chunk_index,
+				'total_chunk_count': total_chunk_count,
+				'chunk_byte_offset': chunk_index * chunk_size,
+				'total_file_size': total_file_size or file_size,
+			})
+			response = upload_file()
+		f.close()
+		return response
 
 
 	def test_upload_file(self):
 		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
-		response = self.call_upload_file(file_path)
-		response_message = json.loads(response.content.decode()).get('message')
-		self.assertIsNotNone(response_message)
-		self.assertEqual(response_message.get('title'), 'sample_text_file.txt')
-		self.assertEqual(response_message.get('file_size'), file_path.stat().st_size)
-		self.assertEqual(response_message.get('parent_drive_entity'), get_user_directory('test_drive@example.com').name)
-		self.assertTrue(Path(response_message.get('path')).exists())
-		frappe.delete_doc_if_exists('Drive Entity', response_message['name'])
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size)
+		self.assertEqual(doc.title, file_path.name)
+		self.assertEqual(doc.file_size, file_size)
+		self.assertEqual(doc.parent_drive_entity, get_user_directory().name)
+		self.assertTrue(Path(doc.path).exists())
+		self.assertTrue(filecmp.cmp(file_path, Path(doc.path), shallow=False))
+		doc.delete()
 
 
-	def test_upload_without_file(self):
-		response = self.POST(
-			'drive.api.files.upload_file',
-			data={
-				'chunk_index': 0,
-				'total_chunk_count': 1,
-				'chunk_byte_offset': 0,
-				'total_file_size': 1024
-			}
-		)
-		self.assertEqual(response.status_code, 400)
+	def test_single_chunk_upload(self):
+		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
+		self.assertEqual(doc.title, file_path.name)
+		self.assertEqual(doc.file_size, file_size)
+		self.assertEqual(doc.parent_drive_entity, get_user_directory().name)
+		self.assertTrue(Path(doc.path).exists())
+		self.assertTrue(filecmp.cmp(file_path, Path(doc.path), shallow=False))
+		doc.delete()
 
 
 	def test_upload_with_inaccurate_file_size(self):
 		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
-		with open(file_path, 'rb') as f:
-			response = self.POST(
-				'drive.api.files.upload_file',
-				data={
-					'chunk_index': 0,
-					'total_chunk_count': 1,
-					'chunk_byte_offset': 0,
-					'total_file_size': 1024,
-				},
-				files={
-					'file': ('sample_text_file.txt', f)
-				}
-			)
-		self.assertEqual(response.status_code, 500)
+		file_size = file_path.stat().st_size
+		with self.assertRaises(ValueError):
+			doc = self.mock_chunked_upload_request(file_path, file_size, total_file_size=1024)
+
+
+	def test_upload_existing_file(self):
+		file_path = Path(frappe.get_app_path('drive')) / 'tests' / 'fixtures' / 'sample_text_file.txt'
+		file_size = file_path.stat().st_size
+		doc = self.mock_chunked_upload_request(file_path, file_size)
+		with self.assertRaises(FileExistsError):
+			self.mock_chunked_upload_request(file_path, file_size)
+		doc.delete()
