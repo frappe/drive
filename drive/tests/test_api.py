@@ -6,7 +6,7 @@ import unittest
 import filecmp
 from unittest.mock import MagicMock
 from pathlib import Path
-from drive.api.files import upload_file
+from drive.api.files import upload_file, create_folder
 from drive.utils.files import get_user_directory
 
 def read_in_chunks(file_obj, chunk_size):
@@ -83,3 +83,30 @@ class TestUploadAPI(unittest.TestCase):
 		with self.assertRaises(FileExistsError):
 			self.mock_chunked_upload_request(file_path, file_size)
 		doc.delete()
+
+
+	def test_create_folder(self):
+		doc = create_folder('Test Folder')
+		self.assertEqual(doc.is_group, 1)
+		self.assertEqual(doc.title, 'Test Folder')
+		self.assertEqual(doc.parent_drive_entity, get_user_directory().name)
+		doc.delete()
+
+
+	def test_create_folder_in_parent(self):
+		L1_folder = create_folder('Test Folder L1')
+		self.assertEqual(L1_folder.is_group, 1)
+		L2_folder = create_folder('Test Folder L2', parent=L1_folder.name)
+		self.assertEqual(L2_folder.is_group, 1)
+		self.assertEqual(L2_folder.title, 'Test Folder L2')
+		self.assertEqual(L2_folder.parent_drive_entity, L1_folder.name)
+		L1_folder.delete()
+		L2_folder.delete()
+
+
+	def test_create_existing_folder(self):
+		folder = create_folder('Test Folder')
+		self.assertEqual(folder.is_group, 1)
+		with self.assertRaises(FileExistsError):
+			create_folder('Test Folder')
+		folder.delete()
