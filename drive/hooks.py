@@ -187,6 +187,3 @@ app_license = ""
 # auth_hooks = [
 # 	"drive.auth.validate"
 # ]
-
-
-website_route_rules = [{'from_route': '/root/<path:app_path>', 'to_route': 'root'},]
