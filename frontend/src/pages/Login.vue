@@ -1,5 +1,8 @@
 <template>
-  <LoginBox title="Log in to your account">
+  <LoginBox
+    title="Log in to your account"
+    :class="{ 'pointer-events-none': loading }"
+  >
     <form class="flex flex-col" @submit.prevent="">
       <Input
         class="mb-4"
@@ -21,14 +24,17 @@
         required
       />
       <ErrorMessage :message="errorMessage" class="mt-4" />
-      <Button
-        class="mt-4"
-        :disabled="state === 'requestStarted'"
-        @click="login"
-        type="primary"
-      >
+      <Button class="mt-4" :loading="loading" @click="login" type="primary">
         Submit
       </Button>
+      <div class="mt-10 text-center border-t">
+        <div class="transform -translate-y-1/2">
+          <span class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">OR</span>
+        </div>
+      </div>
+      <router-link class="text-base text-center" to="/signup">
+        Sign up for a new account
+      </router-link>
     </form>
   </LoginBox>
 </template>
@@ -46,7 +52,7 @@ export default {
   },
   data() {
     return {
-      state: null,
+      loading: false,
       email: null,
       password: null,
       errorMessage: null,
@@ -58,7 +64,7 @@ export default {
     async login() {
       try {
         this.errorMessage = null
-        this.state = 'requestStarted'
+        this.loading = true
         if (this.email && this.password) {
           let res = await this.$call('login', {
             usr: this.email,
@@ -73,7 +79,7 @@ export default {
       } catch (error) {
         this.errorMessage = error.messages.join('\n')
       } finally {
-        this.state = null
+        this.loading = false
       }
     },
   },

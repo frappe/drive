@@ -15,6 +15,14 @@ const routes = [
       isLoginPage: true,
     },
   },
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: () => import('@/pages/Signup.vue'),
+    meta: {
+      isLoginPage: true,
+    },
+  },
 ]
 
 let router = createRouter({

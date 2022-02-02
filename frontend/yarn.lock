@@ -631,10 +631,10 @@ fraction.js@^4.1.2:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.1.2.tgz#13e420a92422b6cf244dff8690ed89401029fbe8"
   integrity sha512-o2RiJQ6DZaR/5+Si0qJUIy637QMRudSi9kU/FFzx9EZazrIdnBgpU+3sEWCxAVhH2RtxW2Oz+T4p2o8uOPVcgA==
 
-frappe-ui@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.0.2.tgz#b7cefd6e791d5a98dfffafa8a57d81cc6693cce2"
-  integrity sha512-UtL7S9x0FNLgsjjbrko7L3fK33fHpwV9gn9SyGekr0Jh/pvj6M+KzpQqCATYepIcNF3fqK+hSozmQDYUBxZNAg==
+frappe-ui@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.0.4.tgz#55c74da9b29b8907342af6ce91067e0333f691c0"
+  integrity sha512-YCX5O9JrBrvc08ZcZTNyYHLhs8OcgBHegjIWjK4eFUMFOMWlmALrdFU49jOikL3vWmd7nnL10A+RRmfXcPuSdw==
   dependencies:
     "@popperjs/core" "^2.11.2"
     "@tailwindcss/forms" "^0.4.0"
