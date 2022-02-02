@@ -1,13 +1,13 @@
 import { createApp } from 'vue'
 import { FrappeUI, Button } from 'frappe-ui'
+import store from './store'
 import router from './router'
-import auth from '@/mixins/auth'
 import App from './App.vue'
 import './index.css'
 
 let app = createApp(App)
 app.use(router)
+app.use(store)
 app.use(FrappeUI)
-app.mixin(auth)
 app.component('Button', Button)
 app.mount('#app')

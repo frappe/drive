@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { checkAuthenticationStatus } from '@/mixins/auth'
+import store from './store'
 
 const routes = [
   {
@@ -31,15 +31,14 @@ let router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  let [, isLoggedIn] = checkAuthenticationStatus()
   if (to.matched.some((record) => record.meta.isLoginPage)) {
-    if (isLoggedIn) {
+    if (store.getters.isLoggedIn) {
       next({ name: 'Home' })
     } else {
       next()
     }
   } else {
-    if (isLoggedIn) {
+    if (store.getters.isLoggedIn) {
       next()
     } else {
       next('/login')

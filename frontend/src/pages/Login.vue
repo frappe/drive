@@ -66,13 +66,11 @@ export default {
         this.errorMessage = null
         this.loading = true
         if (this.email && this.password) {
-          let res = await this.$call('login', {
-            usr: this.email,
-            pwd: this.password,
+          let res = await this.$store.dispatch('login', {
+            email: this.email,
+            password: this.password,
           })
           if (res) {
-            this.auth.isLoggedIn = true
-            this.auth.user = res.full_name
             this.$router.push('/')
           }
         }
