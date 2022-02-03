@@ -3,27 +3,83 @@
     <div
       class="mx-auto px-5 sm:px-20 z-10 h-16 flex items-center justify-between"
     >
-      <router-link to="/">
-        <FrappeDriveLogo class="h-5" />
-      </router-link>
-      <div class="flex items-center gap-4">
-        <Avatar :label="fullName" />
+      <div class="flex items-center">
+        <router-link to="/" class="hidden sm:block">
+          <FrappeDriveLogo class="h-5" />
+        </router-link>
+        <div class="flex items-center sm:hidden">
+          <button
+            class="mr-5 inline-flex items-center justify-center text-gray-700 rounded-md focus:outline-none focus:shadow-outline-gray"
+            @click="$emit('toggleMobileSidebar')"
+          >
+            <FeatherIcon
+              v-if="!mobileSidebarIsOpen"
+              name="menu"
+              class="w-6 h-6"
+            />
+            <FeatherIcon v-else name="x" class="w-6 h-6" />
+          </button>
+          <router-link to="/">
+            <FrappeLogo class="h-6 w-auto" />
+          </router-link>
+        </div>
+      </div>
+
+      <div class="flex items-center">
+        <div class="relative ml-3">
+          <Dropdown :items="dropdownItems" right>
+            <template v-slot="{ toggleDropdown }">
+              <button
+                class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
+                id="user-menu"
+                aria-label="User menu"
+                aria-haspopup="true"
+                @click="toggleDropdown()"
+              >
+                <div class="flex items-center gap-4">
+                  <Avatar :label="fullName" :imageURL="imageURL" />
+                </div>
+              </button>
+            </template>
+          </Dropdown>
+        </div>
       </div>
     </div>
   </nav>
 </template>
 <script>
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
-import { Avatar } from 'frappe-ui'
+import FrappeLogo from '@/components/FrappeLogo.vue'
+import { Avatar, Dropdown, FeatherIcon } from 'frappe-ui'
 export default {
   name: 'Navbar',
   components: {
     FrappeDriveLogo,
+    FrappeLogo,
     Avatar,
+    Dropdown,
+    FeatherIcon,
+  },
+  props: {
+    mobileSidebarIsOpen: Boolean,
+  },
+  emits: ['accepted'],
+  data() {
+    return {
+      dropdownItems: [
+        {
+          label: 'Logout',
+          action: () => this.$store.dispatch('logout'),
+        },
+      ],
+    }
   },
   computed: {
     fullName() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.fullName
+    },
+    imageURL() {
+      return this.$store.state.user.imageURL
     },
   },
 }

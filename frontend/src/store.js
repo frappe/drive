@@ -18,7 +18,9 @@ const store = createStore({
     },
     user: {
       fullName: getCookies().full_name,
-      imageURL: null,
+      imageURL: getCookies().user_image
+        ? window.location.origin + getCookies().user_image
+        : null,
     },
   },
   getters: {
@@ -46,9 +48,20 @@ const store = createStore({
           loading: false,
           user_id: getCookies().user_id,
         })
+        commit('setUser', {
+          fullName: getCookies().full_name,
+          imageURL: getCookies().user_image
+            ? window.location.origin + getCookies().user_image
+            : null,
+        })
         return res
       }
       return false
+    },
+    async logout({ commit }) {
+      commit('setAuth', { loading: true })
+      await call('logout')
+      window.location.reload()
     },
   },
 })
