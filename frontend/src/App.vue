@@ -22,7 +22,7 @@
     </div>
     <!-- Mobile Sidebar -->
     <div v-if="mobileSidebarIsOpen" class="sm:hidden fixed inset-0 z-20 flex">
-      <div class="w-1/2 bg-white flex flex-col">
+      <div class="w-auto bg-white flex flex-col">
         <div class="border-b h-16 px-4 flex items-center">
           <FrappeDriveLogo />
         </div>
