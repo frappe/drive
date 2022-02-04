@@ -48,9 +48,10 @@
   </nav>
 </template>
 <script>
+import { Avatar, Dropdown, FeatherIcon } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
 import FrappeLogo from '@/components/FrappeLogo.vue'
-import { Avatar, Dropdown, FeatherIcon } from 'frappe-ui'
+
 export default {
   name: 'Navbar',
   components: {
@@ -61,9 +62,12 @@ export default {
     FeatherIcon,
   },
   props: {
-    mobileSidebarIsOpen: Boolean,
+    mobileSidebarIsOpen: {
+      type: Boolean,
+      required: true,
+    },
   },
-  emits: ['accepted'],
+  emits: ['toggleMobileSidebar'],
   data() {
     return {
       dropdownItems: [

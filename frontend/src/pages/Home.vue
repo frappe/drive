@@ -22,6 +22,9 @@ import { Dialog } from 'frappe-ui'
 
 export default {
   name: 'Home',
+  components: {
+    Dialog,
+  },
   data() {
     return {
       showDialog: false,
@@ -31,9 +34,6 @@ export default {
     ping: {
       method: 'ping',
     },
-  },
-  components: {
-    Dialog,
   },
 }
 </script>

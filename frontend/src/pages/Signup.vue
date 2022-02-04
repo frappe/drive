@@ -1,6 +1,6 @@
 <template>
   <LoginBox
-    v-if="!status_200"
+    v-if="!request_status_ok"
     title="Create your account"
     :class="{ 'pointer-events-none': loading }"
   >
@@ -11,7 +11,7 @@
         type="text"
         placeholder="John Doe"
         autocomplete="name"
-        v-model="full_name"
+        v-model="fullName"
         required
       />
       <Input
@@ -23,7 +23,7 @@
         required
       />
       <ErrorMessage class="mt-4" :message="errorMessage" />
-      <Button class="mt-4" type="primary" :loading="loading"> Submit </Button>
+      <Button class="mt-4" type="primary" :loading="loading">Submit</Button>
       <div class="mt-10 text-center border-t">
         <div class="transform -translate-y-1/2">
           <span class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">OR</span>
@@ -36,18 +36,7 @@
   </LoginBox>
   <div v-else class="p-5 sm:p-20">
     <div
-      class="
-        flex flex-col flex-1
-        items-center
-        p-10
-        text-base
-        bg-white
-        rounded-lg
-        mx-auto
-        shadow-lg
-        w-full
-        sm:w-96
-      "
+      class="flex flex-col flex-1 items-center p-10 text-base bg-white rounded-lg mx-auto shadow-lg w-full sm:w-96"
     >
       <div class="w-8 h-8 p-1 rounded-full" :class="iconContainerClass">
         <FeatherIcon :name="icon" :class="iconClass" />
@@ -63,27 +52,28 @@
 </template>
 
 <script>
-import LoginBox from '@/components/LoginBox.vue'
 import { Input, ErrorMessage, FeatherIcon } from 'frappe-ui'
+import LoginBox from '@/components/LoginBox.vue'
 
 export default {
   name: 'Signup',
   components: {
-    LoginBox,
     Input,
     ErrorMessage,
     FeatherIcon,
+    LoginBox,
   },
   data() {
     return {
       email: null,
-      full_name: null,
+      fullName: null,
       errorMessage: null,
       loading: false,
-      status_200: false,
+      request_status_ok: false,
       response: {
         title: null,
         message: null,
+        color: null,
       },
     }
   },
@@ -98,9 +88,6 @@ export default {
       return {
         red: 'bg-red-100',
         green: 'bg-green-100',
-        yellow: 'bg-yellow-100',
-        blue: 'bg-blue-100',
-        gray: 'bg-gray-100',
       }[this.response.color]
     },
     icon() {
@@ -115,28 +102,32 @@ export default {
       try {
         this.errorMessage = null
         this.loading = true
-        if (this.email && this.full_name) {
+        if (this.email && this.fullName) {
           let res = await this.$call('frappe.core.doctype.user.user.sign_up', {
-            full_name: this.full_name,
+            full_name: this.fullName,
             email: this.email,
             redirect_to: '',
           })
           if (res) {
             let [code] = res
+            if (code > 0) this.request_status_ok = true
             if (code === 0) {
               this.errorMessage = 'This account already exists'
             } else if (code === 1) {
-              this.status_200 = true
-              this.response.color = 'green'
-              this.response.title = 'Verification Email Sent'
-              this.response.message = `We have sent an email to
-                <span class="font-semibold">${this.email}</span>. Please check your email for verification.`
+              this.response = {
+                title: 'Verification Email Sent',
+                message: `We have sent an email to
+                <span class="font-semibold">${this.email}</span>. Please check your email for verification.`,
+                color: 'green',
+              }
             } else {
-              this.status_200 = true
-              this.response.color = 'red'
-              this.response.title = 'Verification Needed'
-              this.response.message = `Verification email was not sent. Please ask your administrator to
-                verify your sign-up`
+              this.request_status_ok = true
+              this.response = {
+                title: 'Verification Needed',
+                message: `Verification email was not sent. Please ask your administrator to
+                verify your sign-up`,
+                color: 'red',
+              }
             }
           }
         }

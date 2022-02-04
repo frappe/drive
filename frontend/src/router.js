@@ -12,7 +12,7 @@ const routes = [
     name: 'Login',
     component: () => import('@/pages/Login.vue'),
     meta: {
-      isLoginPage: true,
+      isPublicRoute: true,
     },
   },
   {
@@ -20,7 +20,7 @@ const routes = [
     name: 'Signup',
     component: () => import('@/pages/Signup.vue'),
     meta: {
-      isLoginPage: true,
+      isPublicRoute: true,
     },
   },
 ]
@@ -31,7 +31,7 @@ let router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.isLoginPage)) {
+  if (to.matched.some((record) => record.meta.isPublicRoute)) {
     if (store.getters.isLoggedIn) {
       next({ name: 'Home' })
     } else {

@@ -26,9 +26,11 @@
 </template>
 <script>
 import { FeatherIcon } from 'frappe-ui'
+
 export default {
-  components: { FeatherIcon },
   name: 'Sidebar',
+  components: { FeatherIcon },
+  emits: ['toggleMobileSidebar'],
   computed: {
     sidebarItems() {
       return [
@@ -58,9 +60,6 @@ export default {
         },
       ]
     },
-  },
-  data() {
-    return {}
   },
 }
 </script>

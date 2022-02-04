@@ -39,12 +39,11 @@
   </LoginBox>
 </template>
 <script>
-import LoginBox from '@/components/LoginBox.vue'
 import { Input, ErrorMessage } from 'frappe-ui'
+import LoginBox from '@/components/LoginBox.vue'
 
 export default {
   name: 'Login',
-  props: {},
   components: {
     LoginBox,
     Input,

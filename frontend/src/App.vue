@@ -2,7 +2,7 @@
   <div class="text-gray-900 antialiased flex h-screen overflow-hidden">
     <div
       class="flex flex-1 overflow-y-auto"
-      :class="{ 'sm:bg-gray-50': $route.meta.isLoginPage }"
+      :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }"
     >
       <div class="flex flex-col flex-1">
         <Navbar
@@ -44,6 +44,7 @@
 import Navbar from '@/components/Navbar.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
+
 export default {
   name: 'App',
   components: {
@@ -51,15 +52,15 @@ export default {
     Sidebar,
     FrappeDriveLogo,
   },
-  computed: {
-    isLoggedIn() {
-      return this.$store.getters.isLoggedIn
-    },
-  },
   data() {
     return {
       mobileSidebarIsOpen: false,
     }
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn
+    },
   },
 }
 </script>
