@@ -4,7 +4,7 @@
       class="flex flex-1 overflow-y-auto"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }"
     >
-      <div class="flex flex-col flex-1">
+      <div class="flex flex-col flex-1 max-w-full">
         <Navbar
           v-if="isLoggedIn"
           @toggleMobileSidebar="mobileSidebarIsOpen = !mobileSidebarIsOpen"
