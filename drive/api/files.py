@@ -143,3 +143,30 @@ def get_file_content(entity_name, trigger_download=0):
 		response.headers.add('Content-Disposition', content_dispostion, filename=drive_entity.title.encode("utf-8"))
 		response.headers.add('Content-Length', str(drive_entity.file_size))
 		return response
+
+
+@frappe.whitelist()
+def list_folder_contents(entity_name=None, fields=None, order_by='title'):
+	"""
+	Return list of DriveEntity records present in this folder
+
+	:param entity_name: Document-name of the folder whose contents are to be listed. Defaults to the user directory
+	:param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'is_group', 'owner', 'modified', 'file_size']
+	:param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
+	:raises NotADirectoryError: If this DriveEntity doc is not a folder
+	:return: List of DriveEntity records
+	:rtype: list
+	"""
+
+	entity_name = entity_name or get_user_directory().name
+	is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
+	if not is_group:
+		raise NotADirectoryError
+	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size']
+	return frappe.db.get_list('Drive Entity',
+		filters={
+			'parent_drive_entity': entity_name
+		},
+		fields=fields,
+		order_by=order_by
+	)
