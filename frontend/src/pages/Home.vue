@@ -1,39 +1,14 @@
 <template>
-  <div class="max-w-3xl py-12 mx-auto">
-    <Button
-      icon-left="code"
-      @click="$resources.ping.fetch"
-      :loading="$resources.ping.loading"
-    >
-      Click to send 'ping' request
-    </Button>
-    <div>
-      {{ $resources.ping.data }}
-    </div>
-    <pre>{{ $resources.ping }}</pre>
-
-    <Button @click="showDialog = true">Open Dialog</Button>
-    <Dialog title="Title" v-model="showDialog"> Dialog content </Dialog>
-  </div>
+  <ListView />
 </template>
 
 <script>
-import { Dialog } from 'frappe-ui'
+import ListView from '@/components/ListView.vue'
 
 export default {
   name: 'Home',
   components: {
-    Dialog,
-  },
-  data() {
-    return {
-      showDialog: false,
-    }
-  },
-  resources: {
-    ping: {
-      method: 'ping',
-    },
+    ListView,
   },
 }
 </script>

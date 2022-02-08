@@ -1,6 +1,6 @@
 <template>
   <table class="min-w-full max-h-full divide-y divide-gray-100">
-    <thead>
+    <thead class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
       <tr class="text-base text-left text-gray-500">
         <th class="hidden sm:table-cell w-2/5 pl-20 pr-5 py-3.5 font-normal">
           Name
@@ -30,7 +30,7 @@
                 :class="entity.selected ? 'block' : 'hidden group-hover:block'"
               />
             </div>
-            <div class="p-2.5">
+            <div class="px-2.5">
               <FeatherIcon
                 :name="entity.is_group ? 'folder' : 'file'"
                 class="w-3.5 h-3.5 stroke-2 stroke-gray-400"
@@ -68,6 +68,11 @@ export default {
     },
   },
   emits: ['entitySelected'],
+  computed: {
+    userId() {
+      return this.$store.state.auth.user_id
+    },
+  },
   methods: {
     selectEntity(entity) {
       entity.selected = !entity.selected
@@ -131,6 +136,7 @@ export default {
               ? '-'
               : this.formatSize(entity.file_size)
             entity.modified = this.formatDate(entity.modified)
+            entity.owner = entity.owner === this.userId ? 'me' : entity.owner
           })
         },
         auto: true,

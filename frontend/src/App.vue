@@ -1,19 +1,19 @@
 <template>
-  <div class="text-gray-900 antialiased flex h-screen overflow-hidden">
+  <div class="text-gray-900 antialiased flex h-screen w-screen">
     <div
-      class="flex flex-1 overflow-y-auto"
+      class="flex flex-1 max-h-full max-w-full"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }"
     >
-      <div class="flex flex-col flex-1 max-w-full">
+      <div class="flex flex-col flex-1 max-w-full h-full">
         <Navbar
           v-if="isLoggedIn"
           @toggleMobileSidebar="mobileSidebarIsOpen = !mobileSidebarIsOpen"
         />
-        <div v-if="isLoggedIn" class="flex flex-1 sm:px-20 sm:py-8">
-          <div class="hidden sm:flex w-64">
+        <div v-if="isLoggedIn" class="flex flex-1 h-[calc(100%_-_4rem)]">
+          <div class="hidden sm:flex w-64 ml-20 sm:my-8">
             <Sidebar />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 sm:pr-20 sm:my-8 overflow-x-hidden overflow-y-auto">
             <router-view />
           </div>
         </div>
