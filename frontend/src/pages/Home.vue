@@ -1,5 +1,5 @@
 <template>
-  <ListView />
+  <ListView :entityName="entityName" />
 </template>
 
 <script>
@@ -9,6 +9,13 @@ export default {
   name: 'Home',
   components: {
     ListView,
+  },
+  props: {
+    entityName: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
 }
 </script>
