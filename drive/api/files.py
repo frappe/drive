@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe.utils.nestedset import get_ancestors_of
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -170,3 +171,20 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title'):
 		fields=fields,
 		order_by=order_by
 	)
+
+
+@frappe.whitelist()
+def get_entities_in_path(entity_name, fields=None):
+	"""
+	Return list of all DriveEntities present in the path.
+
+	:param entity_name: Document-name of the file or folder
+	:param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'owner']
+	:return: List of parents followed by the specified DriveEntity
+	:rtype: list[frappe._dict]
+	"""
+
+	fields = fields or ['name', 'title', 'owner']
+	path = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
+	path.append(entity_name)
+	return [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]
