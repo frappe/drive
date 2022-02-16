@@ -28,8 +28,8 @@
         <tr
           v-for="entity in $resources.folderContents.data"
           :key="entity.name"
-          class="text-base text-gray-500 hover:bg-gray-50 group"
-          @click="selectEntity(entity)"
+          class="text-base text-gray-500 select-none hover:bg-gray-50 group"
+          @click="openEntity(entity)"
         >
           <td class="w-2/5 px-5 py-3.5 font-normal text-zinc-800">
             <div class="flex items-center">
@@ -40,6 +40,7 @@
                   :class="
                     entity.selected ? 'block' : 'hidden group-hover:block'
                   "
+                  @click.stop="selectEntity(entity)"
                 />
               </div>
               <div class="px-2.5">
@@ -132,6 +133,14 @@ export default {
         (entity) => entity.selected
       )
       this.$emit('entitySelected', selectedEntities)
+    },
+    openEntity(entity) {
+      if (entity.is_group) {
+        this.$router.push({
+          name: 'Folder',
+          params: { entityName: entity.name },
+        })
+      }
     },
     formatSize(size, nDigits = 1) {
       if (size === 0) return '0 B'
