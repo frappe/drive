@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="sticky top-0 bg-white pt-2 sm:pt-0">
-      <DriveToolBar :breadcrumbs="breadcrumbs" />
+      <DriveToolBar :breadcrumbs="breadcrumbs" :actionItems="actionItems" />
       <table class="min-w-full max-h-full divide-y divide-gray-100">
         <thead class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
           <tr class="text-base text-left text-gray-500">
@@ -37,6 +37,7 @@
                 <Input
                   type="checkbox"
                   :checked="entity.selected"
+                  class="focus:ring-0 focus:ring-offset-0"
                   :class="
                     entity.selected ? 'block' : 'hidden group-hover:block'
                   "
@@ -86,6 +87,10 @@ export default {
   props: {
     entityName: {
       type: String,
+      required: true,
+    },
+    actionItems: {
+      type: Array,
       required: true,
     },
   },

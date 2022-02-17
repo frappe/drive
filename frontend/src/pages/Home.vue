@@ -2,6 +2,8 @@
   <div>
     <ListView
       :entityName="entityName"
+      :actionItems="actionItems"
+      @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
     />
     <FilePreview
@@ -32,6 +34,8 @@ export default {
   data: () => ({
     showPreview: false,
     previewEntity: '',
+    selectedEntities: [],
+    actionItems: [],
   }),
   methods: {
     openEntity(entity) {
