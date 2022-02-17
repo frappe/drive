@@ -7,6 +7,7 @@
       <div class="flex flex-col flex-1 max-w-full h-full">
         <Navbar
           v-if="isLoggedIn"
+          :mobileSidebarIsOpen="mobileSidebarIsOpen"
           @toggleMobileSidebar="mobileSidebarIsOpen = !mobileSidebarIsOpen"
         />
         <div v-if="isLoggedIn" class="flex flex-1 h-[calc(100%_-_4rem)]">
