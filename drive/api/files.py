@@ -99,7 +99,7 @@ def create_folder(title, parent=None):
 		'title': title
 	})
 	if entity_exists:
-		raise FileExistsError('Folder already exists')
+		frappe.throw(f"Folder '{title}' already exists", FileExistsError)
 
 	drive_entity = frappe.get_doc({
 		'doctype': 'Drive Entity',

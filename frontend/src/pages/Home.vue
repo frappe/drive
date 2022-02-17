@@ -13,18 +13,31 @@
       @hide="hidePreview"
       :previewEntity="previewEntity"
     />
+    <NewFolderDialog
+      :show="showNewFolderDialog"
+      :parent="entityName"
+      @close="showNewFolderDialog = false"
+      @success="
+        () => {
+          $resources.folderContents.fetch()
+          showNewFolderDialog = false
+        }
+      "
+    />
   </div>
 </template>
 
 <script>
 import ListView from '@/components/ListView.vue'
 import FilePreview from '@/components/FilePreview.vue'
+import NewFolderDialog from '@/components/NewFolderDialog.vue'
 
 export default {
   name: 'Home',
   components: {
     ListView,
     FilePreview,
+    NewFolderDialog,
   },
   props: {
     entityName: {
@@ -37,10 +50,24 @@ export default {
     showPreview: false,
     previewEntity: '',
     selectedEntities: [],
+    showNewFolderDialog: false,
   }),
   computed: {
     userId() {
       return this.$store.state.auth.user_id
+    },
+    actionItems() {
+      return [
+        {
+          label: 'New Folder',
+          action: () => {
+            this.showNewFolderDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 0
+          },
+        },
+      ].filter((item) => item.isEnabled())
     },
     breadcrumbs() {
       if (!this.entityName || this.$resources.pathEntities.data === null) {
