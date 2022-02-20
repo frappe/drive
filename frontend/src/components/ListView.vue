@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="sticky top-0 bg-white pt-2 sm:pt-0">
-      <DriveToolBar :breadcrumbs="breadcrumbs" :actionItems="actionItems" />
+      <DriveToolBar
+        :breadcrumbs="breadcrumbs"
+        :actionItems="actionItems"
+        @uploadFile="$emit('uploadFile')"
+      />
       <table class="min-w-full max-h-full divide-y divide-gray-100">
         <thead class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
           <tr class="text-base text-left text-gray-500">
@@ -102,7 +106,7 @@ export default {
       required: true,
     },
   },
-  emits: ['entitySelected', 'openEntity'],
+  emits: ['entitySelected', 'openEntity', 'uploadFile'],
   methods: {
     selectEntity(entity) {
       entity.selected = !entity.selected

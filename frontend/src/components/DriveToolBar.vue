@@ -14,7 +14,9 @@
           >
         </template>
       </Dropdown>
-      <Button class="focus:ring-0" type="primary"> Upload </Button>
+      <Button class="focus:ring-0" type="primary" @click="$emit('uploadFile')">
+        Upload
+      </Button>
     </div>
   </div>
 </template>
@@ -40,5 +42,6 @@ export default {
       required: true,
     },
   },
+  emits: ['uploadFile'],
 }
 </script>
