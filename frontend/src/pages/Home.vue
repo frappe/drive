@@ -7,6 +7,7 @@
       :breadcrumbs="breadcrumbs"
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
+      @uploadFile="dropzone.hiddenFileInput.click()"
     />
     <FilePreview
       v-if="showPreview"
@@ -24,10 +25,12 @@
         }
       "
     />
+    <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
 
 <script>
+import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
@@ -51,6 +54,7 @@ export default {
     previewEntity: '',
     selectedEntities: [],
     showNewFolderDialog: false,
+    dropzone: null,
   }),
   computed: {
     userId() {
@@ -157,6 +161,41 @@ export default {
       }
       return prefix + date.toLocaleString(undefined, options)
     },
+  },
+  mounted() {
+    let componentContext = this
+    this.dropzone = new Dropzone(this.$el.parentNode, {
+      paramName: 'file',
+      clickable: '#dropzoneElement',
+      previewsContainer: '#dropzoneElement',
+      chunking: true,
+      forceChunking: true,
+      url: '/api/method/drive.api.files.upload_file',
+      maxFilesize: 10 * 1024, // 10GB
+      chunkSize: 10 * 1024 * 1024, // 10MB
+      headers: {
+        'X-Frappe-CSRF-Token': window.csrf_token,
+        Accept: 'application/json',
+      },
+      sending: function (file, xhr, formData, chunk) {
+        formData.append('parent', componentContext.entityName)
+      },
+      params: function (files, xhr, chunk) {
+        if (chunk) {
+          return {
+            uuid: chunk.file.upload.uuid,
+            chunk_index: chunk.index,
+            total_file_size: chunk.file.size,
+            chunk_size: this.options.chunkSize,
+            total_chunk_count: chunk.file.upload.totalChunkCount,
+            chunk_byte_offset: chunk.index * this.options.chunkSize,
+          }
+        }
+      },
+    })
+    this.dropzone.on('complete', function () {
+      componentContext.$resources.folderContents.fetch()
+    })
   },
   resources: {
     folderContents() {
