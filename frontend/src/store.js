@@ -22,6 +22,10 @@ const store = createStore({
         ? window.location.origin + getCookies().user_image
         : null,
     },
+    uploads: {
+      inProgress: [],
+      completed: [],
+    },
   },
   getters: {
     isLoggedIn: (state) => {

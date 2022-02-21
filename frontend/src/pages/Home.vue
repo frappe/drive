@@ -172,7 +172,7 @@ export default {
       forceChunking: true,
       url: '/api/method/drive.api.files.upload_file',
       maxFilesize: 10 * 1024, // 10GB
-      chunkSize: 10 * 1024 * 1024, // 10MB
+      chunkSize: 5 * 1024 * 1024, // 5MB
       headers: {
         'X-Frappe-CSRF-Token': window.csrf_token,
         Accept: 'application/json',
@@ -193,8 +193,25 @@ export default {
         }
       },
     })
-    this.dropzone.on('complete', function () {
+    let uploadsInProgress = this.$store.state.uploads.inProgress
+    this.dropzone.on('addedfile', function (file) {
+      uploadsInProgress.push({
+        uuid: file.upload.uuid,
+        name: file.name,
+        progress: 0,
+      })
+    })
+    this.dropzone.on('uploadprogress', function (file, progress) {
+      let index = uploadsInProgress.findIndex((obj => obj.uuid == file.upload.uuid))
+      uploadsInProgress[index].progress = progress
+    })
+    this.dropzone.on('complete', function (file) {
       componentContext.$resources.folderContents.fetch()
+      let index = uploadsInProgress.findIndex((obj => obj.uuid == file.upload.uuid))
+      uploadsInProgress.splice(index, 1)
+    })
+    this.dropzone.on('queuecomplete', function () {
+      uploadsInProgress = []
     })
   },
   unmounted() {
