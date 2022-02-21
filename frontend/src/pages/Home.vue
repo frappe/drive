@@ -197,6 +197,9 @@ export default {
       componentContext.$resources.folderContents.fetch()
     })
   },
+  unmounted() {
+    this.dropzone.destroy()
+  },
   resources: {
     folderContents() {
       return {
