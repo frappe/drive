@@ -8,13 +8,22 @@
       >
         <div
           class="flex flex-shrink-0 items-center justify-between p-4 rounded-sm bg-gray-50"
+          :class="{ shadow: !collapsed }"
         >
           <div class="text-sm">
             Uploading {{ uploadsInProgress.length }}
             {{ uploadsInProgress.length == 1 ? 'item' : 'items' }}
           </div>
+          <div class="flex items-center gap-4">
+            <button @click="toggleCopllapsed" class="focus:outline-none">
+              <FeatherIcon
+                :name="collapsed ? 'chevron-up' : 'chevron-down'"
+                class="w-5 h-5 text-gray-800"
+              />
+            </button>
+          </div>
         </div>
-        <div class="max-h-64 overflow-y-auto">
+        <div class="max-h-64 overflow-y-auto" v-if="!collapsed">
           <div
             class="truncate border-b"
             v-for="upload in uploadsInProgress"
@@ -41,16 +50,28 @@
   </portal>
 </template>
 <script>
+import { FeatherIcon } from 'frappe-ui'
 import ProgressRing from '@/components/ProgressRing.vue'
 
 export default {
   name: 'UploadTracker',
   components: {
+    FeatherIcon,
     ProgressRing,
+  },
+  data() {
+    return {
+      collapsed: false,
+    }
   },
   computed: {
     uploadsInProgress() {
       return this.$store.state.uploads.inProgress
+    },
+  },
+  methods: {
+    toggleCopllapsed() {
+      this.collapsed = !this.collapsed
     },
   },
 }
