@@ -125,7 +125,7 @@ export default {
       if (size === 0) return '0 B'
       const k = 1024
       const digits = nDigits < 0 ? 0 : nDigits
-      const sizes = ['B ', 'KB ', 'MB ', 'GB ', 'TB ', 'PB ']
+      const sizes = [' B', ' KB', ' MB', ' GB', ' TB', ' PB']
       const i = Math.floor(Math.log(size) / Math.log(k))
       return parseFloat((size / Math.pow(k, i)).toFixed(digits)) + sizes[i]
     },
