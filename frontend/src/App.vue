@@ -39,12 +39,14 @@
       ></div>
     </div>
     <!-- Mobile Sidebar -->
+    <UploadTracker v-if="showUploadTracker" />
   </div>
 </template>
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
+import UploadTracker from '@/components/UploadTracker.vue'
 
 export default {
   name: 'App',
@@ -52,6 +54,7 @@ export default {
     Navbar,
     Sidebar,
     FrappeDriveLogo,
+    UploadTracker,
   },
   data() {
     return {
@@ -61,6 +64,9 @@ export default {
   computed: {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn
+    },
+    showUploadTracker() {
+      return this.isLoggedIn && this.$store.state.uploads.inProgress.length > 0
     },
   },
 }
