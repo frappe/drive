@@ -66,7 +66,7 @@ export default {
       return this.$store.getters.isLoggedIn
     },
     showUploadTracker() {
-      return this.isLoggedIn && this.$store.state.uploads.inProgress.length > 0
+      return this.isLoggedIn && this.$store.state.uploads.length > 0
     },
   },
 }

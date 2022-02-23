@@ -4,15 +4,19 @@
       class="fixed bottom-0 right-0 flex items-start justify-end px-4 py-6 pointer-events-none sm:p-6"
     >
       <div
-        class="max-w-xs w-64 bg-white rounded-lg shadow-lg pointer-events-auto"
+        class="max-w-xs w-full sm:w-64 bg-white rounded-lg shadow-lg pointer-events-auto"
       >
         <div
           class="flex flex-shrink-0 items-center justify-between p-4 rounded-sm bg-gray-50"
           :class="{ shadow: !collapsed }"
         >
-          <div class="text-sm">
+          <div v-if="uploadsInProgress.length > 0" class="text-sm">
             Uploading {{ uploadsInProgress.length }}
             {{ uploadsInProgress.length == 1 ? 'item' : 'items' }}
+          </div>
+          <div v-else-if="uploadsCompleted.length > 0" class="text-sm">
+            {{ uploadsCompleted.length }}
+            {{ uploads.length == 1 ? 'upload' : 'uploads' }} complete
           </div>
           <div class="flex items-center gap-4">
             <button @click="toggleCopllapsed" class="focus:outline-none">
@@ -26,11 +30,17 @@
         <div class="max-h-64 overflow-y-auto" v-if="!collapsed">
           <div
             class="truncate border-b"
-            v-for="upload in uploadsInProgress"
+            v-for="upload in uploads"
             :key="upload.uuid"
           >
             <div class="p-4 flex gap-3 items-center">
-              <div class="w-8 h-8 rounded-full">
+              <div
+                v-if="upload.completed"
+                class="w-7 h-7 p-1 rounded-full bg-[#59B179]"
+              >
+                <GreenCheckIcon />
+              </div>
+              <div v-else class="w-8 h-8 rounded-full">
                 <ProgressRing
                   v-show="true"
                   radius="16"
@@ -50,7 +60,7 @@
   </portal>
 </template>
 <script>
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, GreenCheckIcon } from 'frappe-ui'
 import ProgressRing from '@/components/ProgressRing.vue'
 
 export default {
@@ -58,6 +68,7 @@ export default {
   components: {
     FeatherIcon,
     ProgressRing,
+    GreenCheckIcon,
   },
   data() {
     return {
@@ -65,8 +76,14 @@ export default {
     }
   },
   computed: {
+    uploads() {
+      return this.$store.state.uploads
+    },
     uploadsInProgress() {
-      return this.$store.state.uploads.inProgress
+      return this.uploads.filter((upload) => !upload.completed)
+    },
+    uploadsCompleted() {
+      return this.uploads.filter((upload) => upload.completed)
     },
   },
   methods: {

@@ -193,25 +193,22 @@ export default {
         }
       },
     })
-    let uploadsInProgress = this.$store.state.uploads.inProgress
+    let uploads = this.$store.state.uploads
     this.dropzone.on('addedfile', function (file) {
-      uploadsInProgress.push({
+      uploads.push({
         uuid: file.upload.uuid,
         name: file.name,
         progress: 0,
       })
     })
     this.dropzone.on('uploadprogress', function (file, progress) {
-      let index = uploadsInProgress.findIndex((obj => obj.uuid == file.upload.uuid))
-      uploadsInProgress[index].progress = progress
+      let index = uploads.findIndex((obj) => obj.uuid == file.upload.uuid)
+      uploads[index].progress = progress
     })
     this.dropzone.on('complete', function (file) {
       componentContext.$resources.folderContents.fetch()
-      let index = uploadsInProgress.findIndex((obj => obj.uuid == file.upload.uuid))
-      uploadsInProgress.splice(index, 1)
-    })
-    this.dropzone.on('queuecomplete', function () {
-      uploadsInProgress = []
+      let index = uploads.findIndex((obj) => obj.uuid == file.upload.uuid)
+      uploads[index].completed = true
     })
   },
   unmounted() {
