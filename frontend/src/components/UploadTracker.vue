@@ -25,6 +25,13 @@
                 class="w-5 h-5 text-gray-800"
               />
             </button>
+            <button
+              v-if="uploads.length === uploadsCompleted.length"
+              @click="closeUploadTracker"
+              class="focus:outline-none"
+            >
+              <FeatherIcon name="x" class="w-5 h-5 text-gray-800" />
+            </button>
           </div>
         </div>
         <div class="max-h-64 overflow-y-auto" v-if="!collapsed">
@@ -89,6 +96,9 @@ export default {
   methods: {
     toggleCopllapsed() {
       this.collapsed = !this.collapsed
+    },
+    closeUploadTracker() {
+      this.$store.state.uploads = []
     },
   },
 }
