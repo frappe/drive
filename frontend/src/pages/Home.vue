@@ -178,7 +178,7 @@ export default {
         Accept: 'application/json',
       },
       sending: function (file, xhr, formData, chunk) {
-        formData.append('parent', componentContext.entityName)
+        formData.append('parent', file.parent)
       },
       params: function (files, xhr, chunk) {
         if (chunk) {
@@ -195,6 +195,7 @@ export default {
     })
     let uploads = this.$store.state.uploads
     this.dropzone.on('addedfile', function (file) {
+      file.parent = componentContext.entityName
       uploads.push({
         uuid: file.upload.uuid,
         name: file.name,
