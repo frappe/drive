@@ -43,9 +43,11 @@
             <div class="p-4 flex gap-3 items-center">
               <div
                 v-if="upload.completed"
-                class="w-7 h-7 p-1 rounded-full bg-[#59B179]"
+                class="w-7 h-7 p-1 rounded-full"
+                :class="upload.error ? 'bg-red-400' : 'bg-[#59B179]'"
               >
-                <GreenCheckIcon />
+                <GreenCheckIcon v-if="!upload.error" />
+                <FeatherIcon v-else name="x" class="text-white" />
               </div>
               <div v-else class="w-8 h-8 rounded-full">
                 <ProgressRing
@@ -57,6 +59,12 @@
               <div class="flex-1 truncate">
                 <p class="text-sm font-medium leading-6 text-gray-900 truncate">
                   {{ upload.name }}
+                </p>
+                <p
+                  v-if="upload.error"
+                  class="text-xs leading-tight text-red-600 whitespace-pre-wrap"
+                >
+                  {{ upload.error }}
                 </p>
               </div>
             </div>

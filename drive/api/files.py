@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils.nestedset import get_ancestors_of
+from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -46,7 +46,7 @@ def upload_file():
 	save_path = Path(user_directory.path) / f'{parent}_{secure_filename(file.filename)}'
 
 	if current_chunk == 0 and (entity_exists or save_path.exists()):
-		raise FileExistsError()
+		frappe.throw(f"File '{file.filename}' already exists", FileExistsError)
 	with open(save_path, 'ab') as f:
 		f.seek(int(frappe.form_dict.chunk_byte_offset))
 		f.write(file.stream.read())
@@ -55,7 +55,7 @@ def upload_file():
 		file_size = save_path.stat().st_size
 		if file_size != int(frappe.form_dict.total_file_size):
 			save_path.unlink()
-			raise ValueError('Size on disk does not match the specified filesize')
+			frappe.throw('Size on disk does not match the specified filesize', ValueError)
 		else:
 			mime_type, encoding = mimetypes.guess_type(save_path)
 			name = uuid.uuid4().hex
@@ -185,6 +185,7 @@ def get_entities_in_path(entity_name, fields=None):
 	"""
 
 	fields = fields or ['name', 'title', 'owner']
+	rebuild_tree("Drive Entity", "parent_drive_entity")
 	path = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
 	path.append(entity_name)
 	return [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]

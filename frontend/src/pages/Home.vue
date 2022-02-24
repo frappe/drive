@@ -207,6 +207,15 @@ export default {
         progress: progress,
       })
     })
+    this.dropzone.on('error', function (file, message, xhr) {
+      let server_messages = JSON.parse(message._server_messages).map(
+        (element) => JSON.parse(element).message
+      )
+      componentContext.$store.commit('updateUpload', {
+        uuid: file.upload.uuid,
+        error: server_messages.join('\n'),
+      })
+    })
     this.dropzone.on('complete', function (file) {
       componentContext.$resources.folderContents.fetch()
       componentContext.$store.commit('updateUpload', {
