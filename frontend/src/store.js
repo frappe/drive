@@ -45,6 +45,15 @@ const store = createStore({
     setUploads(state, uploads) {
       state.uploads = uploads
     },
+    pushToUploads(state, upload) {
+      state.uploads.push(upload)
+    },
+    updateUpload(state, payload) {
+      let index = state.uploads.findIndex(
+        (upload) => upload.uuid == payload.uuid
+      )
+      Object.assign(state.uploads[index], payload)
+    },
   },
   actions: {
     async login({ commit }, payload) {

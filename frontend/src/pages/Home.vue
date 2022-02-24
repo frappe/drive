@@ -193,23 +193,26 @@ export default {
         }
       },
     })
-    let uploads = this.$store.state.uploads
     this.dropzone.on('addedfile', function (file) {
       file.parent = componentContext.entityName
-      uploads.push({
+      componentContext.$store.commit('pushToUploads', {
         uuid: file.upload.uuid,
         name: file.name,
         progress: 0,
       })
     })
     this.dropzone.on('uploadprogress', function (file, progress) {
-      let index = uploads.findIndex((obj) => obj.uuid == file.upload.uuid)
-      uploads[index].progress = progress
+      componentContext.$store.commit('updateUpload', {
+        uuid: file.upload.uuid,
+        progress: progress,
+      })
     })
     this.dropzone.on('complete', function (file) {
       componentContext.$resources.folderContents.fetch()
-      let index = uploads.findIndex((obj) => obj.uuid == file.upload.uuid)
-      uploads[index].completed = true
+      componentContext.$store.commit('updateUpload', {
+        uuid: file.upload.uuid,
+        completed: true,
+      })
     })
   },
   unmounted() {
