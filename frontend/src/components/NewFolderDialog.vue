@@ -54,6 +54,10 @@ export default {
       errorMessage: '',
     }
   },
+  unmounted() {
+    this.folderName = ''
+    this.errorMessage = ''
+  },
   resources: {
     createFolder() {
       return {
