@@ -19,7 +19,7 @@
             {{ uploads.length == 1 ? 'upload' : 'uploads' }} complete
           </div>
           <div class="flex items-center gap-4">
-            <button @click="toggleCopllapsed" class="focus:outline-none">
+            <button @click="toggleCollapsed" class="focus:outline-none">
               <FeatherIcon
                 :name="collapsed ? 'chevron-up' : 'chevron-down'"
                 class="w-5 h-5 text-gray-800"
@@ -50,7 +50,7 @@
               <div v-else class="w-8 h-8 rounded-full">
                 <ProgressRing
                   v-show="true"
-                  radius="16"
+                  :radius="16"
                   :progress="upload.progress"
                 />
               </div>
@@ -67,6 +67,7 @@
   </portal>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 import { FeatherIcon, GreenCheckIcon } from 'frappe-ui'
 import ProgressRing from '@/components/ProgressRing.vue'
 
@@ -86,19 +87,14 @@ export default {
     uploads() {
       return this.$store.state.uploads
     },
-    uploadsInProgress() {
-      return this.uploads.filter((upload) => !upload.completed)
-    },
-    uploadsCompleted() {
-      return this.uploads.filter((upload) => upload.completed)
-    },
+    ...mapGetters(['uploadsInProgress', 'uploadsCompleted']),
   },
   methods: {
-    toggleCopllapsed() {
+    toggleCollapsed() {
       this.collapsed = !this.collapsed
     },
     closeUploadTracker() {
-      this.$store.state.uploads = []
+      this.$store.dispatch('clearUploads')
     },
   },
 }

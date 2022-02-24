@@ -28,6 +28,12 @@ const store = createStore({
     isLoggedIn: (state) => {
       return state.auth.user_id && state.auth.user_id !== 'Guest'
     },
+    uploadsInProgress: (state) => {
+      return state.uploads.filter((upload) => !upload.completed)
+    },
+    uploadsCompleted: (state) => {
+      return state.uploads.filter((upload) => upload.completed)
+    },
   },
   mutations: {
     setAuth(state, auth) {
@@ -35,6 +41,9 @@ const store = createStore({
     },
     setUser(state, user) {
       Object.assign(state.user, user)
+    },
+    setUploads(state, uploads) {
+      state.uploads = uploads
     },
   },
   actions: {
@@ -63,6 +72,9 @@ const store = createStore({
       commit('setAuth', { loading: true })
       await call('logout')
       window.location.reload()
+    },
+    clearUploads({ commit }) {
+      commit('setUploads', [])
     },
   },
 })
