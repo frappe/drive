@@ -20,7 +20,7 @@
       @close="showNewFolderDialog = false"
       @success="
         () => {
-          $refetchResource(['folderContents', entityName])
+          $resources.folderContents.fetch()
           showNewFolderDialog = false
         }
       "
