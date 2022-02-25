@@ -166,6 +166,7 @@ export default {
     let componentContext = this
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: 'file',
+      parallelUploads: 1,
       clickable: '#dropzoneElement',
       previewsContainer: '#dropzoneElement',
       chunking: true,
