@@ -71,6 +71,15 @@ export default {
             return this.selectedEntities.length === 0
           },
         },
+        {
+          label: 'Delete',
+          action: () => {
+            this.$resources.deleteEntities.submit()
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0
+          },
+        },
       ].filter((item) => item.isEnabled())
     },
     breadcrumbs() {
@@ -260,6 +269,18 @@ export default {
           entity_name: this.entityName,
         },
         auto: Boolean(this.entityName),
+      }
+    },
+    deleteEntities() {
+      return {
+        method: 'drive.api.files.delete_entities',
+        params: {
+          entity_names: JSON.stringify(this.selectedEntities.map((entity) => entity.name)),
+        },
+        onSuccess() {
+          this.$resources.folderContents.fetch()
+          this.selectedEntities = []
+        },
       }
     },
   },
