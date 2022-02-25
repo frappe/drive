@@ -189,3 +189,18 @@ def get_entities_in_path(entity_name, fields=None):
 	path = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
 	path.append(entity_name)
 	return [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]
+
+
+@frappe.whitelist()
+def delete(entity_name):
+	"""
+	Delete DriveEntity
+
+	:param entity_name: Document-name of the file or folder to be deleted
+	:raises ValueError: If the entity does not exist
+	"""
+
+	drive_entity = frappe.get_doc('Drive Entity', entity_name)
+	if not drive_entity:
+		frappe.throw("Entity does not exist", ValueError)
+	drive_entity.delete()
