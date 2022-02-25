@@ -9,6 +9,7 @@ from werkzeug.wsgi import wrap_file
 from werkzeug.utils import secure_filename
 import uuid
 import mimetypes
+import json
 from drive.utils.files import get_user_directory, create_user_directory
 from drive.locks.distributed_lock import DistributedLock
 
@@ -192,18 +193,19 @@ def get_entities_in_path(entity_name, fields=None):
 
 
 @frappe.whitelist()
-def delete(entity_name):
+def delete_entities(entity_names):
 	"""
-	Delete DriveEntity
+	Delete DriveEntities
 
-	:param entity_name: Document-name of the file or folder to be deleted
-	:raises ValueError: If the entity does not exist
+	:param entity_names: List of document-names as JSON string
+	:type entity_names: str
+	:raises ValueError: If decoded entity_names is not a list
 	"""
 
-	drive_entity = frappe.get_doc('Drive Entity', entity_name)
-	if not drive_entity:
-		frappe.throw("Entity does not exist", ValueError)
-	drive_entity.delete()
+	entity_names = json.loads(entity_names)
+	if not isinstance(entity_names, list):
+		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
+	frappe.db.delete('Drive Entity', {'name': ['in', entity_names]})
 
 
 @frappe.whitelist()
