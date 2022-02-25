@@ -36,6 +36,7 @@ class DriveEntity(NestedSet):
 			shutil.rmtree(self.path) if self.is_group else self.path.unlink()
 
 
+	@frappe.whitelist()
 	def move(self, new_parent=None):
 		"""
 		Move file or folder to the new parent folder
@@ -62,6 +63,7 @@ class DriveEntity(NestedSet):
 		return self
 
 
+	@frappe.whitelist()
 	def rename(self, new_title):
 		"""
 		Rename file or folder
@@ -84,6 +86,7 @@ class DriveEntity(NestedSet):
 		return self
 
 
+	@frappe.whitelist()
 	def share(self, user, write=0, share=0, notify=1):
 		"""
 		Share this file or folder with the specified user.
@@ -103,6 +106,7 @@ class DriveEntity(NestedSet):
 			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify)
 
 
+	@frappe.whitelist()
 	def unshare(self, user):
 		"""Unshare this file or folder with the specified user"""
 

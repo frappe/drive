@@ -204,3 +204,23 @@ def delete(entity_name):
 	if not drive_entity:
 		frappe.throw("Entity does not exist", ValueError)
 	drive_entity.delete()
+
+
+@frappe.whitelist()
+def call_controller_method(entity_name, method):
+	"""
+	Call a whitelisted Drive Entity controller method
+
+	:param entity_name: Document-name of the document on which the controller method is to be called
+	:param method: The controller method to be called
+	:raises ValueError: If the entity does not exist
+	:return: The result of the controller method
+	"""
+
+	drive_entity = frappe.get_doc('Drive Entity', frappe.local.form_dict.pop('entity_name'))
+	if not drive_entity:
+		frappe.throw("Entity does not exist", ValueError)
+	method = frappe.local.form_dict.pop('method')
+	drive_entity.is_whitelisted(method)
+	frappe.local.form_dict.pop('cmd')
+	return drive_entity.run_method(method, **frappe.local.form_dict)
