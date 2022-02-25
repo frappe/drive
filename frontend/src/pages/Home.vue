@@ -208,12 +208,16 @@ export default {
       })
     })
     this.dropzone.on('error', function (file, message, xhr) {
-      let server_messages = JSON.parse(message._server_messages).map(
-        (element) => JSON.parse(element).message
-      )
+      let error_message
+      if (message._server_messages) {
+        error_message = JSON.parse(message._server_messages)
+          .map((element) => JSON.parse(element).message)
+          .join('\n')
+      }
+      error_message = error_message || 'Upload failed'
       componentContext.$store.commit('updateUpload', {
         uuid: file.upload.uuid,
-        error: server_messages.join('\n'),
+        error: error_message,
       })
     })
     this.dropzone.on('complete', function (file) {
