@@ -65,12 +65,12 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value)
+        if (!value) {
+          this.newName = ''
+          this.errorMessage = ''
+        }
       },
     },
-  },
-  unmounted() {
-    this.newName = ''
-    this.errorMessage = ''
   },
   resources: {
     rename() {

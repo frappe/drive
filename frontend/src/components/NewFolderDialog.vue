@@ -61,12 +61,12 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value)
+        if (!value) {
+          this.folderName = ''
+          this.errorMessage = ''
+        }
       },
     },
-  },
-  unmounted() {
-    this.folderName = ''
-    this.errorMessage = ''
   },
   resources: {
     createFolder() {
