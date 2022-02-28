@@ -25,6 +25,17 @@
         }
       "
     />
+    <RenameDialog
+      :show="showRenameDialog"
+      :entity="entityToRename"
+      @close="showRenameDialog = false"
+      @success="
+        () => {
+          $resources.folderContents.fetch()
+          showRenameDialog = false
+        }
+      "
+    />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -34,6 +45,7 @@ import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
+import RenameDialog from '@/components/RenameDialog.vue'
 
 export default {
   name: 'Home',
@@ -41,6 +53,7 @@ export default {
     ListView,
     FilePreview,
     NewFolderDialog,
+    RenameDialog
   },
   props: {
     entityName: {
@@ -54,6 +67,8 @@ export default {
     previewEntity: '',
     selectedEntities: [],
     showNewFolderDialog: false,
+    entityToRename: null,
+    showRenameDialog: false,
     dropzone: null,
   }),
   computed: {
@@ -92,6 +107,16 @@ export default {
             )
           },
         },
+        {
+          label: 'Rename',
+          action: () => {
+            this.entityToRename = this.selectedEntities[0]
+            this.showRenameDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1
+          },
+        }
       ].filter((item) => item.isEnabled())
     },
     breadcrumbs() {

@@ -79,7 +79,7 @@ class DriveEntity(NestedSet):
 			'title': new_title
 		})
 		if entity_exists:
-			raise FileExistsError()
+			frappe.throw(f"'{new_title}' already exists", FileExistsError)
 
 		self.title = new_title
 		self.save()
