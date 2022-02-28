@@ -1,5 +1,5 @@
 <template>
-  <NewDialog :options="{ title: 'New Folder' }" v-model="show">
+  <NewDialog :options="{ title: 'New Folder' }" v-model="open">
     <template #dialog-content>
       <Input
         type="text"
@@ -23,7 +23,7 @@
       >
         Create
       </Button>
-      <Button @click="$emit('close')"> Cancel </Button>
+      <Button @click="open = false"> Cancel </Button>
     </template>
   </NewDialog>
 </template>
@@ -38,7 +38,7 @@ export default {
     ErrorMessage,
   },
   props: {
-    show: {
+    modelValue: {
       type: Boolean,
       required: true,
     },
@@ -47,12 +47,22 @@ export default {
       default: '',
     },
   },
-  emits: ['success', 'close'],
+  emits: ['success'],
   data() {
     return {
       folderName: '',
       errorMessage: '',
     }
+  },
+  computed: {
+    open: {
+      get() {
+        return this.modelValue
+      },
+      set(value) {
+        this.$emit('update:modelValue', value)
+      },
+    },
   },
   unmounted() {
     this.folderName = ''

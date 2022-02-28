@@ -1,5 +1,5 @@
 <template>
-  <NewDialog :options="{ title: 'Rename' }" v-model="show">
+  <NewDialog :options="{ title: 'Rename' }" v-model="open">
     <template #dialog-content>
       <Input
         type="text"
@@ -24,7 +24,7 @@
       >
         Rename
       </Button>
-      <Button @click="$emit('close')"> Cancel </Button>
+      <Button @click="open = false"> Cancel </Button>
     </template>
   </NewDialog>
 </template>
@@ -39,7 +39,7 @@ export default {
     ErrorMessage,
   },
   props: {
-    show: {
+    modelValue: {
       type: Boolean,
       required: true,
     },
@@ -48,7 +48,7 @@ export default {
       required: true,
     },
   },
-  emits: ['success', 'close'],
+  emits: ['success'],
   data() {
     return {
       newName: '',
@@ -58,6 +58,14 @@ export default {
   computed: {
     entityName() {
       return this.entity?.name
+    },
+    open: {
+      get() {
+        return this.modelValue
+      },
+      set(value) {
+        this.$emit('update:modelValue', value)
+      },
     },
   },
   unmounted() {

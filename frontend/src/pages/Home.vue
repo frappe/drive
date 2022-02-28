@@ -15,9 +15,8 @@
       :previewEntity="previewEntity"
     />
     <NewFolderDialog
-      :show="showNewFolderDialog"
+      v-model="showNewFolderDialog"
       :parent="entityName"
-      @close="showNewFolderDialog = false"
       @success="
         () => {
           $resources.folderContents.fetch()
@@ -26,9 +25,8 @@
       "
     />
     <RenameDialog
-      :show="showRenameDialog"
+      v-model="showRenameDialog"
       :entity="entityToRename"
-      @close="showRenameDialog = false"
       @success="
         () => {
           $resources.folderContents.fetch()
@@ -53,7 +51,7 @@ export default {
     ListView,
     FilePreview,
     NewFolderDialog,
-    RenameDialog
+    RenameDialog,
   },
   props: {
     entityName: {
@@ -116,7 +114,7 @@ export default {
           isEnabled: () => {
             return this.selectedEntities.length === 1
           },
-        }
+        },
       ].filter((item) => item.isEnabled())
     },
     breadcrumbs() {
@@ -312,7 +310,9 @@ export default {
       return {
         method: 'drive.api.files.delete_entities',
         params: {
-          entity_names: JSON.stringify(this.selectedEntities.map((entity) => entity.name)),
+          entity_names: JSON.stringify(
+            this.selectedEntities.map((entity) => entity.name)
+          ),
         },
         onSuccess() {
           this.$resources.folderContents.fetch()
