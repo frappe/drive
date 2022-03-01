@@ -7,16 +7,14 @@
       <Dropdown :items="actionItems">
         <template v-slot="{ toggleDropdown }">
           <Button
-            class="text-sm focus:ring-0"
+            class="text-sm"
             @click.stop="toggleDropdown()"
             iconRight="chevron-down"
             >Actions</Button
           >
         </template>
       </Dropdown>
-      <Button class="focus:ring-0" type="primary" @click="$emit('uploadFile')">
-        Upload
-      </Button>
+      <Button type="primary" @click="$emit('uploadFile')"> Upload </Button>
     </div>
   </div>
 </template>
@@ -43,5 +41,10 @@ export default {
     },
   },
   emits: ['uploadFile'],
+  mounted() {
+    for (let element of this.$el.getElementsByTagName('button')) {
+      element.classList.remove('focus:ring-2', 'focus:ring-offset-2')
+    }
+  },
 }
 </script>
