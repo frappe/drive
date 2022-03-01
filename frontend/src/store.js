@@ -23,6 +23,11 @@ const store = createStore({
         : null,
     },
     uploads: [],
+    sortOrder: JSON.parse(localStorage.getItem('sortOrder')) || {
+      label: 'Name',
+      field: 'title',
+      ascending: true,
+    },
   },
   getters: {
     isLoggedIn: (state) => {
@@ -53,6 +58,10 @@ const store = createStore({
         (upload) => upload.uuid == payload.uuid
       )
       Object.assign(state.uploads[index], payload)
+    },
+    setSortOrder(state, payload) {
+      localStorage.setItem('sortOrder', JSON.stringify(payload))
+      state.sortOrder = payload
     },
   },
   actions: {

@@ -4,6 +4,7 @@
       <DriveToolBar
         :breadcrumbs="breadcrumbs"
         :actionItems="actionItems"
+        :columnHeaders="columnHeaders"
         @uploadFile="$emit('uploadFile')"
       />
       <table class="min-w-full max-h-full divide-y divide-gray-100">
@@ -94,6 +95,10 @@ export default {
       required: true,
     },
     actionItems: {
+      type: Array,
+      required: true,
+    },
+    columnHeaders: {
       type: Array,
       required: true,
     },

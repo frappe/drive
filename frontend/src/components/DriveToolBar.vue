@@ -7,14 +7,48 @@
       <Dropdown :items="actionItems">
         <template v-slot="{ toggleDropdown }">
           <Button
-            class="text-sm"
-            @click.stop="toggleDropdown()"
+            class="text-sm h-8"
+            @click="toggleDropdown()"
             iconRight="chevron-down"
             >Actions</Button
           >
         </template>
       </Dropdown>
-      <Button type="primary" @click="$emit('uploadFile')"> Upload </Button>
+      <Dropdown :items="orderByItems" right>
+        <template v-slot="{ toggleDropdown }">
+          <div class="flex items-center whitespace-nowrap">
+            <Button
+              class="text-sm h-8 px-2 border-r border-slate-200 rounded-r-none"
+              @click="toggleAscending"
+            >
+              <svg
+                class="h-4 w-4 stroke-current inline-block"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  :d="
+                    ascending
+                      ? 'M1.75 3.25h9m-9 4h6m-6 4h4m8.5-3.5l-2-2-2 2m2 4v-6'
+                      : 'M1.75 3.25h9m-9 4h6m-6 4h4m4.5-.5l2 2 2-2m-2 1v-6'
+                  "
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </Button>
+            <Button
+              class="text-sm h-8 rounded-l-none"
+              @click="toggleDropdown()"
+            >
+              Sort by {{ orderByLabel.toLowerCase() }}
+            </Button>
+          </div>
+        </template>
+      </Dropdown>
+      <Button class="h-8" type="primary" @click="$emit('uploadFile')">
+        Upload
+      </Button>
     </div>
   </div>
 </template>
@@ -39,8 +73,44 @@ export default {
       type: Array,
       required: true,
     },
+    columnHeaders: {
+      type: Array,
+      required: true,
+    },
   },
   emits: ['uploadFile'],
+  computed: {
+    orderByField() {
+      return this.$store.state.sortOrder.field
+    },
+    orderByLabel() {
+      return this.$store.state.sortOrder.label
+    },
+    ascending() {
+      return this.$store.state.sortOrder.ascending
+    },
+    orderByItems() {
+      return this.columnHeaders.map((header) => ({
+        ...header,
+        action: () => {
+          this.$store.commit('setSortOrder', {
+            field: header.field,
+            label: header.label,
+            ascending: this.ascending,
+          })
+        },
+      }))
+    },
+  },
+  methods: {
+    toggleAscending() {
+      this.$store.commit('setSortOrder', {
+        field: this.orderByField,
+        label: this.orderByLabel,
+        ascending: !this.ascending,
+      })
+    },
+  },
   mounted() {
     for (let element of this.$el.getElementsByTagName('button')) {
       element.classList.remove('focus:ring-2', 'focus:ring-offset-2')

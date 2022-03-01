@@ -5,6 +5,7 @@
       :actionItems="actionItems"
       :folderContents="$resources.folderContents.data"
       :breadcrumbs="breadcrumbs"
+      :columnHeaders="columnHeaders"
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @uploadFile="dropzone.hiddenFileInput.click()"
@@ -72,6 +73,11 @@ export default {
   computed: {
     userId() {
       return this.$store.state.auth.user_id
+    },
+    orderBy() {
+      return this.$store.state.sortOrder.ascending
+        ? this.$store.state.sortOrder.field
+        : `${this.$store.state.sortOrder.field} desc`
     },
     actionItems() {
       return [
@@ -147,6 +153,30 @@ export default {
         })
       }
       return breadcrumbs
+    },
+    columnHeaders() {
+      return [
+        {
+          label: 'Name',
+          field: 'title',
+          sortable: true,
+        },
+        {
+          label: 'Owner',
+          field: 'owner',
+          sortable: true,
+        },
+        {
+          label: 'Modified',
+          field: 'modified',
+          sortable: true,
+        },
+        {
+          label: 'Size',
+          field: 'file_size',
+          sortable: true,
+        },
+      ].filter((item) => item.sortable)
     },
   },
   methods: {
@@ -283,6 +313,7 @@ export default {
         cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
+          order_by: this.orderBy,
         },
         onSuccess(data) {
           data.forEach((entity) => {
