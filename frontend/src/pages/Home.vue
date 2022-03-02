@@ -77,6 +77,7 @@ export default {
     entityToRename: null,
     showRenameDialog: false,
     dropzone: null,
+    breadcrumbs: [{ label: 'Home', route: '/' }],
   }),
   computed: {
     userId() {
@@ -130,37 +131,6 @@ export default {
           },
         },
       ].filter((item) => item.isEnabled())
-    },
-    breadcrumbs() {
-      if (!this.entityName || this.$resources.pathEntities.data === null) {
-        return [
-          {
-            label: 'Home',
-            route: { name: 'Home', params: { entityName: '' } },
-          },
-        ]
-      }
-      let breadcrumbs = []
-      this.$resources.pathEntities.data.forEach((entity, index) => {
-        if (index === 0) {
-          breadcrumbs.push({
-            label: entity.owner === this.userId ? 'Home' : entity.title,
-            route: { name: 'Home', params: { entityName: '' } },
-          })
-        } else {
-          breadcrumbs.push({
-            label: entity.title,
-            route: `/folder/${entity.name}`,
-          })
-        }
-      })
-      if (breadcrumbs.length > 4) {
-        breadcrumbs.splice(1, breadcrumbs.length - 4, {
-          label: '...',
-          route: '',
-        })
-      }
-      return breadcrumbs
     },
     columnHeaders() {
       return [
@@ -242,6 +212,13 @@ export default {
         options = { year: 'numeric', month: 'long', day: 'numeric' }
       }
       return prefix + date.toLocaleString(undefined, options)
+    },
+  },
+  watch: {
+    entityName(newEntityName) {
+      if (!newEntityName) {
+        this.breadcrumbs = [{ label: 'Home', route: '/' }]
+      }
     },
   },
   mounted() {
@@ -341,6 +318,30 @@ export default {
         cache: ['pathEntities', this.entityName],
         params: {
           entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          let breadcrumbs = []
+          data.forEach((entity, index) => {
+            if (index === 0) {
+              const isHome = entity.owner === this.userId
+              breadcrumbs.push({
+                label: isHome ? 'Home' : entity.title,
+                route: isHome ? '/' : `/folder/${entity.name}`,
+              })
+            } else {
+              breadcrumbs.push({
+                label: entity.title,
+                route: `/folder/${entity.name}`,
+              })
+            }
+          })
+          if (breadcrumbs.length > 4) {
+            breadcrumbs.splice(1, breadcrumbs.length - 4, {
+              label: '...',
+              route: '',
+            })
+          }
+          this.breadcrumbs = breadcrumbs
         },
         auto: Boolean(this.entityName),
       }
