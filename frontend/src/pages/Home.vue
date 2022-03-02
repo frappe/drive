@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import { computed } from 'vue'
 import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
 import FilePreview from '@/components/FilePreview.vue'
@@ -53,6 +54,13 @@ export default {
     FilePreview,
     NewFolderDialog,
     RenameDialog,
+  },
+  provide() {
+    return {
+      actionItems: computed(() => this.actionItems),
+      breadcrumbs: computed(() => this.breadcrumbs),
+      columnHeaders: computed(() => this.columnHeaders),
+    }
   },
   props: {
     entityName: {

@@ -64,20 +64,7 @@ export default {
     Breadcrumbs,
     Dropdown,
   },
-  props: {
-    breadcrumbs: {
-      type: Array,
-      required: true,
-    },
-    actionItems: {
-      type: Array,
-      required: true,
-    },
-    columnHeaders: {
-      type: Array,
-      required: true,
-    },
-  },
+  inject: ['breadcrumbs', 'actionItems', 'columnHeaders'],
   emits: ['uploadFile'],
   computed: {
     orderByField() {
