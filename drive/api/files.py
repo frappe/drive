@@ -187,12 +187,15 @@ def get_entities_in_path(entity_name, fields=None):
 
 	:param entity_name: Document-name of the file or folder
 	:param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'owner']
+	:raises PermissionError: If the user does not have access to the specified entity
 	:return: List of parents followed by the specified DriveEntity
 	:rtype: list[frappe._dict]
 	"""
 
 	fields = fields or ['name', 'title', 'owner']
 	rebuild_tree("Drive Entity", "parent_drive_entity")
+	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
+		frappe.throw('Cannot access path due to insufficient permissions', frappe.PermissionError)
 	path = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
 	path.append(entity_name)
 	return [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]
