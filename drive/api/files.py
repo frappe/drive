@@ -25,6 +25,7 @@ def upload_file():
 	:param total_chunk_count: Total number of chunks for the file
 	:param chunk_byte_offset: Position in the file at which the current chunk starts
 	:param total_file_size: Total size of the file in bytes
+	:raises PermissionError: If the user does not have write access to the specified parent folder
 	:raises FileExistsError: If a file with the same name already exists in the specified parent folder
 	:raises ValueError: If the size of the stored file does not match the specified filesize
 	:return: DriveEntity doc once entire file has been uploaded
@@ -37,6 +38,8 @@ def upload_file():
 		user_directory = create_user_directory()
 
 	parent = frappe.form_dict.parent or user_directory.name
+	if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
+		frappe.throw('Cannot upload to this folder due to insufficient permissions', frappe.PermissionError)
 	current_chunk = int(frappe.form_dict.chunk_index)
 	total_chunks = int(frappe.form_dict.total_chunk_count)
 	entity_exists = frappe.db.exists({
@@ -84,6 +87,7 @@ def create_folder(title, parent=None):
 
 	:param title: Folder name
 	:param parent: Document-name of the parent folder. Defaults to the user directory
+	:raises PermissionError: If the user does not have write access to the specified parent folder
 	:raises FileExistsError: If a folder with the same name already exists in the specified parent folder
 	:return: DriveEntity doc of the new folder
 	"""
@@ -94,6 +98,8 @@ def create_folder(title, parent=None):
 		user_directory = create_user_directory()
 
 	parent = parent or user_directory.name
+	if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
+		frappe.throw('Cannot create folder due to insufficient permissions', frappe.PermissionError)
 	entity_exists = frappe.db.exists({
 		'doctype': 'Drive Entity',
 		'parent_drive_entity': parent,
