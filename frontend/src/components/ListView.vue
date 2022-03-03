@@ -1,8 +1,11 @@
 <template>
-  <div>
+  <div class="h-full flex flex-col">
     <div class="sticky top-0 bg-white pt-2 sm:pt-0">
       <DriveToolBar @uploadFile="$emit('uploadFile')" />
-      <table class="min-w-full max-h-full divide-y divide-gray-100">
+      <table
+        v-if="folderContents && folderContents.length > 0"
+        class="min-w-full max-h-full divide-y divide-gray-100"
+      >
         <thead class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
           <tr class="text-base text-left text-gray-500">
             <th
@@ -23,7 +26,10 @@
         </thead>
       </table>
     </div>
-    <table class="min-w-full max-h-full divide-y divide-gray-100">
+    <table
+      v-if="folderContents && folderContents.length > 0"
+      class="min-w-full max-h-full divide-y divide-gray-100"
+    >
       <tbody class="divide-y divide-gray-100">
         <tr
           v-for="entity in folderContents"
@@ -71,11 +77,18 @@
         </tr>
       </tbody>
     </table>
+    <div
+      v-else-if="folderContents"
+      class="flex-1 flex justify-center items-center bg-neutral-50 rounded-lg"
+    >
+      <NoFilesSection />
+    </div>
   </div>
 </template>
 <script>
 import { FeatherIcon, Input } from 'frappe-ui'
 import DriveToolBar from '@/components/DriveToolBar.vue'
+import NoFilesSection from '@/components/NoFilesSection.vue'
 
 export default {
   name: 'ListView',
@@ -83,6 +96,7 @@ export default {
     FeatherIcon,
     Input,
     DriveToolBar,
+    NoFilesSection,
   },
   props: {
     entityName: {
@@ -91,7 +105,7 @@ export default {
     },
     folderContents: {
       type: Array,
-      required: true,
+      required: false,
     },
   },
   emits: ['entitySelected', 'openEntity', 'uploadFile'],
