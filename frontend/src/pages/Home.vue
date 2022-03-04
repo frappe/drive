@@ -90,7 +90,7 @@ export default {
   },
   data: () => ({
     showPreview: false,
-    previewEntity: '',
+    previewEntity: null,
     selectedEntities: [],
     showNewFolderDialog: false,
     entityToRename: null,
@@ -184,13 +184,13 @@ export default {
           params: { entityName: entity.name },
         })
       } else {
-        this.previewEntity = entity.name
+        this.previewEntity = entity
         this.showPreview = true
       }
     },
     hidePreview() {
       this.showPreview = false
-      this.previewEntity = ''
+      this.previewEntity = null
     },
     formatSize(size, nDigits = 1) {
       if (size === 0) return '0 B'

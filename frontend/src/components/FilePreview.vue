@@ -5,13 +5,16 @@
         class="fixed inset-0 transition-opacity bg-gray-900 opacity-75"
         @click="this.$emit('hide')"
       ></div>
+      <img
+        v-if="isImage"
+        :src="previewUrl"
+        class="object-contain max-h-[95vh] max-w-[80vw] z-10"
+      />
       <div
-        class="w-full transition-all transform bg-[#252728] rounded-lg shadow-xl max-h-[95vh] max-w-[80vw]"
+        v-else
+        class="max-h-[95vh] max-w-[80vw] z-10 bg-[#252728] rounded-lg shadow-xl"
       >
-        <object
-          class="w-full h-[95vh]"
-          :data="`/api/method/drive.api.files.get_file_content?entity_name=${previewEntity}`"
-        />
+        <object class="w-full min-w-[80vw] h-[95vh]" :data="previewUrl" />
       </div>
     </div>
   </portal>
@@ -21,11 +24,19 @@ export default {
   name: 'FilePreview',
   props: {
     previewEntity: {
-      type: String,
+      type: Object,
       required: true,
     },
   },
   emits: ['hide'],
+  computed: {
+    previewUrl() {
+      return `/api/method/drive.api.files.get_file_content?entity_name=${this.previewEntity.name}`
+    },
+    isImage() {
+      return this.previewEntity.mime_type.startsWith('image/')
+    },
+  },
   mounted() {
     this.escapeListener = (e) => {
       if (e.key === 'Escape') {
