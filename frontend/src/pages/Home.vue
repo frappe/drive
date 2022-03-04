@@ -322,6 +322,7 @@ export default {
         onSuccess(data) {
           this.$resources.folderContents.error = null
           data.forEach((entity) => {
+            entity.size_in_bytes = entity.file_size
             entity.file_size = entity.is_group
               ? '-'
               : this.formatSize(entity.file_size)
