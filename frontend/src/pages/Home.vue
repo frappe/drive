@@ -1,6 +1,23 @@
 <template>
   <div class="h-full">
+    <div
+      v-if="$resources.folderContents.error"
+      class="relative h-full p-5 flex flex-col lg:flex-row justify-center items-center text-center bg-neutral-50 rounded-lg"
+    >
+      <div class="w-8 h-8 p-1.5 m-4 rounded-full bg-red-100">
+        <FeatherIcon name="x" class="text-red-500" />
+      </div>
+      <p class="text-2xl font-semibold">
+        {{ $resources.folderContents.error.messages.join('\n') }}
+      </p>
+      <Button
+        class="absolute left-0 top-0 m-4 focus:ring-0 focus:ring-offset-0 bg-gray-200 hover:bg-gray-300"
+        @click="$router.go(-1)"
+        icon="chevron-left"
+      />
+    </div>
     <ListView
+      v-else
       :entityName="entityName"
       :actionItems="actionItems"
       :folderContents="$resources.folderContents.data"
@@ -41,6 +58,7 @@
 
 <script>
 import { computed } from 'vue'
+import { FeatherIcon } from 'frappe-ui'
 import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
 import FilePreview from '@/components/FilePreview.vue'
@@ -50,6 +68,7 @@ import RenameDialog from '@/components/RenameDialog.vue'
 export default {
   name: 'Home',
   components: {
+    FeatherIcon,
     ListView,
     FilePreview,
     NewFolderDialog,
@@ -301,6 +320,7 @@ export default {
           order_by: this.orderBy,
         },
         onSuccess(data) {
+          this.$resources.folderContents.error = null
           data.forEach((entity) => {
             entity.file_size = entity.is_group
               ? '-'

@@ -162,6 +162,7 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title'):
 	:param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'is_group', 'owner', 'modified', 'file_size']
 	:param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
 	:raises NotADirectoryError: If this DriveEntity doc is not a folder
+	:raises PermissionError: If the user does not have access to the specified folder
 	:return: List of DriveEntity records
 	:rtype: list
 	"""
@@ -169,7 +170,9 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title'):
 	entity_name = entity_name or get_user_directory().name
 	is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
 	if not is_group:
-		raise NotADirectoryError
+		frappe.throw('Specified entity is not a folder', NotADirectoryError)
+	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
+		frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
 	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size']
 	return frappe.db.get_list('Drive Entity',
 		filters={
