@@ -16,14 +16,17 @@ def get_shared_with_list(entity_name):
 
 	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='edit', user=frappe.session.user):
 		raise frappe.PermissionError
-	return frappe.db.get_list('DocShare',
+	users = frappe.db.get_list('DocShare',
 		filters={
 			'share_doctype': 'Drive Entity',
 			'share_name': entity_name
 		},
 		fields=['user', 'read', 'write', 'share', 'everyone', 'modified']
 	)
-
+	for user in users:
+		user_info = frappe.db.get_value("User", user.user, ["user_image", "full_name"], as_dict=True)
+		user |= user_info
+	return users
 
 @frappe.whitelist()
 def get_shared_with_me():
