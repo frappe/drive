@@ -52,6 +52,10 @@
         }
       "
     />
+    <ShareDialog
+      v-model="showShareDialog"
+      :entity="entityToShare"
+    />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -64,6 +68,7 @@ import ListView from '@/components/ListView.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
+import ShareDialog from '@/components/ShareDialog.vue'
 
 export default {
   name: 'Home',
@@ -73,6 +78,7 @@ export default {
     FilePreview,
     NewFolderDialog,
     RenameDialog,
+    ShareDialog
   },
   provide() {
     return {
@@ -97,6 +103,8 @@ export default {
     showRenameDialog: false,
     dropzone: null,
     breadcrumbs: [{ label: 'Home', route: '/' }],
+    entityToShare: null,
+    showShareDialog: false
   }),
   computed: {
     userId() {
@@ -144,6 +152,16 @@ export default {
           action: () => {
             this.entityToRename = this.selectedEntities[0]
             this.showRenameDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1
+          },
+        },
+        {
+          label: 'Share',
+          action: () => {
+            this.entityToShare = this.selectedEntities[0]
+            this.showShareDialog = true
           },
           isEnabled: () => {
             return this.selectedEntities.length === 1
