@@ -1,7 +1,7 @@
 <template>
   <NewDialog :options="{ title: 'Sharing options' }" v-model="open">
     <template #dialog-content>
-      <div class="text-left">
+      <div class="text-left min-w-[16rem]" ref="dialogContent">
         <div class="flex mt-5 text-xs text-gray-500">
           <FeatherIcon
             name="user-plus"
@@ -76,7 +76,11 @@
           icon="plus"
           @click="showUserSearch = true"
         />
-        <div v-if="showUserSearch" class="flex items-start mt-5 gap-2">
+        <div
+          v-if="showUserSearch"
+          class="flex items-start mt-5 gap-2 w-full relative"
+        >
+          <UserSearch class="flex-1 invisible" />
           <UserSearch
             v-model="searchQuery"
             @submit="
@@ -88,10 +92,10 @@
                   write: 1,
                 })
             "
-            class="flex-1"
+            class="flex-1 absolute w-[calc(100%_-_2.25rem)]"
           />
           <Button
-            class="focus:ring-0 focus:ring-offset-0"
+            class="focus:ring-0 focus:ring-offset-0 absolute left-[calc(100%_-_1.75rem)]"
             icon="plus"
             type="primary"
             @click="$resources.share.fetch()"
@@ -103,9 +107,6 @@
           :message="errorMessage"
         />
       </div>
-    </template>
-    <template #dialog-actions>
-      <Button type="primary" @click="open = false"> Done </Button>
     </template>
   </NewDialog>
 </template>
@@ -159,6 +160,18 @@ export default {
   },
   updated() {
     this.$resources.sharedWith.fetch()
+  },
+  mounted() {
+    this.$resources.sharedWith.fetch()
+    const targetElement = this.$refs.dialogContent?.closest('.overflow-hidden')
+    if (targetElement) {
+      targetElement.classList.remove('overflow-hidden')
+      targetElement.classList.add('self-center')
+      targetElement.childNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE)
+          node.classList.add('rounded-lg')
+      })
+    }
   },
   resources: {
     sharedWith() {
