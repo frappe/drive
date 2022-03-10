@@ -53,6 +53,7 @@
       "
     />
     <ShareDialog
+      v-if="showShareDialog"
       v-model="showShareDialog"
       :entity="entityToShare"
     />
@@ -78,7 +79,7 @@ export default {
     FilePreview,
     NewFolderDialog,
     RenameDialog,
-    ShareDialog
+    ShareDialog,
   },
   provide() {
     return {
@@ -104,7 +105,7 @@ export default {
     dropzone: null,
     breadcrumbs: [{ label: 'Home', route: '/' }],
     entityToShare: null,
-    showShareDialog: false
+    showShareDialog: false,
   }),
   computed: {
     userId() {

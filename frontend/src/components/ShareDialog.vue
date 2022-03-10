@@ -100,7 +100,7 @@
         <ErrorMessage
           v-if="$resources.share.error"
           class="mt-2"
-          :message="$resources.share.error.messages.join('\n')"
+          :message="errorMessage"
         />
       </div>
     </template>
@@ -138,6 +138,7 @@ export default {
     return {
       showUserSearch: false,
       searchQuery: '',
+      errorMessage: '',
     }
   },
   computed: {
@@ -151,7 +152,6 @@ export default {
       set(value) {
         this.$emit('update:modelValue', value)
         if (!value) {
-          this.newName = ''
           this.errorMessage = ''
         }
       },
@@ -178,11 +178,23 @@ export default {
           user: this.searchQuery,
           write: 1,
         },
+        validate(params) {
+          if (!params?.user) {
+            return 'No user was specified'
+          }
+        },
         onSuccess(data) {
           this.$resources.share.error = null
           this.$resources.sharedWith.fetch()
           this.showUserSearch = false
           this.searchQuery = ''
+        },
+        onError(error) {
+          if (error.messages) {
+            this.errorMessage = error.messages.join('\n')
+          } else {
+            this.errorMessage = error.message
+          }
         },
       }
     },
