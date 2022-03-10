@@ -17,6 +17,20 @@ class DriveEntity(NestedSet):
 		self.version = self.version + 1
 
 
+	def after_insert(self):
+		"""Copy parent permissions to new child entity"""
+		permissions = frappe.share.get_users("Drive Entity", self.parent_drive_entity)
+		for permission in permissions:
+			frappe.share.add(
+				"Drive Entity",
+				self.name,
+				permission.user,
+				write=permission.write,
+				share=permission.share,
+				notify=0,
+			)
+
+
 	def on_trash(self):
 		if self.is_group:
 			for child in self.get_children():
