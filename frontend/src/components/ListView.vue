@@ -45,7 +45,7 @@
                   :checked="entity.selected"
                   class="focus:ring-0 focus:ring-offset-0"
                   :class="
-                    entity.selected ? 'block' : 'hidden group-hover:block'
+                    entity.selected ? 'block' : 'sm:hidden group-hover:block'
                   "
                   @click.stop="selectEntity(entity)"
                 />
