@@ -28,6 +28,7 @@ class DriveEntity(NestedSet):
 				write=permission.write,
 				share=permission.share,
 				notify=0,
+				flags={"ignore_share_permission": True}
 			)
 
 
@@ -112,12 +113,13 @@ class DriveEntity(NestedSet):
 		:param notify: 1 if the user should be notified. Defaults to 1
 		"""
 
+		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 		if self.is_group:
 			for child in self.get_children():
 				child.share(user, write, share, 0)
-			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify)
+			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
 		else:
-			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify)
+			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
 
 
 	@frappe.whitelist()

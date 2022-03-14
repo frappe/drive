@@ -14,7 +14,7 @@ def get_shared_with_list(entity_name):
 	:rtype: list[frappe._dict]
 	"""
 
-	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='edit', user=frappe.session.user):
+	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='write', user=frappe.session.user):
 		raise frappe.PermissionError
 	users = frappe.db.get_list('DocShare',
 		filters={
