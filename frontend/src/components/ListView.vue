@@ -1,35 +1,32 @@
 <template>
   <div class="h-full flex flex-col">
-    <div class="sticky top-0 bg-white pt-2 sm:pt-0">
-      <DriveToolBar @uploadFile="$emit('uploadFile')" />
-      <table
-        v-if="folderContents && folderContents.length > 0"
-        class="min-w-full max-h-full divide-y divide-gray-100"
+    <table class="min-w-full max-h-full divide-y divide-gray-100">
+      <thead
+        class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100 sticky top-0 bg-white"
       >
-        <thead class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
-          <tr class="text-base text-left text-gray-500">
-            <th
-              class="hidden sm:table-cell w-2/5 pl-20 pr-5 py-3.5 font-normal"
-            >
-              Name
-            </th>
-            <th class="hidden sm:table-cell w-1/5 px-5 py-3.5 font-normal">
-              Owner
-            </th>
-            <th class="hidden md:table-cell w-1/5 px-5 py-3.5 font-normal">
-              Modified
-            </th>
-            <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
-              Size
-            </th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-    <table
-      v-if="folderContents && folderContents.length > 0"
-      class="min-w-full max-h-full divide-y divide-gray-100"
-    >
+        <tr>
+          <td colspan="4" class="pt-2 sm:pt-0">
+            <DriveToolBar @uploadFile="$emit('uploadFile')" />
+          </td>
+        </tr>
+        <tr
+          v-if="folderContents && folderContents.length > 0"
+          class="text-base text-left text-gray-500"
+        >
+          <th class="hidden sm:table-cell w-2/5 pl-20 pr-5 py-3.5 font-normal">
+            Name
+          </th>
+          <th class="hidden sm:table-cell w-1/5 px-5 py-3.5 font-normal">
+            Owner
+          </th>
+          <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
+            Modified
+          </th>
+          <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
+            Size
+          </th>
+        </tr>
+      </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
           v-for="entity in folderContents"
@@ -65,7 +62,7 @@
             {{ entity.owner }}
           </td>
           <td
-            class="hidden md:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
+            class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
           >
             {{ entity.modified }}
           </td>
@@ -78,7 +75,7 @@
       </tbody>
     </table>
     <div
-      v-else-if="folderContents"
+      v-if="folderContents && folderContents.length === 0"
       class="flex-1 flex justify-center items-center bg-neutral-50 rounded-lg"
     >
       <NoFilesSection />
