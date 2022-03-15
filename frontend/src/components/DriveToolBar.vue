@@ -3,18 +3,19 @@
     class="mb-4 min-h-8 py-2 flex gap-3 flex-wrap justify-between items-center w-full px-5 sm:px-0"
   >
     <Breadcrumbs :breadcrumbLinks="breadcrumbs" />
-    <div class="flex gap-3">
-      <Dropdown :items="actionItems">
+    <div class="flex gap-3 basis-full lg:basis-auto">
+      <Dropdown :items="actionItems" class="basis-5/12 lg:basis-auto">
         <template v-slot="{ toggleDropdown }">
           <Button
-            class="text-sm h-8"
+            class="text-sm h-8 w-full"
             @click="toggleDropdown()"
             iconRight="chevron-down"
-            >Actions</Button
           >
+            Actions
+          </Button>
         </template>
       </Dropdown>
-      <Dropdown :items="orderByItems" right>
+      <Dropdown :items="orderByItems" right class="basis-5/12 lg:basis-auto">
         <template v-slot="{ toggleDropdown }">
           <div class="flex items-center whitespace-nowrap">
             <Button
@@ -38,7 +39,7 @@
               </svg>
             </Button>
             <Button
-              class="text-sm h-8 rounded-l-none"
+              class="text-sm h-8 rounded-l-none flex-1"
               @click="toggleDropdown()"
             >
               Sort by {{ orderByLabel.toLowerCase() }}
@@ -46,8 +47,13 @@
           </div>
         </template>
       </Dropdown>
-      <Button class="h-8" type="primary" @click="$emit('uploadFile')">
-        Upload
+      <Button
+        class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto"
+        type="primary"
+        @click="$emit('uploadFile')"
+      >
+        <span class="hidden md:inline">Upload</span>
+        <span class="md:hidden text-4xl font-light">+</span>
       </Button>
     </div>
   </div>
