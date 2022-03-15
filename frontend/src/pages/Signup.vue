@@ -41,7 +41,7 @@
       <div class="w-8 h-8 p-1 rounded-full" :class="iconContainerClass">
         <FeatherIcon :name="icon" :class="iconClass" />
       </div>
-      <h2 class="mt-4 text-lg font-medium text-gray-900">
+      <h2 class="mt-4 text-lg font-medium text-center text-gray-900">
         {{ response.title }}
       </h2>
       <p class="text-base text-center text-gray-700 mt-1.5">

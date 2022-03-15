@@ -1,13 +1,13 @@
 <template>
   <nav class="bg-white shadow">
     <div
-      class="mx-auto px-5 sm:px-20 z-10 h-16 flex items-center justify-between"
+      class="mx-auto px-5 md:px-20 z-10 h-16 flex items-center justify-between"
     >
       <div class="flex items-center">
-        <router-link to="/" class="hidden sm:block">
+        <router-link to="/" class="hidden md:block">
           <FrappeDriveLogo class="h-5" />
         </router-link>
-        <div class="flex items-center sm:hidden">
+        <div class="flex items-center md:hidden">
           <button
             class="mr-5 inline-flex items-center justify-center text-gray-700 rounded-md focus:outline-none focus:shadow-outline-gray"
             @click="$emit('toggleMobileSidebar')"

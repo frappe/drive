@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mb-4 min-h-8 py-2 flex gap-3 flex-wrap justify-between items-center w-full px-5 sm:px-0"
+    class="mb-4 min-h-8 py-2 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0"
   >
     <Breadcrumbs :breadcrumbLinks="breadcrumbs" />
     <div class="flex gap-3 basis-full lg:basis-auto">

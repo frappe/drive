@@ -5,7 +5,7 @@
         class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100 sticky top-0 bg-white"
       >
         <tr>
-          <td colspan="4" class="pt-2 sm:pt-0">
+          <td colspan="4" class="pt-2 md:pt-0">
             <DriveToolBar @uploadFile="$emit('uploadFile')" />
           </td>
         </tr>
@@ -13,13 +13,13 @@
           v-if="folderContents && folderContents.length > 0"
           class="text-base text-left text-gray-500"
         >
-          <th class="hidden sm:table-cell w-2/5 pl-20 pr-5 py-3.5 font-normal">
+          <th class="hidden md:table-cell w-2/5 pl-20 pr-5 py-3.5 font-normal">
             Name
           </th>
-          <th class="hidden sm:table-cell w-1/5 px-5 py-3.5 font-normal">
+          <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
             Owner
           </th>
-          <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
+          <th class="hidden md:table-cell w-1/5 px-5 py-3.5 font-normal">
             Modified
           </th>
           <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
@@ -42,7 +42,7 @@
                   :checked="entity.selected"
                   class="focus:ring-0 focus:ring-offset-0"
                   :class="
-                    entity.selected ? 'block' : 'sm:hidden group-hover:block'
+                    entity.selected ? 'block' : 'md:hidden group-hover:block'
                   "
                   @click.stop="selectEntity(entity)"
                 />
@@ -57,12 +57,12 @@
             </div>
           </td>
           <td
-            class="hidden sm:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
+            class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
           >
             {{ entity.owner }}
           </td>
           <td
-            class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
+            class="hidden md:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
           >
             {{ entity.modified }}
           </td>

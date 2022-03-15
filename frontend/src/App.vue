@@ -11,10 +11,10 @@
           @toggleMobileSidebar="mobileSidebarIsOpen = !mobileSidebarIsOpen"
         />
         <div v-if="isLoggedIn" class="flex flex-1 h-[calc(100%_-_4rem)]">
-          <div class="hidden sm:flex w-64 ml-20 sm:my-8">
+          <div class="hidden md:flex w-64 ml-20 md:my-8">
             <Sidebar />
           </div>
-          <div class="flex-1 sm:pr-20 sm:my-8 overflow-x-hidden overflow-y-auto">
+          <div class="flex-1 md:pr-20 md:my-8 overflow-x-hidden overflow-y-auto">
             <router-view />
           </div>
         </div>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <!-- Mobile Sidebar -->
-    <div v-if="mobileSidebarIsOpen" class="sm:hidden fixed inset-0 z-20 flex">
+    <div v-if="mobileSidebarIsOpen" class="md:hidden fixed inset-0 z-20 flex">
       <div class="w-auto bg-white flex flex-col">
         <div class="border-b h-16 px-4 flex items-center">
           <FrappeDriveLogo />
