@@ -2,10 +2,11 @@
   <Menu as="div" class="w-full">
     <input
       type="text"
+      ref="searchInput"
       v-model="searchQuery"
       @focus="search(searchQuery) && (showDropdown = true)"
       @blur="showDropdown = false"
-      @keydown.enter="$emit('submit', searchQuery)"
+      @keydown.enter="submit(searchQuery)"
       placeholder="Add user"
       class="w-full form-input placeholder-gray-500"
     />
@@ -72,8 +73,11 @@ export default {
   methods: {
     selectResult(value) {
       this.searchQuery = value
+      this.submit(value)
+    },
+    submit(value) {
       this.$emit('submit', value)
-      this.showDropdown = false
+      this.$refs.searchInput.blur()
     },
     async search(txt) {
       const headers = {
