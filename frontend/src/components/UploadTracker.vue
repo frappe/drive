@@ -1,10 +1,10 @@
 <template>
   <portal to="modals">
     <div
-      class="fixed bottom-0 right-0 flex items-start justify-end px-4 py-6 pointer-events-none sm:p-6"
+      class="fixed bottom-0 right-0 flex items-start justify-end px-4 py-6 pointer-events-none sm:p-6 w-full"
     >
       <div
-        class="max-w-xs w-full sm:w-64 bg-white rounded-lg shadow-lg pointer-events-auto"
+        class="w-full sm:w-96 bg-white rounded-lg shadow-lg pointer-events-auto"
       >
         <div
           class="flex flex-shrink-0 items-center justify-between p-4 rounded-sm bg-gray-50"
