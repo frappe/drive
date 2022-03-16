@@ -44,7 +44,7 @@
     />
     <RenameDialog
       v-model="showRenameDialog"
-      :entity="entityToRename"
+      :entity="selectedEntities[0]"
       @success="
         () => {
           $resources.folderContents.fetch()
@@ -55,7 +55,7 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entity="entityToShare"
+      :entity="selectedEntities[0]"
     />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -96,16 +96,14 @@ export default {
     },
   },
   data: () => ({
-    showPreview: false,
-    previewEntity: null,
-    selectedEntities: [],
-    showNewFolderDialog: false,
-    entityToRename: null,
-    showRenameDialog: false,
     dropzone: null,
-    breadcrumbs: [{ label: 'Home', route: '/' }],
-    entityToShare: null,
+    selectedEntities: [],
+    previewEntity: null,
+    showPreview: false,
+    showNewFolderDialog: false,
+    showRenameDialog: false,
     showShareDialog: false,
+    breadcrumbs: [{ label: 'Home', route: '/' }],
   }),
   computed: {
     userId() {
@@ -151,7 +149,6 @@ export default {
         {
           label: 'Rename',
           action: () => {
-            this.entityToRename = this.selectedEntities[0]
             this.showRenameDialog = true
           },
           isEnabled: () => {
@@ -161,7 +158,6 @@ export default {
         {
           label: 'Share',
           action: () => {
-            this.entityToShare = this.selectedEntities[0]
             this.showShareDialog = true
           },
           isEnabled: () => {
