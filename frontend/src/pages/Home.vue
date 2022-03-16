@@ -57,6 +57,7 @@
       v-model="showShareDialog"
       :entity="selectedEntities[0]"
     />
+    <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -70,6 +71,7 @@ import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
+import DetailsDialog from '@/components/DetailsDialog.vue'
 
 export default {
   name: 'Home',
@@ -80,6 +82,7 @@ export default {
     NewFolderDialog,
     RenameDialog,
     ShareDialog,
+    DetailsDialog,
   },
   provide() {
     return {
@@ -103,6 +106,7 @@ export default {
     showNewFolderDialog: false,
     showRenameDialog: false,
     showShareDialog: false,
+    showDetailsDialog: false,
     breadcrumbs: [{ label: 'Home', route: '/' }],
   }),
   computed: {
@@ -159,6 +163,15 @@ export default {
           label: 'Share',
           action: () => {
             this.showShareDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1
+          },
+        },
+        {
+          label: 'Details',
+          action: () => {
+            this.showDetailsDialog = true
           },
           isEnabled: () => {
             return this.selectedEntities.length === 1
@@ -333,6 +346,16 @@ export default {
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
+          fields: [
+            'name',
+            'title',
+            'is_group',
+            'owner',
+            'modified',
+            'file_size',
+            'mime_type',
+            'creation',
+          ],
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null
@@ -342,6 +365,7 @@ export default {
               ? '-'
               : this.formatSize(entity.file_size)
             entity.modified = this.formatDate(entity.modified)
+            entity.creation = this.formatDate(entity.creation)
             entity.owner = entity.owner === this.userId ? 'me' : entity.owner
           })
         },
