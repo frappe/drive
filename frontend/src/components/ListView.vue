@@ -96,10 +96,6 @@ export default {
     NoFilesSection,
   },
   props: {
-    entityName: {
-      type: String,
-      required: true,
-    },
     folderContents: {
       type: Array,
       required: false,

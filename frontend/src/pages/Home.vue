@@ -18,7 +18,6 @@
     </div>
     <ListView
       v-else
-      :entityName="entityName"
       :actionItems="actionItems"
       :folderContents="$resources.folderContents.data"
       :breadcrumbs="breadcrumbs"
