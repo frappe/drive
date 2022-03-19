@@ -18,14 +18,17 @@
     </div>
     <ListView
       v-else
-      :actionItems="actionItems"
       :folderContents="$resources.folderContents.data"
-      :breadcrumbs="breadcrumbs"
-      :columnHeaders="columnHeaders"
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
-      @uploadFile="dropzone.hiddenFileInput.click()"
-    />
+    >
+      <DriveToolBar
+        :actionItems="actionItems"
+        :breadcrumbs="breadcrumbs"
+        :columnHeaders="columnHeaders"
+        @uploadFile="dropzone.hiddenFileInput.click()"
+      />
+    </ListView>
     <FilePreview
       v-if="showPreview"
       @hide="hidePreview"
@@ -66,6 +69,7 @@ import { computed } from 'vue'
 import { FeatherIcon } from 'frappe-ui'
 import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
+import DriveToolBar from '@/components/DriveToolBar.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
@@ -77,18 +81,12 @@ export default {
   components: {
     FeatherIcon,
     ListView,
+    DriveToolBar,
     FilePreview,
     NewFolderDialog,
     RenameDialog,
     ShareDialog,
     DetailsDialog,
-  },
-  provide() {
-    return {
-      actionItems: computed(() => this.actionItems),
-      breadcrumbs: computed(() => this.breadcrumbs),
-      columnHeaders: computed(() => this.columnHeaders),
-    }
   },
   props: {
     entityName: {

@@ -70,7 +70,20 @@ export default {
     Breadcrumbs,
     Dropdown,
   },
-  inject: ['breadcrumbs', 'actionItems', 'columnHeaders'],
+  props: {
+    breadcrumbs: {
+      type: Array,
+      required: true,
+    },
+    actionItems: {
+      type: Array,
+      required: true,
+    },
+    columnHeaders: {
+      type: Array,
+      required: true,
+    },
+  },
   emits: ['uploadFile'],
   computed: {
     orderByField() {

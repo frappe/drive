@@ -5,9 +5,7 @@
         class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100 sticky top-0 bg-white"
       >
         <tr>
-          <td colspan="4" class="pt-2 md:pt-0">
-            <DriveToolBar @uploadFile="$emit('uploadFile')" />
-          </td>
+          <td colspan="4" class="pt-2 md:pt-0"><slot></slot></td>
         </tr>
         <tr
           v-if="folderContents && folderContents.length > 0"
@@ -84,7 +82,6 @@
 </template>
 <script>
 import { FeatherIcon, Input } from 'frappe-ui'
-import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 
 export default {
@@ -92,7 +89,6 @@ export default {
   components: {
     FeatherIcon,
     Input,
-    DriveToolBar,
     NoFilesSection,
   },
   props: {
@@ -101,7 +97,7 @@ export default {
       required: false,
     },
   },
-  emits: ['entitySelected', 'openEntity', 'uploadFile'],
+  emits: ['entitySelected', 'openEntity'],
   methods: {
     selectEntity(entity) {
       entity.selected = !entity.selected
