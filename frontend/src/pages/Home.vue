@@ -27,6 +27,7 @@
         :breadcrumbs="breadcrumbs"
         :columnHeaders="columnHeaders"
         @uploadFile="dropzone.hiddenFileInput.click()"
+        :actionLoading="actionLoading"
       />
     </ListView>
     <FilePreview
@@ -105,6 +106,7 @@ export default {
     showShareDialog: false,
     showDetailsDialog: false,
     breadcrumbs: [{ label: 'Home', route: '/' }],
+    actionLoading: false,
   }),
   computed: {
     userId() {
@@ -129,6 +131,7 @@ export default {
         {
           label: 'Delete',
           action: () => {
+            this.actionLoading = true
             this.$resources.deleteEntities.submit()
           },
           isEnabled: () => {
@@ -412,6 +415,7 @@ export default {
           ),
         },
         onSuccess() {
+          this.actionLoading = false
           this.$resources.folderContents.fetch()
           this.selectedEntities = []
         },

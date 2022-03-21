@@ -209,15 +209,17 @@ def delete_entities(entity_names):
 	"""
 	Delete DriveEntities
 
-	:param entity_names: List of document-names as JSON string
-	:type entity_names: str
+	:param entity_names: List of document-names
+	:type entity_names: list[str]
 	:raises ValueError: If decoded entity_names is not a list
 	"""
 
-	entity_names = json.loads(entity_names)
+	if isinstance(entity_names, str):
+		entity_names = json.loads(entity_names)
 	if not isinstance(entity_names, list):
 		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
-	frappe.db.delete('Drive Entity', {'name': ['in', entity_names]})
+	for entity in entity_names:
+		frappe.delete_doc("Drive Entity", entity)
 
 
 @frappe.whitelist()

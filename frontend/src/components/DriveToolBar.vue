@@ -10,6 +10,7 @@
             class="text-sm h-8 w-full"
             @click="toggleDropdown()"
             iconRight="chevron-down"
+            :loading="actionLoading"
           >
             Actions
           </Button>
@@ -82,6 +83,10 @@ export default {
     columnHeaders: {
       type: Array,
       required: true,
+    },
+    actionLoading: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ['uploadFile'],
