@@ -1,5 +1,5 @@
 <template>
-  <NewDialog :options="{ title: 'Sharing options' }" v-model="open">
+  <Dialog :options="{ title: 'Sharing options' }" v-model="open">
     <template #dialog-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
         <div class="flex mt-5 text-xs text-gray-500">
@@ -108,17 +108,17 @@
         />
       </div>
     </template>
-  </NewDialog>
+  </Dialog>
 </template>
 <script>
-import { NewDialog, ErrorMessage, FeatherIcon, Button } from 'frappe-ui'
+import { Dialog, ErrorMessage, FeatherIcon, Button } from 'frappe-ui'
 import UserSearch from '@/components/UserSearch.vue'
 import Dropdown from '@/components/Dropdown.vue'
 
 export default {
   name: 'ShareDialog',
   components: {
-    NewDialog,
+    Dialog,
     ErrorMessage,
     FeatherIcon,
     Button,

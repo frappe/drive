@@ -1,5 +1,5 @@
 <template>
-  <NewDialog :options="{ title: ' ' }" v-model="open">
+  <Dialog :options="{ title: ' ' }" v-model="open">
     <template #dialog-content>
       <div class="text-2xl font-medium">{{ entity.title }}</div>
       <div class="grid grid-cols-[2fr_1fr] grid-rows-2 gap-5 mt-6 antialiased">
@@ -55,15 +55,15 @@
         </div>
       </div>
     </template>
-  </NewDialog>
+  </Dialog>
 </template>
 <script>
-import { NewDialog, FeatherIcon } from 'frappe-ui'
+import { Dialog, FeatherIcon } from 'frappe-ui'
 
 export default {
   name: 'DetailsDialog',
   components: {
-    NewDialog,
+    Dialog,
     FeatherIcon,
   },
   props: {

@@ -1,5 +1,5 @@
 <template>
-  <NewDialog :options="{ title: 'New Folder' }" v-model="open">
+  <Dialog :options="{ title: 'New Folder' }" v-model="open">
     <template #dialog-content>
       <Input
         type="text"
@@ -25,15 +25,15 @@
       </Button>
       <Button @click="open = false"> Cancel </Button>
     </template>
-  </NewDialog>
+  </Dialog>
 </template>
 <script>
-import { NewDialog, Input, ErrorMessage } from 'frappe-ui'
+import { Dialog, Input, ErrorMessage } from 'frappe-ui'
 
 export default {
   name: 'NewFolderDialog',
   components: {
-    NewDialog,
+    Dialog,
     Input,
     ErrorMessage,
   },
