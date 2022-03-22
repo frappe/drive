@@ -2,21 +2,31 @@
   <div
     class="mb-4 min-h-8 py-2 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0"
   >
-    <Breadcrumbs :breadcrumbLinks="breadcrumbs" />
+    <Breadcrumbs v-if="breadcrumbs" :breadcrumbLinks="breadcrumbs" />
     <div class="flex gap-3 basis-full lg:basis-auto">
-      <Dropdown :items="actionItems" class="basis-5/12 lg:basis-auto">
+      <Dropdown
+        v-if="actionItems"
+        :items="actionItems"
+        class="basis-5/12 lg:basis-auto"
+      >
         <template v-slot="{ toggleDropdown }">
           <Button
             class="text-sm h-8 w-full"
             @click="toggleDropdown()"
             iconRight="chevron-down"
             :loading="actionLoading"
+            :disabled="!actionItems.length > 0"
           >
             Actions
           </Button>
         </template>
       </Dropdown>
-      <Dropdown :items="orderByItems" right class="basis-5/12 lg:basis-auto">
+      <Dropdown
+        v-if="columnHeaders"
+        :items="orderByItems"
+        right
+        class="basis-5/12 lg:basis-auto"
+      >
         <template v-slot="{ toggleDropdown }">
           <div class="flex items-center whitespace-nowrap">
             <Button
@@ -49,6 +59,7 @@
         </template>
       </Dropdown>
       <Button
+        v-if="showUploadButton"
         class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto"
         type="primary"
         @click="$emit('uploadFile')"
@@ -74,15 +85,16 @@ export default {
   props: {
     breadcrumbs: {
       type: Array,
-      required: true,
     },
     actionItems: {
       type: Array,
-      required: true,
     },
     columnHeaders: {
       type: Array,
-      required: true,
+    },
+    showUploadButton: {
+      type: Boolean,
+      default: true,
     },
     actionLoading: {
       type: Boolean,
