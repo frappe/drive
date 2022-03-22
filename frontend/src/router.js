@@ -14,6 +14,11 @@ const routes = [
     props: true,
   },
   {
+    path: '/shared',
+    name: 'Shared',
+    component: () => import('@/pages/Shared.vue'),
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/pages/Login.vue'),

@@ -52,7 +52,9 @@ def get_shared_with_me():
 			DriveEntity.is_group,
 			DriveEntity.owner,
 			DriveEntity.modified,
+			DriveEntity.creation,
 			DriveEntity.file_size,
+			DriveEntity.mime_type,
 			DocShare.read,
 			DocShare.write,
 			DocShare.share
