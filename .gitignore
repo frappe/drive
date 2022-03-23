@@ -4,3 +4,5 @@
 *.swp
 tags
 drive/docs/current
+drive/public/frontend
+drive/www/drive.html

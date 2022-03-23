@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/assets/drive/frontend/ && yarn copy-html-entry",
+    "copy-html-entry": "cp ../drive/public/frontend/index.html ../drive/www/drive.html",
     "preview": "vite preview"
   },
   "dependencies": {
