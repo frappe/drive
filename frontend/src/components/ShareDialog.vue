@@ -135,6 +135,7 @@ export default {
       required: true,
     },
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       showUserSearch: false,

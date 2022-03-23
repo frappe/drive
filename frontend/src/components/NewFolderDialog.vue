@@ -47,7 +47,7 @@ export default {
       default: '',
     },
   },
-  emits: ['success'],
+  emits: ['update:modelValue', 'success'],
   data() {
     return {
       folderName: '',

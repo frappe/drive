@@ -48,7 +48,7 @@ export default {
       required: true,
     },
   },
-  emits: ['success'],
+  emits: ['update:modelValue', 'success'],
   data() {
     return {
       newName: '',
