@@ -1,51 +1,30 @@
 <template>
-  <div class="text-gray-900 antialiased flex h-screen w-screen">
+  <div class="flex h-screen w-screen text-gray-900 antialiased">
     <div
-      class="flex flex-1 max-h-full max-w-full"
+      class="h-full max-h-full w-full max-w-full flex-col"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }"
     >
-      <div class="flex flex-col flex-1 max-w-full h-full">
-        <Navbar
-          v-if="isLoggedIn"
-          :mobileSidebarIsOpen="mobileSidebarIsOpen"
-          @toggleMobileSidebar="mobileSidebarIsOpen = !mobileSidebarIsOpen"
-        />
-        <div v-if="isLoggedIn" class="flex flex-1 h-[calc(100%_-_4rem)]">
-          <div class="hidden md:flex w-64 ml-20 md:my-8">
-            <Sidebar />
-          </div>
-          <div class="flex-1 md:pr-20 md:my-8 overflow-x-hidden overflow-y-auto">
-            <router-view />
-          </div>
-        </div>
-        <router-view v-else />
-      </div>
-    </div>
-    <!-- Mobile Sidebar -->
-    <div v-if="mobileSidebarIsOpen" class="md:hidden fixed inset-0 z-20 flex">
-      <div class="w-auto bg-white flex flex-col">
-        <div class="border-b h-16 px-4 flex items-center">
-          <FrappeDriveLogo />
-        </div>
-        <div class="flex grow p-4">
-          <Sidebar
-            @toggleMobileSidebar="mobileSidebarIsOpen = !mobileSidebarIsOpen"
-          />
+      <Navbar
+        v-if="isLoggedIn"
+        :mobileSidebarIsOpen="showMobileSidebar"
+        @toggleMobileSidebar="showMobileSidebar = !showMobileSidebar"
+      />
+      <div v-if="isLoggedIn" class="flex h-[calc(100%_-_4rem)]">
+        <MobileSidebar v-model="showMobileSidebar" />
+        <div class="ml-20 hidden w-64 md:my-8 md:block"><Sidebar /></div>
+        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-8 md:pr-20">
+          <router-view />
         </div>
       </div>
-      <div
-        class="bg-black opacity-25 grow"
-        @click="mobileSidebarIsOpen = !mobileSidebarIsOpen"
-      ></div>
+      <router-view v-else />
     </div>
-    <!-- Mobile Sidebar -->
     <UploadTracker v-if="showUploadTracker" />
   </div>
 </template>
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Sidebar from '@/components/Sidebar.vue'
-import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
+import MobileSidebar from '@/components/MobileSidebar.vue'
 import UploadTracker from '@/components/UploadTracker.vue'
 
 export default {
@@ -53,12 +32,12 @@ export default {
   components: {
     Navbar,
     Sidebar,
-    FrappeDriveLogo,
+    MobileSidebar,
     UploadTracker,
   },
   data() {
     return {
-      mobileSidebarIsOpen: false,
+      showMobileSidebar: false,
     }
   },
   computed: {
