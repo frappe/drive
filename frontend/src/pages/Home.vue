@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import { computed } from 'vue'
 import { FeatherIcon } from 'frappe-ui'
 import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
@@ -76,6 +75,7 @@ import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
 import DetailsDialog from '@/components/DetailsDialog.vue'
+import { formatSize, formatDate } from '@/utils/format'
 
 export default {
   name: 'Home',
@@ -220,46 +220,6 @@ export default {
       this.showPreview = false
       this.previewEntity = null
     },
-    formatSize(size, nDigits = 1) {
-      if (size === 0) return '0 B'
-      const k = 1024
-      const digits = nDigits < 0 ? 0 : nDigits
-      const sizes = [' B', ' KB', ' MB', ' GB', ' TB', ' PB']
-      const i = Math.floor(Math.log(size) / Math.log(k))
-      return parseFloat((size / Math.pow(k, i)).toFixed(digits)) + sizes[i]
-    },
-    getDateDiffInDays(date1, date2) {
-      const msPerDay = 1000 * 60 * 60 * 24
-      const date1UTC = Date.UTC(
-        date1.getFullYear(),
-        date1.getMonth(),
-        date1.getDate()
-      )
-      const date2UTC = Date.UTC(
-        date2.getFullYear(),
-        date2.getMonth(),
-        date2.getDate()
-      )
-      return Math.floor((date1UTC - date2UTC) / msPerDay)
-    },
-    formatDate(date) {
-      date = new Date(date)
-      let todaysDate = new Date()
-      let prefix = ''
-      let options = {}
-      if (this.getDateDiffInDays(todaysDate, date) < 1) {
-        prefix = 'Today, '
-        options = { hour: 'numeric', minute: 'numeric' }
-      } else if (this.getDateDiffInDays(date, todaysDate) == 1) {
-        prefix = 'Yesterday, '
-        options = { hour: 'numeric', minute: 'numeric' }
-      } else if (this.getDateDiffInDays(date, todaysDate) < 364) {
-        options = { month: 'long', day: 'numeric' }
-      } else {
-        options = { year: 'numeric', month: 'long', day: 'numeric' }
-      }
-      return prefix + date.toLocaleString(undefined, options)
-    },
   },
   watch: {
     entityName(newEntityName) {
@@ -363,9 +323,9 @@ export default {
             entity.size_in_bytes = entity.file_size
             entity.file_size = entity.is_group
               ? '-'
-              : this.formatSize(entity.file_size)
-            entity.modified = this.formatDate(entity.modified)
-            entity.creation = this.formatDate(entity.creation)
+              : formatSize(entity.file_size)
+            entity.modified = formatDate(entity.modified)
+            entity.creation = formatDate(entity.creation)
             entity.owner = entity.owner === this.userId ? 'me' : entity.owner
           })
         },
