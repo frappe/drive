@@ -10,13 +10,16 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
     >
-      <DriveToolBar
-        :actionItems="actionItems"
-        :breadcrumbs="breadcrumbs"
-        :columnHeaders="columnHeaders"
-        @uploadFile="dropzone.hiddenFileInput.click()"
-        :actionLoading="actionLoading"
-      />
+      <template #toolbar>
+        <DriveToolBar
+          :actionItems="actionItems"
+          :breadcrumbs="breadcrumbs"
+          :columnHeaders="columnHeaders"
+          @uploadFile="dropzone.hiddenFileInput.click()"
+          :actionLoading="actionLoading"
+        />
+      </template>
+      <template #placeholder><NoFilesSection /></template>
     </ListView>
     <FilePreview
       v-if="showPreview"
@@ -58,6 +61,7 @@ import { FeatherIcon } from 'frappe-ui'
 import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
 import DriveToolBar from '@/components/DriveToolBar.vue'
+import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
@@ -72,6 +76,7 @@ export default {
     FeatherIcon,
     ListView,
     DriveToolBar,
+    NoFilesSection,
     FilePreview,
     NewFolderDialog,
     RenameDialog,
@@ -197,6 +202,7 @@ export default {
   methods: {
     openEntity(entity) {
       if (entity.is_group) {
+        this.selectedEntities = []
         this.$router.push({
           name: 'Folder',
           params: { entityName: entity.name },

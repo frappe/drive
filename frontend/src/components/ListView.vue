@@ -1,103 +1,102 @@
 <template>
-  <div class="h-full flex flex-col">
-    <table class="min-w-full max-h-full divide-y divide-gray-100">
+  <div class="flex h-full flex-col">
+    <table class="max-h-full min-w-full">
       <thead
-        class="shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100 sticky top-0 bg-white"
+        class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100"
       >
         <tr>
-          <td colspan="4" class="pt-2 md:pt-0"><slot></slot></td>
+          <td colspan="5" class="pt-2 md:pt-0"><slot name="toolbar"></slot></td>
         </tr>
-        <tr
-          v-if="folderContents && folderContents.length > 0"
-          class="text-base text-left text-gray-500"
-        >
-          <th class="hidden md:table-cell w-2/5 pl-20 pr-5 py-3.5 font-normal">
+        <tr v-if="!isEmpty" class="text-left text-base text-gray-500">
+          <th class="w-6 px-5">
+            <Input type="checkbox" class="invisible" />
+          </th>
+          <th
+            class="hidden px-2.5 py-3.5 pl-[2.125rem] font-normal md:table-cell"
+          >
             Name
           </th>
-          <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
-            Owner
-          </th>
-          <th class="hidden md:table-cell w-1/5 px-5 py-3.5 font-normal">
+          <th class="hidden px-2.5 py-3.5 font-normal lg:table-cell">Owner</th>
+          <th class="hidden px-2.5 py-3.5 font-normal md:table-cell">
             Modified
           </th>
-          <th class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal">
-            Size
-          </th>
+          <th class="hidden px-2.5 py-3.5 font-normal lg:table-cell">Size</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-100">
+      <tbody v-if="!isEmpty" class="divide-y divide-gray-100">
         <tr
           v-for="entity in folderContents"
           :key="entity.name"
-          class="text-base text-gray-500 select-none hover:bg-gray-50 group"
-          @click="this.$emit('openEntity', entity)"
+          class="group select-none text-base text-gray-500 hover:bg-gray-50"
         >
-          <td class="w-2/5 px-5 py-3.5 font-normal text-zinc-800">
+          <td class="w-6 px-5" @click="selectEntity(entity)">
+            <Input
+              type="checkbox"
+              :checked="entity.selected"
+              class="focus:ring-0 focus:ring-offset-0"
+              :class="
+                entity.selected ? 'visible' : 'group-hover:visible md:invisible'
+              "
+            />
+          </td>
+          <td
+            @click="this.$emit('openEntity', entity)"
+            class="min-w-[15rem] px-2.5 py-3.5 font-normal text-zinc-800 lg:w-2/5"
+          >
             <div class="flex items-center">
-              <div class="w-6">
-                <Input
-                  type="checkbox"
-                  :checked="entity.selected"
-                  class="focus:ring-0 focus:ring-offset-0"
-                  :class="
-                    entity.selected ? 'block' : 'md:hidden group-hover:block'
-                  "
-                  @click.stop="selectEntity(entity)"
-                />
-              </div>
-              <div class="px-2.5">
-                <FeatherIcon
-                  :name="entity.is_group ? 'folder' : 'file'"
-                  class="w-3.5 h-3.5 stroke-2 stroke-gray-400"
-                />
-              </div>
+              <FeatherIcon
+                :name="entity.is_group ? 'folder' : 'file'"
+                class="mr-2.5 h-3.5 w-3.5 stroke-gray-400 stroke-2"
+              />
               {{ entity.title }}
             </div>
           </td>
           <td
-            class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
+            @click="this.$emit('openEntity', entity)"
+            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5"
           >
             {{ entity.owner }}
           </td>
           <td
-            class="hidden md:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
+            @click="this.$emit('openEntity', entity)"
+            class="hidden w-36 truncate px-2.5 py-3.5 font-normal md:table-cell lg:w-1/5"
           >
             {{ entity.modified }}
           </td>
           <td
-            class="hidden lg:table-cell w-1/5 px-5 py-3.5 font-normal truncate"
+            @click="this.$emit('openEntity', entity)"
+            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5"
           >
             {{ entity.file_size }}
           </td>
         </tr>
       </tbody>
     </table>
-    <div
-      v-if="folderContents && folderContents.length === 0"
-      class="flex-1 flex justify-center items-center bg-neutral-50 rounded-lg"
-    >
-      <NoFilesSection />
+    <div v-if="isEmpty" class="flex-1">
+      <slot name="placeholder"></slot>
     </div>
   </div>
 </template>
 <script>
-import { FeatherIcon, Input } from 'frappe-ui'
-import NoFilesSection from '@/components/NoFilesSection.vue'
+import { Input, FeatherIcon } from 'frappe-ui'
 
 export default {
   name: 'ListView',
   components: {
-    FeatherIcon,
     Input,
-    NoFilesSection,
+    FeatherIcon,
   },
   props: {
     folderContents: {
       type: Array,
-      required: false,
     },
   },
   emits: ['entitySelected', 'openEntity'],
+  computed: {
+    isEmpty() {
+      return this.folderContents && this.folderContents.length === 0
+    },
+  },
   methods: {
     selectEntity(entity) {
       entity.selected = !entity.selected

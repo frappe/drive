@@ -10,11 +10,16 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
     >
-      <DriveToolBar
-        :actionItems="actionItems"
-        :breadcrumbs="breadcrumbs"
-        :showUploadButton="false"
-      />
+      <template #toolbar>
+        <DriveToolBar
+          :actionItems="actionItems"
+          :breadcrumbs="breadcrumbs"
+          :showUploadButton="false"
+        />
+      </template>
+      <template #placeholder>
+        <NoFilesSection secondaryMessage="No files have been shared with you" />
+      </template>
     </ListView>
     <FilePreview
       v-if="showPreview"
@@ -28,6 +33,7 @@
 import { FeatherIcon } from 'frappe-ui'
 import ListView from '@/components/ListView.vue'
 import DriveToolBar from '@/components/DriveToolBar.vue'
+import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import { formatSize, formatDate } from '@/utils/format'
@@ -38,6 +44,7 @@ export default {
     FeatherIcon,
     ListView,
     DriveToolBar,
+    NoFilesSection,
     FilePreview,
     FolderContentsError,
   },
