@@ -92,19 +92,17 @@ export default {
         cache: ['folderContents', this.userId],
         onSuccess(data) {
           this.$resources.folderContents.error = null
-          data.forEach((entity, index) => {
-            if (entity.is_group) {
-              data.splice(index, 1)
-            } else {
-              entity.size_in_bytes = entity.file_size
-              entity.file_size = entity.is_group
-                ? '-'
-                : formatSize(entity.file_size)
-              entity.modified = formatDate(entity.modified)
-              entity.creation = formatDate(entity.creation)
-              entity.owner = entity.owner === this.userId ? 'me' : entity.owner
-            }
+          data = data.filter((entity) => !entity.is_group)
+          data.forEach((entity) => {
+            entity.size_in_bytes = entity.file_size
+            entity.file_size = entity.is_group
+              ? '-'
+              : formatSize(entity.file_size)
+            entity.modified = formatDate(entity.modified)
+            entity.creation = formatDate(entity.creation)
+            entity.owner = entity.owner === this.userId ? 'me' : entity.owner
           })
+          this.$resources.folderContents.data = data
         },
         auto: true,
       }
