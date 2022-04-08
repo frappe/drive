@@ -167,7 +167,10 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title'):
 	:rtype: list
 	"""
 
-	entity_name = entity_name or get_user_directory().name
+	try:
+		entity_name = entity_name or get_user_directory().name
+	except FileNotFoundError:
+		return []
 	is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
 	if not is_group:
 		frappe.throw('Specified entity is not a folder', NotADirectoryError)
