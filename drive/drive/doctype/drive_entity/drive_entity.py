@@ -132,9 +132,10 @@ class DriveEntity(NestedSet):
 		)
 		if not has_share_permissions:
 			frappe.throw(f"You do not have permissions to unshare '{self.title}'")
+		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 		if self.is_group:
 			for child in self.get_children():
 				child.unshare(user)
-			frappe.share.remove('Drive Entity', self.name, user)
+			frappe.share.remove('Drive Entity', self.name, user, flags=flags)
 		else:
-			frappe.share.remove('Drive Entity', self.name, user)
+			frappe.share.remove('Drive Entity', self.name, user, flags=flags)
