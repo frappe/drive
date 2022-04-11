@@ -72,7 +72,7 @@ export default {
     return {
       dropdownItems: [
         {
-          label: 'Logout',
+          label: 'Log out',
           action: () => this.$store.dispatch('logout'),
         },
       ],
