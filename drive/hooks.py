@@ -9,6 +9,9 @@ app_color = "grey"
 app_email = "mituldavid@gmail.com"
 app_license = ""
 
+website_route_rules = [
+	{"from_route": "/drive/<path:app_path>", "to_route": "drive"},
+]
 # Includes in <head>
 # ------------------
 
