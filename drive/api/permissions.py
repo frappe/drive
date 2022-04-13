@@ -25,7 +25,7 @@ def get_shared_with_list(entity_name):
 	)
 	for user in users:
 		user_info = frappe.db.get_value("User", user.user, ["user_image", "full_name"], as_dict=True)
-		user |= user_info
+		user.update(user_info)
 	return users
 
 @frappe.whitelist()
