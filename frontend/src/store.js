@@ -18,9 +18,7 @@ const store = createStore({
     },
     user: {
       fullName: getCookies().full_name,
-      imageURL: getCookies().user_image
-        ? window.location.origin + getCookies().user_image
-        : null,
+      imageURL: getCookies().user_image,
     },
     uploads: [],
     sortOrder: JSON.parse(localStorage.getItem('sortOrder')) || {
