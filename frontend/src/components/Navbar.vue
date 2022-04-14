@@ -27,20 +27,17 @@
 
       <div class="flex items-center">
         <div class="relative ml-3">
-          <Dropdown :items="dropdownItems" right>
-            <template v-slot="{ toggleDropdown }">
-              <button
-                class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
-                id="user-menu"
-                aria-label="User menu"
-                aria-haspopup="true"
-                @click="toggleDropdown()"
-              >
-                <div class="flex items-center gap-4">
-                  <Avatar :label="fullName" :imageURL="imageURL" />
-                </div>
-              </button>
-            </template>
+          <Dropdown :options="dropdownItems" placement="right">
+            <button
+              class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
+              id="user-menu"
+              aria-label="User menu"
+              aria-haspopup="true"
+            >
+              <div class="flex items-center gap-4">
+                <Avatar :label="fullName" :imageURL="imageURL" />
+              </div>
+            </button>
           </Dropdown>
         </div>
       </div>
@@ -73,7 +70,7 @@ export default {
       dropdownItems: [
         {
           label: 'Log out',
-          action: () => this.$store.dispatch('logout'),
+          handler: () => this.$store.dispatch('logout'),
         },
       ],
     }

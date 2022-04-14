@@ -111,9 +111,8 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, ErrorMessage, FeatherIcon, Button } from 'frappe-ui'
+import { Dialog, ErrorMessage, FeatherIcon, Button, Dropdown } from 'frappe-ui'
 import UserSearch from '@/components/UserSearch.vue'
-import Dropdown from '@/components/Dropdown.vue'
 
 export default {
   name: 'ShareDialog',
