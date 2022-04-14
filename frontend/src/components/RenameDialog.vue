@@ -1,6 +1,6 @@
 <template>
-  <NewDialog :options="{ title: 'Rename' }" v-model="open">
-    <template #dialog-content>
+  <Dialog :options="{ title: 'Rename' }" v-model="open">
+    <template #body-content>
       <Input
         type="text"
         v-model="newName"
@@ -16,7 +16,7 @@
       />
       <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
-    <template #dialog-actions>
+    <template #actions>
       <Button
         type="primary"
         @click="$resources.rename.submit()"
@@ -26,15 +26,15 @@
       </Button>
       <Button @click="open = false"> Cancel </Button>
     </template>
-  </NewDialog>
+  </Dialog>
 </template>
 <script>
-import { NewDialog, Input, ErrorMessage } from 'frappe-ui'
+import { Dialog, Input, ErrorMessage } from 'frappe-ui'
 
 export default {
   name: 'RenameDialog',
   components: {
-    NewDialog,
+    Dialog,
     Input,
     ErrorMessage,
   },
