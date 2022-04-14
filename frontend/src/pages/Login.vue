@@ -24,7 +24,7 @@
         required
       />
       <ErrorMessage :message="errorMessage" class="mt-4" />
-      <Button class="mt-4" :loading="loading" @click="login" type="primary">
+      <Button class="mt-4 focus:ring-0 focus:ring-offset-0" :loading="loading" @click="login" appearance="primary">
         Submit
       </Button>
       <div class="mt-10 text-center border-t">

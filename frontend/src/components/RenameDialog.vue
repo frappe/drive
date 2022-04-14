@@ -18,7 +18,7 @@
     </template>
     <template #actions>
       <Button
-        type="primary"
+        appearance="primary"
         @click="$resources.rename.submit()"
         :loading="$resources.rename.loading"
       >

@@ -97,7 +97,7 @@
           <Button
             class="focus:ring-0 focus:ring-offset-0 absolute left-[calc(100%_-_1.75rem)]"
             icon="plus"
-            type="primary"
+            appearance="primary"
             @click="$resources.share.fetch()"
           />
         </div>

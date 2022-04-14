@@ -55,7 +55,7 @@
       <Button
         v-if="showUploadButton"
         class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto"
-        type="primary"
+        appearance="primary"
         @click="$emit('uploadFile')"
       >
         <span class="hidden md:inline">Upload</span>

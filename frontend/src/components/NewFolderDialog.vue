@@ -17,7 +17,7 @@
     </template>
     <template #actions>
       <Button
-        type="primary"
+        appearance="primary"
         @click="$resources.createFolder.submit()"
         :loading="$resources.createFolder.loading"
       >
