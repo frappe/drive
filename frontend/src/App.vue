@@ -1,5 +1,6 @@
 <template>
   <div class="flex h-screen w-screen text-gray-900 antialiased">
+    <UploadTracker v-if="showUploadTracker" />
     <div
       class="h-full max-h-full w-full max-w-full flex-col"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }"
@@ -18,7 +19,6 @@
       </div>
       <router-view v-else />
     </div>
-    <UploadTracker v-if="showUploadTracker" />
   </div>
 </template>
 <script>
