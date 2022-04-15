@@ -6,62 +6,56 @@
     <div class="flex gap-3 basis-full lg:basis-auto">
       <Dropdown
         v-if="actionItems"
-        :items="actionItems"
+        :options="actionItems"
         class="basis-5/12 lg:basis-auto"
       >
-        <template v-slot="{ toggleDropdown }">
-          <Button
-            class="text-sm h-8 w-full"
-            @click="toggleDropdown()"
-            iconRight="chevron-down"
-            :loading="actionLoading"
-            :disabled="!actionItems.length > 0"
-          >
-            Actions
-          </Button>
-        </template>
+        <Button
+          class="text-sm h-8 w-full"
+          iconRight="chevron-down"
+          :loading="actionLoading"
+          :disabled="!actionItems.length > 0"
+        >
+          Actions
+        </Button>
       </Dropdown>
       <Dropdown
         v-if="columnHeaders"
-        :items="orderByItems"
-        right
+        :options="orderByItems"
+        placement="right"
         class="basis-5/12 lg:basis-auto"
       >
-        <template v-slot="{ toggleDropdown }">
-          <div class="flex items-center whitespace-nowrap">
-            <Button
-              class="text-sm h-8 px-2 border-r border-slate-200 rounded-r-none"
-              @click="toggleAscending"
+        <div class="flex items-center whitespace-nowrap">
+          <Button
+            class="text-sm h-8 px-2 border-r border-slate-200 rounded-r-none"
+            @click.stop="toggleAscending"
+          >
+            <svg
+              class="h-4 w-4 stroke-current inline-block"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                class="h-4 w-4 stroke-current inline-block"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  :d="
-                    ascending
-                      ? 'M1.75 3.25h9m-9 4h6m-6 4h4m8.5-3.5l-2-2-2 2m2 4v-6'
-                      : 'M1.75 3.25h9m-9 4h6m-6 4h4m4.5-.5l2 2 2-2m-2 1v-6'
-                  "
-                  stroke-miterlimit="10"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>
-              </svg>
-            </Button>
-            <Button
-              class="text-sm h-8 rounded-l-none flex-1"
-              @click="toggleDropdown()"
-            >
-              Sort by {{ orderByLabel.toLowerCase() }}
-            </Button>
-          </div>
-        </template>
+              <path
+                :d="
+                  ascending
+                    ? 'M1.75 3.25h9m-9 4h6m-6 4h4m8.5-3.5l-2-2-2 2m2 4v-6'
+                    : 'M1.75 3.25h9m-9 4h6m-6 4h4m4.5-.5l2 2 2-2m-2 1v-6'
+                "
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </Button>
+          <Button
+            class="text-sm h-8 rounded-l-none flex-1"
+          >
+            Sort by {{ orderByLabel.toLowerCase() }}
+          </Button>
+        </div>
       </Dropdown>
       <Button
         v-if="showUploadButton"
         class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto"
-        type="primary"
+        appearance="primary"
         @click="$emit('uploadFile')"
       >
         <span class="hidden md:inline">Upload</span>
@@ -115,7 +109,7 @@ export default {
     orderByItems() {
       return this.columnHeaders.map((header) => ({
         ...header,
-        action: () => {
+        handler: () => {
           this.$store.commit('setSortOrder', {
             field: header.field,
             label: header.label,

@@ -23,7 +23,7 @@
         required
       />
       <ErrorMessage class="mt-4" :message="errorMessage" />
-      <Button class="mt-4" type="primary" :loading="loading">Submit</Button>
+      <Button class="mt-4 focus:ring-0 focus:ring-offset-0" :loading="loading" appearance="primary">Submit</Button>
       <div class="mt-10 text-center border-t">
         <div class="transform -translate-y-1/2">
           <span class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">OR</span>

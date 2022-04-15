@@ -1,6 +1,6 @@
 <template>
-  <NewDialog :options="{ title: 'New Folder' }" v-model="open">
-    <template #dialog-content>
+  <Dialog :options="{ title: 'New Folder' }" v-model="open">
+    <template #body-content>
       <Input
         type="text"
         v-model="folderName"
@@ -15,9 +15,9 @@
       />
       <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
-    <template #dialog-actions>
+    <template #actions>
       <Button
-        type="primary"
+        appearance="primary"
         @click="$resources.createFolder.submit()"
         :loading="$resources.createFolder.loading"
       >
@@ -25,15 +25,15 @@
       </Button>
       <Button @click="open = false"> Cancel </Button>
     </template>
-  </NewDialog>
+  </Dialog>
 </template>
 <script>
-import { NewDialog, Input, ErrorMessage } from 'frappe-ui'
+import { Dialog, Input, ErrorMessage } from 'frappe-ui'
 
 export default {
   name: 'NewFolderDialog',
   components: {
-    NewDialog,
+    Dialog,
     Input,
     ErrorMessage,
   },
