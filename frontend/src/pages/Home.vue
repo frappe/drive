@@ -116,7 +116,7 @@ export default {
       return [
         {
           label: 'New Folder',
-          action: () => {
+          handler: () => {
             this.showNewFolderDialog = true
           },
           isEnabled: () => {
@@ -125,7 +125,7 @@ export default {
         },
         {
           label: 'Delete',
-          action: () => {
+          handler: () => {
             this.actionLoading = true
             this.$resources.deleteEntities.submit()
           },
@@ -135,7 +135,7 @@ export default {
         },
         {
           label: 'Download',
-          action: () => {
+          handler: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
@@ -147,7 +147,7 @@ export default {
         },
         {
           label: 'Rename',
-          action: () => {
+          handler: () => {
             this.showRenameDialog = true
           },
           isEnabled: () => {
@@ -156,7 +156,7 @@ export default {
         },
         {
           label: 'Share',
-          action: () => {
+          handler: () => {
             this.showShareDialog = true
           },
           isEnabled: () => {
@@ -165,7 +165,7 @@ export default {
         },
         {
           label: 'Details',
-          action: () => {
+          handler: () => {
             this.showDetailsDialog = true
           },
           isEnabled: () => {

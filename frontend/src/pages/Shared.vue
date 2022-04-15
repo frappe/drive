@@ -62,7 +62,7 @@ export default {
       return [
         {
           label: 'Download',
-          action: () => {
+          handler: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
