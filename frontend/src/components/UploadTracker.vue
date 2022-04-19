@@ -1,7 +1,7 @@
 <template>
   <portal to="modals">
     <div class="fixed bottom-0 right-0 w-full p-6 sm:w-96">
-      <div class="rounded-lg shadow-lg">
+      <div class="rounded-lg bg-white shadow-lg">
         <div
           class="flex items-center justify-between rounded-sm bg-gray-50 p-4"
           :class="{ shadow: !collapsed }"
