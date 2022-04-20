@@ -7,6 +7,7 @@
       <Dropdown
         v-if="actionItems"
         :options="actionItems"
+        placement="left"
         class="basis-5/12 lg:basis-auto"
       >
         <Button
