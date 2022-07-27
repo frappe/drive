@@ -26,6 +26,7 @@ const store = createStore({
       field: 'title',
       ascending: true,
     },
+    view: 'grid',
   },
   getters: {
     isLoggedIn: (state) => {
@@ -60,6 +61,12 @@ const store = createStore({
     setSortOrder(state, payload) {
       localStorage.setItem('sortOrder', JSON.stringify(payload))
       state.sortOrder = payload
+    },
+    toggleGridView(state) {
+      state.view = 'grid'
+    },
+    toggleListView(state) {
+      state.view = 'list'
     },
   },
   actions: {

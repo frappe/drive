@@ -1,56 +1,39 @@
 <template>
   <div class="h-full">
-    <FolderContentsError
-      v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error"
-    />
-    <ListView
-      v-else
-      :folderContents="$resources.folderContents.data"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-    >
+    <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
+    <GridView v-else-if="$store.state.view === 'grid'">
       <template #toolbar>
-        <DriveToolBar
-          :actionItems="actionItems"
-          :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          @uploadFile="dropzone.hiddenFileInput.click()"
-          :actionLoading="actionLoading"
-        />
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
+          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading" />
       </template>
-      <template #placeholder><NoFilesSection /></template>
+      <template #placeholder>
+        <NoFilesSection />
+      </template>
+    </GridView>
+    <ListView v-else :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)" @openEntity="(entity) => openEntity(entity)">
+      <template #toolbar>
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
+          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading" />
+      </template>
+      <template #placeholder>
+        <NoFilesSection />
+      </template>
     </ListView>
-    <FilePreview
-      v-if="showPreview"
-      @hide="hidePreview"
-      :previewEntity="previewEntity"
-    />
-    <NewFolderDialog
-      v-model="showNewFolderDialog"
-      :parent="entityName"
-      @success="
-        () => {
-          $resources.folderContents.fetch()
-          showNewFolderDialog = false
-        }
-      "
-    />
-    <RenameDialog
-      v-model="showRenameDialog"
-      :entity="selectedEntities[0]"
-      @success="
-        () => {
-          $resources.folderContents.fetch()
-          showRenameDialog = false
-        }
-      "
-    />
-    <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
-      :entity="selectedEntities[0]"
-    />
+    <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
+    <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showNewFolderDialog = false
+      }
+    " />
+    <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showRenameDialog = false
+      }
+    " />
+    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entity="selectedEntities[0]" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -60,6 +43,7 @@
 import { FeatherIcon } from 'frappe-ui'
 import Dropzone from 'dropzone'
 import ListView from '@/components/ListView.vue'
+import GridView from '@/components/GridView.vue'
 import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
@@ -75,6 +59,7 @@ export default {
   components: {
     FeatherIcon,
     ListView,
+    GridView,
     DriveToolBar,
     NoFilesSection,
     FilePreview,
@@ -100,7 +85,7 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showDetailsDialog: false,
-    breadcrumbs: [{ label: 'Home', route: '/' }],
+    breadcrumbs: [{ label: 'All files', route: '/' }],
     actionLoading: false,
   }),
   computed: {

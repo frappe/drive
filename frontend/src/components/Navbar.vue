@@ -1,9 +1,9 @@
 <template>
   <nav class="bg-white border-b-2">
-    <div class="mx-auto px-5 md:px-4 z-10 h-16 flex items-center justify-between">
+    <div class="mx-auto py-2 px-5 md:pl-3 md:pr-5 h-16 md:h-12 z-10 flex items-center justify-between">
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block">
-          <FrappeDriveLogo class="h-5" />
+          <FrappeDriveLogo class="h-4" />
         </router-link>
         <div class="flex items-center md:hidden">
           <button
