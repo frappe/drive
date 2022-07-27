@@ -5,4 +5,7 @@
 tags
 drive/docs/current
 drive/public/frontend
+drive/public/node_modules
 drive/www/drive.html
+yarn.lock
+.yarn-integrity

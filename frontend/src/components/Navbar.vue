@@ -1,8 +1,6 @@
 <template>
-  <nav class="bg-white shadow">
-    <div
-      class="mx-auto px-5 md:px-20 z-10 h-16 flex items-center justify-between"
-    >
+  <nav class="bg-white border-b-2">
+    <div class="mx-auto px-5 md:px-4 z-10 h-16 flex items-center justify-between">
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block">
           <FrappeDriveLogo class="h-5" />
@@ -10,13 +8,8 @@
         <div class="flex items-center md:hidden">
           <button
             class="mr-5 inline-flex items-center justify-center text-gray-700 rounded-md focus:outline-none focus:shadow-outline-gray"
-            @click="$emit('toggleMobileSidebar')"
-          >
-            <FeatherIcon
-              v-if="!mobileSidebarIsOpen"
-              name="menu"
-              class="w-6 h-6"
-            />
+            @click="$emit('toggleMobileSidebar')">
+            <FeatherIcon v-if="!mobileSidebarIsOpen" name="menu" class="w-6 h-6" />
             <FeatherIcon v-else name="x" class="w-6 h-6" />
           </button>
           <router-link to="/">
@@ -30,10 +23,7 @@
           <Dropdown :options="dropdownItems" placement="right">
             <button
               class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
-              id="user-menu"
-              aria-label="User menu"
-              aria-haspopup="true"
-            >
+              id="user-menu" aria-label="User menu" aria-haspopup="true">
               <div class="flex items-center gap-4">
                 <Avatar :label="fullName" :imageURL="imageURL" />
               </div>

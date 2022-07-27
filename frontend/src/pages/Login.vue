@@ -17,7 +17,7 @@
       <Input
         label="Password"
         type="password"
-        placeholder="•••••"
+        placeholder="••••••••"
         v-model="password"
         name="password"
         autocomplete="current-password"
