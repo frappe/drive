@@ -1,7 +1,8 @@
 <template>
   <div class="h-full">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
-    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data">
+    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)" @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
           @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading" />
@@ -205,7 +206,7 @@ export default {
   watch: {
     entityName(newEntityName) {
       if (!newEntityName) {
-        this.breadcrumbs = [{ label: 'Home', route: '/' }]
+        this.breadcrumbs = [{ label: 'All files', route: '/' }]
       }
     },
   },
@@ -326,7 +327,7 @@ export default {
             if (index === 0) {
               const isHome = entity.owner === this.userId
               breadcrumbs.push({
-                label: isHome ? 'Home' : entity.title,
+                label: isHome ? 'All files' : entity.title,
                 route: isHome ? '/' : `/folder/${entity.name}`,
               })
             } else {
