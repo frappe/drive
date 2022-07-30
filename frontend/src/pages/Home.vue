@@ -86,7 +86,7 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showDetailsDialog: false,
-    breadcrumbs: [{ label: 'All files', route: '/' }],
+    breadcrumbs: [{ label: 'Home', route: '/' }],
     actionLoading: false,
   }),
   computed: {
@@ -206,7 +206,7 @@ export default {
   watch: {
     entityName(newEntityName) {
       if (!newEntityName) {
-        this.breadcrumbs = [{ label: 'All files', route: '/' }]
+        this.breadcrumbs = [{ label: 'Home', route: '/' }]
       }
     },
   },
@@ -327,7 +327,7 @@ export default {
             if (index === 0) {
               const isHome = entity.owner === this.userId
               breadcrumbs.push({
-                label: isHome ? 'All files' : entity.title,
+                label: isHome ? 'Home' : entity.title,
                 route: isHome ? '/' : `/folder/${entity.name}`,
               })
             } else {

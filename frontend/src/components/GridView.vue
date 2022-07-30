@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full" @click="deselectAll">
+    <div class="h-full flex flex-col" @click="deselectAll">
         <slot name="toolbar"></slot>
         <div v-if="isEmpty" class="flex-1">
             <slot name="placeholder"></slot>
@@ -7,32 +7,32 @@
         <div v-else>
             <div class="mt-7" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
-                <div class="grid grid-cols-7 gap-4 my-2">
-                    <div class="md:w-52 mt-1 rounded-lg border group select-none" v-for="folder in folders"
+                <div class="grid grid-cols-6 gap-6 my-3">
+                    <div class="md:w-60 mt-1 rounded-lg border group select-none" v-for="folder in folders"
                         :key="folder.name" @click="selectEntity(folder, $event)"
                         :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
-                        <div class="md:h-32 place-items-center grid">
+                        <div class="md:h-36 place-items-center grid">
                             <img src="/svgs/mime_types/folder.svg" />
                         </div>
                         <div class="px-3 pb-3">
-                            <h3 class="truncate text-lg font-medium">{{ folder.title }}</h3>
-                            <p class="truncate text-sm text-gray-600">{{ folder.modified }}</p>
+                            <h3 class="truncate text-xl font-medium">{{ folder.title }}</h3>
+                            <p class="truncate text-base text-gray-600 mt-1">{{ folder.modified }}</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="mt-7" v-if="files.length > 0">
                 <div class="text-gray-600 font-medium">Files</div>
-                <div class="grid grid-cols-7 gap-4 my-2">
-                    <div class="md:w-52 mt-1 rounded-lg border group select-none" v-for="file in files" :key="file.name"
+                <div class="grid grid-cols-6 gap-6 my-3">
+                    <div class="md:w-60 mt-1 rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }">
-                        <div class="md:h-32 place-items-center grid">
+                        <div class="md:h-36 place-items-center grid">
                             <img :src="getMimeTypeIcon(file.mime_type)" />
                         </div>
                         <div class="px-3 pb-3">
-                            <h3 class="truncate text-lg font-medium">{{ file.title }}</h3>
-                            <div class="truncate text-sm text-gray-600 flex ">
-                                <img :src="getMimeTypeIcon(file.mime_type)" class="h-4 mr-1" />
+                            <h3 class="truncate text-xl font-medium">{{ file.title }}</h3>
+                            <div class="truncate text-base text-gray-600 flex mt-1">
+                                <img :src="getMimeTypeIcon(file.mime_type)" class="h-5 mr-1" />
                                 <p>{{ getFileSubtitle(file) }}</p>
                             </div>
                         </div>

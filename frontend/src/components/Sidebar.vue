@@ -26,7 +26,7 @@ export default {
     sidebarItems() {
       return [
         {
-          label: 'All Files',
+          label: 'Home',
           route: '/',
           icon: 'hard-drive',
           highlight: () => {
