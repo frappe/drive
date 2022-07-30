@@ -8,17 +8,13 @@
             <div class="mt-7" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
                 <div class="grid grid-cols-7 gap-4 my-2">
-                    <div class="md:w-52 mt-1 rounded-lg border group" v-for="folder in folders" :key="folder.name"
-                        @click="selectEntity(folder, $event)"
+                    <div class="md:w-52 mt-1 rounded-lg border group select-none" v-for="folder in folders"
+                        :key="folder.name" @click="selectEntity(folder, $event)"
                         :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
-                        <div class="h-7 pt-3">
-                            <FeatherIcon name="more-horizontal" :strokeWidth="2"
-                                class="w-4 h-4 row-span-1 text-gray-700 mr-4 ml-auto hidden group-hover:block" />
+                        <div class="md:h-32 place-items-center grid">
+                            <img src="/svgs/mime_types/folder.svg" />
                         </div>
-                        <div class="md:h-28 place-items-center grid">
-                            <Folder />
-                        </div>
-                        <div class="p-3">
+                        <div class="px-3 pb-3">
                             <h3 class="truncate text-lg font-medium">{{ folder.title }}</h3>
                             <p class="truncate text-sm text-gray-600">{{ folder.modified }}</p>
                         </div>
@@ -28,17 +24,17 @@
             <div class="mt-7" v-if="files.length > 0">
                 <div class="text-gray-600 font-medium">Files</div>
                 <div class="grid grid-cols-7 gap-4 my-2">
-                    <div class="md:w-52 mt-1 rounded-lg border group" v-for="file in files" :key="file.name"
+                    <div class="md:w-52 mt-1 rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }">
-                        <div class="h-7 pt-3">
-                            <FeatherIcon name="more-horizontal" :strokeWidth="2"
-                                class="w-4 h-4 row-span-1 text-gray-700 mr-4 ml-auto hidden group-hover:block" />
+                        <div class="md:h-32 place-items-center grid">
+                            <img :src="getMimeTypeIcon(file.mime_type)" />
                         </div>
-                        <div class="md:h-32">
-                        </div>
-                        <div class="p-3">
+                        <div class="px-3 pb-3">
                             <h3 class="truncate text-lg font-medium">{{ file.title }}</h3>
-                            <p class="truncate text-sm text-gray-600">{{ getFileSubtitle(file) }}</p>
+                            <div class="truncate text-sm text-gray-600 flex ">
+                                <img :src="getMimeTypeIcon(file.mime_type)" class="h-4 mr-1" />
+                                <p>{{ getFileSubtitle(file) }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,13 +45,11 @@
 
 <script>
 import { FeatherIcon } from 'frappe-ui'
-import Folder from '../assets/svgs/folder.vue';
 
 export default {
     name: 'GridView',
     components: {
         FeatherIcon,
-        Folder
     },
     data() {
         return {
@@ -86,7 +80,9 @@ export default {
     },
     methods: {
         getFileSubtitle(file) {
-            const fileType = file.mime_type.split('/')[1]
+            const mimeTypeArr = file.mime_type.split('/')
+            const generics = ["image", "video", "audio"]
+            const fileType = generics.includes(mimeTypeArr[0]) ? mimeTypeArr[0] : mimeTypeArr[1]
             return `${fileType.charAt(0).toUpperCase() + fileType.slice(1)} ∙ ${file.modified}`
         },
         selectEntity(entity, event) {
@@ -107,6 +103,18 @@ export default {
             this.selectedEntities = []
             this.$emit('entitySelected', this.selectedEntities)
         },
+        getMimeTypeIcon(mimeType) {
+            const image = new Image()
+            const path = '/svgs/mime_types/';
+            const mimeTypeArr = mimeType.split('/')
+            let file = path + mimeTypeArr.join('-') + ".svg"
+            image.src = file;
+            if (image.width) return file;
+            file = path + mimeTypeArr[0] + ".svg"
+            image.src = file;
+            if (image.width) return file;
+            return path + "unknown.svg";
+        }
     }
 }
 </script>
