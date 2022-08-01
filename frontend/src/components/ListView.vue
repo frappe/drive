@@ -21,9 +21,10 @@
         <tr v-for="entity in folderContents" :key="entity.name"
           class="group select-none text-base text-gray-500 hover:bg-gray-50">
           <td class="w-6 px-5" @click="selectEntity(entity)">
-            <Input type="checkbox" :checked="entity.selected" class="focus:ring-0 focus:ring-offset-0" :class="
-              entity.selected ? 'visible' : 'group-hover:visible md:invisible'
-            " />
+            <Input type="checkbox" :checked="selectedEntities.includes(entity)" class="focus:ring-0 focus:ring-offset-0"
+              :class="
+                selectedEntities.includes(entity) ? 'visible' : 'group-hover:visible md:invisible'
+              " />
           </td>
           <td @click="this.$emit('openEntity', entity)"
             class="min-w-[15rem] px-2.5 py-3.5 font-normal text-zinc-800 lg:w-2/5">
@@ -66,6 +67,9 @@ export default {
     folderContents: {
       type: Array,
     },
+    selectedEntities: {
+      type: Array,
+    },
   },
   emits: ['entitySelected', 'openEntity'],
   computed: {
@@ -75,10 +79,9 @@ export default {
   },
   methods: {
     selectEntity(entity) {
-      entity.selected = !entity.selected
-      const selectedEntities = this.folderContents.filter(
-        (entity) => entity.selected
-      )
+      let selectedEntities = this.selectedEntities
+      const index = selectedEntities.indexOf(entity)
+      index > -1 ? selectedEntities.splice(index, 1) : selectedEntities.push(entity)
       this.$emit('entitySelected', selectedEntities)
     },
   },

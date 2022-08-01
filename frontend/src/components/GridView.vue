@@ -51,13 +51,11 @@ export default {
     components: {
         FeatherIcon,
     },
-    data() {
-        return {
-            selectedEntities: []
-        }
-    },
     props: {
         folderContents: {
+            type: Array,
+        },
+        selectedEntities: {
             type: Array,
         },
     },
@@ -88,21 +86,20 @@ export default {
         },
         selectEntity(entity, event) {
             event.stopPropagation()
+            let selectedEntities = this.selectedEntities
             if (event.ctrlKey) {
-                const index = this.selectedEntities.indexOf(entity)
-                if (index > -1) this.selectedEntities.splice(index, 1)
-                else this.selectedEntities.push(entity)
+                const index = selectedEntities.indexOf(entity)
+                index > -1 ? selectedEntities.splice(index, 1) : selectedEntities.push(entity)
             }
             else {
-                if (this.selectedEntities.length === 1 && this.selectedEntities[0] === entity)
+                if (selectedEntities.length === 1 && selectedEntities[0] === entity)
                     this.$emit('openEntity', entity)
-                else this.selectedEntities = [entity]
+                else selectedEntities = [entity]
             }
-            this.$emit('entitySelected', this.selectedEntities)
+            this.$emit('entitySelected', selectedEntities)
         },
         deselectAll() {
-            this.selectedEntities = []
-            this.$emit('entitySelected', this.selectedEntities)
+            this.$emit('entitySelected', [])
         },
         getMimeTypeIcon(mimeType) {
             const image = new Image()
