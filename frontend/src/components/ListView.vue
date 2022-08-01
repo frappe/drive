@@ -76,7 +76,7 @@ export default {
   methods: {
     selectEntity(entity) {
       entity.selected = !entity.selected
-      let selectedEntities = this.folderContents.filter(
+      const selectedEntities = this.folderContents.filter(
         (entity) => entity.selected
       )
       this.$emit('entitySelected', selectedEntities)

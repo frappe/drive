@@ -1,10 +1,10 @@
 <template>
-    <div class="h-full flex flex-col" @click="deselectAll">
+    <div class="h-full flex flex-col">
         <slot name="toolbar"></slot>
         <div v-if="isEmpty" class="flex-1">
             <slot name="placeholder"></slot>
         </div>
-        <div v-else>
+        <div v-else class="h-full" @click="deselectAll">
             <div class="mt-7" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
                 <div class="grid grid-cols-6 gap-6 my-3">
@@ -78,6 +78,7 @@ export default {
             return files
         }
     },
+    emits: ['entitySelected', 'openEntity'],
     methods: {
         getFileSubtitle(file) {
             const mimeTypeArr = file.mime_type.split('/')
