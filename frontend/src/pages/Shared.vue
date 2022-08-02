@@ -1,37 +1,34 @@
 <template>
   <div class="h-full flex flex-col">
-    <FolderContentsError
-      v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error"
-    />
-    <ListView
-      v-else
-      :folderContents="$resources.folderContents.data"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-    >
+    <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
+    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
+      @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
-        <DriveToolBar
-          :actionItems="actionItems"
-          :breadcrumbs="breadcrumbs"
-          :showUploadButton="false"
-        />
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="false" />
+      </template>
+      <template #placeholder>
+        <NoFilesSection secondaryMessage="No files have been shared with you" />
+      </template>
+    </GridView>
+    <ListView v-else :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
+      @openEntity="(entity) => openEntity(entity)">
+      <template #toolbar>
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="false" />
       </template>
       <template #placeholder>
         <NoFilesSection secondaryMessage="No files have been shared with you" />
       </template>
     </ListView>
-    <FilePreview
-      v-if="showPreview"
-      @hide="hidePreview"
-      :previewEntity="previewEntity"
-    />
+    <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
   </div>
 </template>
 
 <script>
 import { FeatherIcon } from 'frappe-ui'
 import ListView from '@/components/ListView.vue'
+import GridView from '@/components/GridView.vue'
 import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
@@ -43,6 +40,7 @@ export default {
   components: {
     FeatherIcon,
     ListView,
+    GridView,
     DriveToolBar,
     NoFilesSection,
     FilePreview,
@@ -92,7 +90,7 @@ export default {
         cache: ['folderContents', this.userId],
         onSuccess(data) {
           this.$resources.folderContents.error = null
-          data = data.filter((entity) => !entity.is_group)
+          // data = data.filter((entity) => !entity.is_group)
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size
             entity.file_size = entity.is_group

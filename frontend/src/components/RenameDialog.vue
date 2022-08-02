@@ -1,30 +1,22 @@
 <template>
   <Dialog :options="{ title: 'Rename' }" v-model="open">
     <template #body-content>
-      <Input
-        type="text"
-        v-model="newName"
-        placeholder="New name"
-        @keydown.enter="
-          (e) =>
-            $resources.rename.submit({
-              method: 'rename',
-              entity_name: entityName,
-              new_title: e.target.value.trim(),
-            })
-        "
-      />
+      <Input type="text" v-model="newName" placeholder="New name" @keydown.enter="
+        (e) =>
+          $resources.rename.submit({
+            method: 'rename',
+            entity_name: entityName,
+            new_title: e.target.value.trim(),
+          })
+      " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
-    </template>
-    <template #actions>
-      <Button
-        appearance="primary"
-        @click="$resources.rename.submit()"
-        :loading="$resources.rename.loading"
-      >
-        Rename
-      </Button>
-      <Button @click="open = false"> Cancel </Button>
+      <div class="flex mt-5">
+        <Button @click="open = false" class="ml-auto"> Cancel </Button>
+        <Button appearance="primary" class="ml-4" @click="$resources.rename.submit()"
+          :loading="$resources.rename.loading">
+          Rename
+        </Button>
+      </div>
     </template>
   </Dialog>
 </template>
