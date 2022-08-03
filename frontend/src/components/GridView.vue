@@ -66,13 +66,13 @@ export default {
         folders() {
             let folders = []
             if (this.folderContents)
-                folders = this.folderContents.filter(x => x.is_group === 1)
+                folders = this.folderContents.filter(x => x.is_group === 1 && x.title.toLowerCase().includes(this.$store.state.search.toLowerCase()))
             return folders
         },
         files() {
             let files = []
             if (this.folderContents)
-                files = this.folderContents.filter(x => x.is_group === 0)
+                files = this.folderContents.filter(x => x.is_group === 0 && x.title.toLowerCase().includes(this.$store.state.search.toLowerCase()))
             return files
         }
     },

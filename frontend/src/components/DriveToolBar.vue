@@ -26,9 +26,9 @@
       </Dropdown>
       <Button icon="info"></Button>
       <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5">
-        <Button icon="grid" @click="$store.commit('toggleGridView')"
+        <Button icon="grid" @click="$store.commit('toggleView', 'grid')"
           :style="[$store.state.view === 'grid' && { 'background': '#FFF' }]"></Button>
-        <Button icon="list" @click="$store.commit('toggleListView')"
+        <Button icon="list" @click="$store.commit('toggleView', 'list')"
           :style="[$store.state.view === 'list' && { 'background': '#FFF' }]"></Button>
       </div>
       <Button v-if="showUploadButton" class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto" appearance="primary"

@@ -1,5 +1,5 @@
-import { createStore } from 'vuex'
-import { call } from 'frappe-ui'
+import { createStore } from 'vuex';
+import { call } from 'frappe-ui';
 
 let getCookies = () => {
   return Object.fromEntries(
@@ -7,8 +7,8 @@ let getCookies = () => {
       .split('; ')
       .map((cookie) => cookie.split('='))
       .map((entry) => [entry[0], decodeURIComponent(entry[1])])
-  )
-}
+  );
+};
 
 const store = createStore({
   state: {
@@ -27,79 +27,80 @@ const store = createStore({
       ascending: true,
     },
     view: 'grid',
+    search: '',
   },
   getters: {
     isLoggedIn: (state) => {
-      return state.auth.user_id && state.auth.user_id !== 'Guest'
+      return state.auth.user_id && state.auth.user_id !== 'Guest';
     },
     uploadsInProgress: (state) => {
-      return state.uploads.filter((upload) => !upload.completed)
+      return state.uploads.filter((upload) => !upload.completed);
     },
     uploadsCompleted: (state) => {
-      return state.uploads.filter((upload) => upload.completed)
+      return state.uploads.filter((upload) => upload.completed);
     },
   },
   mutations: {
     setAuth(state, auth) {
-      Object.assign(state.auth, auth)
+      Object.assign(state.auth, auth);
     },
     setUser(state, user) {
-      Object.assign(state.user, user)
+      Object.assign(state.user, user);
     },
     setUploads(state, uploads) {
-      state.uploads = uploads
+      state.uploads = uploads;
     },
     pushToUploads(state, upload) {
-      state.uploads.push(upload)
+      state.uploads.push(upload);
     },
     updateUpload(state, payload) {
       let index = state.uploads.findIndex(
         (upload) => upload.uuid == payload.uuid
-      )
-      Object.assign(state.uploads[index], payload)
+      );
+      Object.assign(state.uploads[index], payload);
     },
     setSortOrder(state, payload) {
-      localStorage.setItem('sortOrder', JSON.stringify(payload))
-      state.sortOrder = payload
+      localStorage.setItem('sortOrder', JSON.stringify(payload));
+      state.sortOrder = payload;
     },
-    toggleGridView(state) {
-      state.view = 'grid'
+    toggleView(state, payload) {
+      state.view = payload;
     },
-    toggleListView(state) {
-      state.view = 'list'
+    setSearch(state, payload) {
+      state.search = payload;
     },
   },
   actions: {
     async login({ commit }, payload) {
-      commit('setAuth', { loading: true })
+      commit('setAuth', { loading: true });
       let res = await call('login', {
         usr: payload.email,
         pwd: payload.password,
-      })
+      });
       if (res) {
         commit('setAuth', {
           loading: false,
           user_id: getCookies().user_id,
-        })
+        });
         commit('setUser', {
           fullName: getCookies().full_name,
           imageURL: getCookies().user_image
             ? window.location.origin + getCookies().user_image
             : null,
-        })
-        return res
+        });
+        return res;
       }
-      return false
+      return false;
     },
     async logout({ commit }) {
-      commit('setAuth', { loading: true })
-      await call('logout')
-      window.location.reload()
+      commit('setAuth', { loading: true });
+      await call('logout');
+      window.location.reload();
     },
     clearUploads({ commit }) {
-      commit('setUploads', [])
+      commit('setUploads', []);
     },
   },
-})
+});
 
-export default store
+export default store;

@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody v-if="!isEmpty" class="divide-y divide-gray-100">
-        <tr v-for="entity in folderContents" :key="entity.name"
+        <tr v-for="entity in filteredContents" :key="entity.name"
           class="group select-none text-base text-gray-500 hover:bg-gray-50">
           <td class="w-6 px-5" @click="selectEntity(entity)">
             <Input type="checkbox" :checked="selectedEntities.includes(entity)" class="focus:ring-0 focus:ring-offset-0"
@@ -73,8 +73,11 @@ export default {
   },
   emits: ['entitySelected', 'openEntity'],
   computed: {
+    filteredContents() {
+      return this.folderContents.filter(x => x.title.toLowerCase().includes(this.$store.state.search.toLowerCase()))
+    },
     isEmpty() {
-      return this.folderContents && this.folderContents.length === 0
+      return this.filteredContents && this.filteredContents.length === 0
     },
   },
   methods: {
