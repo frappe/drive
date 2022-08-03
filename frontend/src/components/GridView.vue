@@ -45,6 +45,7 @@
 
 <script>
 import { FeatherIcon } from 'frappe-ui'
+import { getFilteredEntities } from '../utils/fuzzySearcher'
 
 export default {
     name: 'GridView',
@@ -64,15 +65,15 @@ export default {
             return this.folderContents && this.folderContents.length === 0
         },
         folders() {
-            let folders = []
-            if (this.folderContents)
-                folders = this.folderContents.filter(x => x.is_group === 1 && x.title.toLowerCase().includes(this.$store.state.search.toLowerCase()))
+            const folders = this.folderContents ? this.folderContents.filter(x => x.is_group === 1) : []
+            if (this.$store.state.search)
+                return getFilteredEntities(this.$store.state.search, folders)
             return folders
         },
         files() {
-            let files = []
-            if (this.folderContents)
-                files = this.folderContents.filter(x => x.is_group === 0 && x.title.toLowerCase().includes(this.$store.state.search.toLowerCase()))
+            const files = this.folderContents ? this.folderContents.filter(x => x.is_group === 0) : []
+            if (this.$store.state.search)
+                return getFilteredEntities(this.$store.state.search, files)
             return files
         }
     },

@@ -56,6 +56,7 @@
 </template>
 <script>
 import { Input, FeatherIcon } from 'frappe-ui'
+import { getFilteredEntities } from '../utils/fuzzySearcher'
 
 export default {
   name: 'ListView',
@@ -74,7 +75,10 @@ export default {
   emits: ['entitySelected', 'openEntity'],
   computed: {
     filteredContents() {
-      return this.folderContents.filter(x => x.title.toLowerCase().includes(this.$store.state.search.toLowerCase()))
+      const entities = this.folderContents ? this.folderContents : []
+      if (this.$store.state.search)
+        return getFilteredEntities(this.$store.state.search, entities)
+      return entities
     },
     isEmpty() {
       return this.filteredContents && this.filteredContents.length === 0
