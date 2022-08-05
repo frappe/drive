@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import store from './store'
+import { createRouter, createWebHistory } from 'vue-router';
+import store from './store';
 
 const routes = [
   {
@@ -34,27 +34,32 @@ const routes = [
       isPublicRoute: true,
     },
   },
-]
+  {
+    path: '/trash',
+    name: 'Trash',
+    component: () => import('@/pages/Trash.vue'),
+  },
+];
 
 let router = createRouter({
   history: createWebHistory('/drive'),
   routes,
-})
+});
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.isPublicRoute)) {
     if (store.getters.isLoggedIn) {
-      next({ name: 'Home' })
+      next({ name: 'Home' });
     } else {
-      next()
+      next();
     }
   } else {
     if (store.getters.isLoggedIn) {
-      next()
+      next();
     } else {
-      next('/login')
+      next('/login');
     }
   }
-})
+});
 
-export default router
+export default router;

@@ -24,7 +24,7 @@
           </Button>
         </div>
       </Dropdown>
-      <Button icon="info"></Button>
+      <Button v-if="showViewButton" icon="info"></Button>
       <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5">
         <Button icon="grid" @click="$store.commit('toggleView', 'grid')"
           :style="[$store.state.view === 'grid' && { 'background': '#FFF' }]"></Button>
@@ -62,6 +62,10 @@ export default {
       type: Array,
     },
     showUploadButton: {
+      type: Boolean,
+      default: true,
+    },
+    showViewButton: {
       type: Boolean,
       default: true,
     },
