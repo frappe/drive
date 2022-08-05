@@ -10,7 +10,7 @@
           })
       " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
-      <div class="flex mt-5">
+      <div class="flex mt-8">
         <Button @click="open = false" class="ml-auto"> Cancel </Button>
         <Button appearance="primary" class="ml-4" @click="$resources.rename.submit()"
           :loading="$resources.rename.loading">

@@ -23,6 +23,12 @@
                 <NoFilesSection />
             </template>
         </ListView>
+        <DeleteDialog v-model="showDeleteDialog" :entities="selectedEntities" @success="
+            () => {
+                $resources.folderContents.fetch()
+                showDeleteDialog = false
+            }
+        " />
         <div />
     </div>
 </template>
@@ -32,6 +38,7 @@ import DriveToolBar from '@/components/DriveToolBar.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import GridView from '@/components/GridView.vue'
 import ListView from '@/components/ListView.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import { formatDate, formatSize } from '@/utils/format'
 import { FeatherIcon } from 'frappe-ui'
@@ -43,6 +50,7 @@ export default {
         ListView,
         GridView,
         DriveToolBar,
+        DeleteDialog,
         NoFilesSection,
         FolderContentsError,
     },
@@ -50,6 +58,7 @@ export default {
         selectedEntities: [],
         breadcrumbs: [{ label: 'Trash', route: '/trash' }],
         actionLoading: false,
+        showDeleteDialog: false,
     }),
     computed: {
         userId() {
@@ -74,8 +83,7 @@ export default {
                 {
                     label: 'Delete Forever',
                     handler: () => {
-                        this.actionLoading = true
-                        this.$resources.deleteEntities.submit()
+                        this.showDeleteDialog = true
                     },
                     isEnabled: () => {
                         return this.selectedEntities.length > 0
@@ -149,21 +157,6 @@ export default {
                     })
                 },
                 auto: true,
-            }
-        },
-        deleteEntities() {
-            return {
-                method: 'drive.api.files.delete_entities',
-                params: {
-                    entity_names: JSON.stringify(
-                        this.selectedEntities.map((entity) => entity.name)
-                    ),
-                },
-                onSuccess() {
-                    this.actionLoading = false
-                    this.$resources.folderContents.fetch()
-                    this.selectedEntities = []
-                },
             }
         },
     },

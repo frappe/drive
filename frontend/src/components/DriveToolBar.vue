@@ -31,7 +31,7 @@
         <Button icon="list" @click="$store.commit('toggleView', 'list')"
           :style="[$store.state.view === 'list' && { 'background': '#FFF' }]"></Button>
       </div>
-      <Button v-if="showUploadButton" class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto" appearance="primary"
+      <Button v-if="showUploadButton" class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto" appearance="primary" iconLeft="upload"
         @click="$emit('uploadFile')">
         <span class="hidden md:inline">Upload</span>
         <span class="md:hidden text-4xl font-light">+</span>

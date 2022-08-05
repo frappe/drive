@@ -38,6 +38,12 @@
         showRenameDialog = false
       }
     " />
+    <RemoveDialog v-model="showRemoveDialog" :entities="selectedEntities" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showRemoveDialog = false
+      }
+    " />
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entity="selectedEntities[0]" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
@@ -56,6 +62,7 @@ import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
 import DetailsDialog from '@/components/DetailsDialog.vue'
+import RemoveDialog from '@/components/RemoveDialog.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
@@ -72,6 +79,7 @@ export default {
     RenameDialog,
     ShareDialog,
     DetailsDialog,
+    RemoveDialog,
     FolderContentsError,
   },
   props: {
@@ -90,6 +98,7 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showDetailsDialog: false,
+    showRemoveDialog: false,
     breadcrumbs: [{ label: 'Home', route: '/' }],
     actionLoading: false,
   }),
@@ -111,16 +120,6 @@ export default {
           },
           isEnabled: () => {
             return this.selectedEntities.length === 0
-          },
-        },
-        {
-          label: 'Delete',
-          handler: () => {
-            this.actionLoading = true
-            this.$resources.deleteEntities.submit()
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length > 0
           },
         },
         {
@@ -160,6 +159,17 @@ export default {
           },
           isEnabled: () => {
             return this.selectedEntities.length === 1
+          },
+        },
+        {
+          label: 'Remove',
+          handler: () => {
+            this.showRemoveDialog = true
+            // this.actionLoading = true
+            // this.$resources.deleteEntities.submit()
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0
           },
         },
       ].filter((item) => item.isEnabled())
