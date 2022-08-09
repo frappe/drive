@@ -363,21 +363,6 @@ export default {
         auto: Boolean(this.entityName),
       }
     },
-    deleteEntities() {
-      return {
-        method: 'drive.api.files.delete_entities',
-        params: {
-          entity_names: JSON.stringify(
-            this.selectedEntities.map((entity) => entity.name)
-          ),
-        },
-        onSuccess() {
-          this.actionLoading = false
-          this.$resources.folderContents.fetch()
-          this.selectedEntities = []
-        },
-      }
-    },
   },
 }
 </script>

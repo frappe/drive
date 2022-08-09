@@ -23,13 +23,14 @@
                 <NoFilesSection />
             </template>
         </ListView>
-        <DeleteDialog v-model="showDeleteDialog" :entities="selectedEntities" @success="
-            () => {
-                $resources.folderContents.fetch()
-                showDeleteDialog = false
-                selectedEntities = []
-            }
-        " />
+        <DeleteDialog v-model="showDeleteDialog"
+            :entities="selectedEntities.length > 0 ? selectedEntities : $resources.folderContents.data" @success="
+                () => {
+                    $resources.folderContents.fetch()
+                    showDeleteDialog = false
+                    selectedEntities = []
+                }
+            " />
         <RestoreDialog v-model="showRestoreDialog" :entities="selectedEntities" @success="
             () => {
                 $resources.folderContents.fetch()
@@ -85,10 +86,10 @@ export default {
                 {
                     label: 'Empty Trash',
                     handler: () => {
-                        console.log("Hello");
+                        this.showDeleteDialog = true
                     },
                     isEnabled: () => {
-                        return this.selectedEntities.length === 0
+                        return this.selectedEntities.length === 0 && this.$resources.folderContents.data?.length > 0
                     },
                 },
                 {
