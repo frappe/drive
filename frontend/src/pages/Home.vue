@@ -36,12 +36,14 @@
       () => {
         $resources.folderContents.fetch()
         showRenameDialog = false
+        selectedEntities = []
       }
     " />
     <RemoveDialog v-model="showRemoveDialog" :entities="selectedEntities" @success="
       () => {
         $resources.folderContents.fetch()
         showRemoveDialog = false
+        selectedEntities = []
       }
     " />
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entity="selectedEntities[0]" />
@@ -165,8 +167,6 @@ export default {
           label: 'Remove',
           handler: () => {
             this.showRemoveDialog = true
-            // this.actionLoading = true
-            // this.$resources.deleteEntities.submit()
           },
           isEnabled: () => {
             return this.selectedEntities.length > 0
@@ -311,6 +311,7 @@ export default {
             'file_size',
             'mime_type',
             'creation',
+            'general_access',
           ],
         },
         onSuccess(data) {

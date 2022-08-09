@@ -142,3 +142,4 @@ class DriveEntity(NestedSet):
 			frappe.share.remove('Drive Entity', self.name, user, flags=flags)
 		else:
 			frappe.share.remove('Drive Entity', self.name, user, flags=flags)
+

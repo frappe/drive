@@ -154,7 +154,7 @@ def get_file_content(entity_name, trigger_download=0):
 
 
 @frappe.whitelist()
-def list_folder_contents(entity_name=None, fields=None, order_by='title'):
+def list_folder_contents(entity_name=None, fields=None, order_by='title', is_active=1):
 	"""
 	Return list of DriveEntity records present in this folder
 
@@ -179,7 +179,8 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title'):
 	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']
 	return frappe.db.get_list('Drive Entity',
 		filters={
-			'parent_drive_entity': entity_name
+			'parent_drive_entity': entity_name,
+			'is_active': is_active
 		},
 		fields=fields,
 		order_by=order_by
@@ -223,6 +224,25 @@ def delete_entities(entity_names):
 		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
 	for entity in entity_names:
 		frappe.delete_doc("Drive Entity", entity)
+
+
+@frappe.whitelist()
+def toggle_is_active(entity_names):
+	"""
+	To move entities to or restore entities from the trash
+
+	:param entity_names: List of document-names
+	:type entity_names: list[str]
+	"""
+
+	if isinstance(entity_names, str):
+		entity_names = json.loads(entity_names)
+	if not isinstance(entity_names, list):
+		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
+	for entity in entity_names:
+		doc = frappe.get_doc('Drive Entity', entity)
+		doc.is_active = 0 if doc.is_active else 1
+		doc.save()
 
 
 @frappe.whitelist()

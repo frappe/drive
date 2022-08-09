@@ -1,15 +1,12 @@
 <template>
-    <Dialog :options="{ title: 'Move to Trash?' }" v-model="open">
+    <Dialog :options="{ title: 'Restore Items?' }" v-model="open">
         <template #body-content>
-            <p class="text-gray-600">{{ entities.length === 1 ? `${entities.length} item` : `${entities.length} items`
-            }}
-                will be moved to Trash. Items in Trash are deleted forever after 30 days.
-            </p>
+            <p class="text-gray-600">Selected items will be restored to their original locations.</p>
             <div class="flex mt-5">
                 <Button @click="open = false" class="ml-auto"> Cancel </Button>
-                <Button appearance="primary" iconLeft="trash-2" class="ml-4" @click="$resources.remove.submit()"
-                    :loading="$resources.remove.loading">
-                    Move to Trash
+                <Button appearance="primary" iconLeft="refresh-ccw" class="ml-4" @click="$resources.restore.submit()"
+                    :loading="$resources.restore.loading">
+                    Restore
                 </Button>
             </div>
         </template>
@@ -19,7 +16,7 @@
 import { Dialog, Input } from 'frappe-ui'
 
 export default {
-    name: 'RemoveDialog',
+    name: 'RestoreDialog',
     components: {
         Dialog,
         Input,
@@ -46,7 +43,7 @@ export default {
         },
     },
     resources: {
-        remove() {
+        restore() {
             return {
                 method: 'drive.api.files.toggle_is_active',
                 params: {
@@ -67,3 +64,4 @@ export default {
     },
 }
 </script>
+

@@ -27,6 +27,14 @@
             () => {
                 $resources.folderContents.fetch()
                 showDeleteDialog = false
+                selectedEntities = []
+            }
+        " />
+        <RestoreDialog v-model="showRestoreDialog" :entities="selectedEntities" @success="
+            () => {
+                $resources.folderContents.fetch()
+                showRestoreDialog = false
+                selectedEntities = []
             }
         " />
         <div />
@@ -39,6 +47,7 @@ import FolderContentsError from '@/components/FolderContentsError.vue'
 import GridView from '@/components/GridView.vue'
 import ListView from '@/components/ListView.vue'
 import DeleteDialog from '@/components/DeleteDialog.vue'
+import RestoreDialog from '@/components/RestoreDialog.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import { formatDate, formatSize } from '@/utils/format'
 import { FeatherIcon } from 'frappe-ui'
@@ -51,6 +60,7 @@ export default {
         GridView,
         DriveToolBar,
         DeleteDialog,
+        RestoreDialog,
         NoFilesSection,
         FolderContentsError,
     },
@@ -59,6 +69,7 @@ export default {
         breadcrumbs: [{ label: 'Trash', route: '/trash' }],
         actionLoading: false,
         showDeleteDialog: false,
+        showRestoreDialog: false,
     }),
     computed: {
         userId() {
@@ -92,7 +103,7 @@ export default {
                 {
                     label: 'Restore',
                     handler: () => {
-                        console.log("hello");
+                        this.showRestoreDialog = true
                     },
                     isEnabled: () => {
                         return this.selectedEntities.length > 0
@@ -143,6 +154,7 @@ export default {
                         'mime_type',
                         'creation',
                     ],
+                    is_active: 0
                 },
                 onSuccess(data) {
                     this.$resources.folderContents.error = null
