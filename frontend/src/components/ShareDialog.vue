@@ -100,7 +100,7 @@
         <p class="mt-2 text-xs text-gray-600">Only people with access can view or edit</p>
         <div class="flex mt-5">
           <Button icon-left="link" appearance="white">Get link</Button>
-          <Button appearance="primary" class="ml-auto w-24">Done</Button>
+          <Button appearance="primary" class="ml-auto w-24" @click="open = false">Done</Button>
         </div>
       </div>
     </template>

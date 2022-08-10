@@ -48,6 +48,7 @@ def upload_file():
 		'title': file.filename
 	})
 	save_path = Path(user_directory.path) / f'{parent}_{secure_filename(file.filename)}'
+	print(save_path)
 
 	if current_chunk == 0 and (entity_exists or save_path.exists()):
 		frappe.throw(f"File '{file.filename}' already exists", FileExistsError)
@@ -241,7 +242,15 @@ def toggle_is_active(entity_names):
 		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
 	for entity in entity_names:
 		doc = frappe.get_doc('Drive Entity', entity)
-		doc.is_active = 0 if doc.is_active else 1
+		if (doc.is_active == 1):
+			doc.is_active = 0
+			# doc.parent_drive_entity = get_ancestors_of('Drive Entity', entity)[-1]
+		else:
+			doc.is_active = 1
+			# parent_doc = doc.get_parent()
+			# if parent_doc.is_active == 1:
+			# 	doc.parent_drive_entity = doc.old_parent
+
 		doc.save()
 
 

@@ -91,13 +91,18 @@ export default {
             if (event.ctrlKey) {
                 const index = selectedEntities.indexOf(entity)
                 index > -1 ? selectedEntities.splice(index, 1) : selectedEntities.push(entity)
+                this.$emit('entitySelected', selectedEntities)
             }
             else {
-                if (selectedEntities.length === 1 && selectedEntities[0] === entity)
+                if (selectedEntities.length === 1 && selectedEntities[0] === entity) {
                     this.$emit('openEntity', entity)
-                else selectedEntities = [entity]
+                    this.deselectAll()
+                }
+                else {
+                    selectedEntities = [entity]
+                    this.$emit('entitySelected', selectedEntities)
+                }
             }
-            this.$emit('entitySelected', selectedEntities)
         },
         deselectAll() {
             this.$emit('entitySelected', [])
