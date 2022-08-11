@@ -18,7 +18,8 @@
   "version",
   "general_access",
   "is_active",
-  "trashed_on"
+  "trashed_on",
+  "parent_before_trash"
  ],
  "fields": [
   {
@@ -105,12 +106,17 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
+  },
+  {
+   "fieldname": "parent_before_trash",
+   "fieldtype": "Data",
+   "label": "Parent Before Trash"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-08-09 13:00:01.938441",
+ "modified": "2022-08-11 17:59:57.197516",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Entity",

@@ -9,6 +9,7 @@ from drive.utils.files import get_user_directory
 
 class DriveEntity(NestedSet):
 	nsm_parent_field = 'parent_drive_entity'
+	nsm_oldparent_field = 'old_parent'
 	def on_update(self):
 		super().on_update()
 
