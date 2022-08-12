@@ -228,7 +228,7 @@ def delete_entities(entity_names):
 
 
 @frappe.whitelist()
-def toggle_is_active(entity_names):
+def remove_or_restore(entity_names):
 	"""
 	To move entities to or restore entities from the trash
 
@@ -240,26 +240,29 @@ def toggle_is_active(entity_names):
 		entity_names = json.loads(entity_names)
 	if not isinstance(entity_names, list):
 		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
+
+	def toggle_is_active(doc):
+		doc.is_active = 0 if doc.is_active else 1
+		doc.save()
+		for child in doc.get_children():
+			toggle_is_active(child)
+
 	for entity in entity_names:
 		doc = frappe.get_doc('Drive Entity', entity)
 		if (doc.is_active):
 			entity_ancestors = get_ancestors_of('Drive Entity', entity)
 			doc.parent_before_trash = entity_ancestors[0]
 			doc.parent_drive_entity = entity_ancestors[-1]
-			doc.is_active = 0
+
 		else:
 			try: 
 				parent_doc = frappe.get_doc('Drive Entity', doc.parent_before_trash)
 				if parent_doc.is_active:
-					parents_ancestors = get_ancestors_of('Drive Entity', parent_doc.name)
-					parent_is_active = all(frappe.get_doc('Drive Entity', ancestor).is_active for ancestor in parents_ancestors)
-					if parent_is_active:
-						doc.parent_drive_entity = doc.parent_before_trash
+					doc.parent_drive_entity = doc.parent_before_trash
 			except frappe.DoesNotExistError:
-				print("Parent has been trashed or deleted.")
-			doc.is_active = 1
+				print("Parent has been deleted.")
 
-		doc.save()
+		toggle_is_active(doc)
 
 
 @frappe.whitelist()

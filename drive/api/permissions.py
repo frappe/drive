@@ -59,5 +59,6 @@ def get_shared_with_me():
 			DocShare.write,
 			DocShare.share
 		)
+		.where(DriveEntity.is_active == 1)
 	)
 	return query.run(as_dict=True)

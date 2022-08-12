@@ -45,7 +45,7 @@ export default {
     resources: {
         restore() {
             return {
-                method: 'drive.api.files.toggle_is_active',
+                method: 'drive.api.files.remove_or_restore',
                 params: {
                     entity_names: JSON.stringify(
                         this.entities.map((entity) => entity.name)
