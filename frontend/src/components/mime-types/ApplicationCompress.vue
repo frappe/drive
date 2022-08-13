@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" version="1">
+<template><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" version="1">
     <path style="opacity:0.2" d="M 14.5,8 C 13.115,8 12,9.115 12,10.5 v 45 c 0,1.385 1.115,2.5 2.5,2.5 h 35 C 50.885,58 52,56.885 52,55.5 V 23 L 38.25,21.75 37,8 Z" />
     <path fill="#8bc34a" d="m14.5 7c-1.385 0-2.5 1.115-2.5 2.5v45c0 1.385 1.115 2.5 2.5 2.5h35c1.385 0 2.5-1.115 2.5-2.5v-32.5l-13.75-1.25-1.25-13.75z" />
     <path style="opacity:0.2" d="m 37,8 v 12.5 c 0,1.3808 1.1193,2.5 2.5,2.5 H 52 Z" />
@@ -13,4 +13,4 @@
     <path style="opacity:0.2;fill:#ffffff" d="M 14.5,7 C 13.115,7 12,8.115 12,9.5 v 1 C 12,9.115 13.115,8 14.5,8 H 37 V 7 Z" />
     <path style="fill:#dddddd" d="m 31,7 v 1 h 1 V 7 Z m 0,2 v 1 h 1 V 9 Z m 0,2 v 1 h 1 v -1 z" />
     <path style="opacity:0.2" d="M 32 7 L 32 8 L 33 8 L 33 7 L 32 7 z M 32 8 L 31 8 L 31 9 L 32 9 L 32 8 z M 32 9 L 32 10 L 33 10 L 33 9 L 32 9 z M 32 10 L 31 10 L 31 11 L 32 11 L 32 10 z M 32 11 L 32 12 L 33 12 L 33 11 L 32 11 z" />
-</svg>
+</svg></template>

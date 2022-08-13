@@ -12,7 +12,7 @@
                         :key="folder.name" @click="selectEntity(folder, $event)"
                         :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
                         <div class="md:h-36 place-items-center grid">
-                            <img src="/svgs/mime_types/folder.svg" />
+                            <Folder />
                         </div>
                         <div class="px-3 pb-3">
                             <h3 class="truncate text-xl font-medium">{{ folder.title }}</h3>
@@ -27,12 +27,12 @@
                     <div class="md:w-60 mt-1 rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }">
                         <div class="md:h-36 place-items-center grid">
-                            <img :src="getMimeTypeIcon(file.mime_type)" />
+                            <component :is="getMimeTypeComp(file.mime_type)" />
                         </div>
                         <div class="px-3 pb-3">
                             <h3 class="truncate text-xl font-medium">{{ file.title }}</h3>
                             <div class="truncate text-base text-gray-600 flex mt-1">
-                                <img :src="getMimeTypeIcon(file.mime_type)" class="h-5 mr-1" />
+                                <!-- <img :src="getMimeTypeIcon(file.mime_type)" class="h-5 mr-1" /> -->
                                 <p>{{ getFileSubtitle(file) }}</p>
                             </div>
                         </div>
@@ -46,11 +46,14 @@
 <script>
 import { FeatherIcon } from 'frappe-ui'
 import { getFilteredEntities } from '../utils/fuzzySearcher'
+import Folder from './mime-types/Folder.vue'
+import * as mimeTypes from './mime-types/index.vue'
 
 export default {
     name: 'GridView',
     components: {
         FeatherIcon,
+        Folder,
     },
     props: {
         folderContents: {
@@ -96,7 +99,7 @@ export default {
             else {
                 if (selectedEntities.length === 1 && selectedEntities[0] === entity) {
                     this.$emit('openEntity', entity)
-                    this.deselectAll()
+                    if (entity.is_group === 1) this.deselectAll()
                 }
                 else {
                     selectedEntities = [entity]
@@ -107,17 +110,14 @@ export default {
         deselectAll() {
             this.$emit('entitySelected', [])
         },
-        getMimeTypeIcon(mimeType) {
-            const image = new Image()
-            const path = '/svgs/mime_types/';
-            const mimeTypeArr = mimeType.split('/')
-            let file = path + mimeTypeArr.join('-') + ".svg"
-            image.src = file;
-            if (image.width) return file;
-            file = path + mimeTypeArr[0] + ".svg"
-            image.src = file;
-            if (image.width) return file;
-            return path + "unknown.svg";
+        getMimeTypeComp(mimeType) {
+            const mimeTypeArr = mimeType.split('/').map(x => x.charAt(0).toUpperCase() + x.slice(1))
+            let componentName = "Unknown"
+            if (mimeTypeArr.join('') in mimeTypes)
+                componentName = mimeTypeArr.join('')
+            else if (mimeTypeArr[0] in mimeTypes)
+                componentName = mimeTypeArr[0]
+            return mimeTypes[componentName]
         }
     }
 }
