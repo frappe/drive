@@ -46,7 +46,10 @@
         selectedEntities = []
       }
     " />
-    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entity="selectedEntities[0]" />
+    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entity="selectedEntities[0]" @success="
+    () => {
+      // $resources.folderContents.fetch()
+    }" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>

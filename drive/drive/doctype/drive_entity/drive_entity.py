@@ -106,6 +106,20 @@ class DriveEntity(NestedSet):
 
 
 	@frappe.whitelist()
+	def change_access(self, new_access):
+		"""
+		Change general sharing access for entity
+
+		:param new_access: New access level of entity
+		:return: DriveEntity doc once it's access is changed
+		"""
+
+		self.general_access = new_access
+		self.save()
+		return self
+
+
+	@frappe.whitelist()
 	def share(self, user, write=0, share=0, notify=1):
 		"""
 		Share this file or folder with the specified user.

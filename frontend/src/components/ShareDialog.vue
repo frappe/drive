@@ -76,28 +76,45 @@
         <div class="flex mt-3">
           <Dropdown placement="left" :options="
             [
-              { label: 'Anyone' },
               { label: 'Restricted' },
-            ]
+              { label: 'Open' },
+            ].map((option) => ({
+              ...option,
+              handler: () => {
+                $resources.changeAccess.submit({
+                  method: 'change_access',
+                  entity_name: entityName,
+                  new_access: option.label === 'Restricted' ? 'restricted' : 'viewable'
+                })
+              },
+            }))
           ">
             <Button iconRight="chevron-down" class="text-sm font-medium w-28 focus:ring-0 focus:ring-offset-0">
-              {{ "Restricted" }}
+              {{ entity.general_access === "restricted" ? "Restricted" : "Open" }}
             </Button>
           </Dropdown>
-          <Dropdown class="ml-auto" :options="
+          <Dropdown v-if="entity.general_access !== 'restricted'" class="ml-auto" :options="
             [
               { label: 'Viewer' },
               { label: 'Editor' },
-            ]
+            ].map((option) => ({
+              ...option,
+              handler: () => {
+                $resources.changeAccess.submit({
+                  method: 'change_access',
+                  entity_name: entityName,
+                  new_access: option.label === 'Viewer' ? 'viewable' : 'editable'
+                })
+              },
+            }))
           ">
-            <Button iconRight="chevron-down" class="text-sm w-24 focus:ring-0 focus:ring-offset-0"
-              appearance="minimal">{{
-                  "Viewer"
-              }}</Button>
+            <Button iconRight="chevron-down" class="text-sm w-24 focus:ring-0 focus:ring-offset-0" appearance="minimal">
+              {{ entity.general_access === "viewable" ? "Viewer" : "Editor" }}
+            </Button>
 
           </Dropdown>
         </div>
-        <p class="mt-2 text-xs text-gray-600">Only people with access can view or edit</p>
+        <p class="mt-2 text-xs text-gray-600">{{ accessMessage }}</p>
         <div class="flex mt-5">
           <Button icon-left="link" appearance="white">Get link</Button>
           <Button appearance="primary" class="ml-auto w-24" @click="open = false">Done</Button>
@@ -141,6 +158,14 @@ export default {
   computed: {
     entityName() {
       return this.entity?.name
+    },
+    accessMessage() {
+      let message = "Only shared with individuals can view or edit"
+      if (this.entity?.general_access === "viewable")
+        message = "Anybody with the link can view"
+      else if (this.entity?.general_access === "editable")
+        message = "Anybody with the link who is signed in can edit"
+      return message
     },
     open: {
       get() {
@@ -203,6 +228,19 @@ export default {
             this.errorMessage = error.messages.join('\n')
           } else {
             this.errorMessage = error.message
+          }
+        },
+      }
+    },
+    changeAccess() {
+      return {
+        method: 'drive.api.files.call_controller_method',
+        onSuccess(data) {
+          this.$emit('success', data)
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
           }
         },
       }
