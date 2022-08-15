@@ -189,6 +189,21 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title', is_act
 
 
 @frappe.whitelist()
+def get_entity(entity_name):
+	"""
+	Return specific entity
+
+	:param entity_name: Document-name of the file or folder
+	:raises PermissionError: If the user does not have access to the specified entity
+	:rtype: frappe._dict
+	"""
+
+	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
+		frappe.throw('Cannot access path due to insufficient permissions', frappe.PermissionError)
+	return frappe.get_doc('Drive Entity', entity_name)
+
+
+@frappe.whitelist()
 def get_entities_in_path(entity_name, fields=None):
 	"""
 	Return list of all DriveEntities present in the path.

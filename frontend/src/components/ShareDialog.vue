@@ -76,40 +76,54 @@
         <div class="flex mt-3">
           <Dropdown placement="left" :options="
             [
-              { label: 'Restricted' },
-              { label: 'Open' },
+              { label: 'Restricted', value: 'restricted' },
+              { label: 'Open', value: 'viewable' },
             ].map((option) => ({
               ...option,
               handler: () => {
-                $resources.changeAccess.submit({
-                  method: 'change_access',
-                  entity_name: entityName,
-                  new_access: option.label === 'Restricted' ? 'restricted' : 'viewable'
-                })
+                if (option.value !== entity.general_access && !(option.value === 'viewable' && entity.general_access === 'editable')) {
+                  entity.loading = true
+                  $resources.changeAccess.submit({
+                    method: 'change_access',
+                    entity_name: entityName,
+                    new_access: option.value
+                  })
+                    .then(() => {
+                      entity.loading = false
+                    })
+                }
               },
             }))
           ">
-            <Button iconRight="chevron-down" class="text-sm font-medium w-28 focus:ring-0 focus:ring-offset-0">
+            <Button iconRight="chevron-down" class="text-sm font-medium w-28 focus:ring-0 focus:ring-offset-0"
+              :loading="entity.loading">
               {{ entity.general_access === "restricted" ? "Restricted" : "Open" }}
             </Button>
           </Dropdown>
           <Dropdown v-if="entity.general_access !== 'restricted'" class="ml-auto" :options="
             [
-              { label: 'Viewer' },
-              { label: 'Editor' },
+              { label: 'For viewing', value: 'viewable' },
+              { label: 'For editing', value: 'editable' },
             ].map((option) => ({
               ...option,
               handler: () => {
-                $resources.changeAccess.submit({
-                  method: 'change_access',
-                  entity_name: entityName,
-                  new_access: option.label === 'Viewer' ? 'viewable' : 'editable'
-                })
+                if (option.value !== entity.general_access) {
+                  entity.loading = true
+                  $resources.changeAccess.submit({
+                    method: 'change_access',
+                    entity_name: entityName,
+                    new_access: option.value
+                  })
+                    .then(() => {
+                      entity.loading = false
+                    })
+                }
               },
             }))
           ">
-            <Button iconRight="chevron-down" class="text-sm w-24 focus:ring-0 focus:ring-offset-0" appearance="minimal">
-              {{ entity.general_access === "viewable" ? "Viewer" : "Editor" }}
+            <Button iconRight="chevron-down" class="text-sm w-30 focus:ring-0 focus:ring-offset-0" appearance="minimal"
+              :loading="entity.loading">
+              {{ entity.general_access === "viewable" ? "For viewing" : "For editing" }}
             </Button>
 
           </Dropdown>
@@ -142,28 +156,26 @@ export default {
       type: Boolean,
       required: true,
     },
-    entity: {
-      type: Object,
+    entityName: {
+      type: String,
       required: true,
     },
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'success'],
   data() {
     return {
+      entity: {},
       showUserSearch: false,
       searchQuery: '',
       errorMessage: '',
     }
   },
   computed: {
-    entityName() {
-      return this.entity?.name
-    },
     accessMessage() {
       let message = "Only shared with individuals can view or edit"
-      if (this.entity?.general_access === "viewable")
+      if (this.entity.general_access === "viewable")
         message = "Anybody with the link can view"
-      else if (this.entity?.general_access === "editable")
+      else if (this.entity.general_access === "editable")
         message = "Anybody with the link who is signed in can edit"
       return message
     },
@@ -180,9 +192,11 @@ export default {
     },
   },
   updated() {
+    this.$resources.entity.fetch()
     this.$resources.sharedWith.fetch()
   },
   mounted() {
+    this.$resources.entity.fetch()
     this.$resources.sharedWith.fetch()
     const targetElement = this.$refs.dialogContent?.closest('.overflow-hidden')
     if (targetElement) {
@@ -195,6 +209,17 @@ export default {
     }
   },
   resources: {
+    entity() {
+      return {
+        method: 'drive.api.files.get_entity',
+        params: {
+          entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          this.entity = data
+        },
+      }
+    },
     sharedWith() {
       return {
         method: 'drive.api.permissions.get_shared_with_list',
@@ -217,7 +242,7 @@ export default {
             return 'No user was specified'
           }
         },
-        onSuccess(data) {
+        onSuccess() {
           this.$resources.share.error = null
           this.$resources.sharedWith.fetch()
           this.showUserSearch = false
@@ -235,8 +260,8 @@ export default {
     changeAccess() {
       return {
         method: 'drive.api.files.call_controller_method',
-        onSuccess(data) {
-          this.$emit('success', data)
+        onSuccess() {
+          this.$resources.entity.fetch()
         },
         onError(error) {
           if (error.messages) {
