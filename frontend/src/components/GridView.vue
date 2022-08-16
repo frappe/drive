@@ -83,10 +83,15 @@ export default {
     emits: ['entitySelected', 'openEntity'],
     methods: {
         getFileSubtitle(file) {
-            const mimeTypeArr = file.mime_type.split('/')
-            const generics = ["image", "video", "audio"]
-            const fileType = generics.includes(mimeTypeArr[0]) ? mimeTypeArr[0] : mimeTypeArr[1]
-            return `${fileType.charAt(0).toUpperCase() + fileType.slice(1)} ∙ ${file.modified}`
+            console.log(file.mime_type)
+            let fileSubtitle = "File"
+            if (file.mime_type) {
+                const mimeTypeArr = file.mime_type.split('/')
+                const generics = ["image", "video", "audio", "text"]
+                const fileType = generics.includes(mimeTypeArr[0]) ? mimeTypeArr[0] : mimeTypeArr[1]
+                fileSubtitle = fileType.charAt(0).toUpperCase() + fileType.slice(1)
+            }
+            return `${fileSubtitle} ∙ ${file.modified}`
         },
         selectEntity(entity, event) {
             event.stopPropagation()
@@ -111,12 +116,14 @@ export default {
             this.$emit('entitySelected', [])
         },
         getMimeTypeComp(mimeType) {
-            const mimeTypeArr = mimeType.split('/').map(x => x.charAt(0).toUpperCase() + x.slice(1))
             let componentName = "Unknown"
-            if (mimeTypeArr.join('') in mimeTypes)
-                componentName = mimeTypeArr.join('')
-            else if (mimeTypeArr[0] in mimeTypes)
-                componentName = mimeTypeArr[0]
+            if (mimeType) {
+                const mimeTypeArr = mimeType.split('/').map(x => x.charAt(0).toUpperCase() + x.slice(1))
+                if (mimeTypeArr.join('') in mimeTypes)
+                    componentName = mimeTypeArr.join('')
+                else if (mimeTypeArr[0] in mimeTypes)
+                    componentName = mimeTypeArr[0]
+            }
             return mimeTypes[componentName]
         }
     }

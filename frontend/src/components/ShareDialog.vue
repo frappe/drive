@@ -62,7 +62,7 @@
                 method: 'share',
                 entity_name: entityName,
                 user: user,
-                write: 1,
+                write: 0,
               })
           " class="flex-1 absolute w-[calc(100%_-_2.25rem)]" />
           <Button class="focus:ring-0 focus:ring-offset-0 absolute left-[calc(100%_-_1.75rem)]" icon="plus"
