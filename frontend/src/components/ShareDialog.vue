@@ -130,7 +130,7 @@
         </div>
         <p class="mt-2 text-xs text-gray-600">{{ accessMessage }}</p>
         <div class="flex mt-5">
-          <Button icon-left="link" appearance="white">Get link</Button>
+          <Button icon-left="link" appearance="white" @click="getLink">Get link</Button>
           <Button appearance="primary" class="ml-auto w-24" @click="open = false">Done</Button>
         </div>
       </div>
@@ -190,6 +190,17 @@ export default {
         }
       },
     },
+  },
+  methods: {
+    async getLink() {
+      const link = `${import.meta.env.VITE_CLIENT_URL}/drive/folder/${this.entityName}`
+      try {
+        await navigator.clipboard.writeText(link);
+        alert('Link copied');
+      } catch ($e) {
+        alert('Some error occured');
+      }
+    }
   },
   updated() {
     this.$resources.entity.fetch()
