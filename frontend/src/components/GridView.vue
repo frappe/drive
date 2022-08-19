@@ -83,7 +83,6 @@ export default {
     emits: ['entitySelected', 'openEntity'],
     methods: {
         getFileSubtitle(file) {
-            console.log(file.mime_type)
             let fileSubtitle = "File"
             if (file.mime_type) {
                 const mimeTypeArr = file.mime_type.split('/')

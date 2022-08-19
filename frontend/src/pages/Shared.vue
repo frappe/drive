@@ -98,11 +98,19 @@ export default {
       this.previewEntity = null
     },
   },
+  watch: {
+    entityName(newEntityName) {
+      if (!newEntityName) {
+        this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }]
+      }
+    },
+  },
   resources: {
     folderContents() {
       return {
         method: 'drive.api.permissions.get_shared_with_me',
-        cache: ['folderContents', this.userId],
+        cache: ['folderContents', this.userId, this.entityName],
+        params: { entity_name: this.entityName },
         onSuccess(data) {
           this.$resources.folderContents.error = null
           // data = data.filter((entity) => !entity.is_group)
