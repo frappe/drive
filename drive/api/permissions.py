@@ -55,10 +55,14 @@ def get_shared_with_me():
 			DriveEntity.creation,
 			DriveEntity.file_size,
 			DriveEntity.mime_type,
+			DriveEntity.parent_drive_entity,
 			DocShare.read,
 			DocShare.write,
 			DocShare.share
 		)
 		.where(DriveEntity.is_active == 1)
 	)
-	return query.run(as_dict=True)
+	result = query.run(as_dict=True)
+	names = [x.name for x in result]
+	result = filter(lambda x: x.parent_drive_entity not in names, result)
+	return result

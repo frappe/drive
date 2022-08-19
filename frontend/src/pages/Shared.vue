@@ -50,8 +50,15 @@ export default {
     previewEntity: null,
     showPreview: false,
     selectedEntities: [],
-    breadcrumbs: [{ label: 'Shared files', route: '/shared' }],
+    breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
+  props: {
+    entityName: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
   computed: {
     userId() {
       return this.$store.state.auth.user_id
@@ -75,8 +82,16 @@ export default {
   },
   methods: {
     openEntity(entity) {
-      this.previewEntity = entity
-      this.showPreview = true
+      if (entity.is_group) {
+        this.selectedEntities = []
+        this.$router.push({
+          name: 'SharedFolder',
+          params: { entityName: entity.name },
+        })
+      } else {
+        this.previewEntity = entity
+        this.showPreview = true
+      }
     },
     hidePreview() {
       this.showPreview = false
@@ -105,6 +120,43 @@ export default {
         auto: true,
       }
     },
+
+    // pathEntities() {
+    //   return {
+    //     method: 'drive.api.files.get_entities_in_path',
+    //     cache: ['pathEntities', this.entityName],
+    //     params: {
+    //       entity_name: this.entityName,
+    //     },
+    //     onSuccess(data) {
+    //       console.log(data)
+    //       let breadcrumbs = []
+    //       data.forEach((entity, index) => {
+    //         if (index === 0) {
+    //           // const isHome = entity.owner === this.userId
+    //           breadcrumbs.push({
+    //             label: 'Shared With Me',
+    //             route: '/shared',
+    //           })
+    //         } else {
+    //           breadcrumbs.push({
+    //             label: entity.title,
+    //             route: `/shared/folder/${entity.name}`,
+    //           })
+    //         }
+    //       })
+    //       if (breadcrumbs.length > 4) {
+    //         breadcrumbs.splice(1, breadcrumbs.length - 4, {
+    //           label: '...',
+    //           route: '',
+    //         })
+    //       }
+    //       this.breadcrumbs = breadcrumbs
+    //     },
+    //     auto: Boolean(this.entityName),
+    //   }
+    // },
+
   },
 }
 </script>

@@ -30,7 +30,7 @@ export default {
           route: '/',
           icon: 'hard-drive',
           highlight: () => {
-            return this.$route.fullPath.endsWith('/') || this.$route.fullPath.includes('/folder')
+            return this.$route.fullPath.endsWith('/') || (this.$route.fullPath.includes('/folder') && !this.$route.fullPath.includes('/shared'))
           },
         },
         {
@@ -54,7 +54,7 @@ export default {
           route: '/shared',
           icon: 'share-2',
           highlight: () => {
-            return this.$route.fullPath.endsWith('/shared')
+            return this.$route.fullPath.includes('/shared')
           },
         },
         {

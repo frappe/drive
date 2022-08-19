@@ -329,6 +329,7 @@ export default {
         auto: true,
       }
     },
+
     pathEntities() {
       return {
         method: 'drive.api.files.get_entities_in_path',
@@ -363,6 +364,7 @@ export default {
         auto: Boolean(this.entityName),
       }
     },
+
   },
 }
 </script>
