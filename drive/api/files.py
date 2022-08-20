@@ -204,12 +204,13 @@ def get_entity(entity_name):
 
 
 @frappe.whitelist()
-def get_entities_in_path(entity_name, fields=None):
+def get_entities_in_path(entity_name, fields=None, shared=False):
 	"""
 	Return list of all DriveEntities present in the path.
 
 	:param entity_name: Document-name of the file or folder
 	:param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'owner']
+	:param shared: True if entity in question has been shared with the user
 	:raises PermissionError: If the user does not have access to the specified entity
 	:return: List of parents followed by the specified DriveEntity
 	:rtype: list[frappe._dict]
@@ -221,7 +222,22 @@ def get_entities_in_path(entity_name, fields=None):
 		frappe.throw('Cannot access path due to insufficient permissions', frappe.PermissionError)
 	path = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
 	path.append(entity_name)
-	return [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]
+	entities = [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]
+
+	if shared:
+		shared_entities = [entities[-1]]
+		highest_level_reached = False
+		i = -2
+		while not highest_level_reached:
+			entity = frappe.db.exists('DocShare', { 'user': frappe.session.user, 'share_name': entities[i].name})
+			if entity:
+				shared_entities.insert(0, entities[i])
+				i-=1
+			else:
+				highest_level_reached = True
+		return shared_entities
+
+	return entities
 
 
 @frappe.whitelist()
@@ -270,12 +286,9 @@ def remove_or_restore(entity_names):
 			doc.parent_drive_entity = entity_ancestors[-1]
 
 		else:
-			try: 
-				parent_doc = frappe.get_doc('Drive Entity', doc.parent_before_trash)
-				if parent_doc.is_active:
-					doc.parent_drive_entity = doc.parent_before_trash
-			except frappe.DoesNotExistError:
-				print("Parent has been deleted.")
+			parent_is_active = frappe.db.get_value('Drive Entity', doc.parent_before_trash, 'is_active')
+			if parent_is_active:
+				doc.parent_drive_entity = doc.parent_before_trash
 
 		toggle_is_active(doc)
 

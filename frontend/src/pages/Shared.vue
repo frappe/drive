@@ -113,7 +113,6 @@ export default {
         params: { entity_name: this.entityName },
         onSuccess(data) {
           this.$resources.folderContents.error = null
-          // data = data.filter((entity) => !entity.is_group)
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size
             entity.file_size = entity.is_group
@@ -129,41 +128,36 @@ export default {
       }
     },
 
-    // pathEntities() {
-    //   return {
-    //     method: 'drive.api.files.get_entities_in_path',
-    //     cache: ['pathEntities', this.entityName],
-    //     params: {
-    //       entity_name: this.entityName,
-    //     },
-    //     onSuccess(data) {
-    //       console.log(data)
-    //       let breadcrumbs = []
-    //       data.forEach((entity, index) => {
-    //         if (index === 0) {
-    //           // const isHome = entity.owner === this.userId
-    //           breadcrumbs.push({
-    //             label: 'Shared With Me',
-    //             route: '/shared',
-    //           })
-    //         } else {
-    //           breadcrumbs.push({
-    //             label: entity.title,
-    //             route: `/shared/folder/${entity.name}`,
-    //           })
-    //         }
-    //       })
-    //       if (breadcrumbs.length > 4) {
-    //         breadcrumbs.splice(1, breadcrumbs.length - 4, {
-    //           label: '...',
-    //           route: '',
-    //         })
-    //       }
-    //       this.breadcrumbs = breadcrumbs
-    //     },
-    //     auto: Boolean(this.entityName),
-    //   }
-    // },
+    pathEntities() {
+      return {
+        method: 'drive.api.files.get_entities_in_path',
+        cache: ['pathEntities', this.entityName],
+        params: {
+          entity_name: this.entityName,
+          shared: true,
+        },
+        onSuccess(data) {
+          let breadcrumbs = [{
+            label: 'Shared With Me',
+            route: '/shared',
+          }]
+          data.forEach((entity) => {
+            breadcrumbs.push({
+              label: entity.title,
+              route: `/shared/folder/${entity.name}`,
+            })
+          })
+          if (breadcrumbs.length > 4) {
+            breadcrumbs.splice(1, breadcrumbs.length - 4, {
+              label: '...',
+              route: '',
+            })
+          }
+          this.breadcrumbs = breadcrumbs
+        },
+        auto: Boolean(this.entityName),
+      }
+    },
 
   },
 }
