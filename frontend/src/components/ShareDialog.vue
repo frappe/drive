@@ -193,7 +193,7 @@ export default {
   },
   methods: {
     async getLink() {
-      const link = `${import.meta.env.VITE_CLIENT_URL}/drive/folder/${this.entityName}`
+      const link = `${import.meta.env.VITE_CLIENT_URL}/drive/shared/folder/${this.entityName}`
       try {
         await navigator.clipboard.writeText(link);
         alert('Link copied');

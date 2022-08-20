@@ -116,7 +116,9 @@ class DriveEntity(NestedSet):
 
 		self.general_access = new_access
 		self.save()
-		return self
+		if self.is_group:
+			for child in self.get_children():
+				child.change_access(new_access)
 
 
 	@frappe.whitelist()

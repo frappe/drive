@@ -218,7 +218,8 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
 
 	fields = fields or ['name', 'title', 'owner']
 	rebuild_tree("Drive Entity", "parent_drive_entity")
-	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
+	entity_access = frappe.db.get_value('Drive Entity', entity_name, 'general_access')
+	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user) and entity_access == 'restricted':
 		frappe.throw('Cannot access path due to insufficient permissions', frappe.PermissionError)
 	path = get_ancestors_of('Drive Entity', entity_name, 'lft asc')
 	path.append(entity_name)
@@ -289,7 +290,7 @@ def remove_or_restore(entity_names):
 			parent_is_active = frappe.db.get_value('Drive Entity', doc.parent_before_trash, 'is_active')
 			if parent_is_active:
 				doc.parent_drive_entity = doc.parent_before_trash
-
+	
 		toggle_is_active(doc)
 
 

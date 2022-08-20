@@ -38,6 +38,23 @@ def get_shared_with_me(entity_name=None):
 	:rtype: list[frappe._dict]
 	"""
 
+	if entity_name:
+		doc = frappe.get_doc('Drive Entity', entity_name)
+		if not doc.is_group:
+			frappe.throw('Specified entity is not a folder', NotADirectoryError)
+		# Fix this
+		if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user) and doc.general_access == 'restricted':
+			frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
+		x = frappe.db.get_list('Drive Entity',
+			filters={
+				'parent_drive_entity': entity_name,
+				'general_access': ['!=', 'restricted'],
+				'is_active': 1
+			},
+		)
+		print(x)
+		return x
+
 	DocShare = frappe.qb.DocType('DocShare')
 	DriveEntity = frappe.qb.DocType('Drive Entity')
 	query = (
@@ -64,12 +81,7 @@ def get_shared_with_me(entity_name=None):
 		.where(DriveEntity.is_active == 1)
 	)
 
-	if (entity_name):
-		is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
-		if not is_group:
-			frappe.throw('Specified entity is not a folder', NotADirectoryError)
-		if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
-			frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
+	if entity_name:
 		query = query.where(DriveEntity.parent_drive_entity == entity_name)
 		return query.run(as_dict=True)
 	else:
