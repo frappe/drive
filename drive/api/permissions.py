@@ -35,53 +35,57 @@ def get_shared_with_me(entity_name=None):
 	Return the list of files and folders shared with the current user
 
 	:param entity_name: Document-name of the folder whose contents are to be listed.
+	:raises NotADirectoryError: If this DriveEntity doc is not a folder
 	:return: List of DriveEntities with permissions
 	:rtype: list[frappe._dict]
 	"""
 
+	DocShare = frappe.qb.DocType('DocShare')
+	DriveEntity = frappe.qb.DocType('Drive Entity')
+	selectedFields = [
+		DriveEntity.name,
+		DriveEntity.title,
+		DriveEntity.is_group,
+		DriveEntity.owner,
+		DriveEntity.modified,
+		DriveEntity.creation,
+		DriveEntity.file_size,
+		DriveEntity.mime_type,
+		DriveEntity.parent_drive_entity,
+		DocShare.read,
+		DocShare.write,
+		DocShare.share
+	]
+
 	if entity_name:
-		doc = frappe.get_doc('Drive Entity', entity_name)
-		if not doc.is_group:
+		is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
+		if not is_group:
 			frappe.throw('Specified entity is not a folder', NotADirectoryError)
 		if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
 			frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
-		return frappe.db.get_list('Drive Entity',
-			filters={
-				'parent_drive_entity': entity_name,
-				'is_active': 1
-			},
+		query = (
+			frappe.qb.from_(DocShare)
+			.inner_join(DriveEntity)
+			.on((DocShare.share_name == DriveEntity.name))
+			.select(*selectedFields)
+			.where(
+				(DriveEntity.is_active == 1) &
+				(DriveEntity.parent_drive_entity == entity_name)
+			)
 		)
-
-	DocShare = frappe.qb.DocType('DocShare')
-	DriveEntity = frappe.qb.DocType('Drive Entity')
-	query = (
-		frappe.qb.from_(DocShare)
-		.inner_join(DriveEntity)
-		.on(
-			(DocShare.share_name == DriveEntity.name) &
-			(DocShare.user == frappe.session.user)
-		)
-		.select(
-			DriveEntity.name,
-			DriveEntity.title,
-			DriveEntity.is_group,
-			DriveEntity.owner,
-			DriveEntity.modified,
-			DriveEntity.creation,
-			DriveEntity.file_size,
-			DriveEntity.mime_type,
-			DriveEntity.parent_drive_entity,
-			DocShare.read,
-			DocShare.write,
-			DocShare.share
-		)
-		.where(DriveEntity.is_active == 1)
-	)
-
-	if entity_name:
-		query = query.where(DriveEntity.parent_drive_entity == entity_name)
 		return query.run(as_dict=True)
+
 	else:
+		query = (
+			frappe.qb.from_(DocShare)
+			.inner_join(DriveEntity)
+			.on(
+				(DocShare.share_name == DriveEntity.name) &
+				(DocShare.user == frappe.session.user)
+			)
+			.select(*selectedFields)
+			.where(DriveEntity.is_active == 1)
+		)
 		result = query.run(as_dict=True)
 		names = [x.name for x in result]
 		return filter(lambda x: x.parent_drive_entity not in names, result) # To only return highest level entity
