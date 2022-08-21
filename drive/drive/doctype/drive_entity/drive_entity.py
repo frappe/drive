@@ -31,6 +31,7 @@ class DriveEntity(NestedSet):
 				permission.user,
 				write=permission.write,
 				share=permission.share,
+				everyone=permission.everyone,
 				notify=0,
 				flags={"ignore_share_permission": True}
 			)
@@ -106,19 +107,35 @@ class DriveEntity(NestedSet):
 
 
 	@frappe.whitelist()
-	def change_access(self, new_access):
+	def set_access(self, new_access):
 		"""
-		Change general sharing access for entity
+		Set general sharing access for entity
 
 		:param new_access: New access level of entity
-		:return: DriveEntity doc once it's access is changed
+		:return: DriveEntity doc once it's access is update
 		"""
 
 		self.general_access = new_access
+
+		docshare_exists = frappe.db.exists({
+			'doctype': 'DocShare',
+			'share_doctype': 'Drive Entity',
+			'share_name': self.name,
+			'everyone': 1
+		})
+		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
+
+		if new_access == 'restricted':
+			if docshare_exists:
+				frappe.share.remove('Drive Entity', self.name, user=None, flags=flags)
+		else:
+			write = 1 if new_access == 'editable' else 0
+			frappe.share.add('Drive Entity', self.name, write=write, everyone=1, flags=flags)
+		
 		self.save()
 		if self.is_group:
 			for child in self.get_children():
-				child.change_access(new_access)
+				child.set_access(new_access)
 
 
 	@frappe.whitelist()

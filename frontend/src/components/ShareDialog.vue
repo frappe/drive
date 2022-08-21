@@ -84,7 +84,7 @@
                 if (option.value !== entity.general_access && !(option.value === 'viewable' && entity.general_access === 'editable')) {
                   entity.loading = true
                   $resources.changeAccess.submit({
-                    method: 'change_access',
+                    method: 'set_access',
                     entity_name: entityName,
                     new_access: option.value
                   })
@@ -110,7 +110,7 @@
                 if (option.value !== entity.general_access) {
                   entity.loading = true
                   $resources.changeAccess.submit({
-                    method: 'change_access',
+                    method: 'set_access',
                     entity_name: entityName,
                     new_access: option.value
                   })

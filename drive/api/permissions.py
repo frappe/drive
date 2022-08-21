@@ -19,7 +19,8 @@ def get_shared_with_list(entity_name):
 	users = frappe.db.get_list('DocShare',
 		filters={
 			'share_doctype': 'Drive Entity',
-			'share_name': entity_name
+			'share_name': entity_name,
+			'everyone': 0
 		},
 		fields=['user', 'read', 'write', 'share', 'everyone', 'modified']
 	)
@@ -42,18 +43,14 @@ def get_shared_with_me(entity_name=None):
 		doc = frappe.get_doc('Drive Entity', entity_name)
 		if not doc.is_group:
 			frappe.throw('Specified entity is not a folder', NotADirectoryError)
-		# Fix this
-		if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user) and doc.general_access == 'restricted':
+		if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
 			frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
-		x = frappe.db.get_list('Drive Entity',
+		return frappe.db.get_list('Drive Entity',
 			filters={
 				'parent_drive_entity': entity_name,
-				'general_access': ['!=', 'restricted'],
 				'is_active': 1
 			},
 		)
-		print(x)
-		return x
 
 	DocShare = frappe.qb.DocType('DocShare')
 	DriveEntity = frappe.qb.DocType('Drive Entity')
