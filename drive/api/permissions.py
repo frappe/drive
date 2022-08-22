@@ -75,17 +75,32 @@ def get_shared_with_me(entity_name=None):
 		)
 		return query.run(as_dict=True)
 
-	else:
-		query = (
-			frappe.qb.from_(DocShare)
-			.inner_join(DriveEntity)
-			.on(
-				(DocShare.share_name == DriveEntity.name) &
-				(DocShare.user == frappe.session.user)
-			)
-			.select(*selectedFields)
-			.where(DriveEntity.is_active == 1)
+	query = (
+		frappe.qb.from_(DocShare)
+		.inner_join(DriveEntity)
+		.on(
+			(DocShare.share_name == DriveEntity.name) &
+			(DocShare.user == frappe.session.user)
 		)
-		result = query.run(as_dict=True)
-		names = [x.name for x in result]
-		return filter(lambda x: x.parent_drive_entity not in names, result) # To only return highest level entity
+		.select(*selectedFields)
+		.where(DriveEntity.is_active == 1)
+	)
+	result = query.run(as_dict=True)
+	names = [x.name for x in result]
+	return filter(lambda x: x.parent_drive_entity not in names, result) # To only return highest level entity
+
+@frappe.whitelist()
+def get_general_access(entity_name):
+	"""
+	Return the general access permissions for the given entity
+
+	:param entity_name: Document-name of the entity whose permissions are to be fetched
+	:return: Dict of general access permissions (read, write)
+	:rtype: frappe._dict
+	"""
+
+	return frappe.db.get_value('DocShare',
+	{ 'share_name': entity_name, 'everyone': 1 },
+	[ 'read', 'write' ],
+	as_dict=1
+	)

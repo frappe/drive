@@ -311,7 +311,6 @@ export default {
             'file_size',
             'mime_type',
             'creation',
-            'general_access',
           ],
         },
         onSuccess(data) {

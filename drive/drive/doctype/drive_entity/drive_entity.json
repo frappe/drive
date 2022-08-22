@@ -16,7 +16,6 @@
   "file_size",
   "mime_type",
   "version",
-  "general_access",
   "is_active",
   "trashed_on",
   "parent_before_trash"
@@ -95,13 +94,6 @@
    "label": "Trashed On"
   },
   {
-   "default": "restricted",
-   "fieldname": "general_access",
-   "fieldtype": "Select",
-   "label": "General Access",
-   "options": "restricted\nviewable\neditable"
-  },
-  {
    "default": "1",
    "fieldname": "is_active",
    "fieldtype": "Check",
@@ -116,7 +108,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-08-11 17:59:57.197516",
+ "modified": "2022-08-22 18:27:09.383538",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Entity",

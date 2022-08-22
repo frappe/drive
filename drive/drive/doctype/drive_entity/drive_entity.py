@@ -111,26 +111,22 @@ class DriveEntity(NestedSet):
 		"""
 		Set general sharing access for entity
 
-		:param new_access: New access level of entity
-		:return: DriveEntity doc once it's access is update
+		:param new_access: Dict with new read and write value
 		"""
 
-		self.general_access = new_access
-
-		docshare_exists = frappe.db.exists({
-			'doctype': 'DocShare',
-			'share_doctype': 'Drive Entity',
-			'share_name': self.name,
-			'everyone': 1
-		})
 		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 
-		if new_access == 'restricted':
-			if docshare_exists:
-				frappe.share.remove('Drive Entity', self.name, user=None, flags=flags)
+		if new_access['read']:
+			frappe.share.add('Drive Entity', self.name, write=new_access['write'], everyone=1, flags=flags)
+
 		else:
-			write = 1 if new_access == 'editable' else 0
-			frappe.share.add('Drive Entity', self.name, write=write, everyone=1, flags=flags)
+			if frappe.db.exists({
+				'doctype': 'DocShare',
+				'share_doctype': 'Drive Entity',
+				'share_name': self.name,
+				'everyone': 1
+			}):
+				frappe.share.remove('Drive Entity', self.name, user=None, flags=flags)
 		
 		self.save()
 		if self.is_group:
