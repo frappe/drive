@@ -226,7 +226,6 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
 	path.append(entity_name)
 	entities = [frappe.db.get_value('Drive Entity', entity, fields, as_dict=True) for entity in path]
 
-	# Fix this
 	if shared:
 		shared_entities = [entities[-1]]
 		highest_level_reached = False

@@ -29,6 +29,7 @@ def get_shared_with_list(entity_name):
 		user.update(user_info)
 	return users
 
+
 @frappe.whitelist()
 def get_shared_with_me(entity_name=None):
 	"""
@@ -75,7 +76,8 @@ def get_shared_with_me(entity_name=None):
 				(DriveEntity.parent_drive_entity == entity_name)
 			)
 		)
-		return query.run(as_dict=True)
+		result = query.run(as_dict=True)
+		return list({x['name']:x for x in result}.values()) # Return unique values
 
 	query = (
 		frappe.qb.from_(DocShare)
@@ -89,7 +91,8 @@ def get_shared_with_me(entity_name=None):
 	)
 	result = query.run(as_dict=True)
 	names = [x.name for x in result]
-	return filter(lambda x: x.parent_drive_entity not in names, result) # To only return highest level entity
+	return filter(lambda x: x.parent_drive_entity not in names, result) # Return highest level entity
+
 
 @frappe.whitelist()
 def get_general_access(entity_name):
@@ -98,7 +101,7 @@ def get_general_access(entity_name):
 
 	:param entity_name: Document-name of the entity whose permissions are to be fetched
 	:return: Dict of general access permissions (read, write)
-	:rtype: frappe._dict
+	:rtype: frappe._dict or None
 	"""
 
 	return frappe.db.get_value('DocShare',
