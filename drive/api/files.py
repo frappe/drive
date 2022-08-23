@@ -172,9 +172,11 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title', is_act
 		entity_name = entity_name or get_user_directory().name
 	except FileNotFoundError:
 		return []
-	is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
-	if not is_group:
+	parent_is_group, parent_is_active = frappe.db.get_value('Drive Entity', entity_name, ['is_group', 'is_active'])
+	if not parent_is_group:
 		frappe.throw('Specified entity is not a folder', NotADirectoryError)
+	if not parent_is_active:
+		frappe.throw('Specified folder has been trashed by the owner')
 	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
 		frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
 	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']

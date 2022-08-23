@@ -58,9 +58,11 @@ def get_shared_with_me(entity_name=None):
 	]
 
 	if entity_name:
-		is_group = frappe.get_value('Drive Entity', entity_name, 'is_group')
+		is_group, is_active = frappe.db.get_value('Drive Entity', entity_name, ['is_group', 'is_active'])
 		if not is_group:
 			frappe.throw('Specified entity is not a folder', NotADirectoryError)
+		if not is_active:
+			frappe.throw('Specified folder has been trashed by the owner')
 		if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
 			frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
 		query = (
