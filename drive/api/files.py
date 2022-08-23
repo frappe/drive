@@ -243,6 +243,27 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
 
 
 @frappe.whitelist()
+def unshare_entities(entity_names, user=frappe.session.user):
+	"""
+	Unshare DriveEntities
+
+	:param entity_names: List of document-names
+	:type entity_names: list[str]
+	:raises ValueError: If decoded entity_names is not a list
+	"""
+
+	if isinstance(entity_names, str):
+		entity_names = json.loads(entity_names)
+	if not isinstance(entity_names, list):
+		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
+	for entity in entity_names:
+		doc = frappe.get_doc('Drive Entity', entity)
+		if not doc:
+			frappe.throw("Entity does not exist", ValueError)
+		doc.unshare(user)
+
+
+@frappe.whitelist()
 def delete_entities(entity_names):
 	"""
 	Delete DriveEntities

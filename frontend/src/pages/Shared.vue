@@ -22,6 +22,20 @@
       </template>
     </ListView>
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
+    <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showRenameDialog = false
+        selectedEntities = []
+      }
+    " />
+    <UnshareDialog v-model="showUnshareDialog" :entities="selectedEntities" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showUnshareDialog = false
+        selectedEntities = []
+      }
+    " />
   </div>
 </template>
 
@@ -33,6 +47,8 @@ import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
+import RenameDialog from '@/components/RenameDialog.vue'
+import UnshareDialog from '@/components/UnshareDialog.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
 export default {
@@ -42,6 +58,8 @@ export default {
     ListView,
     GridView,
     DriveToolBar,
+    RenameDialog,
+    UnshareDialog,
     NoFilesSection,
     FilePreview,
     FolderContentsError,
@@ -49,6 +67,8 @@ export default {
   data: () => ({
     previewEntity: null,
     showPreview: false,
+    showRenameDialog: false,
+    showUnshareDialog: false,
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
@@ -72,8 +92,29 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
+              this.selectedEntities.length === 1 && !this.selectedEntities[0].is_group
+            )
+          },
+        },
+        {
+          label: 'Rename',
+          handler: () => {
+            this.showRenameDialog = true
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 && this.selectedEntities[0].write
+            )
+          },
+        },
+        {
+          label: 'Remove',
+          handler: () => {
+            this.showUnshareDialog = true
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.every(x => !x.everyone)
             )
           },
         },

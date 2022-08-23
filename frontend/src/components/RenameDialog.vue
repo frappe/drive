@@ -68,6 +68,11 @@ export default {
     rename() {
       return {
         method: 'drive.api.files.call_controller_method',
+        params: {
+          method: 'rename',
+          entity_name: this.entityName,
+          new_title: this.newName,
+        },
         validate(params) {
           if (!params?.new_title) {
             return 'New name is required'

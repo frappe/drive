@@ -55,6 +55,7 @@ def get_shared_with_me(entity_name=None):
 		DriveEntity.parent_drive_entity,
 		DocShare.read,
 		DocShare.write,
+		DocShare.everyone,
 		DocShare.share
 	]
 

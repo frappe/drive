@@ -244,7 +244,7 @@ export default {
           method: 'share',
           entity_name: this.entityName,
           user: this.searchQuery,
-          write: 1,
+          write: 0,
         },
         validate(params) {
           if (!params?.user) {
