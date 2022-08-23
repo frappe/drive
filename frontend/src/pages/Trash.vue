@@ -9,7 +9,8 @@
                     :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
             </template>
             <template #placeholder>
-                <NoFilesSection :primaryMessage="'Trash is currently empty'" :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
+                <NoFilesSection :primaryMessage="'Trash is currently empty'"
+                    :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
             </template>
         </GridView>
 
@@ -31,7 +32,7 @@
                     selectedEntities = []
                 }
             " />
-        <RestoreDialog v-model="showRestoreDialog" :entities="selectedEntities" @success="
+        <GeneralDialog v-model="showRestoreDialog" :entities="selectedEntities" :for="'restore'" @success="
             () => {
                 $resources.folderContents.fetch()
                 showRestoreDialog = false
@@ -48,7 +49,7 @@ import FolderContentsError from '@/components/FolderContentsError.vue'
 import GridView from '@/components/GridView.vue'
 import ListView from '@/components/ListView.vue'
 import DeleteDialog from '@/components/DeleteDialog.vue'
-import RestoreDialog from '@/components/RestoreDialog.vue'
+import GeneralDialog from '@/components/GeneralDialog.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import { formatDate, formatSize } from '@/utils/format'
 import { FeatherIcon } from 'frappe-ui'
@@ -61,7 +62,7 @@ export default {
         GridView,
         DriveToolBar,
         DeleteDialog,
-        RestoreDialog,
+        GeneralDialog,
         NoFilesSection,
         FolderContentsError,
     },

@@ -29,10 +29,10 @@
         selectedEntities = []
       }
     " />
-    <UnshareDialog v-model="showUnshareDialog" :entities="selectedEntities" @success="
+    <GeneralDialog v-model="showRemoveDialog" :entities="selectedEntities" :for="'unshare'" @success="
       () => {
         $resources.folderContents.fetch()
-        showUnshareDialog = false
+        showRemoveDialog = false
         selectedEntities = []
       }
     " />
@@ -48,7 +48,7 @@ import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
-import UnshareDialog from '@/components/UnshareDialog.vue'
+import GeneralDialog from '@/components/GeneralDialog.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
 export default {
@@ -59,7 +59,7 @@ export default {
     GridView,
     DriveToolBar,
     RenameDialog,
-    UnshareDialog,
+    GeneralDialog,
     NoFilesSection,
     FilePreview,
     FolderContentsError,
@@ -68,7 +68,7 @@ export default {
     previewEntity: null,
     showPreview: false,
     showRenameDialog: false,
-    showUnshareDialog: false,
+    showRemoveDialog: false,
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
@@ -110,7 +110,7 @@ export default {
         {
           label: 'Remove',
           handler: () => {
-            this.showUnshareDialog = true
+            this.showRemoveDialog = true
           },
           isEnabled: () => {
             return (

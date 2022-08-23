@@ -39,7 +39,7 @@
         selectedEntities = []
       }
     " />
-    <RemoveDialog v-model="showRemoveDialog" :entities="selectedEntities" @success="
+    <GeneralDialog v-model="showRemoveDialog" :entities="selectedEntities" :for="'remove'" @success="
       () => {
         $resources.folderContents.fetch()
         showRemoveDialog = false
@@ -64,7 +64,7 @@ import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
 import DetailsDialog from '@/components/DetailsDialog.vue'
-import RemoveDialog from '@/components/RemoveDialog.vue'
+import GeneralDialog from '@/components/GeneralDialog.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
@@ -81,7 +81,7 @@ export default {
     RenameDialog,
     ShareDialog,
     DetailsDialog,
-    RemoveDialog,
+    GeneralDialog,
     FolderContentsError,
   },
   props: {
