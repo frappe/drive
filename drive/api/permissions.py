@@ -74,11 +74,15 @@ def get_shared_with_me(entity_name=None):
 			.select(*selectedFields)
 			.where(
 				(DriveEntity.is_active == 1) &
-				(DriveEntity.parent_drive_entity == entity_name)
+				(DriveEntity.parent_drive_entity == entity_name) &
+				((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
 			)
 		)
 		result = query.run(as_dict=True)
-		return list({x['name']:x for x in result}.values()) # Return unique values
+		user_specific_items = list(filter(lambda x: not x.everyone, result))
+		names = [x.name for x in user_specific_items]
+		open_access_items = list(filter(lambda x: x.name not in names, result))
+		return user_specific_items + open_access_items # Return unique values
 
 	query = (
 		frappe.qb.from_(DocShare)

@@ -114,7 +114,7 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.every(x => !x.everyone)
+              this.selectedEntities.length > 0 && this.selectedEntities.every(x => !x.everyone)
             )
           },
         },

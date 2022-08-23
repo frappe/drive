@@ -6,8 +6,8 @@
             </p>
             <div class="flex mt-5">
                 <Button @click="open = false" class="ml-auto"> Cancel </Button>
-                <Button appearance="primary" :iconLeft="data.buttonIcon" class="ml-4" @click="$resources.remove.submit()"
-                    :loading="$resources.remove.loading">
+                <Button appearance="primary" :iconLeft="data.buttonIcon" class="ml-4" @click="$resources.method.submit()"
+                    :loading="$resources.method.loading">
                     {{ data.buttonMessage }}
                 </Button>
             </div>
@@ -71,7 +71,6 @@ export default {
                     }
             }
         },
-
         open: {
             get() {
                 return this.modelValue
@@ -83,7 +82,7 @@ export default {
     },
 
     resources: {
-        remove() {
+        method() {
             return {
                 method: this.data.methodName,
                 params: {

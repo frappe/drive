@@ -19,8 +19,8 @@
           </div>
           <Dropdown placement="right" :options="
             [
-              { label: 'Editor' },
               { label: 'Viewer' },
+              { label: 'Editor' },
               { label: 'Delete' },
             ].map((option) => ({
               ...option,
