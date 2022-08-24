@@ -43,10 +43,10 @@ export default {
         },
         {
           label: 'Favourites',
-          route: '/favourite',
+          route: '/favourites',
           icon: 'star',
           highlight: () => {
-            return this.$route.fullPath.endsWith('/favourite')
+            return this.$route.fullPath.endsWith('/favourites')
           },
         },
         {

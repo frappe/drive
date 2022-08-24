@@ -146,6 +146,24 @@ export default {
           },
         },
         {
+          label: 'Add to Favourites',
+          handler: () => {
+            this.$resources.toggleFavourite.submit()
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0 && this.selectedEntities.every(x => !x.is_favourite)
+          },
+        },
+        {
+          label: 'Remove from Favourites',
+          handler: () => {
+            this.$resources.toggleFavourite.submit()
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0 && this.selectedEntities.every(x => x.is_favourite)
+          },
+        },
+        {
           label: 'Share',
           handler: () => {
             this.showShareDialog = true
@@ -311,6 +329,7 @@ export default {
             'file_size',
             'mime_type',
             'creation',
+            'is_favourite',
           ],
         },
         onSuccess(data) {
@@ -364,6 +383,25 @@ export default {
       }
     },
 
+    toggleFavourite() {
+      return {
+        method: 'drive.api.files.favourite_entities',
+        params: {
+          entity_names: JSON.stringify(
+            this.selectedEntities?.map((entity) => entity.name)
+          ),
+        },
+        onSuccess() {
+          this.$resources.folderContents.fetch()
+          this.selectedEntities = []
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      }
+    },
   },
 }
 </script>

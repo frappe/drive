@@ -282,6 +282,26 @@ def delete_entities(entity_names):
 
 
 @frappe.whitelist()
+def favourite_entities(entity_names):
+	"""
+	Favouite or unfavourite DriveEntities
+
+	:param entity_names: List of document-names
+	:type entity_names: list[str]
+	:raises ValueError: If decoded entity_names is not a list
+	"""
+
+	if isinstance(entity_names, str):
+		entity_names = json.loads(entity_names)
+	if not isinstance(entity_names, list):
+		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
+	for entity in entity_names:
+		doc = frappe.get_doc('Drive Entity', entity)
+		doc.is_favourite = 0 if doc.is_favourite else 1
+		doc.save()
+
+
+@frappe.whitelist()
 def remove_or_restore(entity_names):
 	"""
 	To move entities to or restore entities from the trash

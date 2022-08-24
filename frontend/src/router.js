@@ -41,6 +41,11 @@ const routes = [
     },
   },
   {
+    path: '/favourites',
+    name: 'Favourites',
+    component: () => import('@/pages/Favourites.vue'),
+  },
+  {
     path: '/trash',
     name: 'Trash',
     component: () => import('@/pages/Trash.vue'),
