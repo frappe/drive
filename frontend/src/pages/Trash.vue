@@ -24,6 +24,7 @@
                 <NoFilesSection />
             </template>
         </ListView>
+
         <DeleteDialog v-model="showDeleteDialog"
             :entities="selectedEntities.length > 0 ? selectedEntities : $resources.folderContents.data" @success="
                 () => {
@@ -142,9 +143,7 @@ export default {
         folderContents() {
             return {
                 method: 'drive.api.files.list_folder_contents',
-                cache: ['folderContents', this.entityName],
                 params: {
-                    entity_name: this.entityName,
                     order_by: this.orderBy,
                     fields: [
                         'name',

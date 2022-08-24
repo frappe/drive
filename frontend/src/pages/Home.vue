@@ -137,6 +137,24 @@ export default {
           },
         },
         {
+          label: 'Share',
+          handler: () => {
+            this.showShareDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1
+          },
+        },
+        {
+          label: 'Details',
+          handler: () => {
+            this.showDetailsDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1
+          },
+        },
+        {
           label: 'Rename',
           handler: () => {
             this.showRenameDialog = true
@@ -164,25 +182,7 @@ export default {
           },
         },
         {
-          label: 'Share',
-          handler: () => {
-            this.showShareDialog = true
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length === 1
-          },
-        },
-        {
-          label: 'Details',
-          handler: () => {
-            this.showDetailsDialog = true
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length === 1
-          },
-        },
-        {
-          label: 'Remove',
+          label: 'Move to Trash',
           handler: () => {
             this.showRemoveDialog = true
           },

@@ -1,5 +1,5 @@
 <template>
-    :<i class="fa fa-qq" aria-hidden="true"></i>
+    <i class="fa fa-qq" aria-hidden="true"></i>
     <Dialog :options="{ title: data.title }" v-model="open">
         <template #body-content>
             <p class="text-gray-600">{{ data.message }}

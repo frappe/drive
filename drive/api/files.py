@@ -155,7 +155,7 @@ def get_file_content(entity_name, trigger_download=0):
 
 
 @frappe.whitelist()
-def list_folder_contents(entity_name=None, fields=None, order_by='title', is_active=1):
+def list_folder_contents(entity_name=None, fields=None, order_by='title', is_active=1, is_favourite=None):
 	"""
 	Return list of DriveEntity records present in this folder
 
@@ -168,6 +168,18 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title', is_act
 	:rtype: list
 	"""
 
+
+	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']
+	if is_favourite:
+		return frappe.db.get_list('Drive Entity',
+			filters={
+				'is_active': is_active,
+				'is_favourite': is_favourite
+			},
+			fields=fields,
+			order_by=order_by
+		)
+
 	try:
 		entity_name = entity_name or get_user_directory().name
 	except FileNotFoundError:
@@ -179,7 +191,7 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title', is_act
 		frappe.throw('Specified folder has been trashed by the owner')
 	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
 		frappe.throw('Cannot access folder due to insufficient permissions', frappe.PermissionError)
-	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']
+
 	return frappe.db.get_list('Drive Entity',
 		filters={
 			'parent_drive_entity': entity_name,
