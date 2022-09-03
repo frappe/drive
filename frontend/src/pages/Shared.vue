@@ -1,6 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
+
     <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
       @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
       @openEntity="(entity) => openEntity(entity)">
@@ -11,6 +12,7 @@
         <NoFilesSection secondaryMessage="No files have been shared with you" />
       </template>
     </GridView>
+
     <ListView v-else :folderContents="$resources.folderContents.data"
       @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
       @openEntity="(entity) => openEntity(entity)">
@@ -21,6 +23,7 @@
         <NoFilesSection secondaryMessage="No files have been shared with you" />
       </template>
     </ListView>
+
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {

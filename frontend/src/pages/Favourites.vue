@@ -22,7 +22,8 @@
                     :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
             </template>
             <template #placeholder>
-                <NoFilesSection />
+                <NoFilesSection :primaryMessage="`You haven't favourited any items`"
+                    :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
             </template>
         </ListView>
 

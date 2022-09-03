@@ -21,7 +21,8 @@
                     :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
             </template>
             <template #placeholder>
-                <NoFilesSection />
+                <NoFilesSection :primaryMessage="'Trash is currently empty'"
+                    :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
             </template>
         </ListView>
 

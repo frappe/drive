@@ -1,14 +1,14 @@
 <template>
     <i class="fa fa-qq" aria-hidden="true"></i>
-    <Dialog :options="{ title: data.title }" v-model="open">
+    <Dialog :options="{ title: dialogData.title }" v-model="open">
         <template #body-content>
-            <p class="text-gray-600">{{ data.message }}
+            <p class="text-gray-600">{{ dialogData.message }}
             </p>
             <div class="flex mt-5">
                 <Button @click="open = false" class="ml-auto"> Cancel </Button>
-                <Button appearance="primary" :iconLeft="data.buttonIcon" class="ml-4" @click="$resources.method.submit()"
+                <Button appearance="primary" :iconLeft="dialogData.buttonIcon" class="ml-4" @click="$resources.method.submit()"
                     :loading="$resources.method.loading">
-                    {{ data.buttonMessage }}
+                    {{ dialogData.buttonMessage }}
                 </Button>
             </div>
         </template>
@@ -42,7 +42,7 @@ export default {
     emits: ['update:modelValue', 'success'],
 
     computed: {
-        data() {
+        dialogData() {
             const items = this.entities.length === 1 ? `${this.entities.length} item` : `${this.entities.length} items`
             switch (this.for) {
                 case 'unshare':
@@ -84,7 +84,7 @@ export default {
     resources: {
         method() {
             return {
-                method: this.data.methodName,
+                method: this.dialogData.methodName,
                 params: {
                     entity_names: JSON.stringify(
                         this.entities.map((entity) => entity.name)
