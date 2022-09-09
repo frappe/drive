@@ -48,7 +48,7 @@
           ">
             <Button iconRight="chevron-down" :loading="user.loading"
               class="text-sm w-24 focus:ring-0 focus:ring-offset-0" appearance="minimal">{{ user.write ? 'Editor' :
-                  'Viewer'
+              'Viewer'
               }}</Button>
           </Dropdown>
         </div>
@@ -191,7 +191,7 @@ export default {
   },
   methods: {
     async getLink() {
-      const link = `${import.meta.env.VITE_CLIENT_URL}/drive/shared/folder/${this.entityName}`
+      const link = `${window.location.origin}/drive/shared/folder/${this.entityName}`
       try {
         await navigator.clipboard.writeText(link);
         alert('Link copied');
