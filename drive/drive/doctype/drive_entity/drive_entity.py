@@ -157,14 +157,18 @@ class DriveEntity(NestedSet):
 
 	@frappe.whitelist()
 	def unshare(self, user):
-		"""Unshare this file or folder with the specified user"""
+		"""Unshare this file or folder with the specified user
 
-		has_share_permissions = (
-			frappe.session.user == self.owner
-			or frappe.has_permission("Drive Entity", ptype="share", doc=self.name)
-		)
-		if not has_share_permissions:
-			frappe.throw(f"You do not have permissions to unshare '{self.title}'")
+		:param user: User with whom this is to be shared
+		"""
+
+		# has_share_permissions = (
+		# 	frappe.session.user == self.owner
+		# 	or frappe.has_permission("Drive Entity", ptype="share", doc=self.name)
+		# )
+		# if not has_share_permissions:
+		# 	frappe.throw(f"You do not have permissions to unshare '{self.title}'")
+
 		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 		if self.is_group:
 			for child in self.get_children():
