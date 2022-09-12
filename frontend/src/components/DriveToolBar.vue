@@ -5,7 +5,7 @@
       <Dropdown v-if="actionItems" :options="actionItems" placement="left" class="basis-5/12 lg:basis-auto">
         <Button class="text-sm h-8 w-full" iconRight="chevron-down" :loading="actionLoading"
           :disabled="!actionItems.length > 0">
-          Actions
+          <span class="hidden md:inline">Actions</span>
         </Button>
       </Dropdown>
       <Dropdown v-if="columnHeaders" :options="orderByItems" placement="right" class="basis-5/12 lg:basis-auto">
@@ -19,22 +19,24 @@
               " stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
           </Button>
-          <Button class="text-sm h-8 rounded-l-none flex-1">
+          <Button class="text-sm h-8 rounded-l-none flex-1 hidden md:block">
             Sort by {{ orderByLabel.toLowerCase() }}
+          </Button>
+          <Button class="text-sm h-8 rounded-l-none flex-1 md:hidden">
+            {{ orderByLabel }}
           </Button>
         </div>
       </Dropdown>
-      <Button v-if="showViewButton" icon="info"></Button>
-      <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5">
+      <Button v-if="showViewButton" icon="info" class="h-8 hidden md:block"></Button>
+      <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5 w-28 md:w-auto">
         <Button icon="grid" @click="$store.commit('toggleView', 'grid')"
           :style="[$store.state.view === 'grid' && { 'background': '#FFF' }]"></Button>
         <Button icon="list" @click="$store.commit('toggleView', 'list')"
           :style="[$store.state.view === 'list' && { 'background': '#FFF' }]"></Button>
       </div>
-      <Button v-if="showUploadButton" class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto" appearance="primary" iconLeft="upload"
-        @click="$emit('uploadFile')">
+      <Button v-if="showUploadButton" class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto" appearance="primary"
+        iconLeft="upload" @click="$emit('uploadFile')">
         <span class="hidden md:inline">Upload</span>
-        <span class="md:hidden text-4xl font-light">+</span>
       </Button>
     </div>
   </div>

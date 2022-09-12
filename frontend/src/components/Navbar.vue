@@ -19,8 +19,8 @@
       </div>
 
       <div class="flex items-center">
-        <Input type="text" v-model="this.$store.state.search" placeholder="Search" @input="handleSearch($event)" />
-        <Button class="ml-6" appearance="minimal" icon="bell"></Button>
+        <Input type="text" class="ml-2" v-model="this.$store.state.search" placeholder="Search" @input="handleSearch($event)" />
+        <Button class="ml-4 md:ml-6" appearance="minimal" icon="bell"></Button>
         <div class="relative ml-3">
           <Dropdown :options="dropdownItems" placement="right">
             <button
