@@ -72,6 +72,7 @@ export default {
     showPreview: false,
     showRenameDialog: false,
     showRemoveDialog: false,
+    userAccess: {},
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
@@ -150,6 +151,16 @@ export default {
     },
   },
   resources: {
+    folderAccess() {
+      return {
+        method: 'drive.api.permissions.get_user_access',
+        params: { entity_name: this.entityName, },
+        onSuccess(data) {
+          this.userAccess = data
+        },
+      }
+    },
+
     folderContents() {
       return {
         method: 'drive.api.permissions.get_shared_with_me',

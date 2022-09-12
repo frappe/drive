@@ -230,9 +230,7 @@ export default {
     generalAccess() {
       return {
         method: 'drive.api.permissions.get_general_access',
-        params: {
-          entity_name: this.entityName,
-        },
+        params: { entity_name: this.entityName, },
         onSuccess(data) {
           this.generalAccess = data
         },

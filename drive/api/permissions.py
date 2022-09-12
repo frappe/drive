@@ -109,8 +109,32 @@ def get_general_access(entity_name):
 	:rtype: frappe._dict or None
 	"""
 
+
 	return frappe.db.get_value('DocShare',
 	{ 'share_name': entity_name, 'everyone': 1 },
 	[ 'read', 'write' ],
 	as_dict=1
 	)
+
+
+@frappe.whitelist()
+def get_user_access(entity_name):
+	"""
+	Return the user specific access permissions for an entity if it exists or general access permissions
+
+	:param entity_name: Document-name of the entity whose permissions are to be fetched
+	:return: Dict of general access permissions (read, write)
+	:rtype: frappe._dict or None
+	"""
+
+
+	user_access = frappe.db.get_value('DocShare',
+	{ 'share_name': entity_name, 'user': frappe.session.user },
+	[ 'read', 'write' ],
+	as_dict=1
+	)
+
+	if user_access:
+		return user_access
+
+	return get_general_access(entity_name)

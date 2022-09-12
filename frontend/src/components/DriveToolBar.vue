@@ -28,7 +28,7 @@
         </div>
       </Dropdown>
       <Button v-if="showViewButton" icon="info" class="h-8 hidden md:block"></Button>
-      <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5 w-28 md:w-auto">
+      <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5">
         <Button icon="grid" @click="$store.commit('toggleView', 'grid')"
           :style="[$store.state.view === 'grid' && { 'background': '#FFF' }]"></Button>
         <Button icon="list" @click="$store.commit('toggleView', 'list')"
