@@ -316,7 +316,7 @@ export default {
     folderContents() {
       return {
         method: 'drive.api.files.list_folder_contents',
-        cache: ['folderContents', this.entityName],
+        // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
