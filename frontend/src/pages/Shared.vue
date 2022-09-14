@@ -6,7 +6,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
       @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
-        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="showUploadButton"
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="hasWriteAccess"
           @uploadFile="dropzone.hiddenFileInput.click()" />
       </template>
       <template #placeholder>
@@ -18,7 +18,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
       @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
-        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="showUploadButton"
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="hasWriteAccess"
           @uploadFile="dropzone.hiddenFileInput.click()" />
       </template>
       <template #placeholder>
@@ -77,7 +77,6 @@ export default {
     showPreview: false,
     showRenameDialog: false,
     showRemoveDialog: false,
-    userAccess: {},
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
@@ -92,8 +91,8 @@ export default {
     userId() {
       return this.$store.state.auth.user_id
     },
-    showUploadButton() {
-      if (this.userAccess?.write) return true
+    hasWriteAccess() {
+      if (this.$resources.folderAccess.data?.write) return true
       return false
     },
     actionItems() {
@@ -152,14 +151,23 @@ export default {
       this.previewEntity = null
     },
   },
+
   watch: {
     entityName(newEntityName) {
+      if (this.dropzone) {
+        this.dropzone.destroy()
+        this.dropzone = null
+      }
       if (!newEntityName) {
         this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }]
       }
     },
   },
-  mounted() {
+
+  async updated() {
+    await this.$resources.folderAccess.fetch()
+    if (!(!this.dropzone && this.hasWriteAccess)) return
+
     let componentContext = this
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: 'file',
@@ -226,19 +234,18 @@ export default {
       })
     })
   },
+
   unmounted() {
-    this.dropzone.destroy()
+    if (this.dropzone) this.dropzone.destroy()
   },
-  updated() {
-    this.$resources.folderAccess.fetch()
-  },
+
   resources: {
     folderAccess() {
       return {
         method: 'drive.api.permissions.get_user_access',
         params: { entity_name: this.entityName, },
         onSuccess(data) {
-          this.userAccess = data
+          this.$resources.folderAccess.data = data
         },
       }
     },
