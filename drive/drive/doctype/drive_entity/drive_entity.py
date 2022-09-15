@@ -117,7 +117,7 @@ class DriveEntity(NestedSet):
 		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 
 		if new_access['read']:
-			frappe.share.add('Drive Entity', self.name, write=new_access['write'], everyone=1, flags=flags)
+			frappe.share.add('Drive Entity', self.name, write=new_access['write'], share=0, everyone=1, flags=flags)
 
 		else:
 			if frappe.db.exists({
@@ -135,7 +135,7 @@ class DriveEntity(NestedSet):
 
 
 	@frappe.whitelist()
-	def share(self, user, write=0, share=0, notify=1):
+	def share(self, user, write=0, share=1, notify=1):
 		"""
 		Share this file or folder with the specified user.
 		If it has already been shared, update permissions.
