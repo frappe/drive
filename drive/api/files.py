@@ -290,7 +290,8 @@ def delete_entities(entity_names):
 	if not isinstance(entity_names, list):
 		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
 	for entity in entity_names:
-		frappe.delete_doc("Drive Entity", entity)
+		if frappe.has_permission(doctype='Drive Entity', doc=entity, ptype='write', user=frappe.session.user):
+			frappe.delete_doc("Drive Entity", entity, ignore_permissions=True)
 
 
 @frappe.whitelist()

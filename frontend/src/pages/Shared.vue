@@ -165,7 +165,7 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length > 0 && this.entityName && this.selectedEntities.every(x => x.write)
+              this.selectedEntities.length > 0 && this.entityName && this.selectedEntities.every(x => x.write || x.owner === this.userId)
             )
           },
         },
