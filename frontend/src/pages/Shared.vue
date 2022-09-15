@@ -41,6 +41,13 @@
         selectedEntities = []
       }
     " />
+    <DeleteDialog v-model="showDeleteDialog" :entities="selectedEntities" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showDeleteDialog = false
+        selectedEntities = []
+      }
+    " />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -55,6 +62,7 @@ import FilePreview from '@/components/FilePreview.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 import { formatSize, formatDate } from '@/utils/format'
 import Dropzone from 'dropzone'
 
@@ -67,6 +75,7 @@ export default {
     DriveToolBar,
     RenameDialog,
     GeneralDialog,
+    DeleteDialog,
     NoFilesSection,
     FilePreview,
     FolderContentsError,
@@ -77,6 +86,7 @@ export default {
     showPreview: false,
     showRenameDialog: false,
     showRemoveDialog: false,
+    showDeleteDialog: false,
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
@@ -126,7 +136,18 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length > 0 && this.selectedEntities.every(x => !x.everyone)
+              this.selectedEntities.length > 0 && !this.entityName
+            )
+          },
+        },
+        {
+          label: 'Remove',
+          handler: () => {
+            this.showDeleteDialog = true
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 && this.entityName && this.selectedEntities.every(x => x.write)
             )
           },
         },
