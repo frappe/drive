@@ -27,6 +27,12 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
+    <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
+      () => {
+        $resources.folderContents.fetch()
+        showNewFolderDialog = false
+      }
+    " />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -60,6 +66,7 @@ import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
+import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import DeleteDialog from '@/components/DeleteDialog.vue'
@@ -74,6 +81,7 @@ export default {
     GridView,
     DriveToolBar,
     RenameDialog,
+    NewFolderDialog,
     GeneralDialog,
     DeleteDialog,
     NoFilesSection,
@@ -84,6 +92,7 @@ export default {
     dropzone: null,
     previewEntity: null,
     showPreview: false,
+    showNewFolderDialog: false,
     showRenameDialog: false,
     showRemoveDialog: false,
     showDeleteDialog: false,
@@ -107,6 +116,15 @@ export default {
     },
     actionItems() {
       return [
+        {
+          label: 'New Folder',
+          handler: () => {
+            this.showNewFolderDialog = true
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 0 && this.hasWriteAccess
+          },
+        },
         {
           label: 'Download',
           handler: () => {
