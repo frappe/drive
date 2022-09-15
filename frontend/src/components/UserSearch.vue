@@ -60,6 +60,9 @@ export default {
     }
   },
   computed: {
+    userId() {
+      return this.$store.state.auth.user_id
+    },
     searchQuery: {
       get() {
         return this.modelValue
@@ -94,7 +97,7 @@ export default {
       )
       if (res.ok) {
         const data = await res.json()
-        this.searchResults = data.results
+        this.searchResults = data.results.filter(x => x.value !== this.userId)
       }
     },
   },

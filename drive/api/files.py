@@ -117,6 +117,10 @@ def create_folder(title, parent=None):
 		'parent_drive_entity': parent,
 	})
 	drive_entity.insert()
+
+	if parent == user_directory.name:
+		drive_entity.share(frappe.session.user, write=1, share=1)
+
 	return drive_entity
 
 

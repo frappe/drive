@@ -20,13 +20,15 @@ def get_shared_with_list(entity_name):
 		filters={
 			'share_doctype': 'Drive Entity',
 			'share_name': entity_name,
-			'everyone': 0
+			'everyone': 0,
+			'user': ['!=', frappe.session.user]
 		},
 		fields=['user', 'read', 'write', 'share', 'everyone', 'modified']
 	)
 	for user in users:
 		user_info = frappe.db.get_value("User", user.user, ["user_image", "full_name"], as_dict=True)
 		user.update(user_info)
+	
 	return users
 
 
@@ -92,11 +94,11 @@ def get_shared_with_me(entity_name=None):
 			(DocShare.user == frappe.session.user)
 		)
 		.select(*selectedFields)
-		.where(DriveEntity.is_active == 1)
+		.where(DriveEntity.is_active == 1) 
 	)
 	result = query.run(as_dict=True)
 	names = [x.name for x in result]
-	return filter(lambda x: x.parent_drive_entity not in names, result) # Return highest level entity
+	return filter(lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user, result) # Return highest level entity
 
 
 @frappe.whitelist()
