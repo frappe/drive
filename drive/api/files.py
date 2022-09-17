@@ -172,7 +172,6 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title', is_act
 	:rtype: list
 	"""
 
-
 	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']
 	if is_favourite:
 		return frappe.db.get_list('Drive Entity',
@@ -259,7 +258,7 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
 
 
 @frappe.whitelist()
-def unshare_entities(entity_names, user=frappe.session.user):
+def unshare_entities(entity_names):
 	"""
 	Unshare DriveEntities
 
@@ -276,7 +275,7 @@ def unshare_entities(entity_names, user=frappe.session.user):
 		doc = frappe.get_doc('Drive Entity', entity)
 		if not doc:
 			frappe.throw("Entity does not exist", ValueError)
-		doc.unshare(user)
+		doc.unshare(frappe.session.user)
 
 
 @frappe.whitelist()
