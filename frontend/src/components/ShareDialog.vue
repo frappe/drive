@@ -85,7 +85,7 @@
                 if (generalAccess ? !option.read : option.read) {
                   generalAccessLoading = true
                   $resources.updateAccess.submit({
-                    method: 'set_access',
+                    method: 'set_general_access',
                     entity_name: entityName,
                     new_access: { read: option.read, write: option.write }
                   })
@@ -111,7 +111,7 @@
                 if (option.write !== generalAccess.write) {
                   generalAccessLoading = true
                   $resources.updateAccess.submit({
-                    method: 'set_access',
+                    method: 'set_general_access',
                     entity_name: entityName,
                     new_access: { read: option.read, write: option.write }
                   })
@@ -161,6 +161,10 @@ export default {
       type: String,
       required: true,
     },
+    isFolder: {
+      type: Boolean,
+      required: true,
+    },
   },
   emits: ['update:modelValue', 'success'],
   data() {
@@ -192,7 +196,9 @@ export default {
   },
   methods: {
     async getLink() {
-      const link = `${window.location.origin}/drive/shared/folder/${this.entityName}`
+      const link = this.isFolder ?
+        `${window.location.origin}/drive/shared/folder/${this.entityName}` :
+        `${window.location.origin}/drive/file/${this.entityName}`
       try {
         await navigator.clipboard.writeText(link);
         alert('Link copied');

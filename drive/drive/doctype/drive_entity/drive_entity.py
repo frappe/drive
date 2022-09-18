@@ -108,7 +108,7 @@ class DriveEntity(NestedSet):
 
 
 	@frappe.whitelist()
-	def set_access(self, new_access):
+	def set_general_access(self, new_access):
 		"""
 		Set general sharing access for entity
 
@@ -132,7 +132,7 @@ class DriveEntity(NestedSet):
 		self.save()
 		if self.is_group:
 			for child in self.get_children():
-				child.set_access(new_access)
+				child.set_general_access(new_access)
 
 
 	@frappe.whitelist()

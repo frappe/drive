@@ -46,7 +46,7 @@
         selectedEntities = []
       }
     " />
-    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="selectedEntities[0].name" />
+    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="selectedEntities[0].name" :isFolder="selectedEntities[0].is_group"/>
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>

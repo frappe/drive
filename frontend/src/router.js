@@ -25,6 +25,24 @@ const routes = [
     props: true,
   },
   {
+    path: '/favourites',
+    name: 'Favourites',
+    component: () => import('@/pages/Favourites.vue'),
+  },
+  {
+    path: '/trash',
+    name: 'Trash',
+    component: () => import('@/pages/Trash.vue'),
+  },
+  {
+    path: '/file/:entityName',
+    name: 'File',
+    component: () => import('@/pages/File.vue'),
+    meta: {
+      isHybridRoute: true,
+    },
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/pages/Login.vue'),
@@ -39,16 +57,6 @@ const routes = [
     meta: {
       isPublicRoute: true,
     },
-  },
-  {
-    path: '/favourites',
-    name: 'Favourites',
-    component: () => import('@/pages/Favourites.vue'),
-  },
-  {
-    path: '/trash',
-    name: 'Trash',
-    component: () => import('@/pages/Trash.vue'),
   },
 ];
 
@@ -65,7 +73,7 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
-    if (store.getters.isLoggedIn) {
+    if (store.getters.isLoggedIn || ((record) => record.meta.isHybridRoute)) {
       next();
     } else {
       next('/login');
