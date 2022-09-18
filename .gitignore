@@ -8,3 +8,4 @@ drive/public/frontend
 drive/public/node_modules
 drive/www/drive.html
 .yarn-integrity
+**/__pycache__
