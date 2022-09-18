@@ -78,6 +78,10 @@ def upload_file():
 			drive_entity.flags.file_created = True
 			frappe.local.rollback_observers.append(drive_entity)
 			drive_entity.insert()
+
+			if parent == user_directory.name:
+				drive_entity.share(frappe.session.user, write=1, share=1)
+
 			return drive_entity
 
 
@@ -206,7 +210,7 @@ def list_folder_contents(entity_name=None, fields=None, order_by='title', is_act
 
 
 @frappe.whitelist()
-def get_entity(entity_name):
+def get_entity(entity_name, fields=None):
 	"""
 	Return specific entity
 
@@ -217,7 +221,8 @@ def get_entity(entity_name):
 
 	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
 		frappe.throw('Cannot access path due to insufficient permissions', frappe.PermissionError)
-	return frappe.get_doc('Drive Entity', entity_name)
+	fields = fields or ['name', 'title', 'owner']
+	return frappe.db.get_value('Drive Entity', entity_name, fields, as_dict=1)
 
 
 @frappe.whitelist()

@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from drive.api.files import get_entity
 
 @frappe.whitelist()
 def get_shared_with_list(entity_name):
@@ -99,6 +100,30 @@ def get_shared_with_me(entity_name=None):
 	result = query.run(as_dict=True)
 	names = [x.name for x in result]
 	return filter(lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user, result) # Return highest level entity
+
+
+@frappe.whitelist()
+def get_file_with_permissions(entity_name):
+	"""
+	Return file data with permissions
+
+	:param entity_name: Name of file document.
+	:raises IsADirectoryError: If this DriveEntity doc is not a file
+	:return: DriveEntity with permissions
+	:rtype: frappe._dict
+	"""
+
+
+	fields = ['name', 'title', 'owner', 'is_group', 'is_active']
+	entity = get_entity(entity_name, fields)
+	if entity.is_group:
+		frappe.throw('Specified entity is not a file', IsADirectoryError)
+	if not entity.is_active:
+		frappe.throw('Specified file has been trashed by the owner')
+	
+	user_access = get_user_access(entity_name)
+
+	return entity | user_access
 
 
 @frappe.whitelist()

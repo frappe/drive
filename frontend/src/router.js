@@ -38,6 +38,7 @@ const routes = [
     path: '/file/:entityName',
     name: 'File',
     component: () => import('@/pages/File.vue'),
+    props: true,
     meta: {
       isHybridRoute: true,
     },
@@ -73,7 +74,10 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
-    if (store.getters.isLoggedIn || ((record) => record.meta.isHybridRoute)) {
+    if (
+      store.getters.isLoggedIn ||
+      to.matched.some((record) => record.meta.isHybridRoute)
+    ) {
       next();
     } else {
       next('/login');

@@ -11,7 +11,7 @@ export default {
     props: {
         entityName: {
             type: String,
-            required: false,
+            required: true,
             default: '',
         },
     },
@@ -24,7 +24,20 @@ export default {
     },
     methods: {
     },
+    mounted() {
+        this.$resources.entity.fetch()
+    },
     resources: {
+        file() {
+            return {
+                method: 'drive.api.permissions.get_file_with_permissions',
+                params: { entity_name: this.entityName, },
+                onSuccess(data) {
+                    console.log(data)
+                    this.generalAccess = data
+                },
+            }
+        },
     },
 }
 </script>
