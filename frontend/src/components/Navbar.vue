@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white border-b-2">
+  <nav class="bg-white border-b">
     <div class="mx-auto py-2 px-5 md:pl-3 md:pr-8 h-16 md:h-12 z-10 flex items-center justify-between">
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block">
