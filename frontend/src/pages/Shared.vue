@@ -165,7 +165,7 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length > 0 && this.entityName && this.selectedEntities.every(x => x.write || x.owner === 'me')
+              this.selectedEntities.length > 0 && this.entityName && this.selectedEntities.every(x => x.write || x.owner === 'Me')
             )
           },
         },
@@ -303,7 +303,7 @@ export default {
               : formatSize(entity.file_size)
             entity.modified = formatDate(entity.modified)
             entity.creation = formatDate(entity.creation)
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner
+            entity.owner = entity.owner === this.userId ? 'Me' : entity.owner
           })
           this.$resources.folderContents.data = data
         },

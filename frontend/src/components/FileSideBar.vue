@@ -8,16 +8,62 @@
                 <div class="m-auto">Comments</div>
             </div>
         </div>
+        <div v-if="!tab" class="p-6 space-y-7">
+            <div v-if="entity.owner === 'Me'">
+                <div class="text-lg font-medium mb-4 ">Manage Access</div>
+                <div class="flex flex-row">
+                    <Button @click="showShareDialog=true">Share</Button>
+                </div>
+            </div>
+            <div>
+                <div class="text-lg font-medium mb-4">Properties</div>
+                <div class="flex text-base">
+                    <div class="w-1/2 text-gray-600 space-y-2">
+                        <div>Type</div>
+                        <div>Size</div>
+                        <div>Modified</div>
+                        <div>Created</div>
+                        <div>Owner</div>
+                    </div>
+                    <div class="w-1/2 space-y-2">
+                        <div>{{entity.mime_type}}</div>
+                        <div>{{entity.file_size}}</div>
+                        <div>{{entity.modified}}</div>
+                        <div>{{entity.creation}}</div>
+                        <div>{{entity.owner}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="entity.name"
+            :isFolder="entity.is_group" />
     </div>
 </template>
 
 <script>
+import ShareDialog from '@/components/ShareDialog.vue'
+
 export default {
     name: 'FileSideBar',
+    components: {
+        ShareDialog,
+    },
+    props: {
+        entity: {
+            type: Object,
+            required: true,
+        },
+    },
     data() {
         return {
-            tab: 0
+            tab: 0,
+            showShareDialog: false,
         }
+    },
+    computed: {
+        userId() {
+            return this.$store.state.auth.user_id
+        },
     }
 } 
 </script>

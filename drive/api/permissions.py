@@ -114,7 +114,7 @@ def get_file_with_permissions(entity_name):
 	"""
 
 
-	fields = ['name', 'title', 'owner', 'is_group', 'is_active']
+	fields = ['name', 'title', 'owner', 'is_group', 'is_active', 'modified', 'creation', 'file_size', 'mime_type']
 	entity = get_entity(entity_name, fields)
 	if entity.is_group:
 		frappe.throw('Specified entity is not a file', IsADirectoryError)

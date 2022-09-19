@@ -29,7 +29,7 @@
         </div>
         <div class="flex flex-row flex-1">
             <div class="p-6 mr-auto">yo</div>
-            <FileSideBar />
+            <FileSideBar :entity="$resources.file.data || {}" />
         </div>
     </div>
 </template>
@@ -38,6 +38,7 @@
 
 import { Avatar, Dropdown } from 'frappe-ui'
 import FileSideBar from '@/components/FileSideBar.vue'
+import { formatSize, formatDate, formatMimeType } from '@/utils/format'
 
 export default {
     name: 'File',
@@ -45,6 +46,12 @@ export default {
         Avatar,
         Dropdown,
         FileSideBar
+    },
+    props: {
+        entityName: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {
@@ -63,13 +70,6 @@ export default {
                 },
             ]
         }
-    },
-    props: {
-        entityName: {
-            type: String,
-            required: true,
-            default: '',
-        },
     },
     computed: {
         userId() {
@@ -93,6 +93,14 @@ export default {
                 method: 'drive.api.permissions.get_file_with_permissions',
                 params: { entity_name: this.entityName, },
                 onSuccess(data) {
+                    data.size_in_bytes = data.file_size
+                    data.file_size = data.is_group
+                        ? '-'
+                        : formatSize(data.file_size)
+                    data.modified = formatDate(data.modified)
+                    data.creation = formatDate(data.creation)
+                    data.mime_type = formatMimeType(data.mime_type)
+                    data.owner = data.owner === this.userId ? 'Me' : entity.owner
                     this.$resources.file.data = data
                 },
             }

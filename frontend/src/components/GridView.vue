@@ -48,6 +48,7 @@ import { FeatherIcon } from 'frappe-ui'
 import { getFilteredEntities } from '../utils/fuzzySearcher'
 import Folder from './mime-types/Folder.vue'
 import * as mimeTypes from './mime-types/index.vue'
+import { formatMimeType } from '@/utils/format'
 
 export default {
     name: 'GridView',
@@ -85,10 +86,7 @@ export default {
         getFileSubtitle(file) {
             let fileSubtitle = "File"
             if (file.mime_type) {
-                const mimeTypeArr = file.mime_type.split('/')
-                const generics = ["image", "video", "audio", "text"]
-                const fileType = generics.includes(mimeTypeArr[0]) ? mimeTypeArr[0] : mimeTypeArr[1]
-                fileSubtitle = fileType.charAt(0).toUpperCase() + fileType.slice(1)
+                fileSubtitle = formatMimeType(file.mime_type)
             }
             return `${fileSubtitle} ∙ ${file.modified}`
         },
