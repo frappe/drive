@@ -134,12 +134,13 @@
           <Button icon-left="link" appearance="white" @click="getLink">Get link</Button>
           <Button appearance="primary" class="ml-auto w-24" @click="open = false">Done</Button>
         </div>
+        <Alert :title="alertMessage" class="mt-5" v-if="showAlert"></Alert>
       </div>
     </template>
   </Dialog>
 </template>
 <script>
-import { Dialog, ErrorMessage, FeatherIcon, Button, Dropdown } from 'frappe-ui'
+import { Dialog, ErrorMessage, FeatherIcon, Button, Dropdown, Alert } from 'frappe-ui'
 import UserSearch from '@/components/UserSearch.vue'
 
 export default {
@@ -151,6 +152,7 @@ export default {
     Button,
     UserSearch,
     Dropdown,
+    Alert
   },
   props: {
     modelValue: {
@@ -174,6 +176,8 @@ export default {
       showUserSearch: false,
       searchQuery: '',
       errorMessage: '',
+      showAlert: false,
+      alertMessage: ""
     }
   },
   computed: {
@@ -196,14 +200,17 @@ export default {
   },
   methods: {
     async getLink() {
+      this.showAlert = false
       const link = this.isFolder ?
         `${window.location.origin}/drive/shared/folder/${this.entityName}` :
         `${window.location.origin}/drive/file/${this.entityName}`
       try {
         await navigator.clipboard.writeText(link);
-        alert('Link copied');
+        this.alertMessage = "Link copied successfully"
+        this.showAlert = true
       } catch ($e) {
-        alert('Some error occured');
+        this.alertMessage = "Some error occurred while copying the link"
+        this.showAlert = true
       }
     }
   },
