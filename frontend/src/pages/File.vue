@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full">
+    <div class="h-full flex flex-col">
         <div class="py-3 px-5 h-16 md:h-12 z-10 flex items-center justify-between border-b">
             <h3 class="truncate font-medium">{{ $resources.file.data?.title }}</h3>
             <div class="flex items-center">
@@ -27,18 +27,24 @@
                 </div>
             </div>
         </div>
+        <div class="flex flex-row flex-1">
+            <div class="p-6 mr-auto">yo</div>
+            <FileSideBar />
+        </div>
     </div>
 </template>
 
 <script>
 
 import { Avatar, Dropdown } from 'frappe-ui'
+import FileSideBar from '@/components/FileSideBar.vue'
 
 export default {
     name: 'File',
     components: {
         Avatar,
         Dropdown,
+        FileSideBar
     },
     data() {
         return {
