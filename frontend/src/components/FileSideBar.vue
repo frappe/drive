@@ -26,7 +26,7 @@
                         <div>Owner</div>
                     </div>
                     <div class="w-1/2 space-y-2">
-                        <div>{{entity.mime_type}}</div>
+                        <div>{{entity.formatted_mime_type}}</div>
                         <div>{{entity.file_size}}</div>
                         <div>{{entity.modified}}</div>
                         <div>{{entity.creation}}</div>
