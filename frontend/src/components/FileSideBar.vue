@@ -1,5 +1,13 @@
 <template>
-    <div class="w-96 border-l flex flex-col" >
+    <div class="w-96 flex flex-col">
+        <div class="mx-5 mb-3">
+            <div class="my-4">
+                <FeatherIcon name="x" class="h-4 cursor-pointer" @click="$store.commit('setShowInfo', false)" />
+            </div>
+            <div>
+                <div class="font-semibold">{{entity.title}}</div>
+            </div>
+        </div>
         <div class="h-11 flex cursor-pointer text-base">
             <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': tab, 'border-blue-500': !tab }" @click="tab=0">
                 <div class="m-auto">Detail</div>
@@ -26,7 +34,7 @@
                         <div>Owner</div>
                     </div>
                     <div class="w-1/2 space-y-2">
-                        <div>{{entity.formatted_mime_type}}</div>
+                        <div>{{formattedMimeType}}</div>
                         <div>{{entity.file_size}}</div>
                         <div>{{entity.modified}}</div>
                         <div>{{entity.creation}}</div>
@@ -42,11 +50,14 @@
 </template>
 
 <script>
+import { FeatherIcon } from 'frappe-ui'
 import ShareDialog from '@/components/ShareDialog.vue'
+import { formatMimeType } from '@/utils/format'
 
 export default {
     name: 'FileSideBar',
     components: {
+        FeatherIcon,
         ShareDialog,
     },
     props: {
@@ -64,6 +75,9 @@ export default {
     computed: {
         userId() {
             return this.$store.state.auth.user_id
+        },
+        formattedMimeType() {
+            return this.entity.is_group ? "Folder" : formatMimeType(this.entity.mime_type)
         },
     }
 } 

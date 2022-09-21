@@ -31,7 +31,7 @@
             <div class="p-6 grow grid place-items-center">
                 <FileRender :previewEntity="$resources.file.data" />
             </div>
-            <FileSideBar :entity="$resources.file.data" />
+            <FileSideBar class="border-l" :entity="$resources.file.data" />
         </div>
     </div>
 </template>
@@ -41,7 +41,7 @@
 import { Avatar, Dropdown } from 'frappe-ui'
 import FileSideBar from '@/components/FileSideBar.vue'
 import FileRender from '@/components/FileRender.vue'
-import { formatSize, formatDate, formatMimeType } from '@/utils/format'
+import { formatSize, formatDate } from '@/utils/format'
 
 export default {
     name: 'File',
@@ -103,7 +103,6 @@ export default {
                         : formatSize(data.file_size)
                     data.modified = formatDate(data.modified)
                     data.creation = formatDate(data.creation)
-                    data.formatted_mime_type = formatMimeType(data.mime_type)
                     data.owner = data.owner === this.userId ? 'Me' : entity.owner
                     this.$resources.file.data = data
                 },

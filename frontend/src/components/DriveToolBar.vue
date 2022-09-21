@@ -27,7 +27,8 @@
           </Button>
         </div>
       </Dropdown>
-      <Button v-if="showInfoButton" icon="info" class="h-8 hidden md:block"></Button>
+      <Button v-if="showInfoButton" icon="info" class="h-8 hidden md:block"
+        @click="$store.commit('setShowInfo', true)"></Button>
       <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5 h-8 flex">
         <Button icon="grid" class="h-7" @click="$store.commit('toggleView', 'grid')"
           :style="[$store.state.view === 'grid' && { 'background': '#FFF' }]"></Button>

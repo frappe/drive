@@ -13,6 +13,9 @@
         <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-6 md:px-8">
           <router-view />
         </div>
+        <div v-if="$store.state.showInfo && $store.state.entityInfo" class="border-l md:pt-6 flex">
+          <FileSideBar :entity="$store.state.entityInfo" />
+        </div>
       </div>
       <router-view v-else />
     </div>
@@ -21,6 +24,7 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Sidebar from '@/components/Sidebar.vue'
+import FileSideBar from '@/components/FileSideBar.vue'
 import MobileSidebar from '@/components/MobileSidebar.vue'
 import UploadTracker from '@/components/UploadTracker.vue'
 
@@ -29,6 +33,7 @@ export default {
   components: {
     Navbar,
     Sidebar,
+    FileSideBar,
     MobileSidebar,
     UploadTracker,
   },

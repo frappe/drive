@@ -28,6 +28,8 @@ const store = createStore({
     },
     view: 'grid',
     search: '',
+    entityInfo: null,
+    showInfo: false
   },
   getters: {
     isLoggedIn: (state) => {
@@ -68,6 +70,12 @@ const store = createStore({
     },
     setSearch(state, payload) {
       state.search = payload;
+    },
+    setEntityInfo(state, payload) {
+      state.entityInfo = payload;
+    },
+    setShowInfo(state, payload) {
+      state.showInfo = payload;
     },
   },
   actions: {

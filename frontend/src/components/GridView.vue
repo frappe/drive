@@ -108,9 +108,11 @@ export default {
                     this.$emit('entitySelected', selectedEntities)
                 }
             }
+            this.$store.commit('setEntityInfo', selectedEntities[selectedEntities.length - 1])
         },
         deselectAll() {
             this.$emit('entitySelected', [])
+            this.$store.commit('setEntityInfo', null)
         },
         getMimeTypeComp(mimeType) {
             let componentName = "Unknown"
