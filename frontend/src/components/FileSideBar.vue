@@ -1,5 +1,5 @@
 <template>
-    <div class="w-96 border-l">
+    <div class="w-96 border-l flex flex-col" >
         <div class="h-11 flex cursor-pointer text-base">
             <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': tab, 'border-blue-500': !tab }" @click="tab=0">
                 <div class="m-auto">Detail</div>
@@ -8,14 +8,14 @@
                 <div class="m-auto">Comments</div>
             </div>
         </div>
-        <div v-if="!tab" class="p-6 space-y-7">
+        <div v-if="!tab" class="p-6 space-y-7 h-full flex flex-col">
             <div v-if="entity.owner === 'Me'">
                 <div class="text-lg font-medium mb-4 ">Manage Access</div>
                 <div class="flex flex-row">
                     <Button @click="showShareDialog=true">Share</Button>
                 </div>
             </div>
-            <div>
+            <div class="grow">
                 <div class="text-lg font-medium mb-4">Properties</div>
                 <div class="flex text-base">
                     <div class="w-1/2 text-gray-600 space-y-2">
@@ -34,6 +34,7 @@
                     </div>
                 </div>
             </div>
+            <div class="text-gray-600 text-base">Viewers can download this file.</div>
         </div>
         <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="entity.name"
             :isFolder="entity.is_group" />

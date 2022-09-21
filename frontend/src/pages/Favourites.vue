@@ -7,7 +7,7 @@
             @openEntity="(entity) => openEntity(entity)">
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-                    :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
+                    :actionLoading="actionLoading" :showUploadButton="false" />
             </template>
             <template #placeholder>
                 <NoFilesSection :primaryMessage="`You haven't favourited any items`"
@@ -19,7 +19,7 @@
             @entitySelected="(selected) => (selectedEntities = selected)" @openEntity="(entity) => openEntity(entity)">
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-                    :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
+                    :actionLoading="actionLoading" :showUploadButton="false" />
             </template>
             <template #placeholder>
                 <NoFilesSection :primaryMessage="`You haven't favourited any items`"

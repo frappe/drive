@@ -7,7 +7,8 @@
       @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading" />
+          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
+          :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -18,7 +19,8 @@
       @entitySelected="(selected) => (selectedEntities = selected)" @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading" />
+          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
+          :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -46,7 +48,8 @@
         selectedEntities = []
       }
     " />
-    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="selectedEntities[0].name" :isFolder="selectedEntities[0].is_group"/>
+    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="selectedEntities[0].name"
+      :isFolder="selectedEntities[0].is_group" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -107,6 +110,9 @@ export default {
   computed: {
     userId() {
       return this.$store.state.auth.user_id
+    },
+    showInfoButton() {
+      return this.selectedEntities.length === 1
     },
     orderBy() {
       return this.$store.state.sortOrder.ascending

@@ -6,7 +6,7 @@
             :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)">
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-                    :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
+                    :actionLoading="actionLoading" :showUploadButton="false" />
             </template>
             <template #placeholder>
                 <NoFilesSection :primaryMessage="'Trash is currently empty'"
@@ -18,7 +18,7 @@
             @entitySelected="(selected) => (selectedEntities = selected)">
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-                    :actionLoading="actionLoading" :showUploadButton="false" :showViewButton="false" />
+                    :actionLoading="actionLoading" :showUploadButton="false" />
             </template>
             <template #placeholder>
                 <NoFilesSection :primaryMessage="'Trash is currently empty'"
