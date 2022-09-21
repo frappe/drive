@@ -1,6 +1,6 @@
 <template>
     <div class="w-96 flex flex-col">
-        <div class="mx-5 mb-3">
+        <div v-if="$store.state.showInfo" class="mx-5 mb-3">
             <div class="my-4">
                 <FeatherIcon name="x" class="h-4 cursor-pointer" @click="$store.commit('setShowInfo', false)" />
             </div>
@@ -44,6 +44,8 @@
             </div>
             <div class="text-gray-600 text-base">Viewers can download this file.</div>
         </div>
+        <div v-else class="p-6 space-y-7 h-full flex flex-col">
+        </div>
         <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="entity.name"
             :isFolder="entity.is_group" />
     </div>
@@ -55,7 +57,7 @@ import ShareDialog from '@/components/ShareDialog.vue'
 import { formatMimeType } from '@/utils/format'
 
 export default {
-    name: 'FileSideBar',
+    name: 'FileSidebar',
     components: {
         FeatherIcon,
         ShareDialog,

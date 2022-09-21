@@ -89,8 +89,8 @@ export default {
       let selectedEntities = this.selectedEntities
       const index = selectedEntities.indexOf(entity)
       index > -1 ? selectedEntities.splice(index, 1) : selectedEntities.push(entity)
-      this.$store.commit('setEntityInfo', selectedEntities[selectedEntities.length - 1])
       this.$emit('entitySelected', selectedEntities)
+      this.$store.commit('setEntityInfo', selectedEntities[selectedEntities.length - 1])
     },
   },
 }
