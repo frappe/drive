@@ -214,13 +214,7 @@ export default {
       }
     }
   },
-  updated() {
-    this.$resources.sharedWith.fetch()
-    this.$resources.generalAccess.fetch()
-  },
   mounted() {
-    this.$resources.sharedWith.fetch()
-    this.$resources.generalAccess.fetch()
     const targetElement = this.$refs.dialogContent?.closest('.overflow-hidden')
     if (targetElement) {
       targetElement.classList.remove('overflow-hidden')
@@ -238,6 +232,7 @@ export default {
         params: {
           entity_name: this.entityName,
         },
+        auto: true
       }
     },
     generalAccess() {
@@ -247,6 +242,7 @@ export default {
         onSuccess(data) {
           this.generalAccess = data
         },
+        auto: true
       }
     },
     share() {

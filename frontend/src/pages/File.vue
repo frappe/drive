@@ -86,11 +86,6 @@ export default {
             return this.$store.state.user.imageURL
         },
     },
-    methods: {
-    },
-    created() {
-        this.$resources.file.fetch()
-    },
     resources: {
         file() {
             return {
@@ -106,6 +101,7 @@ export default {
                     data.owner = data.owner === this.userId ? 'Me' : entity.owner
                     this.$resources.file.data = data
                 },
+                auto: true
             }
         },
     },

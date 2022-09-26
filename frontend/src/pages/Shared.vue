@@ -111,8 +111,7 @@ export default {
       return this.$store.state.auth.user_id
     },
     hasWriteAccess() {
-      if (this.$resources.folderAccess.data?.write) return true
-      return false
+      return !!this.$resources.folderAccess.data?.write
     },
     actionItems() {
       return [
@@ -203,8 +202,7 @@ export default {
     },
   },
 
-  async updated() {
-    await this.$resources.folderAccess.fetch()
+  updated() {
     if (!(!this.dropzone && this.hasWriteAccess)) return
 
     let componentContext = this
@@ -286,6 +284,7 @@ export default {
         onSuccess(data) {
           this.$resources.folderAccess.data = data
         },
+        auto: true
       }
     },
 
