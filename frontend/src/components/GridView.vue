@@ -7,8 +7,8 @@
         <div v-else class="h-full px-5 md:px-0" @click="deselectAll">
             <div class="mt-7" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
-                <div class="flex flex-row flex-wrap gap-6 my-3">
-                    <div class="md:w-60 mt-1 rounded-lg border group select-none" v-for="folder in folders"
+                <div class="flex flex-row flex-wrap gap-5 my-4">
+                    <div class="md:w-60 rounded-lg border group select-none" v-for="folder in folders"
                         :key="folder.name" @click="selectEntity(folder, $event)"
                         :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
                         <div class="h-28 md:h-36 place-items-center grid">
@@ -23,8 +23,8 @@
             </div>
             <div class="mt-7" v-if="files.length > 0">
                 <div class="text-gray-600 font-medium">Files</div>
-                <div class="flex flex-row flex-wrap gap-6 my-3">
-                    <div class="md:w-60 mt-1 rounded-lg border group select-none" v-for="file in files" :key="file.name"
+                <div class="flex flex-row flex-wrap gap-5 my-4">
+                    <div class="md:w-60 rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }">
                         <div class="h-28 md:h-36 place-items-center grid">
                             <component :is="getMimeTypeComp(file.mime_type)" />

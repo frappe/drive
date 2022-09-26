@@ -3,6 +3,7 @@
 
 import frappe
 from drive.api.files import get_entity
+from drive.utils.files import get_user_directory 
 
 @frappe.whitelist()
 def get_shared_with_list(entity_name):
@@ -34,7 +35,7 @@ def get_shared_with_list(entity_name):
 
 
 @frappe.whitelist()
-def get_shared_with_me(entity_name=None):
+def get_shared_with_me(entity_name=None, get_all=False):
 	"""
 	Return the list of files and folders shared with the current user
 
@@ -98,8 +99,38 @@ def get_shared_with_me(entity_name=None):
 		.where(DriveEntity.is_active == 1) 
 	)
 	result = query.run(as_dict=True)
+	if get_all:
+		return result
+
 	names = [x.name for x in result]
 	return filter(lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user, result) # Return highest level entity
+
+
+@frappe.whitelist()
+def get_all_my_entities(fields=None):
+	"""
+	Return file data with permissions
+
+	:return: DriveEntity with permissions
+	:rtype: frappe._dict
+	"""
+
+
+	fields = fields or ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']
+	my_entities = frappe.db.get_list('Drive Entity',
+		filters={
+			'is_active': 1,
+			'owner': frappe.session.user,
+			'name': [ '!=', get_user_directory().name ]
+		},
+		fields=fields,
+	)
+
+	shared_entities = get_shared_with_me(get_all=True)
+
+	all_entities = my_entities + shared_entities
+	return list({x['name']:x for x in all_entities}.values())
+
 
 
 @frappe.whitelist()

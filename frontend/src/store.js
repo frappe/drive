@@ -27,7 +27,6 @@ const store = createStore({
       ascending: true,
     },
     view: 'grid',
-    search: '',
     entityInfo: null,
     showInfo: false
   },
@@ -67,9 +66,6 @@ const store = createStore({
     },
     toggleView(state, payload) {
       state.view = payload;
-    },
-    setSearch(state, payload) {
-      state.search = payload;
     },
     setEntityInfo(state, payload) {
       state.entityInfo = payload;

@@ -19,7 +19,7 @@
       </div>
 
       <div class="flex items-center">
-        <Input type="text" class="ml-2" v-model="this.$store.state.search" placeholder="Search" @input="handleSearch($event)" />
+        <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly @click="showSearchDialog=true" />
         <Button class="ml-4 md:ml-6" appearance="minimal" icon="bell"></Button>
         <div class="relative ml-3">
           <Dropdown :options="dropdownItems" placement="right">
@@ -35,10 +35,12 @@
       </div>
     </div>
   </nav>
+  <SearchDialog v-model="showSearchDialog" />
 </template>
 <script>
 import { Avatar, Dropdown, FeatherIcon, Input, Button } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
+import SearchDialog from '@/components/SearchDialog.vue'
 import FrappeLogo from '@/components/FrappeLogo.vue'
 
 export default {
@@ -46,6 +48,7 @@ export default {
   components: {
     FrappeDriveLogo,
     FrappeLogo,
+    SearchDialog,
     Avatar,
     Dropdown,
     FeatherIcon,
@@ -67,6 +70,7 @@ export default {
           handler: () => this.$store.dispatch('logout'),
         },
       ],
+      showSearchDialog: false
     }
   },
   computed: {
@@ -77,10 +81,5 @@ export default {
       return this.$store.state.user.imageURL
     },
   },
-  methods: {
-    handleSearch(event) {
-      this.$store.commit('setSearch', event)
-    }
-  }
 }
 </script>
