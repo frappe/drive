@@ -27,6 +27,7 @@ export function formatDate(date) {
 }
 
 export function formatMimeType(mimeType) {
+  if (!mimeType) return 'Unknown';
   const mimeTypeArr = mimeType.split('/');
   const generics = ['image', 'video', 'audio', 'text'];
   const fileType = generics.includes(mimeTypeArr[0])
