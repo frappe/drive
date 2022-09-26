@@ -57,7 +57,7 @@ import ShareDialog from '@/components/ShareDialog.vue'
 import { formatMimeType } from '@/utils/format'
 
 export default {
-    name: 'FileSidebar',
+    name: 'InfoSidebar',
     components: {
         FeatherIcon,
         ShareDialog,

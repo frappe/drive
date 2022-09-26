@@ -31,7 +31,7 @@
             <div class="p-6 grow grid place-items-center">
                 <FileRender :previewEntity="$resources.file.data" />
             </div>
-            <FileSidebar class="border-l" :entity="$resources.file.data" />
+            <InfoSidebar class="border-l" :entity="$resources.file.data" />
         </div>
     </div>
 </template>
@@ -39,7 +39,7 @@
 <script>
 
 import { Avatar, Dropdown } from 'frappe-ui'
-import FileSidebar from '@/components/FileSidebar.vue'
+import InfoSidebar from '@/components/InfoSidebar.vue'
 import FileRender from '@/components/FileRender.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
@@ -48,7 +48,7 @@ export default {
     components: {
         Avatar,
         Dropdown,
-        FileSidebar,
+        InfoSidebar,
         FileRender,
     },
     props: {

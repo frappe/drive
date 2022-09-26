@@ -13,8 +13,8 @@
         <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-6 md:px-8">
           <router-view />
         </div>
-        <div v-if="showFileSidebar" class="border-l md:pt-6 flex">
-          <FileSidebar :entity="$store.state.entityInfo" />
+        <div v-if="showInfoSidebar" class="border-l md:pt-6 flex">
+          <InfoSidebar :entity="$store.state.entityInfo" />
         </div>
       </div>
       <router-view v-else />
@@ -24,7 +24,7 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Sidebar from '@/components/Sidebar.vue'
-import FileSidebar from '@/components/FileSidebar.vue'
+import InfoSidebar from '@/components/InfoSidebar.vue'
 import MobileSidebar from '@/components/MobileSidebar.vue'
 import UploadTracker from '@/components/UploadTracker.vue'
 
@@ -33,7 +33,7 @@ export default {
   components: {
     Navbar,
     Sidebar,
-    FileSidebar,
+    InfoSidebar,
     MobileSidebar,
     UploadTracker,
   },
@@ -52,7 +52,7 @@ export default {
     showUploadTracker() {
       return this.isLoggedIn && this.$store.state.uploads.length > 0
     },
-    showFileSidebar() {
+    showInfoSidebar() {
       return this.$store.state.showInfo && this.$store.state.entityInfo
     },
   },
