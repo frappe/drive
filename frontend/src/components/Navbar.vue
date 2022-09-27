@@ -19,7 +19,8 @@
       </div>
 
       <div class="flex items-center">
-        <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly @click="showSearchDialog=true" />
+        <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly
+          @click="showSearchDialog=true" />
         <Button class="ml-4 md:ml-6" appearance="minimal" icon="bell"></Button>
         <div class="relative ml-3">
           <Dropdown :options="dropdownItems" placement="right">
@@ -35,17 +36,20 @@
       </div>
     </div>
   </nav>
-  <SearchDialog v-model="showSearchDialog" />
+  <SearchDialog v-model="showSearchDialog" @openEntity="(entity) => openEntity(entity)" />
+  <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
 </template>
 <script>
 import { Avatar, Dropdown, FeatherIcon, Input, Button } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
 import SearchDialog from '@/components/SearchDialog.vue'
+import FilePreview from '@/components/FilePreview.vue'
 import FrappeLogo from '@/components/FrappeLogo.vue'
 
 export default {
   name: 'Navbar',
   components: {
+    FilePreview,
     FrappeDriveLogo,
     FrappeLogo,
     SearchDialog,
@@ -64,6 +68,8 @@ export default {
   emits: ['toggleMobileSidebar'],
   data() {
     return {
+      previewEntity: null,
+      showPreview: false,
       dropdownItems: [
         {
           label: 'Log out',
@@ -79,6 +85,24 @@ export default {
     },
     imageURL() {
       return this.$store.state.user.imageURL
+    },
+  },
+  methods: {
+    openEntity(entity) {
+      if (entity.is_group) {
+        this.selectedEntities = []
+        this.$router.push({
+          name: 'Folder',
+          params: { entityName: entity.name },
+        })
+      } else {
+        this.previewEntity = entity
+        this.showPreview = true
+      }
+    },
+    hidePreview() {
+      this.showPreview = false
+      this.previewEntity = null
     },
   },
 }

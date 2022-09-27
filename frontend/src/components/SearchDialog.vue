@@ -31,7 +31,7 @@ export default {
       required: true,
     },
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'openEntity'],
   data() {
     return {
       search: '',
@@ -58,15 +58,8 @@ export default {
   },
   methods: {
     openEntity(entity) {
-      if (entity.is_group) {
-        console.log("yellow")
-        // this.$router.push({
-        //   name: 'Folder',
-        //   params: { entityName: entity.name },
-        // })
-      } else {
-        console.log("mellow")
-      }
+      this.$emit('openEntity', entity)
+      this.open = false
     },
   },
   updated() {
