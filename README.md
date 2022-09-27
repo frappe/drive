@@ -35,31 +35,31 @@ To setup the repository locally follow the steps mentioned below:
 
 1. Once you're in the `frappe-bench` directory, start the server
     ```sh
-    $ bench start
+    bench start
     ```
 
 1. In a separate terminal instance, but same directory, get the Drive app
     ```sh
-    $ bench get-app https://github.com/frappe/drive
+    bench get-app https://github.com/frappe/drive
     ```
 1. Create a new site
     ```sh
-    $ bench new-site drive.site
+    bench new-site drive.site
     ```
 
 1. Map your site to localhost
     ```sh
-    $ bench --site drive.site add-to-hosts
+    bench --site drive.site add-to-hosts
     ```
 
 1. Install the app onto your site
     ```sh
-    $ bench --site drive.site install-app drive
+    bench --site drive.site install-app drive
     ```
 
 1. Start the frontend development server
     ```sh
-    $ cd apps/drive && yarn dev
+    cd apps/drive && yarn dev
     ```
 
 1. Finally, open the URL http://drive.site:8000/drive in your browser to see the app running.
