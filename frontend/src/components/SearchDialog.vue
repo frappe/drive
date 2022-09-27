@@ -2,14 +2,17 @@
   <Dialog :options="{title: 'Search in Drive'}" v-model="open">
     <template #body-content>
       <Input iconLeft="search" type="text" v-model="search" placeholder="Search in Drive" />
-      <div>{{$resources.entities.data.map(x=> x.title)}}</div>
       <ErrorMessage class="mt-2" :message="errorMessage" />
+      <div>{{filteredEntities.map(x=> x.title)}}</div>
+      <div>{{search}}</div>
+      <div></div>
     </template>
   </Dialog>
 </template>
 <script>
 import { Dialog, Input, ErrorMessage } from 'frappe-ui'
 import { formatSize, formatDate } from '@/utils/format'
+import { getFilteredEntities } from '../utils/fuzzySearcher'
 
 export default {
   name: 'SearchDialog',
@@ -27,10 +30,14 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
+      search: '',
       errorMessage: '',
     }
   },
   computed: {
+    filteredEntities() {
+        return getFilteredEntities(this.search, this.$resources.entities.data)
+    },
     open: {
       get() {
         return this.modelValue
@@ -42,6 +49,9 @@ export default {
         }
       },
     },
+  },
+  updated() {
+    this.$resources.entities.fetch()
   },
   resources: {
     entities() {
@@ -59,7 +69,7 @@ export default {
             entity.owner = entity.owner === this.userId ? 'Me' : entity.owner
           })
         },
-        auto: true,
+        auto: true
       }
     },
   },

@@ -281,9 +281,6 @@ export default {
       return {
         method: 'drive.api.permissions.get_user_access',
         params: { entity_name: this.entityName, },
-        onSuccess(data) {
-          this.$resources.folderAccess.data = data
-        },
         auto: true
       }
     },
@@ -304,7 +301,6 @@ export default {
             entity.creation = formatDate(entity.creation)
             entity.owner = entity.owner === this.userId ? 'Me' : entity.owner
           })
-          this.$resources.folderContents.data = data
         },
         auto: true,
       }

@@ -129,6 +129,7 @@ def get_all_my_entities(fields=None):
 	shared_entities = get_shared_with_me(get_all=True)
 
 	all_entities = my_entities + shared_entities
+	all_entities.sort(key=lambda x: x.modified, reverse=True)
 	return list({x['name']:x for x in all_entities}.values())
 
 

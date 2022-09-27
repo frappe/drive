@@ -99,7 +99,6 @@ export default {
                     data.modified = formatDate(data.modified)
                     data.creation = formatDate(data.creation)
                     data.owner = data.owner === this.userId ? 'Me' : entity.owner
-                    this.$resources.file.data = data
                 },
                 auto: true
             }

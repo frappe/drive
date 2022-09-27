@@ -45,7 +45,6 @@
 
 <script>
 import { FeatherIcon } from 'frappe-ui'
-import { getFilteredEntities } from '../utils/fuzzySearcher'
 import Folder from './mime-types/Folder.vue'
 import * as mimeTypes from './mime-types/index.vue'
 import { formatMimeType } from '@/utils/format'
@@ -69,16 +68,10 @@ export default {
             return this.folderContents && this.folderContents.length === 0
         },
         folders() {
-            const folders = this.folderContents ? this.folderContents.filter(x => x.is_group === 1) : []
-            if (this.$store.state.search)
-                return getFilteredEntities(this.$store.state.search, folders)
-            return folders
+            return this.folderContents ? this.folderContents.filter(x => x.is_group === 1) : []
         },
         files() {
-            const files = this.folderContents ? this.folderContents.filter(x => x.is_group === 0) : []
-            if (this.$store.state.search)
-                return getFilteredEntities(this.$store.state.search, files)
-            return files
+            return this.folderContents ? this.folderContents.filter(x => x.is_group === 0) : []
         }
     },
     emits: ['entitySelected', 'openEntity'],
