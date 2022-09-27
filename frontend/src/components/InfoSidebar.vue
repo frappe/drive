@@ -17,7 +17,7 @@
             </div>
         </div>
         <div v-if="!tab" class="p-6 space-y-7 h-full flex flex-col">
-            <div v-if="entity.owner === 'Me'">
+            <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium mb-4 ">Manage Access</div>
                 <div class="flex flex-row">
                     <Button @click="showShareDialog=true">Share</Button>

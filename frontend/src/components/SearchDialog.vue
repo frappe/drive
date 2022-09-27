@@ -1,16 +1,21 @@
 <template>
   <Dialog :options="{title: 'Search in Drive'}" v-model="open">
     <template #body-content>
-      <Input iconLeft="search" type="text" v-model="search" placeholder="Search in Drive" />
-      <ErrorMessage class="mt-2" :message="errorMessage" />
-      <div>{{filteredEntities.map(x=> x.title)}}</div>
-      <div>{{search}}</div>
-      <div></div>
+      <Input iconLeft="search" type="text" v-model="search" placeholder="Search in Drive"
+        @input="($event) => search = $event" class="mb-2" />
+      <div v-if="showEntities" v-for="entity in filteredEntities" @click="openEntity(entity)"
+        class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-md py-2 px-3">
+        <div class="grow">
+          <div class="text-lg">{{entity.title}}</div>
+          <div class="text-sm text-gray-600">{{entity.owner}}</div>
+        </div>
+        <div class="text-xs whitespace-nowrap">{{entity.modified}}</div>
+      </div>
     </template>
   </Dialog>
 </template>
 <script>
-import { Dialog, Input, ErrorMessage } from 'frappe-ui'
+import { Dialog, Input, } from 'frappe-ui'
 import { formatSize, formatDate } from '@/utils/format'
 import { getFilteredEntities } from '../utils/fuzzySearcher'
 
@@ -19,7 +24,6 @@ export default {
   components: {
     Dialog,
     Input,
-    ErrorMessage,
   },
   props: {
     modelValue: {
@@ -31,12 +35,17 @@ export default {
   data() {
     return {
       search: '',
-      errorMessage: '',
     }
   },
   computed: {
+    userId() {
+      return this.$store.state.auth.user_id
+    },
     filteredEntities() {
-        return getFilteredEntities(this.search, this.$resources.entities.data)
+      return getFilteredEntities(this.search, this.$resources.entities.data)
+    },
+    showEntities() {
+      return this.search.length > 0
     },
     open: {
       get() {
@@ -44,10 +53,20 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value)
-        if (!value) {
-          this.errorMessage = ''
-        }
       },
+    },
+  },
+  methods: {
+    openEntity(entity) {
+      if (entity.is_group) {
+        console.log("yellow")
+        // this.$router.push({
+        //   name: 'Folder',
+        //   params: { entityName: entity.name },
+        // })
+      } else {
+        console.log("mellow")
+      }
     },
   },
   updated() {
@@ -66,7 +85,7 @@ export default {
               : formatSize(entity.file_size)
             entity.modified = formatDate(entity.modified)
             entity.creation = formatDate(entity.creation)
-            entity.owner = entity.owner === this.userId ? 'Me' : entity.owner
+            entity.owner = entity.owner === this.userId ? 'me' : entity.owner
           })
         },
         auto: true
