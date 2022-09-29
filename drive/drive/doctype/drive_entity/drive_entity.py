@@ -13,10 +13,18 @@ class DriveEntity(NestedSet):
 	def on_update(self):
 		super().on_update()
 
-
 	def before_save(self):
 		self.version = self.version + 1
 
+	def get_children(self):
+		if int(frappe.__version__.split('.')[0]) >= 14:
+			super().get_children(self)
+		else:
+			child_names = frappe.get_list(
+				self.doctype, filters={self.nsm_parent_field: self.name}, pluck="name"
+			)
+			for name in child_names:
+				yield frappe.get_doc(self.doctype, name)
 
 	def after_insert(self):
 		"""Copy parent permissions to new child entity"""
