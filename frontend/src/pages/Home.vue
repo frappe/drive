@@ -48,8 +48,7 @@
         selectedEntities = []
       }
     " />
-    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="selectedEntities[0].name"
-      :isFolder="selectedEntities[0].is_group" />
+    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :isFolder="shareIsFolder" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -119,6 +118,12 @@ export default {
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`
     },
+    shareName() {
+      return this.selectedEntities[0]?.name ? this.selectedEntities[0].name : this.entityName
+    },
+    shareIsFolder() {
+      return this.selectedEntities[0]?.is_group ? this.selectedEntities[0].is_group : 1
+    },
     actionItems() {
       return [
         {
@@ -148,7 +153,7 @@ export default {
             this.showShareDialog = true
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1
+            return this.selectedEntities.length === 1 || (this.entityName && !this.selectedEntities.length)
           },
         },
         {
