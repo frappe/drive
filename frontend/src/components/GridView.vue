@@ -125,12 +125,9 @@ export default {
             return mimeTypes[componentName]
         },
         handleEntityContext(entity, event){
-            // console.log(this.$el.offsetLeft, this.$el.offsetTop)
             this.$emit('entitySelected', [entity])
             this.$store.commit('setEntityInfo', entity)
-            this.$nextTick()
             this.$emit('showEntityContext', {x: event.clientX, y: event.clientY })
-            console.log('handleEntityContext', event)
             event.preventDefault()
         },
     }
