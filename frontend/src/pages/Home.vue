@@ -4,7 +4,9 @@
 
     <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
       :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)">
+      @openEntity="(entity) => openEntity(entity)"
+      @showEntityContext="(event) => (toggleEntityContext(event))"
+      >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
           @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
@@ -28,6 +30,11 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
+    <EntityContextMenu
+      v-if="hideEntityContext"
+      :actionItems="actionItems"
+      :entityContext="entityContext"
+    />
     <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
       () => {
         $resources.folderContents.fetch()
@@ -48,6 +55,7 @@
         selectedEntities = []
       }
     " />
+    
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :isFolder="shareIsFolder" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
@@ -68,6 +76,7 @@ import ShareDialog from '@/components/ShareDialog.vue'
 import DetailsDialog from '@/components/DetailsDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
+import EntityContextMenu from '@/components/EntityContextMenu.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
 export default {
@@ -85,6 +94,7 @@ export default {
     DetailsDialog,
     GeneralDialog,
     FolderContentsError,
+    EntityContextMenu
   },
   props: {
     entityName: {
@@ -103,6 +113,8 @@ export default {
     showShareDialog: false,
     showDetailsDialog: false,
     showRemoveDialog: false,
+    hideEntityContext: false,
+    entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
     actionLoading: false,
   }),
@@ -244,6 +256,11 @@ export default {
     hidePreview() {
       this.showPreview = false
       this.previewEntity = null
+    },
+    toggleEntityContext(event) {
+      console.log('toggleEntityContext', event)
+      this.hideEntityContext = !this.hideEntityContext
+      this.entityContext = event
     },
   },
   watch: {
