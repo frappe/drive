@@ -90,9 +90,9 @@ export default {
   methods: {
     openEntity(entity) {
       if (entity.is_group) {
-        this.selectedEntities = []
+        const name = entity?.read ? 'SharedFolder' : 'Folder'
         this.$router.push({
-          name: 'Folder',
+          name: name,
           params: { entityName: entity.name },
         })
       } else {
