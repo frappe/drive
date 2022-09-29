@@ -248,6 +248,7 @@ export default {
   },
   watch: {
     entityName(newEntityName) {
+      this.selectedEntities = []
       if (!newEntityName) {
         this.breadcrumbs = [{ label: 'Home', route: '/' }]
       }

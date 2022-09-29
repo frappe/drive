@@ -192,6 +192,7 @@ export default {
 
   watch: {
     entityName(newEntityName) {
+      this.selectedEntities = []
       if (this.dropzone) {
         this.dropzone.destroy()
         this.dropzone = null
