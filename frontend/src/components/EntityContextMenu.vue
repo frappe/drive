@@ -2,6 +2,7 @@
 	<div
 		class="bg-gray-100"
 		:style="{ left: `${entityContext.x}px`, top: `${entityContext.y}px` }"
+		v-if="contextActionItems.length > 0"
 	>
 		<ul>
 		<li
@@ -40,7 +41,6 @@ export default {
 	methods: {
 		closeAndApply(handler){
 			handler()
-			this.$emit('showEntityContext')
 		}
 	}
 }

@@ -6,6 +6,7 @@
       :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => (toggleEntityContext(event))"
+      @closeContextMenuEvent="closeContextMenu"
       >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
@@ -151,6 +152,7 @@ export default {
         {
           label: 'Download',
           handler: () => {
+            this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
@@ -259,12 +261,13 @@ export default {
       this.previewEntity = null
     },
     toggleEntityContext(event) {
+      this.hidePreview()
       this.hideEntityContext = true
-      this.showPreview = false
       this.entityContext = event
     },
     closeContextMenu(){
       this.hideEntityContext = false
+      this.entityContext = undefined
     },
   },
   watch: {
@@ -275,7 +278,19 @@ export default {
       }
     },
     showPreview(){
-      this.hideEntityContext = false
+      this.closeContextMenu()
+    },
+    showDetailsDialog(){
+      this.closeContextMenu()
+    },
+    showRenameDialog(){
+      this.closeContextMenu()
+    },
+    showShareDialog(){
+      this.closeContextMenu()
+    },
+    showRemoveDialog(){
+      this.closeContextMenu()
     }
   },
   mounted() {
