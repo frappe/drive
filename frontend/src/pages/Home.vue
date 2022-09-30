@@ -2,12 +2,15 @@
   <div class="h-full">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
+    <GridView
+      v-else-if="$store.state.view === 'grid'"
+      :folderContents="$resources.folderContents.data"
+      :selectedEntities="selectedEntities"
+      @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => (toggleEntityContext(event))"
       @closeContextMenuEvent="closeContextMenu"
-      >
+    >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
           @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
@@ -96,7 +99,7 @@ export default {
     DetailsDialog,
     GeneralDialog,
     FolderContentsError,
-    EntityContextMenu
+    EntityContextMenu,
   },
   props: {
     entityName: {

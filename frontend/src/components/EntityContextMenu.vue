@@ -31,7 +31,8 @@ export default {
 	},
 	computed: {
 		contextActionItems(){
-			if (this.actionItems.length <= 2){
+			console.log(this.actionItems)
+			if (this.actionItems[0].label === 'New Folder'){
 				return []
 			} else {
 				return this.actionItems

@@ -2,9 +2,15 @@
   <div class="h-full flex flex-col">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
-      @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
-      @openEntity="(entity) => openEntity(entity)">
+    <GridView 
+      v-else-if="$store.state.view === 'grid'"
+      :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)"
+      :selectedEntities="selectedEntities"
+      @openEntity="(entity) => openEntity(entity)"
+      @showEntityContext="(event) => (toggleEntityContext(event))"
+      @closeContextMenuEvent="closeContextMenu"
+    >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="hasWriteAccess"
           @uploadFile="dropzone.hiddenFileInput.click()" />
@@ -27,6 +33,12 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
+    <EntityContextMenu
+      v-if="hideEntityContext"
+      :actionItems="actionItems"
+      :entityContext="entityContext"
+      v-on-outside-click="closeContextMenu"
+    />
     <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
       () => {
         $resources.folderContents.fetch()
@@ -70,6 +82,7 @@ import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import DeleteDialog from '@/components/DeleteDialog.vue'
+import EntityContextMenu from '@/components/EntityContextMenu.vue'
 import { formatSize, formatDate } from '@/utils/format'
 import Dropzone from 'dropzone'
 
@@ -87,6 +100,7 @@ export default {
     NoFilesSection,
     FilePreview,
     FolderContentsError,
+    EntityContextMenu,
   },
   data: () => ({
     dropzone: null,
@@ -96,6 +110,8 @@ export default {
     showRenameDialog: false,
     showRemoveDialog: false,
     showDeleteDialog: false,
+    hideEntityContext: false,
+    entityContext: {},
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
@@ -127,6 +143,7 @@ export default {
         {
           label: 'Download',
           handler: () => {
+            this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
@@ -188,8 +205,16 @@ export default {
       this.showPreview = false
       this.previewEntity = null
     },
+    toggleEntityContext(event) {
+      this.hidePreview()
+      this.hideEntityContext = true
+      this.entityContext = event
+    },
+    closeContextMenu(){
+      this.hideEntityContext = false
+      this.entityContext = undefined
+    },
   },
-
   watch: {
     entityName(newEntityName) {
       this.selectedEntities = []
@@ -201,6 +226,21 @@ export default {
         this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }]
       }
     },
+    showPreview(){
+      this.closeContextMenu()
+    },
+    showDetailsDialog(){
+      this.closeContextMenu()
+    },
+    showRenameDialog(){
+      this.closeContextMenu()
+    },
+    showShareDialog(){
+      this.closeContextMenu()
+    },
+    showRemoveDialog(){
+      this.closeContextMenu()
+    }
   },
 
   updated() {
