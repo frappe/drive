@@ -34,6 +34,7 @@
       v-if="hideEntityContext"
       :actionItems="actionItems"
       :entityContext="entityContext"
+      v-on-outside-click="closeContextMenu"
     />
     <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
       () => {
@@ -258,9 +259,12 @@ export default {
       this.previewEntity = null
     },
     toggleEntityContext(event) {
-      console.log('toggleEntityContext', event)
-      this.hideEntityContext = !this.hideEntityContext
+      this.hideEntityContext = true
+      this.showPreview = false
       this.entityContext = event
+    },
+    closeContextMenu(){
+      this.hideEntityContext = false
     },
   },
   watch: {
@@ -270,6 +274,9 @@ export default {
         this.breadcrumbs = [{ label: 'Home', route: '/' }]
       }
     },
+    showPreview(){
+      this.hideEntityContext = false
+    }
   },
   mounted() {
     let componentContext = this

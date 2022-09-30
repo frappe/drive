@@ -16,8 +16,6 @@
 	</div>
 </template>
 <script>
-	// <Dialog>
-	// </Dialog>
 import { Dialog, Button, ListItem } from 'frappe-ui'
 export default {
 	name: 'EntityContextMenu',
@@ -32,7 +30,6 @@ export default {
 	},
 	computed: {
 		contextActionItems(){
-			console.log(JSON.stringify(this.$props))
 			if (this.actionItems.length <= 2){
 				return []
 			} else {
@@ -53,7 +50,8 @@ div {
 	position: absolute;
 	width: auto;
 	z-index: 250;
-	padding: 1rem;
+	padding: 0.5rem 1rem 0.5em 1rem;
+	cursor: pointer;
 }
 li {
 	height: 1.5rem;
