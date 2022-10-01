@@ -1,5 +1,5 @@
 <template>
-    <Spinner v-if="preview.loading" class="w-10 h-10 z-10 text-neutral-100" />
+    <Spinner v-if="preview.loading" class="w-10 h-10 z-10 text-neutral-100 mx-auto" />
     <div v-else-if="preview.error "
         class="p-8 z-10 bg-[#252728] rounded-md text-neutral-100 text-xl text-center font-medium">
         {{ preview.error }}
@@ -34,23 +34,31 @@ export default {
         }
     },
     mounted() {
-        const isSupportedType =
-            this.previewEntity.mime_type &&
-            ['image', 'video', 'application/pdf'].some((type) =>
-                this.previewEntity.mime_type.startsWith(type)
-            )
-        if (!isSupportedType) {
-            this.preview.error = 'Previews are not supported for this file type'
-            this.preview.loading = false
-        } else if (this.previewEntity.size_in_bytes > 100 * 1024 * 1024) {
-            // Size limit = 100MB
-            this.preview.error = 'File is too large to preview'
-            this.preview.loading = false
-        } else {
-            this.fetchContent()
-        }
+        this.renderContent()
+    },
+    watch: {
+        previewEntity() {
+            this.renderContent()
+        },
     },
     methods: {
+        renderContent() {
+            const isSupportedType =
+                this.previewEntity.mime_type &&
+                ['image', 'video', 'application/pdf'].some((type) =>
+                    this.previewEntity.mime_type.startsWith(type)
+                )
+            if (!isSupportedType) {
+                this.preview.error = 'Previews are not supported for this file type'
+                this.preview.loading = false
+            } else if (this.previewEntity.size_in_bytes > 100 * 1024 * 1024) {
+                // Size limit = 100MB
+                this.preview.error = 'File is too large to preview'
+                this.preview.loading = false
+            } else {
+                this.fetchContent()
+            }
+        },
         async fetchContent() {
             const headers = {
                 Accept: 'application/json',

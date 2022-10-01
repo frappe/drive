@@ -17,6 +17,7 @@
             </div>
         </div>
         <div v-if="!tab" class="p-6 space-y-7 h-full flex flex-col">
+            <FileRender v-if="isImage && $store.state.showInfo" :previewEntity="entity" />
             <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium mb-4 ">Manage Access</div>
                 <div class="flex flex-row">
@@ -55,12 +56,14 @@
 import { FeatherIcon } from 'frappe-ui'
 import ShareDialog from '@/components/ShareDialog.vue'
 import { formatMimeType } from '@/utils/format'
+import FileRender from '@/components/FileRender.vue'
 
 export default {
     name: 'InfoSidebar',
     components: {
         FeatherIcon,
         ShareDialog,
+        FileRender
     },
     props: {
         entity: {
@@ -72,15 +75,19 @@ export default {
         return {
             tab: 0,
             showShareDialog: false,
+            isImage: this.entity.mime_type?.startsWith('image/'),
         }
     },
     computed: {
         userId() {
             return this.$store.state.auth.user_id
         },
+        isImage() {
+            return this.entity.mime_type?.startsWith('image/')
+        },
         formattedMimeType() {
             return this.entity.is_group ? "Folder" : formatMimeType(this.entity.mime_type)
         },
-    }
+    },
 } 
 </script>

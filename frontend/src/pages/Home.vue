@@ -136,10 +136,10 @@ export default {
         : `${this.$store.state.sortOrder.field} desc`
     },
     shareName() {
-      return this.selectedEntities[0]?.name ? this.selectedEntities[0].name : this.entityName
+      return this.selectedEntities[0] ? this.selectedEntities[0].name : this.entityName
     },
     shareIsFolder() {
-      return this.selectedEntities[0]?.is_group ? this.selectedEntities[0].is_group : 1
+      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1
     },
     actionItems() {
       return [
