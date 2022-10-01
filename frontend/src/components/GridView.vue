@@ -9,8 +9,11 @@
                 <div class="text-gray-600 font-medium">Folders</div>
                 <div class="flex flex-row flex-wrap gap-5 my-4">
                     <div class="md:w-60 rounded-lg border group select-none" v-for="folder in folders"
-                        :key="folder.name" @click="selectEntity(folder, $event)"
-                        :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
+                        :key="folder.name" 
+                        @click="selectEntity(folder, $event)"
+                        @contextmenu="handleEntityContext(folder, $event)"
+                        :class="{ 'bg-blue-50': selectedEntities.includes(folder) }"
+                        >
                         <div class="h-28 md:h-36 place-items-center grid">
                             <Folder />
                         </div>
@@ -24,10 +27,16 @@
             <div class="mt-7" v-if="files.length > 0">
                 <div class="text-gray-600 font-medium">Files</div>
                 <div class="flex flex-row flex-wrap gap-5 my-4">
-                    <div class="md:w-60 rounded-lg border group select-none" v-for="file in files" :key="file.name"
-                        @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }">
+                    <div
+                        class="md:w-60 rounded-lg border group select-none"
+                        v-for="file in files"
+                        :key="file.name"
+                        @click="selectEntity(file, $event)"
+                        :class="{ 'bg-blue-50': selectedEntities.includes(file) }"
+                        @contextmenu="handleEntityContext(file, $event)"
+                    >
                         <div class="h-28 md:h-36 place-items-center grid">
-                            <component :is="getMimeTypeComp(file.mime_type)" />
+                            <component :is="getMimeTypeComp($event, file.mime_type)" />
                         </div>
                         <div class="px-3 pb-3">
                             <h3 class="truncate text-xl font-medium">{{ file.title }}</h3>
@@ -74,7 +83,7 @@ export default {
             return this.folderContents ? this.folderContents.filter(x => x.is_group === 0) : []
         }
     },
-    emits: ['entitySelected', 'openEntity'],
+    emits: ['entitySelected', 'openEntity', 'showEntityContext'],
     methods: {
         getFileSubtitle(file) {
             const fileSubtitle = formatMimeType(file.mime_type)
@@ -114,7 +123,13 @@ export default {
                     componentName = mimeTypeArr[0]
             }
             return mimeTypes[componentName]
-        }
+        },
+        handleEntityContext(entity, event){
+            this.$emit('entitySelected', [entity])
+            this.$store.commit('setEntityInfo', entity)
+            this.$emit('showEntityContext', {x: event.clientX, y: event.clientY })
+            event.preventDefault()
+        },
     }
 }
 </script>

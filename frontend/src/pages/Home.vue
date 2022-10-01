@@ -2,9 +2,15 @@
   <div class="h-full">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)">
+    <GridView
+      v-else-if="$store.state.view === 'grid'"
+      :folderContents="$resources.folderContents.data"
+      :selectedEntities="selectedEntities"
+      @entitySelected="(selected) => (selectedEntities = selected)"
+      @openEntity="(entity) => openEntity(entity)"
+      @showEntityContext="(event) => (toggleEntityContext(event))"
+      @closeContextMenuEvent="closeContextMenu"
+    >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
           @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
@@ -28,6 +34,12 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
+    <EntityContextMenu
+      v-if="hideEntityContext"
+      :actionItems="actionItems"
+      :entityContext="entityContext"
+      v-on-outside-click="closeContextMenu"
+    />
     <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
       () => {
         $resources.folderContents.fetch()
@@ -48,6 +60,7 @@
         selectedEntities = []
       }
     " />
+    
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :isFolder="shareIsFolder" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
@@ -68,6 +81,7 @@ import ShareDialog from '@/components/ShareDialog.vue'
 import DetailsDialog from '@/components/DetailsDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
+import EntityContextMenu from '@/components/EntityContextMenu.vue'
 import { formatSize, formatDate } from '@/utils/format'
 
 export default {
@@ -85,6 +99,7 @@ export default {
     DetailsDialog,
     GeneralDialog,
     FolderContentsError,
+    EntityContextMenu,
   },
   props: {
     entityName: {
@@ -103,6 +118,8 @@ export default {
     showShareDialog: false,
     showDetailsDialog: false,
     showRemoveDialog: false,
+    hideEntityContext: false,
+    entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
     actionLoading: false,
   }),
@@ -138,6 +155,7 @@ export default {
         {
           label: 'Download',
           handler: () => {
+            this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
@@ -245,6 +263,15 @@ export default {
       this.showPreview = false
       this.previewEntity = null
     },
+    toggleEntityContext(event) {
+      this.hidePreview()
+      this.hideEntityContext = true
+      this.entityContext = event
+    },
+    closeContextMenu(){
+      this.hideEntityContext = false
+      this.entityContext = undefined
+    },
   },
   watch: {
     entityName(newEntityName) {
@@ -253,6 +280,21 @@ export default {
         this.breadcrumbs = [{ label: 'Home', route: '/' }]
       }
     },
+    showPreview(){
+      this.closeContextMenu()
+    },
+    showDetailsDialog(){
+      this.closeContextMenu()
+    },
+    showRenameDialog(){
+      this.closeContextMenu()
+    },
+    showShareDialog(){
+      this.closeContextMenu()
+    },
+    showRemoveDialog(){
+      this.closeContextMenu()
+    }
   },
   mounted() {
     let componentContext = this

@@ -2,8 +2,14 @@
     <div class="h-full">
         <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-        <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
-            :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)">
+        <GridView
+            v-else-if="$store.state.view === 'grid'"
+            :folderContents="$resources.folderContents.data"
+            :selectedEntities="selectedEntities"
+            @entitySelected="(selected) => (selectedEntities = selected)"
+            @showEntityContext="(event) => (toggleEntityContext(event))"
+            @closeContextMenuEvent="closeContextMenu"
+        >
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
                     :actionLoading="actionLoading" :showUploadButton="false" />
@@ -25,7 +31,12 @@
                     :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
             </template>
         </ListView>
-
+        <EntityContextMenu
+        v-if="hideEntityContext"
+        :actionItems="actionItems"
+        :entityContext="entityContext"
+        v-on-outside-click="closeContextMenu"
+        />
         <DeleteDialog v-model="showDeleteDialog"
             :entities="selectedEntities.length > 0 ? selectedEntities : $resources.folderContents.data" @success="
                 () => {
@@ -53,6 +64,7 @@ import ListView from '@/components/ListView.vue'
 import DeleteDialog from '@/components/DeleteDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
+import EntityContextMenu from '@/components/EntityContextMenu.vue'
 import { formatDate, formatSize } from '@/utils/format'
 import { FeatherIcon } from 'frappe-ui'
 
@@ -67,6 +79,7 @@ export default {
         GeneralDialog,
         NoFilesSection,
         FolderContentsError,
+        EntityContextMenu,
     },
     data: () => ({
         selectedEntities: [],
@@ -74,6 +87,8 @@ export default {
         actionLoading: false,
         showDeleteDialog: false,
         showRestoreDialog: false,
+        hideEntityContext: false,
+        entityContext: {},
     }),
     computed: {
         userId() {
@@ -138,6 +153,16 @@ export default {
                     sortable: true,
                 },
             ].filter((item) => item.sortable)
+        },
+    },
+    methods: {
+        toggleEntityContext(event) {
+            this.hideEntityContext = true
+            this.entityContext = event
+        },
+        closeContextMenu(){
+            this.hideEntityContext = false
+            this.entityContext = undefined
         },
     },
     resources: {

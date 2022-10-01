@@ -4,7 +4,10 @@
 
         <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
             :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
-            @openEntity="(entity) => openEntity(entity)">
+            @openEntity="(entity) => openEntity(entity)"
+            @showEntityContext="(event) => (toggleEntityContext(event))"
+            @closeContextMenuEvent="closeContextMenu"
+        >
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
                     :actionLoading="actionLoading" :showUploadButton="false" />
@@ -26,7 +29,12 @@
                     :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
             </template>
         </ListView>
-
+        <EntityContextMenu
+            v-if="hideEntityContext"
+            :actionItems="actionItems"
+            :entityContext="entityContext"
+            v-on-outside-click="closeContextMenu"
+        />
         <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
 
         <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
@@ -61,6 +69,7 @@ import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
 import DetailsDialog from '@/components/DetailsDialog.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
+import EntityContextMenu from '@/components/EntityContextMenu.vue'
 import { formatDate, formatSize } from '@/utils/format'
 import { FeatherIcon } from 'frappe-ui'
 
@@ -78,6 +87,7 @@ export default {
         DetailsDialog,
         NoFilesSection,
         FolderContentsError,
+        EntityContextMenu,
     },
     data: () => ({
         selectedEntities: [],
@@ -89,6 +99,8 @@ export default {
         showShareDialog: false,
         showDetailsDialog: false,
         showRemoveDialog: false,
+        hideEntityContext: false,
+        entityContext: {},
     }),
     computed: {
         userId() {
@@ -104,6 +116,7 @@ export default {
                 {
                     label: 'Download',
                     handler: () => {
+                        this.closeContextMenu()
                         window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
                     },
                     isEnabled: () => {
@@ -203,8 +216,33 @@ export default {
             this.showPreview = false
             this.previewEntity = null
         },
+        toggleEntityContext(event) {
+            this.hidePreview()
+            this.hideEntityContext = true
+            this.entityContext = event
+        },
+        closeContextMenu(){
+            this.hideEntityContext = false
+            this.entityContext = undefined
+        },
     },
-
+    watch: {
+        showPreview(){
+            this.closeContextMenu()
+        },
+        showDetailsDialog(){
+            this.closeContextMenu()
+        },
+        showRenameDialog(){
+            this.closeContextMenu()
+        },
+        showShareDialog(){
+            this.closeContextMenu()
+        },
+        showRemoveDialog(){
+            this.closeContextMenu()
+        }
+    },
     resources: {
         folderContents() {
             return {
