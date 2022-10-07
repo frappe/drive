@@ -18,7 +18,7 @@ def get_shared_with_list(entity_name):
 
 	if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='write', user=frappe.session.user):
 		raise frappe.PermissionError
-	users = frappe.db.get_list('DocShare',
+	users = frappe.db.get_all('DocShare',
 		filters={
 			'share_doctype': 'Drive Entity',
 			'share_name': entity_name,

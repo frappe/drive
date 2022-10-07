@@ -16,15 +16,15 @@ class DriveEntity(NestedSet):
 	def before_save(self):
 		self.version = self.version + 1
 
-	def get_children(self):
-		if int(frappe.__version__.split('.')[0]) >= 14:
-			super().get_children(self)
-		else:
-			child_names = frappe.get_list(
-				self.doctype, filters={self.nsm_parent_field: self.name}, pluck="name"
-			)
-			for name in child_names:
-				yield frappe.get_doc(self.doctype, name)
+	# def get_children(self):
+	# 	if int(frappe.__version__.split('.')[0]) >= 14:
+	# 		super().get_children(self)
+	# 	else:
+	# 		child_names = frappe.get_list(
+	# 			self.doctype, filters={self.nsm_parent_field: self.name}, pluck="name"
+	# 		)
+	# 		for name in child_names:
+	# 			yield frappe.get_doc(self.doctype, name)
 
 	def after_insert(self):
 		"""Copy parent permissions to new child entity"""
@@ -123,12 +123,13 @@ class DriveEntity(NestedSet):
 		:param new_access: Dict with new read and write value
 		"""
 
-		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 
 		if new_access['read']:
+			flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
 			frappe.share.add('Drive Entity', self.name, write=new_access['write'], share=0, everyone=1, flags=flags)
 
 		else:
+			flags = {"ignore_permissions": True} if frappe.session.user == self.owner else None
 			if frappe.db.exists({
 				'doctype': 'DocShare',
 				'share_doctype': 'Drive Entity',
@@ -171,14 +172,8 @@ class DriveEntity(NestedSet):
 		:param user: User with whom this is to be shared
 		"""
 
-		# has_share_permissions = (
-		# 	frappe.session.user == self.owner
-		# 	or frappe.has_permission("Drive Entity", ptype="share", doc=self.name)
-		# )
-		# if not has_share_permissions:
-		# 	frappe.throw(f"You do not have permissions to unshare '{self.title}'")
-
-		flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
+		if frappe.has_permission(doctype='Drive Entity', doc=self.name, ptype='share', user=frappe.session.user) or frappe.session.user == self.owner:
+			flags = {"ignore_permissions": True}
 		if self.is_group:
 			for child in self.get_children():
 				child.unshare(user)
