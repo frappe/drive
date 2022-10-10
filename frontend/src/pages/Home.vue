@@ -374,7 +374,7 @@ export default {
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
-          fields: 'name,title,is_group,owner,modified,file_size,mime_type,creation,is_favourite,',
+          fields: 'name,title,is_group,owner,modified,file_size,mime_type,creation,is_favourite',
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null

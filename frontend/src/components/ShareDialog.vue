@@ -1,10 +1,61 @@
 <template>
-  <Dialog :options="{ title: 'Sharing options' }" v-model="open">
+  <Dialog :options="{ title: 'Share' }" v-model="open">
     <template #body-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
-        <div class="flex mt-5 text-sm font-medium text-gray-600">
-          <FeatherIcon name="user-plus" :strokeWidth="2" class="h-4 pr-1" />Shared with
+        <div class="border rounded-lg py-2 px-4">
+          <div class="flex flex-row">
+            <div class="flex my-auto">
+              <FeatherIcon name="globe" :strokeWidth="2" class="h-5 text-yellow-600" />
+            </div>
+            <div class="grow ml-4">
+              <div class="text-[14px] font-medium text-gray-900">Public access</div>
+              <p class="text-base text-gray-700">{{ accessMessage }}</p>
+            </div>
+            <div class="flex my-auto">
+              <Switch v-model="generalAccess.read" :class="generalAccess.read ? 'bg-blue-500' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-7 items-center rounded-full" @change="$resources.hello">
+                <span :class="generalAccess.read ? 'translate-x-4' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+              </Switch>
+            </div>
+          </div>
+          <div v-if="generalAccess.read" class="flex flex-row mt-3">
+            <div class=" grow text-[14px] text-gray-900">Allow edit</div>
+            <div class="flex my-auto">
+              <Switch v-model="generalAccess.write" :class="generalAccess.write ? 'bg-blue-500' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-7 items-center rounded-full" @change="$resources.hello">
+                <span :class="generalAccess.write ? 'translate-x-4' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+              </Switch>
+            </div>
+          </div>
+          <div v-if="generalAccess.read" class="flex flex-row mt-2">
+            <div class=" grow text-[14px] text-gray-900">Allow comments</div>
+            <div class="flex my-auto">
+              <Switch :class="false ? 'bg-blue-500' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-7 items-center rounded-full" @change="$resources.hello">
+                <span :class="false ? 'translate-x-4' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+              </Switch>
+            </div>
+          </div>
         </div>
+        <div class="flex items-start mt-4 gap-2 w-full relative">
+          <UserSearch class="flex-1 invisible" />
+          <UserSearch v-model="searchQuery" @submit="
+            (user) =>
+              $resources.share.submit({
+                method: 'share',
+                entity_name: entityName,
+                user: user,
+                write: 0,
+                share: 1,
+              })
+          " class="flex-1 absolute w-[calc(100%_-_2.25rem)]" />
+          <Button class="focus:ring-0 focus:ring-offset-0 absolute left-[calc(100%_-_1.75rem)]" icon="plus"
+            appearance="primary" @click="$resources.share.fetch()" />
+        </div>
+        <div class="flex mt-5 text-[14px] text-gray-600">Members</div>
         <div v-for="user in $resources.sharedWith.data" :key="user.user"
           class="mt-3 flex justify-between items-center text-base font-medium antialiased">
           <div class="flex w-full gap-2 items-center">
@@ -52,87 +103,12 @@
               }}</Button>
           </Dropdown>
         </div>
-        <Button v-if="!showUserSearch" class="mt-3 focus:ring-0 focus:ring-offset-0" icon="plus"
-          @click="showUserSearch = true" />
-        <div v-if="showUserSearch" class="flex items-start mt-5 gap-2 w-full relative">
-          <UserSearch class="flex-1 invisible" />
-          <UserSearch v-model="searchQuery" @submit="
-            (user) =>
-              $resources.share.submit({
-                method: 'share',
-                entity_name: entityName,
-                user: user,
-                write: 0,
-                share: 1,
-              })
-          " class="flex-1 absolute w-[calc(100%_-_2.25rem)]" />
-          <Button class="focus:ring-0 focus:ring-offset-0 absolute left-[calc(100%_-_1.75rem)]" icon="plus"
-            appearance="primary" @click="$resources.share.fetch()" />
-        </div>
         <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
-        <hr class="mt-5" />
-        <div class="flex mt-5 text-base font-medium text-gray-600">
-          <FeatherIcon name="unlock" :strokeWidth="2" class="h-4 pr-1" />General access
-        </div>
-        <div class="flex mt-3">
-          <Dropdown placement="left" :options="
-            [
-              { label: 'Restricted', read: 0, write: 0 },
-              { label: 'Open', read: 1, write: 0 },
-            ].map((option) => ({
-              ...option,
-              handler: () => {
-                if (generalAccess ? !option.read : option.read) {
-                  generalAccessLoading = true
-                  $resources.updateAccess.submit({
-                    method: 'set_general_access',
-                    entity_name: entityName,
-                    new_access: { read: option.read, write: option.write }
-                  })
-                    .then(() => {
-                      generalAccessLoading = false
-                    })
-                }
-              },
-            }))
-          ">
-            <Button iconRight="chevron-down" class="text-sm font-medium w-28 focus:ring-0 focus:ring-offset-0"
-              :loading="generalAccessLoading">
-              {{ generalAccess ? "Open" : "Restricted" }}
-            </Button>
-          </Dropdown>
-          <Dropdown v-if="generalAccess" class="ml-auto" :options="
-            [
-              { label: 'For viewing', read: 1, write: 0 },
-              { label: 'For editing', read: 1, write: 1 },
-            ].map((option) => ({
-              ...option,
-              handler: () => {
-                if (option.write !== generalAccess.write) {
-                  generalAccessLoading = true
-                  $resources.updateAccess.submit({
-                    method: 'set_general_access',
-                    entity_name: entityName,
-                    new_access: { read: option.read, write: option.write }
-                  })
-                    .then(() => {
-                      generalAccessLoading = false
-                    })
-                }
-              },
-            }))
-          ">
-            <Button iconRight="chevron-down" class="text-sm w-30 focus:ring-0 focus:ring-offset-0" appearance="minimal"
-              :loading="generalAccessLoading">
-              {{ generalAccess.write ? "For editing" : "For viewing" }}
-            </Button>
-
-          </Dropdown>
-        </div>
-        <p class="mt-2 text-xs text-gray-600">{{ accessMessage }}</p>
         <div class="flex mt-5">
-          <Button icon-left="link" appearance="white" @click="getLink">Get link</Button>
-          <Button appearance="primary" class="ml-auto w-24" @click="open = false">Done</Button>
+          <Button icon-left="link" appearance="white" @click="getLink">Copy link</Button>
+          <Button appearance="primary" class="ml-auto w-24" :loading="saveLoading" @click="saveOrClose">{{accessChanged?
+          "Save":
+          "Done"}}</Button>
         </div>
         <Alert :title="alertMessage" class="mt-5" v-if="showAlert"></Alert>
       </div>
@@ -141,6 +117,7 @@
 </template>
 <script>
 import { Dialog, ErrorMessage, FeatherIcon, Button, Dropdown, Alert } from 'frappe-ui'
+import { Switch } from '@headlessui/vue'
 import UserSearch from '@/components/UserSearch.vue'
 
 export default {
@@ -152,7 +129,8 @@ export default {
     Button,
     UserSearch,
     Dropdown,
-    Alert
+    Alert,
+    Switch
   },
   props: {
     modelValue: {
@@ -172,8 +150,7 @@ export default {
   data() {
     return {
       generalAccess: {},
-      generalAccessLoading: false,
-      showUserSearch: false,
+      saveLoading: false,
       searchQuery: '',
       errorMessage: '',
       showAlert: false,
@@ -181,10 +158,13 @@ export default {
     }
   },
   computed: {
+    accessChanged() {
+      return JSON.stringify(this.generalAccess) !== JSON.stringify(this.$resources.generalAccess.data)
+    },
     accessMessage() {
-      if (this.generalAccess)
-        return this.generalAccess.write ? "Anybody with the link who is signed in can edit" : "Anybody with the link can view"
-      return "Only shared with individuals can view or edit"
+      if (this.generalAccess.read)
+        return this.generalAccess.write ? "Anyone with the link can edit" : "Anyone with the link can view"
+      return "Publish and share link with anyone"
     },
     open: {
       get() {
@@ -199,6 +179,21 @@ export default {
     },
   },
   methods: {
+    saveOrClose() {
+      if (this.accessChanged) {
+        this.saveLoading = true
+        this.$resources.updateAccess.submit({
+          method: 'set_general_access',
+          entity_name: this.entityName,
+          new_access: this.generalAccess
+        })
+          .then(() => {
+            this.saveLoading = false
+          })
+      }
+      else
+        this.open = false
+    },
     async getLink() {
       this.showAlert = false
       const link = this.isFolder ?
@@ -240,7 +235,12 @@ export default {
         method: 'drive.api.permissions.get_general_access',
         params: { entity_name: this.entityName, },
         onSuccess(data) {
-          this.generalAccess = data
+          data = data || {}
+          data.read = !!data.read
+          data.write = !!data.write
+          this.$resources.generalAccess.data = data
+          this.generalAccess = Object.assign({}, data)
+
         },
         auto: true
       }
@@ -262,7 +262,6 @@ export default {
         onSuccess() {
           this.$resources.share.error = null
           this.$resources.sharedWith.fetch()
-          this.showUserSearch = false
           this.searchQuery = ''
         },
         onError(error) {
