@@ -27,9 +27,10 @@ export function formatDate(date) {
 }
 
 export function formatMimeType(mimeType) {
+  let icon = 'unknown';
+  if (!mimeType) return icon;
   const generic = mimeType.split('/')[0];
   const specific = mimeType.split('/')[1];
-  let icon = 'file';
   if (['image', 'video', 'audio'].includes(generic)) icon = generic;
   else
     switch (specific) {
@@ -37,7 +38,7 @@ export function formatMimeType(mimeType) {
         icon = 'pdf';
         break;
     }
-  return `${icon}`;
+  return icon;
 }
 
 export function getDateDiffInDays(date1, date2) {
