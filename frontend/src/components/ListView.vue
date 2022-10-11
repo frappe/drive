@@ -3,7 +3,7 @@
     <slot name="toolbar"></slot>
     <table class="max-h-full min-w-full">
       <thead class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
-        <tr v-if="!isEmpty" class="text-left text-base text-gray-500">
+        <tr v-if="!isEmpty" class="text-left text-base text-gray-600">
           <th class="w-6 px-5">
             <Input type="checkbox" class="invisible" />
           </th>
@@ -26,24 +26,23 @@
                 selectedEntities.includes(entity) ? 'visible' : 'group-hover:visible md:invisible'
               " />
           </td>
-          <td @click="this.$emit('openEntity', entity)"
-            class="min-w-[15rem] px-2.5 py-3.5 font-normal text-zinc-800 lg:w-2/5">
-            <div class="flex items-center">
-              <FeatherIcon :name="entity.is_group ? 'folder' : 'file'"
-                class="mr-2.5 h-3.5 w-3.5 stroke-gray-400 stroke-2" />
+          <td @click="this.$emit('openEntity', entity)" class="min-w-[15rem] px-2.5 py-3.5 lg:w-2/5">
+            <div class="flex items-center text-gray-900 text-[14px] font-medium">
+              <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
+              : formatMimeType(entity.mime_type)}.svg`" class="h-5 mr-5" />
               {{ entity.title }}
             </div>
           </td>
           <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5">
+            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5 text-gray-700">
             {{ entity.owner }}
           </td>
           <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3.5 font-normal md:table-cell lg:w-1/5">
+            class="hidden w-36 truncate px-2.5 py-3.5 font-normal md:table-cell lg:w-1/5 text-gray-700">
             {{ entity.modified }}
           </td>
           <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5">
+            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5 text-gray-700">
             {{ entity.file_size }}
           </td>
         </tr>
@@ -56,6 +55,7 @@
 </template>
 <script>
 import { Input, FeatherIcon } from 'frappe-ui'
+import { formatMimeType } from '@/utils/format'
 
 export default {
   name: 'ListView',
@@ -89,5 +89,8 @@ export default {
       this.$store.commit('setEntityInfo', selectedEntities[selectedEntities.length - 1])
     },
   },
+  setup() {
+    return { formatMimeType }
+  }
 }
 </script>

@@ -1,6 +1,6 @@
 import fuzzysort from 'fuzzysort';
 
-export function getFilteredEntities(search, entities) {
+export default function getFilteredEntities(search, entities) {
   return fuzzysort
     .go(search, entities, {
       limit: 5,

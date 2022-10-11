@@ -4,8 +4,12 @@
             <div class="my-4">
                 <FeatherIcon name="x" class="h-4 cursor-pointer" @click="$store.commit('setShowInfo', false)" />
             </div>
-            <div>
-                <div class="font-semibold">{{entity.title}}</div>
+            <div class="flex items-center">
+                <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
+                : formatMimeType(entity.mime_type)}.svg`" class="h-5 mr-2.5" />
+                <div class="font-semibold truncate text-2xl">
+                    {{entity.title}}
+                </div>
             </div>
         </div>
         <div class="h-11 flex cursor-pointer text-base">
@@ -86,8 +90,13 @@ export default {
             return this.entity.mime_type?.startsWith('image/')
         },
         formattedMimeType() {
-            return this.entity.is_group ? "Folder" : formatMimeType(this.entity.mime_type)
+            if (this.entity.is_group) return "Folder"
+            const file = formatMimeType(this.entity.mime_type)
+            return file.charAt(0).toUpperCase() + file.slice(1)
         },
     },
+    setup() {
+        return { formatMimeType }
+    }
 } 
 </script>

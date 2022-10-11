@@ -5,11 +5,15 @@
         @input="($event) => search = $event" class="mb-2" />
       <div v-if="showEntities" v-for="entity in filteredEntities" @click="openEntity(entity)"
         class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-md py-2 px-3">
-        <div class="grow">
-          <div class="text-lg">{{entity.title}}</div>
-          <div class="text-sm text-gray-600">{{entity.owner}}</div>
+        <div class="flex grow items-center">
+          <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
+          : formatMimeType(entity.mime_type)}.svg`" class="w-6 mr-4" />
+          <div class="w-72">
+            <div class="text-lg text-gray-900 font-medium truncate">{{entity.title}}</div>
+            <div class="text-[13px] text-gray-600">{{entity.owner}}</div>
+          </div>
         </div>
-        <div class="text-xs whitespace-nowrap">{{entity.modified}}</div>
+        <div class="text-[13px] text-gray-600 whitespace-nowrap my-auto">{{entity.modified}}</div>
       </div>
     </template>
   </Dialog>
@@ -17,7 +21,8 @@
 <script>
 import { Dialog, Input, } from 'frappe-ui'
 import { formatSize, formatDate } from '@/utils/format'
-import { getFilteredEntities } from '../utils/fuzzySearcher'
+import getFilteredEntities from '../utils/fuzzySearcher'
+import { formatMimeType } from '@/utils/format'
 
 export default {
   name: 'SearchDialog',
@@ -61,6 +66,9 @@ export default {
       this.$emit('openEntity', entity)
       this.open = false
     },
+  },
+  setup() {
+    return { formatMimeType }
   },
   updated() {
     this.$resources.entities.fetch()
