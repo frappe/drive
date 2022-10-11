@@ -17,7 +17,7 @@
 <script>
 import { Dialog, Input, } from 'frappe-ui'
 import { formatSize, formatDate } from '@/utils/format'
-import { getFilteredEntities } from '../utils/fuzzySearcher'
+import getFilteredEntities from '../utils/fuzzySearcher'
 
 export default {
   name: 'SearchDialog',

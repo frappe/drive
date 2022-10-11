@@ -27,13 +27,17 @@ export function formatDate(date) {
 }
 
 export function formatMimeType(mimeType) {
-  if (!mimeType) return 'Unknown';
-  const mimeTypeArr = mimeType.split('/');
-  const generics = ['image', 'video', 'audio', 'text'];
-  const fileType = generics.includes(mimeTypeArr[0])
-    ? mimeTypeArr[0]
-    : mimeTypeArr[1];
-  return fileType.charAt(0).toUpperCase() + fileType.slice(1);
+  const generic = mimeType.split('/')[0];
+  const specific = mimeType.split('/')[1];
+  let icon = 'file';
+  if (['image', 'video', 'audio'].includes(generic)) icon = generic;
+  else
+    switch (specific) {
+      case 'pdf':
+        icon = 'pdf';
+        break;
+    }
+  return `${icon}`;
 }
 
 export function getDateDiffInDays(date1, date2) {

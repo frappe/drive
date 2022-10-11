@@ -13,11 +13,11 @@
                         @contextmenu="handleEntityContext(folder, $event)"
                         :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
                         <div class="h-28 md:h-36 place-items-center grid">
-                            <Folder />
+                            <img src="/src/assets/images/icons/folder.svg" />
                         </div>
                         <div class="px-3 pb-3">
-                            <h3 class="truncate text-xl font-medium">{{ folder.title }}</h3>
-                            <p class="truncate text-base text-gray-600 mt-1">{{ folder.modified }}</p>
+                            <h3 class="truncate text-[14px] font-medium">{{ folder.title }}</h3>
+                            <p class="truncate text-sm text-gray-600 mt-1">{{ folder.modified }}</p>
                         </div>
                     </div>
                 </div>
@@ -29,12 +29,12 @@
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }"
                         @contextmenu="handleEntityContext(file, $event)">
                         <div class="h-28 md:h-36 place-items-center grid">
-                            <component :is="getMimeTypeComp(file.mime_type)" />
+                            <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`" class="h-14" />
                         </div>
                         <div class="px-3 pb-3">
-                            <h3 class="truncate text-xl font-medium">{{ file.title }}</h3>
-                            <div class="truncate text-base text-gray-600 flex mt-1">
-                                <!-- <img :src="getMimeTypeIcon(file.mime_type)" class="h-5 mr-1" /> -->
+                            <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
+                            <div class="truncate text-sm text-gray-600 flex mt-1">
+                                <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`" class="h-4 mr-1.5" />
                                 <p>{{ getFileSubtitle(file) }}</p>
                             </div>
                         </div>
@@ -47,15 +47,12 @@
 
 <script>
 import { FeatherIcon } from 'frappe-ui'
-import Folder from './mime-types/Folder.vue'
-import * as mimeTypes from './mime-types/index.vue'
 import { formatMimeType } from '@/utils/format'
 
 export default {
     name: 'GridView',
     components: {
         FeatherIcon,
-        Folder,
     },
     props: {
         folderContents: {
@@ -79,7 +76,8 @@ export default {
     emits: ['entitySelected', 'openEntity', 'showEntityContext'],
     methods: {
         getFileSubtitle(file) {
-            const fileSubtitle = formatMimeType(file.mime_type)
+            let fileSubtitle = formatMimeType(file.mime_type)
+            fileSubtitle = fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1)
             return `${fileSubtitle} ∙ ${file.modified}`
         },
         selectEntity(entity, event) {
@@ -106,23 +104,15 @@ export default {
             this.$emit('entitySelected', [])
             this.$store.commit('setEntityInfo', null)
         },
-        getMimeTypeComp(mimeType) {
-            let componentName = "Unknown"
-            if (mimeType) {
-                const mimeTypeArr = mimeType.split('/').map(x => x.charAt(0).toUpperCase() + x.slice(1))
-                if (mimeTypeArr.join('') in mimeTypes)
-                    componentName = mimeTypeArr.join('')
-                else if (mimeTypeArr[0] in mimeTypes)
-                    componentName = mimeTypeArr[0]
-            }
-            return mimeTypes[componentName]
-        },
         handleEntityContext(entity, event) {
             this.$emit('entitySelected', [entity])
             this.$store.commit('setEntityInfo', entity)
             this.$emit('showEntityContext', { x: event.clientX, y: event.clientY })
             event.preventDefault()
         },
+    },
+    setup() {
+        return { formatMimeType }
     }
 }
 </script>
