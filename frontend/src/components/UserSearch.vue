@@ -8,7 +8,7 @@
       @blur="showDropdown = false"
       @keydown.enter="submit(searchQuery)"
       placeholder="Add user"
-      class="w-full form-input placeholder-gray-600"
+      class="w-full form-input placeholder-gray-600 h-8"
     />
     <MenuItems
       static

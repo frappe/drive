@@ -2,7 +2,7 @@
   <Dialog :options="{ title: 'Share' }" v-model="open">
     <template #body-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
-        <div class="border rounded-lg py-2 px-4">
+        <div class="border rounded-lg py-3 px-4">
           <div class="flex flex-row">
             <div class="flex my-auto">
               <FeatherIcon name="globe" :strokeWidth="2" class="h-5 text-yellow-600" />
@@ -51,22 +51,24 @@
                 write: 0,
                 share: 1,
               })
-          " class="flex-1 absolute w-[calc(100%_-_2.25rem)]" />
-          <Button class="focus:ring-0 focus:ring-offset-0 absolute left-[calc(100%_-_1.75rem)]" icon="plus"
-            appearance="primary" @click="$resources.share.fetch()" />
+          " class="flex-1 absolute w-[calc(100%_-_5.5rem)]" />
+          <Button class="focus:ring-0 focus:ring-offset-0 w-20 h-8" appearance="primary"
+            @click="$resources.share.fetch()">Invite</Button>
         </div>
+        <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
         <div class="flex mt-5 text-[14px] text-gray-600">Members</div>
         <div v-for="user in $resources.sharedWith.data" :key="user.user"
-          class="mt-3 flex justify-between items-center text-base font-medium antialiased">
-          <div class="flex w-full gap-2 items-center">
-            <div class="overflow-hidden rounded-full h-7 w-7">
-              <img v-if="user.user_image" :src="user.user_image" class="object-cover rounded-full h-7 w-7" />
-              <div v-else
-                class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
-                {{ user.full_name[0] }}
-              </div>
+          class="mt-3 flex flex-row w-full gap-2 items-center antialiased ">
+          <div class="overflow-hidden rounded-full h-9 w-9">
+            <img v-if="user.user_image" :src="user.user_image" class="object-cover rounded-full h-7 w-7" />
+            <div v-else
+              class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
+              {{ user.full_name[0] }}
             </div>
-            <div class="max-w-[70%] truncate">{{ user.user }}</div>
+          </div>
+          <div class="grow truncate">
+            <div class="text-gray-900 text-[14px] font-medium">{{ user.full_name }}</div>
+            <div class="text-gray-600 text-base">{{ user.user }}</div>
           </div>
           <Dropdown placement="right" :options="
             [
@@ -98,17 +100,16 @@
             }))
           ">
             <Button iconRight="chevron-down" :loading="user.loading"
-              class="text-sm w-24 focus:ring-0 focus:ring-offset-0" appearance="minimal">{{ user.write ? 'Editor' :
+              class="text-sm w-24 focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px]" appearance="minimal">{{
+              user.write ? 'Editor' :
               'Viewer'
               }}</Button>
           </Dropdown>
         </div>
-        <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
         <div class="flex mt-5">
           <Button icon-left="link" appearance="white" @click="getLink">Copy link</Button>
-          <Button appearance="primary" class="ml-auto w-24" :loading="saveLoading" @click="saveOrClose">{{accessChanged?
-          "Save":
-          "Done"}}</Button>
+          <Button appearance="minimal" class="ml-auto text-gray-700 hover:bg-white focus:bg-white active:bg-white"
+            iconRight="info">Learn about sharing</Button>
         </div>
         <Alert :title="alertMessage" class="mt-5" v-if="showAlert"></Alert>
       </div>
@@ -130,7 +131,7 @@ export default {
     UserSearch,
     Dropdown,
     Alert,
-    Switch
+    Switch,
   },
   props: {
     modelValue: {
@@ -173,27 +174,23 @@ export default {
       set(value) {
         this.$emit('update:modelValue', value)
         if (!value) {
+          if (this.accessChanged) {
+            this.saveLoading = true
+            this.$resources.updateAccess.submit({
+              method: 'set_general_access',
+              entity_name: this.entityName,
+              new_access: this.generalAccess
+            })
+              .then(() => {
+                this.saveLoading = false
+              })
+          }
           this.errorMessage = ''
         }
       },
     },
   },
   methods: {
-    saveOrClose() {
-      if (this.accessChanged) {
-        this.saveLoading = true
-        this.$resources.updateAccess.submit({
-          method: 'set_general_access',
-          entity_name: this.entityName,
-          new_access: this.generalAccess
-        })
-          .then(() => {
-            this.saveLoading = false
-          })
-      }
-      else
-        this.open = false
-    },
     async getLink() {
       this.showAlert = false
       const link = this.isFolder ?
