@@ -1,27 +1,20 @@
 <template>
-	<div
-		class="bg-gray-100"
-		:style="{ left: `${entityContext.x}px`, top: `${entityContext.y}px` }"
-		v-if="contextActionItems.length > 0"
-	>
-		<ul>
-		<li
-			v-for="(item, index) in contextActionItems"
-			:key="index"
-			class="text-sm h-8"
-			@click="closeAndApply(item.handler)"
-			>
-			{{ item.label }}
-		</li>
-	</ul>
+	<div class="bg-white rounded-xl absolute shadow-md p-2 w-56 z-50 space-y-0.5"
+		:style="{ left: `${entityContext.x}px`, top: `${entityContext.y}px` }" v-if="contextActionItems.length > 0">
+		<div v-for="(item, index) in contextActionItems" :key="index"
+			class="text-sm h-7 hover:bg-gray-100 cursor-pointer rounded-lg flex px-3 items-center" @click="closeAndApply(item.handler)">
+			<FeatherIcon :name="item.icon" :strokeWidth="1" class="w-4 h-4 text-gray-700 mr-3" />
+			<div class="text-gray-800 text-base">{{ item.label }}</div>
+		</div>
 	</div>
 </template>
 <script>
-import { Dialog, Button, ListItem } from 'frappe-ui'
+import { FeatherIcon } from 'frappe-ui'
+
 export default {
 	name: 'EntityContextMenu',
-  components: { Dialog, Button, ListItem },
-  props: {
+	components: { FeatherIcon },
+	props: {
 		actionItems: {
 			type: Array,
 		},
@@ -30,9 +23,9 @@ export default {
 		},
 	},
 	computed: {
-		contextActionItems(){
+		contextActionItems() {
 			console.log(this.actionItems)
-			if (this.actionItems[0].label === 'New Folder'){
+			if (this.actionItems[0].label === 'New Folder') {
 				return []
 			} else {
 				return this.actionItems
@@ -40,25 +33,9 @@ export default {
 		}
 	},
 	methods: {
-		closeAndApply(handler){
+		closeAndApply(handler) {
 			handler()
 		}
 	}
 }
 </script>
-<style scoped>
-div {
-	position: absolute;
-	width: auto;
-	z-index: 250;
-	padding: 0.5rem 1rem 0.5em 1rem;
-	cursor: pointer;
-}
-li {
-	height: 1.5rem;
-	width: auto;
-}
-li:hover {
-	text-decoration: underline;
-}
-</style>

@@ -138,6 +138,7 @@ export default {
       return [
         {
           label: 'New Folder',
+          icon: 'folder-plus',
           handler: () => {
             this.showNewFolderDialog = true
           },
@@ -147,6 +148,7 @@ export default {
         },
         {
           label: 'Download',
+          icon: 'download',
           handler: () => {
             this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
@@ -160,6 +162,7 @@ export default {
         },
         {
           label: 'Share',
+          icon: 'share-2',
           handler: () => {
             this.shareTitle = this.selectedEntities.length ? this.selectedEntities[0].title : this.breadcrumbs.at(-1).label
             console.log(this.shareTitle)
@@ -171,6 +174,7 @@ export default {
         },
         {
           label: 'Details',
+          icon: 'info',
           handler: () => {
             this.showDetailsDialog = true
           },
@@ -180,6 +184,7 @@ export default {
         },
         {
           label: 'Rename',
+          icon: 'edit',
           handler: () => {
             this.showRenameDialog = true
           },
@@ -189,6 +194,7 @@ export default {
         },
         {
           label: 'Add to Favourites',
+          icon: 'star',
           handler: () => {
             this.$resources.toggleFavourite.submit()
           },
@@ -198,6 +204,7 @@ export default {
         },
         {
           label: 'Remove from Favourites',
+          icon: 'x-circle',
           handler: () => {
             this.$resources.toggleFavourite.submit()
           },
@@ -207,6 +214,7 @@ export default {
         },
         {
           label: 'Move to Trash',
+          icon: 'trash',
           handler: () => {
             this.showRemoveDialog = true
           },
