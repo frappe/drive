@@ -54,7 +54,6 @@
 
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :entityTitle="shareTitle"
       :isFolder="shareIsFolder" />
-    <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -70,7 +69,6 @@ import FilePreview from '@/components/FilePreview.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
-import DetailsDialog from '@/components/DetailsDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
 import EntityContextMenu from '@/components/EntityContextMenu.vue'
@@ -88,7 +86,6 @@ export default {
     NewFolderDialog,
     RenameDialog,
     ShareDialog,
-    DetailsDialog,
     GeneralDialog,
     FolderContentsError,
     EntityContextMenu,
@@ -108,7 +105,6 @@ export default {
     showNewFolderDialog: false,
     showRenameDialog: false,
     showShareDialog: false,
-    showDetailsDialog: false,
     showRemoveDialog: false,
     hideEntityContext: false,
     entityContext: {},
@@ -121,7 +117,7 @@ export default {
       return this.$store.state.auth.user_id
     },
     showInfoButton() {
-      return this.selectedEntities.length === 1
+      return !!this.selectedEntities.length && !this.$store.state.showInfo
     },
     orderBy() {
       return this.$store.state.sortOrder.ascending
@@ -165,7 +161,6 @@ export default {
           icon: 'share-2',
           handler: () => {
             this.shareTitle = this.selectedEntities.length ? this.selectedEntities[0].title : this.breadcrumbs.at(-1).label
-            console.log(this.shareTitle)
             this.showShareDialog = true
           },
           isEnabled: () => {
@@ -173,13 +168,23 @@ export default {
           },
         },
         {
-          label: 'Details',
-          icon: 'info',
+          label: 'View details',
+          icon: 'eye',
           handler: () => {
-            this.showDetailsDialog = true
+            this.$store.commit('setShowInfo', true)
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1
+            return !this.$store.state.showInfo
+          },
+        },
+        {
+          label: 'Hide details',
+          icon: 'eye-off',
+          handler: () => {
+            this.$store.commit('setShowInfo', false)
+          },
+          isEnabled: () => {
+            return this.$store.state.showInfo
           },
         },
         {
@@ -284,9 +289,6 @@ export default {
       }
     },
     showPreview() {
-      this.closeContextMenu()
-    },
-    showDetailsDialog() {
       this.closeContextMenu()
     },
     showRenameDialog() {

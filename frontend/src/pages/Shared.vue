@@ -229,9 +229,6 @@ export default {
     showPreview(){
       this.closeContextMenu()
     },
-    showDetailsDialog(){
-      this.closeContextMenu()
-    },
     showRenameDialog(){
       this.closeContextMenu()
     },
