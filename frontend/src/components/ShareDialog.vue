@@ -1,5 +1,5 @@
 <template>
-  <Dialog :options="{ title: 'Share' }" v-model="open">
+  <Dialog :options="{ title: `Share '${entityTitle}'` }" v-model="open">
     <template #body-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
         <div class="border rounded-lg py-3 px-4">
@@ -139,6 +139,10 @@ export default {
       required: true,
     },
     entityName: {
+      type: String,
+      required: true,
+    },
+    entityTitle: {
       type: String,
       required: true,
     },

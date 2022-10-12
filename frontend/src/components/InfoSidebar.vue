@@ -1,5 +1,5 @@
 <template>
-    <div class="w-96 flex flex-col">
+    <div class="w-[400px] flex flex-col">
         <div v-if="$store.state.showInfo" class="mx-5 mb-3">
             <div class="my-4">
                 <FeatherIcon name="x" class="h-4 cursor-pointer" @click="$store.commit('setShowInfo', false)" />

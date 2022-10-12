@@ -10,7 +10,7 @@
         <div class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-6 md:px-8">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-6 md:px-6">
           <router-view />
         </div>
         <div v-if="showInfoSidebar" class="border-l md:pt-6 flex">

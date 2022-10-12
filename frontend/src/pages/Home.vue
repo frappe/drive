@@ -2,15 +2,10 @@
   <div class="h-full">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-    <GridView
-      v-else-if="$store.state.view === 'grid'"
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => (toggleEntityContext(event))"
-      @closeContextMenuEvent="closeContextMenu"
-    >
+    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
+      :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
+      @openEntity="(entity) => openEntity(entity)" @showEntityContext="(event) => (toggleEntityContext(event))"
+      @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
           @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
@@ -34,12 +29,8 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu
-      v-if="hideEntityContext"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      v-on-outside-click="closeContextMenu"
-    />
+    <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+      v-on-outside-click="closeContextMenu" />
     <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
       () => {
         $resources.folderContents.fetch()
@@ -60,8 +51,9 @@
         selectedEntities = []
       }
     " />
-    
-    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :isFolder="shareIsFolder" />
+
+    <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :entityTitle="shareTitle"
+      :isFolder="shareIsFolder" />
     <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -122,6 +114,7 @@ export default {
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
     actionLoading: false,
+    shareTitle: ""
   }),
   computed: {
     userId() {
@@ -168,6 +161,8 @@ export default {
         {
           label: 'Share',
           handler: () => {
+            this.shareTitle = this.selectedEntities.length ? this.selectedEntities[0].title : this.breadcrumbs.at(-1).label
+            console.log(this.shareTitle)
             this.showShareDialog = true
           },
           isEnabled: () => {
@@ -268,7 +263,7 @@ export default {
       this.hideEntityContext = true
       this.entityContext = event
     },
-    closeContextMenu(){
+    closeContextMenu() {
       this.hideEntityContext = false
       this.entityContext = undefined
     },
@@ -280,19 +275,19 @@ export default {
         this.breadcrumbs = [{ label: 'Home', route: '/' }]
       }
     },
-    showPreview(){
+    showPreview() {
       this.closeContextMenu()
     },
-    showDetailsDialog(){
+    showDetailsDialog() {
       this.closeContextMenu()
     },
-    showRenameDialog(){
+    showRenameDialog() {
       this.closeContextMenu()
     },
-    showShareDialog(){
+    showShareDialog() {
       this.closeContextMenu()
     },
-    showRemoveDialog(){
+    showRemoveDialog() {
       this.closeContextMenu()
     }
   },

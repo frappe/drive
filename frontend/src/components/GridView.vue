@@ -8,14 +8,14 @@
             <div class="mt-7" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
                 <div class="flex flex-row flex-wrap gap-5 my-4">
-                    <div class="md:w-60 rounded-lg border group select-none" v-for="folder in folders"
+                    <div class="md:w-[212px] rounded-lg border group select-none" v-for="folder in folders"
                         :key="folder.name" @click="selectEntity(folder, $event)"
                         @contextmenu="handleEntityContext(folder, $event)"
                         :class="{ 'bg-blue-50': selectedEntities.includes(folder) }">
-                        <div class="h-28 md:h-36 place-items-center grid">
+                        <div class="h-28 md:h-32 place-items-center grid">
                             <img src="/src/assets/images/icons/folder.svg" />
                         </div>
-                        <div class="px-3 pb-3">
+                        <div class="px-3.5 pb-2.5">
                             <h3 class="truncate text-[14px] font-medium">{{ folder.title }}</h3>
                             <p class="truncate text-sm text-gray-600 mt-1">{{ folder.modified }}</p>
                         </div>
@@ -25,13 +25,13 @@
             <div class="mt-7" v-if="files.length > 0">
                 <div class="text-gray-600 font-medium">Files</div>
                 <div class="flex flex-row flex-wrap gap-5 my-4">
-                    <div class="md:w-60 rounded-lg border group select-none" v-for="file in files" :key="file.name"
+                    <div class="md:w-[212px] rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }"
                         @contextmenu="handleEntityContext(file, $event)">
                         <div class="h-28 md:h-36 place-items-center grid">
                             <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`" class="h-14" />
                         </div>
-                        <div class="px-3 pb-3">
+                        <div class="px-3.5 pb-2.5">
                             <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
                             <div class="truncate text-sm text-gray-600 flex mt-1">
                                 <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`" class="h-4 mr-1.5" />
