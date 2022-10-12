@@ -4,10 +4,8 @@
 
         <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
             :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
-            @openEntity="(entity) => openEntity(entity)"
-            @showEntityContext="(event) => (toggleEntityContext(event))"
-            @closeContextMenuEvent="closeContextMenu"
-        >
+            @openEntity="(entity) => openEntity(entity)" @showEntityContext="(event) => (toggleEntityContext(event))"
+            @closeContextMenuEvent="closeContextMenu">
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
                     :actionLoading="actionLoading" :showUploadButton="false" />
@@ -29,12 +27,8 @@
                     :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
             </template>
         </ListView>
-        <EntityContextMenu
-            v-if="hideEntityContext"
-            :actionItems="actionItems"
-            :entityContext="entityContext"
-            v-on-outside-click="closeContextMenu"
-        />
+        <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+            v-on-outside-click="closeContextMenu" />
         <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
 
         <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
@@ -52,7 +46,6 @@
             }
         " />
         <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="selectedEntities[0].name" />
-        <DetailsDialog v-model="showDetailsDialog" :entity="selectedEntities[0]" />
         <div />
 
     </div>
@@ -67,7 +60,6 @@ import FilePreview from '@/components/FilePreview.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
-import DetailsDialog from '@/components/DetailsDialog.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import EntityContextMenu from '@/components/EntityContextMenu.vue'
 import { formatDate, formatSize } from '@/utils/format'
@@ -84,7 +76,6 @@ export default {
         GeneralDialog,
         RenameDialog,
         ShareDialog,
-        DetailsDialog,
         NoFilesSection,
         FolderContentsError,
         EntityContextMenu,
@@ -97,7 +88,6 @@ export default {
         actionLoading: false,
         showRenameDialog: false,
         showShareDialog: false,
-        showDetailsDialog: false,
         showRemoveDialog: false,
         hideEntityContext: false,
         entityContext: {},
@@ -136,12 +126,23 @@ export default {
                     },
                 },
                 {
-                    label: 'Details',
+                    label: 'View details',
+                    icon: 'eye',
                     handler: () => {
-                        this.showDetailsDialog = true
+                        this.$store.commit('setShowInfo', true)
                     },
                     isEnabled: () => {
-                        return this.selectedEntities.length === 1
+                        return !this.$store.state.showInfo
+                    },
+                },
+                {
+                    label: 'Hide details',
+                    icon: 'eye-off',
+                    handler: () => {
+                        this.$store.commit('setShowInfo', false)
+                    },
+                    isEnabled: () => {
+                        return this.$store.state.showInfo
                     },
                 },
                 {
@@ -221,25 +222,22 @@ export default {
             this.hideEntityContext = true
             this.entityContext = event
         },
-        closeContextMenu(){
+        closeContextMenu() {
             this.hideEntityContext = false
             this.entityContext = undefined
         },
     },
     watch: {
-        showPreview(){
+        showPreview() {
             this.closeContextMenu()
         },
-        showDetailsDialog(){
+        showRenameDialog() {
             this.closeContextMenu()
         },
-        showRenameDialog(){
+        showShareDialog() {
             this.closeContextMenu()
         },
-        showShareDialog(){
-            this.closeContextMenu()
-        },
-        showRemoveDialog(){
+        showRemoveDialog() {
             this.closeContextMenu()
         }
     },

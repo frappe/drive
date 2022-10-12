@@ -52,7 +52,7 @@
         <div v-else class="p-6 space-y-7 h-full flex flex-col">
         </div>
         <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="entity.name"
-            :isFolder="entity.is_group" />
+            :isFolder="entity.is_group" :entityTitle="entity.title" />
     </div>
 </template>
 
