@@ -174,7 +174,7 @@ export default {
             this.$store.commit('setShowInfo', true)
           },
           isEnabled: () => {
-            return !this.$store.state.showInfo
+            return !this.$store.state.showInfo && this.selectedEntities.length === 1
           },
         },
         {
@@ -301,6 +301,7 @@ export default {
       this.closeContextMenu()
     }
   },
+
   mounted() {
     let componentContext = this
     this.dropzone = new Dropzone(this.$el.parentNode, {

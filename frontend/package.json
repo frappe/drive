@@ -12,8 +12,9 @@
     "@headlessui/vue": "^1.7.3",
     "dropzone": "^6.0.0-beta.2",
     "feather-icons": "^4.28.0",
-    "frappe-ui": "^0.0.79",
+    "frappe-ui": "0.0.73",
     "fuzzysort": "^2.0.1",
+    "mitt": "^3.0.0",
     "vue": "^3.2.25",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2"
