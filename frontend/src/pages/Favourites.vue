@@ -132,7 +132,7 @@ export default {
                         this.$store.commit('setShowInfo', true)
                     },
                     isEnabled: () => {
-                        return !this.$store.state.showInfo
+                        return !this.$store.state.showInfo && this.selectedEntities.length === 1
                     },
                 },
                 {

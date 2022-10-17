@@ -21,9 +21,14 @@
       <div class="flex items-center">
         <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly
           @click="showSearchDialog=true" />
-        <Button class="ml-4 md:ml-6" appearance="minimal" icon="bell"></Button>
+
+        <Dropdown :options="addOptions" placement="left" class="basis-5/12 lg:basis-auto">
+          <Button class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full" appearance="primary" icon="plus"></Button>
+        </Dropdown>
+        <div class="border h-5"></div>
+        <Button class="ml-4 md:ml-5" appearance="minimal" icon="bell"></Button>
         <div class="relative ml-3">
-          <Dropdown :options="dropdownItems" placement="right">
+          <Dropdown :options="accountOptions" placement="right">
             <button
               class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
               id="user-menu" aria-label="User menu" aria-haspopup="true">
@@ -37,12 +42,19 @@
     </div>
   </nav>
   <SearchDialog v-model="showSearchDialog" @openEntity="(entity) => openEntity(entity)" />
+  <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
+    () => {
+    //  component('Home').test()
+      showNewFolderDialog = false
+    }
+  " />
   <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
 </template>
 <script>
 import { Avatar, Dropdown, FeatherIcon, Input, Button } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
 import SearchDialog from '@/components/SearchDialog.vue'
+import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FrappeLogo from '@/components/FrappeLogo.vue'
 
@@ -53,6 +65,7 @@ export default {
     FrappeDriveLogo,
     FrappeLogo,
     SearchDialog,
+    NewFolderDialog,
     Avatar,
     Dropdown,
     FeatherIcon,
@@ -70,7 +83,20 @@ export default {
     return {
       previewEntity: null,
       showPreview: false,
-      dropdownItems: [
+      showNewFolderDialog: false,
+      addOptions: [
+        {
+          label: 'File upload',
+          icon: 'upload',
+          handler: () => console.log("log.console")
+        },
+        {
+          label: 'New folder',
+          icon: 'folder-plus',
+          handler: () => this.showNewFolderDialog = true
+        },
+      ],
+      accountOptions: [
         {
           label: 'Log out',
           handler: () => this.$store.dispatch('logout'),
