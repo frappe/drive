@@ -304,6 +304,9 @@ export default {
 
   mounted() {
     let componentContext = this
+    this.emitter.on('fetchFolderContents', () => {
+      componentContext.$resources.folderContents.fetch()
+    })
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: 'file',
       parallelUploads: 1,
