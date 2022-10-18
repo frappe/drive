@@ -88,7 +88,7 @@ export default {
         {
           label: 'File upload',
           icon: 'upload',
-          handler: () => console.log("log.console")
+          handler: () => this.emitter.emit('uploadFile')
         },
         {
           label: 'New folder',

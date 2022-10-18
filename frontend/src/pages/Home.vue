@@ -371,6 +371,10 @@ export default {
         completed: true,
       })
     })
+    this.emitter.on('uploadFile', () => {
+      if (componentContext.dropzone.hiddenFileInput)
+        componentContext.dropzone.hiddenFileInput.click()
+    })
   },
   unmounted() {
     this.dropzone.destroy()
