@@ -44,7 +44,7 @@
   <SearchDialog v-model="showSearchDialog" @openEntity="(entity) => openEntity(entity)" />
   <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
     () => {
-    //  component('Home').test()
+      this.emitter.emit('fetchFolderContents')
       showNewFolderDialog = false
     }
   " />

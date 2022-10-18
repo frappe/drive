@@ -2,15 +2,10 @@
   <div class="h-full flex flex-col">
     <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-    <GridView 
-      v-else-if="$store.state.view === 'grid'"
-      :folderContents="$resources.folderContents.data"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      :selectedEntities="selectedEntities"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => (toggleEntityContext(event))"
-      @closeContextMenuEvent="closeContextMenu"
-    >
+    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
+      @openEntity="(entity) => openEntity(entity)" @showEntityContext="(event) => (toggleEntityContext(event))"
+      @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="hasWriteAccess"
           @uploadFile="dropzone.hiddenFileInput.click()" />
@@ -33,12 +28,8 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu
-      v-if="hideEntityContext"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      v-on-outside-click="closeContextMenu"
-    />
+    <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+      v-on-outside-click="closeContextMenu" />
     <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
       () => {
         $resources.folderContents.fetch()
@@ -210,7 +201,7 @@ export default {
       this.hideEntityContext = true
       this.entityContext = event
     },
-    closeContextMenu(){
+    closeContextMenu() {
       this.hideEntityContext = false
       this.entityContext = undefined
     },
@@ -226,16 +217,16 @@ export default {
         this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }]
       }
     },
-    showPreview(){
+    showPreview() {
       this.closeContextMenu()
     },
-    showRenameDialog(){
+    showRenameDialog() {
       this.closeContextMenu()
     },
-    showShareDialog(){
+    showShareDialog() {
       this.closeContextMenu()
     },
-    showRemoveDialog(){
+    showRemoveDialog() {
       this.closeContextMenu()
     }
   },
@@ -244,6 +235,9 @@ export default {
     if (!(!this.dropzone && this.hasWriteAccess)) return
 
     let componentContext = this
+    this.emitter.on('fetchFolderContents', () => {
+      componentContext.$resources.folderContents.fetch()
+    })
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: 'file',
       parallelUploads: 1,
