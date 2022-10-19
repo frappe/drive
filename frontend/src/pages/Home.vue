@@ -8,8 +8,7 @@
       @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
-          :showInfoButton="showInfoButton" />
+          :actionLoading="actionLoading" :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -20,8 +19,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)" @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
-          @uploadFile="dropzone.hiddenFileInput.click()" :actionLoading="actionLoading"
-          :showInfoButton="showInfoButton" />
+          :actionLoading="actionLoading" :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -31,12 +29,6 @@
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
     <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
       v-on-outside-click="closeContextMenu" />
-    <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
-      () => {
-        $resources.folderContents.fetch()
-        showNewFolderDialog = false
-      }
-    " />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -66,7 +58,6 @@ import GridView from '@/components/GridView.vue'
 import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
-import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import ShareDialog from '@/components/ShareDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
@@ -83,7 +74,6 @@ export default {
     DriveToolBar,
     NoFilesSection,
     FilePreview,
-    NewFolderDialog,
     RenameDialog,
     ShareDialog,
     GeneralDialog,
@@ -102,7 +92,6 @@ export default {
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
-    showNewFolderDialog: false,
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
@@ -132,16 +121,6 @@ export default {
     },
     actionItems() {
       return [
-        {
-          label: 'New Folder',
-          icon: 'folder-plus',
-          handler: () => {
-            this.showNewFolderDialog = true
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length === 0
-          },
-        },
         {
           label: 'Download',
           icon: 'download',
@@ -303,6 +282,7 @@ export default {
   },
 
   mounted() {
+    this.$store.commit('setHasWriteAccess', true)
     let componentContext = this
     this.emitter.on('fetchFolderContents', () => {
       componentContext.$resources.folderContents.fetch()
@@ -377,6 +357,7 @@ export default {
     })
   },
   unmounted() {
+    this.$store.commit('setHasWriteAccess', false)
     this.dropzone.destroy()
   },
   resources: {

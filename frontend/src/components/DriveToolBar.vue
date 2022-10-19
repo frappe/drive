@@ -35,10 +35,6 @@
         <Button icon="list" class="h-7" @click="$store.commit('toggleView', 'list')"
           :style="[$store.state.view === 'list' && { 'background': '#FFF' }]"></Button>
       </div>
-      <Button v-if="showUploadButton" class="h-8 w-8 md:w-auto basis-2/12 lg:basis-auto" appearance="primary"
-        iconLeft="upload" @click="$emit('uploadFile')">
-        <span class="hidden md:inline">Upload</span>
-      </Button>
     </div>
   </div>
 </template>
@@ -64,10 +60,6 @@ export default {
     columnHeaders: {
       type: Array,
     },
-    showUploadButton: {
-      type: Boolean,
-      default: true,
-    },
     showInfoButton: {
       type: Boolean,
       default: false,
@@ -77,7 +69,6 @@ export default {
       default: false,
     },
   },
-  emits: ['uploadFile'],
   computed: {
     orderByField() {
       return this.$store.state.sortOrder.field
