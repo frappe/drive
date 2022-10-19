@@ -28,7 +28,8 @@ const store = createStore({
     },
     view: 'grid',
     entityInfo: null,
-    showInfo: false
+    showInfo: false,
+    hasWriteAccess: false
   },
   getters: {
     isLoggedIn: (state) => {
@@ -72,6 +73,9 @@ const store = createStore({
     },
     setShowInfo(state, payload) {
       state.showInfo = payload;
+    },
+    setHasWriteAccess(state, payload) {
+      state.hasWriteAccess = payload;
     },
   },
   actions: {

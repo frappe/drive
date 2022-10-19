@@ -22,8 +22,10 @@
         <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly
           @click="showSearchDialog=true" />
 
-        <Dropdown :options="addOptions" placement="left" class="basis-5/12 lg:basis-auto">
-          <Button class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full" appearance="primary" icon="plus"></Button>
+        <Dropdown :options="$store.state.hasWriteAccess ? addOptions : []" placement="left"
+          class="basis-5/12 lg:basis-auto">
+          <Button class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full" appearance="primary" icon="plus"
+            :disabled="!$store.state.hasWriteAccess"></Button>
         </Dropdown>
         <div class="border h-5"></div>
         <Button class="ml-4 md:ml-5" appearance="minimal" icon="bell"></Button>
@@ -86,14 +88,14 @@ export default {
       showNewFolderDialog: false,
       addOptions: [
         {
-          label: 'File upload',
-          icon: 'upload',
-          handler: () => this.emitter.emit('uploadFile')
-        },
-        {
           label: 'New folder',
           icon: 'folder-plus',
           handler: () => this.showNewFolderDialog = true
+        },
+        {
+          label: 'File upload',
+          icon: 'upload',
+          handler: () => this.emitter.emit('uploadFile')
         },
       ],
       accountOptions: [

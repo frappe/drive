@@ -7,8 +7,7 @@
       @openEntity="(entity) => openEntity(entity)" @showEntityContext="(event) => (toggleEntityContext(event))"
       @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
-        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="hasWriteAccess"
-          @uploadFile="dropzone.hiddenFileInput.click()" />
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" />
       </template>
       <template #placeholder>
         <NoFilesSection secondaryMessage="No files have been shared with you" />
@@ -19,8 +18,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
       @openEntity="(entity) => openEntity(entity)">
       <template #toolbar>
-        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :showUploadButton="hasWriteAccess"
-          @uploadFile="dropzone.hiddenFileInput.click()" />
+        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" />
       </template>
       <template #placeholder>
         <NoFilesSection secondaryMessage="No files have been shared with you" />
@@ -30,12 +28,6 @@
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
     <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
       v-on-outside-click="closeContextMenu" />
-    <NewFolderDialog v-model="showNewFolderDialog" :parent="entityName" @success="
-      () => {
-        $resources.folderContents.fetch()
-        showNewFolderDialog = false
-      }
-    " />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -69,7 +61,6 @@ import DriveToolBar from '@/components/DriveToolBar.vue'
 import NoFilesSection from '@/components/NoFilesSection.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FolderContentsError from '@/components/FolderContentsError.vue'
-import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import RenameDialog from '@/components/RenameDialog.vue'
 import GeneralDialog from '@/components/GeneralDialog.vue'
 import DeleteDialog from '@/components/DeleteDialog.vue'
@@ -85,7 +76,6 @@ export default {
     GridView,
     DriveToolBar,
     RenameDialog,
-    NewFolderDialog,
     GeneralDialog,
     DeleteDialog,
     NoFilesSection,
@@ -97,7 +87,6 @@ export default {
     dropzone: null,
     previewEntity: null,
     showPreview: false,
-    showNewFolderDialog: false,
     showRenameDialog: false,
     showRemoveDialog: false,
     showDeleteDialog: false,
@@ -117,20 +106,8 @@ export default {
     userId() {
       return this.$store.state.auth.user_id
     },
-    hasWriteAccess() {
-      return !!this.$resources.folderAccess.data?.write
-    },
     actionItems() {
       return [
-        {
-          label: 'New Folder',
-          handler: () => {
-            this.showNewFolderDialog = true
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length === 0 && this.hasWriteAccess
-          },
-        },
         {
           label: 'Download',
           handler: () => {
@@ -280,7 +257,9 @@ export default {
   },
 
   watch: {
-    entityName(newEntityName) {
+    async entityName(newEntityName) {
+      await this.$resources.folderAccess.fetch()
+      this.$store.commit('setHasWriteAccess', !!this.$resources.folderAccess.data?.write)
       this.selectedEntities = []
       if (!newEntityName) {
         this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }]
@@ -304,7 +283,9 @@ export default {
     }
   },
 
-  mounted() {
+  async mounted() {
+    await this.$resources.folderAccess.fetch()
+    this.$store.commit('setHasWriteAccess', !!this.$resources.folderAccess.data?.write)
     let componentContext = this
     this.emitter.on('fetchFolderContents', () => {
       componentContext.$resources.folderContents.fetch()
@@ -321,7 +302,6 @@ export default {
       return {
         method: 'drive.api.permissions.get_user_access',
         params: { entity_name: this.entityName, },
-        auto: true
       }
     },
 
