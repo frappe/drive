@@ -27,7 +27,7 @@
                     :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
             </template>
         </ListView>
-        <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+        <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
             v-on-outside-click="closeContextMenu" />
         <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
 
@@ -89,7 +89,7 @@ export default {
         showRenameDialog: false,
         showShareDialog: false,
         showRemoveDialog: false,
-        hideEntityContext: false,
+        showEntityContext: false,
         entityContext: {},
     }),
     computed: {
@@ -219,11 +219,11 @@ export default {
         },
         toggleEntityContext(event) {
             this.hidePreview()
-            this.hideEntityContext = true
+            this.showEntityContext = true
             this.entityContext = event
         },
         closeContextMenu() {
-            this.hideEntityContext = false
+            this.showEntityContext = false
             this.entityContext = undefined
         },
     },

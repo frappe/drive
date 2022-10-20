@@ -26,7 +26,7 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu v-if="hideEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
       v-on-outside-click="closeContextMenu" />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
@@ -90,7 +90,7 @@ export default {
     showRenameDialog: false,
     showRemoveDialog: false,
     showDeleteDialog: false,
-    hideEntityContext: false,
+    showEntityContext: false,
     entityContext: {},
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
@@ -247,11 +247,11 @@ export default {
     },
     toggleEntityContext(event) {
       this.hidePreview()
-      this.hideEntityContext = true
+      this.showEntityContext = true
       this.entityContext = event
     },
     closeContextMenu() {
-      this.hideEntityContext = false
+      this.showEntityContext = false
       this.entityContext = undefined
     },
   },
