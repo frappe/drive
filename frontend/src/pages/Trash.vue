@@ -2,14 +2,9 @@
     <div class="h-full">
         <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
 
-        <GridView
-            v-else-if="$store.state.view === 'grid'"
-            :folderContents="$resources.folderContents.data"
-            :selectedEntities="selectedEntities"
-            @entitySelected="(selected) => (selectedEntities = selected)"
-            @showEntityContext="(event) => (toggleEntityContext(event))"
-            @closeContextMenuEvent="closeContextMenu"
-        >
+        <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
+            :selectedEntities="selectedEntities" @entitySelected="(selected) => (selectedEntities = selected)"
+            @showEntityContext="(event) => (toggleEntityContext(event))" @closeContextMenuEvent="closeContextMenu">
             <template #toolbar>
                 <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" :columnHeaders="columnHeaders"
                     :actionLoading="actionLoading" :showUploadButton="false" />
@@ -31,12 +26,7 @@
                     :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
             </template>
         </ListView>
-        <EntityContextMenu
-        v-if="showEntityContext"
-        :actionItems="actionItems"
-        :entityContext="entityContext"
-        v-on-outside-click="closeContextMenu"
-        />
+        <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
         <DeleteDialog v-model="showDeleteDialog"
             :entities="selectedEntities.length > 0 ? selectedEntities : $resources.folderContents.data" @success="
                 () => {
@@ -103,6 +93,7 @@ export default {
             return [
                 {
                     label: 'Empty Trash',
+                    icon: 'trash-2',
                     handler: () => {
                         this.showDeleteDialog = true
                     },
@@ -111,18 +102,20 @@ export default {
                     },
                 },
                 {
-                    label: 'Delete Forever',
+                    label: 'Restore',
+                    icon: 'refresh-ccw',
                     handler: () => {
-                        this.showDeleteDialog = true
+                        this.showRestoreDialog = true
                     },
                     isEnabled: () => {
                         return this.selectedEntities.length > 0
                     },
                 },
                 {
-                    label: 'Restore',
+                    label: 'Delete Forever',
+                    icon: 'trash-2',
                     handler: () => {
-                        this.showRestoreDialog = true
+                        this.showDeleteDialog = true
                     },
                     isEnabled: () => {
                         return this.selectedEntities.length > 0
@@ -157,10 +150,14 @@ export default {
     },
     methods: {
         toggleEntityContext(event) {
-            this.showEntityContext = true
-            this.entityContext = event
+            if (!event)
+                this.showEntityContext = false
+            else {
+                this.showEntityContext = true
+                this.entityContext = event
+            }
         },
-        closeContextMenu(){
+        closeContextMenu() {
             this.showEntityContext = false
             this.entityContext = undefined
         },

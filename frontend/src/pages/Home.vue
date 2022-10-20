@@ -27,8 +27,7 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
-      v-on-outside-click="closeContextMenu" />
+    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -198,7 +197,7 @@ export default {
         },
         {
           label: 'Move to Trash',
-          icon: 'trash',
+          icon: 'trash-2',
           handler: () => {
             this.showRemoveDialog = true
           },

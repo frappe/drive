@@ -26,8 +26,7 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
-      v-on-outside-click="closeContextMenu" />
+    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -54,7 +53,6 @@
 </template>
 
 <script>
-import { FeatherIcon } from 'frappe-ui'
 import ListView from '@/components/ListView.vue'
 import GridView from '@/components/GridView.vue'
 import DriveToolBar from '@/components/DriveToolBar.vue'
@@ -71,7 +69,6 @@ import Dropzone from 'dropzone'
 export default {
   name: 'Shared',
   components: {
-    FeatherIcon,
     ListView,
     GridView,
     DriveToolBar,
@@ -110,6 +107,7 @@ export default {
       return [
         {
           label: 'Download',
+          icon: 'download',
           handler: () => {
             this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
@@ -122,6 +120,7 @@ export default {
         },
         {
           label: 'Rename',
+          icon: 'edit',
           handler: () => {
             this.showRenameDialog = true
           },
@@ -133,6 +132,7 @@ export default {
         },
         {
           label: 'Remove',
+          icon: 'trash-2',
           handler: () => {
             this.showRemoveDialog = true
           },
@@ -144,6 +144,7 @@ export default {
         },
         {
           label: 'Remove',
+          icon: 'trash-2',
           handler: () => {
             this.showDeleteDialog = true
           },
@@ -246,9 +247,13 @@ export default {
       this.previewEntity = null
     },
     toggleEntityContext(event) {
-      this.hidePreview()
-      this.showEntityContext = true
-      this.entityContext = event
+      if (!event)
+        this.showEntityContext = false
+      else {
+        this.hidePreview()
+        this.showEntityContext = true
+        this.entityContext = event
+      }
     },
     closeContextMenu() {
       this.showEntityContext = false
