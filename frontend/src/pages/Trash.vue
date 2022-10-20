@@ -32,7 +32,7 @@
             </template>
         </ListView>
         <EntityContextMenu
-        v-if="hideEntityContext"
+        v-if="showEntityContext"
         :actionItems="actionItems"
         :entityContext="entityContext"
         v-on-outside-click="closeContextMenu"
@@ -87,7 +87,7 @@ export default {
         actionLoading: false,
         showDeleteDialog: false,
         showRestoreDialog: false,
-        hideEntityContext: false,
+        showEntityContext: false,
         entityContext: {},
     }),
     computed: {
@@ -157,11 +157,11 @@ export default {
     },
     methods: {
         toggleEntityContext(event) {
-            this.hideEntityContext = true
+            this.showEntityContext = true
             this.entityContext = event
         },
         closeContextMenu(){
-            this.hideEntityContext = false
+            this.showEntityContext = false
             this.entityContext = undefined
         },
     },

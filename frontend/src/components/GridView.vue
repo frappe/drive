@@ -82,6 +82,7 @@ export default {
         },
         selectEntity(entity, event) {
             event.stopPropagation()
+            this.$emit('showEntityContext', null)
             let selectedEntities = this.selectedEntities
             if (event.ctrlKey) {
                 const index = selectedEntities.indexOf(entity)
@@ -103,6 +104,7 @@ export default {
         deselectAll() {
             this.$emit('entitySelected', [])
             this.$store.commit('setEntityInfo', null)
+            this.$emit('showEntityContext', null)
         },
         handleEntityContext(entity, event) {
             this.$emit('entitySelected', [entity])
