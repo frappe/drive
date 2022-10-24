@@ -33,7 +33,7 @@ class DriveEntity(NestedSet):
 			return
 		permissions = frappe.share.get_users("Drive Entity", self.parent_drive_entity)
 		for permission in permissions:
-			frappe.share.add(
+			frappe.share.add_docshare(
 				"Drive Entity",
 				self.name,
 				permission.user,
@@ -126,7 +126,7 @@ class DriveEntity(NestedSet):
 
 		if new_access['read']:
 			flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
-			frappe.share.add('Drive Entity', self.name, write=new_access['write'], share=0, everyone=1, flags=flags)
+			frappe.share.add_docshare('Drive Entity', self.name, write=new_access['write'], share=0, everyone=1, flags=flags)
 
 		else:
 			flags = {"ignore_permissions": True} if frappe.session.user == self.owner else None
@@ -160,9 +160,9 @@ class DriveEntity(NestedSet):
 		if self.is_group:
 			for child in self.get_children():
 				child.share(user, write, share, 0)
-			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
+			frappe.share.add_docshare('Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
 		else:
-			frappe.share.add('Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
+			frappe.share.add_docshare('Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
 
 
 	@frappe.whitelist()
