@@ -59,6 +59,13 @@ const routes = [
       isPublicRoute: true,
     },
   },
+  {
+    path: '/workspace',
+    name: 'Workspace',
+    redirect: () => {
+      window.location.href ="/app"
+    },
+  },
 ];
 
 let router = createRouter({

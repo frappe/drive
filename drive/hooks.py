@@ -1,13 +1,13 @@
 from . import __version__ as app_version
 
 app_name = "drive"
-app_title = "Drive"
+app_title = "Frappe Drive"
 app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "An easy to use, document sharing and management solution."
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
 app_email = "hello@frappe.io"
-app_license = ""
+app_license = "GNU Affero General Public License v3.0"
 
 website_route_rules = [
 	{"from_route": "/drive/<path:app_path>", "to_route": "drive"},

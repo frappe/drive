@@ -66,11 +66,11 @@ export default {
           },
         },
         {
-          label: 'Settings',
-          route: '/settings',
-          icon: 'settings',
+          label: 'Workspace',
+          route: '/workspace',
+          icon: 'tool',
           highlight: () => {
-            return this.$route.fullPath.endsWith('/settings')
+            return this.$route.fullPath.endsWith('/workspace')
           },
         },
       ]
