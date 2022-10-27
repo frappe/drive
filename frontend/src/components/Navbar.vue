@@ -19,9 +19,7 @@
       </div>
 
       <div class="flex items-center">
-        <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly
-          @click="showSearchDialog=true" />
-
+        <SearchPopup />
         <Dropdown :options="$store.state.hasWriteAccess ? addOptions : []" placement="left"
           class="basis-5/12 lg:basis-auto">
           <Button class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full" appearance="primary" icon="plus"
@@ -43,7 +41,6 @@
       </div>
     </div>
   </nav>
-  <SearchDialog v-model="showSearchDialog" @openEntity="(entity) => openEntity(entity)" />
   <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
     () => {
       this.emitter.emit('fetchFolderContents')
@@ -55,7 +52,7 @@
 <script>
 import { Avatar, Dropdown, FeatherIcon, Input, Button } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
-import SearchDialog from '@/components/SearchDialog.vue'
+import SearchPopup from '@/components/SearchPopup.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FrappeLogo from '@/components/FrappeLogo.vue'
@@ -66,7 +63,7 @@ export default {
     FilePreview,
     FrappeDriveLogo,
     FrappeLogo,
-    SearchDialog,
+    SearchPopup,
     NewFolderDialog,
     Avatar,
     Dropdown,
@@ -104,7 +101,7 @@ export default {
           handler: () => this.$store.dispatch('logout'),
         },
       ],
-      showSearchDialog: false
+      showSearchPopup: false
     }
   },
   computed: {
