@@ -1,6 +1,6 @@
 <template>
   <nav class="bg-white border-b">
-    <div class="mx-auto py-2 px-5 md:pl-3 md:pr-6 h-16 md:h-12 z-10 flex items-center justify-between">
+    <div class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block">
           <FrappeDriveLogo class="h-4" />
@@ -17,9 +17,10 @@
           </router-link>
         </div>
       </div>
-
-      <div class="flex items-center">
+      <div class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
         <SearchPopup />
+      </div>
+      <div class="flex items-center">
         <Dropdown :options="$store.state.hasWriteAccess ? addOptions : []" placement="left"
           class="basis-5/12 lg:basis-auto">
           <Button class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full" appearance="primary" icon="plus"

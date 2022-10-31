@@ -1,17 +1,28 @@
 <template>
     <div :class="divClass">
-        <Input iconLeft="search" type="text" v-model="search" placeholder="Search" @focus="openPopup = true" />
-        <div v-if="showEntities" v-for="entity in filteredEntities" @click="openEntity(entity)"
-            class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-md py-2 px-3">
-            <div class="flex grow items-center">
-                <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
-                : formatMimeType(entity.mime_type)}.svg`" class="w-6 mr-4" />
-                <div class="w-72">
-                    <div class="text-lg text-gray-900 font-medium truncate">{{ entity.title }}</div>
-                    <div class="text-[13px] text-gray-600">{{ entity.owner }}</div>
+        <Input iconLeft="search" type="text" :class="{ 'bg-white focus:bg-white': openPopup }" v-model="search"
+            placeholder="Search" @focus="openPopup = true" />
+        <div v-if="openPopup">
+            <div v-if="showEntities" v-for="entity in filteredEntities" @click="openEntity(entity)"
+                class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-md py-2 px-3">
+                <div class="flex grow items-center">
+                    <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
+                    : formatMimeType(entity.mime_type)}.svg`" class="w-6 mr-4" />
+                    <div class="w-72">
+                        <div class="text-lg text-gray-900 font-medium truncate">{{ entity.title }}</div>
+                        <div class="text-[13px] text-gray-600">{{ entity.owner }}</div>
+                    </div>
+                </div>
+                <div class="text-[13px] text-gray-600 whitespace-nowrap my-auto">{{ entity.modified }}</div>
+            </div>
+            <div v-else class="mx-2.5 mb-2.5 mt-6 space-x-2.5 flex">
+                <div v-for="item in filterItems" class="w-28 border border rounded-lg flex flex-col cursor-pointer"
+                    :class="{ 'bg-gray-200': selectedFilterItems[item.imgSrc] }"
+                    @click="selectedFilterItems[item.imgSrc] = !selectedFilterItems[item.imgSrc]">
+                    <img :src="`/src/assets/images/icons/${item.imgSrc}.svg`" class="h-[22px] mt-3.5 mb-3" />
+                    <div class="text-sm text-gray-700 text-center mb-2">{{ item.title }}</div>
                 </div>
             </div>
-            <div class="text-[13px] text-gray-600 whitespace-nowrap my-auto">{{ entity.modified }}</div>
         </div>
     </div>
 </template>
@@ -37,12 +48,41 @@ export default {
         return {
             search: '',
             openPopup: false,
+            filterItems: [
+                {
+                    title: "Documents",
+                    imgSrc: "doc"
+                },
+                {
+                    title: "Spreadsheets",
+                    imgSrc: "spreadsheet"
+                },
+                {
+                    title: "PDFs",
+                    imgSrc: "pdf"
+                },
+                {
+                    title: "Video",
+                    imgSrc: "video"
+                },
+                {
+                    title: "Folder",
+                    imgSrc: "folder"
+                },
+            ],
+            selectedFilterItems: {
+                doc: false,
+                spreadsheet: false,
+                pdf: false,
+                video: false,
+                folder: false
+            },
         }
     },
     computed: {
         divClass() {
             if (!this.openPopup) return "w-[200px]"
-            return "w-[620px] border rounded-xl shadow-md p-2"
+            return "w-[620px] border rounded-2xl shadow-md p-2 bg-white"
         },
         userId() {
             return this.$store.state.auth.user_id
