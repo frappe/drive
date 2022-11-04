@@ -1,8 +1,8 @@
 <template>
-    <div :class="divClass">
+    <div :class="divClass" v-on-outside-click="closePopup">
         <Input iconLeft="search" type="text" :class="{ 'bg-white focus:bg-white': isOpen }" v-model="search"
             placeholder="Search" @focus="openPopup" @input="($event) => search = $event" />
-        <div v-if="isOpen" class="mt-2">
+        <div v-if="isOpen" class="mt-3">
             <div v-if="showEntities" v-for="entity in filteredEntities" @click="openEntity(entity)"
                 class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3">
                 <div class="flex grow items-center">
@@ -97,6 +97,9 @@ export default {
             this.$resources.entities.fetch()
             this.isOpen = true
         },
+        closePopup() {
+            this.isOpen = false
+        }
     },
     setup() {
         return { formatMimeType }
