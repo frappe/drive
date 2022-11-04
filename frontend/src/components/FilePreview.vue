@@ -1,6 +1,6 @@
 <template>
   <portal to="modals">
-    <div class="fixed inset-0 flex items-center justify-center px-4 py-4">
+    <div class="fixed inset-0 flex items-center justify-center px-4 py-4 z-10">
       <div class="fixed inset-0 transition-opacity bg-gray-900 opacity-75" @click="this.$emit('hide')"></div>
       <FileRender :previewEntity="previewEntity" />
     </div>

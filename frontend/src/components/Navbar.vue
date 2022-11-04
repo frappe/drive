@@ -1,6 +1,6 @@
 <template>
   <nav class="bg-white border-b">
-    <div class="mx-auto py-2 px-5 md:pl-3 md:pr-6 h-16 md:h-12 z-10 flex items-center justify-between">
+    <div class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block">
           <FrappeDriveLogo class="h-4" />
@@ -17,11 +17,10 @@
           </router-link>
         </div>
       </div>
-
+      <div class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
+        <SearchPopup @openEntity="(entity) => openEntity(entity)" />
+      </div>
       <div class="flex items-center">
-        <Input iconLeft="search" type="text" class="cursor-pointer" placeholder="Search" readonly
-          @click="showSearchDialog=true" />
-
         <Dropdown :options="$store.state.hasWriteAccess ? addOptions : []" placement="left"
           class="basis-5/12 lg:basis-auto">
           <Button class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full" appearance="primary" icon="plus"
@@ -43,7 +42,6 @@
       </div>
     </div>
   </nav>
-  <SearchDialog v-model="showSearchDialog" @openEntity="(entity) => openEntity(entity)" />
   <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
     () => {
       this.emitter.emit('fetchFolderContents')
@@ -55,7 +53,7 @@
 <script>
 import { Avatar, Dropdown, FeatherIcon, Input, Button } from 'frappe-ui'
 import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
-import SearchDialog from '@/components/SearchDialog.vue'
+import SearchPopup from '@/components/SearchPopup.vue'
 import NewFolderDialog from '@/components/NewFolderDialog.vue'
 import FilePreview from '@/components/FilePreview.vue'
 import FrappeLogo from '@/components/FrappeLogo.vue'
@@ -66,7 +64,7 @@ export default {
     FilePreview,
     FrappeDriveLogo,
     FrappeLogo,
-    SearchDialog,
+    SearchPopup,
     NewFolderDialog,
     Avatar,
     Dropdown,
@@ -104,7 +102,7 @@ export default {
           handler: () => this.$store.dispatch('logout'),
         },
       ],
-      showSearchDialog: false
+      showSearchPopup: false
     }
   },
   computed: {
