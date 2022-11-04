@@ -1,14 +1,14 @@
 <template>
     <div :class="divClass">
-        <Input iconLeft="search" type="text" :class="{ 'bg-white focus:bg-white': openPopup }" v-model="search"
-            placeholder="Search" @focus="openPopup = true" />
-        <div v-if="openPopup">
+        <Input iconLeft="search" type="text" :class="{ 'bg-white focus:bg-white': isOpen }" v-model="search"
+            placeholder="Search" @focus="openPopup" @input="($event) => search = $event" />
+        <div v-if="isOpen" class="mt-2">
             <div v-if="showEntities" v-for="entity in filteredEntities" @click="openEntity(entity)"
-                class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-md py-2 px-3">
+                class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3">
                 <div class="flex grow items-center">
                     <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
                     : formatMimeType(entity.mime_type)}.svg`" class="w-6 mr-4" />
-                    <div class="w-72">
+                    <div>
                         <div class="text-lg text-gray-900 font-medium truncate">{{ entity.title }}</div>
                         <div class="text-[13px] text-gray-600">{{ entity.owner }}</div>
                     </div>
@@ -37,17 +37,11 @@ export default {
     components: {
         Input,
     },
-    props: {
-        modelValue: {
-            type: Boolean,
-            required: true,
-        },
-    },
-    emits: ['update:modelValue', 'openEntity'],
+    emits: ['openEntity'],
     data() {
         return {
             search: '',
-            openPopup: false,
+            isOpen: false,
             filterItems: [
                 {
                     title: "Documents",
@@ -81,7 +75,7 @@ export default {
     },
     computed: {
         divClass() {
-            if (!this.openPopup) return "w-[200px]"
+            if (!this.isOpen) return "w-[200px]"
             return "w-[620px] border rounded-2xl shadow-md p-2 bg-white"
         },
         userId() {
@@ -93,19 +87,15 @@ export default {
         showEntities() {
             return this.search.length > 0
         },
-        open: {
-            get() {
-                return this.modelValue
-            },
-            set(value) {
-                this.$emit('update:modelValue', value)
-            },
-        },
     },
     methods: {
         openEntity(entity) {
+            this.isOpen = false
             this.$emit('openEntity', entity)
-            this.open = false
+        },
+        openPopup() {
+            this.$resources.entities.fetch()
+            this.isOpen = true
         },
     },
     setup() {

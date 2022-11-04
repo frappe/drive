@@ -18,7 +18,7 @@
         </div>
       </div>
       <div class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
-        <SearchPopup />
+        <SearchPopup @openEntity="(entity) => openEntity(entity)" />
       </div>
       <div class="flex items-center">
         <Dropdown :options="$store.state.hasWriteAccess ? addOptions : []" placement="left"
