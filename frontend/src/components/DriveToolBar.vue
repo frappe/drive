@@ -1,5 +1,6 @@
 <template>
-  <div class="mb-4 min-h-8 py-2 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0">
+  <div class="mb-4 min-h-8 py-2 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0"
+    @click="($event) => $event.stopPropagation()">
     <Breadcrumbs v-if="breadcrumbs" :breadcrumbLinks="breadcrumbs" />
     <div class="flex gap-3 basis-full lg:basis-auto">
       <Dropdown v-if="actionItems" :options="actionItems" placement="left" class="basis-5/12 lg:basis-auto">

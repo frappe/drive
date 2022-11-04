@@ -34,7 +34,8 @@
                         <div class="px-3.5 pb-2.5">
                             <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
                             <div class="truncate text-sm text-gray-600 flex mt-1">
-                                <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`" class="h-4 mr-1.5" />
+                                <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`"
+                                    class="h-4 mr-1.5" />
                                 <p>{{ getFileSubtitle(file) }}</p>
                             </div>
                         </div>

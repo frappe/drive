@@ -8,15 +8,17 @@
                 <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
                 : formatMimeType(entity.mime_type)}.svg`" class="h-5 mr-2.5" />
                 <div class="font-semibold truncate text-2xl">
-                    {{entity.title}}
+                    {{ entity.title }}
                 </div>
             </div>
         </div>
         <div class="h-11 flex cursor-pointer text-base">
-            <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': tab, 'border-blue-500': !tab }" @click="tab=0">
+            <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': tab, 'border-blue-500': !tab }"
+                @click="tab = 0">
                 <div class="m-auto">Detail</div>
             </div>
-            <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': !tab, 'border-blue-500': tab }" @click="tab=1">
+            <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': !tab, 'border-blue-500': tab }"
+                @click="tab = 1">
                 <div class="m-auto">Comments</div>
             </div>
         </div>
@@ -25,7 +27,7 @@
             <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium mb-4 ">Manage Access</div>
                 <div class="flex flex-row">
-                    <Button @click="showShareDialog=true">Share</Button>
+                    <Button @click="showShareDialog = true">Share</Button>
                 </div>
             </div>
             <div class="grow">
@@ -39,11 +41,11 @@
                         <div>Owner</div>
                     </div>
                     <div class="w-1/2 space-y-2">
-                        <div>{{formattedMimeType}}</div>
-                        <div>{{entity.file_size}}</div>
-                        <div>{{entity.modified}}</div>
-                        <div>{{entity.creation}}</div>
-                        <div>{{entity.owner}}</div>
+                        <div>{{ formattedMimeType }}</div>
+                        <div>{{ entity.file_size }}</div>
+                        <div>{{ entity.modified }}</div>
+                        <div>{{ entity.creation }}</div>
+                        <div>{{ entity.owner }}</div>
                     </div>
                 </div>
             </div>

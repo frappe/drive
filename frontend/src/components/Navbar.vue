@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white border-b">
+  <nav class="bg-white border-b" @click="($event) => $event.stopPropagation()">
     <div class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block">
