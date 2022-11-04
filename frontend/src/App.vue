@@ -1,5 +1,5 @@
 <template>
-  <div class="flex text-gray-900 h-screen antialiased">
+  <div class="flex text-gray-900 h-screen antialiased overflow-y-hidden">
     <UploadTracker v-if="showUploadTracker" />
     <div class="h-full max-h-full w-full max-w-full flex flex-col"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }">
