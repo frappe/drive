@@ -1,5 +1,6 @@
 <template>
 	<div class="bg-white rounded-xl absolute shadow-md p-2 z-10 space-y-0.5 border"
+		@click="($event) => $event.stopPropagation()"
 		:style="{ left: `${entityContext.x}px`, top: `${entityContext.y}px` }" v-if="actionItems.length > 0">
 		<div v-for="(item, index) in actionItems" :key="index"
 			class="text-sm h-7 hover:bg-gray-100 cursor-pointer rounded-lg flex px-3 items-center"
