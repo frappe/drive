@@ -5,8 +5,8 @@
                 <FeatherIcon name="x" class="h-4 cursor-pointer" @click="$store.commit('setShowInfo', false)" />
             </div>
             <div class="flex items-center">
-                <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
-                : formatMimeType(entity.mime_type)}.svg`" class="h-5 mr-2.5" />
+                <img :src="getIconUrl(entity.is_group ? 'folder'
+                : formatMimeType(entity.mime_type))" class="h-5 mr-2.5" />
                 <div class="font-semibold truncate text-2xl">
                     {{ entity.title }}
                 </div>
@@ -63,6 +63,7 @@ import { FeatherIcon } from 'frappe-ui'
 import ShareDialog from '@/components/ShareDialog.vue'
 import { formatMimeType } from '@/utils/format'
 import FileRender from '@/components/FileRender.vue'
+import getIconUrl from '@/utils/getIconUrl'
 
 export default {
     name: 'InfoSidebar',
@@ -98,7 +99,7 @@ export default {
         },
     },
     setup() {
-        return { formatMimeType }
+        return { formatMimeType, getIconUrl }
     }
 } 
 </script>

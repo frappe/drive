@@ -29,13 +29,12 @@
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }"
                         @contextmenu="handleEntityContext(file, $event)">
                         <div class="h-28 md:h-36 place-items-center grid">
-                            <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`" class="h-14" />
+                            <img :src="getIconUrl(formatMimeType(file.mime_type))" class="h-14" />
                         </div>
                         <div class="px-3.5 pb-2.5">
                             <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
                             <div class="truncate text-sm text-gray-600 flex mt-1">
-                                <img :src="`/src/assets/images/icons/${formatMimeType(file.mime_type)}.svg`"
-                                    class="h-4 mr-1.5" />
+                                <img :src="getIconUrl(formatMimeType(file.mime_type))" class="h-4 mr-1.5" />
                                 <p>{{ getFileSubtitle(file) }}</p>
                             </div>
                         </div>
@@ -49,6 +48,7 @@
 <script>
 import { FeatherIcon } from 'frappe-ui'
 import { formatMimeType } from '@/utils/format'
+import getIconUrl from '@/utils/getIconUrl'
 
 export default {
     name: 'GridView',
@@ -115,7 +115,7 @@ export default {
         },
     },
     setup() {
-        return { formatMimeType }
+        return { formatMimeType, getIconUrl }
     }
 }
 </script>
