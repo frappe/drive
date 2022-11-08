@@ -7,14 +7,14 @@
           <th class="w-6 px-5">
             <Input type="checkbox" class="invisible" />
           </th>
-          <th class="hidden px-2.5 py-3.5 font-normal md:table-cell">
+          <th class="hidden px-2.5 py-3 font-normal md:table-cell">
             Name
           </th>
-          <th class="hidden px-2.5 py-3.5 font-normal lg:table-cell">Owner</th>
-          <th class="hidden px-2.5 py-3.5 font-normal md:table-cell">
+          <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Owner</th>
+          <th class="hidden px-2.5 py-3 font-normal md:table-cell">
             Modified
           </th>
-          <th class="hidden px-2.5 py-3.5 font-normal lg:table-cell">Size</th>
+          <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Size</th>
         </tr>
       </thead>
       <tbody v-if="!isEmpty" class="divide-y divide-gray-100">
@@ -26,23 +26,23 @@
                 selectedEntities.includes(entity) ? 'visible' : 'group-hover:visible md:invisible'
               " />
           </td>
-          <td @click="this.$emit('openEntity', entity)" class="min-w-[15rem] px-2.5 py-3.5 lg:w-2/5">
+          <td @click="this.$emit('openEntity', entity)" class="min-w-[15rem] px-2.5 py-3 lg:w-2/5">
             <div class="flex items-center text-gray-900 text-[14px] font-medium">
               <img :src="getIconUrl(entity.is_group ? 'folder'
-              : formatMimeType(entity.mime_type))" class="h-5 mr-5" />
+              : formatMimeType(entity.mime_type))" class="h-[21px] mr-5" />
               {{ entity.title }}
             </div>
           </td>
           <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5 text-gray-700">
+            class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/5 text-gray-700">
             {{ entity.owner }}
           </td>
           <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3.5 font-normal md:table-cell lg:w-1/5 text-gray-700">
+            class="hidden w-36 truncate px-2.5 py-3 font-normal md:table-cell lg:w-1/5 text-gray-700">
             {{ entity.modified }}
           </td>
           <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3.5 font-normal lg:table-cell lg:w-1/5 text-gray-700">
+            class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/5 text-gray-700">
             {{ entity.file_size }}
           </td>
         </tr>
