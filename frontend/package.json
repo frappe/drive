@@ -15,7 +15,7 @@
     "frappe-ui": "0.0.73",
     "fuzzysort": "^2.0.1",
     "mitt": "^3.0.0",
-    "vue": "^3.2.25",
+    "vue": "^3.2",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2"
   },
@@ -24,6 +24,6 @@
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
     "tailwindcss": "^3.0.15",
-    "vite": "^2.7.2"
+    "vite": "^3.2"
   }
 }
