@@ -28,13 +28,13 @@
                     <div class="md:w-[212px] rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }"
                         @contextmenu="handleEntityContext(file, $event)">
-                        <div class="h-28 md:h-36 place-items-center grid">
+                        <div class="h-28 md:h-32 place-items-center grid">
                             <img :src="getIconUrl(formatMimeType(file.mime_type))" class="h-14" />
                         </div>
-                        <div class="px-3.5 pb-2.5">
+                        <div class="px-3.5 md:h-16 content-center grid">
                             <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
-                            <div class="truncate text-sm text-gray-600 flex mt-1">
-                                <img :src="getIconUrl(formatMimeType(file.mime_type))" class="h-4 mr-1.5" />
+                            <div class="truncate text-sm text-gray-600 flex mt-1 place-items-center">
+                                <img :src="getIconUrl(formatMimeType(file.mime_type))" class="h-3.5 mr-1.5" />
                                 <p>{{ getFileSubtitle(file) }}</p>
                             </div>
                         </div>
