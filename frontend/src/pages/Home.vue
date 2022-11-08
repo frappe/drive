@@ -392,7 +392,7 @@ export default {
     pathEntities() {
       return {
         method: 'drive.api.files.get_entities_in_path',
-        cache: ['pathEntities', this.entityName],
+        // cache: ['pathEntities', this.entityName],
         params: {
           entity_name: this.entityName,
         },
