@@ -22,7 +22,7 @@
                 <div class="m-auto">Comments</div>
             </div>
         </div>
-        <div v-if="!tab" class="p-6 space-y-7 h-full flex flex-col">
+        <div v-if="!tab" class="p-6 space-y-7 h-full flex flex-col z-0">
             <FileRender v-if="isImage && $store.state.showInfo" :previewEntity="entity" />
             <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium mb-4 ">Manage Access</div>
