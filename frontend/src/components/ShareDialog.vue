@@ -1,5 +1,5 @@
 <template>
-  <Dialog :options="{ title: `Share '${entityTitle}'` }" v-model="open">
+  <Dialog :options="{ title: `Share '${entityTitle}'` }" v-model="open" @click="($event) => $event.stopPropagation()">
     <template #body-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
         <div class="border rounded-lg py-3 px-4">
@@ -100,10 +100,9 @@
             }))
           ">
             <Button iconRight="chevron-down" :loading="user.loading"
-              class="text-sm w-24 focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px]" appearance="minimal">{{
-              user.write ? 'Editor' :
-              'Viewer'
-              }}</Button>
+              class="text-sm w-24 focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px]" appearance="minimal">
+              {{ user.write ? 'Editor' : 'Viewer' }}
+            </Button>
           </Dropdown>
         </div>
         <div class="flex mt-5">

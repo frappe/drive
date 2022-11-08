@@ -1,26 +1,17 @@
 <template>
-  <Dialog :options="{ title: 'New Folder' }" v-model="open">
+  <Dialog :options="{ title: 'New Folder' }" v-model="open" @click="($event) => $event.stopPropagation()">
     <template #body-content>
-      <Input
-        type="text"
-        v-model="folderName"
-        placeholder="Folder Name"
-        @keydown.enter="
-          (e) =>
-            $resources.createFolder.submit({
-              title: e.target.value.trim(),
-              parent,
-            })
-        "
-      />
+      <Input type="text" v-model="folderName" placeholder="Folder Name" @keydown.enter="
+        (e) =>
+          $resources.createFolder.submit({
+            title: e.target.value.trim(),
+            parent,
+          })
+      " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
     <template #actions>
-      <Button
-        appearance="primary"
-        @click="$resources.createFolder.submit()"
-        :loading="$resources.createFolder.loading"
-      >
+      <Button appearance="primary" @click="$resources.createFolder.submit()" :loading="$resources.createFolder.loading">
         Create
       </Button>
       <Button @click="open = false"> Cancel </Button>

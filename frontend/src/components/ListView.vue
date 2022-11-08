@@ -28,8 +28,8 @@
           </td>
           <td @click="this.$emit('openEntity', entity)" class="min-w-[15rem] px-2.5 py-3.5 lg:w-2/5">
             <div class="flex items-center text-gray-900 text-[14px] font-medium">
-              <img :src="`/src/assets/images/icons/${entity.is_group ? 'folder'
-              : formatMimeType(entity.mime_type)}.svg`" class="h-5 mr-5" />
+              <img :src="getIconUrl(entity.is_group ? 'folder'
+              : formatMimeType(entity.mime_type))" class="h-5 mr-5" />
               {{ entity.title }}
             </div>
           </td>
@@ -56,6 +56,7 @@
 <script>
 import { Input, FeatherIcon } from 'frappe-ui'
 import { formatMimeType } from '@/utils/format'
+import getIconUrl from '@/utils/getIconUrl'
 
 export default {
   name: 'ListView',
@@ -90,7 +91,7 @@ export default {
     },
   },
   setup() {
-    return { formatMimeType }
+    return { formatMimeType, getIconUrl }
   }
 }
 </script>

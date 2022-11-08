@@ -44,7 +44,7 @@
     " />
 
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :entityTitle="shareTitle"
-      :isFolder="shareIsFolder" />
+      :isFolder="shareIsFolder" @click="($event) => $event.stopPropagation()" />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>

@@ -1,13 +1,13 @@
 <template>
     <i class="fa fa-qq" aria-hidden="true"></i>
-    <Dialog :options="{ title: dialogData.title }" v-model="open">
+    <Dialog :options="{ title: dialogData.title }" v-model="open" @click="($event) => $event.stopPropagation()">
         <template #body-content>
             <p class="text-gray-600">{{ dialogData.message }}
             </p>
             <div class="flex mt-5">
                 <Button @click="open = false" class="ml-auto"> Cancel </Button>
-                <Button appearance="primary" :iconLeft="dialogData.buttonIcon" class="ml-4" @click="$resources.method.submit()"
-                    :loading="$resources.method.loading">
+                <Button appearance="primary" :iconLeft="dialogData.buttonIcon" class="ml-4"
+                    @click="$resources.method.submit()" :loading="$resources.method.loading">
                     {{ dialogData.buttonMessage }}
                 </Button>
             </div>
