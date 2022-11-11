@@ -13,7 +13,8 @@
             </div>
             <div class="flex my-auto">
               <Switch v-model="generalAccess.read" :class="generalAccess.read ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-7 items-center rounded-full" @change="$resources.hello">
+                class="relative inline-flex h-4 w-7 items-center rounded-full"
+                @click="updateAccess({ read: !generalAccess.read })">
                 <span :class="generalAccess.read ? 'translate-x-4' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
               </Switch>
@@ -23,7 +24,8 @@
             <div class=" grow text-[14px] text-gray-900">Allow edit</div>
             <div class="flex my-auto">
               <Switch v-model="generalAccess.write" :class="generalAccess.write ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-7 items-center rounded-full" @change="$resources.hello">
+                class="relative inline-flex h-4 w-7 items-center rounded-full"
+                @click="updateAccess({ write: !generalAccess.write })">
                 <span :class="generalAccess.write ? 'translate-x-4' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
               </Switch>
@@ -33,7 +35,7 @@
             <div class=" grow text-[14px] text-gray-900">Allow comments</div>
             <div class="flex my-auto">
               <Switch :class="false ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-7 items-center rounded-full" @change="$resources.hello">
+                class="relative inline-flex h-4 w-7 items-center rounded-full">
                 <span :class="false ? 'translate-x-4' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
               </Switch>
@@ -56,7 +58,7 @@
             @click="$resources.share.fetch()">Invite</Button>
         </div>
         <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
-        <div class="flex mt-5 text-[14px] text-gray-600">Members</div>
+        <div v-if="$resources.sharedWith.data?.length > 0" class="flex mt-5 text-[14px] text-gray-600">Members</div>
         <div v-for="user in $resources.sharedWith.data" :key="user.user"
           class="mt-3 flex flex-row w-full gap-2 items-center antialiased ">
           <div class="overflow-hidden rounded-full h-9 w-9">
@@ -177,23 +179,24 @@ export default {
       set(value) {
         this.$emit('update:modelValue', value)
         if (!value) {
-          if (this.accessChanged) {
-            this.saveLoading = true
-            this.$resources.updateAccess.submit({
-              method: 'set_general_access',
-              entity_name: this.entityName,
-              new_access: this.generalAccess
-            })
-              .then(() => {
-                this.saveLoading = false
-              })
-          }
           this.errorMessage = ''
         }
       },
     },
   },
   methods: {
+    updateAccess(updatedPerm) {
+      this.saveLoading = true
+      const updatedAccess = {...this.generalAccess, ...updatedPerm}
+      this.$resources.updateAccess.submit({
+        method: 'set_general_access',
+        entity_name: this.entityName,
+        new_access: updatedAccess
+      })
+        .then(() => {
+          this.saveLoading = false
+        })
+    },
     async getLink() {
       this.showAlert = false
       const link = this.isFolder ?
