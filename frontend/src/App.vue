@@ -10,7 +10,7 @@
         <div class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-6 md:px-6">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-[25px] md:px-6">
           <router-view />
         </div>
         <Transition enter-from-class="translate-x-[150%] opacity-0" leave-to-class="translate-x-[150%] opacity-0"

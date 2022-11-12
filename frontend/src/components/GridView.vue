@@ -5,9 +5,9 @@
             <slot name="placeholder"></slot>
         </div>
         <div v-else class="h-full px-5 md:px-0" @click="deselectAll" v-on-outside-click="deselectAll">
-            <div class="mt-7" v-if="folders.length > 0">
+            <div class="mt-3" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
-                <div class="flex flex-row flex-wrap gap-5 my-4">
+                <div class="flex flex-row flex-wrap gap-5 mt-4">
                     <div class="md:w-[212px] rounded-lg border group select-none" v-for="folder in folders"
                         :key="folder.name" @click="selectEntity(folder, $event)"
                         @contextmenu="handleEntityContext(folder, $event)"
@@ -22,9 +22,9 @@
                     </div>
                 </div>
             </div>
-            <div class="mt-7" v-if="files.length > 0">
+            <div :class="folders.length > 0 ? 'mt-8' : 'mt-3'" v-if="files.length > 0">
                 <div class="text-gray-600 font-medium">Files</div>
-                <div class="flex flex-row flex-wrap gap-5 my-4">
+                <div class="flex flex-row flex-wrap gap-5 mt-4">
                     <div class="md:w-[212px] rounded-lg border group select-none" v-for="file in files" :key="file.name"
                         @click="selectEntity(file, $event)" :class="{ 'bg-blue-50': selectedEntities.includes(file) }"
                         @contextmenu="handleEntityContext(file, $event)">
