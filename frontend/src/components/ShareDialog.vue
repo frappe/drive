@@ -42,21 +42,7 @@
             </div>
           </div>
         </div>
-        <div class="flex items-start mt-3.5 gap-2 w-full relative">
-          <UserSearch class="flex-1 invisible" />
-          <UserSearch v-model="searchQuery" @submit="
-            (user) =>
-              $resources.share.submit({
-                method: 'share',
-                entity_name: entityName,
-                user: user,
-                write: 0,
-                share: 1,
-              })
-          " class="flex-1 absolute w-[calc(100%_-_5.2rem)]" />
-          <Button class="focus:ring-0 focus:ring-offset-0 w-[75px] h-8 rounded-lg" appearance="primary"
-            @click="$resources.share.fetch()">Invite</Button>
-        </div>
+        <UserSearch v-model="searchQuery"/>
         <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
         <div v-if="$resources.sharedWith.data?.length > 0" class="flex mt-5 text-[14px] text-gray-600">Members</div>
         <div v-for="user in $resources.sharedWith.data" :key="user.user"
@@ -123,7 +109,7 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, ErrorMessage, FeatherIcon, Button, Alert, Popover } from 'frappe-ui'
+import { Dialog, ErrorMessage, FeatherIcon, Button, Alert, Popover, Input } from 'frappe-ui'
 import { Switch } from '@headlessui/vue'
 import UserSearch from '@/components/UserSearch.vue'
 
@@ -138,6 +124,7 @@ export default {
     Alert,
     Switch,
     Popover,
+    Input
   },
   props: {
     modelValue: {
@@ -190,13 +177,13 @@ export default {
     },
   },
   methods: {
-    updateAccess(updatedPerm) {
+    updateAccess(updatedAccess) {
       this.saveLoading = true
-      const updatedAccess = { ...this.generalAccess, ...updatedPerm }
+      const newAccess = { ...this.generalAccess, ...updatedAccess }
       this.$resources.updateAccess.submit({
         method: 'set_general_access',
         entity_name: this.entityName,
-        new_access: updatedAccess
+        new_access: newAccess
       })
         .then(() => {
           this.saveLoading = false
