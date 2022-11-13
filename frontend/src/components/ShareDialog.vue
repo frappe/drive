@@ -2,7 +2,7 @@
   <Dialog :options="{ title: `Share '${entityTitle}'` }" v-model="open" @click="($event) => $event.stopPropagation()">
     <template #body-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
-        <div class="border rounded-lg py-3 px-4">
+        <div class="border rounded-xl py-2 px-[18px]">
           <div class="flex flex-row">
             <div class="flex my-auto">
               <FeatherIcon name="globe" :strokeWidth="2" class="h-5 text-yellow-600" />
@@ -13,9 +13,9 @@
             </div>
             <div class="flex my-auto">
               <Switch v-model="generalAccess.read" :class="generalAccess.read ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-7 items-center rounded-full"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
                 @click="updateAccess({ read: !generalAccess.read })">
-                <span :class="generalAccess.read ? 'translate-x-4' : 'translate-x-1'"
+                <span :class="generalAccess.read ? 'translate-x-3.5' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
               </Switch>
             </div>
@@ -24,9 +24,9 @@
             <div class=" grow text-[14px] text-gray-900">Allow edit</div>
             <div class="flex my-auto">
               <Switch v-model="generalAccess.write" :class="generalAccess.write ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-7 items-center rounded-full"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
                 @click="updateAccess({ write: !generalAccess.write })">
-                <span :class="generalAccess.write ? 'translate-x-4' : 'translate-x-1'"
+                <span :class="generalAccess.write ? 'translate-x-3.5' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
               </Switch>
             </div>
@@ -35,14 +35,14 @@
             <div class=" grow text-[14px] text-gray-900">Allow comments</div>
             <div class="flex my-auto">
               <Switch :class="false ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-7 items-center rounded-full">
-                <span :class="false ? 'translate-x-4' : 'translate-x-1'"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full">
+                <span :class="false ? 'translate-x-3.5' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
               </Switch>
             </div>
           </div>
         </div>
-        <div class="flex items-start mt-4 gap-2 w-full relative">
+        <div class="flex items-start mt-3.5 gap-2 w-full relative">
           <UserSearch class="flex-1 invisible" />
           <UserSearch v-model="searchQuery" @submit="
             (user) =>
@@ -53,8 +53,8 @@
                 write: 0,
                 share: 1,
               })
-          " class="flex-1 absolute w-[calc(100%_-_5.5rem)]" />
-          <Button class="focus:ring-0 focus:ring-offset-0 w-20 h-8" appearance="primary"
+          " class="flex-1 absolute w-[calc(100%_-_5.2rem)]" />
+          <Button class="focus:ring-0 focus:ring-offset-0 w-[75px] h-8 rounded-lg" appearance="primary"
             @click="$resources.share.fetch()">Invite</Button>
         </div>
         <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
@@ -72,44 +72,49 @@
             <div class="text-gray-900 text-[14px] font-medium">{{ user.full_name }}</div>
             <div class="text-gray-600 text-base">{{ user.user }}</div>
           </div>
-          <Dropdown placement="right" :options="
-            [
-              { label: 'Viewer' },
-              { label: 'Editor' },
-              { label: 'Delete' },
-            ].map((option) => ({
-              ...option,
-              handler: () => {
-                user.loading = true
-                $resources.share
-                  .submit(
-                    Object.assign(
-                      {
-                        method:
-                          option.label === 'Delete' ? 'unshare' : 'share',
-                        entity_name: entityName,
-                        user: user.user,
-                      },
-                      option.label != 'Delete' && {
-                        write: option.label === 'Editor' ? 1 : 0,
-                      }
-                    )
-                  )
-                  .then(() => {
-                    user.loading = false
-                  })
-              },
-            }))
-          ">
-            <Button iconRight="chevron-down" :loading="user.loading"
-              class="text-sm w-24 focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px]" appearance="minimal">
-              {{ user.write ? 'Editor' : 'Viewer' }}
-            </Button>
-          </Dropdown>
+          <Popover transition="default">
+            <template #target="{ togglePopover }">
+              <Button iconRight="chevron-down" :loading="user.loading" @click="togglePopover()"
+                class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px] rounded-lg"
+                appearance="minimal">
+                {{ user.write ? 'Can edit' : 'Can view' }}
+              </Button>
+            </template>
+            <template #body-main="{ togglePopover }">
+              <div class="p-1" @click="($event) => $event.stopPropagation()">
+                <div v-for="item in ['Viewer', 'Editor', 'Remove']" :key="item">
+                  <div class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2" @click="() => {
+                    user.loading = true
+                    $resources.share
+                      .submit(
+                        Object.assign(
+                          {
+                            method:
+                              item === 'Remove' ? 'unshare' : 'share',
+                            entity_name: entityName,
+                            user: user.user,
+                          },
+                          item != 'Remove' && {
+                            write: item === 'Editor' ? 1 : 0,
+                          }
+                        )
+                      )
+                      .then(() => {
+                        user.loading = false
+                      })
+                    togglePopover()
+                  }">
+                    {{ item }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </Popover>
         </div>
         <div class="flex mt-5">
-          <Button icon-left="link" appearance="white" @click="getLink">Copy link</Button>
-          <Button appearance="minimal" class="ml-auto text-gray-700 hover:bg-white focus:bg-white active:bg-white"
+          <Button icon-left="link" appearance="white" class="h-7 rounded-lg" @click="getLink">Copy link</Button>
+          <Button appearance="minimal"
+            class="ml-auto text-gray-700 hover:bg-white focus:bg-white active:bg-white h-7 rounded-lg"
             iconRight="info">Learn about sharing</Button>
         </div>
         <Alert :title="alertMessage" class="mt-5" v-if="showAlert"></Alert>
@@ -118,7 +123,7 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, ErrorMessage, FeatherIcon, Button, Dropdown, Alert } from 'frappe-ui'
+import { Dialog, ErrorMessage, FeatherIcon, Button, Alert, Popover } from 'frappe-ui'
 import { Switch } from '@headlessui/vue'
 import UserSearch from '@/components/UserSearch.vue'
 
@@ -130,9 +135,9 @@ export default {
     FeatherIcon,
     Button,
     UserSearch,
-    Dropdown,
     Alert,
     Switch,
+    Popover,
   },
   props: {
     modelValue: {
@@ -160,7 +165,7 @@ export default {
       searchQuery: '',
       errorMessage: '',
       showAlert: false,
-      alertMessage: ""
+      alertMessage: "",
     }
   },
   computed: {
@@ -187,7 +192,7 @@ export default {
   methods: {
     updateAccess(updatedPerm) {
       this.saveLoading = true
-      const updatedAccess = {...this.generalAccess, ...updatedPerm}
+      const updatedAccess = { ...this.generalAccess, ...updatedPerm }
       this.$resources.updateAccess.submit({
         method: 'set_general_access',
         entity_name: this.entityName,

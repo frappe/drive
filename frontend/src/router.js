@@ -60,10 +60,15 @@ const routes = [
     },
   },
   {
+    path: '/test',
+    name: 'Test',
+    component: () => import('@/pages/Test.vue'),
+  },
+  {
     path: '/workspace',
     name: 'Workspace',
     redirect: () => {
-      window.location.href ="/app"
+      window.location.href = '/app';
     },
   },
 ];
