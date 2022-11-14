@@ -42,7 +42,15 @@
             </div>
           </div>
         </div>
-        <UserSearch v-model="searchQuery"/>
+        <UserSearch @submit="
+          ({ user, write }) => $resources.share.submit({
+            method: 'share',
+            entity_name: entityName,
+            user,
+            write,
+            share: 1,
+          })
+        " />
         <ErrorMessage v-if="$resources.share.error" class="mt-2" :message="errorMessage" />
         <div v-if="$resources.sharedWith.data?.length > 0" class="flex mt-5 text-[14px] text-gray-600">Members</div>
         <div v-for="user in $resources.sharedWith.data" :key="user.user"
@@ -149,7 +157,6 @@ export default {
     return {
       generalAccess: {},
       saveLoading: false,
-      searchQuery: '',
       errorMessage: '',
       showAlert: false,
       alertMessage: "",
@@ -246,8 +253,6 @@ export default {
         params: {
           method: 'share',
           entity_name: this.entityName,
-          user: this.searchQuery,
-          write: 0,
         },
         validate(params) {
           if (!params?.user) {
@@ -257,7 +262,6 @@ export default {
         onSuccess() {
           this.$resources.share.error = null
           this.$resources.sharedWith.fetch()
-          this.searchQuery = ''
         },
         onError(error) {
           if (error.messages) {
