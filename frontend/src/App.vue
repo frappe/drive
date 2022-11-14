@@ -15,7 +15,7 @@
         </div>
         <Transition enter-from-class="translate-x-[150%] opacity-0" leave-to-class="translate-x-[150%] opacity-0"
           enter-active-class="transition duration-700" leave-active-class="transition duration-700">
-          <div v-if="showInfoSidebar" class="border-l md:pt-6 flex" @click="($event) => $event.stopPropagation()">
+          <div v-if="showInfoSidebar" class="border-l md:pt-6 flex" >
             <InfoSidebar :entity="$store.state.entityInfo" />
           </div>
         </Transition>

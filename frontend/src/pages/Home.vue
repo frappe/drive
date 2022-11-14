@@ -44,7 +44,7 @@
     " />
 
     <ShareDialog v-if="showShareDialog" v-model="showShareDialog" :entityName="shareName" :entityTitle="shareTitle"
-      :isFolder="shareIsFolder" @click="($event) => $event.stopPropagation()" />
+      :isFolder="shareIsFolder" />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -149,6 +149,7 @@ export default {
           label: 'View details',
           icon: 'eye',
           handler: () => {
+            this.closeContextMenu()
             this.$store.commit('setShowInfo', true)
           },
           isEnabled: () => {
@@ -159,6 +160,7 @@ export default {
           label: 'Hide details',
           icon: 'eye-off',
           handler: () => {
+            this.closeContextMenu()
             this.$store.commit('setShowInfo', false)
           },
           isEnabled: () => {

@@ -1,5 +1,5 @@
 <template>
-  <Dialog :options="{ title: `Share '${entityTitle}'` }" v-model="open" @click="($event) => $event.stopPropagation()">
+  <Dialog :options="{ title: `Share '${entityTitle}'` }" v-model="open">
     <template #body-content>
       <div class="text-left min-w-[16rem]" ref="dialogContent">
         <div class="border rounded-xl py-2 px-[18px]">
@@ -75,7 +75,7 @@
               </Button>
             </template>
             <template #body-main="{ togglePopover }">
-              <div class="p-1" @click="($event) => $event.stopPropagation()">
+              <div class="p-1">
                 <div v-for="item in ['Viewer', 'Editor', 'Remove']" :key="item">
                   <div class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2" @click="() => {
                     user.loading = true

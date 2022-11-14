@@ -1,5 +1,5 @@
 <template>
-    <Dialog :options="{ title: 'Delete Forever?' }" v-model="open" @click="($event) => $event.stopPropagation()">
+    <Dialog :options="{ title: 'Delete Forever?' }" v-model="open" >
         <template #body-content>
             <p class="text-gray-600">{{ entities.length === 1 ? `${entities.length} item` :
                     `${entities.length} items`

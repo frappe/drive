@@ -4,7 +4,7 @@
         <div v-if="isEmpty" class="flex-1">
             <slot name="placeholder"></slot>
         </div>
-        <div v-else class="h-full px-5 md:px-0" @click="deselectAll" v-on-outside-click="deselectAll">
+        <div v-else class="h-full px-5 md:px-0" @click="deselectAll">
             <div class="mt-3" v-if="folders.length > 0">
                 <div class="text-gray-600 font-medium">Folders</div>
                 <div class="flex flex-row flex-wrap gap-5 mt-4">

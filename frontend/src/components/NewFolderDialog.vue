@@ -1,5 +1,5 @@
 <template>
-  <Dialog :options="{ title: 'New Folder' }" v-model="open" @click="($event) => $event.stopPropagation()">
+  <Dialog :options="{ title: 'New Folder' }" v-model="open" >
     <template #body-content>
       <Input type="text" v-model="folderName" placeholder="Folder Name" @keydown.enter="
         (e) =>

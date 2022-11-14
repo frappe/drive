@@ -15,7 +15,7 @@
                   </Button>
                 </template>
                 <template #body-main="{ togglePopover: toggleAccess }">
-                  <div class="p-1" @click="($event) => $event.stopPropagation()">
+                  <div class="p-1">
                     <div v-for="item in ['Can view', 'Can edit']" :key="item">
                       <div class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                         @click="() => {
@@ -32,7 +32,7 @@
             </div>
           </template>
           <template #body-main="{ togglePopover: toggleUsers }">
-            <div class="p-1" @click="($event) => $event.stopPropagation()">
+            <div class="p-1">
               <div v-for="result in searchResults" :key="result.value">
                 <div class="hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2" @click="() => {
                   selectResult(result.value)

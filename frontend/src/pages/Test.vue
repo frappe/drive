@@ -28,7 +28,7 @@
                 </Button>
             </template>
             <template #body-main="{ togglePopover }">
-                <div v-for="item in ['yes', 'no']" :key="item" v-on-outside-click="togglePopover">
+                <div v-for="item in ['yes', 'no']" :key="item">
                     <div @click="() => { togglePopover() }">
                         {{ item }}
                     </div>
