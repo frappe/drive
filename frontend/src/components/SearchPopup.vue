@@ -76,8 +76,8 @@ export default {
     },
     computed: {
         divClass() {
-            if (!this.isOpen) return "w-[200px]"
-            return "w-[620px] border rounded-2xl shadow-md p-2 bg-white"
+            if (!this.isOpen) return "w-[200px] rounded-lg bg-white transition-all duration-[600ms]"
+            return "w-[620px] border shadow-md p-2 rounded-2xl bg-white transition-all duration-[600ms]"
         },
         userId() {
             return this.$store.state.auth.user_id

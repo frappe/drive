@@ -1,6 +1,6 @@
 <template>
     <i class="fa fa-qq" aria-hidden="true"></i>
-    <Dialog :options="{ title: dialogData.title }" v-model="open" @click="($event) => $event.stopPropagation()">
+    <Dialog :options="{ title: dialogData.title }" v-model="open" >
         <template #body-content>
             <p class="text-gray-600">{{ dialogData.message }}
             </p>

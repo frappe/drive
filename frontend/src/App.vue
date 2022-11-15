@@ -10,12 +10,12 @@
         <div class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-6 md:px-6">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden md:my-[25px] md:px-6">
           <router-view />
         </div>
         <Transition enter-from-class="translate-x-[150%] opacity-0" leave-to-class="translate-x-[150%] opacity-0"
           enter-active-class="transition duration-700" leave-active-class="transition duration-700">
-          <div v-if="showInfoSidebar" class="border-l md:pt-6 flex" @click="($event) => $event.stopPropagation()">
+          <div v-if="showInfoSidebar" class="border-l md:pt-6 flex" >
             <InfoSidebar :entity="$store.state.entityInfo" />
           </div>
         </Transition>
