@@ -1,5 +1,5 @@
 <template>
-    <div class="w-[400px] flex flex-col">
+    <div class="min-w-[400px] max-w-[400px] flex flex-col">
         <div v-if="$store.state.showInfo" class="mx-5 mb-3">
             <div class="my-4">
                 <FeatherIcon name="x" class="h-4 cursor-pointer" @click="$store.commit('setShowInfo', false)" />
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <div class="h-11 flex cursor-pointer text-base">
+        <div class="flex cursor-pointer text-base" :class="$store.state.showInfo ? 'min-h-[45px]' : 'min-h-[48px]'">
             <div class="w-1/2 flex border-b" :class="{ 'text-gray-500': tab, 'border-blue-500': !tab }"
                 @click="tab = 0">
                 <div class="m-auto">Detail</div>

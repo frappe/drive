@@ -1,38 +1,31 @@
 <template>
-    <div class="h-full flex flex-col">
-        <div class="py-3 px-5 h-16 md:h-12 z-10 flex items-center justify-between border-b">
-            <h3 class="truncate font-medium">{{ $resources.file.data?.title }}</h3>
-            <div class="flex items-center">
-                <div class="relative ml-3">
-                    <Dropdown :options="actionItems" placement="right">
-                        <button
-                            class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
-                            id="actions-menu" aria-label="Actions menu" aria-haspopup="true">
-                            <div class="flex items-center gap-4">
-                                <Button appearance="minimal" icon="more-vertical"></Button>
-                            </div>
-                        </button>
-                    </Dropdown>
-                </div>
-                <div class="relative ml-3">
-                    <Dropdown :options="dropdownItems" placement="right">
-                        <button
-                            class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
-                            id="user-menu" aria-label="User menu" aria-haspopup="true">
-                            <div class="flex items-center gap-4">
-                                <Avatar :label="fullName" :imageURL="imageURL" />
-                            </div>
-                        </button>
-                    </Dropdown>
+    <div class="h-full flex">
+        <div class="w-full">
+            <div class="py-3 px-6 h-16 md:h-[48px] z-10 flex items-center justify-between border-b">
+                <p class="truncate text-lg text-gray-600">
+                    {{ `${$resources.file.data?.modified} ∙ ${$resources.file.data?.file_size}` }}
+                </p>
+                <h3 class="truncate font-medium text-2xl">{{ $resources.file.data?.title }}</h3>
+                <div class="flex items-center">
+                    <div class="z-20 space-x-4">
+                        <Button icon="download" appearance="minimal" @click="download"></Button>
+                        <Dropdown :options="actionItems" placement="right">
+                            <button
+                                class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
+                                id="actions-menu" aria-label="Actions menu" aria-haspopup="true">
+                                <div class="flex items-center gap-4">
+                                    <Button appearance="minimal" icon="more-horizontal"></Button>
+                                </div>
+                            </button>
+                        </Dropdown>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div v-if="$resources.file.data" class="flex flex-row flex-1">
             <div class="p-6 grow grid place-items-center">
-                <FileRender :previewEntity="$resources.file.data" />
+                <FileRender v-if="$resources.file.data" :previewEntity="$resources.file.data" class="w-full" />
             </div>
-            <InfoSidebar class="border-l" :entity="$resources.file.data" />
         </div>
+        <InfoSidebar v-if="$resources.file.data" class="border-l" :entity="$resources.file.data" />
     </div>
 </template>
 
@@ -84,6 +77,11 @@ export default {
         },
         imageURL() {
             return this.$store.state.user.imageURL
+        },
+    },
+    methods: {
+        download() {
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.entityName}&trigger_download=1`
         },
     },
     resources: {

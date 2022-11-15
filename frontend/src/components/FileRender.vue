@@ -6,7 +6,7 @@
     </div>
     <img v-else-if="isImage" :src="preview.url" class="object-contain max-h-[95vh] max-w-[80vw] z-10" />
     <div v-else class="max-h-[95vh] max-w-[80vw] z-10 bg-[#252728] rounded-lg shadow-xl">
-        <iframe class="w-full min-w-[80vw] h-[90vh]" :src="preview.url" />
+        <iframe class="w-full h-[90vh]" :src="preview.url" />
     </div>
 </template>
 
