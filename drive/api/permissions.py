@@ -148,6 +148,9 @@ def get_file_with_permissions(entity_name):
 
 	if frappe.session.user == 'Guest':
 		frappe.set_user('Administrator')
+		user_access = get_general_access(entity_name)
+	else:
+		user_access = get_user_access(entity_name)
 
 	fields = ['name', 'title', 'owner', 'is_group', 'is_active', 'modified', 'creation', 'file_size', 'mime_type']
 	entity = get_entity(entity_name, fields)
@@ -155,8 +158,6 @@ def get_file_with_permissions(entity_name):
 		frappe.throw('Specified entity is not a file', IsADirectoryError)
 	if not entity.is_active:
 		frappe.throw('Specified file has been trashed by the owner')
-	
-	user_access = get_user_access(entity_name)
 
 	return entity | user_access
 

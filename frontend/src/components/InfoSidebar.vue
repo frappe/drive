@@ -82,7 +82,6 @@ export default {
         return {
             tab: 0,
             showShareDialog: false,
-            isImage: this.entity.mime_type?.startsWith('image/'),
         }
     },
     computed: {
