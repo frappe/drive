@@ -128,7 +128,7 @@ def create_folder(title, parent=None):
 	return drive_entity
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_file_content(entity_name, trigger_download=0):
 	"""
 	Stream file content and optionally trigger download
@@ -140,6 +140,10 @@ def get_file_content(entity_name, trigger_download=0):
 	:raises PermissionError: If the current user does not have permission to read the file
 	:raises FileLockedError: If the file has been writer-locked
 	"""
+
+
+	if frappe.session.user == 'Guest':
+		frappe.set_user('Administrator')
 
 	trigger_download = int(trigger_download)
 	drive_entity = frappe.get_value(

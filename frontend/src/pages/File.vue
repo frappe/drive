@@ -98,7 +98,7 @@ export default {
                         : formatSize(data.file_size)
                     data.modified = formatDate(data.modified)
                     data.creation = formatDate(data.creation)
-                    data.owner = data.owner === this.userId ? 'me' : entity.owner
+                    data.owner = data.owner === this.userId ? 'me' : data.owner
                 },
                 auto: true
             }

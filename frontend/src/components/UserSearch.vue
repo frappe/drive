@@ -5,12 +5,13 @@
         <Popover transition="default">
           <template #target="{ open: openUsers, close: closeUsers }">
             <div class="flex items-center h-[34px] gap-2 w-full">
-              <Input type="text" placeholder="Add people or Email" class="h-7 focus:bg-inherit w-[266px]"
+              <Input type="text" placeholder="Add people or Email" class="h-7 focus:bg-inherit w-[262px]"
                 v-model="searchQuery" @input="handleInput($event, openUsers, closeUsers)" />
               <Popover transition="default">
                 <template #target="{ togglePopover: toggleAccess }">
                   <Button iconRight="chevron-down" @click="toggleAccess"
-                    class="text-sm text-gray-900 text-[13px] rounded-lg h-7 hover:bg-inherit" appearance="minimal">
+                    class="text-sm text-gray-900 text-[13px] rounded-lg h-7 w-[108px]"
+                    appearance="minimal">
                     {{ newUserAccess }}
                   </Button>
                 </template>

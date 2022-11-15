@@ -134,7 +134,7 @@ def get_all_my_entities(fields=None):
 
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_file_with_permissions(entity_name):
 	"""
 	Return file data with permissions
@@ -145,6 +145,9 @@ def get_file_with_permissions(entity_name):
 	:rtype: frappe._dict
 	"""
 
+
+	if frappe.session.user == 'Guest':
+		frappe.set_user('Administrator')
 
 	fields = ['name', 'title', 'owner', 'is_group', 'is_active', 'modified', 'creation', 'file_size', 'mime_type']
 	entity = get_entity(entity_name, fields)
