@@ -26,7 +26,8 @@
                     :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
             </template>
         </ListView>
-        <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
+        <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+            :close="closeContextMenu" v-on-outside-click="closeContextMenu" />
         <DeleteDialog v-model="showDeleteDialog"
             :entities="selectedEntities.length > 0 ? selectedEntities : $resources.folderContents.data" @success="
                 () => {
@@ -36,11 +37,11 @@
                 }
             " />
         <GeneralDialog v-model="showRestoreDialog" :entities="selectedEntities" :for="'restore'" @success="
-            () => {
-                $resources.folderContents.fetch()
-                showRestoreDialog = false
-                selectedEntities = []
-            }
+    () => {
+        $resources.folderContents.fetch()
+        showRestoreDialog = false
+        selectedEntities = []
+    }
         " />
         <div />
     </div>

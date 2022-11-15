@@ -27,7 +27,8 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
+    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" :close="closeContextMenu"
+      v-on-outside-click="closeContextMenu" />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -124,7 +125,6 @@ export default {
           label: 'Download',
           icon: 'download',
           handler: () => {
-            this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
@@ -149,7 +149,6 @@ export default {
           label: 'View details',
           icon: 'eye',
           handler: () => {
-            this.closeContextMenu()
             this.$store.commit('setShowInfo', true)
           },
           isEnabled: () => {
@@ -160,7 +159,6 @@ export default {
           label: 'Hide details',
           icon: 'eye-off',
           handler: () => {
-            this.closeContextMenu()
             this.$store.commit('setShowInfo', false)
           },
           isEnabled: () => {
@@ -272,18 +270,6 @@ export default {
         this.breadcrumbs = [{ label: 'Home', route: '/' }]
       }
     },
-    showPreview() {
-      this.closeContextMenu()
-    },
-    showRenameDialog() {
-      this.closeContextMenu()
-    },
-    showShareDialog() {
-      this.closeContextMenu()
-    },
-    showRemoveDialog() {
-      this.closeContextMenu()
-    }
   },
 
   mounted() {

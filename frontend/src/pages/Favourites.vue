@@ -27,7 +27,8 @@
                     :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
             </template>
         </ListView>
-        <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
+        <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+            :close="closeContextMenu" v-on-outside-click="closeContextMenu" />
         <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
 
         <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
@@ -106,7 +107,6 @@ export default {
                     label: 'Download',
                     icon: 'download',
                     handler: () => {
-                        this.closeContextMenu()
                         window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
                     },
                     isEnabled: () => {
@@ -234,20 +234,6 @@ export default {
             this.showEntityContext = false
             this.entityContext = undefined
         },
-    },
-    watch: {
-        showPreview() {
-            this.closeContextMenu()
-        },
-        showRenameDialog() {
-            this.closeContextMenu()
-        },
-        showShareDialog() {
-            this.closeContextMenu()
-        },
-        showRemoveDialog() {
-            this.closeContextMenu()
-        }
     },
     resources: {
         folderContents() {

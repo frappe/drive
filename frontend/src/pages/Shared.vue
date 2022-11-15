@@ -26,7 +26,8 @@
     </ListView>
 
     <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext" />
+    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
+      :close="closeContextMenu" v-on-outside-click="closeContextMenu" />
     <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
       () => {
         $resources.folderContents.fetch()
@@ -42,11 +43,11 @@
       }
     " />
     <DeleteDialog v-model="showDeleteDialog" :entities="selectedEntities" @success="
-      () => {
-        $resources.folderContents.fetch()
-        showDeleteDialog = false
-        selectedEntities = []
-      }
+  () => {
+    $resources.folderContents.fetch()
+    showDeleteDialog = false
+    selectedEntities = []
+  }
     " />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -109,7 +110,6 @@ export default {
           label: 'Download',
           icon: 'download',
           handler: () => {
-            this.closeContextMenu()
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
@@ -274,18 +274,6 @@ export default {
       else if (!this.dropzone)
         this.initializeDropzone()
     },
-    showPreview() {
-      this.closeContextMenu()
-    },
-    showRenameDialog() {
-      this.closeContextMenu()
-    },
-    showShareDialog() {
-      this.closeContextMenu()
-    },
-    showRemoveDialog() {
-      this.closeContextMenu()
-    }
   },
 
   async mounted() {
