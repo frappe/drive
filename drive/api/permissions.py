@@ -152,6 +152,9 @@ def get_file_with_permissions(entity_name):
 	else:
 		user_access = get_user_access(entity_name)
 
+	if not user_access:
+		frappe.throw("PermissionError: Either this file does not exist, or you don't have access to it", frappe.PermissionError)
+
 	fields = ['name', 'title', 'owner', 'is_group', 'is_active', 'modified', 'creation', 'file_size', 'mime_type']
 	entity = get_entity(entity_name, fields)
 	if entity.is_group:

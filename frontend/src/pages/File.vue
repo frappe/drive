@@ -98,7 +98,11 @@ export default {
                     data.creation = formatDate(data.creation)
                     data.owner = data.owner === this.userId ? 'me' : data.owner
                 },
-                auto: true
+                onError(error) {
+                    if (error?.messages.some(x => x.startsWith('PermissionError')))
+                        window.location.href = "/"
+                },
+                auto: true,
             }
         },
     },

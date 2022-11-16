@@ -92,8 +92,7 @@ router.beforeEach((to, from, next) => {
     ) {
       next();
     } else {
-      window.location.href = '/login';
-      // next('/login');
+      import.meta.env.DEV ? next('/login') : (window.location.href = '/login');
     }
   }
 });
