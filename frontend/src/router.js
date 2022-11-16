@@ -92,7 +92,8 @@ router.beforeEach((to, from, next) => {
     ) {
       next();
     } else {
-      next('/login');
+      window.location.href = '/login';
+      // next('/login');
     }
   }
 });

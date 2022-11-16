@@ -13,10 +13,6 @@ website_route_rules = [
 	{"from_route": "/drive/<path:app_path>", "to_route": "drive"},
 ]
 
-website_redirects = [
-    {"source": "/", "target": "/login"},
-]
-
 # Includes in <head>
 # ------------------
 
@@ -48,7 +44,7 @@ web_include_js = "/assets/drive/js/drive.js"
 # ----------
 
 # application home page (will override Website Settings)
-# home_page = "/login"
+home_page = "drive"
 
 # website user home page (by Role)
 # role_home_page = {
