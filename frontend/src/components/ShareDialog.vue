@@ -117,7 +117,7 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, ErrorMessage, FeatherIcon, Button, Alert, Popover, Input } from 'frappe-ui'
+import { Dialog, ErrorMessage, FeatherIcon, Button, Alert, Popover } from 'frappe-ui'
 import { Switch } from '@headlessui/vue'
 import UserSearch from '@/components/UserSearch.vue'
 
@@ -132,7 +132,6 @@ export default {
     Alert,
     Switch,
     Popover,
-    Input
   },
   props: {
     modelValue: {
