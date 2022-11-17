@@ -267,6 +267,19 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
 
 
 @frappe.whitelist()
+def list_entity_comments(entity_name):
+	return frappe.db.get_list('Comment',
+		filters={
+			'comment_type': 'Comment',
+			'reference_doctype': 'Drive Entity',
+			'reference_name': entity_name
+		},
+		fields=['comment_by', 'comment_email', 'creation', 'content']
+		# order_by='date'
+	)
+
+
+@frappe.whitelist()
 def unshare_entities(entity_names):
 	"""
 	Unshare DriveEntities
