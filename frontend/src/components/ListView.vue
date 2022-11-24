@@ -1,67 +1,82 @@
 <template>
   <div class="h-full flex flex-col">
     <slot name="toolbar"></slot>
-    <table class="max-h-full min-w-full">
-      <thead class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-100">
-        <tr v-if="!isEmpty" class="text-left text-base text-gray-600">
-          <th class="w-6 px-5">
-            <Input type="checkbox" class="invisible" />
-          </th>
-          <th class="hidden px-2.5 py-3 font-normal md:table-cell">
-            Name
-          </th>
-          <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Owner</th>
-          <th class="hidden px-2.5 py-3 font-normal md:table-cell">
-            Modified
-          </th>
-          <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Size</th>
-        </tr>
-      </thead>
-      <tbody v-if="!isEmpty" class="divide-y divide-gray-100">
-        <tr v-for="entity in filteredContents" :key="entity.name"
-          class="group select-none text-base text-gray-500 hover:bg-gray-50">
-          <td class="w-6 px-5" @click="selectEntity(entity)">
-            <Input type="checkbox" :checked="selectedEntities.includes(entity)" class="focus:ring-0 focus:ring-offset-0"
-              :class="
-                selectedEntities.includes(entity) ? 'visible' : 'group-hover:visible md:invisible'
-              " />
-          </td>
-          <td @click="this.$emit('openEntity', entity)" class="min-w-[15rem] px-2.5 py-3 lg:w-2/5">
-            <div class="flex items-center text-gray-900 text-[14px] font-medium">
-              <img :src="getIconUrl(entity.is_group ? 'folder'
-              : formatMimeType(entity.mime_type))" class="h-[21px] mr-5" />
-              {{ entity.title }}
-            </div>
-          </td>
-          <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/5 text-gray-700">
-            {{ entity.owner }}
-          </td>
-          <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3 font-normal md:table-cell lg:w-1/5 text-gray-700">
-            {{ entity.modified }}
-          </td>
-          <td @click="this.$emit('openEntity', entity)"
-            class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/5 text-gray-700">
-            {{ entity.file_size }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
     <div v-if="isEmpty" class="flex-1">
       <slot name="placeholder"></slot>
+    </div>
+    <div v-else class="h-full px-5 md:px-0" @click="deselectAll">
+      <table class="max-h-full min-w-full">
+        <thead
+          class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200"
+        >
+          <tr class="text-left text-base text-gray-600">
+            <th class="hidden px-2.5 py-3 font-normal md:table-cell">Name</th>
+            <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Owner</th>
+            <th class="hidden px-2.5 py-3 font-normal md:table-cell">
+              Modified
+            </th>
+            <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Size</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="entity in folderContents"
+            :key="entity.name"
+            class="group select-none text-base shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200"
+            :class="
+              selectedEntities.includes(entity)
+                ? 'bg-gray-100'
+                : 'hover:bg-gray-50'
+            "
+            @click="selectEntity(entity, $event)"
+            @contextmenu="handleEntityContext(entity, $event)"
+          >
+            <td class="min-w-[15rem] px-2.5 py-3 lg:w-3/6">
+              <div
+                class="flex items-center text-gray-900 text-[14px] font-medium truncate"
+              >
+                <img
+                  :src="
+                    getIconUrl(
+                      entity.is_group
+                        ? 'folder'
+                        : formatMimeType(entity.mime_type)
+                    )
+                  "
+                  class="h-[21px] mr-5"
+                />
+                {{ entity.title }}
+              </div>
+            </td>
+            <td
+              class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/6 text-gray-700"
+            >
+              {{ entity.owner }}
+            </td>
+            <td
+              class="hidden w-36 truncate px-2.5 py-3 font-normal md:table-cell lg:w-1/6 text-gray-700"
+            >
+              {{ entity.modified }}
+            </td>
+            <td
+              class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/6 text-gray-700"
+            >
+              {{ entity.file_size }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 <script>
-import { Input, FeatherIcon } from 'frappe-ui'
-import { formatMimeType } from '@/utils/format'
-import getIconUrl from '@/utils/getIconUrl'
+import { FeatherIcon } from 'frappe-ui';
+import { formatMimeType } from '@/utils/format';
+import getIconUrl from '@/utils/getIconUrl';
 
 export default {
-  name: 'ListView',
+  name: 'GridView',
   components: {
-    Input,
     FeatherIcon,
   },
   props: {
@@ -72,26 +87,57 @@ export default {
       type: Array,
     },
   },
-  emits: ['entitySelected', 'openEntity'],
   computed: {
-    filteredContents() {
-      return this.folderContents ? this.folderContents : []
-    },
     isEmpty() {
-      return this.filteredContents && this.filteredContents.length === 0
+      return this.folderContents && this.folderContents.length === 0;
     },
   },
+  emits: ['entitySelected', 'openEntity', 'showEntityContext'],
   methods: {
-    selectEntity(entity) {
-      let selectedEntities = this.selectedEntities
-      const index = selectedEntities.indexOf(entity)
-      index > -1 ? selectedEntities.splice(index, 1) : selectedEntities.push(entity)
-      this.$emit('entitySelected', selectedEntities)
-      this.$store.commit('setEntityInfo', selectedEntities[selectedEntities.length - 1])
+    getFileSubtitle(file) {
+      let fileSubtitle = formatMimeType(file.mime_type);
+      fileSubtitle =
+        fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1);
+      return `${fileSubtitle} ∙ ${file.modified}`;
+    },
+    selectEntity(entity, event) {
+      event.stopPropagation();
+      this.$emit('showEntityContext', null);
+      let selectedEntities = this.selectedEntities;
+      if (event.ctrlKey || event.metaKey) {
+        const index = selectedEntities.indexOf(entity);
+        index > -1
+          ? selectedEntities.splice(index, 1)
+          : selectedEntities.push(entity);
+        this.$emit('entitySelected', selectedEntities);
+      } else {
+        if (selectedEntities.length === 1 && selectedEntities[0] === entity) {
+          this.$emit('openEntity', entity);
+          if (entity.is_group === 1) this.deselectAll();
+        } else {
+          selectedEntities = [entity];
+          this.$emit('entitySelected', selectedEntities);
+        }
+      }
+      this.$store.commit(
+        'setEntityInfo',
+        selectedEntities[selectedEntities.length - 1]
+      );
+    },
+    deselectAll() {
+      this.$emit('entitySelected', []);
+      this.$store.commit('setEntityInfo', null);
+      this.$emit('showEntityContext', null);
+    },
+    handleEntityContext(entity, event) {
+      this.$emit('entitySelected', [entity]);
+      this.$store.commit('setEntityInfo', entity);
+      this.$emit('showEntityContext', { x: event.clientX, y: event.clientY });
+      event.preventDefault();
     },
   },
   setup() {
-    return { formatMimeType, getIconUrl }
-  }
-}
+    return { formatMimeType, getIconUrl };
+  },
+};
 </script>
