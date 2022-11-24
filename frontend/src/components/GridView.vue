@@ -85,7 +85,7 @@ export default {
             event.stopPropagation()
             this.$emit('showEntityContext', null)
             let selectedEntities = this.selectedEntities
-            if (event.ctrlKey) {
+            if (event.ctrlKey || event.metaKey) {
                 const index = selectedEntities.indexOf(entity)
                 index > -1 ? selectedEntities.splice(index, 1) : selectedEntities.push(entity)
                 this.$emit('entitySelected', selectedEntities)
