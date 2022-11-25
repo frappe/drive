@@ -478,11 +478,12 @@ export default {
 
     toggleFavourite() {
       return {
-        method: 'drive.api.files.favourite_entities',
+        method: 'drive.api.files.add_or_remove_favourites',
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)
           ),
+          user: this.userId
         },
         onSuccess() {
           this.$resources.folderContents.fetch();

@@ -320,7 +320,7 @@ def delete_entities(entity_names):
 
 
 @frappe.whitelist()
-def favourite_entities(entity_names):
+def add_or_remove_favourites(entity_names, user):
 	"""
 	Favouite or unfavourite DriveEntities
 
@@ -334,9 +334,20 @@ def favourite_entities(entity_names):
 	if not isinstance(entity_names, list):
 		frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
 	for entity in entity_names:
-		doc = frappe.get_doc('Drive Entity', entity)
-		doc.is_favourite = 0 if doc.is_favourite else 1
-		doc.save()
+		existing_doc = frappe.db.exists({
+			'doctype': 'Drive Favourite',
+			'drive_entity': entity,
+			'user': user,
+		})
+		if existing_doc:
+			frappe.delete_doc('Drive Favourite', existing_doc)
+		else:
+			doc = frappe.get_doc({
+				'doctype': 'Drive Favourite',
+				'drive_entity': entity,
+				'user': user,
+			})
+			doc.insert()
 
 
 @frappe.whitelist()
