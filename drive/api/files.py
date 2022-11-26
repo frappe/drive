@@ -320,9 +320,47 @@ def delete_entities(entity_names):
 
 
 @frappe.whitelist()
-def add_or_remove_favourites(entity_names, user):
+def list_favourites(order_by='title'):
 	"""
-	Favouite or unfavourite DriveEntities
+	Return list of DriveEntity records present in this folder
+
+	:param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
+	:return: List of DriveEntity records
+	:rtype: list
+	"""
+
+	DriveFavourite = frappe.qb.DocType('Drive Favourite')
+	DriveEntity = frappe.qb.DocType('Drive Entity')
+	selectedFields = [
+		DriveEntity.name,
+		DriveEntity.title,
+		DriveEntity.is_group,
+		DriveEntity.owner,
+		DriveEntity.modified,
+		DriveEntity.creation,
+		DriveEntity.file_size,
+		DriveEntity.mime_type,
+		DriveEntity.parent_drive_entity,
+	]
+	query = (
+		frappe.qb.from_(DriveFavourite)
+		.inner_join(DriveEntity)
+		.on(
+			(DriveFavourite.entity == DriveEntity.name) &
+			(DriveFavourite.user == frappe.session.user)
+		)
+		.select(*selectedFields)
+		.where(
+			(DriveEntity.is_active == 1)
+		)
+	)
+	return query.run(as_dict=True)
+
+
+@frappe.whitelist()
+def add_or_remove_favourites(entity_names):
+	"""
+	Favouite or unfavourite DriveEntities for specified user
 
 	:param entity_names: List of document-names
 	:type entity_names: list[str]
@@ -336,16 +374,16 @@ def add_or_remove_favourites(entity_names, user):
 	for entity in entity_names:
 		existing_doc = frappe.db.exists({
 			'doctype': 'Drive Favourite',
-			'drive_entity': entity,
-			'user': user,
+			'entity': entity,
+			'user': frappe.session.user,
 		})
 		if existing_doc:
 			frappe.delete_doc('Drive Favourite', existing_doc)
 		else:
 			doc = frappe.get_doc({
 				'doctype': 'Drive Favourite',
-				'drive_entity': entity,
-				'user': user,
+				'entity': entity,
+				'user': frappe.session.user,
 			})
 			doc.insert()
 

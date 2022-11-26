@@ -316,7 +316,6 @@ export default {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)
           ),
-          user: this.userId,
         },
         onSuccess() {
           this.$resources.folderContents.fetch();

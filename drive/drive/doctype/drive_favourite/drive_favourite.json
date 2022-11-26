@@ -6,7 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "user",
-  "drive_entity"
+  "entity"
  ],
  "fields": [
   {
@@ -18,7 +18,7 @@
    "reqd": 1
   },
   {
-   "fieldname": "drive_entity",
+   "fieldname": "entity",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Drive Entity",
@@ -28,7 +28,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-11-25 15:15:51.196155",
+ "modified": "2022-11-25 19:34:06.623282",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Favourite",
