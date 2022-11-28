@@ -1,11 +1,19 @@
 <template>
   <div class="h-full flex flex-col">
-    <FolderContentsError v-if="$resources.folderContents.error" :error="$resources.folderContents.error" />
+    <FolderContentsError
+      v-if="$resources.folderContents.error"
+      :error="$resources.folderContents.error"
+    />
 
-    <GridView v-else-if="$store.state.view === 'grid'" :folderContents="$resources.folderContents.data"
-      @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
-      @openEntity="(entity) => openEntity(entity)" @showEntityContext="(event) => (toggleEntityContext(event))"
-      @closeContextMenuEvent="closeContextMenu">
+    <GridView
+      v-else-if="$store.state.view === 'grid'"
+      :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)"
+      :selectedEntities="selectedEntities"
+      @openEntity="(entity) => openEntity(entity)"
+      @showEntityContext="(event) => toggleEntityContext(event)"
+      @closeContextMenuEvent="closeContextMenu"
+    >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" />
       </template>
@@ -14,9 +22,13 @@
       </template>
     </GridView>
 
-    <ListView v-else :folderContents="$resources.folderContents.data"
-      @entitySelected="(selected) => (selectedEntities = selected)" :selectedEntities="selectedEntities"
-      @openEntity="(entity) => openEntity(entity)">
+    <ListView
+      v-else
+      :folderContents="$resources.folderContents.data"
+      @entitySelected="(selected) => (selectedEntities = selected)"
+      :selectedEntities="selectedEntities"
+      @openEntity="(entity) => openEntity(entity)"
+    >
       <template #toolbar>
         <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" />
       </template>
@@ -25,47 +37,69 @@
       </template>
     </ListView>
 
-    <FilePreview v-if="showPreview" @hide="hidePreview" :previewEntity="previewEntity" />
-    <EntityContextMenu v-if="showEntityContext" :actionItems="actionItems" :entityContext="entityContext"
-      :close="closeContextMenu" v-on-outside-click="closeContextMenu" />
-    <RenameDialog v-model="showRenameDialog" :entity="selectedEntities[0]" @success="
-      () => {
-        $resources.folderContents.fetch()
-        showRenameDialog = false
-        selectedEntities = []
-      }
-    " />
-    <GeneralDialog v-model="showRemoveDialog" :entities="selectedEntities" :for="'unshare'" @success="
-      () => {
-        $resources.folderContents.fetch()
-        showRemoveDialog = false
-        selectedEntities = []
-      }
-    " />
-    <DeleteDialog v-model="showDeleteDialog" :entities="selectedEntities" @success="
-  () => {
-    $resources.folderContents.fetch()
-    showDeleteDialog = false
-    selectedEntities = []
-  }
-    " />
+    <FilePreview
+      v-if="showPreview"
+      @hide="hidePreview"
+      :previewEntity="previewEntity"
+    />
+    <EntityContextMenu
+      v-if="showEntityContext"
+      :actionItems="actionItems"
+      :entityContext="entityContext"
+      :close="closeContextMenu"
+      v-on-outside-click="closeContextMenu"
+    />
+    <RenameDialog
+      v-model="showRenameDialog"
+      :entity="selectedEntities[0]"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showRenameDialog = false;
+          selectedEntities = [];
+        }
+      "
+    />
+    <GeneralDialog
+      v-model="showRemoveDialog"
+      :entities="selectedEntities"
+      :for="'unshare'"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showRemoveDialog = false;
+          selectedEntities = [];
+        }
+      "
+    />
+    <DeleteDialog
+      v-model="showDeleteDialog"
+      :entities="selectedEntities"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showDeleteDialog = false;
+          selectedEntities = [];
+        }
+      "
+    />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
 
 <script>
-import ListView from '@/components/ListView.vue'
-import GridView from '@/components/GridView.vue'
-import DriveToolBar from '@/components/DriveToolBar.vue'
-import NoFilesSection from '@/components/NoFilesSection.vue'
-import FilePreview from '@/components/FilePreview.vue'
-import FolderContentsError from '@/components/FolderContentsError.vue'
-import RenameDialog from '@/components/RenameDialog.vue'
-import GeneralDialog from '@/components/GeneralDialog.vue'
-import DeleteDialog from '@/components/DeleteDialog.vue'
-import EntityContextMenu from '@/components/EntityContextMenu.vue'
-import { formatSize, formatDate } from '@/utils/format'
-import Dropzone from 'dropzone'
+import ListView from '@/components/ListView.vue';
+import GridView from '@/components/GridView.vue';
+import DriveToolBar from '@/components/DriveToolBar.vue';
+import NoFilesSection from '@/components/NoFilesSection.vue';
+import FilePreview from '@/components/FilePreview.vue';
+import FolderContentsError from '@/components/FolderContentsError.vue';
+import RenameDialog from '@/components/RenameDialog.vue';
+import GeneralDialog from '@/components/GeneralDialog.vue';
+import DeleteDialog from '@/components/DeleteDialog.vue';
+import EntityContextMenu from '@/components/EntityContextMenu.vue';
+import { formatSize, formatDate } from '@/utils/format';
+import Dropzone from 'dropzone';
 
 export default {
   name: 'Shared',
@@ -102,7 +136,7 @@ export default {
   },
   computed: {
     userId() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.auth.user_id;
     },
     actionItems() {
       return [
@@ -110,57 +144,85 @@ export default {
           label: 'Download',
           icon: 'download',
           handler: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 && !this.selectedEntities[0].is_group
-            )
+              this.selectedEntities.length === 1 &&
+              !this.selectedEntities[0].is_group
+            );
           },
         },
         {
           label: 'Rename',
           icon: 'edit',
           handler: () => {
-            this.showRenameDialog = true
+            this.showRenameDialog = true;
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 && this.selectedEntities[0].write
-            )
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].write
+            );
+          },
+        },
+        {
+          label: 'Add to Favourites',
+          icon: 'star',
+          handler: () => {
+            this.$resources.toggleFavourite.submit();
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => !x.is_favourite)
+            );
+          },
+        },
+        {
+          label: 'Remove from Favourites',
+          icon: 'x-circle',
+          handler: () => {
+            this.$resources.toggleFavourite.submit();
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.is_favourite)
+            );
           },
         },
         {
           label: 'Remove',
           icon: 'trash-2',
           handler: () => {
-            this.showRemoveDialog = true
+            this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 && !this.entityName
-            )
+            return this.selectedEntities.length > 0 && !this.entityName;
           },
         },
         {
           label: 'Remove',
           icon: 'trash-2',
           handler: () => {
-            this.showDeleteDialog = true
+            this.showDeleteDialog = true;
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length > 0 && this.entityName && this.selectedEntities.every(x => x.write || x.owner === 'me')
-            )
+              this.selectedEntities.length > 0 &&
+              this.entityName &&
+              this.selectedEntities.every((x) => x.write || x.owner === 'me')
+            );
           },
         },
-      ].filter((item) => item.isEnabled())
+      ].filter((item) => item.isEnabled());
     },
   },
 
   methods: {
     initializeDropzone() {
-      let componentContext = this
+      let componentContext = this;
       this.dropzone = new Dropzone(this.$el.parentNode, {
         paramName: 'file',
         parallelUploads: 1,
@@ -176,7 +238,7 @@ export default {
           Accept: 'application/json',
         },
         sending: function (file, xhr, formData, chunk) {
-          formData.append('parent', file.parent)
+          formData.append('parent', file.parent);
         },
         params: function (files, xhr, chunk) {
           if (chunk) {
@@ -187,115 +249,118 @@ export default {
               chunk_size: this.options.chunkSize,
               total_chunk_count: chunk.file.upload.totalChunkCount,
               chunk_byte_offset: chunk.index * this.options.chunkSize,
-            }
+            };
           }
         },
-      })
+      });
       this.dropzone.on('addedfile', function (file) {
-        file.parent = componentContext.entityName
+        file.parent = componentContext.entityName;
         componentContext.$store.commit('pushToUploads', {
           uuid: file.upload.uuid,
           name: file.name,
           progress: 0,
-        })
-      })
+        });
+      });
       this.dropzone.on('uploadprogress', function (file, progress) {
         componentContext.$store.commit('updateUpload', {
           uuid: file.upload.uuid,
           progress: progress,
-        })
-      })
+        });
+      });
       this.dropzone.on('error', function (file, message, xhr) {
-        let error_message
+        let error_message;
         if (message._server_messages) {
           error_message = JSON.parse(message._server_messages)
             .map((element) => JSON.parse(element).message)
-            .join('\n')
+            .join('\n');
         }
-        error_message = error_message || 'Upload failed'
+        error_message = error_message || 'Upload failed';
         componentContext.$store.commit('updateUpload', {
           uuid: file.upload.uuid,
           error: error_message,
-        })
-      })
+        });
+      });
       this.dropzone.on('complete', function (file) {
-        componentContext.$resources.folderContents.fetch()
+        componentContext.$resources.folderContents.fetch();
         componentContext.$store.commit('updateUpload', {
           uuid: file.upload.uuid,
           completed: true,
-        })
-      })
+        });
+      });
       this.emitter.on('uploadFile', () => {
         if (componentContext.dropzone.hiddenFileInput)
-          componentContext.dropzone.hiddenFileInput.click()
-      })
+          componentContext.dropzone.hiddenFileInput.click();
+      });
     },
     openEntity(entity) {
       if (entity.is_group) {
-        this.selectedEntities = []
+        this.selectedEntities = [];
         this.$router.push({
           name: 'SharedFolder',
           params: { entityName: entity.name },
-        })
+        });
       } else {
-        this.previewEntity = entity
-        this.showPreview = true
+        this.previewEntity = entity;
+        this.showPreview = true;
       }
     },
     hidePreview() {
-      this.showPreview = false
-      this.previewEntity = null
+      this.showPreview = false;
+      this.previewEntity = null;
     },
     toggleEntityContext(event) {
-      if (!event)
-        this.showEntityContext = false
+      if (!event) this.showEntityContext = false;
       else {
-        this.hidePreview()
-        this.showEntityContext = true
-        this.entityContext = event
+        this.hidePreview();
+        this.showEntityContext = true;
+        this.entityContext = event;
       }
     },
     closeContextMenu() {
-      this.showEntityContext = false
-      this.entityContext = undefined
+      this.showEntityContext = false;
+      this.entityContext = undefined;
     },
   },
 
   watch: {
     async entityName(newEntityName) {
-      await this.$resources.folderAccess.fetch()
-      this.$store.commit('setHasWriteAccess', !!this.$resources.folderAccess.data?.write)
-      this.selectedEntities = []
+      await this.$resources.folderAccess.fetch();
+      this.$store.commit(
+        'setHasWriteAccess',
+        !!this.$resources.folderAccess.data?.write
+      );
+      this.selectedEntities = [];
       if (!newEntityName) {
-        this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }]
-        this.dropzone.destroy()
-        this.dropzone = null
-      }
-      else if (!this.dropzone)
-        this.initializeDropzone()
+        this.breadcrumbs = [{ label: 'Shared With Me', route: '/shared' }];
+        this.dropzone.destroy();
+        this.dropzone = null;
+      } else if (!this.dropzone) this.initializeDropzone();
     },
   },
 
   async mounted() {
-    await this.$resources.folderAccess.fetch()
-    this.$store.commit('setHasWriteAccess', !!this.$resources.folderAccess.data?.write)
-    let componentContext = this
+    await this.$resources.folderAccess.fetch();
+    this.$store.commit(
+      'setHasWriteAccess',
+      !!this.$resources.folderAccess.data?.write
+    );
+    let componentContext = this;
     this.emitter.on('fetchFolderContents', () => {
-      componentContext.$resources.folderContents.fetch()
-    })
-    if (this.entityName) this.initializeDropzone()
+      componentContext.$resources.folderContents.fetch();
+    });
+    if (this.entityName) this.initializeDropzone();
   },
 
   unmounted() {
-    if (this.dropzone) this.dropzone.destroy()
+    if (this.dropzone) this.dropzone.destroy();
   },
 
   resources: {
     folderAccess() {
       return {
         method: 'drive.api.permissions.get_user_access',
-        params: { entity_name: this.entityName, },
-      }
+        params: { entity_name: this.entityName },
+      };
     },
 
     folderContents() {
@@ -304,19 +369,19 @@ export default {
         // cache: ['folderContents', this.userId, this.entityName],
         params: { entity_name: this.entityName },
         onSuccess(data) {
-          this.$resources.folderContents.error = null
+          this.$resources.folderContents.error = null;
           data.forEach((entity) => {
-            entity.size_in_bytes = entity.file_size
+            entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
               ? '-'
-              : formatSize(entity.file_size)
-            entity.modified = formatDate(entity.modified)
-            entity.creation = formatDate(entity.creation)
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner
-          })
+              : formatSize(entity.file_size);
+            entity.modified = formatDate(entity.modified);
+            entity.creation = formatDate(entity.creation);
+            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
+          });
         },
         auto: true,
-      }
+      };
     },
 
     pathEntities() {
@@ -328,28 +393,49 @@ export default {
           shared: true,
         },
         onSuccess(data) {
-          let breadcrumbs = [{
-            label: 'Shared With Me',
-            route: '/shared',
-          }]
+          let breadcrumbs = [
+            {
+              label: 'Shared With Me',
+              route: '/shared',
+            },
+          ];
           data.forEach((entity) => {
             breadcrumbs.push({
               label: entity.title,
               route: `/shared/folder/${entity.name}`,
-            })
-          })
+            });
+          });
           if (breadcrumbs.length > 4) {
             breadcrumbs.splice(1, breadcrumbs.length - 4, {
               label: '...',
               route: '',
-            })
+            });
           }
-          this.breadcrumbs = breadcrumbs
+          this.breadcrumbs = breadcrumbs;
         },
         auto: Boolean(this.entityName),
-      }
+      };
     },
 
+    toggleFavourite() {
+      return {
+        method: 'drive.api.files.add_or_remove_favourites',
+        params: {
+          entity_names: JSON.stringify(
+            this.selectedEntities?.map((entity) => entity.name)
+          ),
+        },
+        onSuccess() {
+          this.$resources.folderContents.fetch();
+          this.selectedEntities = [];
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      };
+    },
   },
-}
+};
 </script>

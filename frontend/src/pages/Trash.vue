@@ -169,7 +169,7 @@ export default {
                 method: 'drive.api.files.list_folder_contents',
                 params: {
                     order_by: this.orderBy,
-                    fields: 'name,title,is_group,owner,modified,file_size,mime_type,creation,',
+                    fields: 'name,title,is_group,owner,modified,file_size,mime_type,creation',
                     is_active: 0
                 },
                 onSuccess(data) {

@@ -287,12 +287,11 @@ export default {
   resources: {
     folderContents() {
       return {
-        method: 'drive.api.files.list_folder_contents',
+        method: 'drive.api.files.list_favourites',
         params: {
           order_by: this.orderBy,
           fields:
             'name,title,is_group,owner,modified,file_size,mime_type,creation',
-          is_favourite: 1,
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
