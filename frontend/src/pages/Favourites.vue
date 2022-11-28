@@ -20,6 +20,7 @@
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
           :actionLoading="actionLoading"
+          :showInfoButton="showInfoButton"
           :showUploadButton="false"
         />
       </template>
@@ -37,6 +38,8 @@
       :selectedEntities="selectedEntities"
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
+      @showEntityContext="(event) => toggleEntityContext(event)"
+      @closeContextMenuEvent="closeContextMenu"
     >
       <template #toolbar>
         <DriveToolBar
@@ -44,6 +47,7 @@
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
           :actionLoading="actionLoading"
+          :showInfoButton="showInfoButton"
           :showUploadButton="false"
         />
       </template>
@@ -143,6 +147,9 @@ export default {
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
+    },
+    showInfoButton() {
+      return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
     orderBy() {
       return this.$store.state.sortOrder.ascending

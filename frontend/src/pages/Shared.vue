@@ -15,7 +15,11 @@
       @closeContextMenuEvent="closeContextMenu"
     >
       <template #toolbar>
-        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" />
+        <DriveToolBar
+          :actionItems="actionItems"
+          :breadcrumbs="breadcrumbs"
+          :showInfoButton="showInfoButton"
+        />
       </template>
       <template #placeholder>
         <NoFilesSection secondaryMessage="No files have been shared with you" />
@@ -28,9 +32,15 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       :selectedEntities="selectedEntities"
       @openEntity="(entity) => openEntity(entity)"
+      @showEntityContext="(event) => toggleEntityContext(event)"
+      @closeContextMenuEvent="closeContextMenu"
     >
       <template #toolbar>
-        <DriveToolBar :actionItems="actionItems" :breadcrumbs="breadcrumbs" />
+        <DriveToolBar
+          :actionItems="actionItems"
+          :breadcrumbs="breadcrumbs"
+          :showInfoButton="showInfoButton"
+        />
       </template>
       <template #placeholder>
         <NoFilesSection secondaryMessage="No files have been shared with you" />
@@ -138,6 +148,9 @@ export default {
     userId() {
       return this.$store.state.auth.user_id;
     },
+    showInfoButton() {
+      return !!this.selectedEntities.length && !this.$store.state.showInfo;
+    },
     actionItems() {
       return [
         {
@@ -151,6 +164,28 @@ export default {
               this.selectedEntities.length === 1 &&
               !this.selectedEntities[0].is_group
             );
+          },
+        },
+        {
+          label: 'View details',
+          icon: 'eye',
+          handler: () => {
+            this.$store.commit('setShowInfo', true);
+          },
+          isEnabled: () => {
+            return (
+              !this.$store.state.showInfo && this.selectedEntities.length === 1
+            );
+          },
+        },
+        {
+          label: 'Hide details',
+          icon: 'eye-off',
+          handler: () => {
+            this.$store.commit('setShowInfo', false);
+          },
+          isEnabled: () => {
+            return this.$store.state.showInfo;
           },
         },
         {
