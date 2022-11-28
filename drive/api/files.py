@@ -175,7 +175,7 @@ def get_file_content(entity_name, trigger_download=0):
 
 
 @frappe.whitelist()
-def list_folder_contents(entity_name=None, fields=None, order_by='title', is_active=1):
+def list_folder_contents(entity_name=None, fields=None, order_by='modified', is_active=1):
     """
     Return list of DriveEntity records present in this folder
 
@@ -302,7 +302,6 @@ def list_entity_comments(entity_name):
                               },
                               fields=['comment_by', 'comment_email',
                                       'creation', 'content']
-                              # order_by='date'
                               )
 
 
@@ -347,7 +346,7 @@ def delete_entities(entity_names):
 
 
 @frappe.whitelist()
-def list_favourites(order_by='title'):
+def list_favourites(order_by='modified'):
     """
     Return list of DriveEntity records present in this folder
 

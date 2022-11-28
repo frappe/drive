@@ -22,9 +22,9 @@ const store = createStore({
     },
     uploads: [],
     sortOrder: JSON.parse(localStorage.getItem('sortOrder')) || {
-      label: 'Name',
-      field: 'title',
-      ascending: true,
+      label: 'Modified',
+      field: 'modified',
+      ascending: false,
     },
     view: 'grid',
     entityInfo: null,

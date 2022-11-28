@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from pypika import Order
 from drive.api.files import get_entity
 from drive.utils.files import get_user_directory
 
@@ -38,7 +39,7 @@ def get_shared_with_list(entity_name):
 
 
 @frappe.whitelist()
-def get_shared_with_me(entity_name=None, get_all=False):
+def get_shared_with_me(entity_name=None, get_all=False, order_by='modified'):
     """
     Return the list of files and folders shared with the current user
 
@@ -65,7 +66,7 @@ def get_shared_with_me(entity_name=None, get_all=False):
         DocShare.write,
         DocShare.everyone,
         DocShare.share,
-		DriveFavourite.entity.as_("is_favourite"),
+        DriveFavourite.entity.as_("is_favourite"),
     ]
 
     if entity_name:
@@ -95,6 +96,7 @@ def get_shared_with_me(entity_name=None, get_all=False):
                 ((DocShare.user == frappe.session.user)
                  | (DocShare.everyone == 1))
             )
+            .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
         )
         result = query.run(as_dict=True)
         user_specific_items = list(filter(lambda x: not x.everyone, result))
@@ -103,8 +105,8 @@ def get_shared_with_me(entity_name=None, get_all=False):
         return user_specific_items + open_access_items  # Return unique values
 
     query = (
-        frappe.qb.from_(DocShare)
-        .inner_join(DriveEntity)
+        frappe.qb.from_(DriveEntity)
+        .inner_join(DocShare)
         .on(
             (DocShare.share_name == DriveEntity.name) &
             (DocShare.user == frappe.session.user)
@@ -116,6 +118,7 @@ def get_shared_with_me(entity_name=None, get_all=False):
         )
         .select(*selectedFields)
         .where(DriveEntity.is_active == 1)
+        .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
     )
     result = query.run(as_dict=True)
     if get_all:

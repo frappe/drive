@@ -18,6 +18,7 @@
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
+          :columnHeaders="columnHeaders"
           :showInfoButton="showInfoButton"
         />
       </template>
@@ -39,6 +40,7 @@
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
+          :columnHeaders="columnHeaders"
           :showInfoButton="showInfoButton"
         />
       </template>
@@ -151,6 +153,11 @@ export default {
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
+    orderBy() {
+      return this.$store.state.sortOrder.ascending
+        ? this.$store.state.sortOrder.field
+        : `${this.$store.state.sortOrder.field} desc`;
+    },
     actionItems() {
       return [
         {
@@ -252,6 +259,30 @@ export default {
           },
         },
       ].filter((item) => item.isEnabled());
+    },
+    columnHeaders() {
+      return [
+        {
+          label: 'Name',
+          field: 'title',
+          sortable: true,
+        },
+        {
+          label: 'Owner',
+          field: 'owner',
+          sortable: true,
+        },
+        {
+          label: 'Modified',
+          field: 'modified',
+          sortable: true,
+        },
+        {
+          label: 'Size',
+          field: 'file_size',
+          sortable: true,
+        },
+      ].filter((item) => item.sortable);
     },
   },
 
@@ -402,7 +433,10 @@ export default {
       return {
         method: 'drive.api.permissions.get_shared_with_me',
         // cache: ['folderContents', this.userId, this.entityName],
-        params: { entity_name: this.entityName },
+        params: {
+          entity_name: this.entityName,
+          order_by: this.orderBy,
+        },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
