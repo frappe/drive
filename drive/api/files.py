@@ -341,11 +341,14 @@ def delete_entities(entity_names):
     if not isinstance(entity_names, list):
         frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
     for entity in entity_names:
-        if frappe.has_permission(doctype='Drive Entity', doc=entity, ptype='write', user=frappe.session.user):
+        root_entity = get_ancestors_of('Drive Entity', entity)[0]
+        owns_root_entity = frappe.has_permission(
+            doctype='Drive Entity', doc=root_entity, ptype='write', user=frappe.session.user)
+        if frappe.has_permission(doctype='Drive Entity', doc=entity, ptype='write', user=frappe.session.user) or owns_root_entity:
             frappe.delete_doc("Drive Entity", entity, ignore_permissions=True)
 
 
-@frappe.whitelist()
+@ frappe.whitelist()
 def list_favourites(order_by='modified'):
     """
     Return list of DriveEntity records present in this folder
@@ -387,7 +390,7 @@ def list_favourites(order_by='modified'):
             )
         .select(*selectedFields)
         .where(
-            (DriveEntity.is_active == 1) & 
+            (DriveEntity.is_active == 1) &
             (DocShare.read == 1)
         )
         .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
