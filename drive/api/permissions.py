@@ -42,7 +42,7 @@ def get_shared_with_list(entity_name):
 
 
 @frappe.whitelist()
-def get_shared_with_me(entity_name=None, get_all=False, order_by='modified'):
+def get_shared_with_me(get_all=False, order_by='modified'):
     """
     Return the list of files and folders shared with the current user
 
@@ -71,42 +71,6 @@ def get_shared_with_me(entity_name=None, get_all=False, order_by='modified'):
         DocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
     ]
-
-    if entity_name:
-        is_group, is_active = frappe.db.get_value(
-            'Drive Entity', entity_name, ['is_group', 'is_active'])
-        if not is_group:
-            frappe.throw('Specified entity is not a folder',
-                         NotADirectoryError)
-        if not is_active:
-            frappe.throw('Specified folder has been trashed by the owner')
-        if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='read', user=frappe.session.user):
-            frappe.throw(
-                'Cannot access folder due to insufficient permissions', frappe.PermissionError)
-        query = (
-            frappe.qb.from_(DriveEntity)
-            .inner_join(DocShare)
-            .on((DocShare.share_name == DriveEntity.name) &
-                ((DocShare.user == frappe.session.user)
-                 | (DocShare.everyone == 1))
-                )
-            .left_join(DriveFavourite)
-            .on(
-                (DriveFavourite.entity == DriveEntity.name) &
-                (DriveFavourite.user == frappe.session.user)
-            )
-            .select(*selectedFields)
-            .where(
-                (DriveEntity.is_active == 1) &
-                (DriveEntity.parent_drive_entity == entity_name)
-            )
-            .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
-        )
-        result = query.run(as_dict=True)
-        user_specific_items = list(filter(lambda x: not x.everyone, result))
-        names = [x.name for x in user_specific_items]
-        open_access_items = list(filter(lambda x: x.name not in names, result))
-        return user_specific_items + open_access_items  # Return unique values
 
     query = (
         frappe.qb.from_(DriveEntity)

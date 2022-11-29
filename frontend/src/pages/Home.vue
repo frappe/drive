@@ -125,13 +125,6 @@ export default {
     FolderContentsError,
     EntityContextMenu,
   },
-  props: {
-    entityName: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  },
   data: () => ({
     dropzone: null,
     selectedEntities: [],
@@ -145,9 +138,6 @@ export default {
     breadcrumbs: [{ label: 'Home', route: '/' }],
   }),
   computed: {
-    userId() {
-      return this.$store.state.auth.user_id;
-    },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
@@ -178,10 +168,7 @@ export default {
             this.showShareDialog = true;
           },
           isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 ||
-              (this.entityName && !this.selectedEntities.length)
-            );
+            return this.selectedEntities.length === 1;
           },
         },
         {
@@ -309,14 +296,6 @@ export default {
       this.entityContext = undefined;
     },
   },
-  watch: {
-    entityName(newEntityName) {
-      this.selectedEntities = [];
-      if (!newEntityName) {
-        this.breadcrumbs = [{ label: 'Home', route: '/' }];
-      }
-    },
-  },
 
   mounted() {
     this.$store.commit('setHasWriteAccess', true);
@@ -355,7 +334,7 @@ export default {
       },
     });
     this.dropzone.on('addedfile', function (file) {
-      file.parent = componentContext.entityName;
+      file.parent = '';
       componentContext.$store.commit('pushToUploads', {
         uuid: file.upload.uuid,
         name: file.name,
@@ -401,9 +380,7 @@ export default {
     folderContents() {
       return {
         method: 'drive.api.files.list_folder_contents',
-        // cache: ['folderContents', this.entityName],
         params: {
-          entity_name: this.entityName,
           order_by: this.orderBy,
           fields:
             'name,title,is_group,owner,modified,file_size,mime_type,creation',
@@ -417,7 +394,6 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
           });
         },
         auto: true,

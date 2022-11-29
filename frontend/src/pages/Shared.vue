@@ -89,18 +89,7 @@
       v-model="showShareDialog"
       :entityName="selectedEntities[0].name"
       :entityTitle="selectedEntities[0].title"
-      :isFolder="shareIsFolder"
-    />
-    <DeleteDialog
-      v-model="showDeleteDialog"
-      :entities="selectedEntities"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showDeleteDialog = false;
-          selectedEntities = [];
-        }
-      "
+      :isFolder="selectedEntities[0].is_folder"
     />
   </div>
 </template>
@@ -115,7 +104,6 @@ import FolderContentsError from '@/components/FolderContentsError.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
-import DeleteDialog from '@/components/DeleteDialog.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
 
@@ -128,7 +116,6 @@ export default {
     RenameDialog,
     GeneralDialog,
     ShareDialog,
-    DeleteDialog,
     NoFilesSection,
     FilePreview,
     FolderContentsError,
@@ -140,7 +127,6 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
-    showDeleteDialog: false,
     showEntityContext: false,
     entityContext: {},
     selectedEntities: [],
@@ -148,9 +134,6 @@ export default {
   }),
 
   computed: {
-    userId() {
-      return this.$store.state.auth.user_id;
-    },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
@@ -174,19 +157,19 @@ export default {
             );
           },
         },
-        {
-          label: 'Share',
-          icon: 'share-2',
-          handler: () => {
-            this.showShareDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].write
-            );
-          },
-        },
+        // {
+        //   label: 'Share',
+        //   icon: 'share-2',
+        //   handler: () => {
+        //     this.showShareDialog = true;
+        //   },
+        //   isEnabled: () => {
+        //     return (
+        //       this.selectedEntities.length === 1 &&
+        //       this.selectedEntities[0].write
+        //     );
+        //   },
+        // },
         {
           label: 'View details',
           icon: 'eye',
@@ -333,7 +316,6 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
           });
         },
         auto: true,
