@@ -191,7 +191,6 @@ export default {
           data.forEach((comment) => {
             comment.creation = formatDate(comment.creation);
           });
-          console.log(data);
         },
         onError(error) {
           console.log(error);

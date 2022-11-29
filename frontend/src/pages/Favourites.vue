@@ -83,6 +83,18 @@
       "
     />
     <GeneralDialog
+      v-model="showUnshareDialog"
+      :entities="selectedEntities"
+      :for="'unshare'"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showUnshareDialog = false;
+          selectedEntities = [];
+        }
+      "
+    />
+    <GeneralDialog
       v-model="showRemoveDialog"
       :entities="selectedEntities"
       :for="'remove'"
@@ -98,6 +110,8 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="selectedEntities[0].name"
+      :entityTitle="selectedEntities[0].title"
+      :isFolder="shareIsFolder"
     />
     <div />
   </div>
@@ -140,6 +154,7 @@ export default {
     actionLoading: false,
     showRenameDialog: false,
     showShareDialog: false,
+    showUnshareDialog: false,
     showRemoveDialog: false,
     showEntityContext: false,
     entityContext: {},
@@ -150,6 +165,9 @@ export default {
     },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
+    },
+    shareIsFolder() {
+      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1;
     },
     orderBy() {
       return this.$store.state.sortOrder.ascending
@@ -178,7 +196,10 @@ export default {
             this.showShareDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].write
+            );
           },
         },
         {
@@ -210,7 +231,10 @@ export default {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].write
+            );
           },
         },
         {
@@ -224,13 +248,30 @@ export default {
           },
         },
         {
+          label: 'Remove',
+          icon: 'trash-2',
+          handler: () => {
+            this.showUnshareDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner != 'me') &&
+              this.selectedEntities.every((x) => !x.everyone)
+            );
+          },
+        },
+        {
           label: 'Move to Trash',
           icon: 'trash-2',
           handler: () => {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0;
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === 'me')
+            );
           },
         },
       ].filter((item) => item.isEnabled());

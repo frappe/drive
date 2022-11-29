@@ -20,12 +20,15 @@ def get_shared_with_list(entity_name):
 
     if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='write', user=frappe.session.user):
         raise frappe.PermissionError
+
+    entity_owner = frappe.db.get_value("Drive Entity", entity_name, "owner")
+
     users = frappe.db.get_all('DocShare',
                               filters={
                                   'share_doctype': 'Drive Entity',
                                   'share_name': entity_name,
                                   'everyone': 0,
-                                  'user': ['!=', frappe.session.user]
+                                  'user': ['not in', [frappe.session.user, entity_owner]]
                               },
                               fields=['user', 'read', 'write',
                                       'share', 'everyone', 'modified']
@@ -83,7 +86,10 @@ def get_shared_with_me(entity_name=None, get_all=False, order_by='modified'):
         query = (
             frappe.qb.from_(DriveEntity)
             .inner_join(DocShare)
-            .on((DocShare.share_name == DriveEntity.name))
+            .on((DocShare.share_name == DriveEntity.name) &
+                ((DocShare.user == frappe.session.user)
+                 | (DocShare.everyone == 1))
+                )
             .left_join(DriveFavourite)
             .on(
                 (DriveFavourite.entity == DriveEntity.name) &
@@ -92,9 +98,7 @@ def get_shared_with_me(entity_name=None, get_all=False, order_by='modified'):
             .select(*selectedFields)
             .where(
                 (DriveEntity.is_active == 1) &
-                (DriveEntity.parent_drive_entity == entity_name) &
-                ((DocShare.user == frappe.session.user)
-                 | (DocShare.everyone == 1))
+                (DriveEntity.parent_drive_entity == entity_name)
             )
             .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
         )

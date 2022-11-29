@@ -357,6 +357,7 @@ def list_favourites(order_by='modified'):
 
     DriveFavourite = frappe.qb.DocType('Drive Favourite')
     DriveEntity = frappe.qb.DocType('Drive Entity')
+    DocShare = frappe.qb.DocType('DocShare')
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -367,24 +368,38 @@ def list_favourites(order_by='modified'):
         DriveEntity.file_size,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
+        DocShare.read,
+        DocShare.write,
+        DocShare.share,
+        DocShare.everyone,
     ]
     query = (
         frappe.qb.from_(DriveEntity)
-        .right_join(DriveFavourite)
+        .inner_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name) &
             (DriveFavourite.user == frappe.session.user)
         )
+        .left_join(DocShare)
+        .on((DocShare.share_name == DriveEntity.name) &
+            ((DocShare.user == frappe.session.user)
+             | (DocShare.everyone == 1))
+            )
         .select(*selectedFields)
         .where(
-            (DriveEntity.is_active == 1)
+            (DriveEntity.is_active == 1) & 
+            (DocShare.read == 1)
         )
         .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
     )
-    return query.run(as_dict=True)
+    result = query.run(as_dict=True)
+    user_specific_items = list(filter(lambda x: not x.everyone, result))
+    names = [x.name for x in user_specific_items]
+    open_access_items = list(filter(lambda x: x.name not in names, result))
+    return user_specific_items + open_access_items  # Return unique values
 
 
-@frappe.whitelist()
+@ frappe.whitelist()
 def add_or_remove_favourites(entity_names):
     """
     Favouite or unfavourite DriveEntities for specified user
@@ -415,7 +430,7 @@ def add_or_remove_favourites(entity_names):
             doc.insert()
 
 
-@frappe.whitelist()
+@ frappe.whitelist()
 def remove_or_restore(entity_names):
     """
     To move entities to or restore entities from the trash
@@ -451,7 +466,7 @@ def remove_or_restore(entity_names):
         toggle_is_active(doc)
 
 
-@frappe.whitelist()
+@ frappe.whitelist()
 def call_controller_method(entity_name, method):
     """
     Call a whitelisted Drive Entity controller method
