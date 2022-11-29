@@ -102,7 +102,6 @@
         }
       "
     />
-    <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
 
@@ -119,7 +118,6 @@ import ShareDialog from '@/components/ShareDialog.vue';
 import DeleteDialog from '@/components/DeleteDialog.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
-import Dropzone from 'dropzone';
 
 export default {
   name: 'Shared',
@@ -137,7 +135,6 @@ export default {
     EntityContextMenu,
   },
   data: () => ({
-    dropzone: null,
     previewEntity: null,
     showPreview: false,
     showRenameDialog: false,
@@ -149,13 +146,7 @@ export default {
     selectedEntities: [],
     breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
   }),
-  props: {
-    entityName: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  },
+
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
@@ -264,21 +255,7 @@ export default {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0 && !this.entityName;
-          },
-        },
-        {
-          label: 'Delete',
-          icon: 'trash-2',
-          handler: () => {
-            this.showDeleteDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.entityName &&
-              this.selectedEntities.every((x) => x.write || x.owner === 'me')
-            );
+            return this.selectedEntities.length > 0;
           },
         },
       ].filter((item) => item.isEnabled());
@@ -310,77 +287,6 @@ export default {
   },
 
   methods: {
-    initializeDropzone() {
-      let componentContext = this;
-      this.dropzone = new Dropzone(this.$el.parentNode, {
-        paramName: 'file',
-        parallelUploads: 1,
-        clickable: '#dropzoneElement',
-        previewsContainer: '#dropzoneElement',
-        chunking: true,
-        forceChunking: true,
-        url: '/api/method/drive.api.files.upload_file',
-        maxFilesize: 10 * 1024, // 10GB
-        chunkSize: 5 * 1024 * 1024, // 5MB
-        headers: {
-          'X-Frappe-CSRF-Token': window.csrf_token,
-          Accept: 'application/json',
-        },
-        sending: function (file, xhr, formData, chunk) {
-          formData.append('parent', file.parent);
-        },
-        params: function (files, xhr, chunk) {
-          if (chunk) {
-            return {
-              uuid: chunk.file.upload.uuid,
-              chunk_index: chunk.index,
-              total_file_size: chunk.file.size,
-              chunk_size: this.options.chunkSize,
-              total_chunk_count: chunk.file.upload.totalChunkCount,
-              chunk_byte_offset: chunk.index * this.options.chunkSize,
-            };
-          }
-        },
-      });
-      this.dropzone.on('addedfile', function (file) {
-        file.parent = componentContext.entityName;
-        componentContext.$store.commit('pushToUploads', {
-          uuid: file.upload.uuid,
-          name: file.name,
-          progress: 0,
-        });
-      });
-      this.dropzone.on('uploadprogress', function (file, progress) {
-        componentContext.$store.commit('updateUpload', {
-          uuid: file.upload.uuid,
-          progress: progress,
-        });
-      });
-      this.dropzone.on('error', function (file, message, xhr) {
-        let error_message;
-        if (message._server_messages) {
-          error_message = JSON.parse(message._server_messages)
-            .map((element) => JSON.parse(element).message)
-            .join('\n');
-        }
-        error_message = error_message || 'Upload failed';
-        componentContext.$store.commit('updateUpload', {
-          uuid: file.upload.uuid,
-          error: error_message,
-        });
-      });
-      this.dropzone.on('complete', function (file) {
-        componentContext.$resources.folderContents.fetch();
-        componentContext.$store.commit('updateUpload', {
-          uuid: file.upload.uuid,
-          completed: true,
-        });
-      });
-      this.emitter.on('uploadFile', () => {
-        if (componentContext.dropzone.hiddenFileInput)
-          componentContext.dropzone.hiddenFileInput.click();
-      });
-    },
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
@@ -411,52 +317,11 @@ export default {
     },
   },
 
-  watch: {
-    async entityName(newEntityName) {
-      await this.$resources.folderAccess.fetch();
-      this.$store.commit(
-        'setHasWriteAccess',
-        !!this.$resources.folderAccess.data?.write
-      );
-      this.selectedEntities = [];
-      if (!newEntityName) {
-        this.dropzone.destroy();
-        this.dropzone = null;
-      } else if (!this.dropzone) this.initializeDropzone();
-    },
-  },
-
-  async mounted() {
-    await this.$resources.folderAccess.fetch();
-    this.$store.commit(
-      'setHasWriteAccess',
-      !!this.$resources.folderAccess.data?.write
-    );
-    let componentContext = this;
-    this.emitter.on('fetchFolderContents', () => {
-      componentContext.$resources.folderContents.fetch();
-    });
-    if (this.entityName) this.initializeDropzone();
-  },
-
-  unmounted() {
-    if (this.dropzone) this.dropzone.destroy();
-  },
-
   resources: {
-    folderAccess() {
-      return {
-        method: 'drive.api.permissions.get_user_access',
-        params: { entity_name: this.entityName },
-      };
-    },
-
     folderContents() {
       return {
         method: 'drive.api.permissions.get_shared_with_me',
-        // cache: ['folderContents', this.userId, this.entityName],
         params: {
-          entity_name: this.entityName,
           order_by: this.orderBy,
         },
         onSuccess(data) {
@@ -474,7 +339,6 @@ export default {
         auto: true,
       };
     },
-
 
     toggleFavourite() {
       return {

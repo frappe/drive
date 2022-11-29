@@ -292,6 +292,79 @@ export default {
     },
   },
   methods: {
+
+    initializeDropzone() {
+      let componentContext = this;
+      this.dropzone = new Dropzone(this.$el.parentNode, {
+        paramName: 'file',
+        parallelUploads: 1,
+        clickable: '#dropzoneElement',
+        previewsContainer: '#dropzoneElement',
+        chunking: true,
+        forceChunking: true,
+        url: '/api/method/drive.api.files.upload_file',
+        maxFilesize: 10 * 1024, // 10GB
+        chunkSize: 5 * 1024 * 1024, // 5MB
+        headers: {
+          'X-Frappe-CSRF-Token': window.csrf_token,
+          Accept: 'application/json',
+        },
+        sending: function (file, xhr, formData, chunk) {
+          formData.append('parent', file.parent);
+        },
+        params: function (files, xhr, chunk) {
+          if (chunk) {
+            return {
+              uuid: chunk.file.upload.uuid,
+              chunk_index: chunk.index,
+              total_file_size: chunk.file.size,
+              chunk_size: this.options.chunkSize,
+              total_chunk_count: chunk.file.upload.totalChunkCount,
+              chunk_byte_offset: chunk.index * this.options.chunkSize,
+            };
+          }
+        },
+      });
+      this.dropzone.on('addedfile', function (file) {
+        file.parent = componentContext.entityName;
+        componentContext.$store.commit('pushToUploads', {
+          uuid: file.upload.uuid,
+          name: file.name,
+          progress: 0,
+        });
+      });
+      this.dropzone.on('uploadprogress', function (file, progress) {
+        componentContext.$store.commit('updateUpload', {
+          uuid: file.upload.uuid,
+          progress: progress,
+        });
+      });
+      this.dropzone.on('error', function (file, message, xhr) {
+        let error_message;
+        if (message._server_messages) {
+          error_message = JSON.parse(message._server_messages)
+            .map((element) => JSON.parse(element).message)
+            .join('\n');
+        }
+        error_message = error_message || 'Upload failed';
+        componentContext.$store.commit('updateUpload', {
+          uuid: file.upload.uuid,
+          error: error_message,
+        });
+      });
+      this.dropzone.on('complete', function (file) {
+        componentContext.$resources.folderContents.fetch();
+        componentContext.$store.commit('updateUpload', {
+          uuid: file.upload.uuid,
+          completed: true,
+        });
+      });
+      this.emitter.on('uploadFile', () => {
+        if (componentContext.dropzone.hiddenFileInput)
+          componentContext.dropzone.hiddenFileInput.click();
+      });
+    },
+
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
@@ -329,6 +402,8 @@ export default {
         !!this.$resources.folderAccess.data?.write
       );
       this.selectedEntities = [];
+      if (!this.dropzone && this.$store.state.hasWriteAccess)
+        this.initializeDropzone();
     },
   },
 
@@ -342,13 +417,15 @@ export default {
     this.emitter.on('fetchFolderContents', () => {
       componentContext.$resources.folderContents.fetch();
     });
+    if (this.$store.state.hasWriteAccess) this.initializeDropzone();
   },
 
   unmounted() {
     this.$store.commit('setHasWriteAccess', false);
+    if (this.dropzone) this.dropzone.destroy();
   },
-  resources: {
 
+  resources: {
     folderAccess() {
       return {
         method: 'drive.api.permissions.get_user_access',
