@@ -143,6 +143,7 @@ export default {
     showEntityContext: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
+    isSharedFolder: false,
     shareTitle: '',
   }),
   computed: {
@@ -191,8 +192,9 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 ||
-              (this.entityName && !this.selectedEntities.length)
+              (this.selectedEntities.length === 1 ||
+                (this.entityName && !this.selectedEntities.length)) &&
+              !this.isSharedFolder
             );
           },
         },
@@ -261,7 +263,7 @@ export default {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0;
+            return this.selectedEntities.length > 0 && !this.isSharedFolder;
           },
         },
       ].filter((item) => item.isEnabled());
@@ -292,7 +294,6 @@ export default {
     },
   },
   methods: {
-
     initializeDropzone() {
       let componentContext = this;
       this.dropzone = new Dropzone(this.$el.parentNode, {
@@ -454,6 +455,7 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
           });
+          console.log(data);
         },
         auto: true,
       };
@@ -467,8 +469,9 @@ export default {
           entity_name: this.entityName,
         },
         onSuccess(data) {
+          this.isSharedFolder = data.is_shared;
           let breadcrumbs = [];
-          if (data.is_shared)
+          if (this.isSharedFolder)
             breadcrumbs.push({
               label: 'Shared With Me',
               route: '/shared',

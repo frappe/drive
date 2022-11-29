@@ -89,7 +89,7 @@
       v-model="showShareDialog"
       :entityName="selectedEntities[0].name"
       :entityTitle="selectedEntities[0].title"
-      :isFolder="selectedEntities[0].is_folder"
+      :isFolder="selectedEntities[0].is_group"
     />
   </div>
 </template>
