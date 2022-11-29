@@ -84,6 +84,13 @@
         }
       "
     />
+    <ShareDialog
+      v-if="showShareDialog"
+      v-model="showShareDialog"
+      :entityName="selectedEntities[0].name"
+      :entityTitle="selectedEntities[0].title"
+      :isFolder="shareIsFolder"
+    />
     <DeleteDialog
       v-model="showDeleteDialog"
       :entities="selectedEntities"
@@ -108,6 +115,7 @@ import FilePreview from '@/components/FilePreview.vue';
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
+import ShareDialog from '@/components/ShareDialog.vue';
 import DeleteDialog from '@/components/DeleteDialog.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
@@ -121,6 +129,7 @@ export default {
     DriveToolBar,
     RenameDialog,
     GeneralDialog,
+    ShareDialog,
     DeleteDialog,
     NoFilesSection,
     FilePreview,
@@ -132,6 +141,7 @@ export default {
     previewEntity: null,
     showPreview: false,
     showRenameDialog: false,
+    showShareDialog: false,
     showRemoveDialog: false,
     showDeleteDialog: false,
     showEntityContext: false,
@@ -170,6 +180,19 @@ export default {
             return (
               this.selectedEntities.length === 1 &&
               !this.selectedEntities[0].is_group
+            );
+          },
+        },
+        {
+          label: 'Share',
+          icon: 'share-2',
+          handler: () => {
+            this.showShareDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].write
             );
           },
         },
