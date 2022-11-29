@@ -21,7 +21,7 @@
             "
           >
             <div class="h-28 md:h-32 place-items-center grid">
-              <img src="/src/assets/images/icons/folder.svg" />
+              <img src="/src/assets/images/icons/folder.svg" :draggable="false"/>
             </div>
             <div class="px-3.5 pb-2.5">
               <h3 class="truncate text-[14px] font-medium">
@@ -56,6 +56,7 @@
               <img
                 :src="getIconUrl(formatMimeType(file.mime_type))"
                 class="h-14"
+		:draggable="false"
               />
             </div>
             <div class="px-3.5 md:h-16 content-center grid">
