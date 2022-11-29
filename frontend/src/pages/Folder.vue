@@ -23,7 +23,7 @@
         />
       </template>
       <template #placeholder>
-        <NoFilesSection secondaryMessage="No files have been shared with you" />
+        <NoFilesSection />
       </template>
     </GridView>
 
@@ -45,7 +45,7 @@
         />
       </template>
       <template #placeholder>
-        <NoFilesSection secondaryMessage="No files have been shared with you" />
+        <NoFilesSection />
       </template>
     </ListView>
 
@@ -75,7 +75,7 @@
     <GeneralDialog
       v-model="showRemoveDialog"
       :entities="selectedEntities"
-      :for="'unshare'"
+      :for="'remove'"
       @success="
         () => {
           $resources.folderContents.fetch();
@@ -87,68 +87,44 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="selectedEntities[0].name"
-      :entityTitle="selectedEntities[0].title"
+      :entityName="shareName"
+      :entityTitle="shareTitle"
       :isFolder="shareIsFolder"
-    />
-    <DeleteDialog
-      v-model="showDeleteDialog"
-      :entities="selectedEntities"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showDeleteDialog = false;
-          selectedEntities = [];
-        }
-      "
     />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
 
 <script>
+import { FeatherIcon } from 'frappe-ui';
+import Dropzone from 'dropzone';
 import ListView from '@/components/ListView.vue';
 import GridView from '@/components/GridView.vue';
 import DriveToolBar from '@/components/DriveToolBar.vue';
 import NoFilesSection from '@/components/NoFilesSection.vue';
 import FilePreview from '@/components/FilePreview.vue';
-import FolderContentsError from '@/components/FolderContentsError.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
-import GeneralDialog from '@/components/GeneralDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
-import DeleteDialog from '@/components/DeleteDialog.vue';
+import GeneralDialog from '@/components/GeneralDialog.vue';
+import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
-import Dropzone from 'dropzone';
 
 export default {
-  name: 'Shared',
+  name: 'Home',
   components: {
+    FeatherIcon,
     ListView,
     GridView,
     DriveToolBar,
-    RenameDialog,
-    GeneralDialog,
-    ShareDialog,
-    DeleteDialog,
     NoFilesSection,
     FilePreview,
+    RenameDialog,
+    ShareDialog,
+    GeneralDialog,
     FolderContentsError,
     EntityContextMenu,
   },
-  data: () => ({
-    dropzone: null,
-    previewEntity: null,
-    showPreview: false,
-    showRenameDialog: false,
-    showShareDialog: false,
-    showRemoveDialog: false,
-    showDeleteDialog: false,
-    showEntityContext: false,
-    entityContext: {},
-    selectedEntities: [],
-    breadcrumbs: [{ label: 'Shared With Me', route: '/shared' }],
-  }),
   props: {
     entityName: {
       type: String,
@@ -156,6 +132,19 @@ export default {
       default: '',
     },
   },
+  data: () => ({
+    dropzone: null,
+    selectedEntities: [],
+    previewEntity: null,
+    showPreview: false,
+    showRenameDialog: false,
+    showShareDialog: false,
+    showRemoveDialog: false,
+    showEntityContext: false,
+    entityContext: {},
+    breadcrumbs: [{ label: 'Home', route: '/' }],
+    shareTitle: '',
+  }),
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
@@ -167,6 +156,14 @@ export default {
       return this.$store.state.sortOrder.ascending
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
+    },
+    shareName() {
+      return this.selectedEntities[0]
+        ? this.selectedEntities[0].name
+        : this.entityName;
+    },
+    shareIsFolder() {
+      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1;
     },
     actionItems() {
       return [
@@ -187,12 +184,15 @@ export default {
           label: 'Share',
           icon: 'share-2',
           handler: () => {
+            this.shareTitle = this.selectedEntities.length
+              ? this.selectedEntities[0].title
+              : this.breadcrumbs.at(-1).label;
             this.showShareDialog = true;
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].write
+              this.selectedEntities.length === 1 ||
+              (this.entityName && !this.selectedEntities.length)
             );
           },
         },
@@ -225,10 +225,7 @@ export default {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].write
-            );
+            return this.selectedEntities.length === 1;
           },
         },
         {
@@ -258,27 +255,13 @@ export default {
           },
         },
         {
-          label: 'Unshare',
+          label: 'Move to Trash',
           icon: 'trash-2',
           handler: () => {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0 && !this.entityName;
-          },
-        },
-        {
-          label: 'Delete',
-          icon: 'trash-2',
-          handler: () => {
-            this.showDeleteDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.entityName &&
-              this.selectedEntities.every((x) => x.write || x.owner === 'me')
-            );
+            return this.selectedEntities.length > 0;
           },
         },
       ].filter((item) => item.isEnabled());
@@ -308,79 +291,7 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
-
   methods: {
-    initializeDropzone() {
-      let componentContext = this;
-      this.dropzone = new Dropzone(this.$el.parentNode, {
-        paramName: 'file',
-        parallelUploads: 1,
-        clickable: '#dropzoneElement',
-        previewsContainer: '#dropzoneElement',
-        chunking: true,
-        forceChunking: true,
-        url: '/api/method/drive.api.files.upload_file',
-        maxFilesize: 10 * 1024, // 10GB
-        chunkSize: 5 * 1024 * 1024, // 5MB
-        headers: {
-          'X-Frappe-CSRF-Token': window.csrf_token,
-          Accept: 'application/json',
-        },
-        sending: function (file, xhr, formData, chunk) {
-          formData.append('parent', file.parent);
-        },
-        params: function (files, xhr, chunk) {
-          if (chunk) {
-            return {
-              uuid: chunk.file.upload.uuid,
-              chunk_index: chunk.index,
-              total_file_size: chunk.file.size,
-              chunk_size: this.options.chunkSize,
-              total_chunk_count: chunk.file.upload.totalChunkCount,
-              chunk_byte_offset: chunk.index * this.options.chunkSize,
-            };
-          }
-        },
-      });
-      this.dropzone.on('addedfile', function (file) {
-        file.parent = componentContext.entityName;
-        componentContext.$store.commit('pushToUploads', {
-          uuid: file.upload.uuid,
-          name: file.name,
-          progress: 0,
-        });
-      });
-      this.dropzone.on('uploadprogress', function (file, progress) {
-        componentContext.$store.commit('updateUpload', {
-          uuid: file.upload.uuid,
-          progress: progress,
-        });
-      });
-      this.dropzone.on('error', function (file, message, xhr) {
-        let error_message;
-        if (message._server_messages) {
-          error_message = JSON.parse(message._server_messages)
-            .map((element) => JSON.parse(element).message)
-            .join('\n');
-        }
-        error_message = error_message || 'Upload failed';
-        componentContext.$store.commit('updateUpload', {
-          uuid: file.upload.uuid,
-          error: error_message,
-        });
-      });
-      this.dropzone.on('complete', function (file) {
-        componentContext.$resources.folderContents.fetch();
-        componentContext.$store.commit('updateUpload', {
-          uuid: file.upload.uuid,
-          completed: true,
-        });
-      });
-      this.emitter.on('uploadFile', () => {
-        if (componentContext.dropzone.hiddenFileInput)
-          componentContext.dropzone.hiddenFileInput.click();
-      });
-    },
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
@@ -410,19 +321,14 @@ export default {
       this.entityContext = undefined;
     },
   },
-
   watch: {
-    async entityName(newEntityName) {
+    async entityName() {
       await this.$resources.folderAccess.fetch();
       this.$store.commit(
         'setHasWriteAccess',
         !!this.$resources.folderAccess.data?.write
       );
       this.selectedEntities = [];
-      if (!newEntityName) {
-        this.dropzone.destroy();
-        this.dropzone = null;
-      } else if (!this.dropzone) this.initializeDropzone();
     },
   },
 
@@ -436,14 +342,13 @@ export default {
     this.emitter.on('fetchFolderContents', () => {
       componentContext.$resources.folderContents.fetch();
     });
-    if (this.entityName) this.initializeDropzone();
   },
 
   unmounted() {
-    if (this.dropzone) this.dropzone.destroy();
+    this.$store.commit('setHasWriteAccess', false);
   },
-
   resources: {
+
     folderAccess() {
       return {
         method: 'drive.api.permissions.get_user_access',
@@ -453,11 +358,13 @@ export default {
 
     folderContents() {
       return {
-        method: 'drive.api.permissions.get_shared_with_me',
-        // cache: ['folderContents', this.userId, this.entityName],
+        method: 'drive.api.files.list_folder_contents',
+        // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
+          fields:
+            'name,title,is_group,owner,modified,file_size,mime_type,creation',
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
@@ -475,6 +382,45 @@ export default {
       };
     },
 
+    pathEntities() {
+      return {
+        method: 'drive.api.files.get_entities_in_path',
+        // cache: ['pathEntities', this.entityName],
+        params: {
+          entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          let breadcrumbs = [];
+          if (data.is_shared)
+            breadcrumbs.push({
+              label: 'Shared With Me',
+              route: '/shared',
+            });
+          data.entities.forEach((entity, index) => {
+            if (index === 0) {
+              const isHome = entity.owner === this.userId;
+              breadcrumbs.push({
+                label: isHome ? 'Home' : entity.title,
+                route: isHome ? '/' : `/folder/${entity.name}`,
+              });
+            } else {
+              breadcrumbs.push({
+                label: entity.title,
+                route: `/folder/${entity.name}`,
+              });
+            }
+          });
+          if (breadcrumbs.length > 4) {
+            breadcrumbs.splice(1, breadcrumbs.length - 4, {
+              label: '...',
+              route: '',
+            });
+          }
+          this.breadcrumbs = breadcrumbs;
+        },
+        auto: Boolean(this.entityName),
+      };
+    },
 
     toggleFavourite() {
       return {

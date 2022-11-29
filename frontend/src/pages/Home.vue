@@ -19,7 +19,6 @@
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
           :showInfoButton="showInfoButton"
         />
       </template>
@@ -37,13 +36,11 @@
       @showEntityContext="(event) => toggleEntityContext(event)"
       @closeContextMenuEvent="closeContextMenu"
     >
-      >
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
           :showInfoButton="showInfoButton"
         />
       </template>
@@ -87,13 +84,12 @@
         }
       "
     />
-
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="shareName"
-      :entityTitle="shareTitle"
-      :isFolder="shareIsFolder"
+      :entityName="this.selectedEntities[0].name"
+      :entityTitle="this.selectedEntities[0].title"
+      :isFolder="this.selectedEntities[0].is_folder"
     />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -147,8 +143,6 @@ export default {
     showEntityContext: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
-    actionLoading: false,
-    shareTitle: '',
   }),
   computed: {
     userId() {
@@ -161,14 +155,6 @@ export default {
       return this.$store.state.sortOrder.ascending
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
-    },
-    shareName() {
-      return this.selectedEntities[0]
-        ? this.selectedEntities[0].name
-        : this.entityName;
-    },
-    shareIsFolder() {
-      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1;
     },
     actionItems() {
       return [
@@ -189,9 +175,6 @@ export default {
           label: 'Share',
           icon: 'share-2',
           handler: () => {
-            this.shareTitle = this.selectedEntities.length
-              ? this.selectedEntities[0].title
-              : this.breadcrumbs.at(-1).label;
             this.showShareDialog = true;
           },
           isEnabled: () => {
@@ -438,41 +421,6 @@ export default {
           });
         },
         auto: true,
-      };
-    },
-
-    pathEntities() {
-      return {
-        method: 'drive.api.files.get_entities_in_path',
-        // cache: ['pathEntities', this.entityName],
-        params: {
-          entity_name: this.entityName,
-        },
-        onSuccess(data) {
-          let breadcrumbs = [];
-          data.forEach((entity, index) => {
-            if (index === 0) {
-              const isHome = entity.owner === this.userId;
-              breadcrumbs.push({
-                label: isHome ? 'Home' : entity.title,
-                route: isHome ? '/' : `/folder/${entity.name}`,
-              });
-            } else {
-              breadcrumbs.push({
-                label: entity.title,
-                route: `/folder/${entity.name}`,
-              });
-            }
-          });
-          if (breadcrumbs.length > 4) {
-            breadcrumbs.splice(1, breadcrumbs.length - 4, {
-              label: '...',
-              route: '',
-            });
-          }
-          this.breadcrumbs = breadcrumbs;
-        },
-        auto: Boolean(this.entityName),
       };
     },
 

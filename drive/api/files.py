@@ -276,20 +276,38 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
     entities = [frappe.db.get_value(
         'Drive Entity', entity, fields, as_dict=True) for entity in path]
 
-    if shared:
-        shared_entities = [entities[-1]]
-        highest_level_reached = False
-        i = -2
-        while not highest_level_reached:
-            if (frappe.db.exists('DocShare', {'user': frappe.session.user, 'share_name': entities[i].name}) or
-                    frappe.db.exists('DocShare', {'everyone': 1, 'share_name': entities[i].name})):
-                shared_entities.insert(0, entities[i])
-                i -= 1
-            else:
-                highest_level_reached = True
-        return shared_entities
+    if entities[0].owner != frappe.session.user:
+        return get_shared_entities_in_path(entities)
 
-    return entities
+    result = {"is_shared": False, "entities": []}
+    result["entities"] += entities
+    return result
+
+
+@frappe.whitelist()
+def get_shared_entities_in_path(entities):
+    """
+    Return list of all DriveEntities present in the path for a shared folder.
+
+    :param entities: All entities in path
+    :return: List of parents followed by the specified DriveEntity
+    :rtype: list[frappe._dict]
+    """
+
+    shared_entities = [entities[-1]]
+    highest_level_reached = False
+    i = -2
+    while not highest_level_reached:
+        if (frappe.db.exists('DocShare', {'user': frappe.session.user, 'share_name': entities[i].name}) or
+                frappe.db.exists('DocShare', {'everyone': 1, 'share_name': entities[i].name})):
+            shared_entities.insert(0, entities[i])
+            i -= 1
+        else:
+            highest_level_reached = True
+
+    result = {"is_shared": True, "entities": []}
+    result["entities"] += shared_entities
+    return result
 
 
 @frappe.whitelist()
