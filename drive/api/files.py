@@ -344,8 +344,11 @@ def delete_entities(entity_names):
         root_entity = get_ancestors_of('Drive Entity', entity)[0]
         owns_root_entity = frappe.has_permission(
             doctype='Drive Entity', doc=root_entity, ptype='write', user=frappe.session.user)
-        if frappe.has_permission(doctype='Drive Entity', doc=entity, ptype='write', user=frappe.session.user) or owns_root_entity:
-            frappe.delete_doc("Drive Entity", entity, ignore_permissions=True)
+        has_write_access = frappe.has_permission(
+            doctype='Drive Entity', doc=entity, ptype='write', user=frappe.session.user)
+        ignore_permissions = owns_root_entity or has_write_access
+        frappe.delete_doc("Drive Entity", entity,
+                          ignore_permissions=ignore_permissions)
 
 
 @ frappe.whitelist()

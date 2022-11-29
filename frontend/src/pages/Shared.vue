@@ -258,7 +258,7 @@ export default {
           },
         },
         {
-          label: 'Remove',
+          label: 'Unshare',
           icon: 'trash-2',
           handler: () => {
             this.showRemoveDialog = true;
@@ -268,7 +268,7 @@ export default {
           },
         },
         {
-          label: 'Remove',
+          label: 'Delete',
           icon: 'trash-2',
           handler: () => {
             this.showDeleteDialog = true;

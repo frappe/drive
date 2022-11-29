@@ -53,8 +53,9 @@ class DriveEntity(NestedSet):
         })
         if self.is_group:
             for child in self.get_children():
-                if frappe.has_permission(doctype='Drive Entity', doc=self, ptype='write', user=frappe.session.user):
-                    child.delete(ignore_permissions=True)
+                has_write_access = frappe.has_permission(
+                    doctype='Drive Entity', doc=self, ptype='write', user=frappe.session.user)
+                child.delete(ignore_permissions=has_write_access)
         super().on_trash()
 
     def after_delete(self):
