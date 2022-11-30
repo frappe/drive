@@ -45,16 +45,11 @@ def upload_file():
             'Cannot upload to this folder due to insufficient permissions', frappe.PermissionError)
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
-    entity_exists = frappe.db.exists({
-        'doctype': 'Drive Entity',
-        'parent_drive_entity': parent,
-        'title': file.filename
-    })
     save_path = Path(user_directory.path) / \
         f'{parent}_{secure_filename(file.filename)}'
     print(save_path)
 
-    if current_chunk == 0 and (entity_exists or save_path.exists()):
+    if current_chunk == 0 and save_path.exists():
         frappe.throw(f"File '{file.filename}' already exists", FileExistsError)
     with open(save_path, 'ab') as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
@@ -111,13 +106,6 @@ def create_folder(title, parent=None):
     if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
         frappe.throw(
             'Cannot create folder due to insufficient permissions', frappe.PermissionError)
-    entity_exists = frappe.db.exists({
-        'doctype': 'Drive Entity',
-        'parent_drive_entity': parent,
-        'title': title
-    })
-    if entity_exists:
-        frappe.throw(f"Folder '{title}' already exists", FileExistsError)
 
     drive_entity = frappe.get_doc({
         'doctype': 'Drive Entity',
