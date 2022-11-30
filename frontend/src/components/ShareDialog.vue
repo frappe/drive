@@ -198,7 +198,7 @@ export default {
     async getLink() {
       this.showAlert = false
       const link = this.isFolder ?
-        `${window.location.origin}/drive/shared/folder/${this.entityName}` :
+        `${window.location.origin}/drive/folder/${this.entityName}` :
         `${window.location.origin}/drive/file/${this.entityName}`
       try {
         await navigator.clipboard.writeText(link);

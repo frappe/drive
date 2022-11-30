@@ -10,19 +10,13 @@ const routes = [
   {
     path: '/folder/:entityName',
     name: 'Folder',
-    component: () => import('@/pages/Home.vue'),
+    component: () => import('@/pages/Folder.vue'),
     props: true,
   },
   {
     path: '/shared',
     name: 'Shared',
     component: () => import('@/pages/Shared.vue'),
-  },
-  {
-    path: '/shared/folder/:entityName',
-    name: 'SharedFolder',
-    component: () => import('@/pages/Shared.vue'),
-    props: true,
   },
   {
     path: '/favourites',

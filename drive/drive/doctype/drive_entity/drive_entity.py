@@ -83,16 +83,22 @@ class DriveEntity(NestedSet):
         is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
         if not is_group:
             raise NotADirectoryError()
-        entity_exists = frappe.db.exists({
-            'doctype': 'Drive Entity',
-            'parent_drive_entity': new_parent,
-            'title': self.title
-        })
-        if entity_exists:
-            raise FileExistsError()
         self.parent_drive_entity = new_parent
         self.save()
         return self
+
+    @frappe.whitelist()
+    def move_to_owners_root(self):
+        """
+        To move entity to the root entity of its owner
+        """
+
+        owners_root_entity = frappe.get_last_doc(
+            'Drive Entity', filters={
+                "owner": self.owner,
+                "parent_drive_entity": ""
+            })
+        self.move(owners_root_entity.name)
 
     @frappe.whitelist()
     def rename(self, new_title):
@@ -103,14 +109,6 @@ class DriveEntity(NestedSet):
         :raises FileExistsError: If a file or folder with the same name already exists in the parent folder
         :return: DriveEntity doc once it's renamed
         """
-
-        entity_exists = frappe.db.exists({
-            'doctype': 'Drive Entity',
-            'parent_drive_entity': self.parent_drive_entity,
-            'title': new_title
-        })
-        if entity_exists:
-            frappe.throw(f"'{new_title}' already exists", FileExistsError)
 
         self.title = new_title
         self.save()

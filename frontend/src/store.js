@@ -26,10 +26,10 @@ const store = createStore({
       field: 'modified',
       ascending: false,
     },
-    view: 'grid',
+    view: JSON.parse(localStorage.getItem('view')) || 'grid',
     entityInfo: null,
     showInfo: false,
-    hasWriteAccess: false
+    hasWriteAccess: false,
   },
   getters: {
     isLoggedIn: (state) => {
@@ -66,6 +66,7 @@ const store = createStore({
       state.sortOrder = payload;
     },
     toggleView(state, payload) {
+      localStorage.setItem('view', JSON.stringify(payload));
       state.view = payload;
     },
     setEntityInfo(state, payload) {

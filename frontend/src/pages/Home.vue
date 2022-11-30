@@ -19,7 +19,6 @@
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
           :showInfoButton="showInfoButton"
         />
       </template>
@@ -37,13 +36,11 @@
       @showEntityContext="(event) => toggleEntityContext(event)"
       @closeContextMenuEvent="closeContextMenu"
     >
-      >
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
           :showInfoButton="showInfoButton"
         />
       </template>
@@ -87,13 +84,12 @@
         }
       "
     />
-
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="shareName"
-      :entityTitle="shareTitle"
-      :isFolder="shareIsFolder"
+      :entityName="this.selectedEntities[0].name"
+      :entityTitle="this.selectedEntities[0].title"
+      :isFolder="this.selectedEntities[0].is_group"
     />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -129,13 +125,6 @@ export default {
     FolderContentsError,
     EntityContextMenu,
   },
-  props: {
-    entityName: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  },
   data: () => ({
     dropzone: null,
     selectedEntities: [],
@@ -147,13 +136,8 @@ export default {
     showEntityContext: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
-    actionLoading: false,
-    shareTitle: '',
   }),
   computed: {
-    userId() {
-      return this.$store.state.auth.user_id;
-    },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
@@ -161,14 +145,6 @@ export default {
       return this.$store.state.sortOrder.ascending
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
-    },
-    shareName() {
-      return this.selectedEntities[0]
-        ? this.selectedEntities[0].name
-        : this.entityName;
-    },
-    shareIsFolder() {
-      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1;
     },
     actionItems() {
       return [
@@ -189,16 +165,10 @@ export default {
           label: 'Share',
           icon: 'share-2',
           handler: () => {
-            this.shareTitle = this.selectedEntities.length
-              ? this.selectedEntities[0].title
-              : this.breadcrumbs.at(-1).label;
             this.showShareDialog = true;
           },
           isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 ||
-              (this.entityName && !this.selectedEntities.length)
-            );
+            return this.selectedEntities.length === 1;
           },
         },
         {
@@ -326,14 +296,6 @@ export default {
       this.entityContext = undefined;
     },
   },
-  watch: {
-    entityName(newEntityName) {
-      this.selectedEntities = [];
-      if (!newEntityName) {
-        this.breadcrumbs = [{ label: 'Home', route: '/' }];
-      }
-    },
-  },
 
   mounted() {
     this.$store.commit('setHasWriteAccess', true);
@@ -372,7 +334,7 @@ export default {
       },
     });
     this.dropzone.on('addedfile', function (file) {
-      file.parent = componentContext.entityName;
+      file.parent = '';
       componentContext.$store.commit('pushToUploads', {
         uuid: file.upload.uuid,
         name: file.name,
@@ -418,9 +380,7 @@ export default {
     folderContents() {
       return {
         method: 'drive.api.files.list_folder_contents',
-        // cache: ['folderContents', this.entityName],
         params: {
-          entity_name: this.entityName,
           order_by: this.orderBy,
           fields:
             'name,title,is_group,owner,modified,file_size,mime_type,creation',
@@ -434,45 +394,10 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
+            entity.owner = 'me';
           });
         },
         auto: true,
-      };
-    },
-
-    pathEntities() {
-      return {
-        method: 'drive.api.files.get_entities_in_path',
-        // cache: ['pathEntities', this.entityName],
-        params: {
-          entity_name: this.entityName,
-        },
-        onSuccess(data) {
-          let breadcrumbs = [];
-          data.forEach((entity, index) => {
-            if (index === 0) {
-              const isHome = entity.owner === this.userId;
-              breadcrumbs.push({
-                label: isHome ? 'Home' : entity.title,
-                route: isHome ? '/' : `/folder/${entity.name}`,
-              });
-            } else {
-              breadcrumbs.push({
-                label: entity.title,
-                route: `/folder/${entity.name}`,
-              });
-            }
-          });
-          if (breadcrumbs.length > 4) {
-            breadcrumbs.splice(1, breadcrumbs.length - 4, {
-              label: '...',
-              route: '',
-            });
-          }
-          this.breadcrumbs = breadcrumbs;
-        },
-        auto: Boolean(this.entityName),
       };
     },
 

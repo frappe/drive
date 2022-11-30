@@ -189,19 +189,19 @@ export default {
             );
           },
         },
-        {
-          label: 'Share',
-          icon: 'share-2',
-          handler: () => {
-            this.showShareDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].write
-            );
-          },
-        },
+        // {
+        //   label: 'Share',
+        //   icon: 'share-2',
+        //   handler: () => {
+        //     this.showShareDialog = true;
+        //   },
+        //   isEnabled: () => {
+        //     return (
+        //       this.selectedEntities.length === 1 &&
+        //       this.selectedEntities[0].write
+        //     );
+        //   },
+        // },
         {
           label: 'View details',
           icon: 'eye',
@@ -247,33 +247,33 @@ export default {
             return this.selectedEntities.length > 0;
           },
         },
-        {
-          label: 'Remove',
-          icon: 'trash-2',
-          handler: () => {
-            this.showUnshareDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner != 'me') &&
-              this.selectedEntities.every((x) => !x.everyone)
-            );
-          },
-        },
-        {
-          label: 'Move to Trash',
-          icon: 'trash-2',
-          handler: () => {
-            this.showRemoveDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === 'me')
-            );
-          },
-        },
+        // {
+        //   label: 'Remove',
+        //   icon: 'trash-2',
+        //   handler: () => {
+        //     this.showUnshareDialog = true;
+        //   },
+        //   isEnabled: () => {
+        //     return (
+        //       this.selectedEntities.length > 0 &&
+        //       this.selectedEntities.every((x) => x.owner != 'me') &&
+        //       this.selectedEntities.every((x) => !x.everyone)
+        //     );
+        //   },
+        // },
+        // {
+        //   label: 'Move to Trash',
+        //   icon: 'trash-2',
+        //   handler: () => {
+        //     this.showRemoveDialog = true;
+        //   },
+        //   isEnabled: () => {
+        //     return (
+        //       this.selectedEntities.length > 0 &&
+        //       this.selectedEntities.every((x) => x.owner === 'me')
+        //     );
+        //   },
+        // },
       ].filter((item) => item.isEnabled());
     },
     columnHeaders() {
