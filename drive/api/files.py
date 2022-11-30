@@ -202,6 +202,7 @@ def list_folder_contents(entity_name=None, order_by='modified', is_active=1):
         DriveEntity.file_size,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
+        DriveEntity.allow_comments,
         DocShare.read,
         fn.Max(DocShare.write).as_("write"),
         DocShare.everyone,
@@ -307,8 +308,10 @@ def get_shared_entities_in_path(entities):
     return result
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def list_entity_comments(entity_name):
+    if frappe.session.user == 'Guest':
+        frappe.set_user('Administrator')
     return frappe.db.get_list('Comment',
                               filters={
                                   'comment_type': 'Comment',
@@ -393,6 +396,7 @@ def list_favourites(order_by='modified'):
         DriveEntity.file_size,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
+        DriveEntity.allow_comments,
         DocShare.read,
         fn.Max(DocShare.write).as_("write"),
         DocShare.share,

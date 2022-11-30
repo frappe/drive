@@ -369,6 +369,7 @@ export default {
         },
         onSuccess() {
           this.$resources.entity.fetch();
+          this.$emit('success');
         },
         onError(error) {
           if (error.messages) {

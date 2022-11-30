@@ -88,6 +88,7 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="shareName"
+      @success="$resources.folderContents.fetch()"
     />
     <div class="hidden" id="dropzoneElement" />
   </div>
