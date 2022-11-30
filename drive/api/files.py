@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
-from pypika import Order
+from pypika import Order, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -207,6 +207,7 @@ def list_folder_contents(entity_name=None, fields=None, order_by='modified', is_
 
     DriveEntity = frappe.qb.DocType('Drive Entity')
     DriveFavourite = frappe.qb.DocType('Drive Favourite')
+    DocShare = frappe.qb.DocType('DocShare')
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -217,10 +218,21 @@ def list_folder_contents(entity_name=None, fields=None, order_by='modified', is_
         DriveEntity.file_size,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
+        DocShare.read,
+        fn.Max(DocShare.write).as_("write"),
+        DocShare.everyone,
+        DocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
     ]
+
     query = (
         frappe.qb.from_(DriveEntity)
+        .inner_join(DocShare)
+        .on(
+            (DocShare.share_name == DriveEntity.name) &
+            ((DocShare.user == frappe.session.user)
+             | (DocShare.everyone == 1))
+        )
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name) &
@@ -231,6 +243,7 @@ def list_folder_contents(entity_name=None, fields=None, order_by='modified', is_
             (DriveEntity.parent_drive_entity == entity_name) &
             (DriveEntity.is_active == is_active)
         )
+        .groupby(DriveEntity.name)
         .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
     )
     return query.run(as_dict=True)
@@ -393,7 +406,7 @@ def list_favourites(order_by='modified'):
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
         DocShare.read,
-        DocShare.write,
+        fn.Max(DocShare.write).as_("write"),
         DocShare.share,
         DocShare.everyone,
     ]
@@ -414,13 +427,10 @@ def list_favourites(order_by='modified'):
             (DriveEntity.is_active == 1) &
             (DocShare.read == 1)
         )
+        .groupby(DriveEntity.name)
         .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
     )
-    result = query.run(as_dict=True)
-    user_specific_items = list(filter(lambda x: not x.everyone, result))
-    names = [x.name for x in user_specific_items]
-    open_access_items = list(filter(lambda x: x.name not in names, result))
-    return user_specific_items + open_access_items  # Return unique values
+    return query.run(as_dict=True)
 
 
 @ frappe.whitelist()
