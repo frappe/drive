@@ -43,6 +43,7 @@
                         : formatMimeType(entity.mime_type)
                     )
                   "
+		  :draggable="false"
                   class="h-[21px] mr-5"
                 />
                 {{ entity.title }}
