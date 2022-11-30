@@ -110,8 +110,6 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="selectedEntities[0].name"
-      :entityTitle="selectedEntities[0].title"
-      :isFolder="shareIsFolder"
     />
     <div />
   </div>
@@ -165,9 +163,6 @@ export default {
     },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
-    },
-    shareIsFolder() {
-      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1;
     },
     orderBy() {
       return this.$store.state.sortOrder.ascending

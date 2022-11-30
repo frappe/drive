@@ -102,8 +102,6 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="entity.name"
-      :isFolder="entity.is_group"
-      :entityTitle="entity.title"
     />
   </div>
 </template>
