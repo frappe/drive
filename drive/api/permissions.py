@@ -86,12 +86,12 @@ def get_shared_with_me(get_all=False, order_by='modified'):
         )
         .select(*selectedFields)
         .where(DriveEntity.is_active == 1)
-        .orderby(order_by.split()[0], order=Order.desc if order_by.endswith('desc') else Order.asc)
     )
-    result = query.run(as_dict=True)
     if get_all:
-        return result
+        return query.run(as_dict=True)
 
+    result = query.orderby(order_by.split()[0], order=Order.desc if order_by.endswith(
+        'desc') else Order.asc).run(as_dict=True)
     names = [x.name for x in result]
     # Return highest level entity
     return filter(lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user, result)
@@ -120,7 +120,6 @@ def get_all_my_entities(fields=None):
     shared_entities = get_shared_with_me(get_all=True)
 
     all_entities = shared_entities + my_entities
-    all_entities.sort(key=lambda x: x.modified, reverse=True)
     return list({x['name']: x for x in all_entities}.values())
 
 
