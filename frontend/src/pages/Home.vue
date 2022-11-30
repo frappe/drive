@@ -394,6 +394,7 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
+            entity.owner = 'me';
           });
         },
         auto: true,

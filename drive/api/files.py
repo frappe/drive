@@ -163,21 +163,17 @@ def get_file_content(entity_name, trigger_download=0):
 
 
 @frappe.whitelist()
-def list_folder_contents(entity_name=None, fields=None, order_by='modified', is_active=1):
+def list_folder_contents(entity_name=None, order_by='modified', is_active=1):
     """
     Return list of DriveEntity records present in this folder
 
     :param entity_name: Document-name of the folder whose contents are to be listed. Defaults to the user directory
-    :param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'is_group', 'owner', 'modified', 'file_size', 'mime_type']
     :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
     :raises NotADirectoryError: If this DriveEntity doc is not a folder
     :raises PermissionError: If the user does not have access to the specified folder
     :return: List of DriveEntity records
     :rtype: list
     """
-
-    fields = fields or ['name', 'title', 'is_group',
-                        'owner', 'modified', 'file_size', 'mime_type']
 
     try:
         entity_name = entity_name or get_user_directory().name
@@ -325,12 +321,14 @@ def list_entity_comments(entity_name):
 
 
 @frappe.whitelist()
-def unshare_entities(entity_names):
+def unshare_entities(entity_names, move=False):
     """
     Unshare DriveEntities
 
     :param entity_names: List of document-names
     :type entity_names: list[str]
+    :param move: if True, moves entity to root entity of user
+    :type move: Boolean
     :raises ValueError: If decoded entity_names is not a list
     """
 
@@ -342,6 +340,8 @@ def unshare_entities(entity_names):
         doc = frappe.get_doc('Drive Entity', entity)
         if not doc:
             frappe.throw("Entity does not exist", ValueError)
+        if move:
+            doc.move_to_owners_root()
         doc.unshare(frappe.session.user)
 
 
@@ -370,7 +370,7 @@ def delete_entities(entity_names):
                           ignore_permissions=ignore_permissions)
 
 
-@ frappe.whitelist()
+@frappe.whitelist()
 def list_favourites(order_by='modified'):
     """
     Return list of DriveEntity records present in this folder
@@ -421,7 +421,7 @@ def list_favourites(order_by='modified'):
     return query.run(as_dict=True)
 
 
-@ frappe.whitelist()
+@frappe.whitelist()
 def add_or_remove_favourites(entity_names):
     """
     Favouite or unfavourite DriveEntities for specified user
@@ -452,7 +452,7 @@ def add_or_remove_favourites(entity_names):
             doc.insert()
 
 
-@ frappe.whitelist()
+@frappe.whitelist()
 def remove_or_restore(entity_names):
     """
     To move entities to or restore entities from the trash
@@ -477,18 +477,18 @@ def remove_or_restore(entity_names):
         if (doc.is_active):
             entity_ancestors = get_ancestors_of('Drive Entity', entity)
             doc.parent_before_trash = entity_ancestors[0]
-            doc.parent_drive_entity = entity_ancestors[-1]
+            doc.move_to_owners_root()
 
         else:
             parent_is_active = frappe.db.get_value(
                 'Drive Entity', doc.parent_before_trash, 'is_active')
             if parent_is_active:
-                doc.parent_drive_entity = doc.parent_before_trash
+                doc.move(doc.parent_before_trash)
 
         toggle_is_active(doc)
 
 
-@ frappe.whitelist()
+@frappe.whitelist()
 def call_controller_method(entity_name, method):
     """
     Call a whitelisted Drive Entity controller method

@@ -227,7 +227,11 @@ export default {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return (
+              this.selectedEntities.length === 1 &&
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === 'me')
+            );
           },
         },
         {
@@ -257,13 +261,31 @@ export default {
           },
         },
         {
+          label: 'Remove',
+          icon: 'trash-2',
+          handler: () => {
+            this.$resources.removeEntity.submit();
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner != 'me') &&
+              (this.selectedEntities.every((x) => x.write) ||
+                !this.isSharedFolder)
+            );
+          },
+        },
+        {
           label: 'Move to Trash',
           icon: 'trash-2',
           handler: () => {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0 && !this.isSharedFolder;
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === 'me')
+            );
           },
         },
       ].filter((item) => item.isEnabled());
@@ -378,10 +400,12 @@ export default {
         this.showPreview = true;
       }
     },
+
     hidePreview() {
       this.showPreview = false;
       this.previewEntity = null;
     },
+
     toggleEntityContext(event) {
       if (!event) this.showEntityContext = false;
       else {
@@ -513,6 +537,26 @@ export default {
         onSuccess() {
           this.$resources.folderContents.fetch();
           this.selectedEntities = [];
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      };
+    },
+
+    removeEntity() {
+      return {
+        method: 'drive.api.files.unshare_entities',
+        params: {
+          entity_names: JSON.stringify(
+            this.selectedEntities.map((entity) => entity.name)
+          ),
+          move: true,
+        },
+        onSuccess() {
+          this.$resources.folderContents.fetch();
         },
         onError(error) {
           if (error.messages) {
