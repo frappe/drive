@@ -86,7 +86,11 @@
           />
         </div>
         <div v-for="comment in $resources.comments.data" class="flex gap-3">
-          <Avatar :label="comment.comment_by" class="h-7 w-7" />
+          <Avatar
+            :label="comment.comment_by"
+            :imageURL="comment.user_image"
+            class="h-7 w-7"
+          />
           <div>
             <span class="mb-1">
               <span class="text-[14px] font-medium">
