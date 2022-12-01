@@ -1,6 +1,6 @@
 <template>
   <portal to="modals">
-    <div class="fixed bottom-0 right-0 w-full p-6 sm:w-96">
+    <div class="fixed bottom-0 right-0 w-full p-6 sm:w-96 z-10">
       <div class="rounded-lg bg-white shadow-lg">
         <div
           class="flex items-center justify-between rounded-sm bg-gray-50 p-4"
@@ -31,7 +31,7 @@
             </button>
           </div>
         </div>
-        <div class="max-h-64 overflow-y-auto" v-if="!collapsed">
+        <div class="max-h-64 overflow-y-auto bg-white" v-if="!collapsed">
           <div
             class="truncate border-b"
             v-for="upload in uploads"
