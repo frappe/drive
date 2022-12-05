@@ -6,7 +6,7 @@
 				item.handler()
 				close()
 			}">
-			<FeatherIcon :name="item.icon" :strokeWidth="1" class="w-4 h-4 text-gray-700 mr-3" />
+			<FeatherIcon :name="item.icon" class="stroke-1.5  w-4 h-4 text-gray-700 mr-3" />
 			<div class="text-gray-800 text-small">{{ item.label }}</div>
 		</div>
 	</div>

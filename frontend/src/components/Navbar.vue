@@ -27,7 +27,7 @@
             :disabled="!$store.state.hasWriteAccess"></Button>
         </Dropdown>
         <div class="border h-5"></div>
-        <Button class="ml-4 md:ml-5" appearance="minimal" icon="bell"></Button>
+        <Button class="stroke-1.5 ml-4 md:ml-5" appearance="minimal" icon="bell"></Button>
         <div class="relative ml-3">
           <Dropdown :options="accountOptions" placement="right">
             <button
