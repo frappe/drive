@@ -88,8 +88,7 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="selectedEntities[0].name"
-      :entityTitle="selectedEntities[0].title"
-      :isFolder="selectedEntities[0].is_group"
+      @success="$resources.folderContents.fetch()"
     />
   </div>
 </template>

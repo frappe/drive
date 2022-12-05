@@ -73,37 +73,47 @@
       </div>
       <div class="text-gray-600 text-base">Viewers can download this file.</div>
     </div>
-    <div v-else class="px-5 py-6 space-y-6 h-full overflow-y-auto">
-      <div class="flex items-center gap-3">
-        <Avatar :label="fullName" :imageURL="imageURL" class="h-7 w-7" />
-        <input
-          type="text"
-          placeholder="Add comment or update..."
-          @keydown.enter="postComment"
-          v-model="comment"
-          class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600"
-        />
-      </div>
-      <div v-for="comment in $resources.comments.data" class="flex gap-3">
-        <Avatar :label="comment.comment_by" class="h-7 w-7" />
-        <div>
-          <span class="mb-1">
-            <span class="text-[14px] font-medium">
-              {{ comment.comment_by }}
-            </span>
-            <span class="text-gray-500 text-base">∙</span>
-            <span class="text-gray-700 text-base">{{ comment.creation }}</span>
-          </span>
-          <div class="text-base">{{ comment.content }}</div>
+    <div v-else class="px-5 py-6 h-full overflow-y-auto">
+      <div v-if="entity.allow_comments" class="space-y-5">
+        <div v-if="userId != 'Guest'" class="flex items-center gap-3">
+          <Avatar :label="fullName" :imageURL="imageURL" class="h-7 w-7" />
+          <input
+            type="text"
+            placeholder="Add comment or update..."
+            @keydown.enter="postComment"
+            v-model="comment"
+            class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600"
+          />
         </div>
+        <div v-for="comment in $resources.comments.data" class="flex gap-3">
+          <Avatar
+            :label="comment.comment_by"
+            :imageURL="comment.user_image"
+            class="h-7 w-7"
+          />
+          <div>
+            <span class="mb-1">
+              <span class="text-[14px] font-medium">
+                {{ comment.comment_by }}
+              </span>
+              <span class="text-gray-500 text-base">{{ ' ∙ ' }}</span>
+              <span class="text-gray-700 text-base">
+                {{ comment.creation }}
+              </span>
+            </span>
+            <div class="text-base">{{ comment.content }}</div>
+          </div>
+        </div>
+      </div>
+      <div v-else class="text-gray-600 text-base">
+        Comments have been disabled for this
+        {{ entity.is_group ? 'folder' : 'file' }} by its owner.
       </div>
     </div>
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="entity.name"
-      :isFolder="entity.is_group"
-      :entityTitle="entity.title"
     />
   </div>
 </template>

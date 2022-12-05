@@ -88,8 +88,7 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="shareName"
-      :entityTitle="shareTitle"
-      :isFolder="shareIsFolder"
+      @success="$resources.folderContents.fetch()"
     />
     <div class="hidden" id="dropzoneElement" />
   </div>
@@ -144,7 +143,6 @@ export default {
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
     isSharedFolder: false,
-    shareTitle: '',
   }),
   computed: {
     userId() {
@@ -162,9 +160,6 @@ export default {
       return this.selectedEntities[0]
         ? this.selectedEntities[0].name
         : this.entityName;
-    },
-    shareIsFolder() {
-      return this.selectedEntities[0] ? this.selectedEntities[0].is_group : 1;
     },
     actionItems() {
       return [
@@ -185,9 +180,6 @@ export default {
           label: 'Share',
           icon: 'share-2',
           handler: () => {
-            this.shareTitle = this.selectedEntities.length
-              ? this.selectedEntities[0].title
-              : this.breadcrumbs.at(-1).label;
             this.showShareDialog = true;
           },
           isEnabled: () => {

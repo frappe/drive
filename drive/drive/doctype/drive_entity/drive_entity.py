@@ -146,6 +146,19 @@ class DriveEntity(NestedSet):
                 child.set_general_access(new_access)
 
     @frappe.whitelist()
+    def toggle_allow_comments(self):
+        """
+        Toggle allow comments for entity
+
+        """
+
+        self.allow_comments = not self.allow_comments
+        self.save()
+        if self.is_group:
+            for child in self.get_children():
+                child.toggle_allow_comments()
+
+    @frappe.whitelist()
     def share(self, user, write=0, share=1, notify=1):
         """
         Share this file or folder with the specified user.

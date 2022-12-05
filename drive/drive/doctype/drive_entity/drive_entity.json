@@ -18,7 +18,8 @@
   "version",
   "is_active",
   "trashed_on",
-  "parent_before_trash"
+  "parent_before_trash",
+  "allow_comments"
  ],
  "fields": [
   {
@@ -103,12 +104,18 @@
    "fieldname": "parent_before_trash",
    "fieldtype": "Data",
    "label": "Parent Before Trash"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_comments",
+   "fieldtype": "Check",
+   "label": "Allow Comments"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-11-28 12:23:34.792908",
+ "modified": "2022-11-30 20:37:50.899228",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Entity",

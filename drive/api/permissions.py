@@ -65,6 +65,7 @@ def get_shared_with_me(get_all=False, order_by='modified'):
         DriveEntity.file_size,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
+        DriveEntity.allow_comments,
         DocShare.read,
         DocShare.write,
         DocShare.everyone,
@@ -145,7 +146,7 @@ def get_file_with_permissions(entity_name):
             "PermissionError: Either this file does not exist, or you don't have access to it", frappe.PermissionError)
 
     fields = ['name', 'title', 'owner', 'is_group', 'is_active',
-              'modified', 'creation', 'file_size', 'mime_type']
+              'modified', 'creation', 'file_size', 'mime_type', 'allow_comments']
     entity = get_entity(entity_name, fields)
     if entity.is_group:
         frappe.throw('Specified entity is not a file', IsADirectoryError)
