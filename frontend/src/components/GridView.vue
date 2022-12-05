@@ -12,8 +12,14 @@
             class="md:w-[212px] rounded-lg border group select-none"
             v-for="folder in folders"
             :key="folder.name"
+            @dblclick="dblClickEntity(folder)"
             @click="selectEntity(folder, $event)"
             @contextmenu="handleEntityContext(folder, $event)"
+            draggable="true"
+            @dragstart="dragStart(folder, $event)"
+            @drop="onDrop($event)"
+            @dragenter.prevent
+            @dragover.prevent
             :class="
               selectedEntities.includes(folder)
                 ? 'bg-blue-100'
@@ -44,7 +50,12 @@
             class="md:w-[212px] rounded-lg border group select-none"
             v-for="file in files"
             :key="file.name"
+            @dblclick="dblClickEntity(file)"
             @click="selectEntity(file, $event)"
+            draggable="true"
+            @dragstart="dragStart(file, $event)"
+            @dragenter.prevent
+            @dragover.prevent
             :class="
               selectedEntities.includes(file)
                 ? 'bg-blue-100'
@@ -56,7 +67,7 @@
               <img
                 :src="getIconUrl(formatMimeType(file.mime_type))"
                 class="h-14"
-		:draggable="false"
+                :draggable="false"
               />
             </div>
             <div class="px-3.5 md:h-16 content-center grid">
@@ -130,18 +141,16 @@ export default {
           : selectedEntities.push(entity);
         this.$emit('entitySelected', selectedEntities);
       } else {
-        if (selectedEntities.length === 1 && selectedEntities[0] === entity) {
-          this.$emit('openEntity', entity);
-          if (entity.is_group === 1) this.deselectAll();
-        } else {
-          selectedEntities = [entity];
-          this.$emit('entitySelected', selectedEntities);
-        }
+        selectedEntities = [entity];
+        this.$emit('entitySelected', selectedEntities);
       }
       this.$store.commit(
         'setEntityInfo',
         selectedEntities[selectedEntities.length - 1]
       );
+    },
+    dblClickEntity(entity) {
+      this.$emit('openEntity', entity);
     },
     deselectAll() {
       this.$emit('entitySelected', []);
@@ -153,6 +162,22 @@ export default {
       this.$store.commit('setEntityInfo', entity);
       this.$emit('showEntityContext', { x: event.clientX, y: event.clientY });
       event.preventDefault();
+    },
+    dragStart(entity, event) {
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      let selectedEntities = this.selectedEntities;
+      // for when a user directly drags a single file 
+      if (selectedEntities.length === 0) {
+        this.selectEntity(entity, event) 
+      }
+    },
+    onDrop(event) {
+      // todo
+      // pass current parent entity and new parent entity
+      //parent entity update operations
+      console.log(this.selectedEntities);
+      this.deselectAll();
     },
   },
   setup() {
