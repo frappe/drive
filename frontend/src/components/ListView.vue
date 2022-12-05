@@ -28,6 +28,7 @@
                 ? 'bg-gray-100'
                 : 'hover:bg-gray-50'
             "
+            @dblclick="dblClickEntity(entity)"
             @click="selectEntity(entity, $event)"
             @contextmenu="handleEntityContext(entity, $event)"
           >
@@ -112,18 +113,16 @@ export default {
           : selectedEntities.push(entity);
         this.$emit('entitySelected', selectedEntities);
       } else {
-        if (selectedEntities.length === 1 && selectedEntities[0] === entity) {
-          this.$emit('openEntity', entity);
-          if (entity.is_group === 1) this.deselectAll();
-        } else {
-          selectedEntities = [entity];
-          this.$emit('entitySelected', selectedEntities);
-        }
+        selectedEntities = [entity];
+        this.$emit('entitySelected', selectedEntities);
       }
       this.$store.commit(
         'setEntityInfo',
         selectedEntities[selectedEntities.length - 1]
       );
+    },
+    dblClickEntity(entity) {
+      this.$emit('openEntity', entity);
     },
     deselectAll() {
       this.$emit('entitySelected', []);

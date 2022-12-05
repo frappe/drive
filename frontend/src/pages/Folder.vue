@@ -471,7 +471,6 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
           });
-          console.log(data);
         },
         auto: true,
       };
