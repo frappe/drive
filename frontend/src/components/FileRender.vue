@@ -5,13 +5,14 @@
         {{ preview.error }}
     </div>
     <img v-else-if="isImage" :src="preview.url" class="object-contain max-h-[95vh] max-w-[80vw] z-10" />
-    <div v-else class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl">
-        <iframe class="w-full min-w-[75vw] h-[90vh]" :src="preview.url" />
-    </div>
+    <div v-else class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl"/>
+    <div id="container" class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll" ></div>
 </template>
 
 <script>
 import { Spinner } from 'frappe-ui'
+import * as docx from "docx-preview"
+
 export default {
     name: 'FileRender',
     components: {
@@ -43,9 +44,10 @@ export default {
     },
     methods: {
         renderContent() {
+            console.log(this.previewEntity.mime_type)
             const isSupportedType =
                 this.previewEntity.mime_type &&
-                ['image', 'video', 'application/pdf'].some((type) =>
+                ['image', 'video', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].some((type) =>
                     this.previewEntity.mime_type.startsWith(type)
                 )
             if (!isSupportedType) {
@@ -72,10 +74,14 @@ export default {
                     headers,
                 }
             )
+
             if (res.ok) {
                 const blob = await res.blob()
-                this.preview.url = URL.createObjectURL(blob)
+                //this.preview.url = URL.createObjectURL(blob)
                 this.preview.loading = false
+                var docData = blob;
+                console.log(docData.arrayBuffer())
+                docx.renderAsync(docData, document.getElementById("container")).then(x => console.log("docx: finished"));
             } else {
                 this.preview.error = 'No preview available'
                 this.preview.loading = false
