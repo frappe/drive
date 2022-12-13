@@ -15,13 +15,14 @@
     class="object-contain max-h-[95vh] max-w-[80vw] z-10"
   />
   <div
-    v-else
-    class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl"
-  />
-  <div
+    v-if="isDocx"
     id="container"
     class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll"
   ></div>
+  <div
+    v-else
+    class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl"
+  />
 </template>
 
 <script>
@@ -47,6 +48,9 @@ export default {
         url: '',
       },
       isImage: this.previewEntity.mime_type?.startsWith('image/'),
+      isDocx:
+        this.previewEntity.mime_type ===
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     };
   },
   mounted() {
@@ -59,7 +63,6 @@ export default {
   },
   methods: {
     renderContent() {
-      console.log(this.previewEntity.mime_type);
       const isSupportedType =
         this.previewEntity.mime_type &&
         [
@@ -95,13 +98,24 @@ export default {
 
       if (res.ok) {
         const blob = await res.blob();
-        //this.preview.url = URL.createObjectURL(blob)
+        this.preview.url = URL.createObjectURL(blob);
         this.preview.loading = false;
-        var docData = blob;
-        console.log(docData.arrayBuffer());
-        docx
-          .renderAsync(docData, document.getElementById('container'))
-          .then((x) => console.log('docx: finished'));
+        if (
+          this.previewEntity.mime_type ===
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
+          docx
+            .renderAsync(
+              blob,
+              document.getElementById('container'),
+              document.getElementById('container'),
+              {
+                ignoreLastRenderedPageBreak: false,
+                experimental: true,
+              }
+            )
+            .then((x) => console.log('docx: finished'));
+        }
       } else {
         this.preview.error = 'No preview available';
         this.preview.loading = false;
