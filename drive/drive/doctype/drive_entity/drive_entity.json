@@ -77,6 +77,12 @@
    "reqd": 1
   },
   {
+    "fieldname": "file_ext",
+    "fieldtype": "Data",
+    "label": "File Ext",
+    "read_only": 1
+  },
+  {
    "fieldname": "mime_type",
    "fieldtype": "Data",
    "label": "MIME Type",
