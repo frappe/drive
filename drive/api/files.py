@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+import os 
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pypika import Order, functions as fn
 from pathlib import Path
@@ -63,6 +64,7 @@ def upload_file():
                 'Size on disk does not match the specified filesize', ValueError)
         else:
             mime_type, encoding = mimetypes.guess_type(save_path)
+            file_name, file_ext = os.path.splitext(file.filename)
             name = uuid.uuid4().hex
             path = save_path.parent / f'{name}{save_path.suffix}'
             save_path.rename(path)
@@ -73,6 +75,7 @@ def upload_file():
                 'parent_drive_entity': parent,
                 'path': path,
                 'file_size': file_size,
+                'file_ext': file_ext,
                 'mime_type': mime_type
             })
             drive_entity.flags.file_created = True
@@ -200,6 +203,7 @@ def list_folder_contents(entity_name=None, order_by='modified', is_active=1):
         DriveEntity.modified,
         DriveEntity.creation,
         DriveEntity.file_size,
+        DriveEntity.file_ext,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_comments,
