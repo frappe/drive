@@ -51,7 +51,7 @@
             v-for="file in files"
             :key="file.name"
             @dblclick="dblClickEntity(file)"
-            @click="selectEntity(file, $event)"
+            @click="selectEntity(file, $event, files)"
             draggable="true"
             @dragstart="dragStart(file, $event)"
             @dragenter.prevent
@@ -130,7 +130,7 @@ export default {
         fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1);
       return `${fileSubtitle} ∙ ${file.modified}`;
     },
-    selectEntity(entity, event) {
+    selectEntity(entity, event, files) {
       event.stopPropagation();
       this.$emit('showEntityContext', null);
       let selectedEntities = this.selectedEntities;
@@ -140,6 +140,17 @@ export default {
           ? selectedEntities.splice(index, 1)
           : selectedEntities.push(entity);
         this.$emit('entitySelected', selectedEntities);
+      } else if (event.shiftKey) {
+        const index = selectedEntities.indexOf(entity);
+        selectedEntities.push(entity);
+        const lastIndex = selectedEntities[selectedEntities.length - 1];
+        let shiftSelect = files.slice(
+          files.indexOf(selectedEntities[0]),
+          files.indexOf(selectedEntities[selectedEntities.length - 1])
+        );
+        shiftSelect.slice(1).map((file) => {
+          selectedEntities.push(file);
+        });
       } else {
         selectedEntities = [entity];
         this.$emit('entitySelected', selectedEntities);
