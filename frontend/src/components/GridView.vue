@@ -141,13 +141,16 @@ export default {
           : selectedEntities.push(entity);
         this.$emit('entitySelected', selectedEntities);
       } else if (event.shiftKey) {
+        let shiftSelect;
         const index = selectedEntities.indexOf(entity);
         selectedEntities.push(entity);
-        const lastIndex = selectedEntities[selectedEntities.length - 1];
-        let shiftSelect = files.slice(
-          files.indexOf(selectedEntities[0]),
-          files.indexOf(selectedEntities[selectedEntities.length - 1])
-        );
+        const firstIndex = files.indexOf(selectedEntities[0])
+        const lastIndex = files.indexOf(selectedEntities[selectedEntities.length - 1])
+        if (firstIndex > lastIndex) {
+          shiftSelect = files.slice(lastIndex,firstIndex);
+        } else {
+          shiftSelect = files.slice(firstIndex,lastIndex);
+        }
         shiftSelect.slice(1).map((file) => {
           selectedEntities.push(file);
         });
