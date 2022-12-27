@@ -135,6 +135,7 @@ export default {
     showEntityContext: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
+    createdFolderName: "",
   }),
   computed: {
     showInfoButton() {
@@ -332,9 +333,36 @@ export default {
         }
       },
     });
-    this.dropzone.on('addedfile', function (file) {
-      file.parent = '';
-      componentContext.$store.commit('pushToUploads', {
+    this.dropzone.on("addedfile", function (file) {
+      const folders = componentContext.$resources.folderContents.data.filter(
+        (folder) => folder.is_group
+      );
+
+      if (file.fullPath) {
+        const folderName = file.fullPath.slice(0, file.fullPath.indexOf("/"));
+        const folderExists = folders.filter((folder) => folder.title === folderName);
+
+        if (folderExists.length > 0) {
+          file.parent = folderExists[0].name;
+        } else {
+          componentContext.$resources.createFolder.submit({
+            title: folderName,
+            parent: "",
+          });
+          /* 
+            Assign file.parent from the state             
+            Currently breaks because of some odd proxy behaviour
+            Look at notes (folder_upload_validation.md) for alternate implementation methods if 
+            this becomes unfeasible
+          */
+          //let rawObject = unref(componentContext.$data);
+          //console.log(rawObject.createdFolderName);
+          //file.parent = rawObject.createdFolderName;
+        }
+      } else {
+        file.parent = "";
+      }
+      componentContext.$store.commit("pushToUploads", {
         uuid: file.upload.uuid,
         name: file.name,
         progress: 0,
@@ -376,6 +404,32 @@ export default {
     this.dropzone.destroy();
   },
   resources: {
+    createFolder() {
+      return {
+        method: "drive.api.files.create_folder",
+        params: {
+          title: this.folderName,
+          parent: this.parent,
+        },
+        validate(params) {
+          if (!params?.title) {
+            return "Folder name is required";
+          }
+        },
+        onSuccess(data) {
+          this.$data.createdFolderName = data.name;
+          console.log(this.$data.createdFolderName);
+        },
+        onError(error) {
+          if (error.messages) {
+            this.errorMessage = error.messages.join("\n");
+          } else {
+            this.errorMessage = error.message;
+          }
+        },
+      };
+    },
+
     folderContents() {
       return {
         method: 'drive.api.files.list_folder_contents',
