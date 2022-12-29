@@ -116,6 +116,7 @@ def create_folder(title, parent=None):
         'title': title,
         'is_group': 1,
         'parent_drive_entity': parent,
+        'color': "#98A1A9",
     })
     drive_entity.insert()
 
@@ -204,6 +205,7 @@ def list_folder_contents(entity_name=None, order_by='modified', is_active=1):
         DriveEntity.creation,
         DriveEntity.file_size,
         DriveEntity.file_ext,
+        DriveEntity.color,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_comments,
