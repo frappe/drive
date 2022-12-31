@@ -39,6 +39,12 @@
    "read_only": 1
   },
   {
+    "fieldname": "color",
+    "fieldtype": "Data",
+    "label": "Color",
+    "read_only": 0
+  },
+  {
    "default": "0",
    "fieldname": "is_group",
    "fieldtype": "Check",

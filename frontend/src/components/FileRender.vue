@@ -1,5 +1,5 @@
 <template>
-  <Spinner
+  <LoadingIndicator
     v-if="preview.loading"
     class="w-10 h-10 z-10 text-neutral-100 mx-auto"
   />
@@ -26,13 +26,13 @@
 </template>
 
 <script>
-import { Spinner } from 'frappe-ui';
+import { LoadingIndicator } from 'frappe-ui';
 import * as docx from 'docx-preview';
 
 export default {
   name: 'FileRender',
   components: {
-    Spinner,
+    LoadingIndicator,
   },
   props: {
     previewEntity: {

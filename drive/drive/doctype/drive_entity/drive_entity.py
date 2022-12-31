@@ -115,6 +115,20 @@ class DriveEntity(NestedSet):
         return self
 
     @frappe.whitelist()
+    def change_color(self, new_color):
+        """
+        Change color of a folder
+
+        :param new_color: New color selected for folder
+        :raises InvalidColor: If the color is not a hex value string
+        :return: DriveEntity doc once it's updated
+        """
+
+        self.color = new_color
+        self.save()
+        return self
+
+    @frappe.whitelist()
     def set_general_access(self, new_access):
         """
         Set general sharing access for entity
