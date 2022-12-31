@@ -90,6 +90,13 @@
       :entityName="this.selectedEntities[0].name"
       @success="$resources.folderContents.fetch()"
     />
+    <ColorPicker v-model="showColorPicker" :entity="selectedEntities[0]" @success="
+      () => {
+        $resources.folderContents.fetch();
+        showColorPicker = false;
+        selectedEntities = [];
+        }"
+    /> 
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -105,6 +112,7 @@ import FilePreview from '@/components/FilePreview.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
+import ColorPicker from "@/components/ColorPicker.vue";
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
@@ -119,6 +127,7 @@ export default {
     NoFilesSection,
     FilePreview,
     RenameDialog,
+    ColorPicker,
     ShareDialog,
     GeneralDialog,
     FolderContentsError,
@@ -227,6 +236,17 @@ export default {
               this.selectedEntities.length > 0 &&
               this.selectedEntities.every((x) => x.is_favourite)
             );
+          },
+        },
+        {
+          label: 'Change Color',
+          icon: 'droplet',
+          handler: () => {
+            this.showColorPicker = true;
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group;
           },
         },
         {
