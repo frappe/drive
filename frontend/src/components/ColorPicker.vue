@@ -5,7 +5,7 @@
       method: 'change_color',
       entity_name: this.entityName,
       new_color: color
-      })" :value="entity?.color" class="mx-2 my-1 h-8 w-8 rounded-md" :style="{ backgroundColor: color }"
+      })" :value="entity?.color" class="mx-3 my-1 h-7 w-7 rounded-md" :style="{ backgroundColor: color }"
         v-for="color in colors" :key="color" />
     </template>
   </Dialog>
