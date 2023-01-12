@@ -9,6 +9,7 @@
   >
     {{ preview.error }}
   </div>
+  
   <img
     v-else-if="isImage"
     :src="preview.url"
@@ -21,10 +22,10 @@
   ></div>
   <div
     v-else
-    class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl"
-  />
+    class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl">
+    <iframe class="w-full min-w-[75vw] h-[90vh]" :src="preview.url" />
+  </div>
 </template>
-
 <script>
 import { LoadingIndicator } from 'frappe-ui';
 import * as docx from 'docx-preview';
