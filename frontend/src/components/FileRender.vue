@@ -16,7 +16,7 @@
     class="object-contain max-h-[95vh] max-w-[80vw] z-10"
   />
   <div
-    v-if="isDocx"
+    v-else-if="isDocx"
     id="container"
     class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll"
   ></div>
