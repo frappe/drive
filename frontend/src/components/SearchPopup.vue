@@ -108,7 +108,7 @@ export default {
     resources: {
         entities() {
             return {
-                method: 'drive.api.permissions.get_all_my_entities',
+                url: 'drive.api.permissions.get_all_my_entities',
                 onSuccess(data) {
                     this.$resources.entities.error = null
                     data.forEach((entity) => {

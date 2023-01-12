@@ -195,7 +195,7 @@ export default {
   resources: {
     comments() {
       return {
-        method: 'drive.api.files.list_entity_comments',
+        url: 'drive.api.files.list_entity_comments',
         params: { entity_name: this.entity.name },
         onSuccess(data) {
           data.forEach((comment) => {

@@ -426,7 +426,7 @@ export default {
   resources: {
     createFolder() {
       return {
-        method: "drive.api.files.create_folder",
+        url: "drive.api.files.create_folder",
         params: {
           title: this.folderName,
           parent: this.parent,
@@ -452,7 +452,7 @@ export default {
 
     folderContents() {
       return {
-        method: 'drive.api.files.list_folder_contents',
+        url: 'drive.api.files.list_folder_contents',
         params: {
           order_by: this.orderBy,
           fields:
@@ -476,7 +476,7 @@ export default {
 
     toggleFavourite() {
       return {
-        method: 'drive.api.files.add_or_remove_favourites',
+        url: 'drive.api.files.add_or_remove_favourites',
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)

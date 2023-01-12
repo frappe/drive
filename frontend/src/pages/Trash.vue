@@ -213,7 +213,7 @@ export default {
   resources: {
     folderContents() {
       return {
-        method: 'drive.api.files.list_folder_contents',
+        url: 'drive.api.files.list_folder_contents',
         params: {
           order_by: this.orderBy,
           fields:

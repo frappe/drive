@@ -62,7 +62,7 @@ export default {
   resources: {
     createFolder() {
       return {
-        method: 'drive.api.files.create_folder',
+        url: 'drive.api.files.create_folder',
         params: {
           title: this.folderName,
           parent: this.parent,

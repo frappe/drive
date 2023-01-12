@@ -102,7 +102,7 @@ export default {
   resources: {
     file() {
       return {
-        method: 'drive.api.permissions.get_file_with_permissions',
+        url: 'drive.api.permissions.get_file_with_permissions',
         params: { entity_name: this.entityName },
         onSuccess(data) {
           data.size_in_bytes = data.file_size;

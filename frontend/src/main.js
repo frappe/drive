@@ -1,11 +1,12 @@
 import { createApp } from 'vue';
-import { FrappeUI, Button, onOutsideClickDirective } from 'frappe-ui';
+import { FrappeUI, Button, onOutsideClickDirective, setConfig, frappeRequest } from 'frappe-ui';
 import store from './store';
 import router from './router';
 import App from './App.vue';
 import mitt from 'mitt';
 import './index.css';
 
+setConfig('resourceFetcher', frappeRequest)
 const emitter = mitt();
 
 const app = createApp(App);

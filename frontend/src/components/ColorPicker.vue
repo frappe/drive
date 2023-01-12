@@ -105,7 +105,7 @@ export default {
   resources: {
     updateColor() {
       return {
-        method: 'drive.api.files.call_controller_method',
+        url: 'drive.api.files.call_controller_method',
         params: {
           method: 'change_color',
           entity_name: this.entityName,

@@ -94,7 +94,7 @@ export default {
   resources: {
     method() {
       return {
-        method: this.dialogData.methodName,
+        url: this.dialogData.methodName,
         params: {
           entity_names: JSON.stringify(
             this.entities.map((entity) => entity.name)

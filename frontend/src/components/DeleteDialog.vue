@@ -48,7 +48,7 @@ export default {
     resources: {
         delete() {
             return {
-                method: 'drive.api.files.delete_entities',
+                url: 'drive.api.files.delete_entities',
                 params: {
                     entity_names: JSON.stringify(
                         this.entities?.map((entity) => entity.name)

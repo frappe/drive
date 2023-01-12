@@ -67,7 +67,7 @@ export default {
   resources: {
     rename() {
       return {
-        method: 'drive.api.files.call_controller_method',
+        url: 'drive.api.files.call_controller_method',
         params: {
           method: 'rename',
           entity_name: this.entityName,

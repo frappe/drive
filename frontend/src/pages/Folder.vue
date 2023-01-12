@@ -445,14 +445,14 @@ export default {
   resources: {
     folderAccess() {
       return {
-        method: 'drive.api.permissions.get_user_access',
+        url: 'drive.api.permissions.get_user_access',
         params: { entity_name: this.entityName },
       };
     },
 
     folderContents() {
       return {
-        method: 'drive.api.files.list_folder_contents',
+        url: 'drive.api.files.list_folder_contents',
         // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
@@ -478,7 +478,7 @@ export default {
 
     pathEntities() {
       return {
-        method: 'drive.api.files.get_entities_in_path',
+        url: 'drive.api.files.get_entities_in_path',
         // cache: ['pathEntities', this.entityName],
         params: {
           entity_name: this.entityName,
@@ -519,7 +519,7 @@ export default {
 
     toggleFavourite() {
       return {
-        method: 'drive.api.files.add_or_remove_favourites',
+        url: 'drive.api.files.add_or_remove_favourites',
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)
@@ -539,7 +539,7 @@ export default {
 
     removeEntity() {
       return {
-        method: 'drive.api.files.unshare_entities',
+        url: 'drive.api.files.unshare_entities',
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities.map((entity) => entity.name)

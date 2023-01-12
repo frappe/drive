@@ -302,7 +302,7 @@ export default {
   resources: {
     folderContents() {
       return {
-        method: 'drive.api.permissions.get_shared_with_me',
+        url: 'drive.api.permissions.get_shared_with_me',
         params: {
           order_by: this.orderBy,
         },
@@ -323,7 +323,7 @@ export default {
 
     toggleFavourite() {
       return {
-        method: 'drive.api.files.add_or_remove_favourites',
+        url: 'drive.api.files.add_or_remove_favourites',
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)

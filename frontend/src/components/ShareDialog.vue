@@ -301,7 +301,7 @@ export default {
   resources: {
     sharedWith() {
       return {
-        method: 'drive.api.permissions.get_shared_with_list',
+        url: 'drive.api.permissions.get_shared_with_list',
         params: {
           entity_name: this.entityName,
         },
@@ -310,7 +310,7 @@ export default {
     },
     entity() {
       return {
-        method: 'drive.api.files.get_entity',
+        url: 'drive.api.files.get_entity',
         params: {
           entity_name: this.entityName,
           fields: 'title,is_group,allow_comments',
@@ -323,7 +323,7 @@ export default {
     },
     generalAccess() {
       return {
-        method: 'drive.api.permissions.get_general_access',
+        url: 'drive.api.permissions.get_general_access',
         params: { entity_name: this.entityName },
         onSuccess(data) {
           data = data || {};
@@ -337,7 +337,7 @@ export default {
     },
     share() {
       return {
-        method: 'drive.api.files.call_controller_method',
+        url: 'drive.api.files.call_controller_method',
         params: {
           method: 'share',
           entity_name: this.entityName,
@@ -362,10 +362,10 @@ export default {
     },
     toggleAllowComments() {
       return {
-        method: 'drive.api.files.call_controller_method',
+        url: 'drive.api.files.call_controller_method',
         params: {
           entity_name: this.entityName,
-          method: 'toggle_allow_comments',
+          url: 'toggle_allow_comments',
         },
         onSuccess() {
           this.$resources.entity.fetch();
@@ -380,7 +380,7 @@ export default {
     },
     updateAccess() {
       return {
-        method: 'drive.api.files.call_controller_method',
+        url: 'drive.api.files.call_controller_method',
         onSuccess() {
           this.$resources.generalAccess.fetch();
         },
