@@ -13,8 +13,8 @@
             v-for="folder in folders"
             :key="folder.name"
             @dblclick="dblClickEntity(folder)"
-            @click="selectEntity(folder, $event)"
-            @contextmenu="handleEntityContext(folder, $event)"
+            @click="selectEntity(folder, $event, displayOrderedEntities)"
+            @contextmenu="handleEntityContext(folder, $event, displayOrderedEntities)"
             draggable="true"
             @dragstart="dragStart(folder, $event)"
             @drop="onDrop($event)"
@@ -54,7 +54,7 @@
             v-for="file in files"
             :key="file.name"
             @dblclick="dblClickEntity(file)"
-            @click="selectEntity(file, $event, files)"
+            @click="selectEntity(file, $event, displayOrderedEntities)"
             draggable="true"
             @dragstart="dragStart(file, $event)"
             @dragenter.prevent
@@ -64,7 +64,7 @@
                 ? 'bg-blue-100'
                 : 'hover:bg-blue-50'
             "
-            @contextmenu="handleEntityContext(file, $event)"
+            @contextmenu="handleEntityContext(file, $event, displayOrderedEntities)"
           >
             <div class="h-28 md:h-32 place-items-center grid">
               <img
@@ -124,21 +124,29 @@ export default {
         ? this.folderContents.filter((x) => x.is_group === 0)
         : [];
     },
+    displayOrderedEntities() {
+      return this.folders.concat(this.files)
+    },
   },
   emits: ['entitySelected', 'openEntity', 'showEntityContext'],
   methods: {
+    listFolderContents(){
+      console.log(this.folderContents)
+    },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);
       fileSubtitle =
         fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1);
       return `${fileSubtitle} ∙ ${file.modified}`;
     },
-    selectEntity(entity, event, files) {
+    selectEntity(entity, event, entities) {
+      console.log(entities)
       event.stopPropagation();
       this.$emit('showEntityContext', null);
       let selectedEntities = this.selectedEntities;
       if (event.ctrlKey || event.metaKey) {
         const index = selectedEntities.indexOf(entity);
+        console.log(index)
         index > -1
           ? selectedEntities.splice(index, 1)
           : selectedEntities.push(entity);
@@ -147,12 +155,12 @@ export default {
         let shiftSelect;
         const index = selectedEntities.indexOf(entity);
         selectedEntities.push(entity);
-        const firstIndex = files.indexOf(selectedEntities[0])
-        const lastIndex = files.indexOf(selectedEntities[selectedEntities.length - 1])
+        const firstIndex = entities.indexOf(selectedEntities[0])
+        const lastIndex = entities.indexOf(selectedEntities[selectedEntities.length - 1])
         if (firstIndex > lastIndex) {
-          shiftSelect = files.slice(lastIndex,firstIndex);
+          shiftSelect = entities.slice(lastIndex,firstIndex);
         } else {
-          shiftSelect = files.slice(firstIndex,lastIndex);
+          shiftSelect = entities.slice(firstIndex,lastIndex);
         }
         shiftSelect.slice(1).map((file) => {
           selectedEntities.push(file);
@@ -174,11 +182,11 @@ export default {
       this.$store.commit('setEntityInfo', null);
       this.$emit('showEntityContext', null);
     },
-    handleEntityContext(entity, event) {
-      this.$emit('entitySelected', [entity]);
+    handleEntityContext(entity, event, entities) {
+      this.selectEntity(entity, event, entities)
       this.$store.commit('setEntityInfo', entity);
       this.$emit('showEntityContext', { x: event.clientX, y: event.clientY });
-      event.preventDefault();
+      event.preventDefault(event); 
     },
     dragStart(entity, event) {
       event.dataTransfer.dropEffect = 'move';
