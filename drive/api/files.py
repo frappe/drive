@@ -17,7 +17,7 @@ from drive.locks.distributed_lock import DistributedLock
 
 
 @frappe.whitelist()
-def upload_file():
+def upload_file(fullpath=None, parent=None):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -41,6 +41,24 @@ def upload_file():
         user_directory = create_user_directory()
 
     parent = frappe.form_dict.parent or user_directory.name
+
+    if fullpath:
+        values = {"title": fullpath,"is_group": 1, "is_active": 1,"owner": frappe.session.user,"parent_drive_entity": parent}
+        existing_folder = frappe.db.get_value("Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
+        if not existing_folder:
+            new_folder = create_folder(fullpath, parent)
+            parent = new_folder.name
+            print(parent)
+        else:
+            parent = existing_folder.name
+
+    # Todo
+    # Recursively create folders
+    # Memoize it? Maybe 15 nested levels and thats it? Lets see
+    # Error handling
+    # if not exisiting_folder/is_active:
+    # frappe.throw("Specified folder has been trashed by the owner or does not exist")
+
     if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
         frappe.throw(
             'Cannot upload to this folder due to insufficient permissions', frappe.PermissionError)

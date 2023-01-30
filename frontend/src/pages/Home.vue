@@ -13,6 +13,7 @@
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
       @closeContextMenuEvent="closeContextMenu"
+      @fetchFolderContents="() => $resources.folderContents.fetch()"
     >
       <template #toolbar>
         <DriveToolBar
@@ -144,7 +145,6 @@ export default {
     showEntityContext: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
-    createdFolderName: "",
   }),
   computed: {
     showInfoButton() {
@@ -326,8 +326,10 @@ export default {
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: 'file',
       parallelUploads: 1,
+      autoProcessQueue: false,
       clickable: '#dropzoneElement',
       previewsContainer: '#dropzoneElement',
+      uploadMultiple: false,
       chunking: true,
       forceChunking: true,
       url: '/api/method/drive.api.files.upload_file',
@@ -337,8 +339,13 @@ export default {
         'X-Frappe-CSRF-Token': window.csrf_token,
         Accept: 'application/json',
       },
+      init: function(){
+          // Not really needed right now but I might need it
+          this.hiddenFileInput.setAttribute("webkitdirectory", true);
+      },
       sending: function (file, xhr, formData, chunk) {
-        formData.append('parent', file.parent);
+        file.parent ? formData.append("parent", file.parent) : null
+        file.fullPath ? formData.append("fullpath", file.fullPath.slice(0, file.fullPath.indexOf("/"))) : null
       },
       params: function (files, xhr, chunk) {
         if (chunk) {
@@ -354,33 +361,10 @@ export default {
       },
     });
     this.dropzone.on("addedfile", function (file) {
-      const folders = componentContext.$resources.folderContents.data.filter(
-        (folder) => folder.is_group
-      );
-
-      if (file.fullPath) {
-        const folderName = file.fullPath.slice(0, file.fullPath.indexOf("/"));
-        const folderExists = folders.filter((folder) => folder.title === folderName);
-
-        if (folderExists.length > 0) {
-          file.parent = folderExists[0].name;
-        } else {
-          componentContext.$resources.createFolder.submit({
-            title: folderName,
-            parent: "",
-          });
-          /* 
-            Assign file.parent from the state             
-            Currently breaks because of some odd proxy behaviour
-            Look at notes (folder_upload_validation.md) for alternate implementation methods if 
-            this becomes unfeasible
-          */
-          //let rawObject = unref(componentContext.$data);
-          //console.log(rawObject.createdFolderName);
-          //file.parent = rawObject.createdFolderName;
-        }
-      } else {
-        file.parent = "";
+      for (let i = 0; i < componentContext.dropzone.getAddedFiles().length; i++) {
+        setTimeout(function () {
+          componentContext.dropzone.processQueue()
+        }, 1000)
       }
       componentContext.$store.commit("pushToUploads", {
         uuid: file.upload.uuid,
@@ -388,6 +372,15 @@ export default {
         progress: 0,
       });
     });
+
+    this.dropzone.on('processing', function (file) {
+      for (let i = 0; i < componentContext.dropzone.getAcceptedFiles().length; i++) {
+        setTimeout(function () {
+          componentContext.dropzone.processQueue()
+        }, 1000)
+      };
+    });
+
     this.dropzone.on('uploadprogress', function (file, progress) {
       componentContext.$store.commit('updateUpload', {
         uuid: file.upload.uuid,
@@ -437,8 +430,7 @@ export default {
           }
         },
         onSuccess(data) {
-          this.$data.createdFolderName = data.name;
-          console.log(this.$data.createdFolderName);
+          this.$resources.folderContents.fetch();
         },
         onError(error) {
           if (error.messages) {
