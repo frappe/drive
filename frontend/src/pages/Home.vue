@@ -326,7 +326,7 @@ export default {
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: 'file',
       parallelUploads: 1,
-      autoProcessQueue: false,
+      autoProcessQueue: true,
       clickable: '#dropzoneElement',
       previewsContainer: '#dropzoneElement',
       uploadMultiple: false,
@@ -334,6 +334,7 @@ export default {
       forceChunking: true,
       url: '/api/method/drive.api.files.upload_file',
       maxFilesize: 10 * 1024, // 10GB
+      /* timeout: 0, */
       chunkSize: 5 * 1024 * 1024, // 5MB
       headers: {
         'X-Frappe-CSRF-Token': window.csrf_token,
@@ -361,26 +362,12 @@ export default {
       },
     });
     this.dropzone.on("addedfile", function (file) {
-      for (let i = 0; i < componentContext.dropzone.getAddedFiles().length; i++) {
-        setTimeout(function () {
-          componentContext.dropzone.processQueue()
-        }, 100)
-      }
       componentContext.$store.commit("pushToUploads", {
         uuid: file.upload.uuid,
         name: file.name,
         progress: 0,
       });
     });
-
-    this.dropzone.on('processing', function (file) {
-      for (let i = 0; i < componentContext.dropzone.getAcceptedFiles().length; i++) {
-        setTimeout(function () {
-          componentContext.dropzone.processQueue()
-        }, 100)
-      };
-    });
-
     this.dropzone.on('uploadprogress', function (file, progress) {
       componentContext.$store.commit('updateUpload', {
         uuid: file.upload.uuid,
