@@ -17,7 +17,7 @@
             @contextmenu="handleEntityContext(folder, $event, displayOrderedEntities)"
             draggable="true"
             @dragstart="dragStart(folder, $event)"
-            @drop="onDrop($event)"
+            @drop="onDrop(folder)"
             @dragenter.prevent
             @dragover.prevent
             :class="
@@ -128,11 +128,8 @@ export default {
       return this.folders.concat(this.files)
     },
   },
-  emits: ['entitySelected', 'openEntity', 'showEntityContext'],
+  emits: ['entitySelected', 'openEntity', 'showEntityContext', 'fetchFolderContents'],
   methods: {
-    listFolderContents(){
-      console.log(this.folderContents)
-    },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);
       fileSubtitle =
@@ -140,13 +137,11 @@ export default {
       return `${fileSubtitle} ∙ ${file.modified}`;
     },
     selectEntity(entity, event, entities) {
-      console.log(entities)
       event.stopPropagation();
       this.$emit('showEntityContext', null);
       let selectedEntities = this.selectedEntities;
       if (event.ctrlKey || event.metaKey) {
         const index = selectedEntities.indexOf(entity);
-        console.log(index)
         index > -1
           ? selectedEntities.splice(index, 1)
           : selectedEntities.push(entity);
@@ -183,26 +178,52 @@ export default {
       this.$emit('showEntityContext', null);
     },
     handleEntityContext(entity, event, entities) {
-      this.selectEntity(entity, event, entities)
+      event.preventDefault(event);
+      if (this.selectedEntities.length <= 1) {
+        this.selectEntity(entity, event, entities) 
+      }
       this.$store.commit('setEntityInfo', entity);
       this.$emit('showEntityContext', { x: event.clientX, y: event.clientY });
-      event.preventDefault(event); 
     },
     dragStart(entity, event) {
       event.dataTransfer.dropEffect = 'move';
       event.dataTransfer.effectAllowed = 'move';
-      let selectedEntities = this.selectedEntities;
       // for when a user directly drags a single file 
-      if (selectedEntities.length === 0) {
+      if (this.selectedEntities.length === 0) {
         this.selectEntity(entity, event) 
       }
     },
-    onDrop(event) {
-      // todo
-      // pass current parent entity and new parent entity
-      //parent entity update operations
-      console.log(this.selectedEntities);
+
+    async onDrop(newParent) {
+        for (let i = 0; i < this.selectedEntities.length; i++) {
+          await this.$resources.moveEntity.submit({
+            method: 'move',
+            entity_name: this.selectedEntities[i].name,
+            new_parent: newParent.name,
+        })
+        }
       this.deselectAll();
+    },
+  },
+  resources: {
+      moveEntity() {
+      return {
+        url: 'drive.api.files.call_controller_method',
+        method: 'POST',
+        params: {
+          method: 'move',
+          entity_name: 'entity name',
+          new_parent: 'new entity parent',
+        },
+        validate(params) {
+          if (!params?.new_parent) {
+          return 'New parent is required'
+          }
+        },
+        onSuccess(data) {
+          this.$emit('fetchFolderContents');
+        },
+      }
     },
   },
   setup() {
