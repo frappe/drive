@@ -76,8 +76,8 @@ export default {
       if (!isSupportedType) {
         this.preview.error = 'Previews are not supported for this file type';
         this.preview.loading = false;
-      } else if (this.previewEntity.size_in_bytes > 100 * 1024 * 1024) {
-        // Size limit = 100MB
+      } else if (this.previewEntity.size_in_bytes > 100 * 2048 * 2048) {
+        // Size limit = 400
         this.preview.error = 'File is too large to preview';
         this.preview.loading = false;
       } else {
