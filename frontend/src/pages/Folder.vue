@@ -13,6 +13,7 @@
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
       @closeContextMenuEvent="closeContextMenu"
+      @fetchFolderContents="() => $resources.folderContents.fetch()"
     >
       <template #toolbar>
         <DriveToolBar
