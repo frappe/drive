@@ -102,6 +102,7 @@ export default {
         },
         onSuccess(data) {
           this.$emit('success', data);
+          this.$resources.method.reset()
         },
         onError(error) {
           if (error.messages) {
