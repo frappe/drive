@@ -364,7 +364,7 @@ export default {
       for (let i = 0; i < componentContext.dropzone.getAddedFiles().length; i++) {
         setTimeout(function () {
           componentContext.dropzone.processQueue()
-        }, 1000)
+        }, 100)
       }
       componentContext.$store.commit("pushToUploads", {
         uuid: file.upload.uuid,
@@ -377,7 +377,7 @@ export default {
       for (let i = 0; i < componentContext.dropzone.getAcceptedFiles().length; i++) {
         setTimeout(function () {
           componentContext.dropzone.processQueue()
-        }, 1000)
+        }, 100)
       };
     });
 
