@@ -396,13 +396,16 @@ def delete_entities(entity_names):
     :type entity_names: list[str]
     :raises ValueError: If decoded entity_names is not a list
     """
-
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
         frappe.throw(f'Expected list but got {type(entity_names)}', ValueError)
     for entity in entity_names:
-        root_entity = get_ancestors_of('Drive Entity', entity)[0]
+        root_entity = get_ancestors_of('Drive Entity', entity)
+        if root_entity:
+            root_entity = get_ancestors_of('Drive Entity', entity)[0]
+        else:
+            root_entity = get_user_directory()
         owns_root_entity = frappe.has_permission(
             doctype='Drive Entity', doc=root_entity, ptype='write', user=frappe.session.user)
         has_write_access = frappe.has_permission(
@@ -519,8 +522,12 @@ def remove_or_restore(entity_names):
         doc = frappe.get_doc('Drive Entity', entity)
         if (doc.is_active):
             entity_ancestors = get_ancestors_of('Drive Entity', entity)
-            doc.parent_before_trash = entity_ancestors[0]
+            if entity_ancestors:
+                doc.parent_before_trash = entity_ancestors[0]
+            else:
+                doc.parent_before_trash = get_user_directory()
             doc.move_to_owners_root()
+            
 
         else:
             parent_is_active = frappe.db.get_value(
