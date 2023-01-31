@@ -128,7 +128,7 @@ export default {
       return this.folders.concat(this.files)
     },
   },
-  emits: ['entitySelected', 'openEntity', 'showEntityContext', 'fetchFolderContents'],
+  emits: ['entitySelected', 'openEntity', 'showEntityContext', 'showEmptyEntityContext','fetchFolderContents'],
   methods: {
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);

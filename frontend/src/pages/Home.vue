@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error"
@@ -62,6 +62,19 @@
       :close="closeContextMenu"
       v-on-outside-click="closeContextMenu"
     />
+    <EmptyEntityContextMenu
+      v-if="showEmptyEntityContextMenu"
+      :actionItems="emptyActionItems"
+      :entityContext="entityContext"
+      :close="closeContextMenu"
+      v-on-outside-click="closeContextMenu"
+    />
+    <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
+        () => {
+          this.emitter.emit('fetchFolderContents')
+          showNewFolderDialog = false
+        }
+      " />
     <RenameDialog
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
@@ -110,12 +123,14 @@ import GridView from '@/components/GridView.vue';
 import DriveToolBar from '@/components/DriveToolBar.vue';
 import NoFilesSection from '@/components/NoFilesSection.vue';
 import FilePreview from '@/components/FilePreview.vue';
+import NewFolderDialog from '@/components/NewFolderDialog.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
 import ColorPicker from "@/components/ColorPicker.vue";
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
+import EmptyEntityContextMenu from '@/components/EmptyEntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
 
 export default {
@@ -127,22 +142,27 @@ export default {
     DriveToolBar,
     NoFilesSection,
     FilePreview,
+    NewFolderDialog,
     RenameDialog,
     ColorPicker,
     ShareDialog,
     GeneralDialog,
     FolderContentsError,
     EntityContextMenu,
-  },
+    EmptyEntityContextMenu,
+},
   data: () => ({
     dropzone: null,
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
+    showNewFolderDialog: false,
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
     showEntityContext: false,
+    showColorPicker: false,
+    showEmptyEntityContextMenu: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
   }),
@@ -154,6 +174,28 @@ export default {
       return this.$store.state.sortOrder.ascending
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
+    },
+    emptyActionItems(){
+      return [
+        {
+          label: 'Upload File',
+          icon: 'file',
+          handler: () => this.emitter.emit('uploadFile'),
+          isEnabled: () => this.selectedEntities === 0,
+        },
+        {
+          label: 'Upload Folder',
+          icon: 'folder',
+          handler: () => this.emitter.emit('uploadFolder'),
+          isEnabled: () => this.selectedEntities === 0,
+        },
+        {
+          label: 'New Folder',
+          icon: 'folder-plus',
+          handler: () => this.showNewFolderDialog = true,
+          isEnabled: () => this.selectedEntities === 0,
+        },
+      ]
     },
     actionItems() {
       return [
@@ -308,11 +350,25 @@ export default {
       else {
         this.hidePreview();
         this.showEntityContext = true;
+        this.showEmptyEntityContextMenu = false
+        this.entityContext = event;
+      }
+    },
+    toggleEmptyContext(event) {
+      if (!event) {
+        this.showEntityContext = false;
+        this.showEntityContext = false;
+      } else if (this.selectedEntities.length === 0) {
+        this.selectedEntities = [];
+        this.hidePreview();
+        this.showEntityContext = false
+        this.showEmptyEntityContextMenu = true
         this.entityContext = event;
       }
     },
     closeContextMenu() {
       this.showEntityContext = false;
+      this.showEmptyEntityContextMenu = false;
       this.entityContext = undefined;
     },
   },
@@ -339,10 +395,6 @@ export default {
       headers: {
         'X-Frappe-CSRF-Token': window.csrf_token,
         Accept: 'application/json',
-      },
-      init: function(){
-          // Not really needed right now but I might need it
-          this.hiddenFileInput.setAttribute("webkitdirectory", true);
       },
       sending: function (file, xhr, formData, chunk) {
         file.parent ? formData.append("parent", file.parent) : null
@@ -395,9 +447,17 @@ export default {
       });
     });
     this.emitter.on('uploadFile', () => {
-      if (componentContext.dropzone.hiddenFileInput)
+      if (componentContext.dropzone.hiddenFileInput) {
         componentContext.dropzone.hiddenFileInput.click();
+      }
     });
+    this.emitter.on('uploadFolder', () => {
+      if (componentContext.dropzone.hiddenFileInput) {
+        componentContext.dropzone.hiddenFileInput.setAttribute("webkitdirectory", true);
+        // Figure out why dropzone.on.sending is not attaching the formdata here
+        componentContext.dropzone.hiddenFileInput.click();
+      }
+    })
   },
   unmounted() {
     this.$store.commit('setHasWriteAccess', false);
