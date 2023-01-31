@@ -7,7 +7,7 @@
             </p>
             <div class="flex mt-5">
                 <Button @click="open = false" class="ml-auto"> Cancel </Button>
-                <Button appearance="primary" iconLeft="trash-2" class="ml-4" @click="$resources.delete.submit()"
+                <Button appearance="danger" iconLeft="trash-2" class="ml-4" @click="$resources.delete.submit()"
                     :loading="$resources.delete.loading">
                     Delete Forever
                 </Button>

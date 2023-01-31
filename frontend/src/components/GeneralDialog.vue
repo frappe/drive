@@ -6,7 +6,7 @@
       <div class="flex mt-5">
         <Button @click="open = false" class="ml-auto">Cancel</Button>
         <Button
-          appearance="primary"
+          :appearance="dialogData.appearance"
           :iconLeft="dialogData.buttonIcon"
           class="ml-4"
           @click="$resources.method.submit()"
@@ -57,6 +57,7 @@ export default {
             title: 'Remove?',
             message: 'Selected items will not be shared with you anymore.',
             buttonMessage: 'Remove',
+            appearance: 'danger',
             buttonIcon: 'trash-2',
             methodName: 'drive.api.files.unshare_entities',
           };
@@ -66,6 +67,7 @@ export default {
             message:
               'Selected items will be restored to their original locations.',
             buttonMessage: 'Restore',
+            appearance: 'primary',
             buttonIcon: 'refresh-ccw',
             methodName: 'drive.api.files.remove_or_restore',
           };
@@ -76,6 +78,7 @@ export default {
               items +
               ' will be moved to Trash. Items in Trash are deleted forever after 30 days.',
             buttonMessage: 'Move to Trash',
+            appearance: 'danger',
             buttonIcon: 'trash-2',
             methodName: 'drive.api.files.remove_or_restore',
           };
