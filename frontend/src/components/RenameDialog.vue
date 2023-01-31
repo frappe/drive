@@ -1,7 +1,7 @@
 <template>
   <Dialog :options="{ title: 'Rename' }" v-model="open" >
     <template #body-content>
-      <Input type="text" v-model="newName" :value="entity.title" @keydown.enter="
+      <Input type="text" v-model="newName" :value="entity?.title" @keydown.enter="
         (e) =>
           $resources.rename.submit({
             method: 'rename',
