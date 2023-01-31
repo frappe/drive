@@ -80,7 +80,6 @@ export default {
         ...colors.purple,
         ...colors.pink,
       ]
-      console.log(colors) 
     },
     entityName() {
       return this.entity?.name
@@ -118,8 +117,6 @@ export default {
         },
         onSuccess(data) {
           this.newColor = ''
-          console.log(this.newColor)
-          console.log(data)
           this.$emit('success', data)
         },
       }
