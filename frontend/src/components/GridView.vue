@@ -139,6 +139,7 @@ export default {
     selectEntity(entity, event, entities) {
       event.stopPropagation();
       this.$emit('showEntityContext', null);
+      this.$emit('showEmptyEntityContext', null);
       let selectedEntities = this.selectedEntities;
       if (event.ctrlKey || event.metaKey) {
         const index = selectedEntities.indexOf(entity);

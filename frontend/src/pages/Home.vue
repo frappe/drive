@@ -12,6 +12,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
+      @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
       @closeContextMenuEvent="closeContextMenu"
       @fetchFolderContents="() => $resources.folderContents.fetch()"
     >
@@ -357,7 +358,7 @@ export default {
     toggleEmptyContext(event) {
       if (!event) {
         this.showEntityContext = false;
-        this.showEntityContext = false;
+        this.showEmptyEntityContextMenu = false;
       } else if (this.selectedEntities.length === 0) {
         this.selectedEntities = [];
         this.hidePreview();
