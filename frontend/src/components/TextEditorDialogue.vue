@@ -9,7 +9,7 @@
       <input class="border-0 bg-white px-2 py-2 text-3xl font-normal focus:outline-0" placeholder="Untitled File" />
     </template>
     <template #body-content>
-      <TextEditor editor-class="h-[75vh] prose-lg border max-w-none rounded-b-lg p-3 overflow-auto focus:outline-none"
+      <TextEditor editor-class="h-[65vh] prose-lg border max-w-none rounded-b-lg p-3 overflow-auto focus:outline-none"
         :fixedMenu="true" :content="content" @change="(val) => (content = val)" />
     </template>
     <div class="flex mt-8">
