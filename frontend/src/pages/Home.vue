@@ -112,6 +112,7 @@
         selectedEntities = [];
         }"
     /> 
+    <TextEditorDialogue v-model="showTextEditorDialogue"/> 
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -132,6 +133,7 @@ import ColorPicker from "@/components/ColorPicker.vue";
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import EmptyEntityContextMenu from '@/components/EmptyEntityContextMenu.vue';
+import TextEditorDialogue from '@/components/TextEditorDialogue.vue';
 import { formatSize, formatDate } from '@/utils/format';
 
 export default {
@@ -151,6 +153,7 @@ export default {
     FolderContentsError,
     EntityContextMenu,
     EmptyEntityContextMenu,
+    TextEditorDialogue
 },
   data: () => ({
     dropzone: null,
@@ -163,6 +166,7 @@ export default {
     showRemoveDialog: false,
     showEntityContext: false,
     showColorPicker: false,
+    showTextEditorDialogue: false,
     showEmptyEntityContextMenu: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
@@ -188,6 +192,12 @@ export default {
           label: 'Upload Folder',
           icon: 'folder',
           handler: () => this.emitter.emit('uploadFolder'),
+          isEnabled: () => this.selectedEntities === 0,
+        },
+        {
+          label: 'New File',
+          icon: 'file-text',
+          handler: () => this.showTextEditorDialogue = true,
           isEnabled: () => this.selectedEntities === 0,
         },
         {
@@ -364,6 +374,12 @@ export default {
         this.hidePreview();
         this.showEntityContext = false
         this.showEmptyEntityContextMenu = true
+        this.entityContext = event;
+      }
+      else if (this.selectedEntities.length > 0) {
+        this.hidePreview();
+        this.showEntityContext = true
+        this.showEmptyEntityContextMenu = false
         this.entityContext = event;
       }
     },

@@ -11,6 +11,8 @@ const emitter = mitt();
 
 const app = createApp(App);
 app.config.globalProperties.emitter = emitter;
+// frappe-ui text editor
+app.config.unwrapInjectedRef = true
 app.use(router);
 app.use(store);
 app.use(FrappeUI);
