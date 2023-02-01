@@ -85,7 +85,6 @@ export default {
           this.newColor = ''
           this.errorMessage = ''
         }
-        v
       },
     },
   },
