@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error"
@@ -12,6 +12,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
+      @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
       @closeContextMenuEvent="closeContextMenu"
       @fetchFolderContents="() => $resources.folderContents.fetch()"
     >
@@ -62,6 +63,19 @@
       :close="closeContextMenu"
       v-on-outside-click="closeContextMenu"
     />
+    <EmptyEntityContextMenu
+      v-if="showEmptyEntityContextMenu"
+      :actionItems="emptyActionItems"
+      :entityContext="entityContext"
+      :close="closeContextMenu"
+      v-on-outside-click="closeContextMenu"
+    />
+    <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
+        () => {
+          this.emitter.emit('fetchFolderContents')
+          showNewFolderDialog = false
+        }
+      " />
     <RenameDialog
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
@@ -91,6 +105,13 @@
       :entityName="shareName"
       @success="$resources.folderContents.fetch()"
     />
+    <ColorPicker v-model="showColorPicker" :entity="selectedEntities[0]" @success="
+      () => {
+        $resources.folderContents.fetch();
+        showColorPicker = false;
+        selectedEntities = [];
+        }"
+    /> 
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -103,11 +124,14 @@ import GridView from '@/components/GridView.vue';
 import DriveToolBar from '@/components/DriveToolBar.vue';
 import NoFilesSection from '@/components/NoFilesSection.vue';
 import FilePreview from '@/components/FilePreview.vue';
+import NewFolderDialog from '@/components/NewFolderDialog.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
+import ColorPicker from "@/components/ColorPicker.vue";
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
+import EmptyEntityContextMenu from '@/components/EmptyEntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
 
 export default {
@@ -119,11 +143,14 @@ export default {
     DriveToolBar,
     NoFilesSection,
     FilePreview,
+    NewFolderDialog,
     RenameDialog,
+    ColorPicker,
     ShareDialog,
     GeneralDialog,
     FolderContentsError,
     EntityContextMenu,
+    EmptyEntityContextMenu,
   },
   props: {
     entityName: {
@@ -161,6 +188,28 @@ export default {
       return this.selectedEntities[0]
         ? this.selectedEntities[0].name
         : this.entityName;
+    },
+    emptyActionItems(){
+      return [
+        {
+          label: 'Upload File',
+          icon: 'file',
+          handler: () => this.emitter.emit('uploadFile'),
+          isEnabled: () => this.selectedEntities === 0,
+        },
+        {
+          label: 'Upload Folder',
+          icon: 'folder',
+          handler: () => this.emitter.emit('uploadFolder'),
+          isEnabled: () => this.selectedEntities === 0,
+        },
+        {
+          label: 'New Folder',
+          icon: 'folder-plus',
+          handler: () => this.showNewFolderDialog = true,
+          isEnabled: () => this.selectedEntities === 0,
+        },
+      ]
     },
     actionItems() {
       return [
@@ -254,6 +303,17 @@ export default {
           },
         },
         {
+          label: 'Change Color',
+          icon: 'droplet',
+          handler: () => {
+            this.showColorPicker = true;
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group;
+          }
+        },
+        {
           label: 'Remove',
           icon: 'trash-2',
           handler: () => {
@@ -314,6 +374,8 @@ export default {
       this.dropzone = new Dropzone(this.$el.parentNode, {
         paramName: 'file',
         parallelUploads: 1,
+        autoProcessQueue: true,
+        uploadMultiple: false,
         clickable: '#dropzoneElement',
         previewsContainer: '#dropzoneElement',
         chunking: true,
@@ -326,7 +388,10 @@ export default {
           Accept: 'application/json',
         },
         sending: function (file, xhr, formData, chunk) {
-          formData.append('parent', file.parent);
+          file.parent ? formData.append("parent", file.parent) : null
+          file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath.slice(0, file.webkitRelativePath.indexOf("/"))) : null
+          // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
+          file.fullPath ? formData.append("fullpath", file.fullPath.slice(0, file.fullPath.indexOf("/"))) : null
         },
         params: function (files, xhr, chunk) {
           if (chunk) {
@@ -379,6 +444,12 @@ export default {
         if (componentContext.dropzone.hiddenFileInput)
           componentContext.dropzone.hiddenFileInput.click();
       });
+      this.emitter.on('uploadFolder', () => {
+        if (componentContext.dropzone.hiddenFileInput) {
+          componentContext.dropzone.hiddenFileInput.setAttribute("webkitdirectory", true);
+          componentContext.dropzone.hiddenFileInput.click();
+        }
+      })
     },
 
     openEntity(entity) {
@@ -404,11 +475,25 @@ export default {
       else {
         this.hidePreview();
         this.showEntityContext = true;
+        this.showEmptyEntityContextMenu = false
+        this.entityContext = event;
+      }
+    },
+    toggleEmptyContext(event) {
+      if (!event) {
+        this.showEntityContext = false;
+        this.showEmptyEntityContextMenu = false;
+      } else if (this.selectedEntities.length === 0) {
+        this.selectedEntities = [];
+        this.hidePreview();
+        this.showEntityContext = false
+        this.showEmptyEntityContextMenu = true
         this.entityContext = event;
       }
     },
     closeContextMenu() {
       this.showEntityContext = false;
+      this.showEmptyEntityContextMenu = false;
       this.entityContext = undefined;
     },
   },
@@ -450,7 +535,30 @@ export default {
         params: { entity_name: this.entityName },
       };
     },
-
+    createFolder() {
+      return {
+        url: "drive.api.files.create_folder",
+        params: {
+          title: this.folderName,
+          parent: this.parent,
+        },
+        validate(params) {
+          if (!params?.title) {
+            return "Folder name is required";
+          }
+        },
+        onSuccess(data) {
+          this.$resources.folderContents.fetch();
+        },
+        onError(error) {
+          if (error.messages) {
+            this.errorMessage = error.messages.join("\n");
+          } else {
+            this.errorMessage = error.message;
+          }
+        },
+      };
+    },
     folderContents() {
       return {
         url: 'drive.api.files.list_folder_contents',
