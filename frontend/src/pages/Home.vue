@@ -399,6 +399,8 @@ export default {
       },
       sending: function (file, xhr, formData, chunk) {
         file.parent ? formData.append("parent", file.parent) : null
+        file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath.slice(0, file.webkitRelativePath.indexOf("/"))) : null
+        // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
         file.fullPath ? formData.append("fullpath", file.fullPath.slice(0, file.fullPath.indexOf("/"))) : null
       },
       params: function (files, xhr, chunk) {
@@ -455,7 +457,6 @@ export default {
     this.emitter.on('uploadFolder', () => {
       if (componentContext.dropzone.hiddenFileInput) {
         componentContext.dropzone.hiddenFileInput.setAttribute("webkitdirectory", true);
-        // Figure out why dropzone.on.sending is not attaching the formdata here
         componentContext.dropzone.hiddenFileInput.click();
       }
     })
