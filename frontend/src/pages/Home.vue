@@ -36,7 +36,9 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
+      @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
       @closeContextMenuEvent="closeContextMenu"
+      @fetchFolderContents="() => $resources.folderContents.fetch()"
     >
       <template #toolbar>
         <DriveToolBar
