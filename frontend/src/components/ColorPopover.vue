@@ -4,10 +4,9 @@
     placement="right-start"
     :hoverDelay="0.5"
     :leaveDelay="0.5"
-    class="hover:bg-gray-100 rounded-lg flex px-3"
   >
     <template #target>
-      <div class="h-7 flex items-center">
+      <div class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3">
         <FeatherIcon
           name="droplet"
           class="stroke-1.5 w-4 h-4 text-gray-700 mr-3"
@@ -25,7 +24,6 @@
           v-for="color in colors"
           class="h-6 w-6 rounded-md justify-self-center"
           :style="{ backgroundColor: color }"
-          :value="entity?.color"
           @click="
             $resources.updateColor.submit({
               method: 'change_color',
