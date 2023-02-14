@@ -15,31 +15,7 @@
         }
       "
     >
-      <Popover
-        v-if="item.label === 'Change Color'"
-        trigger="hover"
-        placement="right-start"
-        :hoverDelay="0.5"
-        :leaveDelay="0.5"
-        class="hover:bg-gray-100 cursor-pointer rounded-lg flex px-3"
-      >
-        <template #target>
-          <div class="h-7 flex items-center">
-            <FeatherIcon
-              :name="item.icon"
-              class="stroke-1.5 w-4 h-4 text-gray-700 mr-3"
-            />
-            <div class="text-gray-800">{{ item.label }}</div>
-            <FeatherIcon
-              :name="'chevron-right'"
-              class="w-4 h-4 text-gray-700 ml-20"
-            />
-          </div>
-        </template>
-        <template #body-main>
-          <div class="p-2 text-base">Popup content</div>
-        </template>
-      </Popover>
+      <ColorPopover v-if="item.label === 'Change Color'" :entityName="entityName"/>
       <div
         v-else
         class="h-7 hover:bg-gray-100 cursor-pointer rounded-lg flex px-3 items-center"
@@ -55,11 +31,15 @@
 </template>
 <script>
 import { FeatherIcon, Popover, Button } from 'frappe-ui';
+import ColorPopover from '@/components/ColorPopover.vue';
 
 export default {
-  name: 'EntityContextMenu',
-  components: { FeatherIcon, Popover, Button },
+  name: 'E ntityContextMenu',
+  components: { FeatherIcon, Popover, Button, ColorPopover },
   props: {
+    entityName: {
+      type: String,
+    },
     actionItems: {
       type: Array,
     },
