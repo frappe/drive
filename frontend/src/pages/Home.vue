@@ -305,9 +305,6 @@ export default {
         {
           label: 'Change Color',
           icon: 'droplet',
-          handler: () => {
-            this.showColorPicker = true;
-          },
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&

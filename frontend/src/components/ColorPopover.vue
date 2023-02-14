@@ -4,7 +4,7 @@
     placement="right-start"
     :hoverDelay="0.5"
     :leaveDelay="0.5"
-    class="hover:bg-gray-100 cursor-pointer rounded-lg flex px-3"
+    class="hover:bg-gray-100 rounded-lg flex px-3"
   >
     <template #target>
       <div class="h-7 flex items-center">
@@ -85,16 +85,14 @@ export default {
         params: {
           method: 'change_color',
           entity_name: this.entityName,
-          new_color: this.newColor,
         },
         validate(params) {
           if (!params?.new_color) {
             return 'New name is required';
           }
         },
-        onSuccess(data) {
-          this.newColor = '';
-          this.$emit('success', data);
+        onSuccess() {
+          this.emitter.emit('fetchFolderContents');
         },
       };
     },

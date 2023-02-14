@@ -10,12 +10,17 @@
       class="text-sm"
       @click="
         () => {
-          item.handler();
-          close();
+          if (item.handler) {
+            item.handler();
+            close();
+          }
         }
       "
     >
-      <ColorPopover v-if="item.label === 'Change Color'" :entityName="entityName"/>
+      <ColorPopover
+        v-if="item.label === 'Change Color'"
+        :entityName="entityName"
+      />
       <div
         v-else
         class="h-7 hover:bg-gray-100 cursor-pointer rounded-lg flex px-3 items-center"
@@ -34,7 +39,7 @@ import { FeatherIcon, Popover, Button } from 'frappe-ui';
 import ColorPopover from '@/components/ColorPopover.vue';
 
 export default {
-  name: 'E ntityContextMenu',
+  name: 'EntityContextMenu',
   components: { FeatherIcon, Popover, Button, ColorPopover },
   props: {
     entityName: {

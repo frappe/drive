@@ -72,12 +72,16 @@
       :close="closeContextMenu"
       v-on-outside-click="closeContextMenu"
     />
-    <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
+    <NewFolderDialog
+      v-model="showNewFolderDialog"
+      :parent="$route.params.entityName"
+      @success="
         () => {
-          this.emitter.emit('fetchFolderContents')
-          showNewFolderDialog = false
+          this.emitter.emit('fetchFolderContents');
+          showNewFolderDialog = false;
         }
-      " />
+      "
+    />
     <RenameDialog
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
@@ -107,13 +111,17 @@
       :entityName="shareName"
       @success="$resources.folderContents.fetch()"
     />
-    <ColorPicker v-model="showColorPicker" :entity="selectedEntities[0]" @success="
-      () => {
-        $resources.folderContents.fetch();
-        showColorPicker = false;
-        selectedEntities = [];
-        }"
-    /> 
+    <ColorPicker
+      v-model="showColorPicker"
+      :entity="selectedEntities[0]"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showColorPicker = false;
+          selectedEntities = [];
+        }
+      "
+    />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -130,7 +138,7 @@ import NewFolderDialog from '@/components/NewFolderDialog.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
-import ColorPicker from "@/components/ColorPicker.vue";
+import ColorPicker from '@/components/ColorPicker.vue';
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import EmptyEntityContextMenu from '@/components/EmptyEntityContextMenu.vue';
@@ -191,7 +199,7 @@ export default {
         ? this.selectedEntities[0].name
         : this.entityName;
     },
-    emptyActionItems(){
+    emptyActionItems() {
       return [
         {
           label: 'Upload File',
@@ -208,10 +216,10 @@ export default {
         {
           label: 'New Folder',
           icon: 'folder-plus',
-          handler: () => this.showNewFolderDialog = true,
+          handler: () => (this.showNewFolderDialog = true),
           isEnabled: () => this.selectedEntities === 0,
         },
-      ]
+      ];
     },
     actionItems() {
       return [
@@ -307,13 +315,12 @@ export default {
         {
           label: 'Change Color',
           icon: 'droplet',
-          handler: () => {
-            this.showColorPicker = true;
-          },
           isEnabled: () => {
-            return this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group;
-          }
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group
+            );
+          },
         },
         {
           label: 'Remove',
@@ -390,10 +397,23 @@ export default {
           Accept: 'application/json',
         },
         sending: function (file, xhr, formData, chunk) {
-          file.parent ? formData.append("parent", file.parent) : null
-          file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath.slice(0, file.webkitRelativePath.indexOf("/"))) : null
+          file.parent ? formData.append('parent', file.parent) : null;
+          file.webkitRelativePath
+            ? formData.append(
+                'fullpath',
+                file.webkitRelativePath.slice(
+                  0,
+                  file.webkitRelativePath.indexOf('/')
+                )
+              )
+            : null;
           // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
-          file.fullPath ? formData.append("fullpath", file.fullPath.slice(0, file.fullPath.indexOf("/"))) : null
+          file.fullPath
+            ? formData.append(
+                'fullpath',
+                file.fullPath.slice(0, file.fullPath.indexOf('/'))
+              )
+            : null;
         },
         params: function (files, xhr, chunk) {
           if (chunk) {
@@ -448,10 +468,13 @@ export default {
       });
       this.emitter.on('uploadFolder', () => {
         if (componentContext.dropzone.hiddenFileInput) {
-          componentContext.dropzone.hiddenFileInput.setAttribute("webkitdirectory", true);
+          componentContext.dropzone.hiddenFileInput.setAttribute(
+            'webkitdirectory',
+            true
+          );
           componentContext.dropzone.hiddenFileInput.click();
         }
-      })
+      });
     },
 
     openEntity(entity) {
@@ -477,7 +500,7 @@ export default {
       else {
         this.hidePreview();
         this.showEntityContext = true;
-        this.showEmptyEntityContextMenu = false
+        this.showEmptyEntityContextMenu = false;
         this.entityContext = event;
       }
     },
@@ -488,8 +511,8 @@ export default {
       } else if (this.selectedEntities.length === 0) {
         this.selectedEntities = [];
         this.hidePreview();
-        this.showEntityContext = false
-        this.showEmptyEntityContextMenu = true
+        this.showEntityContext = false;
+        this.showEmptyEntityContextMenu = true;
         this.entityContext = event;
       }
     },
@@ -539,14 +562,14 @@ export default {
     },
     createFolder() {
       return {
-        url: "drive.api.files.create_folder",
+        url: 'drive.api.files.create_folder',
         params: {
           title: this.folderName,
           parent: this.parent,
         },
         validate(params) {
           if (!params?.title) {
-            return "Folder name is required";
+            return 'Folder name is required';
           }
         },
         onSuccess(data) {
@@ -554,7 +577,7 @@ export default {
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
+            this.errorMessage = error.messages.join('\n');
           } else {
             this.errorMessage = error.message;
           }
