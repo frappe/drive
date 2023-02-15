@@ -15,6 +15,14 @@ import json
 from drive.utils.files import get_user_directory, create_user_directory
 from drive.locks.distributed_lock import DistributedLock
 
+def if_folder_exists(folder_name, parent):
+    values = {"title": folder_name,"is_group": 1, "is_active": 1,"owner": frappe.session.user,"parent_drive_entity": parent}
+    existing_folder = frappe.db.get_value("Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
+    if not existing_folder:
+        new_folder = create_folder(folder_name, parent)
+        return new_folder.name
+    else:
+        return existing_folder.name
 
 @frappe.whitelist()
 def upload_file(fullpath=None, parent=None):
@@ -41,16 +49,10 @@ def upload_file(fullpath=None, parent=None):
         user_directory = create_user_directory()
 
     parent = frappe.form_dict.parent or user_directory.name
-
     if fullpath:
-        values = {"title": fullpath,"is_group": 1, "is_active": 1,"owner": frappe.session.user,"parent_drive_entity": parent}
-        existing_folder = frappe.db.get_value("Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
-        if not existing_folder:
-            new_folder = create_folder(fullpath, parent)
-            parent = new_folder.name
-            print(parent)
-        else:
-            parent = existing_folder.name
+        dirname = os.path.dirname(fullpath).split("/")
+        for i in dirname:
+            parent = if_folder_exists(i, parent)
 
     # Todo
     # Recursively create folders
