@@ -419,7 +419,8 @@ export default {
         file.parent ? formData.append("parent", file.parent) : null
         file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath.slice(0, file.webkitRelativePath.indexOf("/"))) : null
         // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
-        file.fullPath ? formData.append("fullpath", file.fullPath.slice(0, file.fullPath.indexOf("/"))) : null
+        file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath) : null
+        file.fullPath ? formData.append("fullpath", file.fullPath) : null
       },
       params: function (files, xhr, chunk) {
         if (chunk) {
