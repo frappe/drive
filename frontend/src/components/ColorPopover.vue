@@ -5,8 +5,8 @@
     :hoverDelay="0.5"
     :leaveDelay="0.5"
   >
-    <template #target>
-      <div class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3">
+    <template #target="{ togglePopover, isOpen }">
+      <div @click="togglePopover()" :active="isOpen" class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3 cursor-pointer">
         <FeatherIcon
           name="droplet"
           class="stroke-1.5 w-4 h-4 text-gray-700 mr-3"
@@ -22,7 +22,7 @@
       <div class="grid grid-cols-5 gap-2 p-3">
         <button
           v-for="color in colors"
-          class="h-6 w-6 rounded-md justify-self-center"
+          class="h-6 w-6 rounded-full justify-self-center"
           :style="{ backgroundColor: color }"
           @click="
             $resources.updateColor.submit({
