@@ -60,6 +60,7 @@
     />
     <EntityContextMenu
       v-if="showEntityContext"
+      :entityName="selectedEntities[0].name"
       :actionItems="actionItems"
       :entityContext="entityContext"
       :close="closeContextMenu"
@@ -72,12 +73,16 @@
       :close="closeContextMenu"
       v-on-outside-click="closeContextMenu"
     />
-    <NewFolderDialog v-model="showNewFolderDialog" :parent="$route.params.entityName" @success="
+    <NewFolderDialog
+      v-model="showNewFolderDialog"
+      :parent="$route.params.entityName"
+      @success="
         () => {
-          this.emitter.emit('fetchFolderContents')
-          showNewFolderDialog = false
+          this.emitter.emit('fetchFolderContents');
+          showNewFolderDialog = false;
         }
-      " />
+      "
+    />
     <RenameDialog
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
@@ -107,14 +112,18 @@
       :entityName="this.selectedEntities[0].name"
       @success="$resources.folderContents.fetch()"
     />
-    <ColorPicker v-model="showColorPicker" :entity="selectedEntities[0]" @success="
-      () => {
-        $resources.folderContents.fetch();
-        showColorPicker = false;
-        selectedEntities = [];
-        }"
-    /> 
-    <TextEditorDialogue v-model="showTextEditorDialogue"/> 
+    <ColorPicker
+      v-model="showColorPicker"
+      :entity="selectedEntities[0]"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showColorPicker = false;
+          selectedEntities = [];
+        }
+      "
+    />
+    <TextEditorDialogue v-model="showTextEditorDialogue" />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
@@ -131,7 +140,7 @@ import NewFolderDialog from '@/components/NewFolderDialog.vue';
 import RenameDialog from '@/components/RenameDialog.vue';
 import ShareDialog from '@/components/ShareDialog.vue';
 import GeneralDialog from '@/components/GeneralDialog.vue';
-import ColorPicker from "@/components/ColorPicker.vue";
+import ColorPicker from '@/components/ColorPicker.vue';
 import FolderContentsError from '@/components/FolderContentsError.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import EmptyEntityContextMenu from '@/components/EmptyEntityContextMenu.vue';
@@ -155,8 +164,8 @@ export default {
     FolderContentsError,
     EntityContextMenu,
     EmptyEntityContextMenu,
-    TextEditorDialogue
-},
+    TextEditorDialogue,
+  },
   data: () => ({
     dropzone: null,
     selectedEntities: [],
@@ -182,7 +191,7 @@ export default {
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
     },
-    emptyActionItems(){
+    emptyActionItems() {
       return [
         {
           label: 'Upload File',
@@ -199,16 +208,16 @@ export default {
         {
           label: 'New File',
           icon: 'file-text',
-          handler: () => this.showTextEditorDialogue = true,
+          handler: () => (this.showTextEditorDialogue = true),
           isEnabled: () => this.selectedEntities === 0,
         },
         {
           label: 'New Folder',
           icon: 'folder-plus',
-          handler: () => this.showNewFolderDialog = true,
+          handler: () => (this.showNewFolderDialog = true),
           isEnabled: () => this.selectedEntities === 0,
         },
-      ]
+      ];
     },
     actionItems() {
       return [
@@ -296,12 +305,11 @@ export default {
         {
           label: 'Change Color',
           icon: 'droplet',
-          handler: () => {
-            this.showColorPicker = true;
-          },
           isEnabled: () => {
-            return this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group;
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group
+            );
           },
         },
         {
@@ -363,7 +371,7 @@ export default {
       else {
         this.hidePreview();
         this.showEntityContext = true;
-        this.showEmptyEntityContextMenu = false
+        this.showEmptyEntityContextMenu = false;
         this.entityContext = event;
       }
     },
@@ -374,14 +382,13 @@ export default {
       } else if (this.selectedEntities.length === 0) {
         this.selectedEntities = [];
         this.hidePreview();
-        this.showEntityContext = false
-        this.showEmptyEntityContextMenu = true
+        this.showEntityContext = false;
+        this.showEmptyEntityContextMenu = true;
         this.entityContext = event;
-      }
-      else if (this.selectedEntities.length > 0) {
+      } else if (this.selectedEntities.length > 0) {
         this.hidePreview();
-        this.showEntityContext = true
-        this.showEmptyEntityContextMenu = false
+        this.showEntityContext = true;
+        this.showEmptyEntityContextMenu = false;
         this.entityContext = event;
       }
     },
@@ -416,8 +423,16 @@ export default {
         Accept: 'application/json',
       },
       sending: function (file, xhr, formData, chunk) {
-        file.parent ? formData.append("parent", file.parent) : null
-        file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath.slice(0, file.webkitRelativePath.indexOf("/"))) : null
+        file.parent ? formData.append('parent', file.parent) : null;
+        file.webkitRelativePath
+          ? formData.append(
+              'fullpath',
+              file.webkitRelativePath.slice(
+                0,
+                file.webkitRelativePath.indexOf('/')
+              )
+            )
+          : null;
         // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
         file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath) : null
         file.fullPath ? formData.append("fullpath", file.fullPath) : null
@@ -435,8 +450,8 @@ export default {
         }
       },
     });
-    this.dropzone.on("addedfile", function (file) {
-      componentContext.$store.commit("pushToUploads", {
+    this.dropzone.on('addedfile', function (file) {
+      componentContext.$store.commit('pushToUploads', {
         uuid: file.upload.uuid,
         name: file.name,
         progress: 0,
@@ -475,10 +490,13 @@ export default {
     });
     this.emitter.on('uploadFolder', () => {
       if (componentContext.dropzone.hiddenFileInput) {
-        componentContext.dropzone.hiddenFileInput.setAttribute("webkitdirectory", true);
+        componentContext.dropzone.hiddenFileInput.setAttribute(
+          'webkitdirectory',
+          true
+        );
         componentContext.dropzone.hiddenFileInput.click();
       }
-    })
+    });
   },
   unmounted() {
     this.$store.commit('setHasWriteAccess', false);
@@ -487,14 +505,14 @@ export default {
   resources: {
     createFolder() {
       return {
-        url: "drive.api.files.create_folder",
+        url: 'drive.api.files.create_folder',
         params: {
           title: this.folderName,
           parent: this.parent,
         },
         validate(params) {
           if (!params?.title) {
-            return "Folder name is required";
+            return 'Folder name is required';
           }
         },
         onSuccess(data) {
@@ -502,7 +520,7 @@ export default {
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
+            this.errorMessage = error.messages.join('\n');
           } else {
             this.errorMessage = error.message;
           }
