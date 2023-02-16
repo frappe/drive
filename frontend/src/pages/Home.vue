@@ -197,27 +197,33 @@ export default {
           label: 'Upload File',
           icon: 'file',
           handler: () => this.emitter.emit('uploadFile'),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: 'Upload Folder',
           icon: 'folder',
           handler: () => this.emitter.emit('uploadFolder'),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: 'New File',
           icon: 'file-text',
           handler: () => (this.showTextEditorDialogue = true),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: 'New Folder',
           icon: 'folder-plus',
           handler: () => (this.showNewFolderDialog = true),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
-      ];
+        {
+          label: 'Paste',
+          icon: 'clipboard',
+          handler: () => console.log(this.$store.state.cutEntities),
+          isEnabled: () => this.$store.state.cutEntities.length > 0,
+        },
+      ].filter((item) => item.isEnabled());
     },
     actionItems() {
       return [
@@ -274,6 +280,32 @@ export default {
           },
           isEnabled: () => {
             return this.selectedEntities.length === 1;
+          },
+        },
+        {
+          label: 'Cut',
+          icon: 'scissors',
+          handler: () => {
+            this.$store.commit(
+              'setCutEntities',
+              this.selectedEntities.map((x) => x.name)
+            );
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
+          },
+        },
+        {
+          label: 'Paste into Folder',
+          icon: 'clipboard',
+          handler: () => {
+            console.log(this.$store.state.cutEntities);
+          },
+          isEnabled: () => {
+            return (
+              this.$store.state.cutEntities.length > 0 &&
+              this.selectedEntities.length === 1
+            );
           },
         },
         {
@@ -434,8 +466,10 @@ export default {
             )
           : null;
         // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
-        file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath) : null
-        file.fullPath ? formData.append("fullpath", file.fullPath) : null
+        file.webkitRelativePath
+          ? formData.append('fullpath', file.webkitRelativePath)
+          : null;
+        file.fullPath ? formData.append('fullpath', file.fullPath) : null;
       },
       params: function (files, xhr, chunk) {
         if (chunk) {

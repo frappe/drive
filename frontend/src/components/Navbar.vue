@@ -91,7 +91,7 @@ export default {
           handler: () => this.showNewFolderDialog = true
         },
         {
-          label: 'File upload',
+          label: 'Upload file',
           icon: 'upload',
           handler: () => this.emitter.emit('uploadFile')
         },
