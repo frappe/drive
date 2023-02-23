@@ -220,7 +220,17 @@ export default {
         {
           label: 'Paste',
           icon: 'clipboard',
-          handler: () => console.log(this.$store.state.cutEntities),
+          handler: async () => {
+            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
+              await this.$resources.moveEntityToRoot.submit({
+                method: 'move_to_owners_root',
+                entity_name: this.$store.state.cutEntities[i],
+              });
+            }
+            this.selectedEntities = [];
+            this.$store.commit('setCutEntities', []);
+            this.$resources.folderContents.fetch();
+          },
           isEnabled: () => this.$store.state.cutEntities.length > 0,
         },
       ].filter((item) => item.isEnabled());
@@ -307,6 +317,8 @@ export default {
               });
             }
             this.selectedEntities = [];
+            this.$store.commit('setCutEntities', []);
+            this.$resources.folderContents.fetch();
           },
           isEnabled: () => {
             return (
@@ -558,8 +570,16 @@ export default {
             return 'New parent is required';
           }
         },
-        onSuccess(data) {
-          this.$resources.folderContents.fetch();
+      };
+    },
+
+    moveEntityToRoot() {
+      return {
+        url: 'drive.api.files.call_controller_method',
+        method: 'POST',
+        params: {
+          method: 'move_to_owners_root',
+          entity_name: 'entity name',
         },
       };
     },

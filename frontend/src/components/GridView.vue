@@ -228,6 +228,7 @@ export default {
         });
       }
       this.deselectAll();
+      this.$emit('fetchFolderContents');
     },
   },
   resources: {
@@ -244,9 +245,6 @@ export default {
           if (!params?.new_parent) {
             return 'New parent is required';
           }
-        },
-        onSuccess(data) {
-          this.$emit('fetchFolderContents');
         },
       };
     },
