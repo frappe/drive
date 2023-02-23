@@ -298,8 +298,15 @@ export default {
         {
           label: 'Paste into Folder',
           icon: 'clipboard',
-          handler: () => {
-            console.log(this.$store.state.cutEntities);
+          handler: async () => {
+            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
+              await this.$resources.moveEntity.submit({
+                method: 'move',
+                entity_name: this.$store.state.cutEntities[i],
+                new_parent: this.selectedEntities[0].name,
+              });
+            }
+            this.selectedEntities = [];
           },
           isEnabled: () => {
             return (
@@ -537,6 +544,26 @@ export default {
     this.dropzone.destroy();
   },
   resources: {
+    moveEntity() {
+      return {
+        url: 'drive.api.files.call_controller_method',
+        method: 'POST',
+        params: {
+          method: 'move',
+          entity_name: 'entity name',
+          new_parent: 'new entity parent',
+        },
+        validate(params) {
+          if (!params?.new_parent) {
+            return 'New parent is required';
+          }
+        },
+        onSuccess(data) {
+          this.$resources.folderContents.fetch();
+        },
+      };
+    },
+
     createFolder() {
       return {
         url: 'drive.api.files.create_folder',
