@@ -251,7 +251,10 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
+              !this.selectedEntities[0].is_group &&
+              (this.selectedEntities[0].allow_download ||
+                this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === 'me')
             );
           },
         },
@@ -669,7 +672,7 @@ export default {
           entity_name: this.entityName,
           order_by: this.orderBy,
           fields:
-            'name,title,is_group,owner,modified,file_size,mime_type,creation',
+            'name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download',
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
