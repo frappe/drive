@@ -19,7 +19,10 @@
   "is_active",
   "trashed_on",
   "parent_before_trash",
-  "allow_comments"
+  "allow_comments",
+  "allow_download",
+  "color",
+  "file_ext"
  ],
  "fields": [
   {
@@ -39,10 +42,9 @@
    "read_only": 1
   },
   {
-    "fieldname": "color",
-    "fieldtype": "Data",
-    "label": "Color",
-    "read_only": 0
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Color"
   },
   {
    "default": "0",
@@ -83,10 +85,10 @@
    "reqd": 1
   },
   {
-    "fieldname": "file_ext",
-    "fieldtype": "Data",
-    "label": "File Ext",
-    "read_only": 1
+   "fieldname": "file_ext",
+   "fieldtype": "Data",
+   "label": "File Ext",
+   "read_only": 1
   },
   {
    "fieldname": "mime_type",
@@ -122,16 +124,21 @@
    "fieldname": "allow_comments",
    "fieldtype": "Check",
    "label": "Allow Comments"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_download",
+   "fieldtype": "Check",
+   "label": "Allow Download"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-11-30 20:37:50.899228",
+ "modified": "2023-02-24 13:22:27.588494",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Entity",
- "name_case": "UPPER CASE",
  "naming_rule": "Set by user",
  "nsm_parent_field": "parent_drive_entity",
  "owner": "Administrator",

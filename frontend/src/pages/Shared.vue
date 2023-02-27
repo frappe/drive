@@ -152,7 +152,9 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
+              !this.selectedEntities[0].is_group &&
+              (this.selectedEntities[0].allow_download ||
+                this.selectedEntities[0].write)
             );
           },
         },
@@ -199,6 +201,29 @@ export default {
           },
           isEnabled: () => {
             return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].write
+            );
+          },
+        },
+        {
+          label: 'Paste into Folder',
+          icon: 'clipboard',
+          handler: async () => {
+            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
+              await this.$resources.moveEntity.submit({
+                method: 'move',
+                entity_name: this.$store.state.cutEntities[i],
+                new_parent: this.selectedEntities[0].name,
+              });
+            }
+            this.selectedEntities = [];
+            this.$store.commit('setCutEntities', []);
+            this.$resources.folderContents.fetch();
+          },
+          isEnabled: () => {
+            return (
+              this.$store.state.cutEntities.length > 0 &&
               this.selectedEntities.length === 1 &&
               this.selectedEntities[0].write
             );
@@ -318,6 +343,23 @@ export default {
           });
         },
         auto: true,
+      };
+    },
+
+    moveEntity() {
+      return {
+        url: 'drive.api.files.call_controller_method',
+        method: 'POST',
+        params: {
+          method: 'move',
+          entity_name: 'entity name',
+          new_parent: 'new entity parent',
+        },
+        validate(params) {
+          if (!params?.new_parent) {
+            return 'New parent is required';
+          }
+        },
       };
     },
 

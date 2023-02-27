@@ -28,6 +28,7 @@ const store = createStore({
     },
     view: JSON.parse(localStorage.getItem('view')) || 'grid',
     entityInfo: null,
+    cutEntities: [],
     showInfo: false,
     hasWriteAccess: false,
   },
@@ -71,6 +72,9 @@ const store = createStore({
     },
     setEntityInfo(state, payload) {
       state.entityInfo = payload;
+    },
+    setCutEntities(state, payload) {
+      state.cutEntities = payload;
     },
     setShowInfo(state, payload) {
       state.showInfo = payload;

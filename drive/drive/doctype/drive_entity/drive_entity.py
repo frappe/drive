@@ -173,6 +173,19 @@ class DriveEntity(NestedSet):
                 child.toggle_allow_comments()
 
     @frappe.whitelist()
+    def toggle_allow_download(self):
+        """
+        Toggle allow download for entity
+
+        """
+
+        self.allow_download = not self.allow_download
+        self.save()
+        if self.is_group:
+            for child in self.get_children():
+                child.toggle_allow_download()
+
+    @frappe.whitelist()
     def share(self, user, write=0, share=1, notify=1):
         """
         Share this file or folder with the specified user.

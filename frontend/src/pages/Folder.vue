@@ -205,21 +205,40 @@ export default {
           label: 'Upload File',
           icon: 'file',
           handler: () => this.emitter.emit('uploadFile'),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: 'Upload Folder',
           icon: 'folder',
           handler: () => this.emitter.emit('uploadFolder'),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: 'New Folder',
           icon: 'folder-plus',
           handler: () => (this.showNewFolderDialog = true),
-          isEnabled: () => this.selectedEntities === 0,
+          isEnabled: () => this.selectedEntities.length === 0,
         },
-      ];
+        {
+          label: 'Paste',
+          icon: 'clipboard',
+          handler: async () => {
+            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
+              await this.$resources.moveEntity.submit({
+                method: 'move',
+                entity_name: this.$store.state.cutEntities[i],
+                new_parent: this.entityName,
+              });
+            }
+            this.selectedEntities = [];
+            this.$store.commit('setCutEntities', []);
+            this.$resources.folderContents.fetch();
+          },
+          isEnabled: () =>
+            this.$store.state.cutEntities.length > 0 &&
+            this.$store.state.hasWriteAccess,
+        },
+      ].filter((item) => item.isEnabled());
     },
     actionItems() {
       return [
@@ -232,7 +251,10 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
+              !this.selectedEntities[0].is_group &&
+              (this.selectedEntities[0].allow_download ||
+                this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === 'me')
             );
           },
         },
@@ -280,6 +302,46 @@ export default {
           },
           isEnabled: () => {
             return (
+              this.selectedEntities.length === 1 &&
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === 'me')
+            );
+          },
+        },
+        {
+          label: 'Cut',
+          icon: 'scissors',
+          handler: () => {
+            this.$store.commit(
+              'setCutEntities',
+              this.selectedEntities.map((x) => x.name)
+            );
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === 'me')
+            );
+          },
+        },
+        {
+          label: 'Paste into Folder',
+          icon: 'clipboard',
+          handler: async () => {
+            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
+              await this.$resources.moveEntity.submit({
+                method: 'move',
+                entity_name: this.$store.state.cutEntities[i],
+                new_parent: this.selectedEntities[0].name,
+              });
+            }
+            this.selectedEntities = [];
+            this.$store.commit('setCutEntities', []);
+            this.$resources.folderContents.fetch();
+          },
+          isEnabled: () => {
+            return (
+              this.$store.state.cutEntities.length > 0 &&
               this.selectedEntities.length === 1 &&
               (this.selectedEntities[0].write ||
                 this.selectedEntities[0].owner === 'me')
@@ -584,6 +646,24 @@ export default {
         },
       };
     },
+
+    moveEntity() {
+      return {
+        url: 'drive.api.files.call_controller_method',
+        method: 'POST',
+        params: {
+          method: 'move',
+          entity_name: 'entity name',
+          new_parent: 'new entity parent',
+        },
+        validate(params) {
+          if (!params?.new_parent) {
+            return 'New parent is required';
+          }
+        },
+      };
+    },
+
     folderContents() {
       return {
         url: 'drive.api.files.list_folder_contents',
@@ -592,7 +672,7 @@ export default {
           entity_name: this.entityName,
           order_by: this.orderBy,
           fields:
-            'name,title,is_group,owner,modified,file_size,mime_type,creation',
+            'name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download',
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;

@@ -54,6 +54,7 @@
               </Switch>
             </div>
           </div>
+
           <div v-if="generalAccess.read" class="flex flex-row mt-2">
             <div class="grow text-[14px] text-gray-900">Allow comments</div>
             <div class="flex my-auto">
@@ -65,6 +66,23 @@
               >
                 <span
                   :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition"
+                />
+              </Switch>
+            </div>
+          </div>
+
+          <div v-if="generalAccess.read" class="flex flex-row mt-2">
+            <div class="grow text-[14px] text-gray-900">Allow download</div>
+            <div class="flex my-auto">
+              <Switch
+                v-model="allowDownload"
+                :class="allowDownload ? 'bg-blue-500' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
+                @click="$resources.toggleAllowDownload.submit()"
+              >
+                <span
+                  :class="allowDownload ? 'translate-x-3.5' : 'translate-x-1'"
                   class="inline-block h-2 w-2 transform rounded-full bg-white transition"
                 />
               </Switch>
@@ -226,6 +244,7 @@ export default {
     return {
       generalAccess: {},
       allowComments: false,
+      allowDownload: false,
       saveLoading: false,
       errorMessage: '',
       showAlert: false,
@@ -313,10 +332,11 @@ export default {
         url: 'drive.api.files.get_entity',
         params: {
           entity_name: this.entityName,
-          fields: 'title,is_group,allow_comments',
+          fields: 'title,is_group,allow_comments,allow_download',
         },
         onSuccess(data) {
           this.allowComments = !!data.allow_comments;
+          this.allowDownload = !!data.allow_download;
         },
         auto: true,
       };
@@ -365,7 +385,25 @@ export default {
         url: 'drive.api.files.call_controller_method',
         params: {
           entity_name: this.entityName,
-          url: 'toggle_allow_comments',
+          method: 'toggle_allow_comments',
+        },
+        onSuccess() {
+          this.$resources.entity.fetch();
+          this.$emit('success');
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      };
+    },
+    toggleAllowDownload() {
+      return {
+        url: 'drive.api.files.call_controller_method',
+        params: {
+          entity_name: this.entityName,
+          method: 'toggle_allow_download',
         },
         onSuccess() {
           this.$resources.entity.fetch();
