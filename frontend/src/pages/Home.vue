@@ -390,6 +390,12 @@ export default {
   },
 
   mounted() {
+    this.selectAllListener = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A'))
+        this.selectedEntities = this.$resources.folderContents.data;
+    };
+    document.addEventListener('keydown', this.selectAllListener);
+
     this.$store.commit('setHasWriteAccess', true);
     let componentContext = this;
     this.emitter.on('fetchFolderContents', () => {
@@ -424,8 +430,10 @@ export default {
             )
           : null;
         // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
-        file.webkitRelativePath ? formData.append("fullpath", file.webkitRelativePath) : null
-        file.fullPath ? formData.append("fullpath", file.fullPath) : null
+        file.webkitRelativePath
+          ? formData.append('fullpath', file.webkitRelativePath)
+          : null;
+        file.fullPath ? formData.append('fullpath', file.fullPath) : null;
       },
       params: function (files, xhr, chunk) {
         if (chunk) {
@@ -489,6 +497,7 @@ export default {
     });
   },
   unmounted() {
+    document.removeEventListener('keydown', this.selectAllListener);
     this.$store.commit('setHasWriteAccess', false);
     this.dropzone.destroy();
   },
