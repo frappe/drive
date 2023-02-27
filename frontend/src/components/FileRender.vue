@@ -29,6 +29,8 @@
 <script>
 import { LoadingIndicator } from 'frappe-ui';
 import * as docx from 'docx-preview';
+import { set } from 'idb-keyval'
+
 
 export default {
   name: 'FileRender',
@@ -65,6 +67,7 @@ export default {
   },
   methods: {
     renderContent() {
+      set(this.previewEntity.name, Date.now())
       const isSupportedType =
         this.previewEntity.mime_type &&
         [
