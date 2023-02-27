@@ -299,6 +299,14 @@ export default {
   },
 
   mounted() {
+    window.addEventListener("dragover", function (e) {
+      e = e || event;
+      e.preventDefault();
+    }, false);
+    window.addEventListener("drop", function (e) {
+      e = e || event;
+      e.preventDefault();
+    }, false);
     this.selectAllListener = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A'))
         this.selectedEntities = this.$resources.folderContents.data;

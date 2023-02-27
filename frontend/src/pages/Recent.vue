@@ -153,6 +153,14 @@ export default {
     },
   },
    mounted() {
+    window.addEventListener("dragover", function (e) {
+      e = e || event;
+      e.preventDefault();
+    }, false);
+    window.addEventListener("drop", function (e) {
+      e = e || event;
+      e.preventDefault();
+    }, false);
     entries().then((result) => result.forEach((entityEntries) => {
       this.$resources.recentDriveEntity.fetch({
         entity_name: entityEntries[0],
