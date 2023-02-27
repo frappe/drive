@@ -149,7 +149,6 @@ export default {
         this.$emit('entitySelected', selectedEntities);
       } else if (event.shiftKey) {
         let shiftSelect;
-        const index = selectedEntities.indexOf(entity);
         selectedEntities.push(entity);
         const firstIndex = entities.indexOf(selectedEntities[0])
         const lastIndex = entities.indexOf(selectedEntities[selectedEntities.length - 1])
@@ -190,7 +189,7 @@ export default {
       event.dataTransfer.dropEffect = 'move';
       event.dataTransfer.effectAllowed = 'move';
       // for when a user directly drags a single file 
-      if (this.selectedEntities.length === 0) {
+      if (this.selectedEntities.length <= 1) {
         this.selectEntity(entity, event) 
       }
     },
