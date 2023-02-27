@@ -59,35 +59,6 @@
       :close="closeContextMenu"
       v-on-outside-click="closeContextMenu"
     />
-    <RenameDialog
-      v-model="showRenameDialog"
-      :entity="selectedEntities[0]"
-      @success="
-        () => {
-          $resources.recentDriveEntity.fetch();
-          showRenameDialog = false;
-          selectedEntities = [];
-        }
-      "
-    />
-    <GeneralDialog
-      v-model="showRemoveDialog"
-      :entities="selectedEntities"
-      :for="'unshare'"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showRemoveDialog = false;
-          selectedEntities = [];
-        }
-      "
-    />
-    <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
-      :entityName="selectedEntities[0].name"
-      @success="$resources.folderContents.fetch()"
-    />
   </div>
 </template>
 
@@ -98,9 +69,6 @@ import DriveToolBar from '@/components/DriveToolBar.vue';
 import NoFilesSection from '@/components/NoFilesSection.vue';
 import FilePreview from '@/components/FilePreview.vue';
 import FolderContentsError from '@/components/FolderContentsError.vue';
-import RenameDialog from '@/components/RenameDialog.vue';
-import GeneralDialog from '@/components/GeneralDialog.vue';
-import ShareDialog from '@/components/ShareDialog.vue';
 import EntityContextMenu from '@/components/EntityContextMenu.vue';
 import { formatSize, formatDate } from '@/utils/format';
 import { entries, get } from 'idb-keyval'
@@ -112,9 +80,6 @@ export default {
     ListView,
     GridView,
     DriveToolBar,
-    RenameDialog,
-    GeneralDialog,
-    ShareDialog,
     NoFilesSection,
     FilePreview,
     FolderContentsError,
@@ -123,9 +88,6 @@ export default {
   data: () => ({
     previewEntity: null,
     showPreview: false,
-    showRenameDialog: false,
-    showShareDialog: false,
-    showRemoveDialog: false,
     showEntityContext: false,
     entityContext: {},
     entities: [],
@@ -139,19 +101,6 @@ export default {
     },
     actionItems() {
       return [
-        {
-          label: 'Download',
-          icon: 'download',
-          handler: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
-            );
-          },
-        },
         {
           label: 'View details',
           icon: 'eye',
@@ -172,19 +121,6 @@ export default {
           },
           isEnabled: () => {
             return this.$store.state.showInfo;
-          },
-        },
-        {
-          label: 'Rename',
-          icon: 'edit',
-          handler: () => {
-            this.showRenameDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].write
-            );
           },
         },
         {
@@ -213,21 +149,10 @@ export default {
             );
           },
         },
-        {
-          label: 'Unshare',
-          icon: 'trash-2',
-          handler: () => {
-            this.showRemoveDialog = true;
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length > 0;
-          },
-        },
       ].filter((item) => item.isEnabled());
     },
   },
    mounted() {
-    //let fetchEntries = await entries()
     entries().then((result) => result.forEach((entityEntries) => {
       this.$resources.recentDriveEntity.fetch({
         entity_name: entityEntries[0],
