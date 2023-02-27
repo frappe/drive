@@ -20,6 +20,7 @@
 </template>
 <script>
 import { Dialog, Input } from 'frappe-ui';
+import { del } from 'idb-keyval'
 
 export default {
   name: 'GeneralDialog',
@@ -106,6 +107,7 @@ export default {
         onSuccess(data) {
           this.$emit('success', data);
           this.$resources.method.reset()
+          this.entities.map((entity) => del(entity.name))
         },
         onError(error) {
           if (error.messages) {
