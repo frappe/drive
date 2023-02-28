@@ -1,5 +1,11 @@
 <template>
-  <div class="h-full" @contextmenu="toggleEmptyContext">
+  <div
+    class="h-full"
+    @contextmenu="toggleEmptyContext"
+    @mousedown="(event) => handleMousedown(event)"
+    @mousemove="(event) => handleMousemove(event)"
+    @mouseup="handleMouseup"
+  >
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error"
@@ -123,7 +129,13 @@
         }
       "
     />
-    <div class="hidden" id="dropzoneElement" />
+    <div
+      id="selectionElement"
+      class="h-20 w-20 absolute border border-dashed border-gray-500"
+      :style="selectionElementStyle"
+      :hidden="selectionHidden"
+    />
+    <div id="dropzoneElement" class="hidden" />
   </div>
 </template>
 
@@ -177,6 +189,9 @@ export default {
     showEmptyEntityContextMenu: false,
     entityContext: {},
     breadcrumbs: [{ label: 'Home', route: '/' }],
+    selectionElementStyle: {},
+    coordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    selectionHidden: true,
   }),
   computed: {
     showInfoButton() {
@@ -437,6 +452,33 @@ export default {
       this.showEntityContext = false;
       this.showEmptyEntityContextMenu = false;
       this.entityContext = undefined;
+    },
+
+    recalculateRectangle() {
+      const x3 = Math.min(this.coordinates.x1, this.coordinates.x2);
+      const x4 = Math.max(this.coordinates.x1, this.coordinates.x2);
+      const y3 = Math.min(this.coordinates.y1, this.coordinates.y2);
+      const y4 = Math.max(this.coordinates.y1, this.coordinates.y2);
+      this.selectionElementStyle = {
+        left: x3 + 'px',
+        top: y3 + 'px',
+        width: x4 - x3 + 'px',
+        height: y4 - y3 + 'px',
+      };
+    },
+    handleMousedown(event) {
+      this.selectionHidden = false;
+      this.coordinates.x1 = event.clientX;
+      this.coordinates.y1 = event.clientY;
+      this.recalculateRectangle();
+    },
+    handleMousemove(event) {
+      this.coordinates.x2 = event.clientX;
+      this.coordinates.y2 = event.clientY;
+      this.recalculateRectangle();
+    },
+    handleMouseup() {
+      this.selectionHidden = true;
     },
   },
 
