@@ -22,9 +22,9 @@
   ></div>
   <div
     v-if="isXlsx"
-    id="container"
+    id="ctr"
     class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll">
-    <canvas-datagrid :data.prop="gridData"></canvas-datagrid>
+    <div id="gridctr" v-once></div>
   </div>
   <div
     v-if="isPdf"
@@ -62,8 +62,10 @@ export default {
       isImage: this.previewEntity.mime_type?.startsWith('image/'),
       isDocx: this.previewEntity.mime_type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       isXlsx: this.previewEntity.mime_type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      gridData: [],
     };
+  },
+  created(){
+    this.$options.gridData = []
   },
   mounted() {
     this.renderContent();
@@ -125,10 +127,16 @@ export default {
             )
             .then((x) => console.log('docx: finished'));
         } else if (this.isXlsx) {
-          blob.arrayBuffer().then((xlsxData) => {
-            const wb = read(xlsxData);
-            this.gridData = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-          })
+          const z = await blob.arrayBuffer();
+          const wb = read(z)
+          this.$options.gridData = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+          //Object.freeze(this.$options.gridData);
+          const grid = canvasDatagrid({
+              parentNode: document.getElementById('gridctr'),
+              data: this.$options.gridData,
+          });
+          grid.style.height = '100%';
+          grid.style.width = '100%';
         }
         this.preview.loading = false;
       }
