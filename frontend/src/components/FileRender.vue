@@ -21,6 +21,12 @@
     class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll"
   ></div>
   <div
+    v-if="isXlsx"
+    id="container"
+    class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll">
+    <canvas-datagrid :data.prop="gridData"></canvas-datagrid>
+  </div>
+  <div
     v-if="isPdf"
     class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl">
     <iframe class="w-full min-w-[75vw] h-[90vh]" :src="preview.url" />
@@ -29,6 +35,8 @@
 <script>
 import { LoadingIndicator } from 'frappe-ui';
 import * as docx from 'docx-preview';
+import { read, utils } from 'xlsx';
+import canvasDatagrid from 'canvas-datagrid';
 import { set } from 'idb-keyval'
 
 
@@ -52,9 +60,9 @@ export default {
       },
       isPdf: this.previewEntity.mime_type === 'application/pdf',
       isImage: this.previewEntity.mime_type?.startsWith('image/'),
-      isDocx:
-        this.previewEntity.mime_type ===
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      isDocx: this.previewEntity.mime_type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      isXlsx: this.previewEntity.mime_type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      gridData: [],
     };
   },
   mounted() {
@@ -75,6 +83,7 @@ export default {
           'video',
           'application/pdf',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ].some((type) => this.previewEntity.mime_type.startsWith(type));
       if (!isSupportedType) {
         this.preview.error = 'Previews are not supported for this file type';
@@ -100,15 +109,10 @@ export default {
           headers,
         }
       );
-
       if (res.ok) {
         const blob = await res.blob();
         this.preview.url = URL.createObjectURL(blob);
-        this.preview.loading = false;
-        if (
-          this.previewEntity.mime_type ===
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        ) {
+        if (this.isDocx) {
           docx
             .renderAsync(
               blob,
@@ -120,8 +124,15 @@ export default {
               }
             )
             .then((x) => console.log('docx: finished'));
+        } else if (this.isXlsx) {
+          blob.arrayBuffer().then((xlsxData) => {
+            const wb = read(xlsxData);
+            this.gridData = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+          })
         }
-      } else {
+        this.preview.loading = false;
+      }
+      else {
         this.preview.error = 'No preview available';
         this.preview.loading = false;
       }
