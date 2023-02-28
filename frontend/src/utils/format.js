@@ -31,11 +31,21 @@ export function formatMimeType(mimeType) {
   if (!mimeType) return icon;
   const generic = mimeType.split('/')[0];
   const specific = mimeType.split('/')[1];
+  console.log(specific)
   if (['image', 'video', 'audio'].includes(generic)) icon = generic;
   else
     switch (specific) {
       case 'pdf':
         icon = 'pdf';
+        break;
+      case 'vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        icon = 'spreadsheet';
+        break;
+      case 'vnd.openxmlformats-officedocument.presentationml.presentation':
+        icon = 'presentation';
+        break;
+      case 'vnd.openxmlformats-officedocument.wordprocessingml.document':
+        icon = 'doc';
         break;
     }
   return icon;
