@@ -15,7 +15,7 @@
     v-if="isTxt"
     id="container"
     class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-auto">
-    <pre class="p-2 rounded-md w-full h-full bg-white overflow-x-scroll overflow-y-scroll">{{textFileContent}}</pre>
+    <pre class="p-3 font-mono min-w-[80vw] min-h-[95vh] bg-white overflow-x-scroll overflow-y-scroll">{{textFileContent}}</pre>
   </div>
   <div
     v-if="isDocx"
