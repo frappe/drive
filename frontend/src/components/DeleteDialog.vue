@@ -17,6 +17,7 @@
 </template>
 <script>
 import { Dialog, Input } from 'frappe-ui'
+import { del } from 'idb-keyval'
 
 export default {
     name: 'DeleteDialog',
@@ -55,6 +56,7 @@ export default {
                     ),
                 },
                 onSuccess(data) {
+                    this.entities.map((entity) => del(entity.name))
                     this.$emit('success', data)
                 },
                 onError(error) {
