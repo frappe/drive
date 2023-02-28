@@ -1,25 +1,27 @@
 <template>
   <LoadingIndicator
     v-if="preview.loading"
-    class="w-10 h-10 z-10 text-neutral-100 mx-auto"
-  />
+    class="w-10 h-10 z-10 text-neutral-100 mx-auto"/>
   <div
     v-else-if="preview.error"
-    class="p-8 z-10 bg-[#252728] rounded-md text-neutral-100 text-xl text-center font-medium"
-  >
+    class="p-8 z-10 bg-[#252728] rounded-md text-neutral-100 text-xl text-center font-medium">
     {{ preview.error }}
   </div>
-  
   <img
     v-if="isImage"
     :src="preview.url"
-    class="object-contain max-h-[95vh] max-w-[80vw] z-10"
-  />
+    class="object-contain max-h-[95vh] max-w-[80vw] z-10"/>
+    <div
+    v-if="isTxt"
+    id="container"
+    class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-auto">
+    <pre class="p-2 rounded-md w-full h-full bg-white overflow-x-scroll overflow-y-scroll">{{textFileContent}}</pre>
+  </div>
   <div
     v-if="isDocx"
     id="container"
-    class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll"
-  ></div>
+    class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll">
+  </div>
   <div
     v-if="isXlsx"
     id="ctr"
@@ -39,7 +41,6 @@ import { read, utils } from 'xlsx';
 import canvasDatagrid from 'canvas-datagrid';
 import { set } from 'idb-keyval'
 
-
 export default {
   name: 'FileRender',
   components: {
@@ -58,8 +59,10 @@ export default {
         error: null,
         url: '',
       },
+      textFileContent: "",
       isPdf: this.previewEntity.mime_type === 'application/pdf',
       isImage: this.previewEntity.mime_type?.startsWith('image/'),
+      isTxt: this.previewEntity.mime_type?.startsWith('text/') || this.previewEntity.mime_type === 'application/json' || this.previewEntity.mime_type === 'application/javascript' || this.previewEntity.mime_type === 'text/x-python',
       isDocx: this.previewEntity.mime_type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       isXlsx: this.previewEntity.mime_type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     };
@@ -83,6 +86,10 @@ export default {
         [
           'image',
           'video',
+          'text',
+          'text/x-python',
+          'application/json',
+          'application/javascript',
           'application/pdf',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -114,6 +121,10 @@ export default {
       if (res.ok) {
         const blob = await res.blob();
         this.preview.url = URL.createObjectURL(blob);
+        if (this.isTxt) {
+          let data = await blob.text()
+          this.textFileContent = data
+        }
         if (this.isDocx) {
           docx
             .renderAsync(
