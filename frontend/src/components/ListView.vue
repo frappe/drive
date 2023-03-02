@@ -21,8 +21,9 @@
         <tbody>
           <tr
             v-for="entity in folderContents"
+            :id="entity.name"
             :key="entity.name"
-            class="group select-none text-base shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200"
+            class="group select-none text-base shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200 entity"
             :class="
               selectedEntities.includes(entity)
                 ? 'bg-gray-100'

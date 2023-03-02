@@ -9,7 +9,8 @@
         <div class="text-gray-600 font-medium">Folders</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
           <div
-            class="md:w-[212px] rounded-lg border group select-none"
+            :id="folder.name"
+            class="md:w-[212px] rounded-lg border group select-none entity"
             v-for="folder in folders"
             :key="folder.name"
             @dblclick="dblClickEntity(folder)"
@@ -64,7 +65,8 @@
         <div class="text-gray-600 font-medium">Files</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
           <div
-            class="md:w-[212px] rounded-lg border group select-none"
+            :id="file.name"
+            class="md:w-[212px] rounded-lg border group select-none entity"
             v-for="file in files"
             :key="file.name"
             @dblclick="dblClickEntity(file)"
@@ -212,9 +214,9 @@ export default {
     dragStart(entity, event) {
       event.dataTransfer.dropEffect = 'move';
       event.dataTransfer.effectAllowed = 'move';
-      // for when a user directly drags a single file 
+      // for when a user directly drags a single file
       if (this.selectedEntities.length <= 1) {
-        this.selectEntity(entity, event) 
+        this.selectEntity(entity, event);
       }
     },
 
