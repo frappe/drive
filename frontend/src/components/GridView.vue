@@ -107,6 +107,12 @@
         </div>
       </div>
     </div>
+    <div
+      id="selectionElement"
+      class="h-20 w-20 absolute border border-dashed border-gray-500"
+      :style="selectionElementStyle"
+      :hidden="selectionHidden"
+    />
   </div>
 </template>
 
@@ -120,6 +126,11 @@ export default {
   components: {
     FeatherIcon,
   },
+  data: () => ({
+    selectionElementStyle: {},
+    coordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    selectionHidden: true,
+  }),
   props: {
     folderContents: {
       type: Array,
@@ -154,6 +165,60 @@ export default {
     'fetchFolderContents',
   ],
   methods: {
+    recalculateRectangle() {
+      const x3 = Math.min(this.coordinates.x1, this.coordinates.x2);
+      const x4 = Math.max(this.coordinates.x1, this.coordinates.x2);
+      const y3 = Math.min(this.coordinates.y1, this.coordinates.y2);
+      const y4 = Math.max(this.coordinates.y1, this.coordinates.y2);
+      this.selectionElementStyle = {
+        left: x3 + 'px',
+        top: y3 + 'px',
+        width: x4 - x3 + 'px',
+        height: y4 - y3 + 'px',
+      };
+    },
+    handleDragSelect() {
+      const entityElements = this.$el.querySelectorAll('.entity');
+      const selectedEntities = [];
+      entityElements.forEach((element) => {
+        const elementRect = element.getBoundingClientRect();
+        const maxX = Math.max(this.coordinates.x1, this.coordinates.x2);
+        const minX = Math.min(this.coordinates.x1, this.coordinates.x2);
+        const maxY = Math.max(this.coordinates.y1, this.coordinates.y2);
+        const minY = Math.min(this.coordinates.y1, this.coordinates.y2);
+        if (
+          ((elementRect.top >= minY && elementRect.top <= maxY) ||
+            (elementRect.bottom >= minY && elementRect.bottom <= maxY) ||
+            (minY >= elementRect.top && minY <= elementRect.bottom)) &&
+          ((elementRect.left >= minX && elementRect.left <= maxX) ||
+            (elementRect.right >= minX && elementRect.right <= maxX) ||
+            (minX >= elementRect.left && minX <= elementRect.right))
+        ) {
+          const entity = this.folderContents.find((x) => x.name === element.id);
+          selectedEntities.push(entity);
+        }
+      });
+      this.$emit('entitySelected', selectedEntities);
+    },
+    handleMousedown(event) {
+      this.$emit('entitySelected', []);
+      this.selectionHidden = false;
+      this.coordinates.x1 = event.clientX;
+      this.coordinates.y1 = event.clientY;
+      this.coordinates.x2 = event.clientX;
+      this.coordinates.y2 = event.clientY;
+      this.recalculateRectangle();
+    },
+    handleMousemove(event) {
+      if (event.which != 1) return;
+      this.coordinates.x2 = event.clientX;
+      this.coordinates.y2 = event.clientY;
+      this.recalculateRectangle();
+      this.handleDragSelect();
+    },
+    handleMouseup() {
+      this.selectionHidden = true;
+    },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);
       fileSubtitle =
@@ -199,6 +264,7 @@ export default {
       this.$emit('openEntity', entity);
     },
     deselectAll() {
+      console.log("iamrunning")
       this.$emit('entitySelected', []);
       this.$store.commit('setEntityInfo', null);
       this.$emit('showEntityContext', null);
@@ -231,6 +297,12 @@ export default {
       this.deselectAll();
       this.$emit('fetchFolderContents');
     },
+  },
+  mounted() {
+    document.addEventListener('mousedown', this.handleMousedown);
+    document.addEventListener('mousemove', this.handleMousemove);
+    document.addEventListener('mouseup', this.handleMouseup);
+    document.addEventListener('mouseleave', this.handleMouseup);
   },
   resources: {
     moveEntity() {
