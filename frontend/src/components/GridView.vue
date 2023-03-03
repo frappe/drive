@@ -118,7 +118,7 @@
       id="selectionElement"
       class="h-20 w-20 absolute border border-dashed border-gray-500"
       :style="selectionElementStyle"
-      :hidden="!coordinates.x1"
+      :hidden="!selectionCoordinates.x1"
     />
   </div>
 </template>
@@ -127,6 +127,7 @@
 import { FeatherIcon } from 'frappe-ui';
 import { formatMimeType } from '@/utils/format';
 import getIconUrl from '@/utils/getIconUrl';
+import { calculateRectangle, handleDragSelect } from '@/utils/dragSelect';
 
 export default {
   name: 'GridView',
@@ -135,7 +136,7 @@ export default {
   },
   data: () => ({
     selectionElementStyle: {},
-    coordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
     containerRect: null,
   }),
   props: {
@@ -172,64 +173,41 @@ export default {
     'fetchFolderContents',
   ],
   methods: {
-    recalculateRectangle() {
-      const x3 = Math.min(this.coordinates.x1, this.coordinates.x2);
-      const x4 = Math.max(this.coordinates.x1, this.coordinates.x2);
-      const y3 = Math.min(this.coordinates.y1, this.coordinates.y2);
-      const y4 = Math.max(this.coordinates.y1, this.coordinates.y2);
-      this.selectionElementStyle = {
-        left: x3 + 'px',
-        top: y3 + 'px',
-        width: x4 - x3 + 'px',
-        height: y4 - y3 + 'px',
-      };
-    },
-    handleDragSelect() {
-      const entityElements = this.$el.querySelectorAll('.entity');
-      const selectedEntities = [];
-      entityElements.forEach((element) => {
-        const elementRect = element.getBoundingClientRect();
-        const maxX = Math.max(this.coordinates.x1, this.coordinates.x2);
-        const minX = Math.min(this.coordinates.x1, this.coordinates.x2);
-        const maxY = Math.max(this.coordinates.y1, this.coordinates.y2);
-        const minY = Math.min(this.coordinates.y1, this.coordinates.y2);
-        if (
-          ((elementRect.top >= minY && elementRect.top <= maxY) ||
-            (elementRect.bottom >= minY && elementRect.bottom <= maxY) ||
-            (minY >= elementRect.top && minY <= elementRect.bottom)) &&
-          ((elementRect.left >= minX && elementRect.left <= maxX) ||
-            (elementRect.right >= minX && elementRect.right <= maxX) ||
-            (minX >= elementRect.left && minX <= elementRect.right))
-        ) {
-          const entity = this.folderContents.find((x) => x.name === element.id);
-          selectedEntities.push(entity);
-        }
-      });
-      this.$emit('entitySelected', selectedEntities);
-    },
     handleMousedown(event) {
       this.deselectAll();
-      this.coordinates.x1 = event.clientX;
-      this.coordinates.y1 = event.clientY;
-      this.coordinates.x2 = event.clientX;
-      this.coordinates.y2 = event.clientY;
-      this.recalculateRectangle();
+      this.selectionCoordinates.x1 = event.clientX;
+      this.selectionCoordinates.y1 = event.clientY;
+      this.selectionCoordinates.x2 = event.clientX;
+      this.selectionCoordinates.y2 = event.clientY;
+      this.selectionElementStyle = calculateRectangle(
+        this.selectionCoordinates
+      );
     },
     handleMousemove(event) {
-      if (event.which != 1 || !this.coordinates.x1) return;
-      this.coordinates.x2 = Math.max(
+      if (event.which != 1 || !this.selectionCoordinates.x1) return;
+      this.selectionCoordinates.x2 = Math.max(
         this.containerRect.left,
         Math.min(this.containerRect.right, event.clientX)
       );
-      this.coordinates.y2 = Math.max(
+      this.selectionCoordinates.y2 = Math.max(
         this.containerRect.top,
         Math.min(this.containerRect.bottom, event.clientY)
       );
-      this.recalculateRectangle();
-      this.handleDragSelect();
+      this.selectionElementStyle = calculateRectangle(
+        this.selectionCoordinates
+      );
+      const entityElements = this.$el.querySelectorAll('.entity');
+      this.$emit(
+        'entitySelected',
+        handleDragSelect(
+          entityElements,
+          this.selectionCoordinates,
+          this.folderContents
+        )
+      );
     },
     handleMouseup() {
-      this.coordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
+      this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
     },
     updateContainerRect() {
       this.containerRect = this.$refs['container'].getBoundingClientRect();
@@ -241,7 +219,6 @@ export default {
       return `${fileSubtitle} ∙ ${file.modified}`;
     },
     selectEntity(entity, event, entities) {
-      event.stopPropagation();
       this.$emit('showEntityContext', null);
       this.$emit('showEmptyEntityContext', null);
       let selectedEntities = this.selectedEntities;
