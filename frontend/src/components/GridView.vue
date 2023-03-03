@@ -28,6 +28,7 @@
             @drop="onDrop(folder)"
             @dragenter.prevent
             @dragover.prevent
+            @mousedown.stop
             :class="
               selectedEntities.includes(folder)
                 ? 'bg-blue-100'
@@ -80,6 +81,7 @@
             @dragstart="dragStart(file, $event)"
             @dragenter.prevent
             @dragover.prevent
+            @mousedown.stop
             :class="
               selectedEntities.includes(file)
                 ? 'bg-blue-100'
@@ -116,7 +118,7 @@
       id="selectionElement"
       class="h-20 w-20 absolute border border-dashed border-gray-500"
       :style="selectionElementStyle"
-      :hidden="selectionHidden"
+      :hidden="!coordinates.x1"
     />
   </div>
 </template>
@@ -134,7 +136,6 @@ export default {
   data: () => ({
     selectionElementStyle: {},
     coordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
-    selectionHidden: true,
     containerRect: null,
   }),
   props: {
@@ -208,7 +209,6 @@ export default {
     },
     handleMousedown(event) {
       this.deselectAll();
-      this.selectionHidden = false;
       this.coordinates.x1 = event.clientX;
       this.coordinates.y1 = event.clientY;
       this.coordinates.x2 = event.clientX;
@@ -229,7 +229,6 @@ export default {
       this.handleDragSelect();
     },
     handleMouseup() {
-      this.selectionHidden = true;
       this.coordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
     },
     updateContainerRect() {
