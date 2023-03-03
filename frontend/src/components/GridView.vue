@@ -4,7 +4,12 @@
     <div v-if="isEmpty" class="flex-1">
       <slot name="placeholder"></slot>
     </div>
-    <div v-else class="h-full px-5 md:px-0" @click="deselectAll">
+    <div
+      v-else
+      ref="container"
+      class="h-full px-5 md:px-0"
+      @mousedown="(event) => handleMousedown(event)"
+    >
       <div class="mt-3" v-if="folders.length > 0">
         <div class="text-gray-600 font-medium">Folders</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
@@ -130,6 +135,7 @@ export default {
     selectionElementStyle: {},
     coordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
     selectionHidden: true,
+    containerRect: null,
   }),
   props: {
     folderContents: {
@@ -201,7 +207,7 @@ export default {
       this.$emit('entitySelected', selectedEntities);
     },
     handleMousedown(event) {
-      this.$emit('entitySelected', []);
+      this.deselectAll();
       this.selectionHidden = false;
       this.coordinates.x1 = event.clientX;
       this.coordinates.y1 = event.clientY;
@@ -210,14 +216,24 @@ export default {
       this.recalculateRectangle();
     },
     handleMousemove(event) {
-      if (event.which != 1) return;
-      this.coordinates.x2 = event.clientX;
-      this.coordinates.y2 = event.clientY;
+      if (event.which != 1 || !this.coordinates.x1) return;
+      this.coordinates.x2 = Math.max(
+        this.containerRect.left,
+        Math.min(this.containerRect.right, event.clientX)
+      );
+      this.coordinates.y2 = Math.max(
+        this.containerRect.top,
+        Math.min(this.containerRect.bottom, event.clientY)
+      );
       this.recalculateRectangle();
       this.handleDragSelect();
     },
     handleMouseup() {
       this.selectionHidden = true;
+      this.coordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
+    },
+    updateContainerRect() {
+      this.containerRect = this.$refs['container'].getBoundingClientRect();
     },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);
@@ -264,7 +280,6 @@ export default {
       this.$emit('openEntity', entity);
     },
     deselectAll() {
-      console.log("iamrunning")
       this.$emit('entitySelected', []);
       this.$store.commit('setEntityInfo', null);
       this.$emit('showEntityContext', null);
@@ -299,10 +314,10 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener('mousedown', this.handleMousedown);
+    this.updateContainerRect();
     document.addEventListener('mousemove', this.handleMousemove);
     document.addEventListener('mouseup', this.handleMouseup);
-    document.addEventListener('mouseleave', this.handleMouseup);
+    visualViewport.addEventListener('resize', this.updateContainerRect);
   },
   resources: {
     moveEntity() {
