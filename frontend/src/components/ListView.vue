@@ -162,13 +162,15 @@ export default {
         this.selectionCoordinates
       );
       const entityElements = this.$el.querySelectorAll('.entity');
-      this.$emit(
-        'entitySelected',
-        handleDragSelect(
-          entityElements,
-          this.selectionCoordinates,
-          this.folderContents
-        )
+      const selectedEntities = handleDragSelect(
+        entityElements,
+        this.selectionCoordinates,
+        this.folderContents
+      );
+      this.$emit('entitySelected', selectedEntities);
+      this.$store.commit(
+        'setEntityInfo',
+        selectedEntities[selectedEntities.length - 1]
       );
     },
     handleMouseup() {
