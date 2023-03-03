@@ -116,7 +116,7 @@
     </div>
     <div
       id="selectionElement"
-      class="h-20 w-20 absolute border border-dashed border-gray-500"
+      class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1"
     />
@@ -292,6 +292,7 @@ export default {
     },
   },
   mounted() {
+    if (this.isEmpty) return;
     this.updateContainerRect();
     document.addEventListener('mousemove', this.handleMousemove);
     document.addEventListener('mouseup', this.handleMouseup);
