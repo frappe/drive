@@ -4,12 +4,18 @@
     <div v-if="isEmpty" class="flex-1">
       <slot name="placeholder"></slot>
     </div>
-    <div v-else class="h-full px-5 md:px-0" @click="deselectAll">
+    <div
+      v-else
+      ref="container"
+      class="h-full px-5 md:px-0"
+      @mousedown="(event) => handleMousedown(event)"
+    >
       <div class="mt-3" v-if="folders.length > 0">
         <div class="text-gray-600 font-medium">Folders</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
           <div
-            class="md:w-[212px] rounded-lg border group select-none"
+            :id="folder.name"
+            class="md:w-[212px] rounded-lg border group select-none entity"
             v-for="folder in folders"
             :key="folder.name"
             @dblclick="dblClickEntity(folder)"
@@ -22,6 +28,7 @@
             @drop="onDrop(folder)"
             @dragenter.prevent
             @dragover.prevent
+            @mousedown.stop
             :class="
               selectedEntities.includes(folder)
                 ? 'bg-blue-100'
@@ -64,7 +71,8 @@
         <div class="text-gray-600 font-medium">Files</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
           <div
-            class="md:w-[212px] rounded-lg border group select-none"
+            :id="file.name"
+            class="md:w-[212px] rounded-lg border group select-none entity"
             v-for="file in files"
             :key="file.name"
             @dblclick="dblClickEntity(file)"
@@ -73,6 +81,7 @@
             @dragstart="dragStart(file, $event)"
             @dragenter.prevent
             @dragover.prevent
+            @mousedown.stop
             :class="
               selectedEntities.includes(file)
                 ? 'bg-blue-100'
@@ -105,6 +114,12 @@
         </div>
       </div>
     </div>
+    <div
+      id="selectionElement"
+      class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
+      :style="selectionElementStyle"
+      :hidden="!selectionCoordinates.x1"
+    />
   </div>
 </template>
 
@@ -112,12 +127,18 @@
 import { FeatherIcon } from 'frappe-ui';
 import { formatMimeType } from '@/utils/format';
 import getIconUrl from '@/utils/getIconUrl';
+import { calculateRectangle, handleDragSelect } from '@/utils/dragSelect';
 
 export default {
   name: 'GridView',
   components: {
     FeatherIcon,
   },
+  data: () => ({
+    selectionElementStyle: {},
+    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    containerRect: null,
+  }),
   props: {
     folderContents: {
       type: Array,
@@ -152,6 +173,47 @@ export default {
     'fetchFolderContents',
   ],
   methods: {
+    handleMousedown(event) {
+      this.deselectAll();
+      this.selectionCoordinates.x1 = event.clientX;
+      this.selectionCoordinates.y1 = event.clientY;
+      this.selectionCoordinates.x2 = event.clientX;
+      this.selectionCoordinates.y2 = event.clientY;
+      this.selectionElementStyle = calculateRectangle(
+        this.selectionCoordinates
+      );
+    },
+    handleMousemove(event) {
+      if (event.which != 1 || !this.selectionCoordinates.x1) return;
+      this.selectionCoordinates.x2 = Math.max(
+        this.containerRect.left,
+        Math.min(this.containerRect.right, event.clientX)
+      );
+      this.selectionCoordinates.y2 = Math.max(
+        this.containerRect.top,
+        Math.min(this.containerRect.bottom, event.clientY)
+      );
+      this.selectionElementStyle = calculateRectangle(
+        this.selectionCoordinates
+      );
+      const entityElements = this.$el.querySelectorAll('.entity');
+      const selectedEntities = handleDragSelect(
+        entityElements,
+        this.selectionCoordinates,
+        this.folderContents
+      );
+      this.$emit('entitySelected', selectedEntities);
+      this.$store.commit(
+        'setEntityInfo',
+        selectedEntities[selectedEntities.length - 1]
+      );
+    },
+    handleMouseup() {
+      this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
+    },
+    updateContainerRect() {
+      this.containerRect = this.$refs['container'].getBoundingClientRect();
+    },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);
       fileSubtitle =
@@ -159,7 +221,6 @@ export default {
       return `${fileSubtitle} ∙ ${file.modified}`;
     },
     selectEntity(entity, event, entities) {
-      event.stopPropagation();
       this.$emit('showEntityContext', null);
       this.$emit('showEmptyEntityContext', null);
       let selectedEntities = this.selectedEntities;
@@ -212,9 +273,9 @@ export default {
     dragStart(entity, event) {
       event.dataTransfer.dropEffect = 'move';
       event.dataTransfer.effectAllowed = 'move';
-      // for when a user directly drags a single file 
+      // for when a user directly drags a single file
       if (this.selectedEntities.length <= 1) {
-        this.selectEntity(entity, event) 
+        this.selectEntity(entity, event);
       }
     },
 
@@ -229,6 +290,13 @@ export default {
       this.deselectAll();
       this.$emit('fetchFolderContents');
     },
+  },
+  mounted() {
+    if (this.isEmpty) return;
+    this.updateContainerRect();
+    document.addEventListener('mousemove', this.handleMousemove);
+    document.addEventListener('mouseup', this.handleMouseup);
+    visualViewport.addEventListener('resize', this.updateContainerRect);
   },
   resources: {
     moveEntity() {

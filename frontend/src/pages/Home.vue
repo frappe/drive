@@ -123,7 +123,7 @@
         }
       "
     />
-    <div class="hidden" id="dropzoneElement" />
+    <div id="dropzoneElement" class="hidden" />
   </div>
 </template>
 

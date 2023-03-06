@@ -4,7 +4,12 @@
     <div v-if="isEmpty" class="flex-1">
       <slot name="placeholder"></slot>
     </div>
-    <div v-else class="h-full px-5 md:px-0" @click="deselectAll">
+    <div
+      v-else
+      ref="container"
+      class="h-full px-5 md:px-0"
+      @mousedown="(event) => handleMousedown(event)"
+    >
       <table class="max-h-full min-w-full">
         <thead
           class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200"
@@ -21,8 +26,9 @@
         <tbody>
           <tr
             v-for="entity in folderContents"
+            :id="entity.name"
             :key="entity.name"
-            class="group select-none text-base shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200"
+            class="group select-none text-base shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200 entity"
             :class="
               selectedEntities.includes(entity)
                 ? 'bg-gray-100'
@@ -35,6 +41,7 @@
             @dragstart="dragStart(entity, $event)"
             @dragenter.prevent
             @dragover.prevent
+            @mousedown.stop
             @drop="isGroupOnDrop(entity)"
           >
             <td class="min-w-[15rem] px-2.5 py-3 lg:w-3/6" :draggable="false">
@@ -86,18 +93,30 @@
         </tbody>
       </table>
     </div>
+    <div
+      id="selectionElement"
+      class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
+      :style="selectionElementStyle"
+      :hidden="!selectionCoordinates.x1"
+    />
   </div>
 </template>
 <script>
 import { FeatherIcon } from 'frappe-ui';
 import { formatMimeType } from '@/utils/format';
 import getIconUrl from '@/utils/getIconUrl';
+import { calculateRectangle, handleDragSelect } from '@/utils/dragSelect';
 
 export default {
   name: 'GridView',
   components: {
     FeatherIcon,
   },
+  data: () => ({
+    selectionElementStyle: {},
+    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    containerRect: null,
+  }),
   props: {
     folderContents: {
       type: Array,
@@ -119,6 +138,47 @@ export default {
     'fetchFolderContents',
   ],
   methods: {
+    handleMousedown(event) {
+      this.deselectAll();
+      this.selectionCoordinates.x1 = event.clientX;
+      this.selectionCoordinates.y1 = event.clientY;
+      this.selectionCoordinates.x2 = event.clientX;
+      this.selectionCoordinates.y2 = event.clientY;
+      this.selectionElementStyle = calculateRectangle(
+        this.selectionCoordinates
+      );
+    },
+    handleMousemove(event) {
+      if (event.which != 1 || !this.selectionCoordinates.x1) return;
+      this.selectionCoordinates.x2 = Math.max(
+        this.containerRect.left,
+        Math.min(this.containerRect.right, event.clientX)
+      );
+      this.selectionCoordinates.y2 = Math.max(
+        this.containerRect.top,
+        Math.min(this.containerRect.bottom, event.clientY)
+      );
+      this.selectionElementStyle = calculateRectangle(
+        this.selectionCoordinates
+      );
+      const entityElements = this.$el.querySelectorAll('.entity');
+      const selectedEntities = handleDragSelect(
+        entityElements,
+        this.selectionCoordinates,
+        this.folderContents
+      );
+      this.$emit('entitySelected', selectedEntities);
+      this.$store.commit(
+        'setEntityInfo',
+        selectedEntities[selectedEntities.length - 1]
+      );
+    },
+    handleMouseup() {
+      this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
+    },
+    updateContainerRect() {
+      this.containerRect = this.$refs['container'].getBoundingClientRect();
+    },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);
       fileSubtitle =
@@ -126,7 +186,6 @@ export default {
       return `${fileSubtitle} ∙ ${file.modified}`;
     },
     selectEntity(entity, event, entities) {
-      event.stopPropagation();
       this.$emit('showEntityContext', null);
       this.$emit('showEmptyEntityContext', null);
       let selectedEntities = this.selectedEntities;
@@ -199,6 +258,13 @@ export default {
     isGroupOnDrop(entity) {
       return entity.is_group ? this.onDrop(entity) : null;
     },
+  },
+  mounted() {
+    if (this.isEmpty) return;
+    this.updateContainerRect();
+    document.addEventListener('mousemove', this.handleMousemove);
+    document.addEventListener('mouseup', this.handleMouseup);
+    visualViewport.addEventListener('resize', this.updateContainerRect);
   },
   resources: {
     moveEntity() {
