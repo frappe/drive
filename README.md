@@ -96,3 +96,6 @@ If you want to contribute code then you can fork this repo, make changes and rai
 ## License
 
 [GNU Affero General Public License v3.0](LICENSE)
+
+## Warning
+Frappe drive is currently marked as **pre-alpha** expect breaking changes between versions.
