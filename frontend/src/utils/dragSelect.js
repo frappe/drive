@@ -4,10 +4,10 @@ export function calculateRectangle(coordinates) {
   const y3 = Math.min(coordinates.y1, coordinates.y2);
   const y4 = Math.max(coordinates.y1, coordinates.y2);
   return {
-    left: x3 + 'px',
-    top: y3 + 'px',
-    width: x4 - x3 + 'px',
-    height: y4 - y3 + 'px',
+    left: x3 + "px",
+    top: y3 + "px",
+    width: x4 - x3 + "px",
+    height: y4 - y3 + "px",
   };
 }
 

@@ -5,8 +5,7 @@
         <FeatherIcon
           name="x"
           class="h-4 cursor-pointer"
-          @click="$store.commit('setShowInfo', false)"
-        />
+          @click="$store.commit('setShowInfo', false)" />
       </div>
       <div class="flex items-center">
         <img
@@ -15,8 +14,7 @@
               entity.is_group ? 'folder' : formatMimeType(entity.mime_type)
             )
           "
-          class="h-5 mr-2.5"
-        />
+          class="h-5 mr-2.5" />
         <div class="font-semibold truncate text-2xl">
           {{ entity.title }}
         </div>
@@ -24,28 +22,24 @@
     </div>
     <div
       class="flex cursor-pointer text-base"
-      :class="$store.state.showInfo ? 'min-h-[45px]' : 'min-h-[48px]'"
-    >
+      :class="$store.state.showInfo ? 'min-h-[45px]' : 'min-h-[48px]'">
       <div
         class="w-1/2 flex border-b"
         :class="tab ? 'text-gray-600' : 'border-blue-500'"
-        @click="tab = 0"
-      >
+        @click="tab = 0">
         <div class="m-auto">Detail</div>
       </div>
       <div
         class="w-1/2 flex border-b"
         :class="tab ? 'border-blue-500' : 'text-gray-600'"
-        @click="tab = 1"
-      >
+        @click="tab = 1">
         <div class="m-auto">Comments</div>
       </div>
     </div>
     <div v-if="!tab" class="px-5 py-6 space-y-7 h-full flex flex-col z-0">
       <FileRender
         v-if="isImage && $store.state.showInfo"
-        :previewEntity="entity"
-      />
+        :previewEntity="entity" />
       <div v-if="entity.owner === 'me'">
         <div class="text-lg font-medium mb-4">Manage Access</div>
         <div class="flex flex-row">
@@ -82,21 +76,19 @@
             placeholder="Add comment or update..."
             @keydown.enter="postComment"
             v-model="comment"
-            class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600"
-          />
+            class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600" />
         </div>
         <div v-for="comment in $resources.comments.data" class="flex gap-3">
           <Avatar
             :label="comment.comment_by"
             :imageURL="comment.user_image"
-            class="h-7 w-7"
-          />
+            class="h-7 w-7" />
           <div>
             <span class="mb-1">
               <span class="text-[14px] font-medium">
                 {{ comment.comment_by }}
               </span>
-              <span class="text-gray-500 text-base">{{ ' ∙ ' }}</span>
+              <span class="text-gray-500 text-base">{{ " ∙ " }}</span>
               <span class="text-gray-700 text-base">
                 {{ comment.creation }}
               </span>
@@ -107,26 +99,25 @@
       </div>
       <div v-else class="text-gray-600 text-base">
         Comments have been disabled for this
-        {{ entity.is_group ? 'folder' : 'file' }} by its owner.
+        {{ entity.is_group ? "folder" : "file" }} by its owner.
       </div>
     </div>
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="entity.name"
-    />
+      :entityName="entity.name" />
   </div>
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, call } from 'frappe-ui';
-import ShareDialog from '@/components/ShareDialog.vue';
-import { formatMimeType, formatDate } from '@/utils/format';
-import FileRender from '@/components/FileRender.vue';
-import getIconUrl from '@/utils/getIconUrl';
+import { FeatherIcon, Avatar, Input, call } from "frappe-ui";
+import ShareDialog from "@/components/ShareDialog.vue";
+import { formatMimeType, formatDate } from "@/utils/format";
+import FileRender from "@/components/FileRender.vue";
+import getIconUrl from "@/utils/getIconUrl";
 
 export default {
-  name: 'InfoSidebar',
+  name: "InfoSidebar",
   components: {
     FeatherIcon,
     Avatar,
@@ -145,7 +136,7 @@ export default {
   data() {
     return {
       tab: 0,
-      comment: '',
+      comment: "",
       showShareDialog: false,
     };
   },
@@ -153,14 +144,14 @@ export default {
   methods: {
     async postComment() {
       try {
-        await call('frappe.desk.form.utils.add_comment', {
-          reference_doctype: 'Drive Entity',
+        await call("frappe.desk.form.utils.add_comment", {
+          reference_doctype: "Drive Entity",
           reference_name: this.entity.name,
           content: this.comment,
           comment_email: this.userId,
           comment_by: this.fullName,
         });
-        this.comment = '';
+        this.comment = "";
         this.$resources.comments.fetch();
       } catch (e) {
         console.log(e);
@@ -179,10 +170,10 @@ export default {
       return this.$store.state.user.imageURL;
     },
     isImage() {
-      return this.entity.mime_type?.startsWith('image/');
+      return this.entity.mime_type?.startsWith("image/");
     },
     formattedMimeType() {
-      if (this.entity.is_group) return 'Folder';
+      if (this.entity.is_group) return "Folder";
       const file = formatMimeType(this.entity.mime_type);
       return file.charAt(0).toUpperCase() + file.slice(1);
     },
@@ -195,7 +186,7 @@ export default {
   resources: {
     comments() {
       return {
-        url: 'drive.api.files.list_entity_comments',
+        url: "drive.api.files.list_entity_comments",
         params: { entity_name: this.entity.name },
         onSuccess(data) {
           data.forEach((comment) => {

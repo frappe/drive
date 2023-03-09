@@ -2,8 +2,7 @@
   <div class="h-full">
     <FolderContentsError
       v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error"
-    />
+      :error="$resources.folderContents.error" />
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
@@ -11,22 +10,19 @@
       :selectedEntities="selectedEntities"
       @entitySelected="(selected) => (selectedEntities = selected)"
       @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu"
-    >
+      @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
           :actionLoading="actionLoading"
-          :showUploadButton="false"
-        />
+          :showUploadButton="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
           :primaryMessage="'Trash is currently empty'"
-          :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'"
-        />
+          :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
       </template>
     </GridView>
 
@@ -36,22 +32,19 @@
       :selectedEntities="selectedEntities"
       @entitySelected="(selected) => (selectedEntities = selected)"
       @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu"
-    >
+      @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
           :actionLoading="actionLoading"
-          :showUploadButton="false"
-        />
+          :showUploadButton="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
           :primaryMessage="'Trash is currently empty'"
-          :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'"
-        />
+          :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
       </template>
     </ListView>
     <EntityContextMenu
@@ -59,8 +52,7 @@
       :actionItems="actionItems"
       :entityContext="entityContext"
       :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu"
-    />
+      v-on-outside-click="closeContextMenu" />
     <DeleteDialog
       v-model="showDeleteDialog"
       :entities="
@@ -74,8 +66,7 @@
           showDeleteDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <GeneralDialog
       v-model="showRestoreDialog"
       :entities="selectedEntities"
@@ -86,26 +77,25 @@
           showRestoreDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <div />
   </div>
 </template>
 
 <script>
-import DriveToolBar from '@/components/DriveToolBar.vue';
-import FolderContentsError from '@/components/FolderContentsError.vue';
-import GridView from '@/components/GridView.vue';
-import ListView from '@/components/ListView.vue';
-import DeleteDialog from '@/components/DeleteDialog.vue';
-import GeneralDialog from '@/components/GeneralDialog.vue';
-import NoFilesSection from '@/components/NoFilesSection.vue';
-import EntityContextMenu from '@/components/EntityContextMenu.vue';
-import { formatDate, formatSize } from '@/utils/format';
-import { FeatherIcon } from 'frappe-ui';
+import DriveToolBar from "@/components/DriveToolBar.vue";
+import FolderContentsError from "@/components/FolderContentsError.vue";
+import GridView from "@/components/GridView.vue";
+import ListView from "@/components/ListView.vue";
+import DeleteDialog from "@/components/DeleteDialog.vue";
+import GeneralDialog from "@/components/GeneralDialog.vue";
+import NoFilesSection from "@/components/NoFilesSection.vue";
+import EntityContextMenu from "@/components/EntityContextMenu.vue";
+import { formatDate, formatSize } from "@/utils/format";
+import { FeatherIcon } from "frappe-ui";
 
 export default {
-  name: 'Trash',
+  name: "Trash",
   components: {
     FeatherIcon,
     ListView,
@@ -119,7 +109,7 @@ export default {
   },
   data: () => ({
     selectedEntities: [],
-    breadcrumbs: [{ label: 'Trash', route: '/trash' }],
+    breadcrumbs: [{ label: "Trash", route: "/trash" }],
     actionLoading: false,
     showDeleteDialog: false,
     showRestoreDialog: false,
@@ -138,8 +128,8 @@ export default {
     actionItems() {
       return [
         {
-          label: 'Empty Trash',
-          icon: 'trash-2',
+          label: "Empty Trash",
+          icon: "trash-2",
           handler: () => {
             this.showDeleteDialog = true;
           },
@@ -151,8 +141,8 @@ export default {
           },
         },
         {
-          label: 'Restore',
-          icon: 'refresh-ccw',
+          label: "Restore",
+          icon: "refresh-ccw",
           handler: () => {
             this.showRestoreDialog = true;
           },
@@ -161,8 +151,8 @@ export default {
           },
         },
         {
-          label: 'Delete Forever',
-          icon: 'trash-2',
+          label: "Delete Forever",
+          icon: "trash-2",
           handler: () => {
             this.showDeleteDialog = true;
           },
@@ -175,23 +165,23 @@ export default {
     columnHeaders() {
       return [
         {
-          label: 'Name',
-          field: 'title',
+          label: "Name",
+          field: "title",
           sortable: true,
         },
         {
-          label: 'Owner',
-          field: 'owner',
+          label: "Owner",
+          field: "owner",
           sortable: true,
         },
         {
-          label: 'Modified',
-          field: 'modified',
+          label: "Modified",
+          field: "modified",
           sortable: true,
         },
         {
-          label: 'Size',
-          field: 'file_size',
+          label: "Size",
+          field: "file_size",
           sortable: true,
         },
       ].filter((item) => item.sortable);
@@ -199,23 +189,31 @@ export default {
   },
 
   mounted() {
-    window.addEventListener("dragover", function (e) {
-      e = e || event;
-      e.preventDefault();
-    }, false);
-    window.addEventListener("drop", function (e) {
-      e = e || event;
-      e.preventDefault();
-    }, false);
+    window.addEventListener(
+      "dragover",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
+    window.addEventListener(
+      "drop",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
     this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A'))
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.selectedEntities = this.$resources.folderContents.data;
     };
-    document.addEventListener('keydown', this.selectAllListener);
+    document.addEventListener("keydown", this.selectAllListener);
   },
 
   unmounted() {
-    document.removeEventListener('keydown', this.selectAllListener);
+    document.removeEventListener("keydown", this.selectAllListener);
   },
 
   methods: {
@@ -234,11 +232,11 @@ export default {
   resources: {
     folderContents() {
       return {
-        url: 'drive.api.files.list_folder_contents',
+        url: "drive.api.files.list_folder_contents",
         params: {
           order_by: this.orderBy,
           fields:
-            'name,title,is_group,owner,modified,file_size,mime_type,creation',
+            "name,title,is_group,owner,modified,file_size,mime_type,creation",
           is_active: 0,
         },
         onSuccess(data) {
@@ -246,11 +244,11 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? '-'
+              ? "-"
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
+            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
         },
         auto: true,

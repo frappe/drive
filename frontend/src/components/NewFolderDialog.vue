@@ -1,28 +1,35 @@
 <template>
-  <Dialog :options="{ title: 'New Folder' }" v-model="open" >
+  <Dialog :options="{ title: 'New Folder' }" v-model="open">
     <template #body-content>
-      <Input type="text" v-model="folderName" placeholder="Folder Name" @keydown.enter="
-        (e) =>
-          $resources.createFolder.submit({
-            title: e.target.value.trim(),
-            parent,
-          })
-      " />
+      <Input
+        type="text"
+        v-model="folderName"
+        placeholder="Folder Name"
+        @keydown.enter="
+          (e) =>
+            $resources.createFolder.submit({
+              title: e.target.value.trim(),
+              parent,
+            })
+        " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
     <template #actions>
-      <Button appearance="primary" @click="$resources.createFolder.submit()" :loading="$resources.createFolder.loading">
+      <Button
+        appearance="primary"
+        @click="$resources.createFolder.submit()"
+        :loading="$resources.createFolder.loading">
         Create
       </Button>
-      <Button @click="open = false"> Cancel </Button>
+      <Button @click="open = false">Cancel</Button>
     </template>
   </Dialog>
 </template>
 <script>
-import { Dialog, Input, ErrorMessage } from 'frappe-ui'
+import { Dialog, Input, ErrorMessage } from "frappe-ui";
 
 export default {
-  name: 'NewFolderDialog',
+  name: "NewFolderDialog",
   components: {
     Dialog,
     Input,
@@ -35,26 +42,26 @@ export default {
     },
     parent: {
       type: String,
-      default: '',
+      default: "",
     },
   },
-  emits: ['update:modelValue', 'success'],
+  emits: ["update:modelValue", "success"],
   data() {
     return {
-      folderName: '',
-      errorMessage: '',
-    }
+      folderName: "",
+      errorMessage: "",
+    };
   },
   computed: {
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue;
       },
       set(value) {
-        this.$emit('update:modelValue', value)
+        this.$emit("update:modelValue", value);
         if (!value) {
-          this.folderName = ''
-          this.errorMessage = ''
+          this.folderName = "";
+          this.errorMessage = "";
         }
       },
     },
@@ -62,29 +69,29 @@ export default {
   resources: {
     createFolder() {
       return {
-        url: 'drive.api.files.create_folder',
+        url: "drive.api.files.create_folder",
         params: {
           title: this.folderName,
           parent: this.parent,
         },
         validate(params) {
           if (!params?.title) {
-            return 'Folder name is required'
+            return "Folder name is required";
           }
         },
         onSuccess(data) {
-          this.folderName = ''
-          this.$emit('success', data)
+          this.folderName = "";
+          this.$emit("success", data);
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join('\n')
+            this.errorMessage = error.messages.join("\n");
           } else {
-            this.errorMessage = error.message
+            this.errorMessage = error.message;
           }
         },
-      }
+      };
     },
   },
-}
+};
 </script>

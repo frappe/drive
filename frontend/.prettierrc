@@ -1,0 +1,8 @@
+{
+  "htmlWhitespaceSensitivity": "ignore",
+  "trailingComma": "es5",
+  "semi": true,
+  "tabWidth": 2,
+  "bracketSpacing": true,
+  "bracketSameLine": true
+}

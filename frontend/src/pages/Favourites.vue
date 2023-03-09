@@ -2,8 +2,7 @@
   <div class="h-full">
     <FolderContentsError
       v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error"
-    />
+      :error="$resources.folderContents.error" />
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
@@ -12,8 +11,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu"
-    >
+      @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
@@ -21,14 +19,12 @@
           :columnHeaders="columnHeaders"
           :actionLoading="actionLoading"
           :showInfoButton="showInfoButton"
-          :showUploadButton="false"
-        />
+          :showUploadButton="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
           :primaryMessage="`You haven't favourited any items`"
-          :secondaryMessage="'Items will appear here for easy access when you add them to favourites'"
-        />
+          :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
       </template>
     </GridView>
 
@@ -39,8 +35,7 @@
       @entitySelected="(selected) => (selectedEntities = selected)"
       @openEntity="(entity) => openEntity(entity)"
       @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu"
-    >
+      @closeContextMenuEvent="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
@@ -48,14 +43,12 @@
           :columnHeaders="columnHeaders"
           :actionLoading="actionLoading"
           :showInfoButton="showInfoButton"
-          :showUploadButton="false"
-        />
+          :showUploadButton="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
           :primaryMessage="`You haven't favourited any items`"
-          :secondaryMessage="'Items will appear here for easy access when you add them to favourites'"
-        />
+          :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
       </template>
     </ListView>
     <EntityContextMenu
@@ -63,13 +56,11 @@
       :actionItems="actionItems"
       :entityContext="entityContext"
       :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu"
-    />
+      v-on-outside-click="closeContextMenu" />
     <FilePreview
       v-if="showPreview"
       @hide="hidePreview"
-      :previewEntity="previewEntity"
-    />
+      :previewEntity="previewEntity" />
 
     <RenameDialog
       v-model="showRenameDialog"
@@ -80,8 +71,7 @@
           showRenameDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <GeneralDialog
       v-model="showUnshareDialog"
       :entities="selectedEntities"
@@ -92,8 +82,7 @@
           showUnshareDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <GeneralDialog
       v-model="showRemoveDialog"
       :entities="selectedEntities"
@@ -104,34 +93,32 @@
           showRemoveDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="selectedEntities[0].name"
-      @success="$resources.folderContents.fetch()"
-    />
+      @success="$resources.folderContents.fetch()" />
     <div />
   </div>
 </template>
 
 <script>
-import DriveToolBar from '@/components/DriveToolBar.vue';
-import FolderContentsError from '@/components/FolderContentsError.vue';
-import GridView from '@/components/GridView.vue';
-import ListView from '@/components/ListView.vue';
-import FilePreview from '@/components/FilePreview.vue';
-import GeneralDialog from '@/components/GeneralDialog.vue';
-import RenameDialog from '@/components/RenameDialog.vue';
-import ShareDialog from '@/components/ShareDialog.vue';
-import NoFilesSection from '@/components/NoFilesSection.vue';
-import EntityContextMenu from '@/components/EntityContextMenu.vue';
-import { formatDate, formatSize } from '@/utils/format';
-import { FeatherIcon } from 'frappe-ui';
+import DriveToolBar from "@/components/DriveToolBar.vue";
+import FolderContentsError from "@/components/FolderContentsError.vue";
+import GridView from "@/components/GridView.vue";
+import ListView from "@/components/ListView.vue";
+import FilePreview from "@/components/FilePreview.vue";
+import GeneralDialog from "@/components/GeneralDialog.vue";
+import RenameDialog from "@/components/RenameDialog.vue";
+import ShareDialog from "@/components/ShareDialog.vue";
+import NoFilesSection from "@/components/NoFilesSection.vue";
+import EntityContextMenu from "@/components/EntityContextMenu.vue";
+import { formatDate, formatSize } from "@/utils/format";
+import { FeatherIcon } from "frappe-ui";
 
 export default {
-  name: 'Favourites',
+  name: "Favourites",
   components: {
     FeatherIcon,
     ListView,
@@ -149,7 +136,7 @@ export default {
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
-    breadcrumbs: [{ label: 'Favourites', route: '/favourites' }],
+    breadcrumbs: [{ label: "Favourites", route: "/favourites" }],
     actionLoading: false,
     showRenameDialog: false,
     showShareDialog: false,
@@ -173,8 +160,8 @@ export default {
     actionItems() {
       return [
         {
-          label: 'Download',
-          icon: 'download',
+          label: "Download",
+          icon: "download",
           handler: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
@@ -199,10 +186,10 @@ export default {
         //   },
         // },
         {
-          label: 'View details',
-          icon: 'eye',
+          label: "View details",
+          icon: "eye",
           handler: () => {
-            this.$store.commit('setShowInfo', true);
+            this.$store.commit("setShowInfo", true);
           },
           isEnabled: () => {
             return (
@@ -211,18 +198,18 @@ export default {
           },
         },
         {
-          label: 'Hide details',
-          icon: 'eye-off',
+          label: "Hide details",
+          icon: "eye-off",
           handler: () => {
-            this.$store.commit('setShowInfo', false);
+            this.$store.commit("setShowInfo", false);
           },
           isEnabled: () => {
             return this.$store.state.showInfo;
           },
         },
         {
-          label: 'Rename',
-          icon: 'edit',
+          label: "Rename",
+          icon: "edit",
           handler: () => {
             this.showRenameDialog = true;
           },
@@ -234,8 +221,8 @@ export default {
           },
         },
         {
-          label: 'Remove from Favourites',
-          icon: 'x-circle',
+          label: "Remove from Favourites",
+          icon: "x-circle",
           handler: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -275,23 +262,23 @@ export default {
     columnHeaders() {
       return [
         {
-          label: 'Name',
-          field: 'title',
+          label: "Name",
+          field: "title",
           sortable: true,
         },
         {
-          label: 'Owner',
-          field: 'owner',
+          label: "Owner",
+          field: "owner",
           sortable: true,
         },
         {
-          label: 'Modified',
-          field: 'modified',
+          label: "Modified",
+          field: "modified",
           sortable: true,
         },
         {
-          label: 'Size',
-          field: 'file_size',
+          label: "Size",
+          field: "file_size",
           sortable: true,
         },
       ].filter((item) => item.sortable);
@@ -299,23 +286,31 @@ export default {
   },
 
   mounted() {
-    window.addEventListener("dragover", function (e) {
-      e = e || event;
-      e.preventDefault();
-    }, false);
-    window.addEventListener("drop", function (e) {
-      e = e || event;
-      e.preventDefault();
-    }, false);
+    window.addEventListener(
+      "dragover",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
+    window.addEventListener(
+      "drop",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
     this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A'))
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.selectedEntities = this.$resources.folderContents.data;
     };
-    document.addEventListener('keydown', this.selectAllListener);
+    document.addEventListener("keydown", this.selectAllListener);
   },
 
   unmounted() {
-    document.removeEventListener('keydown', this.selectAllListener);
+    document.removeEventListener("keydown", this.selectAllListener);
   },
 
   methods: {
@@ -323,7 +318,7 @@ export default {
       if (entity.is_group) {
         this.selectedEntities = [];
         this.$router.push({
-          name: 'Folder',
+          name: "Folder",
           params: { entityName: entity.name },
         });
       } else {
@@ -351,22 +346,22 @@ export default {
   resources: {
     folderContents() {
       return {
-        url: 'drive.api.files.list_favourites',
+        url: "drive.api.files.list_favourites",
         params: {
           order_by: this.orderBy,
           fields:
-            'name,title,is_group,owner,modified,file_size,mime_type,creation',
+            "name,title,is_group,owner,modified,file_size,mime_type,creation",
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? '-'
+              ? "-"
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
+            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
         },
         auto: true,
@@ -374,7 +369,7 @@ export default {
     },
     toggleFavourite() {
       return {
-        url: 'drive.api.files.add_or_remove_favourites',
+        url: "drive.api.files.add_or_remove_favourites",
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)

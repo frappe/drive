@@ -1,8 +1,8 @@
 export function formatSize(size, nDigits = 1) {
-  if (size === 0) return '0 B';
+  if (size === 0) return "0 B";
   const k = 1024;
   const digits = nDigits < 0 ? 0 : nDigits;
-  const sizes = [' B', ' KB', ' MB', ' GB', ' TB', ' PB'];
+  const sizes = [" B", " KB", " MB", " GB", " TB", " PB"];
   const i = Math.floor(Math.log(size) / Math.log(k));
   return parseFloat((size / Math.pow(k, i)).toFixed(digits)) + sizes[i];
 }
@@ -10,41 +10,41 @@ export function formatSize(size, nDigits = 1) {
 export function formatDate(date) {
   date = new Date(date);
   let todaysDate = new Date();
-  let prefix = '';
+  let prefix = "";
   let options = {};
   if (getDateDiffInDays(todaysDate, date) < 1) {
-    prefix = 'Today, ';
-    options = { hour: 'numeric', minute: 'numeric' };
+    prefix = "Today, ";
+    options = { hour: "numeric", minute: "numeric" };
   } else if (getDateDiffInDays(date, todaysDate) == 1) {
-    prefix = 'Yesterday, ';
-    options = { hour: 'numeric', minute: 'numeric' };
+    prefix = "Yesterday, ";
+    options = { hour: "numeric", minute: "numeric" };
   } else if (getDateDiffInDays(date, todaysDate) < 364) {
-    options = { month: 'long', day: 'numeric' };
+    options = { month: "long", day: "numeric" };
   } else {
-    options = { year: 'numeric', month: 'long', day: 'numeric' };
+    options = { year: "numeric", month: "long", day: "numeric" };
   }
   return prefix + date.toLocaleString(undefined, options);
 }
 
 export function formatMimeType(mimeType) {
-  let icon = 'unknown';
+  let icon = "unknown";
   if (!mimeType) return icon;
-  const generic = mimeType.split('/')[0];
-  const specific = mimeType.split('/')[1];
-  if (['image', 'video', 'audio'].includes(generic)) icon = generic;
+  const generic = mimeType.split("/")[0];
+  const specific = mimeType.split("/")[1];
+  if (["image", "video", "audio"].includes(generic)) icon = generic;
   else
     switch (specific) {
-      case 'pdf':
-        icon = 'pdf';
+      case "pdf":
+        icon = "pdf";
         break;
-      case 'vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        icon = 'spreadsheet';
+      case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        icon = "spreadsheet";
         break;
-      case 'vnd.openxmlformats-officedocument.presentationml.presentation':
-        icon = 'presentation';
+      case "vnd.openxmlformats-officedocument.presentationml.presentation":
+        icon = "presentation";
         break;
-      case 'vnd.openxmlformats-officedocument.wordprocessingml.document':
-        icon = 'doc';
+      case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+        icon = "doc";
         break;
     }
   return icon;
