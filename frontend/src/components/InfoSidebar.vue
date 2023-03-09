@@ -43,7 +43,30 @@
       <div v-if="entity.owner === 'me'">
         <div class="text-lg font-medium mb-4">Manage Access</div>
         <div class="flex flex-row">
-          <Button @click="showShareDialog = true">Share</Button>
+          <Button class="h-7" @click="showShareDialog = true">Share</Button>
+        </div>
+      </div>
+      <div>
+        <div class="text-lg font-medium mb-4">Tag</div>
+        <div class="flex flex-row">
+          <Button
+            v-if="!addTag"
+            class="h-6 text-[12px]"
+            icon-left="plus"
+            @click="addTag = true">
+            Add tag
+          </Button>
+          <Input
+            v-else
+            type="text"
+            class="h-6"
+            autofocus
+            @keydown.enter="
+              (e) =>
+                $resources.createTag.submit({
+                  title: e.target.value.trim(),
+                })
+            " />
         </div>
       </div>
       <div class="grow">
@@ -138,6 +161,7 @@ export default {
       tab: 0,
       comment: "",
       showShareDialog: false,
+      addTag: false,
     };
   },
 
@@ -197,6 +221,19 @@ export default {
           console.log(error);
         },
         auto: true,
+      };
+    },
+    createTag() {
+      return {
+        url: "drive.api.tags.create_tag",
+        onSuccess() {
+          this.addTag = false;
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
       };
     },
   },
