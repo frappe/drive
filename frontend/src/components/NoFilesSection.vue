@@ -1,6 +1,9 @@
 <template>
-  <div class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center">
-    <svg viewBox="0 0 78 85" class="h-auto w-1/12 min-w-[78px] fill-transparent stroke-2 pb-6">
+  <div
+    class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center">
+    <svg
+      viewBox="0 0 78 85"
+      class="h-auto w-1/12 min-w-[78px] fill-transparent stroke-2 pb-6">
       <path
         d="M42 31H66 M42 51H66 M42 25H55 M42 45H55 M65 9V8C65 4.13401 61.866 1 58 1H8C4.13401 1 1 4.13401 1 8V66C1 69.866 4.13401 73 8 73H10 M70 12H20C16.134 12 13 15.134 13 19V77C13 80.866 16.134 84 20 84H70C73.866 84 77 80.866 77 77V19C77 15.134 73.866 12 70 12Z"
         stroke="#A6B1B9" />
@@ -14,7 +17,7 @@
 </template>
 <script>
 export default {
-  name: 'NoFilesSection',
+  name: "NoFilesSection",
   props: {
     primaryMessage: {
       type: String,
@@ -22,8 +25,8 @@ export default {
     },
     secondaryMessage: {
       type: String,
-      default: 'Drop files here',
+      default: "Drop files here",
     },
   },
-}
+};
 </script>

@@ -10,8 +10,7 @@
           :iconLeft="dialogData.buttonIcon"
           class="ml-4"
           @click="$resources.method.submit()"
-          :loading="$resources.method.loading"
-        >
+          :loading="$resources.method.loading">
           {{ dialogData.buttonMessage }}
         </Button>
       </div>
@@ -19,11 +18,11 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, Input } from 'frappe-ui';
-import { del } from 'idb-keyval'
+import { Dialog, Input } from "frappe-ui";
+import { del } from "idb-keyval";
 
 export default {
-  name: 'GeneralDialog',
+  name: "GeneralDialog",
 
   components: {
     Dialog,
@@ -44,7 +43,7 @@ export default {
     },
   },
 
-  emits: ['update:modelValue', 'success'],
+  emits: ["update:modelValue", "success"],
 
   computed: {
     dialogData() {
@@ -53,35 +52,35 @@ export default {
           ? `${this.entities.length} item`
           : `${this.entities.length} items`;
       switch (this.for) {
-        case 'unshare':
+        case "unshare":
           return {
-            title: 'Remove?',
-            message: 'Selected items will not be shared with you anymore.',
-            buttonMessage: 'Remove',
-            appearance: 'danger',
-            buttonIcon: 'trash-2',
-            methodName: 'drive.api.files.unshare_entities',
+            title: "Remove?",
+            message: "Selected items will not be shared with you anymore.",
+            buttonMessage: "Remove",
+            appearance: "danger",
+            buttonIcon: "trash-2",
+            methodName: "drive.api.files.unshare_entities",
           };
-        case 'restore':
+        case "restore":
           return {
-            title: 'Restore Items?',
+            title: "Restore Items?",
             message:
-              'Selected items will be restored to their original locations.',
-            buttonMessage: 'Restore',
-            appearance: 'primary',
-            buttonIcon: 'refresh-ccw',
-            methodName: 'drive.api.files.remove_or_restore',
+              "Selected items will be restored to their original locations.",
+            buttonMessage: "Restore",
+            appearance: "primary",
+            buttonIcon: "refresh-ccw",
+            methodName: "drive.api.files.remove_or_restore",
           };
-        case 'remove':
+        case "remove":
           return {
-            title: 'Move to Trash?',
+            title: "Move to Trash?",
             message:
               items +
-              ' will be moved to Trash. Items in Trash are deleted forever after 30 days.',
-            buttonMessage: 'Move to Trash',
-            appearance: 'danger',
-            buttonIcon: 'trash-2',
-            methodName: 'drive.api.files.remove_or_restore',
+              " will be moved to Trash. Items in Trash are deleted forever after 30 days.",
+            buttonMessage: "Move to Trash",
+            appearance: "danger",
+            buttonIcon: "trash-2",
+            methodName: "drive.api.files.remove_or_restore",
           };
       }
     },
@@ -90,7 +89,7 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        this.$emit('update:modelValue', value);
+        this.$emit("update:modelValue", value);
       },
     },
   },
@@ -105,9 +104,9 @@ export default {
           ),
         },
         onSuccess(data) {
-          this.$emit('success', data);
-          this.$resources.method.reset()
-          this.entities.map((entity) => del(entity.name))
+          this.$emit("success", data);
+          this.$resources.method.reset();
+          this.entities.map((entity) => del(entity.name));
         },
         onError(error) {
           if (error.messages) {

@@ -1,8 +1,7 @@
 <template>
   <LoginBox
     title="Log in to your account"
-    :class="{ 'pointer-events-none': loading }"
-  >
+    :class="{ 'pointer-events-none': loading }">
     <form class="flex flex-col" @submit.prevent="">
       <Input
         class="mb-4"
@@ -12,8 +11,7 @@
         name="email"
         autocomplete="email"
         :type="email !== 'Administrator' ? 'email' : 'text'"
-        required
-      />
+        required />
       <Input
         label="Password"
         type="password"
@@ -21,15 +19,21 @@
         v-model="password"
         name="password"
         autocomplete="current-password"
-        required
-      />
+        required />
       <ErrorMessage :message="errorMessage" class="mt-4" />
-      <Button class="mt-4 focus:ring-0 focus:ring-offset-0" :loading="loading" @click="login" appearance="primary">
+      <Button
+        class="mt-4 focus:ring-0 focus:ring-offset-0"
+        :loading="loading"
+        @click="login"
+        appearance="primary">
         Submit
       </Button>
       <div class="mt-10 text-center border-t">
         <div class="transform -translate-y-1/2">
-          <span class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">OR</span>
+          <span
+            class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">
+            OR
+          </span>
         </div>
       </div>
       <router-link class="text-base text-center" to="/signup">
@@ -39,11 +43,11 @@
   </LoginBox>
 </template>
 <script>
-import { Input, ErrorMessage } from 'frappe-ui'
-import LoginBox from '@/components/LoginBox.vue'
+import { Input, ErrorMessage } from "frappe-ui";
+import LoginBox from "@/components/LoginBox.vue";
 
 export default {
-  name: 'Login',
+  name: "Login",
   components: {
     LoginBox,
     Input,
@@ -57,28 +61,28 @@ export default {
       errorMessage: null,
       successMessage: null,
       redirect_route: null,
-    }
+    };
   },
   methods: {
     async login() {
       try {
-        this.errorMessage = null
-        this.loading = true
+        this.errorMessage = null;
+        this.loading = true;
         if (this.email && this.password) {
-          let res = await this.$store.dispatch('login', {
+          let res = await this.$store.dispatch("login", {
             email: this.email,
             password: this.password,
-          })
+          });
           if (res) {
-            this.$router.push('/')
+            this.$router.push("/");
           }
         }
       } catch (error) {
-        this.errorMessage = error.messages.join('\n')
+        this.errorMessage = error.messages.join("\n");
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
   },
-}
+};
 </script>

@@ -1,11 +1,11 @@
-import { createStore } from 'vuex';
-import { call } from 'frappe-ui';
+import { createStore } from "vuex";
+import { call } from "frappe-ui";
 
 let getCookies = () => {
   return Object.fromEntries(
     document.cookie
-      .split('; ')
-      .map((cookie) => cookie.split('='))
+      .split("; ")
+      .map((cookie) => cookie.split("="))
       .map((entry) => [entry[0], decodeURIComponent(entry[1])])
   );
 };
@@ -21,12 +21,12 @@ const store = createStore({
       imageURL: getCookies().user_image,
     },
     uploads: [],
-    sortOrder: JSON.parse(localStorage.getItem('sortOrder')) || {
-      label: 'Modified',
-      field: 'modified',
+    sortOrder: JSON.parse(localStorage.getItem("sortOrder")) || {
+      label: "Modified",
+      field: "modified",
       ascending: false,
     },
-    view: JSON.parse(localStorage.getItem('view')) || 'grid',
+    view: JSON.parse(localStorage.getItem("view")) || "grid",
     entityInfo: null,
     cutEntities: [],
     showInfo: false,
@@ -34,7 +34,7 @@ const store = createStore({
   },
   getters: {
     isLoggedIn: (state) => {
-      return state.auth.user_id && state.auth.user_id !== 'Guest';
+      return state.auth.user_id && state.auth.user_id !== "Guest";
     },
     uploadsInProgress: (state) => {
       return state.uploads.filter((upload) => !upload.completed);
@@ -63,11 +63,11 @@ const store = createStore({
       Object.assign(state.uploads[index], payload);
     },
     setSortOrder(state, payload) {
-      localStorage.setItem('sortOrder', JSON.stringify(payload));
+      localStorage.setItem("sortOrder", JSON.stringify(payload));
       state.sortOrder = payload;
     },
     toggleView(state, payload) {
-      localStorage.setItem('view', JSON.stringify(payload));
+      localStorage.setItem("view", JSON.stringify(payload));
       state.view = payload;
     },
     setEntityInfo(state, payload) {
@@ -85,17 +85,17 @@ const store = createStore({
   },
   actions: {
     async login({ commit }, payload) {
-      commit('setAuth', { loading: true });
-      let res = await call('login', {
+      commit("setAuth", { loading: true });
+      let res = await call("login", {
         usr: payload.email,
         pwd: payload.password,
       });
       if (res) {
-        commit('setAuth', {
+        commit("setAuth", {
           loading: false,
           user_id: getCookies().user_id,
         });
-        commit('setUser', {
+        commit("setUser", {
           fullName: getCookies().full_name,
           imageURL: getCookies().user_image
             ? window.location.origin + getCookies().user_image
@@ -106,12 +106,12 @@ const store = createStore({
       return false;
     },
     async logout({ commit }) {
-      commit('setAuth', { loading: true });
-      await call('logout');
+      commit("setAuth", { loading: true });
+      await call("logout");
       window.location.reload();
     },
     clearUploads({ commit }) {
-      commit('setUploads', []);
+      commit("setUploads", []);
     },
   },
 });

@@ -2,8 +2,7 @@
   <div class="h-full" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error"
-    />
+      :error="$resources.folderContents.error" />
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
@@ -14,15 +13,13 @@
       @showEntityContext="(event) => toggleEntityContext(event)"
       @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
       @closeContextMenuEvent="closeContextMenu"
-      @fetchFolderContents="() => $resources.folderContents.fetch()"
-    >
+      @fetchFolderContents="() => $resources.folderContents.fetch()">
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
-          :showInfoButton="showInfoButton"
-        />
+          :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -38,15 +35,13 @@
       @showEntityContext="(event) => toggleEntityContext(event)"
       @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
       @closeContextMenuEvent="closeContextMenu"
-      @fetchFolderContents="() => $resources.folderContents.fetch()"
-    >
+      @fetchFolderContents="() => $resources.folderContents.fetch()">
       <template #toolbar>
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
           :columnHeaders="columnHeaders"
-          :showInfoButton="showInfoButton"
-        />
+          :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -56,22 +51,19 @@
     <FilePreview
       v-if="showPreview"
       @hide="hidePreview"
-      :previewEntity="previewEntity"
-    />
+      :previewEntity="previewEntity" />
     <EntityContextMenu
       v-if="showEntityContext"
       :actionItems="actionItems"
       :entityContext="entityContext"
       :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu"
-    />
+      v-on-outside-click="closeContextMenu" />
     <EmptyEntityContextMenu
       v-if="showEmptyEntityContextMenu"
       :actionItems="emptyActionItems"
       :entityContext="entityContext"
       :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu"
-    />
+      v-on-outside-click="closeContextMenu" />
     <NewFolderDialog
       v-model="showNewFolderDialog"
       :parent="$route.params.entityName"
@@ -80,8 +72,7 @@
           this.emitter.emit('fetchFolderContents');
           showNewFolderDialog = false;
         }
-      "
-    />
+      " />
     <RenameDialog
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
@@ -91,8 +82,7 @@
           showRenameDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <GeneralDialog
       v-model="showRemoveDialog"
       :entities="selectedEntities"
@@ -103,14 +93,12 @@
           showRemoveDialog = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entityName="shareName"
-      @success="$resources.folderContents.fetch()"
-    />
+      @success="$resources.folderContents.fetch()" />
     <ColorPicker
       v-model="showColorPicker"
       :entity="selectedEntities[0]"
@@ -120,32 +108,31 @@
           showColorPicker = false;
           selectedEntities = [];
         }
-      "
-    />
+      " />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
 
 <script>
-import { FeatherIcon } from 'frappe-ui';
-import Dropzone from 'dropzone';
-import ListView from '@/components/ListView.vue';
-import GridView from '@/components/GridView.vue';
-import DriveToolBar from '@/components/DriveToolBar.vue';
-import NoFilesSection from '@/components/NoFilesSection.vue';
-import FilePreview from '@/components/FilePreview.vue';
-import NewFolderDialog from '@/components/NewFolderDialog.vue';
-import RenameDialog from '@/components/RenameDialog.vue';
-import ShareDialog from '@/components/ShareDialog.vue';
-import GeneralDialog from '@/components/GeneralDialog.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
-import FolderContentsError from '@/components/FolderContentsError.vue';
-import EntityContextMenu from '@/components/EntityContextMenu.vue';
-import EmptyEntityContextMenu from '@/components/EmptyEntityContextMenu.vue';
-import { formatSize, formatDate } from '@/utils/format';
+import { FeatherIcon } from "frappe-ui";
+import Dropzone from "dropzone";
+import ListView from "@/components/ListView.vue";
+import GridView from "@/components/GridView.vue";
+import DriveToolBar from "@/components/DriveToolBar.vue";
+import NoFilesSection from "@/components/NoFilesSection.vue";
+import FilePreview from "@/components/FilePreview.vue";
+import NewFolderDialog from "@/components/NewFolderDialog.vue";
+import RenameDialog from "@/components/RenameDialog.vue";
+import ShareDialog from "@/components/ShareDialog.vue";
+import GeneralDialog from "@/components/GeneralDialog.vue";
+import ColorPicker from "@/components/ColorPicker.vue";
+import FolderContentsError from "@/components/FolderContentsError.vue";
+import EntityContextMenu from "@/components/EntityContextMenu.vue";
+import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
+import { formatSize, formatDate } from "@/utils/format";
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: {
     FeatherIcon,
     ListView,
@@ -166,7 +153,7 @@ export default {
     entityName: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
   },
   data: () => ({
@@ -179,7 +166,7 @@ export default {
     showRemoveDialog: false,
     showEntityContext: false,
     entityContext: {},
-    breadcrumbs: [{ label: 'Home', route: '/' }],
+    breadcrumbs: [{ label: "Home", route: "/" }],
     isSharedFolder: false,
   }),
   computed: {
@@ -202,36 +189,36 @@ export default {
     emptyActionItems() {
       return [
         {
-          label: 'Upload File',
-          icon: 'file',
-          handler: () => this.emitter.emit('uploadFile'),
+          label: "Upload File",
+          icon: "file",
+          handler: () => this.emitter.emit("uploadFile"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
-          label: 'Upload Folder',
-          icon: 'folder',
-          handler: () => this.emitter.emit('uploadFolder'),
+          label: "Upload Folder",
+          icon: "folder",
+          handler: () => this.emitter.emit("uploadFolder"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
-          label: 'New Folder',
-          icon: 'folder-plus',
+          label: "New Folder",
+          icon: "folder-plus",
           handler: () => (this.showNewFolderDialog = true),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
-          label: 'Paste',
-          icon: 'clipboard',
+          label: "Paste",
+          icon: "clipboard",
           handler: async () => {
             for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
               await this.$resources.moveEntity.submit({
-                method: 'move',
+                method: "move",
                 entity_name: this.$store.state.cutEntities[i],
                 new_parent: this.entityName,
               });
             }
             this.selectedEntities = [];
-            this.$store.commit('setCutEntities', []);
+            this.$store.commit("setCutEntities", []);
             this.$resources.folderContents.fetch();
           },
           isEnabled: () =>
@@ -243,8 +230,8 @@ export default {
     actionItems() {
       return [
         {
-          label: 'Download',
-          icon: 'download',
+          label: "Download",
+          icon: "download",
           handler: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
@@ -254,13 +241,13 @@ export default {
               !this.selectedEntities[0].is_group &&
               (this.selectedEntities[0].allow_download ||
                 this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === 'me')
+                this.selectedEntities[0].owner === "me")
             );
           },
         },
         {
-          label: 'Share',
-          icon: 'share-2',
+          label: "Share",
+          icon: "share-2",
           handler: () => {
             this.showShareDialog = true;
           },
@@ -273,10 +260,10 @@ export default {
           },
         },
         {
-          label: 'View details',
-          icon: 'eye',
+          label: "View details",
+          icon: "eye",
           handler: () => {
-            this.$store.commit('setShowInfo', true);
+            this.$store.commit("setShowInfo", true);
           },
           isEnabled: () => {
             return (
@@ -285,18 +272,18 @@ export default {
           },
         },
         {
-          label: 'Hide details',
-          icon: 'eye-off',
+          label: "Hide details",
+          icon: "eye-off",
           handler: () => {
-            this.$store.commit('setShowInfo', false);
+            this.$store.commit("setShowInfo", false);
           },
           isEnabled: () => {
             return this.$store.state.showInfo;
           },
         },
         {
-          label: 'Rename',
-          icon: 'edit',
+          label: "Rename",
+          icon: "edit",
           handler: () => {
             this.showRenameDialog = true;
           },
@@ -304,39 +291,39 @@ export default {
             return (
               this.selectedEntities.length === 1 &&
               (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === 'me')
+                this.selectedEntities[0].owner === "me")
             );
           },
         },
         {
-          label: 'Cut',
-          icon: 'scissors',
+          label: "Cut",
+          icon: "scissors",
           handler: () => {
             this.$store.commit(
-              'setCutEntities',
+              "setCutEntities",
               this.selectedEntities.map((x) => x.name)
             );
           },
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === 'me')
+              this.selectedEntities.every((x) => x.owner === "me")
             );
           },
         },
         {
-          label: 'Paste into Folder',
-          icon: 'clipboard',
+          label: "Paste into Folder",
+          icon: "clipboard",
           handler: async () => {
             for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
               await this.$resources.moveEntity.submit({
-                method: 'move',
+                method: "move",
                 entity_name: this.$store.state.cutEntities[i],
                 new_parent: this.selectedEntities[0].name,
               });
             }
             this.selectedEntities = [];
-            this.$store.commit('setCutEntities', []);
+            this.$store.commit("setCutEntities", []);
             this.$resources.folderContents.fetch();
           },
           isEnabled: () => {
@@ -344,13 +331,13 @@ export default {
               this.$store.state.cutEntities.length > 0 &&
               this.selectedEntities.length === 1 &&
               (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === 'me')
+                this.selectedEntities[0].owner === "me")
             );
           },
         },
         {
-          label: 'Add to Favourites',
-          icon: 'star',
+          label: "Add to Favourites",
+          icon: "star",
           handler: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -362,8 +349,8 @@ export default {
           },
         },
         {
-          label: 'Remove from Favourites',
-          icon: 'x-circle',
+          label: "Remove from Favourites",
+          icon: "x-circle",
           handler: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -375,8 +362,8 @@ export default {
           },
         },
         {
-          label: 'Change Color',
-          icon: 'droplet',
+          label: "Change Color",
+          icon: "droplet",
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&
@@ -385,30 +372,30 @@ export default {
           },
         },
         {
-          label: 'Remove',
-          icon: 'trash-2',
+          label: "Remove",
+          icon: "trash-2",
           handler: () => {
             this.$resources.removeEntity.submit();
           },
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner != 'me') &&
+              this.selectedEntities.every((x) => x.owner != "me") &&
               (this.selectedEntities.every((x) => x.write) ||
                 !this.isSharedFolder)
             );
           },
         },
         {
-          label: 'Move to Trash',
-          icon: 'trash-2',
+          label: "Move to Trash",
+          icon: "trash-2",
           handler: () => {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === 'me')
+              this.selectedEntities.every((x) => x.owner === "me")
             );
           },
         },
@@ -417,23 +404,23 @@ export default {
     columnHeaders() {
       return [
         {
-          label: 'Name',
-          field: 'title',
+          label: "Name",
+          field: "title",
           sortable: true,
         },
         {
-          label: 'Owner',
-          field: 'owner',
+          label: "Owner",
+          field: "owner",
           sortable: true,
         },
         {
-          label: 'Modified',
-          field: 'modified',
+          label: "Modified",
+          field: "modified",
           sortable: true,
         },
         {
-          label: 'Size',
-          field: 'file_size',
+          label: "Size",
+          field: "file_size",
           sortable: true,
         },
       ].filter((item) => item.sortable);
@@ -443,37 +430,37 @@ export default {
     initializeDropzone() {
       let componentContext = this;
       this.dropzone = new Dropzone(this.$el.parentNode, {
-        paramName: 'file',
+        paramName: "file",
         parallelUploads: 1,
         autoProcessQueue: true,
         uploadMultiple: false,
-        clickable: '#dropzoneElement',
-        previewsContainer: '#dropzoneElement',
+        clickable: "#dropzoneElement",
+        previewsContainer: "#dropzoneElement",
         chunking: true,
         forceChunking: true,
-        url: '/api/method/drive.api.files.upload_file',
+        url: "/api/method/drive.api.files.upload_file",
         maxFilesize: 10 * 1024, // 10GB
         chunkSize: 5 * 1024 * 1024, // 5MB
         headers: {
-          'X-Frappe-CSRF-Token': window.csrf_token,
-          Accept: 'application/json',
+          "X-Frappe-CSRF-Token": window.csrf_token,
+          Accept: "application/json",
         },
         sending: function (file, xhr, formData, chunk) {
-          file.parent ? formData.append('parent', file.parent) : null;
+          file.parent ? formData.append("parent", file.parent) : null;
           file.webkitRelativePath
             ? formData.append(
-                'fullpath',
+                "fullpath",
                 file.webkitRelativePath.slice(
                   0,
-                  file.webkitRelativePath.indexOf('/')
+                  file.webkitRelativePath.indexOf("/")
                 )
               )
             : null;
           // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
           file.fullPath
             ? formData.append(
-                'fullpath',
-                file.fullPath.slice(0, file.fullPath.indexOf('/'))
+                "fullpath",
+                file.fullPath.slice(0, file.fullPath.indexOf("/"))
               )
             : null;
         },
@@ -490,48 +477,48 @@ export default {
           }
         },
       });
-      this.dropzone.on('addedfile', function (file) {
+      this.dropzone.on("addedfile", function (file) {
         file.parent = componentContext.entityName;
-        componentContext.$store.commit('pushToUploads', {
+        componentContext.$store.commit("pushToUploads", {
           uuid: file.upload.uuid,
           name: file.name,
           progress: 0,
         });
       });
-      this.dropzone.on('uploadprogress', function (file, progress) {
-        componentContext.$store.commit('updateUpload', {
+      this.dropzone.on("uploadprogress", function (file, progress) {
+        componentContext.$store.commit("updateUpload", {
           uuid: file.upload.uuid,
           progress: progress,
         });
       });
-      this.dropzone.on('error', function (file, message, xhr) {
+      this.dropzone.on("error", function (file, message, xhr) {
         let error_message;
         if (message._server_messages) {
           error_message = JSON.parse(message._server_messages)
             .map((element) => JSON.parse(element).message)
-            .join('\n');
+            .join("\n");
         }
-        error_message = error_message || 'Upload failed';
-        componentContext.$store.commit('updateUpload', {
+        error_message = error_message || "Upload failed";
+        componentContext.$store.commit("updateUpload", {
           uuid: file.upload.uuid,
           error: error_message,
         });
       });
-      this.dropzone.on('complete', function (file) {
+      this.dropzone.on("complete", function (file) {
         componentContext.$resources.folderContents.fetch();
-        componentContext.$store.commit('updateUpload', {
+        componentContext.$store.commit("updateUpload", {
           uuid: file.upload.uuid,
           completed: true,
         });
       });
-      this.emitter.on('uploadFile', () => {
+      this.emitter.on("uploadFile", () => {
         if (componentContext.dropzone.hiddenFileInput)
           componentContext.dropzone.hiddenFileInput.click();
       });
-      this.emitter.on('uploadFolder', () => {
+      this.emitter.on("uploadFolder", () => {
         if (componentContext.dropzone.hiddenFileInput) {
           componentContext.dropzone.hiddenFileInput.setAttribute(
-            'webkitdirectory',
+            "webkitdirectory",
             true
           );
           componentContext.dropzone.hiddenFileInput.click();
@@ -543,7 +530,7 @@ export default {
       if (entity.is_group) {
         this.selectedEntities = [];
         this.$router.push({
-          name: 'Folder',
+          name: "Folder",
           params: { entityName: entity.name },
         });
       } else {
@@ -588,7 +575,7 @@ export default {
     async entityName() {
       await this.$resources.folderAccess.fetch();
       this.$store.commit(
-        'setHasWriteAccess',
+        "setHasWriteAccess",
         !!this.$resources.folderAccess.data?.write
       );
       this.selectedEntities = [];
@@ -598,55 +585,63 @@ export default {
   },
 
   async mounted() {
-    window.addEventListener("dragover", function (e) {
-      e = e || event;
-      e.preventDefault();
-    }, false);
-    window.addEventListener("drop", function (e) {
-      e = e || event;
-      e.preventDefault();
-    }, false);
+    window.addEventListener(
+      "dragover",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
+    window.addEventListener(
+      "drop",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
     this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A'))
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.selectedEntities = this.$resources.folderContents.data;
     };
-    document.addEventListener('keydown', this.selectAllListener);
+    document.addEventListener("keydown", this.selectAllListener);
 
     await this.$resources.folderAccess.fetch();
     this.$store.commit(
-      'setHasWriteAccess',
+      "setHasWriteAccess",
       !!this.$resources.folderAccess.data?.write
     );
     let componentContext = this;
-    this.emitter.on('fetchFolderContents', () => {
+    this.emitter.on("fetchFolderContents", () => {
       componentContext.$resources.folderContents.fetch();
     });
     if (this.$store.state.hasWriteAccess) this.initializeDropzone();
   },
 
   unmounted() {
-    document.removeEventListener('keydown', this.selectAllListener);
-    this.$store.commit('setHasWriteAccess', false);
+    document.removeEventListener("keydown", this.selectAllListener);
+    this.$store.commit("setHasWriteAccess", false);
     if (this.dropzone) this.dropzone.destroy();
   },
 
   resources: {
     folderAccess() {
       return {
-        url: 'drive.api.permissions.get_user_access',
+        url: "drive.api.permissions.get_user_access",
         params: { entity_name: this.entityName },
       };
     },
     createFolder() {
       return {
-        url: 'drive.api.files.create_folder',
+        url: "drive.api.files.create_folder",
         params: {
           title: this.folderName,
           parent: this.parent,
         },
         validate(params) {
           if (!params?.title) {
-            return 'Folder name is required';
+            return "Folder name is required";
           }
         },
         onSuccess(data) {
@@ -654,7 +649,7 @@ export default {
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join('\n');
+            this.errorMessage = error.messages.join("\n");
           } else {
             this.errorMessage = error.message;
           }
@@ -664,16 +659,16 @@ export default {
 
     moveEntity() {
       return {
-        url: 'drive.api.files.call_controller_method',
-        method: 'POST',
+        url: "drive.api.files.call_controller_method",
+        method: "POST",
         params: {
-          method: 'move',
-          entity_name: 'entity name',
-          new_parent: 'new entity parent',
+          method: "move",
+          entity_name: "entity name",
+          new_parent: "new entity parent",
         },
         validate(params) {
           if (!params?.new_parent) {
-            return 'New parent is required';
+            return "New parent is required";
           }
         },
       };
@@ -681,24 +676,24 @@ export default {
 
     folderContents() {
       return {
-        url: 'drive.api.files.list_folder_contents',
+        url: "drive.api.files.list_folder_contents",
         // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
           fields:
-            'name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download',
+            "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? '-'
+              ? "-"
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? 'me' : entity.owner;
+            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
         },
         auto: true,
@@ -707,7 +702,7 @@ export default {
 
     pathEntities() {
       return {
-        url: 'drive.api.files.get_entities_in_path',
+        url: "drive.api.files.get_entities_in_path",
         // cache: ['pathEntities', this.entityName],
         params: {
           entity_name: this.entityName,
@@ -717,15 +712,15 @@ export default {
           let breadcrumbs = [];
           if (this.isSharedFolder)
             breadcrumbs.push({
-              label: 'Shared With Me',
-              route: '/shared',
+              label: "Shared With Me",
+              route: "/shared",
             });
           data.entities.forEach((entity, index) => {
             if (index === 0) {
               const isHome = entity.owner === this.userId;
               breadcrumbs.push({
-                label: isHome ? 'Home' : entity.title,
-                route: isHome ? '/' : `/folder/${entity.name}`,
+                label: isHome ? "Home" : entity.title,
+                route: isHome ? "/" : `/folder/${entity.name}`,
               });
             } else {
               breadcrumbs.push({
@@ -736,8 +731,8 @@ export default {
           });
           if (breadcrumbs.length > 4) {
             breadcrumbs.splice(1, breadcrumbs.length - 4, {
-              label: '...',
-              route: '',
+              label: "...",
+              route: "",
             });
           }
           this.breadcrumbs = breadcrumbs;
@@ -748,7 +743,7 @@ export default {
 
     toggleFavourite() {
       return {
-        url: 'drive.api.files.add_or_remove_favourites',
+        url: "drive.api.files.add_or_remove_favourites",
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities?.map((entity) => entity.name)
@@ -768,7 +763,7 @@ export default {
 
     removeEntity() {
       return {
-        url: 'drive.api.files.unshare_entities',
+        url: "drive.api.files.unshare_entities",
         params: {
           entity_names: JSON.stringify(
             this.selectedEntities.map((entity) => entity.name)

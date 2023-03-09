@@ -1,86 +1,86 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import store from './store';
+import { createRouter, createWebHistory } from "vue-router";
+import store from "./store";
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/pages/Home.vue'),
+    path: "/",
+    name: "Home",
+    component: () => import("@/pages/Home.vue"),
   },
   {
-    path: '/folder/:entityName',
-    name: 'Folder',
-    component: () => import('@/pages/Folder.vue'),
+    path: "/folder/:entityName",
+    name: "Folder",
+    component: () => import("@/pages/Folder.vue"),
     props: true,
   },
   {
-    path: '/recent',
-    name: 'Recent',
-    component: () => import('@/pages/Recent.vue'),
+    path: "/recent",
+    name: "Recent",
+    component: () => import("@/pages/Recent.vue"),
   },
   {
-    path: '/shared',
-    name: 'Shared',
-    component: () => import('@/pages/Shared.vue'),
+    path: "/shared",
+    name: "Shared",
+    component: () => import("@/pages/Shared.vue"),
   },
   {
-    path: '/favourites',
-    name: 'Favourites',
-    component: () => import('@/pages/Favourites.vue'),
+    path: "/favourites",
+    name: "Favourites",
+    component: () => import("@/pages/Favourites.vue"),
   },
   {
-    path: '/trash',
-    name: 'Trash',
-    component: () => import('@/pages/Trash.vue'),
+    path: "/trash",
+    name: "Trash",
+    component: () => import("@/pages/Trash.vue"),
   },
   {
-    path: '/file/:entityName',
-    name: 'File',
-    component: () => import('@/pages/File.vue'),
+    path: "/file/:entityName",
+    name: "File",
+    component: () => import("@/pages/File.vue"),
     props: true,
     meta: {
       isHybridRoute: true,
     },
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/Login.vue'),
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/Login.vue"),
     meta: {
       isPublicRoute: true,
     },
   },
   {
-    path: '/signup',
-    name: 'Signup',
-    component: () => import('@/pages/Signup.vue'),
+    path: "/signup",
+    name: "Signup",
+    component: () => import("@/pages/Signup.vue"),
     meta: {
       isPublicRoute: true,
     },
   },
   {
-    path: '/test',
-    name: 'Test',
-    component: () => import('@/pages/Test.vue'),
+    path: "/test",
+    name: "Test",
+    component: () => import("@/pages/Test.vue"),
   },
   {
-    path: '/workspace',
-    name: 'Workspace',
+    path: "/workspace",
+    name: "Workspace",
     redirect: () => {
-      window.location.href = '/app';
+      window.location.href = "/app";
     },
   },
 ];
 
 let router = createRouter({
-  history: createWebHistory('/drive'),
+  history: createWebHistory("/drive"),
   routes,
 });
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.isPublicRoute)) {
     if (store.getters.isLoggedIn) {
-      next({ name: 'Home' });
+      next({ name: "Home" });
     } else {
       next();
     }
@@ -91,7 +91,7 @@ router.beforeEach((to, from, next) => {
     ) {
       next();
     } else {
-      import.meta.env.DEV ? next('/login') : (window.location.href = '/login');
+      import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
     }
   }
 });

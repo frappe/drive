@@ -1,15 +1,21 @@
 <template>
   <div>
-    <div class="flex mt-3.5 gap-2 ">
+    <div class="flex mt-3.5 gap-2">
       <div class="bg-gray-100 rounded-lg w-full">
         <Popover transition="default">
           <template #target="{ open: openUsers, close: closeUsers }">
             <div class="flex items-center h-[34px] gap-2 w-full">
-              <Input type="text" placeholder="Add people or Email" class="h-7 focus:bg-inherit w-[262px]"
-                v-model="searchQuery" @input="handleInput($event, openUsers, closeUsers)" />
+              <Input
+                type="text"
+                placeholder="Add people or Email"
+                class="h-7 focus:bg-inherit w-[262px]"
+                v-model="searchQuery"
+                @input="handleInput($event, openUsers, closeUsers)" />
               <Popover transition="default">
                 <template #target="{ togglePopover: toggleAccess }">
-                  <Button iconRight="chevron-down" @click="toggleAccess"
+                  <Button
+                    iconRight="chevron-down"
+                    @click="toggleAccess"
                     class="text-sm text-gray-900 text-[13px] rounded-lg h-7 w-[108px]"
                     appearance="minimal">
                     {{ newUserAccess }}
@@ -18,98 +24,113 @@
                 <template #body-main="{ togglePopover: toggleAccess }">
                   <div class="p-1">
                     <div v-for="item in ['Can view', 'Can edit']" :key="item">
-                      <div class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                        @click="() => {
-                          newUserAccess = item
-                          toggleAccess()
-                        }">
+                      <div
+                        class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                        @click="
+                          () => {
+                            newUserAccess = item;
+                            toggleAccess();
+                          }
+                        ">
                         {{ item }}
                       </div>
                     </div>
                   </div>
                 </template>
               </Popover>
-
             </div>
           </template>
           <template #body-main="{ togglePopover: toggleUsers }">
             <div class="p-1">
               <div v-for="result in searchResults" :key="result.value">
-                <div class="hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2" @click="() => {
-                  selectResult(result.value)
-                  toggleUsers()
-                }">
-                  <div class="text-gray-900 text-[13px]">{{ result.value }}</div>
-                  <div class="text-xs text-gray-600">{{ result.description }}</div>
+                <div
+                  class="hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
+                  @click="
+                    () => {
+                      selectResult(result.value);
+                      toggleUsers();
+                    }
+                  ">
+                  <div class="text-gray-900 text-[13px]">
+                    {{ result.value }}
+                  </div>
+                  <div class="text-xs text-gray-600">
+                    {{ result.description }}
+                  </div>
                 </div>
               </div>
             </div>
           </template>
         </Popover>
       </div>
-      <Button class="min-w-[75px] h-8 rounded-lg" appearance="primary"
-        @click="selectResult(searchQuery)">Invite</Button>
+      <Button
+        class="min-w-[75px] h-8 rounded-lg"
+        appearance="primary"
+        @click="selectResult(searchQuery)">
+        Invite
+      </Button>
     </div>
   </div>
-
 </template>
 
 <script>
-import { Popover, Button, Input } from 'frappe-ui'
+import { Popover, Button, Input } from "frappe-ui";
 
 export default {
-  name: 'UserSearch',
+  name: "UserSearch",
   components: {
     Popover,
     Button,
-    Input
+    Input,
   },
-  emits: ['submit'],
+  emits: ["submit"],
   data() {
     return {
-      searchQuery: '',
-      newUserAccess: 'Can view',
+      searchQuery: "",
+      newUserAccess: "Can view",
       searchResults: [],
       showDropdown: false,
-    }
+    };
   },
   computed: {
     userId() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.auth.user_id;
     },
     writeAccess() {
-      return this.newUserAccess === 'Can view' ? 0 : 1
-    }
+      return this.newUserAccess === "Can view" ? 0 : 1;
+    },
   },
   methods: {
     async handleInput(event, open, close) {
-      this.searchQuery = event
-      if (event.length > 0) await this.search(this.searchQuery)
-      else this.searchResults = []
-      this.searchResults.length > 0 ? open() : close()
+      this.searchQuery = event;
+      if (event.length > 0) await this.search(this.searchQuery);
+      else this.searchResults = [];
+      this.searchResults.length > 0 ? open() : close();
     },
     selectResult(value) {
-      this.$emit('submit', { user: value, write: this.writeAccess })
-      this.searchQuery = ''
+      this.$emit("submit", { user: value, write: this.writeAccess });
+      this.searchQuery = "";
     },
     async search(txt) {
       const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-        'X-Frappe-Site-Name': window.location.hostname,
-      }
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
+        "X-Frappe-Site-Name": window.location.hostname,
+      };
       const res = await fetch(
         `/api/method/frappe.desk.search.search_link?doctype=User&filters={"ignore_user_type":1}&txt=${txt}`,
         {
-          method: 'GET',
+          method: "GET",
           headers,
         }
-      )
+      );
       if (res.ok) {
-        const data = await res.json()
-        this.searchResults = data.results.filter(x => x.value !== this.userId)
+        const data = await res.json();
+        this.searchResults = data.results.filter(
+          (x) => x.value !== this.userId
+        );
       }
     },
   },
-}
+};
 </script>

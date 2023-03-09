@@ -13,11 +13,11 @@
 </template>
 
 <script>
-import Sidebar from '@/components/Sidebar.vue'
-import FrappeDriveLogo from '@/components/FrappeDriveLogo.vue'
+import Sidebar from "@/components/Sidebar.vue";
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 
 export default {
-  name: 'MobileSidebar',
+  name: "MobileSidebar",
   components: {
     Sidebar,
     FrappeDriveLogo,
@@ -28,16 +28,16 @@ export default {
       required: true,
     },
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   computed: {
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue;
       },
       set(value) {
-        this.$emit('update:modelValue', value)
+        this.$emit("update:modelValue", value);
       },
     },
   },
-}
+};
 </script>

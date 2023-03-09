@@ -1,18 +1,25 @@
 <template>
-  <Dialog :options="{ title: 'Rename' }" v-model="open" >
+  <Dialog :options="{ title: 'Rename' }" v-model="open">
     <template #body-content>
-      <Input type="text" v-model="newName" :value="entity?.title" @keydown.enter="
-        (e) =>
-          $resources.rename.submit({
-            method: 'rename',
-            entity_name: entityName,
-            new_title: e.target.value.trim(),
-          })
-      " />
+      <Input
+        type="text"
+        v-model="newName"
+        :value="entity?.title"
+        @keydown.enter="
+          (e) =>
+            $resources.rename.submit({
+              method: 'rename',
+              entity_name: entityName,
+              new_title: e.target.value.trim(),
+            })
+        " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
-        <Button @click="open = false" class="ml-auto"> Cancel </Button>
-        <Button appearance="primary" class="ml-4" @click="$resources.rename.submit()"
+        <Button @click="open = false" class="ml-auto">Cancel</Button>
+        <Button
+          appearance="primary"
+          class="ml-4"
+          @click="$resources.rename.submit()"
           :loading="$resources.rename.loading">
           Rename
         </Button>
@@ -21,10 +28,10 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, Input, ErrorMessage } from 'frappe-ui'
+import { Dialog, Input, ErrorMessage } from "frappe-ui";
 
 export default {
-  name: 'RenameDialog',
+  name: "RenameDialog",
   components: {
     Dialog,
     Input,
@@ -40,26 +47,26 @@ export default {
       required: true,
     },
   },
-  emits: ['update:modelValue', 'success'],
+  emits: ["update:modelValue", "success"],
   data() {
     return {
-      newName: '',
-      errorMessage: '',
-    }
+      newName: "",
+      errorMessage: "",
+    };
   },
   computed: {
     entityName() {
-      return this.entity?.name
+      return this.entity?.name;
     },
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue;
       },
       set(value) {
-        this.$emit('update:modelValue', value)
+        this.$emit("update:modelValue", value);
         if (!value) {
-          this.newName = ''
-          this.errorMessage = ''
+          this.newName = "";
+          this.errorMessage = "";
         }
       },
     },
@@ -67,30 +74,30 @@ export default {
   resources: {
     rename() {
       return {
-        url: 'drive.api.files.call_controller_method',
+        url: "drive.api.files.call_controller_method",
         params: {
-          method: 'rename',
+          method: "rename",
           entity_name: this.entityName,
           new_title: this.newName,
         },
         validate(params) {
           if (!params?.new_title) {
-            return 'New name is required'
+            return "New name is required";
           }
         },
         onSuccess(data) {
-          this.newName = ''
-          this.$emit('success', data)
+          this.newName = "";
+          this.$emit("success", data);
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join('\n')
+            this.errorMessage = error.messages.join("\n");
           } else {
-            this.errorMessage = error.message
+            this.errorMessage = error.message;
           }
         },
-      }
+      };
     },
   },
-}
+};
 </script>
