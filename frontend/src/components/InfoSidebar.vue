@@ -49,6 +49,7 @@
       <div>
         <div class="text-lg font-medium mb-4">Tag</div>
         <div class="flex flex-row">
+          <div v-for="tag in $resources.tags.data">{{ tag }}</div>
           <Button
             v-if="!addTag"
             class="h-6 text-[12px]"
@@ -223,11 +224,43 @@ export default {
         auto: true,
       };
     },
+    tags() {
+      return {
+        url: "drive.api.tags.get_entity_tags",
+        params: { entity: this.entity.name },
+        onSuccess(data) {
+          console.log(data);
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+        auto: true,
+      };
+    },
     createTag() {
       return {
         url: "drive.api.tags.create_tag",
-        onSuccess() {
+        onSuccess(data) {
+          this.$resources.addTag.submit({
+            entity: this.entity.name,
+            tag: data,
+          });
           this.addTag = false;
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      };
+    },
+    addTag() {
+      return {
+        url: "drive.api.tags.add_tag",
+        onSuccess() {
+          console.log("done");
         },
         onError(error) {
           if (error.messages) {
