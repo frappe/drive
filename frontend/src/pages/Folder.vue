@@ -99,22 +99,11 @@
       v-model="showShareDialog"
       :entityName="shareName"
       @success="$resources.folderContents.fetch()" />
-    <ColorPicker
-      v-model="showColorPicker"
-      :entity="selectedEntities[0]"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showColorPicker = false;
-          selectedEntities = [];
-        }
-      " />
     <div class="hidden" id="dropzoneElement" />
   </div>
 </template>
 
 <script>
-import { FeatherIcon } from "frappe-ui";
 import Dropzone from "dropzone";
 import ListView from "@/components/ListView.vue";
 import GridView from "@/components/GridView.vue";
@@ -125,7 +114,6 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import RenameDialog from "@/components/RenameDialog.vue";
 import ShareDialog from "@/components/ShareDialog.vue";
 import GeneralDialog from "@/components/GeneralDialog.vue";
-import ColorPicker from "@/components/ColorPicker.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
@@ -134,7 +122,6 @@ import { formatSize, formatDate } from "@/utils/format";
 export default {
   name: "Home",
   components: {
-    FeatherIcon,
     ListView,
     GridView,
     DriveToolBar,
@@ -142,7 +129,6 @@ export default {
     FilePreview,
     NewFolderDialog,
     RenameDialog,
-    ColorPicker,
     ShareDialog,
     GeneralDialog,
     FolderContentsError,
@@ -165,6 +151,9 @@ export default {
     showShareDialog: false,
     showRemoveDialog: false,
     showEntityContext: false,
+    showEmptyEntityContextMenu: false,
+    showNewFolderDialog: false,
+
     entityContext: {},
     breadcrumbs: [{ label: "Home", route: "/" }],
     isSharedFolder: false,

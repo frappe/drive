@@ -100,16 +100,6 @@
       v-model="showShareDialog"
       :entityName="this.selectedEntities[0].name"
       @success="$resources.folderContents.fetch()" />
-    <ColorPicker
-      v-model="showColorPicker"
-      :entity="selectedEntities[0]"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showColorPicker = false;
-          selectedEntities = [];
-        }
-      " />
     <div id="dropzoneElement" class="hidden" />
   </div>
 </template>
@@ -143,7 +133,6 @@ export default {
     FilePreview,
     NewFolderDialog,
     RenameDialog,
-    ColorPicker,
     ShareDialog,
     GeneralDialog,
     FolderContentsError,
