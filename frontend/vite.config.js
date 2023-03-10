@@ -11,7 +11,7 @@ export default defineConfig({
     port: 8080,
     proxy: {
       "^/(app|login|api|assets|files)": {
-        // Localhost resolution is changes in Node 17
+        // Localhost resolution changes in Node 17
         target: `http://localhost:${webserver_port}`,
         ws: true,
         router: function (req) {
