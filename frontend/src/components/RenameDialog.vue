@@ -44,7 +44,7 @@ export default {
     },
     entity: {
       type: Object,
-      required: true,
+      required: false,
     },
   },
   emits: ["update:modelValue", "success"],
