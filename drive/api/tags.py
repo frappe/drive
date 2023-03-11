@@ -37,13 +37,27 @@ def add_tag(entity, tag):
 @frappe.whitelist()
 def get_entity_tags(entity):
     """
-    Add tag to entity
+    Returns all tags of given entity
 
     :param entity: Entity name
-    :param tag: Tag name
     """
 
     entity = frappe.get_doc('Drive Entity', entity)
 
     return map(lambda x: frappe.db.get_value(
-        'Drive Tag', x.tag, ['title', 'color'], as_dict=1), entity.tags)
+        'Drive Tag', x.tag, ['name', 'title', 'color'], as_dict=1), entity.tags)
+
+
+@frappe.whitelist()
+def get_user_tags():
+    """
+    Returns all tags created by current user
+
+    """
+
+    return frappe.db.get_list('Drive Tag',
+                              filters={
+                                  'owner': frappe.session.user
+                              },
+                              fields=['name', 'title', 'color'],
+                              )

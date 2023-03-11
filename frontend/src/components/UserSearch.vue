@@ -16,7 +16,7 @@
                   <Button
                     iconRight="chevron-down"
                     @click="toggleAccess"
-                    class="text-sm text-gray-900 text-[13px] rounded-lg h-7 w-[108px]"
+                    class="text-gray-900 text-[13px] rounded-lg h-7 w-[108px]"
                     appearance="minimal">
                     {{ newUserAccess }}
                   </Button>

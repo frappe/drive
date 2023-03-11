@@ -36,7 +36,9 @@
         <div class="m-auto">Comments</div>
       </div>
     </div>
-    <div v-if="!tab" class="px-5 py-6 space-y-7 h-full flex flex-col z-0">
+    <div
+      v-if="!tab"
+      class="px-5 py-6 space-y-7 h-full flex flex-col z-0 overflow-y-auto">
       <FileRender
         v-if="isImage && $store.state.showInfo"
         :previewEntity="entity" />
@@ -46,29 +48,55 @@
           <Button class="h-7" @click="showShareDialog = true">Share</Button>
         </div>
       </div>
-      <div>
+      <div class="space-y-2">
         <div class="text-lg font-medium mb-4">Tag</div>
-        <div class="flex flex-row">
-          <div v-for="tag in $resources.tags.data">{{ tag }}</div>
+        <div class="flex flex-wrap gap-2">
+          <div
+            :class="`h-6 px-2.5 py-1 rounded-lg flex place-items-center text-[12px] bg-${tag.color}-100 text-${tag.color}-600`"
+            v-for="tag in $resources.entityTags.data">
+            {{ `• ${tag.title}` }}
+          </div>
           <Button
             v-if="!addTag"
-            class="h-6 text-[12px]"
+            class="h-6 text-[12px] text-gray-800"
             icon-left="plus"
             @click="addTag = true">
             Add tag
           </Button>
-          <Input
-            v-else
-            type="text"
-            class="h-6"
-            autofocus
-            @keydown.enter="
-              (e) =>
-                $resources.createTag.submit({
-                  title: e.target.value.trim(),
-                })
-            " />
         </div>
+
+        <Popover v-if="addTag" transition="default">
+          <template #target="{ open }">
+            <Input
+              type="text"
+              class="h-6"
+              autofocus
+              @focus="open"
+              @keydown.enter="
+                (e) =>
+                  $resources.createTag.submit({
+                    title: e.target.value.trim(),
+                  })
+              " />
+          </template>
+
+          <template #body-main="{ togglePopover }">
+            <div class="p-1">
+              <div v-for="tag in unaddedTags" :key="tag.name">
+                <div
+                  :class="`hover:bg-${tag.color}-100 cursor-pointer rounded-md py-1.5 px-2 text-${tag.color}-600 text-[12px]`"
+                  @click="
+                    $resources.addTag.submit({
+                      entity: this.entity.name,
+                      tag: tag.name,
+                    })
+                  ">
+                  {{ tag.title }}
+                </div>
+              </div>
+            </div>
+          </template>
+        </Popover>
       </div>
       <div class="grow">
         <div class="text-lg font-medium mb-4">Properties</div>
@@ -134,7 +162,7 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, call } from "frappe-ui";
+import { FeatherIcon, Avatar, Input, Popover, call } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import FileRender from "@/components/FileRender.vue";
@@ -146,6 +174,7 @@ export default {
     FeatherIcon,
     Avatar,
     Input,
+    Popover,
     ShareDialog,
     FileRender,
   },
@@ -202,6 +231,12 @@ export default {
       const file = formatMimeType(this.entity.mime_type);
       return file.charAt(0).toUpperCase() + file.slice(1);
     },
+    unaddedTags() {
+      return this.$resources.userTags.data.filter(
+        ({ name: id1 }) =>
+          !this.$resources.entityTags.data.some(({ name: id2 }) => id2 === id1)
+      );
+    },
   },
 
   setup() {
@@ -224,13 +259,21 @@ export default {
         auto: true,
       };
     },
-    tags() {
+    entityTags() {
       return {
         url: "drive.api.tags.get_entity_tags",
         params: { entity: this.entity.name },
-        onSuccess(data) {
-          console.log(data);
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
         },
+        auto: true,
+      };
+    },
+    userTags() {
+      return {
+        url: "drive.api.tags.get_user_tags",
         onError(error) {
           if (error.messages) {
             console.log(error.messages);
@@ -260,7 +303,8 @@ export default {
       return {
         url: "drive.api.tags.add_tag",
         onSuccess() {
-          console.log("done");
+          this.$resources.entityTags.fetch();
+          this.$resources.userTags.fetch();
         },
         onError(error) {
           if (error.messages) {
