@@ -65,7 +65,7 @@
           </Button>
         </div>
 
-        <AddTagInput
+        <TagInput
           v-if="addTag"
           :class="{ 'mt-2': $resources.entityTags.data.length }"
           :entity="entity"
@@ -145,7 +145,7 @@
 <script>
 import { FeatherIcon, Avatar, Input, Popover, call } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
-import AddTagInput from "@/components/AddTagInput.vue";
+import TagInput from "@/components/TagInput.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
@@ -158,7 +158,7 @@ export default {
     Input,
     Popover,
     ShareDialog,
-    AddTagInput,
+    TagInput,
     FileRender,
   },
 

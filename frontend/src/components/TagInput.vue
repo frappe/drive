@@ -5,7 +5,7 @@
         type="text"
         class="h-6"
         @focus="open"
-        v-on-outside-click="close"
+        v-on-outside-click="closeInput"
         @keydown.enter="
           (e) =>
             $resources.createTag.submit({
@@ -37,7 +37,7 @@
 import { Input, Popover } from "frappe-ui";
 
 export default {
-  name: "AddTagInput",
+  name: "TagInput",
   components: {
     Input,
     Popover,
@@ -60,7 +60,7 @@ export default {
   },
 
   methods: {
-    close() {
+    closeInput() {
       if (this.hackyFlag) this.$emit("close");
       this.hackyFlag = !this.hackyFlag;
     },
