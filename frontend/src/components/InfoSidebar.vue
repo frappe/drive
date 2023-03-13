@@ -52,12 +52,12 @@
         <div class="text-lg font-medium mb-4">Tag</div>
         <div class="flex flex-wrap gap-2">
           <div
-            :class="`h-6 px-2.5 py-1 rounded-lg flex place-items-center text-[12px] bg-${tag.color}-100 text-${tag.color}-600`"
+            :class="`h-6 px-2.5 py-1 rounded-lg flex place-items-center text-[13px] bg-${tag.color}-100 text-${tag.color}-800`"
             v-for="tag in $resources.entityTags.data">
             {{ `• ${tag.title}` }}
           </div>
           <Button
-            v-if="!addTag"
+            v-if="!addTag && entity.owner === 'me'"
             class="h-6 text-[12px] text-gray-800"
             icon-left="plus"
             @click="addTag = true">

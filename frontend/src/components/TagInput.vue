@@ -1,11 +1,13 @@
 <template>
-  <Popover transition="default">
-    <template #target="{ open }">
+  <Popover transition="default" :show="hackyFlag && filteredTags.length">
+    <template #target="{}">
       <Input
+        v-focus
         type="text"
         class="h-6"
-        @focus="open"
         v-on-outside-click="closeInput"
+        v-model="tagInputText"
+        @input="tagInputText = $event"
         @keydown.enter="
           (e) =>
             $resources.createTag.submit({
@@ -16,9 +18,9 @@
 
     <template #body-main="{}">
       <div class="p-1" @click.stop>
-        <div v-for="tag in unaddedTags" :key="tag.name">
+        <div v-for="tag in filteredTags" :key="tag.name">
           <div
-            :class="`hover:bg-${tag.color}-100 cursor-pointer rounded-md py-1.5 px-2 text-${tag.color}-600 text-[12px]`"
+            :class="`hover:bg-${tag.color}-100 cursor-pointer rounded-md py-1.5 px-2 text-${tag.color}-800 text-[12px]`"
             @click="
               $resources.addTag.submit({
                 entity: this.entity.name,
@@ -45,9 +47,11 @@ export default {
 
   data() {
     return {
+      tagInputText: "",
       hackyFlag: false, // temporary hacky flag to circumvent v-on-outside-click from running on mounting
     };
   },
+
   props: {
     entity: {
       type: Object,
@@ -56,6 +60,14 @@ export default {
     unaddedTags: {
       type: Array,
       required: true,
+    },
+  },
+
+  computed: {
+    filteredTags() {
+      return this.unaddedTags.filter((x) =>
+        x.title.toLowerCase().startsWith(this.tagInputText.toLowerCase())
+      );
     },
   },
 
