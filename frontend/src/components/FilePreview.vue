@@ -1,20 +1,22 @@
 <template>
-  <portal to="modals">
+  <Teleport to="#modals">
     <div class="fixed inset-0 flex items-center justify-center px-4 py-4 z-10">
       <div
         class="fixed inset-0 transition-opacity bg-gray-900 opacity-75"
         @click="this.$emit('hide')"></div>
       <FileRender :previewEntity="previewEntity" />
     </div>
-  </portal>
+  </Teleport>
 </template>
 
 <script>
 import FileRender from "@/components/FileRender.vue";
+import { Teleport } from "vue";
 export default {
   name: "FilePreview",
   components: {
     FileRender,
+    Teleport,
   },
   props: {
     previewEntity: {

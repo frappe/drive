@@ -16,7 +16,6 @@
         <DriveToolBar
           :actionItems="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
           :showInfoButton="showInfoButton" />
       </template>
       <template #placeholder>

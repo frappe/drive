@@ -1,5 +1,5 @@
 <template>
-  <portal to="modals">
+  <Teleport to="#modals">
     <div class="fixed bottom-0 right-0 w-full p-6 sm:w-96 z-10">
       <div class="rounded-lg bg-white shadow-lg">
         <div
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-  </portal>
+  </Teleport>
 </template>
 <script>
 import { mapGetters } from "vuex";

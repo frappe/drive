@@ -113,16 +113,12 @@
 </template>
 
 <script>
-import { FeatherIcon } from "frappe-ui";
 import { formatMimeType } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
   name: "GridView",
-  components: {
-    FeatherIcon,
-  },
   data: () => ({
     selectionElementStyle: {},
     selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
