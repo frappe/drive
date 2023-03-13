@@ -148,7 +148,6 @@ export default {
     showShareDialog: false,
     showRemoveDialog: false,
     showEntityContext: false,
-    showColorPicker: false,
     showEmptyEntityContextMenu: false,
     entityContext: {},
     breadcrumbs: [{ label: "Home", route: "/" }],
