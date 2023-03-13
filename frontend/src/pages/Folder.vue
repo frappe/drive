@@ -54,6 +54,7 @@
       :previewEntity="previewEntity" />
     <EntityContextMenu
       v-if="showEntityContext"
+      :entityName="selectedEntities[0].name"
       :actionItems="actionItems"
       :entityContext="entityContext"
       :close="closeContextMenu"
@@ -153,7 +154,6 @@ export default {
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
     showNewFolderDialog: false,
-
     entityContext: {},
     breadcrumbs: [{ label: "Home", route: "/" }],
     isSharedFolder: false,
