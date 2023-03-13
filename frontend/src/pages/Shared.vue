@@ -282,19 +282,6 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
-
-  mounted() {
-    this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
-        this.selectedEntities = this.$resources.folderContents.data;
-    };
-    document.addEventListener("keydown", this.selectAllListener);
-  },
-
-  unmounted() {
-    document.removeEventListener("keydown", this.selectAllListener);
-  },
-
   methods: {
     openEntity(entity) {
       if (entity.is_group) {

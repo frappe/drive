@@ -253,6 +253,14 @@ export default {
     document.addEventListener("mousemove", this.handleMousemove);
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
+    this.selectAllListener = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
+        this.$emit("entitySelected", this.folderContents);
+    };
+    document.addEventListener("keydown", this.selectAllListener);
+  },
+  unmounted() {
+    document.removeEventListener("keydown", this.selectAllListener);
   },
   resources: {
     moveEntity() {

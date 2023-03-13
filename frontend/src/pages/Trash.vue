@@ -205,17 +205,7 @@ export default {
       },
       false
     );
-    this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
-        this.selectedEntities = this.$resources.folderContents.data;
-    };
-    document.addEventListener("keydown", this.selectAllListener);
   },
-
-  unmounted() {
-    document.removeEventListener("keydown", this.selectAllListener);
-  },
-
   methods: {
     toggleEntityContext(event) {
       if (!event) this.showEntityContext = false;
