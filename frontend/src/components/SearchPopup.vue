@@ -36,7 +36,7 @@
       <div v-else class="mx-2.5 mb-2.5 mt-6 space-x-2.5 flex">
         <div
           v-for="item in filterItems"
-          class="w-28 border border rounded-lg flex flex-col cursor-pointer"
+          class="w-28 border rounded-lg flex flex-col cursor-pointer"
           :class="{ 'bg-gray-200': selectedFilterItems[item.imgSrc] }"
           @click="
             selectedFilterItems[item.imgSrc] = !selectedFilterItems[item.imgSrc]

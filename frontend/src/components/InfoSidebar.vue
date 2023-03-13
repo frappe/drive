@@ -48,7 +48,7 @@
           <Button class="h-7" @click="showShareDialog = true">Share</Button>
         </div>
       </div>
-      <div class="space-y-2">
+      <div>
         <div class="text-lg font-medium mb-4">Tag</div>
         <div class="flex flex-wrap gap-2">
           <div
@@ -65,38 +65,19 @@
           </Button>
         </div>
 
-        <Popover v-if="addTag" transition="default">
-          <template #target="{ open }">
-            <Input
-              type="text"
-              class="h-6"
-              autofocus
-              @focus="open"
-              @keydown.enter="
-                (e) =>
-                  $resources.createTag.submit({
-                    title: e.target.value.trim(),
-                  })
-              " />
-          </template>
-
-          <template #body-main="{ togglePopover }">
-            <div class="p-1">
-              <div v-for="tag in unaddedTags" :key="tag.name">
-                <div
-                  :class="`hover:bg-${tag.color}-100 cursor-pointer rounded-md py-1.5 px-2 text-${tag.color}-600 text-[12px]`"
-                  @click="
-                    $resources.addTag.submit({
-                      entity: this.entity.name,
-                      tag: tag.name,
-                    })
-                  ">
-                  {{ tag.title }}
-                </div>
-              </div>
-            </div>
-          </template>
-        </Popover>
+        <AddTagInput
+          v-if="addTag"
+          :class="{ 'mt-2': $resources.entityTags.data.length }"
+          :entity="entity"
+          :unaddedTags="unaddedTags"
+          @success="
+            () => {
+              $resources.userTags.fetch();
+              $resources.entityTags.fetch();
+              addTag = false;
+            }
+          "
+          @close="addTag = false" />
       </div>
       <div class="grow">
         <div class="text-lg font-medium mb-4">Properties</div>
@@ -164,8 +145,9 @@
 <script>
 import { FeatherIcon, Avatar, Input, Popover, call } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
-import { formatMimeType, formatDate } from "@/utils/format";
+import AddTagInput from "@/components/AddTagInput.vue";
 import FileRender from "@/components/FileRender.vue";
+import { formatMimeType, formatDate } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 
 export default {
@@ -176,6 +158,7 @@ export default {
     Input,
     Popover,
     ShareDialog,
+    AddTagInput,
     FileRender,
   },
 
@@ -259,18 +242,6 @@ export default {
         auto: true,
       };
     },
-    entityTags() {
-      return {
-        url: "drive.api.tags.get_entity_tags",
-        params: { entity: this.entity.name },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
-        auto: true,
-      };
-    },
     userTags() {
       return {
         url: "drive.api.tags.get_user_tags",
@@ -282,35 +253,16 @@ export default {
         auto: true,
       };
     },
-    createTag() {
+    entityTags() {
       return {
-        url: "drive.api.tags.create_tag",
-        onSuccess(data) {
-          this.$resources.addTag.submit({
-            entity: this.entity.name,
-            tag: data,
-          });
-          this.addTag = false;
-        },
+        url: "drive.api.tags.get_entity_tags",
+        params: { entity: this.entity.name },
         onError(error) {
           if (error.messages) {
             console.log(error.messages);
           }
         },
-      };
-    },
-    addTag() {
-      return {
-        url: "drive.api.tags.add_tag",
-        onSuccess() {
-          this.$resources.entityTags.fetch();
-          this.$resources.userTags.fetch();
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
+        auto: true,
       };
     },
   },
