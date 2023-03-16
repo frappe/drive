@@ -4,16 +4,19 @@
       <Badge
         :color="tag.color"
         class="h-6 cursor-pointer"
-        :style="{ fontSize: '12px', cursor: 'pointer' }"
-        @click="togglePopover()">
+        :style="{
+          fontSize: '12px',
+          cursor: entity.owner === 'me' ? 'pointer' : 'default',
+        }"
+        @click="if (entity.owner === 'me') togglePopover();">
         {{ `• ${tag.title}` }}
       </Badge>
     </template>
     <template #body-main="{ togglePopover }">
-      <div class="bg-white rounded-xl shadow-md p-1 z-10 space-y-0.5 border">
+      <div class="bg-white rounded-xl shadow-md p-1 z-10 space-y-0.5 absolute">
         <div
           v-for="item in tagActions"
-          class="hover:bg-gray-100 cursor-pointer rounded-lg flex items-center px-1 py-0.5"
+          class="hover:bg-gray-100 cursor-pointer rounded-lg flex items-center px-2 py-1 w-24"
           @click="
             item.handler();
             togglePopover();
@@ -78,7 +81,7 @@ export default {
 
   props: {
     entity: {
-      type: String,
+      type: Object,
       required: true,
     },
     tag: {
@@ -101,7 +104,7 @@ export default {
       return {
         url: "drive.api.tags.remove_tag",
         params: {
-          entity: this.entity,
+          entity: this.entity.name,
           tag: this.tag.name,
         },
         onSuccess() {

@@ -48,12 +48,12 @@
           <Button class="h-7" @click="showShareDialog = true">Share</Button>
         </div>
       </div>
-      <div>
+      <div v-if="entity.owner === 'me' || $resources.entityTags.data?.length">
         <div class="text-lg font-medium mb-4">Tag</div>
         <div class="flex flex-wrap gap-2">
           <Tag
             :tag="tag"
-            :entity="entity.name"
+            :entity="entity"
             v-for="tag in $resources.entityTags.data"
             @success="
               () => {
