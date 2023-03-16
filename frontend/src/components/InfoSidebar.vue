@@ -53,6 +53,7 @@
         <div class="flex flex-wrap gap-2">
           <Tag
             :tag="tag"
+            :entity="entity.name"
             v-for="tag in $resources.entityTags.data"
             @success="
               () => {

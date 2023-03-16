@@ -29,9 +29,9 @@ def add_tag(entity, tag):
     :param tag: Tag name
     """
 
-    entity = frappe.get_doc('Drive Entity', entity)
-    entity.append('tags', {'tag': tag})
-    entity.save()
+    doc = frappe.get_doc('Drive Entity', entity)
+    doc.append('tags', {'tag': tag})
+    doc.save()
 
 
 @frappe.whitelist()
@@ -66,10 +66,38 @@ def get_user_tags():
 @frappe.whitelist()
 def update_tag_color(tag, color):
     """
-    Returns all tags created by current user
+    Update color for givent tag
 
+    :param tag: Tag name
+    :param color: Color to be update with
     """
 
     doc = frappe.get_doc('Drive Tag', tag)
     doc.color = color
     doc.save()
+
+
+@frappe.whitelist()
+def remove_tag(entity, tag):
+    """
+    Remove tag from entity
+
+    :param entity: Entity name
+    :param tag: Tag name
+    """
+
+    entity_doc = frappe.get_doc('Drive Entity', entity)
+    for tag_doc in entity_doc.tags:
+        if tag_doc.tag == tag:
+            tag_doc.delete()
+
+
+@frappe.whitelist()
+def delete_tag(tag):
+    """
+    Delete tag
+
+    :param tag: Tag name
+    """
+
+    frappe.delete_doc('Drive Tag', tag)
