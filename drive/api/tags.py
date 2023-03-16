@@ -61,3 +61,15 @@ def get_user_tags():
                               },
                               fields=['name', 'title', 'color'],
                               )
+
+
+@frappe.whitelist()
+def update_tag_color(tag, color):
+    """
+    Returns all tags created by current user
+
+    """
+
+    doc = frappe.get_doc('Drive Tag', tag)
+    doc.color = color
+    doc.save()

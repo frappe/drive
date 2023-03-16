@@ -20,7 +20,7 @@
       <div class="p-1" @click.stop>
         <div v-for="tag in filteredTags" :key="tag.name">
           <div
-            :class="`hover:bg-${tag.color}-100 cursor-pointer rounded-md py-1.5 px-2 text-${tag.color}-800 text-[12px]`"
+            :class="`hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2 text-gray-800 text-[12px]`"
             @click="
               $resources.addTag.submit({
                 entity: this.entity.name,

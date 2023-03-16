@@ -51,11 +51,15 @@
       <div>
         <div class="text-lg font-medium mb-4">Tag</div>
         <div class="flex flex-wrap gap-2">
-          <div
-            :class="`h-6 px-2.5 py-1 rounded-lg flex place-items-center text-[13px] bg-${tag.color}-100 text-${tag.color}-800`"
-            v-for="tag in $resources.entityTags.data">
-            {{ `• ${tag.title}` }}
-          </div>
+          <Tag
+            :tag="tag"
+            v-for="tag in $resources.entityTags.data"
+            @success="
+              () => {
+                $resources.userTags.fetch();
+                $resources.entityTags.fetch();
+              }
+            " />
           <Button
             v-if="!addTag && entity.owner === 'me'"
             class="h-6 text-[12px] text-gray-800"
@@ -143,9 +147,10 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, Popover, call } from "frappe-ui";
+import { FeatherIcon, Avatar, Input, call } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
+import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
@@ -156,9 +161,9 @@ export default {
     FeatherIcon,
     Avatar,
     Input,
-    Popover,
     ShareDialog,
     TagInput,
+    Tag,
     FileRender,
   },
 
