@@ -6,20 +6,20 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
-      @closeContextMenuEvent="closeContextMenu"
-      @fetchFolderContents="() => $resources.folderContents.fetch()">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @show-empty-entity-context="(event) => toggleEmptyContext(event)"
+      @close-context-menu-event="closeContextMenu"
+      @fetch-folder-contents="() => $resources.folderContents.fetch()">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :showInfoButton="showInfoButton" />
+          :column-headers="columnHeaders"
+          :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -28,20 +28,20 @@
 
     <ListView
       v-else
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @showEmptyEntityContext="(event) => toggleEmptyContext(event)"
-      @closeContextMenuEvent="closeContextMenu"
-      @fetchFolderContents="() => $resources.folderContents.fetch()">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @show-empty-entity-context="(event) => toggleEmptyContext(event)"
+      @close-context-menu-event="closeContextMenu"
+      @fetch-folder-contents="() => $resources.folderContents.fetch()">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :showInfoButton="showInfoButton" />
+          :column-headers="columnHeaders"
+          :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection />
@@ -50,27 +50,27 @@
 
     <FilePreview
       v-if="showPreview"
-      @hide="hidePreview"
-      :previewEntity="previewEntity" />
+      :preview-entity="previewEntity"
+      @hide="hidePreview" />
     <EntityContextMenu
       v-if="showEntityContext"
-      :entityName="selectedEntities[0].name"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu" />
+      v-on-outside-click="closeContextMenu"
+      :entity-name="selectedEntities[0].name"
+      :action-items="actionItems"
+      :entity-context="entityContext"
+      :close="closeContextMenu" />
     <EmptyEntityContextMenu
       v-if="showEmptyEntityContextMenu"
-      :actionItems="emptyActionItems"
-      :entityContext="entityContext"
-      :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu" />
+      v-on-outside-click="closeContextMenu"
+      :action-items="emptyActionItems"
+      :entity-context="entityContext"
+      :close="closeContextMenu" />
     <NewFolderDialog
       v-model="showNewFolderDialog"
       :parent="$route.params.entityName"
       @success="
         () => {
-          this.emitter.emit('fetchFolderContents');
+          emitter.emit('fetchFolderContents');
           showNewFolderDialog = false;
         }
       " />
@@ -98,9 +98,9 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="shareName"
+      :entity-name="shareName"
       @success="$resources.folderContents.fetch()" />
-    <div class="hidden" id="dropzoneElement" />
+    <div id="dropzoneElement" class="hidden" />
   </div>
 </template>
 
@@ -415,6 +415,53 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
+  watch: {
+    async entityName() {
+      await this.$resources.folderAccess.fetch();
+      this.$store.commit(
+        "setHasWriteAccess",
+        !!this.$resources.folderAccess.data?.write
+      );
+      this.selectedEntities = [];
+      if (!this.dropzone && this.$store.state.hasWriteAccess)
+        this.initializeDropzone();
+    },
+  },
+
+  async mounted() {
+    window.addEventListener(
+      "dragover",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
+    window.addEventListener(
+      "drop",
+      function (e) {
+        e = e || event;
+        e.preventDefault();
+      },
+      false
+    );
+
+    await this.$resources.folderAccess.fetch();
+    this.$store.commit(
+      "setHasWriteAccess",
+      !!this.$resources.folderAccess.data?.write
+    );
+    let componentContext = this;
+    this.emitter.on("fetchFolderContents", () => {
+      componentContext.$resources.folderContents.fetch();
+    });
+    if (this.$store.state.hasWriteAccess) this.initializeDropzone();
+  },
+
+  unmounted() {
+    this.$store.commit("setHasWriteAccess", false);
+    if (this.dropzone) this.dropzone.destroy();
+  },
   methods: {
     initializeDropzone() {
       let componentContext = this;
@@ -434,7 +481,7 @@ export default {
           "X-Frappe-CSRF-Token": window.csrf_token,
           Accept: "application/json",
         },
-        sending: function (file, xhr, formData, chunk) {
+        sending: function (file, formData) {
           file.parent ? formData.append("parent", file.parent) : null;
           file.webkitRelativePath
             ? formData.append(
@@ -453,7 +500,7 @@ export default {
               )
             : null;
         },
-        params: function (files, xhr, chunk) {
+        params: function (chunk) {
           if (chunk) {
             return {
               uuid: chunk.file.upload.uuid,
@@ -480,7 +527,7 @@ export default {
           progress: progress,
         });
       });
-      this.dropzone.on("error", function (file, message, xhr) {
+      this.dropzone.on("error", function (file, message) {
         let error_message;
         if (message._server_messages) {
           error_message = JSON.parse(message._server_messages)
@@ -560,53 +607,6 @@ export default {
       this.entityContext = undefined;
     },
   },
-  watch: {
-    async entityName() {
-      await this.$resources.folderAccess.fetch();
-      this.$store.commit(
-        "setHasWriteAccess",
-        !!this.$resources.folderAccess.data?.write
-      );
-      this.selectedEntities = [];
-      if (!this.dropzone && this.$store.state.hasWriteAccess)
-        this.initializeDropzone();
-    },
-  },
-
-  async mounted() {
-    window.addEventListener(
-      "dragover",
-      function (e) {
-        e = e || event;
-        e.preventDefault();
-      },
-      false
-    );
-    window.addEventListener(
-      "drop",
-      function (e) {
-        e = e || event;
-        e.preventDefault();
-      },
-      false
-    );
-
-    await this.$resources.folderAccess.fetch();
-    this.$store.commit(
-      "setHasWriteAccess",
-      !!this.$resources.folderAccess.data?.write
-    );
-    let componentContext = this;
-    this.emitter.on("fetchFolderContents", () => {
-      componentContext.$resources.folderContents.fetch();
-    });
-    if (this.$store.state.hasWriteAccess) this.initializeDropzone();
-  },
-
-  unmounted() {
-    this.$store.commit("setHasWriteAccess", false);
-    if (this.dropzone) this.dropzone.destroy();
-  },
 
   resources: {
     folderAccess() {
@@ -627,7 +627,7 @@ export default {
             return "Folder name is required";
           }
         },
-        onSuccess(data) {
+        onSuccess() {
           this.$resources.folderContents.fetch();
         },
         onError(error) {

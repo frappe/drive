@@ -4,19 +4,19 @@
     :class="{ 'pointer-events-none': loading }">
     <form class="flex flex-col" @submit.prevent="">
       <Input
+        v-model="email"
         class="mb-4"
         label="Email"
         placeholder="johndoe@mail.com"
-        v-model="email"
         name="email"
         autocomplete="email"
         :type="email !== 'Administrator' ? 'email' : 'text'"
         required />
       <Input
+        v-model="password"
         label="Password"
         type="password"
         placeholder="••••••••"
-        v-model="password"
         name="password"
         autocomplete="current-password"
         required />
@@ -24,8 +24,8 @@
       <Button
         class="mt-4 focus:ring-0 focus:ring-offset-0"
         :loading="loading"
-        @click="login"
-        appearance="primary">
+        appearance="primary"
+        @click="login">
         Submit
       </Button>
       <div class="mt-10 text-center border-t">

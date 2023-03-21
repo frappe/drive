@@ -19,8 +19,8 @@
               @click="download"></Button>
             <Dropdown :options="actionItems" placement="right">
               <button
-                class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
                 id="actions-menu"
+                class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
                 aria-label="Actions menu"
                 aria-haspopup="true">
                 <div class="flex items-center gap-4">
@@ -34,7 +34,7 @@
       <div class="p-6 grow grid place-items-center md:h-[calc(100%-48px)]">
         <FileRender
           v-if="$resources.file.data"
-          :previewEntity="$resources.file.data"
+          :preview-entity="$resources.file.data"
           class="w-full" />
       </div>
     </div>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { Avatar, Dropdown } from "frappe-ui";
+import { Dropdown } from "frappe-ui";
 import InfoSidebar from "@/components/InfoSidebar.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatSize, formatDate } from "@/utils/format";
@@ -54,7 +54,6 @@ import { formatSize, formatDate } from "@/utils/format";
 export default {
   name: "File",
   components: {
-    Avatar,
     Dropdown,
     InfoSidebar,
     FileRender,
@@ -86,7 +85,6 @@ export default {
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
-      m;
     },
   },
   methods: {

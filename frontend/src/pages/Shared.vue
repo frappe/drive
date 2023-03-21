@@ -6,54 +6,56 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :showInfoButton="showInfoButton" />
+          :column-headers="columnHeaders"
+          :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
-        <NoFilesSection secondaryMessage="No files have been shared with you" />
+        <NoFilesSection
+          secondary-message="No files have been shared with you" />
       </template>
     </GridView>
 
     <ListView
       v-else
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :showInfoButton="showInfoButton" />
+          :column-headers="columnHeaders"
+          :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
-        <NoFilesSection secondaryMessage="No files have been shared with you" />
+        <NoFilesSection
+          secondary-message="No files have been shared with you" />
       </template>
     </ListView>
 
     <FilePreview
       v-if="showPreview"
-      @hide="hidePreview"
-      :previewEntity="previewEntity" />
+      :preview-entity="previewEntity"
+      @hide="hidePreview" />
     <EntityContextMenu
       v-if="showEntityContext"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu" />
+      v-on-outside-click="closeContextMenu"
+      :action-items="actionItems"
+      :entity-context="entityContext"
+      :close="closeContextMenu" />
     <RenameDialog
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
@@ -78,7 +80,7 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="selectedEntities[0].name"
+      :entity-name="selectedEntities[0].name"
       @success="$resources.folderContents.fetch()" />
   </div>
 </template>

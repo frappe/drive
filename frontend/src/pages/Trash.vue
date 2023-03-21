@@ -6,53 +6,53 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
-          :showUploadButton="false" />
+          :column-headers="columnHeaders"
+          :action-loading="actionLoading"
+          :show-upload-button="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          :primaryMessage="'Trash is currently empty'"
-          :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
+          :primary-message="'Trash is currently empty'"
+          :secondary-message="'Items in the trash will be deleted automatically after 30 days'" />
       </template>
     </GridView>
 
     <ListView
       v-else
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
-          :showUploadButton="false" />
+          :column-headers="columnHeaders"
+          :action-loading="actionLoading"
+          :show-upload-button="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          :primaryMessage="'Trash is currently empty'"
-          :secondaryMessage="'Items in the trash will be deleted automatically after 30 days'" />
+          :primary-message="'Trash is currently empty'"
+          :secondary-message="'Items in the trash will be deleted automatically after 30 days'" />
       </template>
     </ListView>
     <EntityContextMenu
       v-if="showEntityContext"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu" />
+      v-on-outside-click="closeContextMenu"
+      :action-items="actionItems"
+      :entity-context="entityContext"
+      :close="closeContextMenu" />
     <DeleteDialog
       v-model="showDeleteDialog"
       :entities="
@@ -92,12 +92,10 @@ import GeneralDialog from "@/components/GeneralDialog.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatDate, formatSize } from "@/utils/format";
-import { FeatherIcon } from "frappe-ui";
 
 export default {
   name: "Trash",
   components: {
-    FeatherIcon,
     ListView,
     GridView,
     DriveToolBar,

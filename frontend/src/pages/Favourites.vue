@@ -6,61 +6,61 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
-          :showInfoButton="showInfoButton"
-          :showUploadButton="false" />
+          :column-headers="columnHeaders"
+          :action-loading="actionLoading"
+          :show-info-button="showInfoButton"
+          :show-upload-button="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          :primaryMessage="`You haven't favourited any items`"
-          :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
+          :primary-message="`You haven't favourited any items`"
+          :secondary-message="'Items will appear here for easy access when you add them to favourites'" />
       </template>
     </GridView>
 
     <ListView
       v-else
-      :folderContents="$resources.folderContents.data"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="$resources.folderContents.data"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entitycontext="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :columnHeaders="columnHeaders"
-          :actionLoading="actionLoading"
-          :showInfoButton="showInfoButton"
-          :showUploadButton="false" />
+          :column-headers="columnHeaders"
+          :action-loading="actionLoading"
+          :show-info-button="showInfoButton"
+          :show-upload-button="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          :primaryMessage="`You haven't favourited any items`"
-          :secondaryMessage="'Items will appear here for easy access when you add them to favourites'" />
+          :primary-message="`You haven't favourited any items`"
+          :secondary-message="'Items will appear here for easy access when you add them to favourites'" />
       </template>
     </ListView>
     <EntityContextMenu
       v-if="showEntityContext"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu" />
+      v-on-outside-click="closeContextMenu"
+      :action-items="actionItems"
+      :entity-context="entityContext"
+      :close="closeContextMenu" />
     <FilePreview
       v-if="showPreview"
-      @hide="hidePreview"
-      :previewEntity="previewEntity" />
+      :preview-entity="previewEntity"
+      @hide="hidePreview" />
 
     <RenameDialog
       v-model="showRenameDialog"
@@ -97,7 +97,7 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="selectedEntities[0].name"
+      :entity-name="selectedEntities[0].name"
       @success="$resources.folderContents.fetch()" />
     <div />
   </div>
@@ -115,12 +115,10 @@ import ShareDialog from "@/components/ShareDialog.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatDate, formatSize } from "@/utils/format";
-import { FeatherIcon } from "frappe-ui";
 
 export default {
   name: "Favourites",
   components: {
-    FeatherIcon,
     ListView,
     GridView,
     FilePreview,

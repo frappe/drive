@@ -5,19 +5,19 @@
     :class="{ 'pointer-events-none': loading }">
     <form class="flex flex-col" @submit.prevent="signup()">
       <Input
+        v-model="fullName"
         class="mb-4"
         label="Name"
         type="text"
         placeholder="John Doe"
         autocomplete="name"
-        v-model="fullName"
         required />
       <Input
+        v-model="email"
         label="Email"
         type="email"
         placeholder="johndoe@mail.com"
         autocomplete="email"
-        v-model="email"
         required />
       <ErrorMessage class="mt-4" :message="errorMessage" />
       <Button
@@ -49,6 +49,7 @@
         {{ response.title }}
       </h2>
       <p class="text-base text-center text-gray-700 mt-1.5">
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <span v-html="response.message" />
       </p>
     </div>
