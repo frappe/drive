@@ -6,53 +6,53 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folderContents="entities.sort((a, b) => b.accessed - a.accessed)"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="sortedEntries"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :showInfoButton="showInfoButton" />
+          :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          secondaryMessage="You have not viewed any files recently" />
+          secondary-message="You have not viewed any files recently" />
       </template>
     </GridView>
 
     <ListView
       v-else
-      :folderContents="entities.sort((a, b) => b.accessed - a.accessed)"
-      :selectedEntities="selectedEntities"
-      @entitySelected="(selected) => (selectedEntities = selected)"
-      @openEntity="(entity) => openEntity(entity)"
-      @showEntityContext="(event) => toggleEntityContext(event)"
-      @closeContextMenuEvent="closeContextMenu">
+      :folder-contents="sortedEntries"
+      :selected-entities="selectedEntities"
+      @entity-selected="(selected) => (selectedEntities = selected)"
+      @open-entity="(entity) => openEntity(entity)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
+      @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
-          :actionItems="actionItems"
+          :action-items="actionItems"
           :breadcrumbs="breadcrumbs"
-          :showInfoButton="showInfoButton" />
+          :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          secondaryMessage="You have not viewed any file recently" />
+          secondary-message="You have not viewed any file recently" />
       </template>
     </ListView>
     <FilePreview
       v-if="showPreview"
-      @hide="hidePreview"
-      :previewEntity="previewEntity" />
+      :preview-entity="previewEntity"
+      @hide="hidePreview" />
     <EntityContextMenu
       v-if="showEntityContext"
-      :actionItems="actionItems"
-      :entityContext="entityContext"
-      :close="closeContextMenu"
-      v-on-outside-click="closeContextMenu" />
+      v-on-outside-click="closeContextMenu"
+      :action-items="actionItems"
+      :entity-context="entityContext"
+      :close="closeContextMenu" />
   </div>
 </template>
 
@@ -89,6 +89,11 @@ export default {
   }),
 
   computed: {
+    sortedEntries() {
+      let currentArray = this.entities;
+      currentArray.sort((a, b) => b.accessed - a.accessed);
+      return currentArray;
+    },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
@@ -212,12 +217,12 @@ export default {
           fields:
             "name,title,is_group,owner,modified,file_size,mime_type,creation",
         },
-        onSuccess(data) {
+        async onSuccess(data) {
           data.size_in_bytes = data.file_size;
           data.file_size = data.is_group ? "-" : formatSize(data.file_size);
           data.modified = formatDate(data.modified);
-          get(data.name).then((val) => (data.accessed = val));
           data.creation = formatDate(data.creation);
+          await get(data.name).then((val) => (data.accessed = val));
           this.entities.push(data);
         },
         onError(error) {
