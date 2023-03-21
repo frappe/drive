@@ -1,15 +1,15 @@
 <template>
   <div
-    @contextmenu.prevent="handleDefaultContext($event)"
-    class="flex text-gray-900 h-screen antialiased overflow-y-hidden">
+    class="flex text-gray-900 h-screen antialiased overflow-y-hidden"
+    @contextmenu.prevent="handleDefaultContext($event)">
     <UploadTracker v-if="showUploadTracker" />
     <div
       class="h-full max-h-full w-full max-w-full flex flex-col"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }">
       <Navbar
         v-if="isLoggedIn && !isHybridRoute"
-        :mobileSidebarIsOpen="showMobileSidebar"
-        @toggleMobileSidebar="showMobileSidebar = !showMobileSidebar" />
+        :mobile-sidebar-is-open="showMobileSidebar"
+        @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
       <div
         v-if="isLoggedIn && !isHybridRoute"
         class="flex h-full overflow-x-hidden">

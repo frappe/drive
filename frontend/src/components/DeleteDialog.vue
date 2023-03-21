@@ -1,5 +1,5 @@
 <template>
-  <Dialog :options="{ title: 'Delete Forever?' }" v-model="open">
+  <Dialog v-model="open" :options="{ title: 'Delete Forever?' }">
     <template #body-content>
       <p class="text-gray-600">
         {{
@@ -10,13 +10,13 @@
         will be deleted forever. This is an irreversible process.
       </p>
       <div class="flex mt-5">
-        <Button @click="open = false" class="ml-auto">Cancel</Button>
+        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
           appearance="danger"
-          iconLeft="trash-2"
+          icon-left="trash-2"
           class="ml-4"
-          @click="$resources.delete.submit()"
-          :loading="$resources.delete.loading">
+          :loading="$resources.delete.loading"
+          @click="$resources.delete.submit()">
           Delete Forever
         </Button>
       </div>
@@ -24,14 +24,13 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, Input } from "frappe-ui";
+import { Dialog } from "frappe-ui";
 import { del } from "idb-keyval";
 
 export default {
   name: "DeleteDialog",
   components: {
     Dialog,
-    Input,
   },
   props: {
     modelValue: {
@@ -40,7 +39,8 @@ export default {
     },
     entities: {
       type: Array,
-      required: true,
+      required: false,
+      default: null,
     },
   },
   emits: ["update:modelValue", "success"],

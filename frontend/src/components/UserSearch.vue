@@ -6,18 +6,18 @@
           <template #target="{ open: openUsers, close: closeUsers }">
             <div class="flex items-center h-[34px] gap-2 w-full">
               <Input
+                v-model="searchQuery"
                 type="text"
                 placeholder="Add people or Email"
                 class="h-7 focus:bg-inherit w-[262px]"
-                v-model="searchQuery"
                 @input="handleInput($event, openUsers, closeUsers)" />
               <Popover transition="default">
                 <template #target="{ togglePopover: toggleAccess }">
                   <Button
-                    iconRight="chevron-down"
-                    @click="toggleAccess"
+                    icon-right="chevron-down"
                     class="text-gray-900 text-[13px] rounded-lg h-7 w-[108px]"
-                    appearance="minimal">
+                    appearance="minimal"
+                    @click="toggleAccess">
                     {{ newUserAccess }}
                   </Button>
                 </template>

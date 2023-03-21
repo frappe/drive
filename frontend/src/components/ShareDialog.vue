@@ -1,15 +1,15 @@
 <template>
   <Dialog
-    :options="{ title: `Share '${$resources.entity.data?.title}'` }"
-    v-model="open">
+    v-model="open"
+    :options="{ title: `Share '${$resources.entity.data?.title}'` }">
     <template #body-content>
-      <div class="text-left min-w-[16rem]" ref="dialogContent">
+      <div ref="dialogContent" class="text-left min-w-[16rem]">
         <div class="border rounded-xl py-2 px-[18px]">
           <div class="flex flex-row">
             <div class="flex my-auto">
               <FeatherIcon
                 name="globe"
-                :strokeWidth="2"
+                :stroke-width="2"
                 class="h-5 text-yellow-600" />
             </div>
             <div class="grow ml-4">
@@ -123,11 +123,11 @@
           <Popover transition="default">
             <template #target="{ togglePopover }">
               <Button
-                iconRight="chevron-down"
+                icon-right="chevron-down"
                 :loading="user.loading"
-                @click="togglePopover()"
                 class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px] rounded-lg"
-                appearance="minimal">
+                appearance="minimal"
+                @click="togglePopover()">
                 {{ user.write ? "Can edit" : "Can view" }}
               </Button>
             </template>
@@ -176,11 +176,11 @@
           <Button
             appearance="minimal"
             class="ml-auto text-gray-700 hover:bg-white focus:bg-white active:bg-white h-7 rounded-lg"
-            iconRight="info">
+            icon-right="info">
             Learn about sharing
           </Button>
         </div>
-        <Alert :title="alertMessage" class="mt-5" v-if="showAlert"></Alert>
+        <Alert v-if="showAlert" :title="alertMessage" class="mt-5"></Alert>
       </div>
     </template>
   </Dialog>
@@ -257,6 +257,17 @@ export default {
       },
     },
   },
+  mounted() {
+    const targetElement = this.$refs.dialogContent?.closest(".overflow-hidden");
+    if (targetElement) {
+      targetElement.classList.remove("overflow-hidden");
+      targetElement.classList.add("self-center");
+      targetElement.childNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE)
+          node.classList.add("rounded-lg");
+      });
+    }
+  },
   methods: {
     updateAccess(updatedAccess) {
       this.saveLoading = true;
@@ -285,17 +296,6 @@ export default {
         this.showAlert = true;
       }
     },
-  },
-  mounted() {
-    const targetElement = this.$refs.dialogContent?.closest(".overflow-hidden");
-    if (targetElement) {
-      targetElement.classList.remove("overflow-hidden");
-      targetElement.classList.add("self-center");
-      targetElement.childNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE)
-          node.classList.add("rounded-lg");
-      });
-    }
   },
   resources: {
     sharedWith() {

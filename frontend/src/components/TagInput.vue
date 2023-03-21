@@ -2,11 +2,11 @@
   <Popover transition="default" :show="hackyFlag && filteredTags.length">
     <template #target="{}">
       <Input
+        v-model="tagInputText"
         v-focus
+        v-on-outside-click="closeInput"
         type="text"
         class="h-6"
-        v-on-outside-click="closeInput"
-        v-model="tagInputText"
         @input="tagInputText = $event"
         @keydown.enter="
           (e) =>
@@ -23,7 +23,7 @@
             :class="`hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2 text-gray-800 text-[12px]`"
             @click="
               $resources.addTag.submit({
-                entity: this.entity.name,
+                entity: entity.name,
                 tag: tag.name,
               })
             ">
@@ -45,22 +45,26 @@ export default {
     Popover,
   },
 
+  props: {
+    entity: {
+      type: Object,
+      required: true,
+      default: null,
+    },
+    unaddedTags: {
+      type: Array,
+      required: true,
+      default: null,
+    },
+  },
+
+  emits: ["success", "close"],
+
   data() {
     return {
       tagInputText: "",
       hackyFlag: false, // temporary hacky flag to circumvent v-on-outside-click from running on mounting
     };
-  },
-
-  props: {
-    entity: {
-      type: Object,
-      required: true,
-    },
-    unaddedTags: {
-      type: Array,
-      required: true,
-    },
   },
 
   computed: {
@@ -77,8 +81,6 @@ export default {
       this.hackyFlag = !this.hackyFlag;
     },
   },
-
-  emits: ["success", "close"],
 
   resources: {
     createTag() {

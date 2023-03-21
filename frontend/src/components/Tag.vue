@@ -17,8 +17,8 @@
         <Popover
           placement="right"
           trigger="hover"
-          :hoverDelay="0.5"
-          :leaveDelay="0.6">
+          :hover-delay="0.5"
+          :leave-delay="0.6">
           <template #target>
             <div
               class="hover:bg-gray-100 cursor-pointer rounded-lg flex items-center px-1.5 py-1 w-24">
@@ -33,6 +33,7 @@
             <div class="p-1 space-x-1 flex">
               <button
                 v-for="color in colors"
+                :key="color"
                 :class="`h-4 w-4 rounded-full bg-${color}-500`"
                 @click="
                   $resources.updateColor.submit({
@@ -46,6 +47,7 @@
         </Popover>
         <div
           v-for="item in tagActions"
+          :key="item"
           class="hover:bg-gray-100 cursor-pointer rounded-lg flex items-center px-1.5 py-1 w-24"
           @click="
             item.handler();
@@ -64,6 +66,27 @@ import { Badge, Popover, FeatherIcon } from "frappe-ui";
 
 export default {
   name: "Tag",
+
+  components: {
+    Popover,
+    Badge,
+    FeatherIcon,
+  },
+
+  props: {
+    entity: {
+      type: Object,
+      required: true,
+      default: null,
+    },
+    tag: {
+      type: Object,
+      required: true,
+      default: null,
+    },
+  },
+
+  emits: ["success"],
 
   data() {
     return {
@@ -85,25 +108,6 @@ export default {
         },
       ],
     };
-  },
-
-  components: {
-    Popover,
-    Badge,
-    FeatherIcon,
-  },
-
-  emits: ["success"],
-
-  props: {
-    entity: {
-      type: Object,
-      required: true,
-    },
-    tag: {
-      type: Object,
-      required: true,
-    },
   },
 
   resources: {

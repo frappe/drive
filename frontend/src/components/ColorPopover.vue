@@ -2,13 +2,13 @@
   <Popover
     trigger="hover"
     placement="right-start"
-    :hoverDelay="0.5"
-    :leaveDelay="0.5">
+    :hover-delay="0.5"
+    :leave-delay="0.5">
     <template #target="{ togglePopover, isOpen }">
       <div
-        @click="togglePopover()"
         :active="isOpen"
-        class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3 cursor-pointer">
+        class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3 cursor-pointer"
+        @click="togglePopover()">
         <FeatherIcon
           name="droplet"
           class="stroke-1.5 w-4 h-4 text-gray-700 mr-3" />
@@ -22,12 +22,13 @@
       <div class="grid grid-cols-5 gap-2 p-3">
         <button
           v-for="color in colors"
+          :key="color"
           class="h-6 w-6 rounded-full justify-self-center"
           :style="{ backgroundColor: color }"
           @click="
             $resources.updateColor.submit({
               method: 'change_color',
-              entity_name: this.entityName,
+              entity_name: entityName,
               new_color: color,
             })
           " />
@@ -37,12 +38,18 @@
 </template>
 
 <script>
-import { Popover, Button, FeatherIcon } from "frappe-ui";
+import { Popover, FeatherIcon } from "frappe-ui";
 import { theme } from "@/utils/theme";
 
 export default {
   name: "ColorPopover",
-  components: { Popover, Button, FeatherIcon },
+  components: { Popover, FeatherIcon },
+  props: {
+    entityName: {
+      type: String,
+      default: null,
+    },
+  },
   emits: ["success"],
   data() {
     return {
@@ -69,11 +76,6 @@ export default {
         "fuchsia",
       ].map((color) => theme.colors[color]["500"]),
     };
-  },
-  props: {
-    entityName: {
-      type: String,
-    },
   },
   resources: {
     updateColor() {

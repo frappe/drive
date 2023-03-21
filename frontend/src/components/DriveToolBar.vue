@@ -1,7 +1,7 @@
 <template>
   <div
     class="mb-[15px] min-h-8 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0">
-    <Breadcrumbs v-if="breadcrumbs" :breadcrumbLinks="breadcrumbs" />
+    <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
     <div class="flex gap-3 basis-full lg:basis-auto">
       <Dropdown
         v-if="actionItems.length > 0"
@@ -10,7 +10,7 @@
         class="basis-5/12 lg:basis-auto">
         <Button
           class="text-sm h-8 w-full"
-          iconRight="chevron-down"
+          icon-right="chevron-down"
           :loading="actionLoading">
           <span class="hidden md:inline">Actions</span>
         </Button>
@@ -55,17 +55,13 @@
         <Button
           icon="grid"
           class="h-7"
-          @click="$store.commit('toggleView', 'grid')"
-          :style="[
-            $store.state.view === 'grid' && { background: '#FFF' },
-          ]"></Button>
+          :style="[$store.state.view === 'grid' && { background: '#FFF' }]"
+          @click="$store.commit('toggleView', 'grid')"></Button>
         <Button
           icon="list"
           class="h-7"
-          @click="$store.commit('toggleView', 'list')"
-          :style="[
-            $store.state.view === 'list' && { background: '#FFF' },
-          ]"></Button>
+          :style="[$store.state.view === 'list' && { background: '#FFF' }]"
+          @click="$store.commit('toggleView', 'list')"></Button>
       </div>
     </div>
   </div>
@@ -85,12 +81,15 @@ export default {
   props: {
     breadcrumbs: {
       type: Array,
+      default: null,
     },
     actionItems: {
       type: Array,
+      default: null,
     },
     columnHeaders: {
       type: Array,
+      default: null,
     },
     showInfoButton: {
       type: Boolean,
@@ -124,6 +123,11 @@ export default {
       }));
     },
   },
+  mounted() {
+    for (let element of this.$el.getElementsByTagName("button")) {
+      element.classList.remove("focus:ring-2", "focus:ring-offset-2");
+    }
+  },
   methods: {
     toggleAscending() {
       this.$store.commit("setSortOrder", {
@@ -132,11 +136,6 @@ export default {
         ascending: !this.ascending,
       });
     },
-  },
-  mounted() {
-    for (let element of this.$el.getElementsByTagName("button")) {
-      element.classList.remove("focus:ring-2", "focus:ring-offset-2");
-    }
   },
 };
 </script>

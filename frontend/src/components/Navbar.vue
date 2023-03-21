@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
-        <SearchPopup @openEntity="(entity) => openEntity(entity)" />
+        <SearchPopup @open-entity="(entity) => openEntity(entity)" />
       </div>
       <div class="flex items-center">
         <Dropdown
@@ -43,11 +43,12 @@
         <div class="relative ml-3">
           <Dropdown :options="accountOptions" placement="right">
             <button
-              class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
               id="user-menu"
+              class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
               aria-label="User menu"
               aria-haspopup="true">
               <div class="flex items-center gap-4">
+                <!-- eslint-disable-next-line vue/attribute-hyphenation -->
                 <Avatar :label="fullName" :imageURL="imageURL" />
               </div>
             </button>
@@ -61,17 +62,17 @@
     :parent="$route.params.entityName"
     @success="
       () => {
-        this.emitter.emit('fetchFolderContents');
+        emitter.emit('fetchFolderContents');
         showNewFolderDialog = false;
       }
     " />
   <FilePreview
     v-if="showPreview"
-    @hide="hidePreview"
-    :previewEntity="previewEntity" />
+    :preview-entity="previewEntity"
+    @hide="hidePreview" />
 </template>
 <script>
-import { Avatar, Dropdown, FeatherIcon, Input, Button } from "frappe-ui";
+import { Avatar, Dropdown, FeatherIcon, Button } from "frappe-ui";
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 import SearchPopup from "@/components/SearchPopup.vue";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
@@ -89,7 +90,6 @@ export default {
     Avatar,
     Dropdown,
     FeatherIcon,
-    Input,
     Button,
   },
   props: {

@@ -1,9 +1,9 @@
 <template>
-  <Dialog :options="{ title: 'Rename' }" v-model="open">
+  <Dialog v-model="open" :options="{ title: 'Rename' }">
     <template #body-content>
       <Input
-        type="text"
         v-model="newName"
+        type="text"
         :value="entity?.title"
         @keydown.enter="
           (e) =>
@@ -15,12 +15,12 @@
         " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
-        <Button @click="open = false" class="ml-auto">Cancel</Button>
+        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
           appearance="primary"
           class="ml-4"
-          @click="$resources.rename.submit()"
-          :loading="$resources.rename.loading">
+          :loading="$resources.rename.loading"
+          @click="$resources.rename.submit()">
           Rename
         </Button>
       </div>
@@ -45,6 +45,7 @@ export default {
     entity: {
       type: Object,
       required: false,
+      default: null,
     },
   },
   emits: ["update:modelValue", "success"],

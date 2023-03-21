@@ -1,9 +1,9 @@
 <template>
-  <Dialog :options="{ title: 'New Folder' }" v-model="open">
+  <Dialog v-model="open" :options="{ title: 'New Folder' }">
     <template #body-content>
       <Input
-        type="text"
         v-model="folderName"
+        type="text"
         placeholder="Folder Name"
         @keydown.enter="
           (e) =>
@@ -17,8 +17,8 @@
     <template #actions>
       <Button
         appearance="primary"
-        @click="$resources.createFolder.submit()"
-        :loading="$resources.createFolder.loading">
+        :loading="$resources.createFolder.loading"
+        @click="$resources.createFolder.submit()">
         Create
       </Button>
       <Button @click="open = false">Cancel</Button>

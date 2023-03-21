@@ -1,10 +1,10 @@
 <template>
-  <div :class="divClass" v-on-outside-click="closePopup">
+  <div v-on-outside-click="closePopup" :class="divClass">
     <Input
-      iconLeft="search"
+      v-model="search"
+      icon-left="search"
       type="text"
       :class="{ 'bg-white focus:bg-white': isOpen }"
-      v-model="search"
       placeholder="Search"
       @focus="openPopup"
       @input="($event) => (search = $event)" />
@@ -12,8 +12,9 @@
       <div
         v-if="showEntities"
         v-for="entity in filteredEntities"
-        @click="openEntity(entity)"
-        class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3">
+        :key="entity"
+        class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3"
+        @click="openEntity(entity)">
         <div class="flex grow items-center">
           <img
             :src="
@@ -36,6 +37,7 @@
       <div v-else class="mx-2.5 mb-2.5 mt-6 space-x-2.5 flex">
         <div
           v-for="item in filterItems"
+          :key="item"
           class="w-28 border rounded-lg flex flex-col cursor-pointer"
           :class="{ 'bg-gray-200': selectedFilterItems[item.imgSrc] }"
           @click="
@@ -63,6 +65,9 @@ export default {
     Input,
   },
   emits: ["openEntity"],
+  setup() {
+    return { formatMimeType, getIconUrl };
+  },
   data() {
     return {
       search: "",
@@ -126,9 +131,6 @@ export default {
     closePopup() {
       this.isOpen = false;
     },
-  },
-  setup() {
-    return { formatMimeType, getIconUrl };
   },
   resources: {
     entities() {

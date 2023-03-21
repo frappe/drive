@@ -41,7 +41,7 @@
       class="px-5 py-6 space-y-7 h-full flex flex-col z-0 overflow-y-auto">
       <FileRender
         v-if="isImage && $store.state.showInfo"
-        :previewEntity="entity" />
+        :preview-entity="entity" />
       <div v-if="entity.owner === 'me'">
         <div class="text-lg font-medium mb-4">Manage Access</div>
         <div class="flex flex-row">
@@ -52,9 +52,10 @@
         <div class="text-lg font-medium mb-4">Tag</div>
         <div class="flex flex-wrap gap-2">
           <Tag
+            v-for="tag in $resources.entityTags.data"
+            :key="tag"
             :tag="tag"
             :entity="entity"
-            v-for="tag in $resources.entityTags.data"
             @success="
               () => {
                 $resources.userTags.fetch();
@@ -74,7 +75,7 @@
           v-if="addTag"
           :class="{ 'mt-2': $resources.entityTags.data.length }"
           :entity="entity"
-          :unaddedTags="unaddedTags"
+          :unadded-tags="unaddedTags"
           @success="
             () => {
               $resources.userTags.fetch();
@@ -108,18 +109,21 @@
     <div v-else class="px-5 py-6 h-full overflow-y-auto">
       <div v-if="entity.allow_comments" class="space-y-5">
         <div v-if="userId != 'Guest'" class="flex items-center gap-3">
-          <Avatar :label="fullName" :imageURL="imageURL" class="h-7 w-7" />
+          <Avatar :label="fullName" :image-u-r-l="imageURL" class="h-7 w-7" />
           <input
+            v-model="comment"
             type="text"
             placeholder="Add comment or update..."
-            @keydown.enter="postComment"
-            v-model="comment"
-            class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600" />
+            class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600"
+            @keydown.enter="postComment" />
         </div>
-        <div v-for="comment in $resources.comments.data" class="flex gap-3">
+        <div
+          v-for="comment in $resources.comments.data"
+          :key="comment"
+          class="flex gap-3">
           <Avatar
             :label="comment.comment_by"
-            :imageURL="comment.user_image"
+            :image-u-r-l="comment.user_image"
             class="h-7 w-7" />
           <div>
             <span class="mb-1">
@@ -143,12 +147,12 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entityName="entity.name" />
+      :entity-name="entity.name" />
   </div>
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, call } from "frappe-ui";
+import { FeatherIcon, Avatar, call } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
@@ -161,7 +165,6 @@ export default {
   components: {
     FeatherIcon,
     Avatar,
-    Input,
     ShareDialog,
     TagInput,
     Tag,
@@ -175,6 +178,10 @@ export default {
     },
   },
 
+  setup() {
+    return { formatMimeType, getIconUrl };
+  },
+
   data() {
     return {
       tab: 0,
@@ -182,24 +189,6 @@ export default {
       showShareDialog: false,
       addTag: false,
     };
-  },
-
-  methods: {
-    async postComment() {
-      try {
-        await call("frappe.desk.form.utils.add_comment", {
-          reference_doctype: "Drive Entity",
-          reference_name: this.entity.name,
-          content: this.comment,
-          comment_email: this.userId,
-          comment_by: this.fullName,
-        });
-        this.comment = "";
-        this.$resources.comments.fetch();
-      } catch (e) {
-        console.log(e);
-      }
-    },
   },
 
   computed: {
@@ -228,8 +217,22 @@ export default {
     },
   },
 
-  setup() {
-    return { formatMimeType, getIconUrl };
+  methods: {
+    async postComment() {
+      try {
+        await call("frappe.desk.form.utils.add_comment", {
+          reference_doctype: "Drive Entity",
+          reference_name: this.entity.name,
+          content: this.comment,
+          comment_email: this.userId,
+          comment_by: this.fullName,
+        });
+        this.comment = "";
+        this.$resources.comments.fetch();
+      } catch (e) {
+        console.log(e);
+      }
+    },
   },
 
   resources: {

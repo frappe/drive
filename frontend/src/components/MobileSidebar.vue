@@ -5,7 +5,7 @@
         <FrappeDriveLogo />
       </div>
       <div class="grow p-4">
-        <Sidebar @toggleMobileSidebar="open = !open" />
+        <Sidebar @toggle-mobile-sidebar="open = !open" />
       </div>
     </div>
     <div class="grow bg-black opacity-25" @click="open = !open"></div>

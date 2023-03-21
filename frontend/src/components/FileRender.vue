@@ -28,7 +28,7 @@
     v-if="isXlsx"
     id="ctr"
     class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll">
-    <div id="gridctr" v-once></div>
+    <div v-once id="gridctr"></div>
   </div>
   <div
     v-if="isPdf"
@@ -77,16 +77,16 @@ export default {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     };
   },
+  watch: {
+    previewEntity() {
+      this.renderContent();
+    },
+  },
   created() {
     this.$options.gridData = [];
   },
   mounted() {
     this.renderContent();
-  },
-  watch: {
-    previewEntity() {
-      this.renderContent();
-    },
   },
   methods: {
     renderContent() {
@@ -136,17 +136,16 @@ export default {
           this.textFileContent = data;
         }
         if (this.isDocx) {
-          docx
-            .renderAsync(
-              blob,
-              document.getElementById("container"),
-              document.getElementById("container"),
-              {
-                ignoreLastRenderedPageBreak: false,
-                experimental: true,
-              }
-            )
-            .then((x) => console.log("docx: finished"));
+          docx.renderAsync(
+            blob,
+            document.getElementById("container"),
+            document.getElementById("container"),
+            {
+              ignoreLastRenderedPageBreak: false,
+              experimental: true,
+            }
+          );
+          //.then((x) => console.log("docx: finished"));
         } else if (this.isXlsx) {
           const z = await blob.arrayBuffer();
           const wb = read(z);

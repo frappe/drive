@@ -9,30 +9,30 @@
       ref="container"
       class="h-full px-5 md:px-0"
       @mousedown="(event) => handleMousedown(event)">
-      <div class="mt-3" v-if="folders.length > 0">
+      <div v-if="folders.length > 0" class="mt-3">
         <div class="text-gray-600 font-medium">Folders</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
           <div
-            :id="folder.name"
-            class="md:w-[212px] rounded-lg border group select-none entity"
             v-for="folder in folders"
+            :id="folder.name"
             :key="folder.name"
+            class="md:w-[212px] rounded-lg border group select-none entity"
+            draggable="true"
+            :class="
+              selectedEntities.includes(folder)
+                ? 'bg-blue-100'
+                : 'hover:bg-blue-50'
+            "
             @dblclick="dblClickEntity(folder)"
             @click="selectEntity(folder, $event, displayOrderedEntities)"
             @contextmenu="
               handleEntityContext(folder, $event, displayOrderedEntities)
             "
-            draggable="true"
             @dragstart="dragStart(folder, $event)"
             @drop="onDrop(folder)"
             @dragenter.prevent
             @dragover.prevent
-            @mousedown.stop
-            :class="
-              selectedEntities.includes(folder)
-                ? 'bg-blue-100'
-                : 'hover:bg-blue-50'
-            ">
+            @mousedown.stop>
             <div class="h-28 md:h-32 place-items-center grid">
               <svg
                 :style="{ fill: folder.color }"
@@ -60,27 +60,27 @@
         </div>
       </div>
       <div
-        :class="folders.length > 0 ? 'mt-8' : 'mt-3'"
-        v-if="files.length > 0">
+        v-if="files.length > 0"
+        :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
         <div class="text-gray-600 font-medium">Files</div>
         <div class="flex flex-row flex-wrap gap-5 mt-4">
           <div
-            :id="file.name"
-            class="md:w-[212px] rounded-lg border group select-none entity"
             v-for="file in files"
+            :id="file.name"
             :key="file.name"
-            @dblclick="dblClickEntity(file)"
-            @click="selectEntity(file, $event, displayOrderedEntities)"
+            class="md:w-[212px] rounded-lg border group select-none entity"
             draggable="true"
-            @dragstart="dragStart(file, $event)"
-            @dragenter.prevent
-            @dragover.prevent
-            @mousedown.stop
             :class="
               selectedEntities.includes(file)
                 ? 'bg-blue-100'
                 : 'hover:bg-blue-50'
             "
+            @dblclick="dblClickEntity(file)"
+            @click="selectEntity(file, $event, displayOrderedEntities)"
+            @dragstart="dragStart(file, $event)"
+            @dragenter.prevent
+            @dragover.prevent
+            @mousedown.stop
             @contextmenu="
               handleEntityContext(file, $event, displayOrderedEntities)
             ">
@@ -119,19 +119,31 @@ import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
   name: "GridView",
+  props: {
+    folderContents: {
+      type: Array,
+      default: null,
+    },
+    selectedEntities: {
+      type: Array,
+      default: null,
+    },
+  },
+  emits: [
+    "entitySelected",
+    "openEntity",
+    "showEntityContext",
+    "showEmptyEntityContext",
+    "fetchFolderContents",
+  ],
+  setup() {
+    return { formatMimeType, getIconUrl };
+  },
   data: () => ({
     selectionElementStyle: {},
     selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
     containerRect: null,
   }),
-  props: {
-    folderContents: {
-      type: Array,
-    },
-    selectedEntities: {
-      type: Array,
-    },
-  },
   computed: {
     isEmpty() {
       return this.folderContents && this.folderContents.length === 0;
@@ -150,13 +162,21 @@ export default {
       return this.folders.concat(this.files);
     },
   },
-  emits: [
-    "entitySelected",
-    "openEntity",
-    "showEntityContext",
-    "showEmptyEntityContext",
-    "fetchFolderContents",
-  ],
+  mounted() {
+    if (this.isEmpty) return;
+    this.updateContainerRect();
+    document.addEventListener("mousemove", this.handleMousemove);
+    document.addEventListener("mouseup", this.handleMouseup);
+    visualViewport.addEventListener("resize", this.updateContainerRect);
+    this.selectAllListener = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
+        this.$emit("entitySelected", this.folderContents);
+    };
+    document.addEventListener("keydown", this.selectAllListener);
+  },
+  unmounted() {
+    document.removeEventListener("keydown", this.selectAllListener);
+  },
   methods: {
     handleMousedown(event) {
       this.deselectAll();
@@ -276,21 +296,6 @@ export default {
       this.$emit("fetchFolderContents");
     },
   },
-  mounted() {
-    if (this.isEmpty) return;
-    this.updateContainerRect();
-    document.addEventListener("mousemove", this.handleMousemove);
-    document.addEventListener("mouseup", this.handleMouseup);
-    visualViewport.addEventListener("resize", this.updateContainerRect);
-    this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
-        this.$emit("entitySelected", this.folderContents);
-    };
-    document.addEventListener("keydown", this.selectAllListener);
-  },
-  unmounted() {
-    document.removeEventListener("keydown", this.selectAllListener);
-  },
   resources: {
     moveEntity() {
       return {
@@ -308,9 +313,6 @@ export default {
         },
       };
     },
-  },
-  setup() {
-    return { formatMimeType, getIconUrl };
   },
 };
 </script>

@@ -32,10 +32,10 @@
                 ? 'bg-gray-100'
                 : 'hover:bg-gray-50'
             "
+            :draggable="true"
             @dblclick="dblClickEntity(entity)"
             @click="selectEntity(entity, $event, folderContents)"
             @contextmenu="handleEntityContext(entity, $event, folderContents)"
-            :draggable="true"
             @dragstart="dragStart(entity, $event)"
             @dragenter.prevent
             @dragover.prevent
@@ -90,32 +90,20 @@
   </div>
 </template>
 <script>
-import { FeatherIcon } from "frappe-ui";
 import { formatMimeType } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
   name: "GridView",
-  components: {
-    FeatherIcon,
-  },
-  data: () => ({
-    selectionElementStyle: {},
-    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
-    containerRect: null,
-  }),
   props: {
     folderContents: {
       type: Array,
+      default: null,
     },
     selectedEntities: {
       type: Array,
-    },
-  },
-  computed: {
-    isEmpty() {
-      return this.folderContents && this.folderContents.length === 0;
+      default: null,
     },
   },
   emits: [
@@ -125,6 +113,34 @@ export default {
     "showEmptyEntityContext",
     "fetchFolderContents",
   ],
+  setup() {
+    return { formatMimeType, getIconUrl };
+  },
+  data: () => ({
+    selectionElementStyle: {},
+    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    containerRect: null,
+  }),
+  computed: {
+    isEmpty() {
+      return this.folderContents && this.folderContents.length === 0;
+    },
+  },
+  mounted() {
+    if (this.isEmpty) return;
+    this.updateContainerRect();
+    document.addEventListener("mousemove", this.handleMousemove);
+    document.addEventListener("mouseup", this.handleMouseup);
+    visualViewport.addEventListener("resize", this.updateContainerRect);
+    this.selectAllListener = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
+        this.$emit("entitySelected", this.folderContents);
+    };
+    document.addEventListener("keydown", this.selectAllListener);
+  },
+  unmounted() {
+    document.removeEventListener("keydown", this.selectAllListener);
+  },
   methods: {
     handleMousedown(event) {
       this.deselectAll();
@@ -185,7 +201,6 @@ export default {
         this.$emit("entitySelected", selectedEntities);
       } else if (event.shiftKey) {
         let shiftSelect;
-        const index = selectedEntities.indexOf(entity);
         selectedEntities.push(entity);
         const firstIndex = entities.indexOf(selectedEntities[0]);
         const lastIndex = entities.indexOf(
@@ -247,21 +262,6 @@ export default {
       return entity.is_group ? this.onDrop(entity) : null;
     },
   },
-  mounted() {
-    if (this.isEmpty) return;
-    this.updateContainerRect();
-    document.addEventListener("mousemove", this.handleMousemove);
-    document.addEventListener("mouseup", this.handleMouseup);
-    visualViewport.addEventListener("resize", this.updateContainerRect);
-    this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
-        this.$emit("entitySelected", this.folderContents);
-    };
-    document.addEventListener("keydown", this.selectAllListener);
-  },
-  unmounted() {
-    document.removeEventListener("keydown", this.selectAllListener);
-  },
   resources: {
     moveEntity() {
       return {
@@ -279,9 +279,6 @@ export default {
         },
       };
     },
-  },
-  setup() {
-    return { formatMimeType, getIconUrl };
   },
 };
 </script>

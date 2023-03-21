@@ -15,24 +15,24 @@
           </div>
 
           <div class="flex items-center gap-4">
-            <button @click="toggleCollapsed" class="focus:outline-none">
+            <button class="focus:outline-none" @click="toggleCollapsed">
               <FeatherIcon
                 :name="collapsed ? 'chevron-up' : 'chevron-down'"
                 class="h-5 w-5 text-gray-800" />
             </button>
             <button
               v-if="uploads.length === uploadsCompleted.length"
-              @click="close"
-              class="focus:outline-none">
+              class="focus:outline-none"
+              @click="close">
               <FeatherIcon name="x" class="h-5 w-5 text-gray-800" />
             </button>
           </div>
         </div>
-        <div class="max-h-64 overflow-y-auto bg-white" v-if="!collapsed">
+        <div v-if="!collapsed" class="max-h-64 overflow-y-auto bg-white">
           <div
-            class="truncate border-b"
             v-for="upload in uploads"
-            :key="upload.uuid">
+            :key="upload.uuid"
+            class="truncate border-b">
             <div class="flex items-center gap-3 p-4">
               <div
                 v-if="upload.completed"
@@ -41,7 +41,7 @@
                 <FeatherIcon
                   :name="upload.error ? 'x' : 'check'"
                   class="h-3.5 w-3.5"
-                  :strokeWidth="2.5" />
+                  :stroke-width="2.5" />
               </div>
               <div v-else class="h-8 w-8 rounded-full">
                 <ProgressRing

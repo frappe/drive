@@ -1,16 +1,16 @@
 <template>
   <i class="fa fa-qq" aria-hidden="true"></i>
-  <Dialog :options="{ title: dialogData.title }" v-model="open">
+  <Dialog v-model="open" :options="{ title: dialogData.title }">
     <template #body-content>
       <p class="text-gray-600">{{ dialogData.message }}</p>
       <div class="flex mt-5">
-        <Button @click="open = false" class="ml-auto">Cancel</Button>
+        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
           :appearance="dialogData.appearance"
-          :iconLeft="dialogData.buttonIcon"
+          :icon-left="dialogData.buttonIcon"
           class="ml-4"
-          @click="$resources.method.submit()"
-          :loading="$resources.method.loading">
+          :loading="$resources.method.loading"
+          @click="$resources.method.submit()">
           {{ dialogData.buttonMessage }}
         </Button>
       </div>
@@ -18,7 +18,7 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, Input } from "frappe-ui";
+import { Dialog } from "frappe-ui";
 import { del } from "idb-keyval";
 
 export default {
@@ -26,7 +26,6 @@ export default {
 
   components: {
     Dialog,
-    Input,
   },
 
   props: {
@@ -40,6 +39,7 @@ export default {
     },
     for: {
       type: String,
+      default: null,
     },
   },
 
@@ -82,6 +82,8 @@ export default {
             buttonIcon: "trash-2",
             methodName: "drive.api.files.remove_or_restore",
           };
+        default:
+          return {};
       }
     },
     open: {

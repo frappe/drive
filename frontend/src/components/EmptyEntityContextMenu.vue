@@ -1,8 +1,8 @@
 <template>
   <div
+    v-if="actionItems.length > 0"
     class="bg-white rounded-xl absolute shadow-md p-2 z-10 space-y-0.5 border"
-    :style="{ left: `${entityContext.x}px`, top: `${entityContext.y}px` }"
-    v-if="actionItems.length > 0">
+    :style="{ left: `${entityContext.x}px`, top: `${entityContext.y}px` }">
     <div
       v-for="(item, index) in actionItems"
       :key="index"
@@ -29,12 +29,15 @@ export default {
   props: {
     actionItems: {
       type: Array,
+      default: null,
     },
     entityContext: {
       type: Object,
+      default: null,
     },
     close: {
       type: Function,
+      default: null,
     },
   },
 };
