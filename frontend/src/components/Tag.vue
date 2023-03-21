@@ -29,7 +29,7 @@
                 class="w-3 h-3 text-gray-700 ml-auto" />
             </div>
           </template>
-          <template #body-main="{ togglePopover }">
+          <template #body-main="{ togglePopover: toggleColors }">
             <div class="p-1 space-x-1 flex">
               <button
                 v-for="color in colors"
@@ -40,7 +40,7 @@
                     tag: tag.name,
                     color: color,
                   });
-                  togglePopover();
+                  toggleColors();
                 " />
             </div>
           </template>

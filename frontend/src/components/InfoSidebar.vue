@@ -111,7 +111,7 @@
         <div v-if="userId != 'Guest'" class="flex items-center gap-3">
           <Avatar :label="fullName" :image-u-r-l="imageURL" class="h-7 w-7" />
           <input
-            v-model="comment"
+            v-model="newComment"
             type="text"
             placeholder="Add comment or update..."
             class="grow h-10 bg-white focus:bg-white border border-gray-200 focus:border-gray-200 rounded-lg text-[13px] placeholder-gray-600"
@@ -185,7 +185,7 @@ export default {
   data() {
     return {
       tab: 0,
-      comment: "",
+      newComment: "",
       showShareDialog: false,
       addTag: false,
     };
@@ -223,11 +223,11 @@ export default {
         await call("frappe.desk.form.utils.add_comment", {
           reference_doctype: "Drive Entity",
           reference_name: this.entity.name,
-          content: this.comment,
+          content: this.newComment,
           comment_email: this.userId,
           comment_by: this.fullName,
         });
-        this.comment = "";
+        this.newComment = "";
         this.$resources.comments.fetch();
       } catch (e) {
         console.log(e);

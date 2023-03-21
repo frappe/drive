@@ -16,7 +16,7 @@
           label: 'Log out',
         },
       ]">
-      <template v-slot="{ open }">
+      <template #default="{ open }">
         <Button :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'">
           Drop
         </Button>

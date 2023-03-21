@@ -9,29 +9,30 @@
       @focus="openPopup"
       @input="($event) => (search = $event)" />
     <div v-if="isOpen" class="mt-3">
-      <div
-        v-if="showEntities"
-        v-for="entity in filteredEntities"
-        :key="entity"
-        class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3"
-        @click="openEntity(entity)">
-        <div class="flex grow items-center">
-          <img
-            :src="
-              getIconUrl(
-                entity.is_group ? 'folder' : formatMimeType(entity.mime_type)
-              )
-            "
-            class="w-6 mr-4" />
-          <div>
-            <div class="text-lg text-gray-900 font-medium truncate">
-              {{ entity.title }}
+      <div v-if="showEntities">
+        <div
+          v-for="entity in filteredEntities"
+          :key="entity"
+          class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3"
+          @click="openEntity(entity)">
+          <div class="flex grow items-center">
+            <img
+              :src="
+                getIconUrl(
+                  entity.is_group ? 'folder' : formatMimeType(entity.mime_type)
+                )
+              "
+              class="w-6 mr-4" />
+            <div>
+              <div class="text-lg text-gray-900 font-medium truncate">
+                {{ entity.title }}
+              </div>
+              <div class="text-[13px] text-gray-600">{{ entity.owner }}</div>
             </div>
-            <div class="text-[13px] text-gray-600">{{ entity.owner }}</div>
           </div>
-        </div>
-        <div class="text-[13px] text-gray-600 whitespace-nowrap my-auto">
-          {{ entity.modified }}
+          <div class="text-[13px] text-gray-600 whitespace-nowrap my-auto">
+            {{ entity.modified }}
+          </div>
         </div>
       </div>
       <div v-else class="mx-2.5 mb-2.5 mt-6 space-x-2.5 flex">
