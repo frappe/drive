@@ -36,15 +36,53 @@
         <div class="m-auto">Comments</div>
       </div>
     </div>
-    <div v-if="!tab" class="px-5 py-6 space-y-7 h-full flex flex-col z-0">
+    <div
+      v-if="!tab"
+      class="px-5 py-6 space-y-7 h-full flex flex-col z-0 overflow-y-auto">
       <FileRender
         v-if="isImage && $store.state.showInfo"
         :previewEntity="entity" />
       <div v-if="entity.owner === 'me'">
         <div class="text-lg font-medium mb-4">Manage Access</div>
         <div class="flex flex-row">
-          <Button @click="showShareDialog = true">Share</Button>
+          <Button class="h-7" @click="showShareDialog = true">Share</Button>
         </div>
+      </div>
+      <div v-if="entity.owner === 'me' || $resources.entityTags.data?.length">
+        <div class="text-lg font-medium mb-4">Tag</div>
+        <div class="flex flex-wrap gap-2">
+          <Tag
+            :tag="tag"
+            :entity="entity"
+            v-for="tag in $resources.entityTags.data"
+            @success="
+              () => {
+                $resources.userTags.fetch();
+                $resources.entityTags.fetch();
+              }
+            " />
+          <Button
+            v-if="!addTag && entity.owner === 'me'"
+            class="h-6 text-[12px] text-gray-800"
+            icon-left="plus"
+            @click="addTag = true">
+            Add tag
+          </Button>
+        </div>
+
+        <TagInput
+          v-if="addTag"
+          :class="{ 'mt-2': $resources.entityTags.data.length }"
+          :entity="entity"
+          :unaddedTags="unaddedTags"
+          @success="
+            () => {
+              $resources.userTags.fetch();
+              $resources.entityTags.fetch();
+              addTag = false;
+            }
+          "
+          @close="addTag = false" />
       </div>
       <div class="grow">
         <div class="text-lg font-medium mb-4">Properties</div>
@@ -112,8 +150,10 @@
 <script>
 import { FeatherIcon, Avatar, Input, call } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
-import { formatMimeType, formatDate } from "@/utils/format";
+import TagInput from "@/components/TagInput.vue";
+import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
+import { formatMimeType, formatDate } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 
 export default {
@@ -123,6 +163,8 @@ export default {
     Avatar,
     Input,
     ShareDialog,
+    TagInput,
+    Tag,
     FileRender,
   },
 
@@ -138,6 +180,7 @@ export default {
       tab: 0,
       comment: "",
       showShareDialog: false,
+      addTag: false,
     };
   },
 
@@ -177,6 +220,12 @@ export default {
       const file = formatMimeType(this.entity.mime_type);
       return file.charAt(0).toUpperCase() + file.slice(1);
     },
+    unaddedTags() {
+      return this.$resources.userTags.data.filter(
+        ({ name: id1 }) =>
+          !this.$resources.entityTags.data.some(({ name: id2 }) => id2 === id1)
+      );
+    },
   },
 
   setup() {
@@ -195,6 +244,29 @@ export default {
         },
         onError(error) {
           console.log(error);
+        },
+        auto: true,
+      };
+    },
+    userTags() {
+      return {
+        url: "drive.api.tags.get_user_tags",
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+        auto: true,
+      };
+    },
+    entityTags() {
+      return {
+        url: "drive.api.tags.get_entity_tags",
+        params: { entity: this.entity.name },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
         },
         auto: true,
       };
