@@ -199,19 +199,24 @@ export default {
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
-            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
-              await this.$resources.moveEntity.submit({
-                method: "move",
-                entity_name: this.$store.state.cutEntities[i],
-                new_parent: this.entityName,
-              });
-            }
+            if (this.$store.state.pasteData.action === "cut")
+              for (
+                let i = 0;
+                i < this.$store.state.pasteData.entities.length;
+                i++
+              ) {
+                await this.$resources.moveEntity.submit({
+                  method: "move",
+                  entity_name: this.$store.state.pasteData.entities[i],
+                  new_parent: this.entityName,
+                });
+              }
             this.selectedEntities = [];
-            this.$store.commit("setCutEntities", []);
+            this.$store.commit("setPasteData", { entities: [], action: null });
             this.$resources.folderContents.fetch();
           },
           isEnabled: () =>
-            this.$store.state.cutEntities.length > 0 &&
+            this.$store.state.pasteData.entities.length &&
             this.$store.state.hasWriteAccess,
         },
       ].filter((item) => item.isEnabled());
@@ -285,13 +290,26 @@ export default {
           },
         },
         {
+          label: "Copy",
+          icon: "clipboard",
+          handler: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "copy",
+            });
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
+          },
+        },
+        {
           label: "Cut",
           icon: "scissors",
           handler: () => {
-            this.$store.commit(
-              "setCutEntities",
-              this.selectedEntities.map((x) => x.name)
-            );
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "cut",
+            });
           },
           isEnabled: () => {
             return (
@@ -304,20 +322,25 @@ export default {
           label: "Paste into Folder",
           icon: "clipboard",
           handler: async () => {
-            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
-              await this.$resources.moveEntity.submit({
-                method: "move",
-                entity_name: this.$store.state.cutEntities[i],
-                new_parent: this.selectedEntities[0].name,
-              });
-            }
+            if (this.$store.state.pasteData.action === "cut")
+              for (
+                let i = 0;
+                i < this.$store.state.pasteData.entities.length;
+                i++
+              ) {
+                await this.$resources.moveEntity.submit({
+                  method: "move",
+                  entity_name: this.$store.state.pasteData.entities[i],
+                  new_parent: this.selectedEntities[0].name,
+                });
+              }
             this.selectedEntities = [];
-            this.$store.commit("setCutEntities", []);
+            this.$store.commit("setPasteData", { entities: [], action: null });
             this.$resources.folderContents.fetch();
           },
           isEnabled: () => {
             return (
-              this.$store.state.cutEntities.length > 0 &&
+              this.$store.state.pasteData.entities.length &&
               this.selectedEntities.length === 1 &&
               (this.selectedEntities[0].write ||
                 this.selectedEntities[0].owner === "me")
