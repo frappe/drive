@@ -202,18 +202,19 @@ export default {
           label: "Paste into Folder",
           icon: "clipboard",
           handler: async () => {
-            if (this.$store.state.pasteData.action === "cut")
-              for (
-                let i = 0;
-                i < this.$store.state.pasteData.entities.length;
-                i++
-              ) {
-                await this.$resources.moveEntity.submit({
-                  method: "move",
-                  entity_name: this.$store.state.pasteData.entities[i],
-                  new_parent: this.selectedEntities[0].name,
-                });
-              }
+            const method =
+              this.$store.state.pasteData.action === "cut" ? "move" : "copy";
+            for (
+              let i = 0;
+              i < this.$store.state.pasteData.entities.length;
+              i++
+            ) {
+              await this.$resources.pasteEntity.submit({
+                method,
+                entity_name: this.$store.state.pasteData.entities[i],
+                new_parent: this.selectedEntities[0].name,
+              });
+            }
             this.selectedEntities = [];
             this.$store.commit("setPasteData", { entities: [], action: null });
             this.$resources.folderContents.fetch();
@@ -342,15 +343,10 @@ export default {
       };
     },
 
-    moveEntity() {
+    pasteEntity() {
       return {
         url: "drive.api.files.call_controller_method",
         method: "POST",
-        params: {
-          method: "move",
-          entity_name: "entity name",
-          new_parent: "new entity parent",
-        },
         validate(params) {
           if (!params?.new_parent) {
             return "New parent is required";

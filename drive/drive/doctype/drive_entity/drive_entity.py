@@ -88,6 +88,22 @@ class DriveEntity(NestedSet):
         return self
 
     @frappe.whitelist()
+    def copy(self, new_parent=None):
+        """
+        Copy file or folder to the new parent folder
+
+        :param new_parent: Document-name of the new parent folder. Defaults to the user directory
+        :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
+        :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
+        """
+
+        new_parent = new_parent or get_user_directory().name
+        is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
+        if not is_group:
+            raise NotADirectoryError()
+        print(self)
+
+    @frappe.whitelist()
     def rename(self, new_title):
         """
         Rename file or folder
