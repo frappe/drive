@@ -385,7 +385,7 @@ def unshare_entities(entity_names, move=False):
         if not doc:
             frappe.throw("Entity does not exist", ValueError)
         if move:
-            doc.move_to_owners_root()
+            doc.move()
         doc.unshare(frappe.session.user)
 
 
@@ -528,7 +528,7 @@ def remove_or_restore(entity_names):
                 doc.parent_before_trash = entity_ancestors[0]
             else:
                 doc.parent_before_trash = get_user_directory()
-            doc.move_to_owners_root()
+            doc.move()
             
 
         else:

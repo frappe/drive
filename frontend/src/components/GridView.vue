@@ -217,7 +217,7 @@ export default {
       this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
     },
     updateContainerRect() {
-      this.containerRect = this.$refs["container"].getBoundingClientRect();
+      this.containerRect = this.$refs["container"]?.getBoundingClientRect();
     },
     getFileSubtitle(file) {
       let fileSubtitle = formatMimeType(file.mime_type);

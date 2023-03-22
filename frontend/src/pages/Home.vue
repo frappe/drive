@@ -189,8 +189,8 @@ export default {
                 i < this.$store.state.pasteData.entities.length;
                 i++
               ) {
-                await this.$resources.moveEntityToRoot.submit({
-                  method: "move_to_owners_root",
+                await this.$resources.moveEntity.submit({
+                  method: "move",
                   entity_name: this.$store.state.pasteData.entities[i],
                 });
               }
@@ -565,22 +565,6 @@ export default {
           method: "move",
           entity_name: "entity name",
           new_parent: "new entity parent",
-        },
-        validate(params) {
-          if (!params?.new_parent) {
-            return "New parent is required";
-          }
-        },
-      };
-    },
-
-    moveEntityToRoot() {
-      return {
-        url: "drive.api.files.call_controller_method",
-        method: "POST",
-        params: {
-          method: "move_to_owners_root",
-          entity_name: "entity name",
         },
       };
     },

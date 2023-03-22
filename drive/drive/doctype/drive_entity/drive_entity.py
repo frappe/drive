@@ -88,19 +88,6 @@ class DriveEntity(NestedSet):
         return self
 
     @frappe.whitelist()
-    def move_to_owners_root(self):
-        """
-        To move entity to the root entity of its owner
-        """
-
-        owners_root_entity = frappe.get_last_doc(
-            'Drive Entity', filters={
-                "owner": self.owner,
-                "parent_drive_entity": ""
-            })
-        self.move(owners_root_entity.name)
-
-    @frappe.whitelist()
     def rename(self, new_title):
         """
         Rename file or folder
