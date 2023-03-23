@@ -506,7 +506,7 @@ export default {
           "X-Frappe-CSRF-Token": window.csrf_token,
           Accept: "application/json",
         },
-        sending: function (file, formData) {
+        sending: function (file, xhr, formData) {
           file.parent ? formData.append("parent", file.parent) : null;
           file.webkitRelativePath
             ? formData.append(
@@ -525,7 +525,7 @@ export default {
               )
             : null;
         },
-        params: function (chunk) {
+        params: function (files, xhr, chunk) {
           if (chunk) {
             return {
               uuid: chunk.file.upload.uuid,
