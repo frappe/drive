@@ -310,7 +310,8 @@ export default {
           isEnabled: () => {
             return (
               this.$store.state.pasteData.entities.length &&
-              this.selectedEntities.length === 1
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group
             );
           },
         },

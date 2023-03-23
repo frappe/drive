@@ -2,10 +2,11 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils.nestedset import NestedSet
+from frappe.utils.nestedset import NestedSet, get_ancestors_of
 from pathlib import Path
 import shutil
-from drive.utils.files import get_user_directory
+import uuid
+from drive.utils.files import get_user_directory, create_user_directory
 
 
 class DriveEntity(NestedSet):
@@ -90,18 +91,70 @@ class DriveEntity(NestedSet):
     @frappe.whitelist()
     def copy(self, new_parent=None):
         """
-        Copy file or folder to the new parent folder
+        Copy file or folder along with its contents to the new parent folder
 
         :param new_parent: Document-name of the new parent folder. Defaults to the user directory
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
 
-        new_parent = new_parent or get_user_directory().name
+        try:
+            user_directory = get_user_directory()
+        except FileNotFoundError:
+            user_directory = create_user_directory()
+        new_parent = new_parent or user_directory.name
         is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
         if not is_group:
             raise NotADirectoryError()
-        print(self)
+        if not frappe.has_permission(doctype='Drive Entity', doc=new_parent, ptype='write', user=frappe.session.user):
+            frappe.throw(
+                'Cannot paste to this folder due to insufficient permissions', frappe.PermissionError)
+        if self.name == new_parent or self.name in get_ancestors_of('Drive Entity', new_parent):
+            frappe.throw('You cannot copy a folder into itself')
+
+        name = uuid.uuid4().hex
+
+        if self.is_group:
+            drive_entity = frappe.get_doc({
+                'doctype': 'Drive Entity',
+                'name': name,
+                'title': self.title,
+                'is_group': 1,
+                'parent_drive_entity': new_parent,
+                'color': self.color,
+            })
+            drive_entity.insert()
+
+            for child in self.get_children():
+                child.copy(name)
+
+        else:
+            save_path = Path(user_directory.path) / \
+                f'{new_parent}_{self.title}'
+            if save_path.exists():
+                frappe.throw(
+                    f"File '{self.title}' already exists", FileExistsError)
+
+            shutil.copy(self.path, save_path)
+
+            path = save_path.parent / f'{name}{save_path.suffix}'
+            save_path.rename(path)
+            drive_entity = frappe.get_doc({
+                'doctype': 'Drive Entity',
+                'name': name,
+                'title': self.title,
+                'parent_drive_entity': new_parent,
+                'path': path,
+                'file_size': self.file_size,
+                'file_ext': self.file_ext,
+                'mime_type': self.mime_type
+            })
+            drive_entity.flags.file_created = True
+            frappe.local.rollback_observers.append(drive_entity)
+            drive_entity.insert()
+
+        if new_parent == user_directory.name:
+            drive_entity.share(frappe.session.user, write=1, share=1)
 
     @frappe.whitelist()
     def rename(self, new_title):

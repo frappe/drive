@@ -344,6 +344,7 @@ export default {
             return (
               this.$store.state.pasteData.entities.length &&
               this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group &&
               (this.selectedEntities[0].write ||
                 this.selectedEntities[0].owner === "me")
             );

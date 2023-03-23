@@ -68,7 +68,6 @@ def upload_file(fullpath=None, parent=None):
     total_chunks = int(frappe.form_dict.total_chunk_count)
     save_path = Path(user_directory.path) / \
         f'{parent}_{secure_filename(file.filename)}'
-    print(save_path)
 
     if current_chunk == 0 and save_path.exists():
         frappe.throw(f"File '{file.filename}' already exists", FileExistsError)
