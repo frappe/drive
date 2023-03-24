@@ -31,6 +31,8 @@ const store = createStore({
     pasteData: { entities: [], action: null },
     showInfo: false,
     hasWriteAccess: false,
+    // Default to empty string to upload to user Home folder
+    currentFolderID: "",
   },
   getters: {
     isLoggedIn: (state) => {
@@ -81,6 +83,9 @@ const store = createStore({
     },
     setHasWriteAccess(state, payload) {
       state.hasWriteAccess = payload;
+    },
+    setCurrentFolderID(state, payload) {
+      state.currentFolderID = payload;
     },
   },
   actions: {

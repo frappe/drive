@@ -100,12 +100,10 @@
       v-model="showShareDialog"
       :entity-name="shareName"
       @success="$resources.folderContents.fetch()" />
-    <div id="dropzoneElement" class="hidden" />
   </div>
 </template>
 
 <script>
-import Dropzone from "dropzone";
 import ListView from "@/components/ListView.vue";
 import GridView from "@/components/GridView.vue";
 import DriveToolBar from "@/components/DriveToolBar.vue";
@@ -121,7 +119,7 @@ import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
 
 export default {
-  name: "Home",
+  name: "Folder",
   components: {
     ListView,
     GridView,
@@ -144,7 +142,6 @@ export default {
     },
   },
   data: () => ({
-    dropzone: null,
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
@@ -419,8 +416,6 @@ export default {
         !!this.$resources.folderAccess.data?.write
       );
       this.selectedEntities = [];
-      if (!this.dropzone && this.$store.state.hasWriteAccess)
-        this.initializeDropzone();
     },
   },
 
@@ -446,6 +441,7 @@ export default {
     };
     window.addEventListener("keydown", this.deleteListener);
 
+    await this.$store.commit("setCurrentFolderID", this.entityName);
     window.addEventListener(
       "dragover",
       function (e) {
@@ -472,115 +468,14 @@ export default {
     this.emitter.on("fetchFolderContents", () => {
       componentContext.$resources.folderContents.fetch();
     });
-    if (this.$store.state.hasWriteAccess) this.initializeDropzone();
   },
 
   unmounted() {
     window.removeEventListener("keydown", this.pasteListener);
     window.removeEventListener("keydown", this.deleteListener);
     this.$store.commit("setHasWriteAccess", false);
-    if (this.dropzone) this.dropzone.destroy();
   },
   methods: {
-    initializeDropzone() {
-      let componentContext = this;
-      this.dropzone = new Dropzone(this.$el.parentNode, {
-        paramName: "file",
-        parallelUploads: 1,
-        autoProcessQueue: true,
-        uploadMultiple: false,
-        clickable: "#dropzoneElement",
-        previewsContainer: "#dropzoneElement",
-        chunking: true,
-        forceChunking: true,
-        url: "/api/method/drive.api.files.upload_file",
-        maxFilesize: 10 * 1024, // 10GB
-        chunkSize: 5 * 1024 * 1024, // 5MB
-        headers: {
-          "X-Frappe-CSRF-Token": window.csrf_token,
-          Accept: "application/json",
-        },
-        sending: function (file, xhr, formData) {
-          file.parent ? formData.append("parent", file.parent) : null;
-          file.webkitRelativePath
-            ? formData.append(
-                "fullpath",
-                file.webkitRelativePath.slice(
-                  0,
-                  file.webkitRelativePath.indexOf("/")
-                )
-              )
-            : null;
-          // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
-          file.fullPath
-            ? formData.append(
-                "fullpath",
-                file.fullPath.slice(0, file.fullPath.indexOf("/"))
-              )
-            : null;
-        },
-        params: function (files, xhr, chunk) {
-          if (chunk) {
-            return {
-              uuid: chunk.file.upload.uuid,
-              chunk_index: chunk.index,
-              total_file_size: chunk.file.size,
-              chunk_size: this.options.chunkSize,
-              total_chunk_count: chunk.file.upload.totalChunkCount,
-              chunk_byte_offset: chunk.index * this.options.chunkSize,
-            };
-          }
-        },
-      });
-      this.dropzone.on("addedfile", function (file) {
-        file.parent = componentContext.entityName;
-        componentContext.$store.commit("pushToUploads", {
-          uuid: file.upload.uuid,
-          name: file.name,
-          progress: 0,
-        });
-      });
-      this.dropzone.on("uploadprogress", function (file, progress) {
-        componentContext.$store.commit("updateUpload", {
-          uuid: file.upload.uuid,
-          progress: progress,
-        });
-      });
-      this.dropzone.on("error", function (file, message) {
-        let error_message;
-        if (message._server_messages) {
-          error_message = JSON.parse(message._server_messages)
-            .map((element) => JSON.parse(element).message)
-            .join("\n");
-        }
-        error_message = error_message || "Upload failed";
-        componentContext.$store.commit("updateUpload", {
-          uuid: file.upload.uuid,
-          error: error_message,
-        });
-      });
-      this.dropzone.on("complete", function (file) {
-        componentContext.$resources.folderContents.fetch();
-        componentContext.$store.commit("updateUpload", {
-          uuid: file.upload.uuid,
-          completed: true,
-        });
-      });
-      this.emitter.on("uploadFile", () => {
-        if (componentContext.dropzone.hiddenFileInput)
-          componentContext.dropzone.hiddenFileInput.click();
-      });
-      this.emitter.on("uploadFolder", () => {
-        if (componentContext.dropzone.hiddenFileInput) {
-          componentContext.dropzone.hiddenFileInput.setAttribute(
-            "webkitdirectory",
-            true
-          );
-          componentContext.dropzone.hiddenFileInput.click();
-        }
-      });
-    },
-
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
@@ -639,6 +534,9 @@ export default {
       this.showEntityContext = false;
       this.showEmptyEntityContextMenu = false;
       this.entityContext = undefined;
+    },
+    triggerFetchFolderEmit() {
+      this.emitter.emit("fetchFolderContents");
     },
   },
 

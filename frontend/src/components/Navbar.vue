@@ -1,5 +1,8 @@
 <template>
-  <nav class="bg-white border-b">
+  <nav
+    ondragstart="return false;"
+    ondrop="return false;"
+    class="bg-white border-b">
     <div
       class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
       <div class="flex items-center">
