@@ -89,7 +89,7 @@ class DriveEntity(NestedSet):
         return self
 
     @frappe.whitelist()
-    def copy(self, new_parent=None):
+    def copy(self, new_parent=None, parent_user_directory=None):
         """
         Copy file or folder along with its contents to the new parent folder
 
@@ -98,19 +98,23 @@ class DriveEntity(NestedSet):
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
 
-        try:
-            user_directory = get_user_directory()
-        except FileNotFoundError:
-            user_directory = create_user_directory()
-        new_parent = new_parent or user_directory.name
-        is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
-        if not is_group:
-            raise NotADirectoryError()
-        if not frappe.has_permission(doctype='Drive Entity', doc=new_parent, ptype='write', user=frappe.session.user):
-            frappe.throw(
-                'Cannot paste to this folder due to insufficient permissions', frappe.PermissionError)
-        if self.name == new_parent or self.name in get_ancestors_of('Drive Entity', new_parent):
-            frappe.throw('You cannot copy a folder into itself')
+        if not parent_user_directory:
+            parent_owner = frappe.db.get_value(
+                'Drive Entity', new_parent, 'owner') if new_parent else frappe.session.user
+            try:
+                parent_user_directory = get_user_directory(parent_owner)
+            except FileNotFoundError:
+                parent_user_directory = create_user_directory()
+            new_parent = new_parent or parent_user_directory.name
+            parent_is_group = frappe.db.get_value(
+                'Drive Entity', new_parent, 'is_group')
+            if not parent_is_group:
+                raise NotADirectoryError()
+            if not frappe.has_permission(doctype='Drive Entity', doc=new_parent, ptype='write', user=frappe.session.user):
+                frappe.throw(
+                    'Cannot paste to this folder due to insufficient permissions', frappe.PermissionError)
+            if self.name == new_parent or self.name in get_ancestors_of('Drive Entity', new_parent):
+                frappe.throw('You cannot copy a folder into itself')
 
         name = uuid.uuid4().hex
 
@@ -126,10 +130,10 @@ class DriveEntity(NestedSet):
             drive_entity.insert()
 
             for child in self.get_children():
-                child.copy(name)
+                child.copy(name, parent_user_directory)
 
         else:
-            save_path = Path(user_directory.path) / \
+            save_path = Path(parent_user_directory.path) / \
                 f'{new_parent}_{self.title}'
             if save_path.exists():
                 frappe.throw(
@@ -153,7 +157,7 @@ class DriveEntity(NestedSet):
             frappe.local.rollback_observers.append(drive_entity)
             drive_entity.insert()
 
-        if new_parent == user_directory.name:
+        if new_parent == parent_user_directory.name:
             drive_entity.share(frappe.session.user, write=1, share=1)
 
     @frappe.whitelist()
