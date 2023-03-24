@@ -199,6 +199,19 @@ export default {
           },
         },
         {
+          label: "Copy",
+          icon: "copy",
+          handler: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "copy",
+            });
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
+          },
+        },
+        {
           label: "Paste into Folder",
           icon: "clipboard",
           handler: async () => {

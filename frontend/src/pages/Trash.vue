@@ -187,6 +187,11 @@ export default {
   },
 
   mounted() {
+    this.deleteListener = (e) => {
+      if (e.key === "Delete" && this.selectedEntities.length)
+        this.showDeleteDialog = true;
+    };
+    window.addEventListener("keydown", this.deleteListener);
     window.addEventListener(
       "dragover",
       function (e) {
@@ -203,6 +208,9 @@ export default {
       },
       false
     );
+  },
+  unmounted() {
+    window.removeEventListener("keydown", this.deleteListener);
   },
   methods: {
     toggleEntityContext(event) {

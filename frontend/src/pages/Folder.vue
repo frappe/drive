@@ -199,22 +199,7 @@ export default {
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
-            const method =
-              this.$store.state.pasteData.action === "cut" ? "move" : "copy";
-            for (
-              let i = 0;
-              i < this.$store.state.pasteData.entities.length;
-              i++
-            ) {
-              await this.$resources.pasteEntity.submit({
-                method,
-                entity_name: this.$store.state.pasteData.entities[i],
-                new_parent: this.entityName,
-              });
-            }
-            this.selectedEntities = [];
-            this.$store.commit("setPasteData", { entities: [], action: null });
-            this.$resources.folderContents.fetch();
+            this.pasteEntities(this.entityName);
           },
           isEnabled: () =>
             this.$store.state.pasteData.entities.length &&
@@ -302,7 +287,7 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me")
+              this.selectedEntities.every((x) => x.owner === "me" || x.write)
             );
           },
         },
@@ -323,22 +308,7 @@ export default {
           label: "Paste into Folder",
           icon: "clipboard",
           handler: async () => {
-            const method =
-              this.$store.state.pasteData.action === "cut" ? "move" : "copy";
-            for (
-              let i = 0;
-              i < this.$store.state.pasteData.entities.length;
-              i++
-            ) {
-              await this.$resources.pasteEntity.submit({
-                method,
-                entity_name: this.$store.state.pasteData.entities[i],
-                new_parent: this.selectedEntities[0].name,
-              });
-            }
-            this.selectedEntities = [];
-            this.$store.commit("setPasteData", { entities: [], action: null });
-            this.$resources.folderContents.fetch();
+            this.pasteEntities(this.selectedEntities[0].name);
           },
           isEnabled: () => {
             return (
@@ -455,6 +425,27 @@ export default {
   },
 
   async mounted() {
+    this.pasteListener = (e) => {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "v" || e.key === "V") &&
+        this.$store.state.pasteData.entities.length &&
+        this.$store.state.hasWriteAccess
+      )
+        this.pasteEntities(this.entityName);
+    };
+    window.addEventListener("keydown", this.pasteListener);
+
+    this.deleteListener = (e) => {
+      if (
+        e.key === "Delete" &&
+        this.selectedEntities.length &&
+        this.selectedEntities.every((x) => x.owner === "me")
+      )
+        this.showRemoveDialog = true;
+    };
+    window.addEventListener("keydown", this.deleteListener);
+
     window.addEventListener(
       "dragover",
       function (e) {
@@ -485,6 +476,8 @@ export default {
   },
 
   unmounted() {
+    window.removeEventListener("keydown", this.pasteListener);
+    window.removeEventListener("keydown", this.deleteListener);
     this.$store.commit("setHasWriteAccess", false);
     if (this.dropzone) this.dropzone.destroy();
   },
@@ -599,6 +592,21 @@ export default {
         this.previewEntity = entity;
         this.showPreview = true;
       }
+    },
+
+    async pasteEntities(newParent = null) {
+      const method =
+        this.$store.state.pasteData.action === "cut" ? "move" : "copy";
+      for (let i = 0; i < this.$store.state.pasteData.entities.length; i++) {
+        await this.$resources.pasteEntity.submit({
+          method,
+          entity_name: this.$store.state.pasteData.entities[i],
+          new_parent: newParent,
+        });
+      }
+      this.selectedEntities = [];
+      this.$store.commit("setPasteData", { entities: [], action: null });
+      this.$resources.folderContents.fetch();
     },
 
     hidePreview() {

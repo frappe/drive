@@ -132,14 +132,45 @@ export default {
     document.addEventListener("mousemove", this.handleMousemove);
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
+
     this.selectAllListener = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.$emit("entitySelected", this.folderContents);
     };
+
+    this.copyListener = (e) => {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "c" || e.key === "C") &&
+        this.selectedEntities.length
+      )
+        this.$store.commit("setPasteData", {
+          entities: this.selectedEntities.map((x) => x.name),
+          action: "copy",
+        });
+    };
+
+    this.cutListener = (e) => {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "x" || e.key === "X") &&
+        this.selectedEntities.length &&
+        this.selectedEntities.every((x) => x.owner === "me" || x.write)
+      )
+        this.$store.commit("setPasteData", {
+          entities: this.selectedEntities.map((x) => x.name),
+          action: "cut",
+        });
+    };
+
     document.addEventListener("keydown", this.selectAllListener);
+    document.addEventListener("keydown", this.copyListener);
+    document.addEventListener("keydown", this.cutListener);
   },
   unmounted() {
     document.removeEventListener("keydown", this.selectAllListener);
+    document.removeEventListener("keydown", this.copyListener);
+    document.removeEventListener("keydown", this.cutListener);
   },
   methods: {
     handleMousedown(event) {
