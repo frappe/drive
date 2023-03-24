@@ -1,5 +1,8 @@
 <template>
-  <div class="flex flex-col w-60 justify-between grow">
+  <div
+    ondragstart="return false;"
+    ondrop="return false;"
+    class="flex flex-col w-60 justify-between grow">
     <div class="text-lg">
       <router-link
         v-for="item in sidebarItems"
