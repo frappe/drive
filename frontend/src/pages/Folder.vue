@@ -142,7 +142,6 @@ export default {
     },
   },
   data: () => ({
-    dropzone: null,
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
@@ -197,19 +196,10 @@ export default {
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
-            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
-              await this.$resources.moveEntity.submit({
-                method: "move",
-                entity_name: this.$store.state.cutEntities[i],
-                new_parent: this.entityName,
-              });
-            }
-            this.selectedEntities = [];
-            this.$store.commit("setCutEntities", []);
-            this.$resources.folderContents.fetch();
+            this.pasteEntities(this.entityName);
           },
           isEnabled: () =>
-            this.$store.state.cutEntities.length > 0 &&
+            this.$store.state.pasteData.entities.length &&
             this.$store.state.hasWriteAccess,
         },
       ].filter((item) => item.isEnabled());
@@ -286,37 +276,42 @@ export default {
           label: "Cut",
           icon: "scissors",
           handler: () => {
-            this.$store.commit(
-              "setCutEntities",
-              this.selectedEntities.map((x) => x.name)
-            );
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "cut",
+            });
           },
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me")
+              this.selectedEntities.every((x) => x.owner === "me" || x.write)
             );
+          },
+        },
+        {
+          label: "Copy",
+          icon: "copy",
+          handler: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "copy",
+            });
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
           },
         },
         {
           label: "Paste into Folder",
           icon: "clipboard",
           handler: async () => {
-            for (let i = 0; i < this.$store.state.cutEntities.length; i++) {
-              await this.$resources.moveEntity.submit({
-                method: "move",
-                entity_name: this.$store.state.cutEntities[i],
-                new_parent: this.selectedEntities[0].name,
-              });
-            }
-            this.selectedEntities = [];
-            this.$store.commit("setCutEntities", []);
-            this.$resources.folderContents.fetch();
+            this.pasteEntities(this.selectedEntities[0].name);
           },
           isEnabled: () => {
             return (
-              this.$store.state.cutEntities.length > 0 &&
+              this.$store.state.pasteData.entities.length &&
               this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group &&
               (this.selectedEntities[0].write ||
                 this.selectedEntities[0].owner === "me")
             );
@@ -425,6 +420,27 @@ export default {
   },
 
   async mounted() {
+    this.pasteListener = (e) => {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "v" || e.key === "V") &&
+        this.$store.state.pasteData.entities.length &&
+        this.$store.state.hasWriteAccess
+      )
+        this.pasteEntities(this.entityName);
+    };
+    window.addEventListener("keydown", this.pasteListener);
+
+    this.deleteListener = (e) => {
+      if (
+        e.key === "Delete" &&
+        this.selectedEntities.length &&
+        this.selectedEntities.every((x) => x.owner === "me")
+      )
+        this.showRemoveDialog = true;
+    };
+    window.addEventListener("keydown", this.deleteListener);
+
     await this.$store.commit("setCurrentFolderID", this.entityName);
     window.addEventListener(
       "dragover",
@@ -455,8 +471,9 @@ export default {
   },
 
   unmounted() {
+    window.removeEventListener("keydown", this.pasteListener);
+    window.removeEventListener("keydown", this.deleteListener);
     this.$store.commit("setHasWriteAccess", false);
-    if (this.dropzone) this.dropzone.destroy();
   },
   methods: {
     openEntity(entity) {
@@ -470,6 +487,21 @@ export default {
         this.previewEntity = entity;
         this.showPreview = true;
       }
+    },
+
+    async pasteEntities(newParent = null) {
+      const method =
+        this.$store.state.pasteData.action === "cut" ? "move" : "copy";
+      for (let i = 0; i < this.$store.state.pasteData.entities.length; i++) {
+        await this.$resources.pasteEntity.submit({
+          method,
+          entity_name: this.$store.state.pasteData.entities[i],
+          new_parent: newParent,
+        });
+      }
+      this.selectedEntities = [];
+      this.$store.commit("setPasteData", { entities: [], action: null });
+      this.$resources.folderContents.fetch();
     },
 
     hidePreview() {
@@ -540,15 +572,10 @@ export default {
       };
     },
 
-    moveEntity() {
+    pasteEntity() {
       return {
         url: "drive.api.files.call_controller_method",
         method: "POST",
-        params: {
-          method: "move",
-          entity_name: "entity name",
-          new_parent: "new entity parent",
-        },
         validate(params) {
           if (!params?.new_parent) {
             return "New parent is required";
