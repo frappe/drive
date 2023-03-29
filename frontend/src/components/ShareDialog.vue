@@ -50,21 +50,6 @@
           </div>
 
           <div v-if="generalAccess.read" class="flex flex-row mt-2">
-            <div class="grow text-[14px] text-gray-900">Allow comments</div>
-            <div class="flex my-auto">
-              <Switch
-                v-model="allowComments"
-                :class="allowComments ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-                @click="$resources.toggleAllowComments.submit()">
-                <span
-                  :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
-                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-              </Switch>
-            </div>
-          </div>
-
-          <div v-if="generalAccess.read" class="flex flex-row mt-2">
             <div class="grow text-[14px] text-gray-900">Allow download</div>
             <div class="flex my-auto">
               <Switch
@@ -79,91 +64,114 @@
             </div>
           </div>
         </div>
-        <UserSearch
-          @submit="
-            ({ user, write }) =>
-              $resources.share.submit({
-                method: 'share',
-                entity_name: entityName,
-                user,
-                write,
-                share: 1,
-              })
-          " />
-        <ErrorMessage
-          v-if="$resources.share.error"
-          class="mt-2"
-          :message="errorMessage" />
-        <div
-          v-if="$resources.sharedWith.data?.length > 0"
-          class="flex mt-5 text-[14px] text-gray-600">
-          Members
-        </div>
-        <div
-          v-for="user in $resources.sharedWith.data"
-          :key="user.user"
-          class="mt-3 flex flex-row w-full gap-2 items-center antialiased">
-          <div class="overflow-hidden rounded-full h-9 w-9">
-            <img
-              v-if="user.user_image"
-              :src="user.user_image"
-              class="object-cover rounded-full h-7 w-7" />
-            <div
-              v-else
-              class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
-              {{ user.full_name[0] }}
+        <div class="border rounded-xl py-2 px-2 mt-5">
+          <UserSearch
+            @submit="
+              ({ user, write }) =>
+                $resources.share.submit({
+                  method: 'share',
+                  entity_name: entityName,
+                  user,
+                  write,
+                  share: 1,
+                })
+            " />
+          <ErrorMessage
+            v-if="$resources.share.error"
+            class="mt-2"
+            :message="errorMessage" />
+
+          <div
+            v-if="$resources.sharedWith.data?.length > 0"
+            class="flex flex-row mt-3">
+            <div class="grow text-[14px] text-gray-900">Allow comments</div>
+            <div class="flex my-auto">
+              <Switch
+                v-model="allowComments"
+                :class="allowComments ? 'bg-blue-500' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
+                @click="$resources.toggleAllowComments.submit()">
+                <span
+                  :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+              </Switch>
             </div>
           </div>
-          <div class="grow truncate">
-            <div class="text-gray-900 text-[14px] font-medium">
-              {{ user.full_name }}
-            </div>
-            <div class="text-gray-600 text-base">{{ user.user }}</div>
+
+          <div
+            v-if="$resources.sharedWith.data?.length > 0"
+            class="flex mt-5 text-[14px] text-gray-600">
+            Members
           </div>
-          <Popover transition="default">
-            <template #target="{ togglePopover }">
-              <Button
-                icon-right="chevron-down"
-                :loading="user.loading"
-                class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px] rounded-lg"
-                appearance="minimal"
-                @click="togglePopover()">
-                {{ user.write ? "Can edit" : "Can view" }}
-              </Button>
-            </template>
-            <template #body-main="{ togglePopover }">
-              <div class="p-1">
-                <div v-for="item in ['Viewer', 'Editor', 'Remove']" :key="item">
+          <div
+            v-for="user in $resources.sharedWith.data"
+            :key="user.user"
+            class="mt-3 flex flex-row w-full gap-2 items-center antialiased">
+            <div class="overflow-hidden rounded-full h-9 w-9">
+              <img
+                v-if="user.user_image"
+                :src="user.user_image"
+                class="object-cover rounded-full h-7 w-7" />
+              <div
+                v-else
+                class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
+                {{ user.full_name[0] }}
+              </div>
+            </div>
+            <div class="grow truncate">
+              <div class="text-gray-900 text-[14px] font-medium">
+                {{ user.full_name }}
+              </div>
+              <div class="text-gray-600 text-base">{{ user.user }}</div>
+            </div>
+            <Popover transition="default">
+              <template #target="{ togglePopover }">
+                <Button
+                  icon-right="chevron-down"
+                  :loading="user.loading"
+                  class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px] rounded-lg"
+                  appearance="minimal"
+                  @click="togglePopover()">
+                  {{ user.write ? "Can edit" : "Can view" }}
+                </Button>
+              </template>
+              <template #body-main="{ togglePopover }">
+                <div class="p-1">
                   <div
-                    class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                    @click="
-                      () => {
-                        user.loading = true;
-                        $resources.share
-                          .submit(
-                            Object.assign(
-                              {
-                                method: item === 'Remove' ? 'unshare' : 'share',
-                                entity_name: entityName,
-                                user: user.user,
-                              },
-                              item != 'Remove' && {
-                                write: item === 'Editor' ? 1 : 0,
-                              }
+                    v-for="item in ['Viewer', 'Editor', 'Remove']"
+                    :key="item">
+                    <div
+                      class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                      @click="
+                        () => {
+                          user.loading = true;
+                          $resources.share
+                            .submit(
+                              Object.assign(
+                                {
+                                  method:
+                                    item === 'Remove' ? 'unshare' : 'share',
+                                  entity_name: entityName,
+                                  user: user.user,
+                                },
+                                item != 'Remove' && {
+                                  write: item === 'Editor' ? 1 : 0,
+                                }
+                              )
                             )
-                          )
-                          .then(() => {
-                            user.loading = false;
-                          });
-                        togglePopover();
-                      }
-                    ">
-                    {{ item }}
+                            .then(() => {
+                              user.loading = false;
+                            });
+                          togglePopover();
+                        }
+                      ">
+                      {{ item }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </template>
-          </Popover>
+              </template>
+            </Popover>
+          </div>
         </div>
         <div class="flex mt-5">
           <Button
