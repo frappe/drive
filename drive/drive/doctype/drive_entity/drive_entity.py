@@ -6,7 +6,7 @@ from frappe.utils.nestedset import NestedSet, get_ancestors_of
 from pathlib import Path
 import shutil
 import uuid
-from drive.utils.files import get_user_directory, create_user_directory
+from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 
 
 class DriveEntity(NestedSet):
@@ -98,6 +98,8 @@ class DriveEntity(NestedSet):
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
 
+        title = self.title
+
         if not parent_user_directory:
             parent_owner = frappe.db.get_value(
                 'Drive Entity', new_parent, 'owner') if new_parent else frappe.session.user
@@ -116,13 +118,15 @@ class DriveEntity(NestedSet):
             if self.name == new_parent or self.name in get_ancestors_of('Drive Entity', new_parent):
                 frappe.throw('You cannot copy a folder into itself')
 
+            title = get_new_title(title, new_parent)
+
         name = uuid.uuid4().hex
 
         if self.is_group:
             drive_entity = frappe.get_doc({
                 'doctype': 'Drive Entity',
                 'name': name,
-                'title': self.title,
+                'title': title,
                 'is_group': 1,
                 'parent_drive_entity': new_parent,
                 'color': self.color,
@@ -134,10 +138,10 @@ class DriveEntity(NestedSet):
 
         else:
             save_path = Path(parent_user_directory.path) / \
-                f'{new_parent}_{self.title}'
+                f'{new_parent}_{title}'
             if save_path.exists():
                 frappe.throw(
-                    f"File '{self.title}' already exists", FileExistsError)
+                    f"File '{title}' already exists", FileExistsError)
 
             shutil.copy(self.path, save_path)
 
@@ -146,7 +150,7 @@ class DriveEntity(NestedSet):
             drive_entity = frappe.get_doc({
                 'doctype': 'Drive Entity',
                 'name': name,
-                'title': self.title,
+                'title': title,
                 'parent_drive_entity': new_parent,
                 'path': path,
                 'file_size': self.file_size,
