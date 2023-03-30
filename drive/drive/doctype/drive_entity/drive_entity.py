@@ -81,10 +81,16 @@ class DriveEntity(NestedSet):
         """
 
         new_parent = new_parent or get_user_directory().name
+        if new_parent == self.parent_drive_entity:
+            return
+
         is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
         if not is_group:
             raise NotADirectoryError()
         self.parent_drive_entity = new_parent
+        title = get_new_title(self.title, new_parent)
+        if title != self.title:
+            self.rename(title)
         self.save()
         return self
 

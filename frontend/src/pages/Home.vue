@@ -476,30 +476,30 @@ export default {
       };
     },
 
-    createFolder() {
-      return {
-        url: "drive.api.files.create_folder",
-        params: {
-          title: this.folderName,
-          parent: this.parent,
-        },
-        validate(params) {
-          if (!params?.title) {
-            return "Folder name is required";
-          }
-        },
-        onSuccess() {
-          this.$resources.folderContents.fetch();
-        },
-        onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
-          } else {
-            this.errorMessage = error.message;
-          }
-        },
-      };
-    },
+    // createFolder() {
+    //   return {
+    //     url: "drive.api.files.create_folder",
+    //     params: {
+    //       title: this.folderName,
+    //       parent: this.parent,
+    //     },
+    //     validate(params) {
+    //       if (!params?.title) {
+    //         return "Folder name is required";
+    //       }
+    //     },
+    //     onSuccess() {
+    //       this.$resources.folderContents.fetch();
+    //     },
+    //     onError(error) {
+    //       if (error.messages) {
+    //         this.errorMessage = error.messages.join("\n");
+    //       } else {
+    //         this.errorMessage = error.message;
+    //       }
+    //     },
+    //   };
+    // },
 
     folderContents() {
       return {
