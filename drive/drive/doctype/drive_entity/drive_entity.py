@@ -82,7 +82,7 @@ class DriveEntity(NestedSet):
 
         new_parent = new_parent or get_user_directory().name
         if new_parent == self.parent_drive_entity:
-            return
+            return self
 
         is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
         if not is_group:
@@ -179,6 +179,18 @@ class DriveEntity(NestedSet):
         :raises FileExistsError: If a file or folder with the same name already exists in the parent folder
         :return: DriveEntity doc once it's renamed
         """
+
+        if new_title == self.title:
+            return self
+
+        entity_exists = frappe.db.exists({
+            'doctype': 'Drive Entity',
+            'parent_drive_entity': self.parent_drive_entity,
+            'title': new_title
+        })
+        if entity_exists:
+            frappe.throw(
+                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists", FileExistsError)
 
         self.title = new_title
         self.save()

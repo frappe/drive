@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-import os 
+import os
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pypika import Order, functions as fn
 from pathlib import Path
@@ -15,14 +15,18 @@ import json
 from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
 
+
 def if_folder_exists(folder_name, parent):
-    values = {"title": folder_name,"is_group": 1, "is_active": 1,"owner": frappe.session.user,"parent_drive_entity": parent}
-    existing_folder = frappe.db.get_value("Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
+    values = {"title": folder_name, "is_group": 1, "is_active": 1,
+              "owner": frappe.session.user, "parent_drive_entity": parent}
+    existing_folder = frappe.db.get_value(
+        "Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
     if not existing_folder:
         new_folder = create_folder(folder_name, parent)
         return new_folder.name
     else:
         return existing_folder.name
+
 
 @frappe.whitelist()
 def upload_file(fullpath=None, parent=None):
@@ -130,6 +134,14 @@ def create_folder(title, parent=None):
     if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
         frappe.throw(
             'Cannot create folder due to insufficient permissions', frappe.PermissionError)
+
+    entity_exists = frappe.db.exists({
+        'doctype': 'Drive Entity',
+        'parent_drive_entity': parent,
+        'title': title
+    })
+    if entity_exists:
+        frappe.throw(f"Folder '{title}' already exists", FileExistsError)
 
     drive_entity = frappe.get_doc({
         'doctype': 'Drive Entity',
@@ -530,7 +542,6 @@ def remove_or_restore(entity_names):
             else:
                 doc.parent_before_trash = get_user_directory()
             doc.move()
-            
 
         else:
             parent_is_active = frappe.db.get_value(

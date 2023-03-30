@@ -4,7 +4,7 @@
       <Input
         v-model="newName"
         type="text"
-        :value="entity?.title"
+        :value="newName"
         @keydown.enter="
           (e) =>
             $resources.rename.submit({
@@ -72,6 +72,11 @@ export default {
       },
     },
   },
+
+  updated() {
+    this.newName = this.entity?.title;
+  },
+
   resources: {
     rename() {
       return {
@@ -88,6 +93,7 @@ export default {
         },
         onSuccess(data) {
           this.newName = "";
+          this.errorMessage = "";
           this.$emit("success", data);
         },
         onError(error) {
