@@ -103,16 +103,6 @@ export default {
       sending: function (file, xhr, formData) {
         file.parent ? formData.append("parent", file.parent) : null;
         file.webkitRelativePath
-          ? formData.append(
-              "fullpath",
-              file.webkitRelativePath.slice(
-                0,
-                file.webkitRelativePath.indexOf("/")
-              )
-            )
-          : null;
-        // WARNING: dropzone hidden input element click does not append fullPath to formdata thats why webkitRelativePath was used
-        file.webkitRelativePath
           ? formData.append("fullpath", file.webkitRelativePath)
           : null;
         file.fullPath ? formData.append("fullpath", file.fullPath) : null;
@@ -132,7 +122,6 @@ export default {
     });
     this.dropzone.on("addedfile", function (file) {
       file.parent = componentContext.$store.state.currentFolderID;
-      console.log(file.parent);
       componentContext.$store.commit("pushToUploads", {
         uuid: file.upload.uuid,
         name: file.name,
