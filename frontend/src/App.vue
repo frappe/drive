@@ -94,11 +94,18 @@ export default {
       forceChunking: true,
       url: "/api/method/drive.api.files.upload_file",
       maxFilesize: 10 * 1024, // 10GB
-      /* timeout: 0, */
+      timeout: 10000,
       chunkSize: 5 * 1024 * 1024, // 5MB
       headers: {
         "X-Frappe-CSRF-Token": window.csrf_token,
         Accept: "application/json",
+      },
+      accept: function (file, done) {
+        if (file.size == 0) {
+          done("Empty files will not be uploaded.");
+        } else {
+          done();
+        }
       },
       sending: function (file, xhr, formData) {
         file.parent ? formData.append("parent", file.parent) : null;
@@ -141,7 +148,7 @@ export default {
           .map((element) => JSON.parse(element).message)
           .join("\n");
       }
-      error_message = error_message || "Upload failed";
+      error_message = message || error_message || "Upload failed";
       componentContext.$store.commit("updateUpload", {
         uuid: file.upload.uuid,
         error: error_message,
