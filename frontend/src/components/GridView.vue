@@ -317,6 +317,9 @@ export default {
 
     async onDrop(newParent) {
       for (let i = 0; i < this.selectedEntities.length; i++) {
+        if (this.selectedEntities[i].name === newParent.name) {
+          continue;
+        }
         await this.$resources.moveEntity.submit({
           method: "move",
           entity_name: this.selectedEntities[i].name,
