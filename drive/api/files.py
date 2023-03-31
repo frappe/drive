@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-import os 
+import os
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pypika import Order, functions as fn
 from pathlib import Path
@@ -12,17 +12,21 @@ from werkzeug.utils import secure_filename
 import uuid
 import mimetypes
 import json
-from drive.utils.files import get_user_directory, create_user_directory
+from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
 
+
 def if_folder_exists(folder_name, parent):
-    values = {"title": folder_name,"is_group": 1, "is_active": 1,"owner": frappe.session.user,"parent_drive_entity": parent}
-    existing_folder = frappe.db.get_value("Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
+    values = {"title": folder_name, "is_group": 1, "is_active": 1,
+              "owner": frappe.session.user, "parent_drive_entity": parent}
+    existing_folder = frappe.db.get_value(
+        "Drive Entity", values, ['name', 'title', 'is_group', 'is_active'], as_dict=1)
     if not existing_folder:
         new_folder = create_folder(folder_name, parent)
         return new_folder.name
     else:
         return existing_folder.name
+
 
 @frappe.whitelist()
 def upload_file(fullpath=None, parent=None):
@@ -61,16 +65,18 @@ def upload_file(fullpath=None, parent=None):
     # if not exisiting_folder/is_active:
     # frappe.throw("Specified folder has been trashed by the owner or does not exist")
 
+    title = get_new_title(file.filename, parent)
+
     if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
         frappe.throw(
             'Cannot upload to this folder due to insufficient permissions', frappe.PermissionError)
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
     save_path = Path(user_directory.path) / \
-        f'{parent}_{secure_filename(file.filename)}'
+        f'{parent}_{secure_filename(title)}'
 
     if current_chunk == 0 and save_path.exists():
-        frappe.throw(f"File '{file.filename}' already exists", FileExistsError)
+        frappe.throw(f"File '{title}' already exists", FileExistsError)
     with open(save_path, 'ab') as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
         f.write(file.stream.read())
@@ -83,14 +89,14 @@ def upload_file(fullpath=None, parent=None):
                 'Size on disk does not match the specified filesize', ValueError)
         else:
             mime_type, encoding = mimetypes.guess_type(save_path)
-            file_name, file_ext = os.path.splitext(file.filename)
+            file_name, file_ext = os.path.splitext(title)
             name = uuid.uuid4().hex
             path = save_path.parent / f'{name}{save_path.suffix}'
             save_path.rename(path)
             drive_entity = frappe.get_doc({
                 'doctype': 'Drive Entity',
                 'name': name,
-                'title': file.filename,
+                'title': title,
                 'parent_drive_entity': parent,
                 'path': path,
                 'file_size': file_size,
@@ -128,6 +134,14 @@ def create_folder(title, parent=None):
     if not frappe.has_permission(doctype='Drive Entity', doc=parent, ptype='write', user=frappe.session.user):
         frappe.throw(
             'Cannot create folder due to insufficient permissions', frappe.PermissionError)
+
+    entity_exists = frappe.db.exists({
+        'doctype': 'Drive Entity',
+        'parent_drive_entity': parent,
+        'title': title
+    })
+    if entity_exists:
+        frappe.throw(f"Folder '{title}' already exists", FileExistsError)
 
     drive_entity = frappe.get_doc({
         'doctype': 'Drive Entity',
@@ -528,7 +542,6 @@ def remove_or_restore(entity_names):
             else:
                 doc.parent_before_trash = get_user_directory()
             doc.move()
-            
 
         else:
             parent_is_active = frappe.db.get_value(

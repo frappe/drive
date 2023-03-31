@@ -6,7 +6,7 @@ from frappe.utils.nestedset import NestedSet, get_ancestors_of
 from pathlib import Path
 import shutil
 import uuid
-from drive.utils.files import get_user_directory, create_user_directory
+from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 
 
 class DriveEntity(NestedSet):
@@ -81,10 +81,16 @@ class DriveEntity(NestedSet):
         """
 
         new_parent = new_parent or get_user_directory().name
+        if new_parent == self.parent_drive_entity:
+            return self
+
         is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
         if not is_group:
             raise NotADirectoryError()
         self.parent_drive_entity = new_parent
+        title = get_new_title(self.title, new_parent)
+        if title != self.title:
+            self.rename(title)
         self.save()
         return self
 
@@ -97,6 +103,8 @@ class DriveEntity(NestedSet):
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
+
+        title = self.title
 
         if not parent_user_directory:
             parent_owner = frappe.db.get_value(
@@ -116,13 +124,15 @@ class DriveEntity(NestedSet):
             if self.name == new_parent or self.name in get_ancestors_of('Drive Entity', new_parent):
                 frappe.throw('You cannot copy a folder into itself')
 
+            title = get_new_title(title, new_parent)
+
         name = uuid.uuid4().hex
 
         if self.is_group:
             drive_entity = frappe.get_doc({
                 'doctype': 'Drive Entity',
                 'name': name,
-                'title': self.title,
+                'title': title,
                 'is_group': 1,
                 'parent_drive_entity': new_parent,
                 'color': self.color,
@@ -134,10 +144,10 @@ class DriveEntity(NestedSet):
 
         else:
             save_path = Path(parent_user_directory.path) / \
-                f'{new_parent}_{self.title}'
+                f'{new_parent}_{title}'
             if save_path.exists():
                 frappe.throw(
-                    f"File '{self.title}' already exists", FileExistsError)
+                    f"File '{title}' already exists", FileExistsError)
 
             shutil.copy(self.path, save_path)
 
@@ -146,7 +156,7 @@ class DriveEntity(NestedSet):
             drive_entity = frappe.get_doc({
                 'doctype': 'Drive Entity',
                 'name': name,
-                'title': self.title,
+                'title': title,
                 'parent_drive_entity': new_parent,
                 'path': path,
                 'file_size': self.file_size,
@@ -169,6 +179,18 @@ class DriveEntity(NestedSet):
         :raises FileExistsError: If a file or folder with the same name already exists in the parent folder
         :return: DriveEntity doc once it's renamed
         """
+
+        if new_title == self.title:
+            return self
+
+        entity_exists = frappe.db.exists({
+            'doctype': 'Drive Entity',
+            'parent_drive_entity': self.parent_drive_entity,
+            'title': new_title
+        })
+        if entity_exists:
+            frappe.throw(
+                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists", FileExistsError)
 
         self.title = new_title
         self.save()
