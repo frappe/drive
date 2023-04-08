@@ -5,6 +5,7 @@ import frappe
 from pypika import Order
 from drive.api.files import get_entity
 from drive.utils.files import get_user_directory
+from drive.api.tags import get_entity_tags
 
 
 @frappe.whitelist()
@@ -122,6 +123,11 @@ def get_all_my_entities(fields=None):
     shared_entities = get_shared_with_me(get_all=True)
 
     all_entities = shared_entities + my_entities
+    
+    if 'tags' in fields:
+        for x in all_entities:
+            x['tags'] = get_entity_tags(x['name'])
+            
     return list({x['name']: x for x in all_entities}.values())
 
 
