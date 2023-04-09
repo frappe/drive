@@ -155,8 +155,8 @@ export default {
   computed: {
     div0Class() {
       if (!this.isOpen)
-        return "w-[100px] md:w-[200px]";
-      return "w-[120px] md:w-[500px] lg:w-[620px]";
+        return "w-[100px] md:w-[200px] transition-all duration-[600ms]";
+      return "w-[120px] md:w-[500px] lg:w-[620px] transition-all duration-[600ms]";
     },
     divClass() {
       if (!this.isOpen)
