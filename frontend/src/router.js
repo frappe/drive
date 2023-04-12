@@ -14,6 +14,12 @@ const routes = [
     props: true,
   },
   {
+    path: "/Document",
+    name: "Document",
+    meta: { sidebar: false },
+    component: () => import("@/pages/Document.vue"),
+  },
+  {
     path: "/recent",
     name: "Recent",
     component: () => import("@/pages/Recent.vue"),

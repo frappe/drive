@@ -1,172 +1,178 @@
 {
- "actions": [],
- "autoname": "Prompt",
- "creation": "2021-12-30 11:21:16.076483",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "title",
-  "lft",
-  "rgt",
-  "is_group",
-  "old_parent",
-  "parent_drive_entity",
-  "path",
-  "file_size",
-  "mime_type",
-  "version",
-  "is_active",
-  "trashed_on",
-  "parent_before_trash",
-  "allow_comments",
-  "allow_download",
-  "color",
-  "file_ext",
-  "tags"
- ],
- "fields": [
-  {
-   "fieldname": "lft",
-   "fieldtype": "Int",
-   "hidden": 1,
-   "label": "Left",
-   "no_copy": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "rgt",
-   "fieldtype": "Int",
-   "hidden": 1,
-   "label": "Right",
-   "no_copy": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "color",
-   "fieldtype": "Data",
-   "label": "Color"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_group",
-   "fieldtype": "Check",
-   "label": "Is Group",
-   "read_only": 1
-  },
-  {
-   "fieldname": "old_parent",
-   "fieldtype": "Link",
-   "label": "Old Parent",
-   "options": "Drive Entity"
-  },
-  {
-   "fieldname": "parent_drive_entity",
-   "fieldtype": "Link",
-   "label": "Parent Drive Entity",
-   "options": "Drive Entity"
-  },
-  {
-   "fieldname": "path",
-   "fieldtype": "Data",
-   "label": "Path"
-  },
-  {
-   "fieldname": "file_size",
-   "fieldtype": "Int",
-   "label": "File Size",
-   "read_only": 1
-  },
-  {
-   "fieldname": "title",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Title",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "fieldname": "file_ext",
-   "fieldtype": "Data",
-   "label": "File Ext",
-   "read_only": 1
-  },
-  {
-   "fieldname": "mime_type",
-   "fieldtype": "Data",
-   "label": "MIME Type",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "version",
-   "fieldtype": "Int",
-   "label": "Version",
-   "read_only": 1
-  },
-  {
-   "fieldname": "trashed_on",
-   "fieldtype": "Date",
-   "label": "Trashed On"
-  },
-  {
-   "default": "1",
-   "fieldname": "is_active",
-   "fieldtype": "Check",
-   "label": "Is Active"
-  },
-  {
-   "fieldname": "parent_before_trash",
-   "fieldtype": "Data",
-   "label": "Parent Before Trash"
-  },
-  {
-   "default": "0",
-   "fieldname": "allow_comments",
-   "fieldtype": "Check",
-   "label": "Allow Comments"
-  },
-  {
-   "default": "0",
-   "fieldname": "allow_download",
-   "fieldtype": "Check",
-   "label": "Allow Download"
-  },
-  {
-   "fieldname": "tags",
-   "fieldtype": "Table",
-   "label": "Tags",
-   "options": "Drive Entity Tag"
-  }
- ],
- "index_web_pages_for_search": 1,
- "is_tree": 1,
- "links": [],
- "modified": "2023-03-08 23:57:36.513255",
- "modified_by": "Administrator",
- "module": "Drive",
- "name": "Drive Entity",
- "naming_rule": "Set by user",
- "nsm_parent_field": "parent_drive_entity",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "if_owner": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "All",
-   "set_user_permissions": 1,
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": [],
- "title_field": "title"
+  "actions": [],
+  "autoname": "Prompt",
+  "creation": "2021-12-30 11:21:16.076483",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "title",
+    "lft",
+    "rgt",
+    "is_group",
+    "old_parent",
+    "parent_drive_entity",
+    "path",
+    "file_size",
+    "mime_type",
+    "version",
+    "is_active",
+    "trashed_on",
+    "parent_before_trash",
+    "allow_comments",
+    "allow_download",
+    "color",
+    "file_ext",
+    "tags"
+  ],
+  "fields": [
+    {
+      "fieldname": "lft",
+      "fieldtype": "Int",
+      "hidden": 1,
+      "label": "Left",
+      "no_copy": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "rgt",
+      "fieldtype": "Int",
+      "hidden": 1,
+      "label": "Right",
+      "no_copy": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "color",
+      "fieldtype": "Data",
+      "label": "Color"
+    },
+    {
+      "default": "0",
+      "fieldname": "is_group",
+      "fieldtype": "Check",
+      "label": "Is Group",
+      "read_only": 1
+    },
+    {
+      "fieldname": "old_parent",
+      "fieldtype": "Link",
+      "label": "Old Parent",
+      "options": "Drive Entity"
+    },
+    {
+      "fieldname": "parent_drive_entity",
+      "fieldtype": "Link",
+      "label": "Parent Drive Entity",
+      "options": "Drive Entity"
+    },
+    {
+      "fieldname": "path",
+      "fieldtype": "Data",
+      "label": "Path"
+    },
+    {
+      "fieldname": "file_size",
+      "fieldtype": "Int",
+      "label": "File Size",
+      "read_only": 1
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Title",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "file_ext",
+      "fieldtype": "Data",
+      "label": "File Ext",
+      "read_only": 1
+    },
+    {
+      "fieldname": "mime_type",
+      "fieldtype": "Data",
+      "label": "MIME Type",
+      "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "version",
+      "fieldtype": "Int",
+      "label": "Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "trashed_on",
+      "fieldtype": "Date",
+      "label": "Trashed On"
+    },
+    {
+      "default": "1",
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active"
+    },
+    {
+      "fieldname": "parent_before_trash",
+      "fieldtype": "Data",
+      "label": "Parent Before Trash"
+    },
+    {
+      "default": "0",
+      "fieldname": "allow_comments",
+      "fieldtype": "Check",
+      "label": "Allow Comments"
+    },
+    {
+      "default": "0",
+      "fieldname": "allow_download",
+      "fieldtype": "Check",
+      "label": "Allow Download"
+    },
+    {
+      "fieldname": "tags",
+      "fieldtype": "Table",
+      "label": "Tags",
+      "options": "Drive Entity Tag"
+    },
+    {
+      "fieldname": "document",
+      "fieldtype": "Table",
+      "label": "Document",
+      "options": "Drive Document"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "is_tree": 1,
+  "links": [],
+  "modified": "2023-03-08 23:57:36.513255",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Entity",
+  "naming_rule": "Set by user",
+  "nsm_parent_field": "parent_drive_entity",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "if_owner": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "All",
+      "set_user_permissions": 1,
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "title_field": "title"
 }

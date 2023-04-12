@@ -14,7 +14,7 @@
         v-if="isLoggedIn && !isHybridRoute"
         class="flex h-full overflow-x-hidden">
         <MobileSidebar v-model="showMobileSidebar" />
-        <div class="px-3 border-r hidden md:py-4 md:block">
+        <div v-if="showSidebar" class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>
         <div
@@ -62,6 +62,9 @@ export default {
     };
   },
   computed: {
+    showSidebar() {
+      return this.$route.meta.sidebar !== false;
+    },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },

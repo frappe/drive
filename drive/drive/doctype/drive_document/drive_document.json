@@ -1,0 +1,38 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "hash",
+  "creation": "2023-04-05 11:32:23.940763",
+  "default_view": "List",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": ["title", "content"],
+  "fields": [
+    {
+      "fieldname": "title",
+      "fieldtype": "Text",
+      "in_list_view": 1,
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "content",
+      "fieldtype": "JSON",
+      "label": "Content"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "istable": 1,
+  "links": [],
+  "modified": "2023-04-10 17:24:09.463788",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Document",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}

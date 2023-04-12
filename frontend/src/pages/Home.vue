@@ -177,6 +177,15 @@ export default {
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
+          label: "New Document",
+          icon: "file-text",
+          handler: () =>
+            this.$router.push({
+              name: "Document",
+            }),
+          isEnabled: () => this.selectedEntities.length === 0,
+        },
+        {
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
