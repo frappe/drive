@@ -1,12 +1,13 @@
 from frappe import _
 
+
 def get_data():
-	return [
-		{
-			"module_name": "Drive",
-			"color": "grey",
-			"icon": "octicon octicon-file-directory",
-			"type": "module",
-			"label": _("Drive")
-		}
-	]
+    return [
+        {
+            "module_name": "Drive",
+            "color": "grey",
+            "icon": "octicon octicon-file-directory",
+            "type": "module",
+            "label": _("Drive"),
+        }
+    ]

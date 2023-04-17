@@ -10,7 +10,7 @@ app_email = "hello@frappe.io"
 app_license = "GNU Affero General Public License v3.0"
 
 website_route_rules = [
-	{"from_route": "/drive/<path:app_path>", "to_route": "drive"},
+    {"from_route": "/drive/<path:app_path>", "to_route": "drive"},
 ]
 
 # Includes in <head>
@@ -48,7 +48,7 @@ home_page = "drive"
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# 	"Role": "home_page"
 # }
 
 # Generators
@@ -113,7 +113,7 @@ home_page = "drive"
 # 		"on_update": "method",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
-#	}
+# 	}
 # }
 
 # Scheduled Tasks

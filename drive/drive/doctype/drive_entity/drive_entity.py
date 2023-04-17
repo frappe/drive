@@ -10,8 +10,8 @@ from drive.utils.files import get_user_directory, create_user_directory, get_new
 
 
 class DriveEntity(NestedSet):
-    nsm_parent_field = 'parent_drive_entity'
-    nsm_oldparent_field = 'old_parent'
+    nsm_parent_field = "parent_drive_entity"
+    nsm_oldparent_field = "old_parent"
 
     def on_update(self):
         super().on_update()
@@ -34,8 +34,7 @@ class DriveEntity(NestedSet):
 
         if self.parent_drive_entity is None:
             return
-        permissions = frappe.share.get_users(
-            "Drive Entity", self.parent_drive_entity)
+        permissions = frappe.share.get_users("Drive Entity", self.parent_drive_entity)
         for permission in permissions:
             frappe.share.add_docshare(
                 "Drive Entity",
@@ -45,17 +44,19 @@ class DriveEntity(NestedSet):
                 share=permission.share,
                 everyone=permission.everyone,
                 notify=0,
-                flags={"ignore_share_permission": True}
+                flags={"ignore_share_permission": True},
             )
 
     def on_trash(self):
-        frappe.db.delete("Drive Favourite", {
-            "entity": self.name
-        })
+        frappe.db.delete("Drive Favourite", {"entity": self.name})
         if self.is_group:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
-                    doctype='Drive Entity', doc=self, ptype='write', user=frappe.session.user)
+                    doctype="Drive Entity",
+                    doc=self,
+                    ptype="write",
+                    user=frappe.session.user,
+                )
                 child.delete(ignore_permissions=has_write_access)
         super().on_trash()
 
@@ -84,7 +85,7 @@ class DriveEntity(NestedSet):
         if new_parent == self.parent_drive_entity:
             return self
 
-        is_group = frappe.db.get_value('Drive Entity', new_parent, 'is_group')
+        is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
         if not is_group:
             raise NotADirectoryError()
         self.parent_drive_entity = new_parent
@@ -107,62 +108,77 @@ class DriveEntity(NestedSet):
         title = self.title
 
         if not parent_user_directory:
-            parent_owner = frappe.db.get_value(
-                'Drive Entity', new_parent, 'owner') if new_parent else frappe.session.user
+            parent_owner = (
+                frappe.db.get_value("Drive Entity", new_parent, "owner")
+                if new_parent
+                else frappe.session.user
+            )
             try:
                 parent_user_directory = get_user_directory(parent_owner)
             except FileNotFoundError:
                 parent_user_directory = create_user_directory()
             new_parent = new_parent or parent_user_directory.name
             parent_is_group = frappe.db.get_value(
-                'Drive Entity', new_parent, 'is_group')
+                "Drive Entity", new_parent, "is_group"
+            )
             if not parent_is_group:
                 raise NotADirectoryError()
-            if not frappe.has_permission(doctype='Drive Entity', doc=new_parent, ptype='write', user=frappe.session.user):
+            if not frappe.has_permission(
+                doctype="Drive Entity",
+                doc=new_parent,
+                ptype="write",
+                user=frappe.session.user,
+            ):
                 frappe.throw(
-                    'Cannot paste to this folder due to insufficient permissions', frappe.PermissionError)
-            if self.name == new_parent or self.name in get_ancestors_of('Drive Entity', new_parent):
-                frappe.throw('You cannot copy a folder into itself')
+                    "Cannot paste to this folder due to insufficient permissions",
+                    frappe.PermissionError,
+                )
+            if self.name == new_parent or self.name in get_ancestors_of(
+                "Drive Entity", new_parent
+            ):
+                frappe.throw("You cannot copy a folder into itself")
 
             title = get_new_title(title, new_parent)
 
         name = uuid.uuid4().hex
 
         if self.is_group:
-            drive_entity = frappe.get_doc({
-                'doctype': 'Drive Entity',
-                'name': name,
-                'title': title,
-                'is_group': 1,
-                'parent_drive_entity': new_parent,
-                'color': self.color,
-            })
+            drive_entity = frappe.get_doc(
+                {
+                    "doctype": "Drive Entity",
+                    "name": name,
+                    "title": title,
+                    "is_group": 1,
+                    "parent_drive_entity": new_parent,
+                    "color": self.color,
+                }
+            )
             drive_entity.insert()
 
             for child in self.get_children():
                 child.copy(name, parent_user_directory)
 
         else:
-            save_path = Path(parent_user_directory.path) / \
-                f'{new_parent}_{title}'
+            save_path = Path(parent_user_directory.path) / f"{new_parent}_{title}"
             if save_path.exists():
-                frappe.throw(
-                    f"File '{title}' already exists", FileExistsError)
+                frappe.throw(f"File '{title}' already exists", FileExistsError)
 
             shutil.copy(self.path, save_path)
 
-            path = save_path.parent / f'{name}{save_path.suffix}'
+            path = save_path.parent / f"{name}{save_path.suffix}"
             save_path.rename(path)
-            drive_entity = frappe.get_doc({
-                'doctype': 'Drive Entity',
-                'name': name,
-                'title': title,
-                'parent_drive_entity': new_parent,
-                'path': path,
-                'file_size': self.file_size,
-                'file_ext': self.file_ext,
-                'mime_type': self.mime_type
-            })
+            drive_entity = frappe.get_doc(
+                {
+                    "doctype": "Drive Entity",
+                    "name": name,
+                    "title": title,
+                    "parent_drive_entity": new_parent,
+                    "path": path,
+                    "file_size": self.file_size,
+                    "file_ext": self.file_ext,
+                    "mime_type": self.mime_type,
+                }
+            )
             drive_entity.flags.file_created = True
             frappe.local.rollback_observers.append(drive_entity)
             drive_entity.insert()
@@ -183,14 +199,18 @@ class DriveEntity(NestedSet):
         if new_title == self.title:
             return self
 
-        entity_exists = frappe.db.exists({
-            'doctype': 'Drive Entity',
-            'parent_drive_entity': self.parent_drive_entity,
-            'title': new_title
-        })
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive Entity",
+                "parent_drive_entity": self.parent_drive_entity,
+                "title": new_title,
+            }
+        )
         if entity_exists:
             frappe.throw(
-                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists", FileExistsError)
+                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists",
+                FileExistsError,
+            )
 
         self.title = new_title
         self.save()
@@ -218,23 +238,36 @@ class DriveEntity(NestedSet):
         :param new_access: Dict with new read and write value
         """
 
-        if new_access['read']:
-            flags = {
-                "ignore_share_permission": True} if frappe.session.user == self.owner else None
+        if new_access["read"]:
+            flags = (
+                {"ignore_share_permission": True}
+                if frappe.session.user == self.owner
+                else None
+            )
             frappe.share.add_docshare(
-                'Drive Entity', self.name, write=new_access['write'], share=0, everyone=1, flags=flags)
+                "Drive Entity",
+                self.name,
+                write=new_access["write"],
+                share=0,
+                everyone=1,
+                flags=flags,
+            )
 
         else:
-            flags = {
-                "ignore_permissions": True} if frappe.session.user == self.owner else None
-            if frappe.db.exists({
-                    'doctype': 'DocShare',
-                    'share_doctype': 'Drive Entity',
-                    'share_name': self.name,
-                    'everyone': 1
-            }):
-                frappe.share.remove(
-                    'Drive Entity', self.name, user=None, flags=flags)
+            flags = (
+                {"ignore_permissions": True}
+                if frappe.session.user == self.owner
+                else None
+            )
+            if frappe.db.exists(
+                {
+                    "doctype": "DocShare",
+                    "share_doctype": "Drive Entity",
+                    "share_name": self.name,
+                    "everyone": 1,
+                }
+            ):
+                frappe.share.remove("Drive Entity", self.name, user=None, flags=flags)
 
         self.save()
         if self.is_group:
@@ -279,16 +312,33 @@ class DriveEntity(NestedSet):
         :param notify: 1 if the user should be notified. Defaults to 1
         """
 
-        flags = {
-            "ignore_share_permission": True} if frappe.session.user == self.owner else None
+        flags = (
+            {"ignore_share_permission": True}
+            if frappe.session.user == self.owner
+            else None
+        )
         if self.is_group:
             for child in self.get_children():
                 child.share(user, write, share, 0)
             frappe.share.add_docshare(
-                'Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
+                "Drive Entity",
+                self.name,
+                user,
+                write=write,
+                share=share,
+                notify=notify,
+                flags=flags,
+            )
         else:
             frappe.share.add_docshare(
-                'Drive Entity', self.name, user, write=write, share=share, notify=notify, flags=flags)
+                "Drive Entity",
+                self.name,
+                user,
+                write=write,
+                share=share,
+                notify=notify,
+                flags=flags,
+            )
 
     @frappe.whitelist()
     def unshare(self, user):
@@ -297,11 +347,19 @@ class DriveEntity(NestedSet):
         :param user: User with whom this is to be shared
         """
 
-        if frappe.has_permission(doctype='Drive Entity', doc=self.name, ptype='share', user=frappe.session.user) or frappe.session.user == self.owner:
+        if (
+            frappe.has_permission(
+                doctype="Drive Entity",
+                doc=self.name,
+                ptype="share",
+                user=frappe.session.user,
+            )
+            or frappe.session.user == self.owner
+        ):
             flags = {"ignore_permissions": True}
         if self.is_group:
             for child in self.get_children():
                 child.unshare(user)
-            frappe.share.remove('Drive Entity', self.name, user, flags=flags)
+            frappe.share.remove("Drive Entity", self.name, user, flags=flags)
         else:
-            frappe.share.remove('Drive Entity', self.name, user, flags=flags)
+            frappe.share.remove("Drive Entity", self.name, user, flags=flags)

@@ -1,6 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+black drive/
+
 cd frontend/
 
 npm run precommit

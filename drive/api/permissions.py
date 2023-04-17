@@ -18,31 +18,34 @@ def get_shared_with_list(entity_name):
     :rtype: list[frappe._dict]
     """
 
-    if not frappe.has_permission(doctype='Drive Entity', doc=entity_name, ptype='write', user=frappe.session.user):
+    if not frappe.has_permission(
+        doctype="Drive Entity", doc=entity_name, ptype="write", user=frappe.session.user
+    ):
         raise frappe.PermissionError
 
     entity_owner = frappe.db.get_value("Drive Entity", entity_name, "owner")
 
-    users = frappe.db.get_all('DocShare',
-                              filters={
-                                  'share_doctype': 'Drive Entity',
-                                  'share_name': entity_name,
-                                  'everyone': 0,
-                                  'user': ['not in', [frappe.session.user, entity_owner]]
-                              },
-                              fields=['user', 'read', 'write',
-                                      'share', 'everyone', 'modified']
-                              )
+    users = frappe.db.get_all(
+        "DocShare",
+        filters={
+            "share_doctype": "Drive Entity",
+            "share_name": entity_name,
+            "everyone": 0,
+            "user": ["not in", [frappe.session.user, entity_owner]],
+        },
+        fields=["user", "read", "write", "share", "everyone", "modified"],
+    )
     for user in users:
         user_info = frappe.db.get_value(
-            "User", user.user, ["user_image", "full_name"], as_dict=True)
+            "User", user.user, ["user_image", "full_name"], as_dict=True
+        )
         user.update(user_info)
 
     return users
 
 
 @frappe.whitelist()
-def get_shared_with_me(get_all=False, order_by='modified'):
+def get_shared_with_me(get_all=False, order_by="modified"):
     """
     Return the list of files and folders shared with the current user
 
@@ -52,9 +55,9 @@ def get_shared_with_me(get_all=False, order_by='modified'):
     :rtype: list[frappe._dict]
     """
 
-    DocShare = frappe.qb.DocType('DocShare')
-    DriveEntity = frappe.qb.DocType('Drive Entity')
-    DriveFavourite = frappe.qb.DocType('Drive Favourite')
+    DocShare = frappe.qb.DocType("DocShare")
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    DriveFavourite = frappe.qb.DocType("Drive Favourite")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -78,13 +81,13 @@ def get_shared_with_me(get_all=False, order_by='modified'):
         frappe.qb.from_(DriveEntity)
         .inner_join(DocShare)
         .on(
-            (DocShare.share_name == DriveEntity.name) &
-            (DocShare.user == frappe.session.user)
+            (DocShare.share_name == DriveEntity.name)
+            & (DocShare.user == frappe.session.user)
         )
         .left_join(DriveFavourite)
         .on(
-            (DriveFavourite.entity == DriveEntity.name) &
-            (DriveFavourite.user == frappe.session.user)
+            (DriveFavourite.entity == DriveEntity.name)
+            & (DriveFavourite.user == frappe.session.user)
         )
         .select(*selectedFields)
         .where(DriveEntity.is_active == 1)
@@ -92,11 +95,16 @@ def get_shared_with_me(get_all=False, order_by='modified'):
     if get_all:
         return query.run(as_dict=True)
 
-    result = query.orderby(order_by.split()[0], order=Order.desc if order_by.endswith(
-        'desc') else Order.asc).run(as_dict=True)
+    result = query.orderby(
+        order_by.split()[0],
+        order=Order.desc if order_by.endswith("desc") else Order.asc,
+    ).run(as_dict=True)
     names = [x.name for x in result]
     # Return highest level entity
-    return filter(lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user, result)
+    return filter(
+        lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user,
+        result,
+    )
 
 
 @frappe.whitelist()
@@ -108,21 +116,29 @@ def get_all_my_entities(fields=None):
     :rtype: frappe._dict
     """
 
-    fields = fields or ['name', 'title', 'is_group',
-                        'owner', 'modified', 'file_size', 'mime_type']
-    my_entities = frappe.db.get_list('Drive Entity',
-                                     filters={
-                                         'is_active': 1,
-                                         'owner': frappe.session.user,
-                                         'name': ['!=', get_user_directory().name]
-                                     },
-                                     fields=fields,
-                                     )
+    fields = fields or [
+        "name",
+        "title",
+        "is_group",
+        "owner",
+        "modified",
+        "file_size",
+        "mime_type",
+    ]
+    my_entities = frappe.db.get_list(
+        "Drive Entity",
+        filters={
+            "is_active": 1,
+            "owner": frappe.session.user,
+            "name": ["!=", get_user_directory().name],
+        },
+        fields=fields,
+    )
 
     shared_entities = get_shared_with_me(get_all=True)
 
     all_entities = shared_entities + my_entities
-    return list({x['name']: x for x in all_entities}.values())
+    return list({x["name"]: x for x in all_entities}.values())
 
 
 @frappe.whitelist(allow_guest=True)
@@ -136,23 +152,35 @@ def get_file_with_permissions(entity_name):
     :rtype: frappe._dict
     """
 
-    if frappe.session.user == 'Guest':
-        frappe.set_user('Administrator')
+    if frappe.session.user == "Guest":
+        frappe.set_user("Administrator")
         user_access = get_general_access(entity_name)
     else:
         user_access = get_user_access(entity_name)
 
     if not user_access:
         frappe.throw(
-            "PermissionError: Either this file does not exist, or you don't have access to it", frappe.PermissionError)
+            "PermissionError: Either this file does not exist, or you don't have access to it",
+            frappe.PermissionError,
+        )
 
-    fields = ['name', 'title', 'owner', 'is_group', 'is_active',
-              'modified', 'creation', 'file_size', 'mime_type', 'allow_comments']
+    fields = [
+        "name",
+        "title",
+        "owner",
+        "is_group",
+        "is_active",
+        "modified",
+        "creation",
+        "file_size",
+        "mime_type",
+        "allow_comments",
+    ]
     entity = get_entity(entity_name, fields)
     if entity.is_group:
-        frappe.throw('Specified entity is not a file', IsADirectoryError)
+        frappe.throw("Specified entity is not a file", IsADirectoryError)
     if not entity.is_active:
-        frappe.throw('Specified file has been trashed by the owner')
+        frappe.throw("Specified file has been trashed by the owner")
 
     return entity | user_access
 
@@ -167,11 +195,12 @@ def get_general_access(entity_name):
     :rtype: frappe._dict or None
     """
 
-    return frappe.db.get_value('DocShare',
-                               {'share_name': entity_name, 'everyone': 1},
-                               ['read', 'write'],
-                               as_dict=1
-                               )
+    return frappe.db.get_value(
+        "DocShare",
+        {"share_name": entity_name, "everyone": 1},
+        ["read", "write"],
+        as_dict=1,
+    )
 
 
 @frappe.whitelist()
@@ -184,12 +213,12 @@ def get_user_access(entity_name):
     :rtype: frappe._dict or None
     """
 
-    user_access = frappe.db.get_value('DocShare',
-                                      {'share_name': entity_name,
-                                          'user': frappe.session.user},
-                                      ['read', 'write'],
-                                      as_dict=1
-                                      )
+    user_access = frappe.db.get_value(
+        "DocShare",
+        {"share_name": entity_name, "user": frappe.session.user},
+        ["read", "write"],
+        as_dict=1,
+    )
 
     if user_access:
         return user_access

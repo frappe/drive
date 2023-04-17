@@ -6,4 +6,4 @@ from frappe.tests.utils import FrappeTestCase
 
 
 class TestDriveFavourite(FrappeTestCase):
-	pass
+    pass

@@ -17,22 +17,23 @@ def create_user_directory():
     """
 
     user_directory_name = _get_user_directory_name()
-    user_directory_path = Path(
-        frappe.get_site_path('private'), user_directory_name)
+    user_directory_path = Path(frappe.get_site_path("private"), user_directory_name)
     user_directory_path.mkdir(exist_ok=False)
 
-    full_name = frappe.get_value('User', frappe.session.user, 'full_name')
-    user_directory = frappe.get_doc({
-        'doctype': 'Drive Entity',
-        'name': user_directory_name,
-        'title': f"{full_name}'s Drive",
-        'is_group': 1,
-        'path': user_directory_path
-    })
+    full_name = frappe.get_value("User", frappe.session.user, "full_name")
+    user_directory = frappe.get_doc(
+        {
+            "doctype": "Drive Entity",
+            "name": user_directory_name,
+            "title": f"{full_name}'s Drive",
+            "is_group": 1,
+            "path": user_directory_path,
+        }
+    )
     user_directory.flags.file_created = True
     frappe.local.rollback_observers.append(user_directory)
     user_directory.insert()
-    return frappe._dict({'name': user_directory.name, 'path': user_directory.path})
+    return frappe._dict({"name": user_directory.name, "path": user_directory.path})
 
 
 def get_user_directory(user=None):
@@ -47,13 +48,10 @@ def get_user_directory(user=None):
 
     user_directory_name = _get_user_directory_name(user)
     user_directory = frappe.db.get_value(
-        'Drive Entity',
-        user_directory_name,
-        ['name', 'path'],
-        as_dict=1
+        "Drive Entity", user_directory_name, ["name", "path"], as_dict=1
     )
     if user_directory is None:
-        raise FileNotFoundError('User directory does not exist')
+        raise FileNotFoundError("User directory does not exist")
     return user_directory
 
 
@@ -61,7 +59,7 @@ def _get_user_directory_name(user=None):
     """Returns user directory name from user's unique id"""
     if not user:
         user = frappe.session.user
-    return hashlib.md5(user.encode('utf-8')).hexdigest()
+    return hashlib.md5(user.encode("utf-8")).hexdigest()
 
 
 frappe.whitelist()
@@ -77,20 +75,21 @@ def get_new_title(entity, parent_name):
     """
 
     entity_title, entity_ext = os.path.splitext(entity)
-    sibling_entity_titles = frappe.db.get_list('Drive Entity',
-                                               filters={
-                                                   'parent_drive_entity': parent_name,
-                                                   'title': ['like', f'{entity_title}%{entity_ext}']
-                                               },
-                                               pluck='title',
-                                               )
+    sibling_entity_titles = frappe.db.get_list(
+        "Drive Entity",
+        filters={
+            "parent_drive_entity": parent_name,
+            "title": ["like", f"{entity_title}%{entity_ext}"],
+        },
+        pluck="title",
+    )
 
     if entity not in sibling_entity_titles:
         return entity
 
     i = 1
     while True:
-        new_title = f'{entity_title} ({i}){entity_ext}'
+        new_title = f"{entity_title} ({i}){entity_ext}"
         if new_title not in sibling_entity_titles:
             return new_title
         i += 1
