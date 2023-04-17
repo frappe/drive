@@ -43,21 +43,21 @@ def create_document_entity(title, content, parent=None):
     title = get_new_title(title, parent)
 
     parent = frappe.form_dict.parent or user_directory.name
+    document_entity = frappe.new_doc("Drive Document")
+    document_entity.title = title
+    document_entity.content = content
+    document_entity.save()
+
     drive_doc_entity = frappe.new_doc("Drive Entity")
     drive_doc_entity.title = title
     drive_doc_entity.name = uuid.uuid4().hex
     drive_doc_entity.parent_drive_entity = parent
     drive_doc_entity.mime_type = "frappe_doc"
-    drive_doc_entity.append(
-        "document",
-        {
-            "title": title,
-            "content": content,
-        },
-    )
+    drive_doc_entity.document = document_entity
     drive_doc_entity.flags.file_created = True
     frappe.local.rollback_observers.append(drive_doc_entity)
     drive_doc_entity.save()
+
     if parent == user_directory.name:
         drive_doc_entity.share(frappe.session.user, write=1, share=1)
     return drive_doc_entity

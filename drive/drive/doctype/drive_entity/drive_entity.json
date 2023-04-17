@@ -23,7 +23,8 @@
     "allow_download",
     "color",
     "file_ext",
-    "tags"
+    "tags",
+    "document"
   ],
   "fields": [
     {
@@ -140,7 +141,7 @@
     },
     {
       "fieldname": "document",
-      "fieldtype": "Table",
+      "fieldtype": "Link",
       "label": "Document",
       "options": "Drive Document"
     }
@@ -148,7 +149,7 @@
   "index_web_pages_for_search": 1,
   "is_tree": 1,
   "links": [],
-  "modified": "2023-03-08 23:57:36.513255",
+  "modified": "2023-04-17 15:38:24.521742",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",
@@ -166,7 +167,6 @@
       "read": 1,
       "report": 1,
       "role": "All",
-      "set_user_permissions": 1,
       "share": 1,
       "write": 1
     }
