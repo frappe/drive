@@ -9,6 +9,10 @@
         <router-link to="/" class="hidden md:block">
           <FrappeDriveLogo class="h-4" />
         </router-link>
+      <div class="status-bar">
+        <StatusBar :folder-contents="folderContents" />
+      </div>
+    
         <div class="flex items-center md:hidden">
           <button
             class="mr-5 inline-flex items-center justify-center text-gray-700 rounded-md focus:outline-none focus:shadow-outline-gray"
@@ -81,6 +85,7 @@ import SearchPopup from "@/components/SearchPopup.vue";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import FrappeLogo from "@/components/FrappeLogo.vue";
+import StatusBar from "@/components/StatusBar.vue";
 
 export default {
   name: "Navbar",
@@ -94,6 +99,7 @@ export default {
     Dropdown,
     FeatherIcon,
     Button,
+    StatusBar
   },
   props: {
     mobileSidebarIsOpen: {
@@ -104,6 +110,7 @@ export default {
   emits: ["toggleMobileSidebar"],
   data() {
     return {
+      folderContents: [],
       previewEntity: null,
       showPreview: false,
       showNewFolderDialog: false,
@@ -153,5 +160,10 @@ export default {
       this.previewEntity = null;
     },
   },
+  async mounted() {
+    const response = await this.$resources.folderContents.fetch();
+    this.folderContents = response.data;
+  },
 };
 </script>
+
