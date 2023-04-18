@@ -179,10 +179,17 @@ export default {
         {
           label: "New Document",
           icon: "file-text",
-          handler: () =>
+          handler: () => {
+            this.$resources.createDocument.submit({
+              title: "Untitled Document",
+              content: null,
+              parent: this.$store.state.currentFolderID,
+            });
             this.$router.push({
               name: "Document",
-            }),
+            });
+          },
+
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
@@ -367,7 +374,7 @@ export default {
   },
 
   async mounted() {
-    await this.$store.commit("setCurrentFolderID", "");
+    await this.$resources.getHomeID.fetch();
     this.emitter.on("fetchFolderContents", () => {
       this.$resources.folderContents.fetch();
     });
@@ -484,31 +491,14 @@ export default {
         method: "POST",
       };
     },
-
-    // createFolder() {
-    //   return {
-    //     url: "drive.api.files.create_folder",
-    //     params: {
-    //       title: this.folderName,
-    //       parent: this.parent,
-    //     },
-    //     validate(params) {
-    //       if (!params?.title) {
-    //         return "Folder name is required";
-    //       }
-    //     },
-    //     onSuccess() {
-    //       this.$resources.folderContents.fetch();
-    //     },
-    //     onError(error) {
-    //       if (error.messages) {
-    //         this.errorMessage = error.messages.join("\n");
-    //       } else {
-    //         this.errorMessage = error.message;
-    //       }
-    //     },
-    //   };
-    // },
+    getHomeID() {
+      return {
+        url: "drive.api.files.get_home_folder_id",
+        onSuccess(data) {
+          this.$store.commit("setCurrentFolderID", data);
+        },
+      };
+    },
 
     folderContents() {
       return {
@@ -551,6 +541,19 @@ export default {
             console.log(error.messages);
           }
         },
+      };
+    },
+
+    createDocument() {
+      return {
+        url: "drive.api.files.create_document_entity",
+        onSuccess(data) {
+          console.log(data);
+        },
+        onError(data) {
+          console.log(data);
+        },
+        auto: false,
       };
     },
   },

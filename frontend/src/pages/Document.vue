@@ -58,7 +58,6 @@ export default {
         params: {
           title: this.title,
           content: this.content,
-          parent: this.currentFolderID,
         },
         onSuccess(data) {
           console.log(data);

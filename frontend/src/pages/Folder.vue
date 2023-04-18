@@ -193,6 +193,22 @@ export default {
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
+          label: "New Document",
+          icon: "file-text",
+          handler: () => {
+            this.$resources.createDocument.submit({
+              title: "Untitled Document",
+              content: null,
+              parent: this.$store.state.currentFolderID,
+            });
+            this.$router.push({
+              name: "Document",
+            });
+          },
+
+          isEnabled: () => this.selectedEntities.length === 0,
+        },
+        {
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
@@ -669,6 +685,19 @@ export default {
             console.log(error.messages);
           }
         },
+      };
+    },
+
+    createDocument() {
+      return {
+        url: "drive.api.files.create_document_entity",
+        onSuccess(data) {
+          console.log(data);
+        },
+        onError(data) {
+          console.log(data);
+        },
+        auto: false,
       };
     },
 

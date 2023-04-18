@@ -11,6 +11,7 @@ from werkzeug.wsgi import wrap_file
 from werkzeug.utils import secure_filename
 import uuid
 import mimetypes
+import hashlib
 import json
 from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
@@ -33,6 +34,12 @@ def if_folder_exists(folder_name, parent):
     else:
         return existing_folder.name
 
+@frappe.whitelist()
+def get_home_folder_id(user=None):
+    """Returns user directory name from user's unique id"""
+    if not user:
+        user = frappe.session.user
+    return hashlib.md5(user.encode("utf-8")).hexdigest()
 
 @frappe.whitelist()
 def create_document_entity(title, content, parent=None):
@@ -40,27 +47,27 @@ def create_document_entity(title, content, parent=None):
         user_directory = get_user_directory()
     except FileNotFoundError:
         user_directory = create_user_directory()
-    title = get_new_title(title, parent)
+    new_title = get_new_title(title, parent)
 
     parent = frappe.form_dict.parent or user_directory.name
-    drive_doc_entity = frappe.new_doc("Drive Entity")
-    drive_doc_entity.title = title
-    drive_doc_entity.name = uuid.uuid4().hex
-    drive_doc_entity.parent_drive_entity = parent
-    drive_doc_entity.mime_type = "frappe_doc"
-    drive_doc_entity.append(
-        "document",
-        {
-            "title": title,
-            "content": content,
-        },
-    )
-    drive_doc_entity.flags.file_created = True
-    frappe.local.rollback_observers.append(drive_doc_entity)
-    drive_doc_entity.save()
+
+    drive_doc = frappe.new_doc("Drive Document")
+    drive_doc.title = new_title
+    drive_doc.content =  content
+    drive_doc.save()
+    
+    drive_entity = frappe.new_doc("Drive Entity")
+    drive_entity.title = new_title
+    drive_entity.name = uuid.uuid4().hex
+    drive_entity.parent_drive_entity = parent
+    drive_entity.mime_type = "frappe_doc"
+
+    drive_entity.flags.file_created = True
+    frappe.local.rollback_observers.append(drive_entity)
+    drive_entity.save()
     if parent == user_directory.name:
-        drive_doc_entity.share(frappe.session.user, write=1, share=1)
-    return drive_doc_entity
+        drive_entity.share(frappe.session.user, write=1, share=1)
+    return drive_entity
 
 
 @frappe.whitelist()
@@ -240,7 +247,6 @@ def get_file_content(entity_name, trigger_download=0):
         )
         response.headers.add("Content-Length", str(drive_entity.file_size))
         return response
-
 
 @frappe.whitelist()
 def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
