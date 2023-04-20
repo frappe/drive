@@ -230,8 +230,6 @@ export default {
   margin: 1cm auto;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Firefox */

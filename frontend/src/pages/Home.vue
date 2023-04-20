@@ -179,14 +179,15 @@ export default {
         {
           label: "New Document",
           icon: "file-text",
-          handler: () => {
-            this.$resources.createDocument.submit({
+          handler: async () => {
+            await this.$resources.createDocument.submit({
               title: "Untitled Document",
               content: null,
               parent: this.$store.state.currentFolderID,
             });
             this.$router.push({
               name: "Document",
+              params: { entityName: this.previewEntity.name },
             });
           },
 
@@ -548,7 +549,7 @@ export default {
       return {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
-          console.log(data);
+          this.previewEntity = data;
         },
         onError(data) {
           console.log(data);

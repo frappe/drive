@@ -9,22 +9,18 @@
         class="flex-none mr-1"
         appearance="primary"
         @click="
-          $resources.createDocument.submit({
+          $resources.updateDocument.submit({
             title: title,
             content: content,
-            parent: currentFolderID,
+            entity_name: entityName,
           })
         ">
         Save
       </Button>
-      <Button @click="$router.go(-1)">Discard</Button>
+      <Button @click="$router.go(-1)">Back</Button>
     </div>
   </div>
-  <TextEditor
-    id="editorElem"
-    v-model="content"
-    editor-class="border max-w-none rounded-b-lg p-3 overflow-auto focus:outline-none"
-    :fixed-menu="true" />
+  <TextEditor id="editorElem" v-model="content" :fixed-menu="true" />
 </template>
 
 <script>
@@ -34,6 +30,13 @@ export default {
   components: {
     TextEditor,
     Button,
+  },
+  props: {
+    entityName: {
+      type: String,
+      required: false,
+      default: "",
+    },
   },
   data() {
     return {
@@ -46,21 +49,37 @@ export default {
       return this.$store.state.currentFolderID;
     },
   },
-  methods: {
-    test() {
-      this.emitter.emit("uploadFile");
-    },
+  mounted() {
+    this.entityName ? this.$resources.getDocument.fetch() : null;
   },
   resources: {
-    createDocument() {
+    updateDocument() {
       return {
-        url: "drive.api.files.create_document_entity",
+        url: "drive.api.files.save_doc",
         params: {
+          entity_name: this.entityName,
           title: this.title,
           content: this.content,
         },
         onSuccess(data) {
+          this.title = data.title;
+          this.content = JSON.parse(data.content);
+        },
+        onError(data) {
           console.log(data);
+        },
+        auto: false,
+      };
+    },
+    getDocument() {
+      return {
+        url: "drive.api.files.get_doc_content",
+        params: {
+          entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          this.title = data.title;
+          this.content = JSON.parse(data.content);
         },
         onError(data) {
           console.log(data);

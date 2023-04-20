@@ -208,8 +208,31 @@ def create_folder(title, parent=None):
     return drive_entity
 
 
+@frappe.whitelist()
+def get_doc_content(entity_name, trigger_download=0):
+    drive_entity = frappe.get_value(
+        "Drive Entity",
+        entity_name,
+        ["title", "document.content", "mime_type", "file_size"],
+        as_dict=1,
+    )
+    return drive_entity
+
+
+@frappe.whitelist()
+def save_doc(entity_name, content, title):
+    drive_entity = frappe.get_doc("Drive Entity", entity_name)
+    drive_document = frappe.get_doc("Drive Document", drive_entity.document)
+    drive_entity.title = title
+    drive_document.title = title
+    drive_document.content = content
+    drive_document.save()
+    drive_entity.save()
+    return drive_document
+
+
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name, trigger_download=0):
+def get_file_content(entity_name):
     """
     Stream file content and optionally trigger download
 

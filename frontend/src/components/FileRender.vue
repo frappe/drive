@@ -64,6 +64,7 @@ export default {
       textFileContent: "",
       isPdf: this.previewEntity.mime_type === "application/pdf",
       isImage: this.previewEntity.mime_type?.startsWith("image/"),
+      isFrappeDoc: this.previewEntity.mime_type === "frappe_doc",
       isTxt:
         this.previewEntity.mime_type?.startsWith("text/") ||
         this.previewEntity.mime_type === "application/json" ||
@@ -103,7 +104,9 @@ export default {
           "application/pdf",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "frappe_doc",
         ].some((type) => this.previewEntity.mime_type.startsWith(type));
+
       if (!isSupportedType) {
         this.preview.error = "Previews are not supported for this file type";
         this.preview.loading = false;
@@ -111,6 +114,11 @@ export default {
         // Size limit = 400
         this.preview.error = "File is too large to preview";
         this.preview.loading = false;
+      } else if (this.isFrappeDoc) {
+        this.$router.push({
+          name: "Document",
+          params: { entityName: this.previewEntity.name },
+        });
       } else {
         this.fetchContent();
       }

@@ -14,10 +14,11 @@ const routes = [
     props: true,
   },
   {
-    path: "/Document",
+    path: "/document/:entityName",
     name: "Document",
     meta: { sidebar: false },
     component: () => import("@/pages/Document.vue"),
+    props: true,
   },
   {
     path: "/recent",
