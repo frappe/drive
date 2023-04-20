@@ -35,6 +35,7 @@
           class="basis-5/12 lg:basis-auto">
           <Button
             v-if="$store.state.hasWriteAccess"
+            id="upload-button"
             class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full"
             appearance="primary"
             icon="plus"></Button>
@@ -156,3 +157,8 @@ export default {
   },
 };
 </script>
+<style>
+#upload-button {
+  border-radius: 100%;
+}
+</style>
