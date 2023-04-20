@@ -2,8 +2,8 @@
   <div class="flex justify-between items-center mb-4">
     <input
       v-model="title"
-      class="basis-3/4 border-0 bg-white text-3xl font-normal focus:outline-0"
-      placeholder="Untitled Document" />
+      :placeholder="title"
+      class="basis-auto border-0 text-2xl font-normal focus:outline-0 bg-inherit" />
     <div>
       <Button
         class="flex-none mr-1"

@@ -1,6 +1,7 @@
 <template>
   <div
     class="flex text-gray-900 h-screen antialiased overflow-y-hidden"
+    :class="{ 'bg-slate-50': $route.meta.documentPage }"
     @contextmenu.prevent="handleDefaultContext($event)">
     <UploadTracker v-if="showUploadTracker" />
     <div
@@ -17,8 +18,7 @@
         <div v-if="showSidebar" class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>
-        <div
-          class="flex-1 overflow-y-auto overflow-x-hidden md:my-[25px] md:px-6">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden p-4">
           <router-view v-slot="{ Component }">
             <component :is="Component" ref="currentPage" />
           </router-view>

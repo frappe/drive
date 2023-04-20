@@ -2,7 +2,8 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white border-b">
+    class="bg-white border-b"
+    :class="{ 'shadow-sm': $route.meta.documentPage }">
     <div
       class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
       <div class="flex items-center">
@@ -33,10 +34,10 @@
           placement="left"
           class="basis-5/12 lg:basis-auto">
           <Button
+            v-if="$store.state.hasWriteAccess"
             class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full"
             appearance="primary"
-            icon="plus"
-            :disabled="!$store.state.hasWriteAccess"></Button>
+            icon="plus"></Button>
         </Dropdown>
         <div class="border h-5"></div>
         <Button

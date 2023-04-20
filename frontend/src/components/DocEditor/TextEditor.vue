@@ -2,7 +2,7 @@
   <div v-if="editor" class="relative w-full" :class="$attrs.class">
     <TextEditorBubbleMenu :buttons="bubbleMenu" />
     <TextEditorFixedMenu
-      class="w-full overflow-x-auto rounded-lg border border-gray-200"
+      class="w-full overflow-x-auto rounded-sm border border-gray-200"
       :buttons="fixedMenu" />
     <TextEditorFloatingMenu :buttons="floatingMenu" />
   </div>
