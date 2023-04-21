@@ -1,6 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
-    <slot name="toolbar"></slot>
+    <div>
+      <slot name="toolbar"></slot>
     <div v-if="isEmpty" class="flex-1">
       <slot name="placeholder"></slot>
     </div>
@@ -109,14 +110,19 @@
       class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
-  </div>
+    </div>
+      <StatusBar 
+          :folder-contents="folderContents"
+          />    
+    </div>
+
 </template>
 
 <script>
 import { formatMimeType } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
-
+import StatusBar from './StatusBar.vue';
 export default {
   name: "GridView",
   props: {
@@ -128,6 +134,9 @@ export default {
       type: Array,
       default: null,
     },
+  },
+  components :{
+    StatusBar,
   },
   emits: [
     "entitySelected",
@@ -168,12 +177,10 @@ export default {
     document.addEventListener("mousemove", this.handleMousemove);
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
-
     this.selectAllListener = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.$emit("entitySelected", this.folderContents);
     };
-
     this.copyListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -185,7 +192,6 @@ export default {
           action: "copy",
         });
     };
-
     this.cutListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -198,7 +204,6 @@ export default {
           action: "cut",
         });
     };
-
     document.addEventListener("keydown", this.selectAllListener);
     document.addEventListener("keydown", this.copyListener);
     document.addEventListener("keydown", this.cutListener);
@@ -314,7 +319,6 @@ export default {
         this.selectEntity(entity, event);
       }
     },
-
     async onDrop(newParent) {
       for (let i = 0; i < this.selectedEntities.length; i++) {
         if (this.selectedEntities[i].name === newParent.name) {
