@@ -166,7 +166,7 @@ import GeneralFolderImage from "@/assets/images/icons/Generalfolder.png";
     methods: {
       setFolderIcon: _.memoize(function(folderTitle) {
       const typeKeywords = {
-        images: ["photo", "picture", "image"],
+        images: ["photo", "picture", "image", "screenshot"],
         videos: ["video", "audio"]
       };
       for (const [type, keywords] of Object.entries(typeKeywords)) {
