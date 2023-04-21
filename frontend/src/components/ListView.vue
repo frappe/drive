@@ -1,5 +1,6 @@
 <template>
-  <div class="h-full flex flex-col">
+<div class="h-full flex flex-col">
+  <div>
     <slot name="toolbar"></slot>
     <div v-if="isEmpty" class="flex-1">
       <slot name="placeholder"></slot>
@@ -88,11 +89,17 @@
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
   </div>
-</template>
+    <StatusBar 
+        :folder-contents="folderContents"
+         />    
+  </div>
+  </template>
 <script>
+
 import { formatMimeType } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
+import StatusBar from "./StatusBar.vue";
 
 export default {
   name: "GridView",
@@ -106,6 +113,9 @@ export default {
       default: null,
     },
   },
+  components : {
+      StatusBar,
+    },
   emits: [
     "entitySelected",
     "openEntity",
