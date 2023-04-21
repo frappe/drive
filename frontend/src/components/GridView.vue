@@ -7,7 +7,7 @@
     <div
       v-else
       ref="container"
-      class="h-full px-5 md:px-0"
+      class="h-full my-8 px-5 md:px-0"
       @mousedown="(event) => handleMousedown(event)">
       <div v-if="folders.length > 0" class="mt-3">
         <div class="text-gray-600 font-medium">Folders</div>
@@ -34,27 +34,21 @@
             @dragover.prevent
             @mousedown.stop>
             <div class="h-28 md:h-32 place-items-center grid">
-              <svg
-                :style="{ fill: folder.color }"
-                :draggable="false"
-                width="46"
-                height="40"
-                viewBox="0 0 46 40"
-                fill="#32a852"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M0.368197 17.3301C0.17175 15.5535 1.56262 14.0004 3.35002 14.0004H42.65C44.4374 14.0004 45.8283 15.5535 45.6318 17.3301L43.7155 34.6599C43.3794 37.6999 40.8104 40.0004 37.7519 40.0004H8.24812C5.18961 40.0004 2.62062 37.6999 2.28447 34.6599L0.368197 17.3301Z" />
-                <path
-                  d="M43.125 11V9C43.125 6.79086 41.3341 5 39.125 5H20.312C20.1914 5 20.0749 4.95643 19.9839 4.8773L14.6572 0.245394C14.4752 0.0871501 14.2422 0 14.001 0H6.87501C4.66587 0 2.87501 1.79086 2.87501 4V11C2.87501 11.5523 3.32272 12 3.87501 12H42.125C42.6773 12 43.125 11.5523 43.125 11Z" />
-              </svg>
+              <img
+                :src="setFolderIcon(folder.title)"
+                class="h-14"
+                :draggable="false" />
             </div>
-            <div class="px-3.5 pb-2.5">
-              <h3 class="truncate text-[14px] font-medium">
-                {{ folder.title }}
-              </h3>
-              <p class="truncate text-sm text-gray-600 mt-1">
-                {{ folder.modified }}
-              </p>
+            <div class="px-3.5 md:h-16 content-center grid">
+              <h3 class="truncate text-[14px] font-medium">{{ folder.title }}</h3>
+              <div
+                class="truncate text-sm text-gray-600 flex mt-1 place-items-center">
+                <img
+                  :src="setFolderIcon(folder.title)"
+                  class="h-3.5 mr-1.5" />
+                <p>{{ folder.title }}</p>
+                <p class="ml-2"> {{ folder.modified }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -109,14 +103,19 @@
       class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
-  </div>
+    </div>
+     
+
 </template>
 
 <script>
+import _ from 'lodash';
 import { formatMimeType } from "@/utils/format";
 import getIconUrl from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
-
+import ImagesFolderImage from "@/assets/images/icons/ImagesFolder.jpg";
+import VeidosFolderImage from "@/assets/images/icons/vediosFolder.png";
+import GeneralFolderImage from "@/assets/images/icons/Generalfolder.png";
 export default {
   name: "GridView",
   props: {
@@ -168,12 +167,10 @@ export default {
     document.addEventListener("mousemove", this.handleMousemove);
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
-
     this.selectAllListener = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.$emit("entitySelected", this.folderContents);
     };
-
     this.copyListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -185,7 +182,6 @@ export default {
           action: "copy",
         });
     };
-
     this.cutListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -198,7 +194,6 @@ export default {
           action: "cut",
         });
     };
-
     document.addEventListener("keydown", this.selectAllListener);
     document.addEventListener("keydown", this.copyListener);
     document.addEventListener("keydown", this.cutListener);
@@ -209,6 +204,21 @@ export default {
     document.removeEventListener("keydown", this.cutListener);
   },
   methods: {
+    setFolderIcon: _.memoize(function(folderTitle) {
+      const typeKeywords = {
+        images: ["photo", "picture", "image"],
+        videos: ["video", "audio"]
+      };
+      for (const [type, keywords] of Object.entries(typeKeywords)) {
+        const regex = new RegExp(`\\b(${keywords.join("|")})s?\\b`, "i");
+        if (regex.test(folderTitle)) {
+          return type === "images" ? ImagesFolderImage : VeidosFolderImage;
+        }
+      }
+      return GeneralFolderImage;
+    }, _.identity)
+
+    ,
     handleMousedown(event) {
       this.deselectAll();
       this.selectionCoordinates.x1 = event.clientX;
@@ -314,7 +324,6 @@ export default {
         this.selectEntity(entity, event);
       }
     },
-
     async onDrop(newParent) {
       for (let i = 0; i < this.selectedEntities.length; i++) {
         if (this.selectedEntities[i].name === newParent.name) {
