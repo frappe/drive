@@ -232,7 +232,7 @@ def save_doc(entity_name, content, title):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name):
+def get_file_content(entity_name, trigger_download=0):
     """
     Stream file content and optionally trigger download
 
