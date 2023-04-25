@@ -61,6 +61,8 @@ class DriveEntity(NestedSet):
         super().on_trash()
 
     def after_delete(self):
+        if self.document:
+            frappe.delete_doc('Drive Document', self.document)
         """Remove file once document is deleted"""
         if self.path:
             path = Path(self.path)
