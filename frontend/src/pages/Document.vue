@@ -5,18 +5,6 @@
       :placeholder="title"
       class="basis-auto border-0 text-2xl font-normal focus:outline-0 bg-inherit" />
     <div>
-      <Button
-        class="flex-none mr-1"
-        appearance="primary"
-        @click="
-          $resources.updateDocument.submit({
-            title: title,
-            content: content,
-            entity_name: entityName,
-          })
-        ">
-        Save
-      </Button>
       <Button @click="$router.go(-1)">Back</Button>
     </div>
   </div>
@@ -51,6 +39,13 @@ export default {
   },
   mounted() {
     this.entityName ? this.$resources.getDocument.fetch() : null;
+    this.timer = setInterval(() => {
+      this.$resources.updateDocument.submit();
+    }, 30000);
+  },
+  beforeUnmount() {
+    clearInterval(this.timer);
+    this.$resources.updateDocument.submit();
   },
   resources: {
     updateDocument() {
