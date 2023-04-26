@@ -26,9 +26,11 @@
         </div>
       </div>
       <div class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
-        <SearchPopup @open-entity="(entity) => openEntity(entity)" />
+        <SearchPopup
+          v-if="isLoggedIn"
+          @open-entity="(entity) => openEntity(entity)" />
       </div>
-      <div class="flex items-center">
+      <div class="flex items-center" v-if="isLoggedIn">
         <Dropdown
           :options="$store.state.hasWriteAccess ? addOptions : []"
           placement="left"
@@ -136,6 +138,9 @@ export default {
     },
     imageURL() {
       return this.$store.state.user.imageURL;
+    },
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
     },
   },
   methods: {

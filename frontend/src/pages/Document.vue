@@ -5,10 +5,14 @@
       :placeholder="title"
       class="basis-auto border-0 text-2xl font-normal focus:outline-0 bg-inherit" />
     <div>
-      <Button @click="$router.go(-1)">Back</Button>
+      <Button v-if="isLoggedIn" @click="$router.go(-1)">Back</Button>
     </div>
   </div>
-  <TextEditor id="editorElem" v-model="content" :fixed-menu="true" />
+  <TextEditor
+    :editable="isWriteable"
+    id="editorElem"
+    v-model="content"
+    :fixed-menu="true" />
 </template>
 
 <script>
@@ -30,15 +34,19 @@ export default {
     return {
       title: null,
       content: null,
+      isWriteable: false,
     };
   },
   computed: {
     currentFolderID() {
       return this.$store.state.currentFolderID;
     },
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
   },
-  mounted() {
-    this.entityName ? this.$resources.getDocument.fetch() : null;
+  async mounted() {
+    this.entityName ? await this.$resources.getDocument.fetch() : null;
     this.timer = setInterval(() => {
       this.$resources.updateDocument.submit();
     }, 30000);
@@ -73,8 +81,10 @@ export default {
           entity_name: this.entityName,
         },
         onSuccess(data) {
+          console.log(data);
           this.title = data.title;
           this.content = JSON.parse(data.content);
+          this.isWriteable = !!data.write;
         },
         onError(data) {
           console.log(data);
