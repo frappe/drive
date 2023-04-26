@@ -8,13 +8,13 @@
       class="h-full max-h-full w-full max-w-full flex flex-col"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }">
       <Navbar
-        v-if="isLoggedIn && !isHybridRoute"
+        v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
         :mobile-sidebar-is-open="showMobileSidebar"
         @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
       <div
-        v-if="isLoggedIn && !isHybridRoute"
+        v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
         class="flex h-full overflow-x-hidden">
-        <MobileSidebar v-model="showMobileSidebar" />
+        <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div v-if="showSidebar" class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>

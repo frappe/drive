@@ -4,6 +4,7 @@
 import frappe
 from pypika import Order
 from drive.api.files import get_entity
+from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
 
 
@@ -181,6 +182,47 @@ def get_file_with_permissions(entity_name):
         frappe.throw("Specified entity is not a file", IsADirectoryError)
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
+
+    return entity | user_access
+
+@frappe.whitelist(allow_guest=True)
+def get_doc_with_permissions(entity_name):
+    """
+    Return file data with permissions
+
+    :param entity_name: Name of file document.
+    :raises IsADirectoryError: If this DriveEntity doc is not a file
+    :return: DriveEntity with permissions
+    :rtype: frappe._dict
+    """
+
+    if frappe.session.user == "Guest":
+        #frappe.set_user("Administrator")
+        user_access = get_general_access(entity_name)
+    else:
+        user_access = get_user_access(entity_name)
+
+    if not user_access:
+        frappe.throw(
+            "PermissionError: Either this file does not exist, or you don't have access to it",
+            frappe.PermissionError,
+        )
+
+    fields = [
+        "name",
+        "title",
+        "owner",
+        "is_group",
+        "is_active",
+        "modified",
+        "creation",
+        "file_size",
+        "mime_type",
+        "allow_comments",
+        "document.title",
+        "document.content"
+    ]
+    entity = get_doc_content(entity_name)
 
     return entity | user_access
 
