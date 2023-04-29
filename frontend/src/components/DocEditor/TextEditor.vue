@@ -224,8 +224,9 @@ export default {
   outline: none;
   caret-color: theme("colors.blue.600");
   word-break: break-word;
-  width: 21cm;
-  min-height: 29.7cm;
+  min-width: 816px;
+  max-width: 816px;
+  min-height: 1056px;
   padding: 2cm;
   margin: 1cm auto;
   background: white;
