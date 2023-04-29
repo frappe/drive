@@ -185,6 +185,7 @@ def get_file_with_permissions(entity_name):
 
     return entity | user_access
 
+
 @frappe.whitelist(allow_guest=True)
 def get_doc_with_permissions(entity_name):
     """
@@ -197,7 +198,7 @@ def get_doc_with_permissions(entity_name):
     """
 
     if frappe.session.user == "Guest":
-        #frappe.set_user("Administrator")
+        # frappe.set_user("Administrator")
         user_access = get_general_access(entity_name)
     else:
         user_access = get_user_access(entity_name)
@@ -220,7 +221,7 @@ def get_doc_with_permissions(entity_name):
         "mime_type",
         "allow_comments",
         "document.title",
-        "document.content"
+        "document.content",
     ]
     entity = get_doc_content(entity_name)
 
