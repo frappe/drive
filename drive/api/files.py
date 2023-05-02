@@ -99,12 +99,12 @@ def upload_file(fullpath=None, parent=None):
         user_directory = create_user_directory()
 
     parent = frappe.form_dict.parent or user_directory.name
+
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
             parent = if_folder_exists(i, parent)
 
-    title = get_new_title(file.filename, parent)
 
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
@@ -113,6 +113,9 @@ def upload_file(fullpath=None, parent=None):
             "Cannot upload to this folder due to insufficient permissions",
             frappe.PermissionError,
         )
+
+    title = get_new_title(file.filename, parent)
+
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
