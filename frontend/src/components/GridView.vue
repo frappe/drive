@@ -68,6 +68,7 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
+            v-memo="[files.length, selectedEntities.length]"
             class="md:w-[212px] rounded-lg border group select-none entity"
             draggable="true"
             :class="
