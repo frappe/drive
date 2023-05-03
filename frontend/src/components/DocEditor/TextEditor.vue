@@ -36,8 +36,6 @@ import TextEditorBubbleMenu from "./TextEditorBubbleMenu.vue";
 import TextEditorFloatingMenu from "./TextEditorFloatingMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
-/*  import { ColumnExtension } from "@gocapsule/column-extension"; */
-import { ResizableMedia } from "./extensions/resizableMedia";
 
 export default {
   name: "TextEditor",
@@ -170,7 +168,6 @@ export default {
         Table.configure({
           resizable: true,
         }),
-        ResizableMedia,
         TableRow,
         TableHeader,
         TableCell,
