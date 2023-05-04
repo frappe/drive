@@ -105,7 +105,6 @@ def upload_file(fullpath=None, parent=None):
         for i in dirname:
             parent = if_folder_exists(i, parent)
 
-
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
@@ -216,22 +215,29 @@ def get_doc_content(entity_name, trigger_download=0):
     drive_entity = frappe.get_value(
         "Drive Entity",
         entity_name,
-        ["title", "document.content", "mime_type", "file_size"],
+        ["title", "document", "document.content", "mime_type", "file_size"],
         as_dict=1,
     )
     return drive_entity
 
 
 @frappe.whitelist()
-def save_doc(entity_name, content, title):
+def rename_doc(entity_name, doc_name, title):
+    frappe.db.set_value("Drive Entity", entity_name, "title", title)
+    frappe.db.set_value("Drive Document", doc_name, "title", title)
+    return
+
+
+@frappe.whitelist()
+def save_doc(entity_name, doc_name, content, title):
     drive_entity = frappe.get_doc("Drive Entity", entity_name)
-    drive_document = frappe.get_doc("Drive Document", drive_entity.document)
+    drive_document = frappe.get_doc("Drive Document", doc_name)
     drive_entity.title = title
     drive_document.title = title
     drive_document.content = content
-    drive_document.save()
     drive_entity.save()
-    return drive_document
+    drive_document.save()
+    return
 
 
 @frappe.whitelist(allow_guest=True)

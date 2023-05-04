@@ -208,21 +208,6 @@ def get_doc_with_permissions(entity_name):
             "PermissionError: Either this file does not exist, or you don't have access to it",
             frappe.PermissionError,
         )
-
-    fields = [
-        "name",
-        "title",
-        "owner",
-        "is_group",
-        "is_active",
-        "modified",
-        "creation",
-        "file_size",
-        "mime_type",
-        "allow_comments",
-        "document.title",
-        "document.content",
-    ]
     entity = get_doc_content(entity_name)
 
     return entity | user_access

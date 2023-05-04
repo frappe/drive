@@ -34,6 +34,7 @@ export default {
     return {
       title: null,
       content: null,
+      document: null,
       isWriteable: false,
     };
   },
@@ -51,22 +52,34 @@ export default {
       this.$resources.updateDocument.submit();
     }, 30000);
   },
-  beforeUnmount() {
+  async beforeUnmount() {
     clearInterval(this.timer);
-    this.$resources.updateDocument.submit();
+    await this.$resources.updateDocumentTitle.submit();
+    await this.$resources.updateDocument.submit();
   },
   resources: {
+    updateDocumentTitle() {
+      return {
+        url: "drive.api.files.rename_doc",
+        params: {
+          entity_name: this.entityName,
+          doc_name: this.document,
+          title: this.title,
+        },
+        onError(data) {
+          console.log(data);
+        },
+        auto: false,
+      };
+    },
     updateDocument() {
       return {
         url: "drive.api.files.save_doc",
         params: {
           entity_name: this.entityName,
+          doc_name: this.document,
           title: this.title,
           content: this.content,
-        },
-        onSuccess(data) {
-          this.title = data.title;
-          this.content = JSON.parse(data.content);
         },
         onError(data) {
           console.log(data);
@@ -84,6 +97,7 @@ export default {
           console.log(data);
           this.title = data.title;
           this.content = JSON.parse(data.content);
+          this.document = data.document;
           this.isWriteable = !!data.write;
         },
         onError(data) {
