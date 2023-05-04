@@ -8,11 +8,7 @@
       <Button v-if="isLoggedIn" @click="$router.go(-1)">Back</Button>
     </div>
   </div>
-  <TextEditor
-    :editable="isWriteable"
-    id="editorElem"
-    v-model="content"
-    :fixed-menu="true" />
+  <TextEditor id="editorElem" v-model="content" :editable="isWriteable" />
 </template>
 
 <script>

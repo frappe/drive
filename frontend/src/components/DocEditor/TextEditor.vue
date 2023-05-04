@@ -1,16 +1,10 @@
 <template>
   <div v-if="editable" class="relative w-full" :class="$attrs.class">
     <TextEditorBubbleMenu :buttons="bubbleMenu" />
-    <TextEditorFixedMenu
-      class="w-full overflow-x-auto rounded-sm border border-gray-200"
-      :buttons="fixedMenu" />
-    <TextEditorFloatingMenu :buttons="floatingMenu" />
   </div>
-  <slot name="top" />
   <slot name="editor" :editor="editor">
     <editor-content :editor="editor" />
   </slot>
-  <slot name="bottom" />
 </template>
 
 <script>
@@ -31,19 +25,18 @@ import TextStyle from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
-import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
 import TextEditorBubbleMenu from "./TextEditorBubbleMenu.vue";
-import TextEditorFloatingMenu from "./TextEditorFloatingMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
+import SlashCommand from "./slashCommands.js";
+import suggestion from "./suggestions.js";
+import Document from "@tiptap/extension-document";
 
 export default {
   name: "TextEditor",
   components: {
     EditorContent,
-    TextEditorFixedMenu,
     TextEditorBubbleMenu,
-    TextEditorFloatingMenu,
   },
   provide() {
     return {
@@ -60,33 +53,13 @@ export default {
       type: String,
       default: "",
     },
-    editorClass: {
-      type: [String, Array, Object],
-      default: "",
-    },
     editable: {
       type: Boolean,
       default: true,
     },
     bubbleMenu: {
       type: [Boolean, Array],
-      default: false,
-    },
-    fixedMenu: {
-      type: [Boolean, Array],
-      default: false,
-    },
-    floatingMenu: {
-      type: [Boolean, Array],
-      default: false,
-    },
-    extensions: {
-      type: Array,
-      default: () => [],
-    },
-    starterkitOptions: {
-      type: Object,
-      default: () => ({}),
+      default: true,
     },
     mentions: {
       type: Array,
@@ -189,6 +162,7 @@ export default {
             return this.placeholder;
           },
         }),
+        SlashCommand.configure({ suggestion }),
         configureMention(this.mentions),
         ...(this.extensions || []),
       ],
@@ -200,18 +174,6 @@ export default {
   beforeUnmount() {
     this.editor.destroy();
     this.editor = null;
-  },
-  methods: {
-    addImage() {
-      this.editor.value?.commands.setMedia({
-        src: "https://source.unsplash.com/8xznAGy4HcY/800x400",
-        "media-type": "img",
-        alt: "Something else",
-        title: "Something",
-        width: "800",
-        height: "400",
-      });
-    },
   },
   expose: ["editor"],
 };

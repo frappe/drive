@@ -29,35 +29,14 @@ export default {
       } else {
         buttons = [
           "Paragraph",
+          "Heading 1",
           "Heading 2",
           "Heading 3",
           "Separator",
           "Bold",
           "Italic",
+          "Strikethrough",
           "Link",
-          "Separator",
-          "Bullet List",
-          "Numbered List",
-          "Separator",
-          "Image",
-          "Video",
-          "Blockquote",
-          "Code",
-          [
-            "InsertTable",
-            "AddColumnBefore",
-            "AddColumnAfter",
-            "DeleteColumn",
-            "AddRowBefore",
-            "AddRowAfter",
-            "DeleteRow",
-            "MergeCells",
-            "SplitCell",
-            "ToggleHeaderColumn",
-            "ToggleHeaderRow",
-            "ToggleHeaderCell",
-            "DeleteTable",
-          ],
         ];
       }
       return buttons.map(createEditorButton);

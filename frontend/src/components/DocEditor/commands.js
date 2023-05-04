@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { defineAsyncComponent } from "vue";
 import H1 from "./icons/h-1.vue";
 import H2 from "./icons/h-2.vue";
@@ -7,6 +6,7 @@ import H4 from "./icons/h-4.vue";
 import H5 from "./icons/h-5.vue";
 import H6 from "./icons/h-6.vue";
 import Text from "./icons/text.vue";
+import StrikeThrough from "./icons/strikethrough.vue";
 import Bold from "./icons/bold.vue";
 import Italic from "./icons/italic.vue";
 import Underline from "./icons/underline.vue";
@@ -25,8 +25,6 @@ import ArrowGoBack from "./icons/arrow-go-back-line.vue";
 import ArrowGoForward from "./icons/arrow-go-forward-line.vue";
 import Separator from "./icons/separator.vue";
 import Table from "./icons/table-2.vue";
-/* import ColumnExtension from '@gocapsule/column-extension';
- */
 
 export default {
   Paragraph: {
@@ -155,6 +153,12 @@ export default {
     icon: Separator,
     action: (editor) => editor.chain().focus().setHorizontalRule().run(),
     isActive: (editor) => false,
+  },
+  Strikethrough: {
+    label: "Strikethrough",
+    icon: StrikeThrough,
+    action: (editor) => editor.chain().focus().toggleStrike().run(),
+    isActive: (editor) => editor.isActive("strike"),
   },
   Link: {
     label: "Link",
