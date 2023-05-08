@@ -1,15 +1,26 @@
 import { VueRenderer } from "@tiptap/vue-3";
+import { compile, defineAsyncComponent } from "vue";
 import {
-  ChevronRightSquare,
   Heading1,
   Heading2,
   Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
+  Bold,
+  Italic,
+  UnderlineIcon,
+  List,
   ParkingSquare,
   Table,
+  ListOrdered,
+  AlignCenter,
+  AlignRight,
+  AlignLeft,
+  ImagePlus,
 } from "lucide-vue-next";
 import tippy from "tippy.js";
 
-import { markRaw } from "vue";
 import CommandsList from "./CommandsList.vue";
 
 export default {
@@ -24,8 +35,21 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading 1",
+        title: "Title",
         icon: Heading1,
+        command: ({ editor, range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .setNode("heading", { level: 1 })
+            .run();
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Heading",
+        icon: Heading2,
         command: ({ editor, range }) => {
           editor
             .chain()
@@ -37,8 +61,8 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading 2",
-        icon: Heading2,
+        title: "Subtitle",
+        icon: Heading3,
         command: ({ editor, range }) => {
           editor
             .chain()
@@ -50,8 +74,8 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading 3",
-        icon: Heading3,
+        title: "Heading 4",
+        icon: Heading4,
         command: ({ editor, range }) => {
           editor
             .chain()
@@ -61,6 +85,101 @@ export default {
             .run();
         },
         disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Heading 5",
+        icon: Heading5,
+        command: ({ editor, range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .setNode("heading", { level: 5 })
+            .run();
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Heading 6",
+        icon: Heading6,
+        command: ({ editor, range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .setNode("heading", { level: 6 })
+            .run();
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Bold",
+        icon: Bold,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).toggleBold().run();
+        },
+        disabled: (editor) => editor.isActive("bold"),
+      },
+      {
+        title: "Italic",
+        icon: Italic,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).toggleItalic().run();
+        },
+        disabled: (editor) => editor.isActive("italic"),
+      },
+      {
+        title: "Underline",
+        icon: UnderlineIcon,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).toggleUnderline().run();
+        },
+        disabled: (editor) => editor.isActive("underline"),
+      },
+      {
+        title: "Bullet List",
+        icon: List,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).toggleBulletList().run();
+        },
+        disabled: (editor) => editor.isActive("bulletList"),
+      },
+      {
+        title: "Ordered List",
+        icon: ListOrdered,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).toggleOrderedList().run();
+        },
+        disabled: (editor) => editor.isActive("bulletList"),
+      },
+      {
+        title: "Align Center",
+        icon: AlignCenter,
+        command: ({ editor, range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .setTextAlign("center")
+            .run();
+        },
+        disabled: (editor) => editor.isActive({ textAlign: "center" }),
+      },
+      {
+        title: "Align Left",
+        icon: AlignLeft,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).setTextAlign("left").run();
+        },
+        disabled: (editor) => editor.isActive({ textAlign: "left" }),
+      },
+      {
+        title: "Align Right",
+        icon: AlignRight,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).setTextAlign("right").run();
+        },
+        disabled: (editor) => editor.isActive({ textAlign: "right`" }),
       },
       {
         title: "Table",
@@ -109,6 +228,11 @@ export default {
           editor.chain().focus().deleteRange(range).deleteTable().run();
         },
         disabled: (editor) => !editor.isActive("table"),
+      },
+      {
+        title: "Image",
+        icon: ImagePlus,
+        command: defineAsyncComponent(() => import("./InsertImage.vue")),
       },
     ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
   },

@@ -11,6 +11,7 @@
 import { normalizeClass, computed } from "vue";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import Table from "@tiptap/extension-table";
@@ -30,7 +31,6 @@ import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
 import SlashCommand from "./slashCommands.js";
 import suggestion from "./suggestions.js";
-import Document from "@tiptap/extension-document";
 
 export default {
   name: "TextEditor",
@@ -59,7 +59,7 @@ export default {
     },
     bubbleMenu: {
       type: [Boolean, Array],
-      default: true,
+      default: false,
     },
     mentions: {
       type: Array,
@@ -141,6 +141,7 @@ export default {
         Table.configure({
           resizable: true,
         }),
+        Underline,
         TableRow,
         TableHeader,
         TableCell,
