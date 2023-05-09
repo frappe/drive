@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.8",
+    "@tiptap/extension-underline": "^2.0.3",
     "@tiptap/pm": "^2.0.0-beta.220",
     "@tiptap/starter-kit": "^2.0.0-beta.220",
     "@tiptap/vue-3": "^2.0.0-beta.220",

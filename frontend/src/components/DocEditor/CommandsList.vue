@@ -13,6 +13,13 @@
           :is="item.icon || 'Minus'"
           class="mr-2 h-4 w-4 text-gray-500" />
         {{ item.title }}
+        <component
+          :editor="editor"
+          v-if="item.component"
+          :isOpen="item.isOpen"
+          :is="item.component">
+          {{ item.title }}
+        </component>
       </button>
     </template>
     <div class="item" v-else>No result</div>
@@ -100,8 +107,10 @@ export default {
     selectItem(index) {
       const item = this.enabledItems[index];
 
-      if (item) {
+      if (item.command) {
         this.command(item);
+      } else if (item.component) {
+        item.isOpen = true;
       }
     },
   },

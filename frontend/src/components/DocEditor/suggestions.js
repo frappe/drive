@@ -1,5 +1,5 @@
 import { VueRenderer } from "@tiptap/vue-3";
-import { compile, defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from "vue";
 import {
   Heading1,
   Heading2,
@@ -232,7 +232,8 @@ export default {
       {
         title: "Image",
         icon: ImagePlus,
-        command: defineAsyncComponent(() => import("./InsertImage.vue")),
+        component: defineAsyncComponent(() => import("./InsertImage.vue")),
+        isOpen: false,
       },
     ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
   },

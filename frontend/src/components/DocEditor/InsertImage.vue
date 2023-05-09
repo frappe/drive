@@ -1,8 +1,9 @@
 <template>
-  <slot v-bind="{ onClick: openDialog }"></slot>
   <Dialog
+    :isOpen="isOpen"
     :options="{ title: 'Add Image' }"
-    v-model="addImageDialog.show"
+    :modelValue="isOpen"
+    @update:modelValue="(d) => (isOpen = d)"
     @after-leave="reset">
     <template #body-content>
       <label
@@ -10,8 +11,8 @@
         <input
           type="file"
           class="w-full opacity-0"
-          @change="onImageSelect"
-          accept="image/*" />
+          accept="image/*"
+          @change="onImageSelect" />
         <span class="absolute inset-0 select-none px-2 py-1 text-base">
           {{ addImageDialog.file ? "Select another image" : "Select an image" }}
         </span>
@@ -35,7 +36,7 @@ import fileToBase64 from "@/utils/file-to-base64";
 
 export default {
   name: "InsertImage",
-  props: ["editor"],
+  props: ["editor", "isOpen"],
   expose: ["openDialog"],
   data() {
     return {

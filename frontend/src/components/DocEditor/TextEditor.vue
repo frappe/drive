@@ -1,6 +1,6 @@
 <template>
   <div v-if="editable" class="relative w-full" :class="$attrs.class">
-    <TextEditorBubbleMenu :buttons="bubbleMenu" />
+    <TextEditorBubbleMenu :editor="editor" :buttons="bubbleMenu" />
   </div>
   <slot name="editor" :editor="editor">
     <editor-content :editor="editor" />

@@ -8,7 +8,11 @@
       <Button v-if="isLoggedIn" @click="$router.go(-1)">Back</Button>
     </div>
   </div>
-  <TextEditor id="editorElem" v-model="content" :editable="isWriteable" />
+  <TextEditor
+    id="editorElem"
+    v-model="content"
+    :bubble-menu="true"
+    :editable="isWriteable" />
 </template>
 
 <script>
@@ -28,8 +32,8 @@ export default {
   },
   data() {
     return {
-      title: null,
-      content: null,
+      title: " ",
+      content: " ",
       document: null,
       isWriteable: false,
     };
@@ -42,8 +46,7 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
   },
-  async mounted() {
-    this.entityName ? await this.$resources.getDocument.fetch() : null;
+  mounted() {
     this.timer = setInterval(() => {
       this.$resources.updateDocument.submit();
     }, 30000);
@@ -92,14 +95,15 @@ export default {
         onSuccess(data) {
           console.log(data);
           this.title = data.title;
-          this.content = JSON.parse(data.content);
+          this.content = data.content;
           this.document = data.document;
           this.isWriteable = !!data.write;
+          console.log(this);
         },
         onError(data) {
           console.log(data);
         },
-        auto: false,
+        auto: true,
       };
     },
   },
