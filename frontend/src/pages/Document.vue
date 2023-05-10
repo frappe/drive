@@ -3,7 +3,7 @@
     class="flex-col items-center justify-center p-8 min-w-[816px] max-w-[816px] min-h-full m-auto bg-white border border-slate-300">
     <input
       v-model="title"
-      placeholder="Untitled Document"
+      :placeholder="oldTitle"
       class="text-[2.25em] font-extrabold focus:outline-0 border-b-2 w-full mb-6 pb-8" />
     <TextEditor
       v-model="content"
