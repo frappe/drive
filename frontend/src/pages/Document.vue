@@ -32,8 +32,8 @@ export default {
   },
   data() {
     return {
-      title: " ",
-      content: " ",
+      title: null,
+      content: null,
       document: null,
       isWriteable: false,
     };
@@ -46,7 +46,8 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
   },
-  mounted() {
+  async mounted() {
+    this.entityName ? await this.$resources.getDocument.fetch() : null;
     this.timer = setInterval(() => {
       this.$resources.updateDocument.submit();
     }, 30000);
@@ -93,12 +94,10 @@ export default {
           entity_name: this.entityName,
         },
         onSuccess(data) {
-          console.log(data);
           this.title = data.title;
-          this.content = data.content;
+          this.content = JSON.parse(data.content);
           this.document = data.document;
           this.isWriteable = !!data.write;
-          console.log(this);
         },
         onError(data) {
           console.log(data);

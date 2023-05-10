@@ -1,9 +1,8 @@
 <template>
   <Dialog
-    :isOpen="isOpen"
+    :is-open="isOpen"
     :options="{ title: 'Add Image' }"
-    :modelValue="isOpen"
-    @update:modelValue="(d) => (isOpen = d)"
+    :model-value="isOpen"
     @after-leave="reset">
     <template #body-content>
       <label

@@ -1,12 +1,10 @@
 import { VueRenderer } from "@tiptap/vue-3";
 import { defineAsyncComponent } from "vue";
 import {
+  Type,
   Heading1,
   Heading2,
   Heading3,
-  Heading4,
-  Heading5,
-  Heading6,
   Bold,
   Italic,
   UnderlineIcon,
@@ -18,6 +16,7 @@ import {
   AlignRight,
   AlignLeft,
   ImagePlus,
+  Film,
 } from "lucide-vue-next";
 import tippy from "tippy.js";
 
@@ -36,7 +35,7 @@ export default {
       },
       {
         title: "Title",
-        icon: Heading1,
+        icon: Type,
         command: ({ editor, range }) => {
           editor
             .chain()
@@ -48,8 +47,8 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading",
-        icon: Heading2,
+        title: "Heading 1",
+        icon: Heading1,
         command: ({ editor, range }) => {
           editor
             .chain()
@@ -61,8 +60,8 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Subtitle",
-        icon: Heading3,
+        title: "Heading 2",
+        icon: Heading2,
         command: ({ editor, range }) => {
           editor
             .chain()
@@ -74,40 +73,28 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading 4",
-        icon: Heading4,
+        /* Write custom subtitle node */
+        title: "Subtitle",
+        icon: Heading2,
+        command: ({ editor, range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .setNode("heading", { level: 3 })
+            .run();
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Heading 3",
+        icon: Heading3,
         command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
             .deleteRange(range)
             .setNode("heading", { level: 4 })
-            .run();
-        },
-        disabled: (editor) => editor.isActive("table"),
-      },
-      {
-        title: "Heading 5",
-        icon: Heading5,
-        command: ({ editor, range }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .setNode("heading", { level: 5 })
-            .run();
-        },
-        disabled: (editor) => editor.isActive("table"),
-      },
-      {
-        title: "Heading 6",
-        icon: Heading6,
-        command: ({ editor, range }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .setNode("heading", { level: 6 })
             .run();
         },
         disabled: (editor) => editor.isActive("table"),
@@ -233,6 +220,12 @@ export default {
         title: "Image",
         icon: ImagePlus,
         component: defineAsyncComponent(() => import("./InsertImage.vue")),
+        isOpen: false,
+      },
+      {
+        title: "Video",
+        icon: Film,
+        component: defineAsyncComponent(() => import("./InsertVideo.vue")),
         isOpen: false,
       },
     ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
