@@ -25,12 +25,14 @@
           </router-link>
         </div>
       </div>
-      <div class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
+      <div
+        v-if="!$route.meta.documentPage"
+        class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
         <SearchPopup
           v-if="isLoggedIn"
           @open-entity="(entity) => openEntity(entity)" />
       </div>
-      <div class="flex items-center" v-if="isLoggedIn">
+      <div v-if="isLoggedIn" class="flex items-center">
         <Dropdown
           :options="$store.state.hasWriteAccess ? addOptions : []"
           placement="left"
@@ -42,7 +44,15 @@
             appearance="primary"
             icon="plus"></Button>
         </Dropdown>
-        <div class="border h-5"></div>
+        <div v-if="!$route.meta.documentPage" class="border h-5"></div>
+        <div>
+          <Button
+            v-if="$route.meta.documentPage && isLoggedIn"
+            iconLeft="chevron-left"
+            @click="$router.go(-1)">
+            Back to Files
+          </Button>
+        </div>
         <Button
           class="stroke-1.5 ml-4 md:ml-5"
           appearance="minimal"

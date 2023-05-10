@@ -1,27 +1,23 @@
 <template>
-  <div class="flex justify-between items-center mb-4">
+  <div
+    class="flex-col items-center justify-center p-8 min-w-[816px] max-w-[816px] min-h-full m-auto bg-white border border-slate-300">
     <input
       v-model="title"
-      :placeholder="title"
-      class="basis-auto border-0 text-2xl font-normal focus:outline-0 bg-inherit" />
-    <div>
-      <Button v-if="isLoggedIn" @click="$router.go(-1)">Back</Button>
-    </div>
+      placeholder="Untitled Document"
+      class="text-[2.25em] font-extrabold focus:outline-0 border-b-2 w-full mb-6 pb-8" />
+    <TextEditor
+      v-model="content"
+      :bubble-menu="true"
+      placeholder="Press / for commands"
+      :editable="isWriteable" />
   </div>
-  <TextEditor
-    id="editorElem"
-    v-model="content"
-    :bubble-menu="true"
-    :editable="isWriteable" />
 </template>
 
 <script>
-import { Button } from "frappe-ui";
 import TextEditor from "@/components/DocEditor/TextEditor.vue";
 export default {
   components: {
     TextEditor,
-    Button,
   },
   props: {
     entityName: {
@@ -32,6 +28,7 @@ export default {
   },
   data() {
     return {
+      oldTitle: null,
       title: null,
       content: null,
       document: null,
@@ -39,6 +36,9 @@ export default {
     };
   },
   computed: {
+    titleVal() {
+      return this.title ? this.title : this.oldTitle;
+    },
     currentFolderID() {
       return this.$store.state.currentFolderID;
     },
@@ -64,7 +64,7 @@ export default {
         params: {
           entity_name: this.entityName,
           doc_name: this.document,
-          title: this.title,
+          title: this.titleVal,
         },
         onError(data) {
           console.log(data);
@@ -78,7 +78,7 @@ export default {
         params: {
           entity_name: this.entityName,
           doc_name: this.document,
-          title: this.title,
+          title: this.titleVal,
           content: this.content,
         },
         onError(data) {
@@ -95,6 +95,7 @@ export default {
         },
         onSuccess(data) {
           this.title = data.title;
+          this.oldTitle = data.title;
           this.content = JSON.parse(data.content);
           this.document = data.document;
           this.isWriteable = !!data.write;
