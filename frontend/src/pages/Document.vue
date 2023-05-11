@@ -4,7 +4,8 @@
     <input
       v-model="title"
       :placeholder="oldTitle"
-      class="text-[2.25em] font-extrabold focus:outline-0 border-b-2 w-full mb-6 pb-8" />
+      class="text-[2.25em] font-extrabold focus:outline-0 border-b-2 w-full mb-6 pb-8"
+      @input="$resources.updateDocumentTitle.submit()" />
     <TextEditor
       v-model="content"
       :bubble-menu="true"
@@ -54,16 +55,15 @@ export default {
   },
   async beforeUnmount() {
     clearInterval(this.timer);
-    await this.$resources.updateDocumentTitle.submit();
     await this.$resources.updateDocument.submit();
   },
   resources: {
     updateDocumentTitle() {
       return {
-        url: "drive.api.files.rename_doc",
+        url: "drive.api.files.rename_doc_entity",
+        debounce: 250,
         params: {
           entity_name: this.entityName,
-          doc_name: this.document,
           title: this.titleVal,
         },
         onError(data) {
@@ -75,6 +75,7 @@ export default {
     updateDocument() {
       return {
         url: "drive.api.files.save_doc",
+        debounce: 500,
         params: {
           entity_name: this.entityName,
           doc_name: this.document,

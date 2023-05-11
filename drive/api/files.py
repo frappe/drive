@@ -222,9 +222,8 @@ def get_doc_content(entity_name, trigger_download=0):
 
 
 @frappe.whitelist()
-def rename_doc(entity_name, doc_name, title):
+def rename_doc_entity(entity_name, title):
     frappe.db.set_value("Drive Entity", entity_name, "title", title)
-    frappe.db.set_value("Drive Document", doc_name, "title", title)
     return
 
 
