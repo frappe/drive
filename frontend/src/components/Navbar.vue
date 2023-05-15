@@ -123,14 +123,37 @@ export default {
       showNewFolderDialog: false,
       addOptions: [
         {
+          label: "Upload file",
+          icon: "upload",
+          handler: () => this.emitter.emit("uploadFile"),
+        },
+        {
+          label: "Upload Folder",
+          icon: "folder",
+          handler: () => this.emitter.emit("uploadFolder"),
+          isEnabled: () => this.selectedEntities.length === 0,
+        },
+        {
           label: "New folder",
           icon: "folder-plus",
           handler: () => (this.showNewFolderDialog = true),
         },
         {
-          label: "Upload file",
-          icon: "upload",
-          handler: () => this.emitter.emit("uploadFile"),
+          label: "New Document",
+          icon: "file-text",
+          handler: async () => {
+            await this.$resources.createDocument.submit({
+              title: "Untitled Document",
+              content: null,
+              parent: this.$store.state.currentFolderID,
+            });
+            this.$router.push({
+              name: "Document",
+              params: { entityName: this.previewEntity.name },
+            });
+          },
+
+          isEnabled: () => this.selectedEntities.length === 0,
         },
       ],
       accountOptions: [
@@ -168,6 +191,20 @@ export default {
     hidePreview() {
       this.showPreview = false;
       this.previewEntity = null;
+    },
+  },
+  resources: {
+    createDocument() {
+      return {
+        url: "drive.api.files.create_document_entity",
+        onSuccess(data) {
+          this.previewEntity = data;
+        },
+        onError(data) {
+          console.log(data);
+        },
+        auto: false,
+      };
     },
   },
 };
