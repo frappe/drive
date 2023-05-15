@@ -1,5 +1,5 @@
 import { VueRenderer } from "@tiptap/vue-3";
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, shallowReactive } from "vue";
 import {
   Type,
   Heading1,
@@ -216,18 +216,18 @@ export default {
         },
         disabled: (editor) => !editor.isActive("table"),
       },
-      {
+      shallowReactive({
         title: "Image",
         icon: ImagePlus,
         component: defineAsyncComponent(() => import("./InsertImage.vue")),
         isOpen: false,
-      },
-      {
+      }),
+      shallowReactive({
         title: "Video",
         icon: Film,
         component: defineAsyncComponent(() => import("./InsertVideo.vue")),
         isOpen: false,
-      },
+      }),
     ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
   },
 

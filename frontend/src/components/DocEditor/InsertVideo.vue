@@ -54,6 +54,7 @@ export default {
   name: "InsertImage",
   props: ["editor", "isOpen"],
   expose: ["openDialog"],
+  emits: ["toggleIsOpen"],
   data() {
     return {
       addVideoDialog: { url: "", file: null, show: false },
@@ -81,7 +82,7 @@ export default {
       this.reset();
     },
     reset() {
-      this.addVideoDialog = this.$options.data().addVideoDialog;
+      this.$emit("toggleIsOpen");
     },
   },
 };

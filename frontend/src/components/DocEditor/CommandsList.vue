@@ -3,10 +3,10 @@
     class="flex w-40 flex-col rounded-md border bg-white p-1 text-base shadow">
     <template v-if="enabledItems.length">
       <button
-        class="flex h-8 w-full cursor-pointer items-center rounded px-1 text-base"
-        :class="{ 'bg-gray-100': index === selectedIndex }"
         v-for="(item, index) in enabledItems"
         :key="index"
+        class="flex h-8 w-full cursor-pointer items-center rounded px-1 text-base"
+        :class="{ 'bg-gray-100': index === selectedIndex }"
         @click="selectItem(index)"
         @mouseenter="selectedIndex = index">
         <component
@@ -14,21 +14,25 @@
           class="mr-2 h-4 w-4 text-gray-500" />
         {{ item.title }}
         <component
-          :editor="editor"
+          :is="item.component"
           v-if="item.component"
-          :isOpen="item.isOpen"
-          :is="item.component">
+          :editor="editor"
+          :is-open="item.isOpen"
+          @toggle-is-open="toggleIsOpen(item)">
           {{ item.title }}
         </component>
       </button>
     </template>
-    <div class="item" v-else>No result</div>
+    <div v-else class="item">No result</div>
   </div>
 </template>
 
 <script>
 import { Minus } from "lucide-vue-next";
 export default {
+  components: {
+    Minus,
+  },
   props: {
     items: {
       type: Array,
@@ -46,20 +50,10 @@ export default {
     },
   },
 
-  components: {
-    Minus,
-  },
-
   data() {
     return {
       selectedIndex: 0,
     };
-  },
-
-  watch: {
-    items() {
-      this.selectedIndex = 0;
-    },
   },
 
   computed: {
@@ -70,7 +64,17 @@ export default {
     },
   },
 
+  watch: {
+    items() {
+      this.selectedIndex = 0;
+    },
+  },
+
   methods: {
+    toggleIsOpen(item) {
+      item.isOpen = !item.isOpen;
+    },
+
     onKeyDown({ event }) {
       if (event.key === "ArrowUp") {
         this.upHandler();

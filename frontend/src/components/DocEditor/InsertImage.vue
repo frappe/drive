@@ -37,6 +37,7 @@ export default {
   name: "InsertImage",
   props: ["editor", "isOpen"],
   expose: ["openDialog"],
+  emits: ["toggleIsOpen"],
   data() {
     return {
       addImageDialog: { url: "", file: null, show: false },
@@ -62,7 +63,7 @@ export default {
       this.reset();
     },
     reset() {
-      this.addImageDialog = this.$options.data().addImageDialog;
+      this.$emit("toggleIsOpen");
     },
   },
 };
