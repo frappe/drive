@@ -216,7 +216,7 @@ export default {
         },
         disabled: (editor) => !editor.isActive("table"),
       },
-      shallowReactive({
+      /*       shallowReactive({
         title: "Image",
         icon: ImagePlus,
         component: defineAsyncComponent(() => import("./InsertImage.vue")),
@@ -227,7 +227,7 @@ export default {
         icon: Film,
         component: defineAsyncComponent(() => import("./InsertVideo.vue")),
         isOpen: false,
-      }),
+      }), */
     ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
   },
 
@@ -239,6 +239,7 @@ export default {
       onStart: (props) => {
         component = new VueRenderer(CommandsList, {
           props,
+          popup,
           editor: props.editor,
         });
 
@@ -259,7 +260,9 @@ export default {
 
       onUpdate(props) {
         component.updateProps(props);
-
+        component.updateProps(popup);
+        console.log(props);
+        console.log(popup);
         if (!props.clientRect) {
           return;
         }
