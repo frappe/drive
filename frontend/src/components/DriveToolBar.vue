@@ -48,11 +48,6 @@
           </Button>
         </div>
       </Dropdown>
-      <Button
-        v-if="showInfoButton"
-        icon="info"
-        class="h-8 hidden md:block"
-        @click="$store.commit('setShowInfo', true)"></Button>
       <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5 h-8 flex">
         <Button
           icon="grid"
@@ -92,10 +87,6 @@ export default {
     columnHeaders: {
       type: Array,
       default: null,
-    },
-    showInfoButton: {
-      type: Boolean,
-      default: false,
     },
     actionLoading: {
       type: Boolean,
