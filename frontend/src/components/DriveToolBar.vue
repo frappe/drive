@@ -4,7 +4,7 @@
     ondrop="return false;"
     class="mb-[15px] min-h-8 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0">
     <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
-    <div class="flex gap-3 basis-full lg:basis-auto">
+    <div class="flex gap-3 basis-auto">
       <Dropdown
         v-if="actionItems.length > 0"
         :options="actionItems"

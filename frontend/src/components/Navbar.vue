@@ -20,10 +20,13 @@
               class="w-6 h-6" />
             <FeatherIcon v-else name="x" class="w-6 h-6" />
           </button>
-          <router-link to="/">
-            <FrappeLogo class="h-6 w-auto" />
-          </router-link>
         </div>
+        <Button
+          v-if="$route.meta.documentPage && isLoggedIn"
+          iconLeft="chevron-left"
+          @click="$router.go(-1)">
+          Back to Files
+        </Button>
       </div>
       <div
         v-if="!$route.meta.documentPage"
@@ -44,15 +47,7 @@
             appearance="primary"
             icon="plus"></Button>
         </Dropdown>
-        <div v-if="!$route.meta.documentPage" class="border h-5"></div>
-        <div>
-          <Button
-            v-if="$route.meta.documentPage && isLoggedIn"
-            iconLeft="chevron-left"
-            @click="$router.go(-1)">
-            Back to Files
-          </Button>
-        </div>
+        <div v-if="$store.state.hasWriteAccess" class="border h-5"></div>
         <!--
 
           Pushed implementation

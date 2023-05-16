@@ -16,7 +16,7 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="md:w-[212px] rounded-lg border group select-none entity"
+            class="w-[212px] rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
@@ -33,7 +33,7 @@
             @dragenter.prevent
             @dragover.prevent
             @mousedown.stop>
-            <div class="h-28 md:h-32 place-items-center grid">
+            <div class="h-32 place-items-center grid">
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
@@ -68,8 +68,7 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            v-memo="[files, selectedEntities.length]"
-            class="md:w-[212px] rounded-lg border group select-none entity"
+            class="w-[212px] rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(file)
@@ -85,13 +84,13 @@
             @contextmenu="
               handleEntityContext(file, $event, displayOrderedEntities)
             ">
-            <div class="h-28 md:h-32 place-items-center grid">
+            <div class="h-32 place-items-center grid">
               <img
                 :src="getIconUrl(formatMimeType(file.mime_type))"
                 class="h-14"
                 :draggable="false" />
             </div>
-            <div class="px-3.5 md:h-16 content-center grid">
+            <div class="px-3.5 h-16 content-center grid">
               <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
               <div
                 class="truncate text-sm text-gray-600 flex mt-1 place-items-center">

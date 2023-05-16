@@ -26,7 +26,6 @@
             v-for="entity in folderContents"
             :id="entity.name"
             :key="entity.name"
-            v-memo="[folderContents, selectedEntities.length]"
             class="group select-none text-base shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200 entity"
             :class="
               selectedEntities.includes(entity)
