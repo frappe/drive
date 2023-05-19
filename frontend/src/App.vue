@@ -18,7 +18,7 @@
         <div v-if="showSidebar" class="px-3 border-r hidden md:py-4 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-auto overflow-x-hidden p-4">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden">
           <router-view v-slot="{ Component }">
             <component :is="Component" ref="currentPage" />
           </router-view>

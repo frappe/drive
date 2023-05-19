@@ -1,10 +1,19 @@
 <template>
-  <div v-if="editable" class="relative w-full" :class="$attrs.class">
-    <TextEditorBubbleMenu :editor="editor" :buttons="bubbleMenu" />
+  <div class="sticky top-0 z-10">
+    <div class="w-full bg-white">
+      <input
+        :value="title"
+        :placeholder="oldTitle"
+        class="text-3xl font-semibold focus:outline-0 form-input mx-5 my-2 border-gray-400 placeholder-gray-500"
+        @input="$emit('update:title', $event.target.value)"
+        @change="$resources.updateDocumentTitle.submit()" />
+    </div>
+    <div v-if="editable" class="w-full">
+      <MenuBar />
+      <TextEditorFixedMenu :buttons="fixedMenu" class="shadow-sm" />
+    </div>
   </div>
-  <slot name="editor" :editor="editor">
-    <editor-content :editor="editor" />
-  </slot>
+  <editor-content id="editorElem" :editor="editor" />
 </template>
 
 <script>
@@ -26,17 +35,19 @@ import TextStyle from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
-import TextEditorBubbleMenu from "./TextEditorBubbleMenu.vue";
+import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
 import SlashCommand from "./slashCommands.js";
 import suggestion from "./suggestions.js";
+import MenuBar from "./MenuBar.vue";
 
 export default {
   name: "TextEditor",
   components: {
     EditorContent,
-    TextEditorBubbleMenu,
+    TextEditorFixedMenu,
+    MenuBar,
   },
   provide() {
     return {
@@ -45,6 +56,20 @@ export default {
   },
   inheritAttrs: false,
   props: {
+    fixedMenu: {
+      type: [Boolean, Array],
+      default: false,
+    },
+    title: {
+      default: "",
+      type: String,
+      required: false,
+    },
+    oldTitle: {
+      default: "",
+      type: String,
+      required: false,
+    },
     modelValue: {
       type: Object,
       default: null,
@@ -66,7 +91,7 @@ export default {
       default: () => [],
     },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "update:title", "saveTitle"],
   data() {
     return {
       editor: null,
@@ -114,7 +139,10 @@ export default {
 
       this.editor.commands.setContent(value, false);
     },
-
+    title() {
+      this.$emit("update:title", this.title);
+      this.$emit("saveTitle", this.title);
+    },
     editable(value) {
       this.editor.setEditable(value);
     },
@@ -179,3 +207,29 @@ export default {
   expose: ["editor"],
 };
 </script>
+
+class="flex-col items-center justify-center p-8 min-w-[816px] max-w-[816px]
+min-h-full m-auto bg-white border border-slate-300"
+
+<style>
+.ProseMirror {
+  outline: none;
+  caret-color: theme("colors.blue.600");
+  word-break: break-word;
+  min-width: 816px;
+  max-width: 816px;
+  min-height: 1056px;
+  padding: 2cm;
+  margin: 0.5cm auto;
+  background: white;
+  border: 1px solid #cbd5e1;
+}
+/* Firefox */
+.ProseMirror-focused:focus-visible {
+  outline: none;
+}
+
+#editorElem {
+  @page size: A4;
+}
+</style>

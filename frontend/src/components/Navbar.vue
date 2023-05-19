@@ -23,7 +23,7 @@
         </div>
         <Button
           v-if="$route.meta.documentPage && isLoggedIn"
-          iconLeft="chevron-left"
+          icon-left="chevron-left"
           @click="$router.go(-1)">
           Back to Files
         </Button>
@@ -95,14 +95,12 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 import SearchPopup from "@/components/SearchPopup.vue";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
-import FrappeLogo from "@/components/FrappeLogo.vue";
 
 export default {
   name: "Navbar",
   components: {
     FilePreview,
     FrappeDriveLogo,
-    FrappeLogo,
     SearchPopup,
     NewFolderDialog,
     Avatar,

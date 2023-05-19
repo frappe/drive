@@ -1,17 +1,12 @@
 <template>
-  <div
-    class="flex-col items-center justify-center p-8 min-w-[816px] max-w-[816px] min-h-full m-auto bg-white border border-slate-300">
-    <input
-      v-model="title"
-      :placeholder="oldTitle"
-      class="text-[2.25em] font-extrabold focus:outline-0 border-b-2 w-full mb-6 pb-8"
-      @input="$resources.updateDocumentTitle.submit()" />
-    <TextEditor
-      v-model="content"
-      :bubble-menu="true"
-      placeholder="Press / for commands"
-      :editable="isWriteable" />
-  </div>
+  <TextEditor
+    v-model="content"
+    v-model:title="title"
+    :fixed-menu="true"
+    placeholder="Press / for quick actions"
+    :editable="isWriteable"
+    :old-title="oldTitle"
+    @save-title="$resources.updateDocumentTitle.submit()" />
 </template>
 
 <script>

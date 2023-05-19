@@ -9,7 +9,6 @@ import {
   Italic,
   UnderlineIcon,
   List,
-  ParkingSquare,
   Table,
   ListOrdered,
   AlignCenter,
@@ -25,14 +24,6 @@ import CommandsList from "./CommandsList.vue";
 export default {
   items: ({ query }) => {
     return [
-      {
-        title: "Paragraph",
-        icon: ParkingSquare,
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setNode("paragraph").run();
-        },
-        disabled: (editor) => editor.isActive("table"),
-      },
       {
         title: "Title",
         icon: Type,

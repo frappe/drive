@@ -1,8 +1,8 @@
 <template>
+  <slot v-bind="{ onClick: openDialog }"></slot>
   <Dialog
-    :is-open="isOpen"
     :options="{ title: 'Add Video' }"
-    :model-value="isOpen"
+    v-model="addVideoDialog.show"
     @after-leave="reset">
     <template #body-content>
       <FileUploader
@@ -52,9 +52,8 @@ import { Button, Dialog, FileUploader } from "frappe-ui";
 
 export default {
   name: "InsertImage",
-  props: ["editor", "isOpen"],
+  props: ["editor"],
   expose: ["openDialog"],
-  emits: ["toggleIsOpen"],
   data() {
     return {
       addVideoDialog: { url: "", file: null, show: false },
@@ -82,7 +81,7 @@ export default {
       this.reset();
     },
     reset() {
-      this.$emit("toggleIsOpen");
+      this.addVideoDialog = this.$options.data().addVideoDialog;
     },
   },
 };

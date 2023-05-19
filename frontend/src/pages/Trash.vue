@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full p-4">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />

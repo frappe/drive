@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex">
+  <div class="h-full flex p-4">
     <div class="w-full">
       <div
         class="py-3 px-6 h-16 md:h-[48px] z-10 flex items-center justify-between border-b">
