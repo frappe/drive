@@ -7,10 +7,12 @@
           hideLabel: true,
           items: [
             {
+              icon: 'file-plus',
               label: 'New File',
               handler: () => alert('New File'),
             },
             {
+              icon: 'file-text',
               label: 'Open File',
               handler: () => alert('New Window'),
               // show/hide option based on condition function
@@ -22,15 +24,27 @@
           group: 'Current File',
           hideLabel: true,
           items: [
-            { label: 'Copy File', handler: () => alert('Open File') },
-            { label: 'Share File', handler: () => alert('Open File') },
-            { label: 'Add to favourites', handler: () => alert('Open File') },
+            {
+              icon: 'copy',
+              label: 'Copy File',
+              handler: () => alert('Open File'),
+            },
+            {
+              icon: 'share-2',
+              label: 'Share File',
+              handler: () => alert('Open File'),
+            },
+            {
+              icon: 'star',
+              label: 'Add to favourites',
+              handler: () => alert('Open File'),
+            },
           ],
         },
         {
           group: 'Delete',
           hideLabel: true,
-          items: [{ label: 'Delete File' }],
+          items: [{ icon: 'trash-2', label: 'Delete File' }],
         },
       ]">
       <template v-slot="{ open }">

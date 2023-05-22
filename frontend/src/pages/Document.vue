@@ -3,7 +3,7 @@
     v-model="content"
     v-model:title="title"
     :fixed-menu="true"
-    placeholder="Press / for quick actions"
+    placeholder="Start typing ..."
     :editable="isWriteable"
     :old-title="oldTitle"
     @save-title="$resources.updateDocumentTitle.submit()" />

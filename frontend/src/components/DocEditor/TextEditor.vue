@@ -38,8 +38,6 @@ import configureMention from "./mention";
 import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
-import SlashCommand from "./slashCommands.js";
-import suggestion from "./suggestions.js";
 import MenuBar from "./MenuBar.vue";
 
 export default {
@@ -191,7 +189,6 @@ export default {
             return this.placeholder;
           },
         }),
-        SlashCommand.configure({ suggestion }),
         configureMention(this.mentions),
         ...(this.extensions || []),
       ],
@@ -207,9 +204,6 @@ export default {
   expose: ["editor"],
 };
 </script>
-
-class="flex-col items-center justify-center p-8 min-w-[816px] max-w-[816px]
-min-h-full m-auto bg-white border border-slate-300"
 
 <style>
 .ProseMirror {
