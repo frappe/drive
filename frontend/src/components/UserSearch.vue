@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2">
+  <div class="flex justify-between">
     <div class="flex bg-gray-100 rounded-lg">
       <Popover transition="default">
         <template #target="{ open: openUsers, close: closeUsers }">
