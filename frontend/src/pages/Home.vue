@@ -179,18 +179,7 @@ export default {
         {
           label: "New Document",
           icon: "file-text",
-          handler: async () => {
-            await this.$resources.createDocument.submit({
-              title: "Untitled Document",
-              content: null,
-              parent: this.$store.state.currentFolderID,
-            });
-            this.$router.push({
-              name: "Document",
-              params: { entityName: this.previewEntity.name },
-            });
-          },
-
+          handler: () => this.newDocument(),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
@@ -376,8 +365,13 @@ export default {
 
   async mounted() {
     await this.$resources.getHomeID.fetch();
+
     this.emitter.on("fetchFolderContents", () => {
       this.$resources.folderContents.fetch();
+    });
+
+    this.emitter.on("createNewDocument", () => {
+      this.newDocument();
     });
 
     this.pasteListener = (e) => {
@@ -432,7 +426,8 @@ export default {
         this.showPreview = true;
       }
     },
-    async pasteEntities(newParent = null) {
+    async pasteEntities(newParent = this.$store.state.currentFolderID) {
+      console.log(newParent);
       const method =
         this.$store.state.pasteData.action === "cut" ? "move" : "copy";
       for (let i = 0; i < this.$store.state.pasteData.entities.length; i++) {
@@ -483,6 +478,17 @@ export default {
     },
     triggerFetchFolderEmit() {
       this.emitter.emit("fetchFolderContents");
+    },
+    async newDocument() {
+      await this.$resources.createDocument.submit({
+        title: "Untitled Document",
+        content: null,
+        parent: this.$store.state.currentFolderID,
+      });
+      this.$router.push({
+        name: "Document",
+        params: { entityName: this.previewEntity.name },
+      });
     },
   },
   resources: {

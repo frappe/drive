@@ -1,52 +1,6 @@
 <template>
   <div class="px-4 bg-white">
-    <Dropdown
-      :options="[
-        {
-          group: 'New',
-          hideLabel: true,
-          items: [
-            {
-              icon: 'file-plus',
-              label: 'New File',
-              handler: () => alert('New File'),
-            },
-            {
-              icon: 'file-text',
-              label: 'Open File',
-              handler: () => alert('New Window'),
-              // show/hide option based on condition function
-              condition: () => true,
-            },
-          ],
-        },
-        {
-          group: 'Current File',
-          hideLabel: true,
-          items: [
-            {
-              icon: 'copy',
-              label: 'Copy File',
-              handler: () => alert('Open File'),
-            },
-            {
-              icon: 'share-2',
-              label: 'Share File',
-              handler: () => alert('Open File'),
-            },
-            {
-              icon: 'star',
-              label: 'Add to favourites',
-              handler: () => alert('Open File'),
-            },
-          ],
-        },
-        {
-          group: 'Delete',
-          hideLabel: true,
-          items: [{ icon: 'trash-2', label: 'Delete File' }],
-        },
-      ]">
+    <Dropdown :options="fileMenuOptions">
       <template v-slot="{ open }">
         <button
           :class="[
@@ -261,6 +215,63 @@ export default {
   name: "MenuBar",
   components: {
     Dropdown,
+  },
+  props: {
+    entityName: {
+      default: "",
+      type: String,
+      required: false,
+    },
+  },
+  data() {
+    return {
+      fileMenuOptions: [
+        {
+          group: "New",
+          hideLabel: true,
+          items: [
+            {
+              icon: "file-plus",
+              label: "New File",
+              handler: () => this.emitter.emit("createNewDocument"),
+            },
+          ],
+        },
+        {
+          group: "Current File",
+          hideLabel: true,
+          items: [
+            {
+              icon: "copy",
+              label: "Copy File",
+              handler: () =>
+                this.$store.commit("setPasteData", {
+                  entities: this.entityName,
+                  action: "copy",
+                }),
+            },
+            {
+              icon: "share-2",
+              label: "Share File",
+              handler: () => alert("Open File"),
+            },
+            {
+              icon: "star",
+              label: "Add to favourites",
+              handler: () => alert("Open File"),
+            },
+          ],
+        },
+        {
+          group: "Delete",
+          hideLabel: true,
+          items: [{ icon: "trash-2", label: "Delete File" }],
+        },
+      ],
+    };
+  },
+  mounted() {
+    console.log(this.entityName);
   },
 };
 </script>

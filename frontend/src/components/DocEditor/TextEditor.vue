@@ -9,7 +9,7 @@
         @change="$resources.updateDocumentTitle.submit()" />
     </div>
     <div v-if="editable" class="w-full">
-      <MenuBar />
+      <MenuBar :entityName="entityName" />
       <TextEditorFixedMenu :buttons="fixedMenu" class="shadow-sm" />
     </div>
   </div>
@@ -57,6 +57,11 @@ export default {
     fixedMenu: {
       type: [Boolean, Array],
       default: false,
+    },
+    entityName: {
+      default: "",
+      type: String,
+      required: false,
     },
     title: {
       default: "",
@@ -156,6 +161,7 @@ export default {
     },
   },
   mounted() {
+    console.log(this.entityName);
     this.editor = new Editor({
       content: this.modelValue,
       editorProps: this.editorProps,

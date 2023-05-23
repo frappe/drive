@@ -6,6 +6,7 @@
     placeholder="Start typing ..."
     :editable="isWriteable"
     :old-title="oldTitle"
+    :entityName="entityName"
     @save-title="$resources.updateDocumentTitle.submit()" />
 </template>
 
