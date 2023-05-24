@@ -1,4 +1,5 @@
 <template>
+  <FrappeDriveLogo class="h-4 mb-8" />
   <div
     ondragstart="return false;"
     ondrop="return false;"
@@ -27,10 +28,11 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui";
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon },
+  components: { FeatherIcon, FrappeDriveLogo },
   emits: ["toggleMobileSidebar"],
   computed: {
     sidebarItems() {

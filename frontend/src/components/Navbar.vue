@@ -7,9 +7,7 @@
     <div
       class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
       <div class="flex items-center">
-        <router-link to="/" class="hidden md:block">
-          <FrappeDriveLogo class="h-4" />
-        </router-link>
+        <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
           <button
             class="mr-5 inline-flex items-center justify-center text-gray-700 rounded-md focus:outline-none focus:shadow-outline-gray"

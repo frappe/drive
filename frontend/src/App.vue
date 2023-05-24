@@ -7,10 +7,6 @@
     <div
       class="h-full max-h-full w-full max-w-full flex flex-col"
       :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }">
-      <Navbar
-        v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-        :mobile-sidebar-is-open="showMobileSidebar"
-        @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
       <div
         v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
         class="flex h-full overflow-x-hidden">
@@ -20,6 +16,10 @@
         </div>
         <div class="flex-1 overflow-y-auto overflow-x-hidden">
           <router-view v-slot="{ Component }">
+            <Navbar
+              v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
+              :mobile-sidebar-is-open="showMobileSidebar"
+              @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
             <component :is="Component" ref="currentPage" />
           </router-view>
         </div>
