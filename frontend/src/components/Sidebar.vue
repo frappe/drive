@@ -1,9 +1,9 @@
-<template>
+<template class="bg-gray-50">
   <FrappeDriveLogo class="h-4 mb-8" />
   <div
     ondragstart="return false;"
     ondrop="return false;"
-    class="flex flex-col w-60 justify-between grow">
+    class="flex flex-col w-60 justify-between">
     <div class="text-lg">
       <router-link
         v-for="item in sidebarItems"
@@ -13,7 +13,7 @@
         <a
           :class="[
             item.highlight()
-              ? 'bg-gray-100 text-gray-900'
+              ? 'bg-gray-200 text-gray-900'
               : 'text-gray-800 hover:bg-gray-50',
           ]"
           :href="href"
@@ -40,7 +40,7 @@ export default {
         {
           label: "Home",
           route: "/",
-          icon: "hard-drive",
+          icon: "home",
           highlight: () => {
             return this.$route.fullPath === "/";
           },

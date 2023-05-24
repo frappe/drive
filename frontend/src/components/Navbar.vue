@@ -2,10 +2,11 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white border-b"
+    class="bg-white"
     :class="{ 'shadow-sm': $route.meta.documentPage }">
     <div
       class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
+      <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
@@ -93,6 +94,7 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 import SearchPopup from "@/components/SearchPopup.vue";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
 export default {
   name: "Navbar",
@@ -105,8 +107,13 @@ export default {
     Dropdown,
     FeatherIcon,
     Button,
+    Breadcrumbs,
   },
   props: {
+    breadcrumbs: {
+      type: Array,
+      default: null,
+    },
     mobileSidebarIsOpen: {
       type: Boolean,
       required: true,
