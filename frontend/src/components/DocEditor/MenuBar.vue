@@ -205,16 +205,23 @@
         </button>
       </template>
     </Dropdown>
+    <ShareDialog
+      v-if="showShareDialog"
+      v-model="showShareDialog"
+      :entity-name="entityName"
+      @success="$resources.folderContents.fetch()" />
   </div>
 </template>
 
 <script>
 import { Dropdown } from "frappe-ui";
+import ShareDialog from "@/components/ShareDialog.vue";
 
 export default {
   name: "MenuBar",
   components: {
     Dropdown,
+    ShareDialog,
   },
   props: {
     entityName: {
@@ -225,6 +232,7 @@ export default {
   },
   data() {
     return {
+      showShareDialog: false,
       fileMenuOptions: [
         {
           group: "New",
@@ -241,7 +249,8 @@ export default {
           group: "Current File",
           hideLabel: true,
           items: [
-            {
+            /* Look into making a modal/dialog/portal for this and opening a file from the current file view*/
+            /* {
               icon: "copy",
               label: "Copy File",
               handler: () =>
@@ -249,11 +258,11 @@ export default {
                   entities: this.entityName,
                   action: "copy",
                 }),
-            },
+            }, */
             {
               icon: "share-2",
               label: "Share File",
-              handler: () => alert("Open File"),
+              handler: () => (this.showShareDialog = true),
             },
             {
               icon: "star",
