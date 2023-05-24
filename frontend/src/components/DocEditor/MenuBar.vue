@@ -279,8 +279,5 @@ export default {
       ],
     };
   },
-  mounted() {
-    console.log(this.entityName);
-  },
 };
 </script>

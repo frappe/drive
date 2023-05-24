@@ -161,7 +161,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.entityName);
     this.editor = new Editor({
       content: this.modelValue,
       editorProps: this.editorProps,
