@@ -11,7 +11,9 @@
         v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
         class="flex h-full overflow-x-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
-        <div v-if="showSidebar" class="px-3 border-r hidden md:py-4 md:block">
+        <div
+          v-if="showSidebar"
+          class="px-2 border-r w-[240px] hidden md:py-4 md:block">
           <Sidebar />
         </div>
         <div class="flex-1 overflow-y-auto overflow-x-hidden">

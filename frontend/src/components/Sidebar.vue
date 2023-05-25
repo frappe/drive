@@ -3,7 +3,7 @@
   <div
     ondragstart="return false;"
     ondrop="return false;"
-    class="flex flex-col w-60 justify-between">
+    class="flex flex-col justify-between">
     <div class="text-lg">
       <router-link
         v-for="item in sidebarItems"
@@ -17,7 +17,7 @@
               : 'text-gray-800 hover:bg-gray-50',
           ]"
           :href="href"
-          class="w-60 h-10 p-3 gap-3 rounded-lg focus:outline-none flex grow items-center"
+          class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center"
           @click="navigate && $emit('toggleMobileSidebar')">
           <FeatherIcon :name="item.icon" class="stroke-1.5 w-5 h-5" />
           {{ item.label }}
