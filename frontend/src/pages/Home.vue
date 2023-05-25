@@ -17,7 +17,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :show-info-button="showInfoButton" />
       </template>
@@ -39,7 +38,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :show-info-button="showInfoButton" />
       </template>
@@ -145,7 +143,6 @@ export default {
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
     entityContext: {},
-    breadcrumbs: [{ label: "Home", route: "/" }],
   }),
   computed: {
     showInfoButton() {
@@ -365,7 +362,9 @@ export default {
 
   async mounted() {
     await this.$resources.getHomeID.fetch();
-
+    this.$store.commit("setCurrentBreadcrumbs", [
+      { label: "Home", route: "/" },
+    ]);
     this.emitter.on("fetchFolderContents", () => {
       this.$resources.folderContents.fetch();
     });

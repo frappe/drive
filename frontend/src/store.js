@@ -33,6 +33,7 @@ const store = createStore({
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
+    currentBreadcrumbs: [{ label: "", route: "" }],
   },
   getters: {
     isLoggedIn: (state) => {
@@ -86,6 +87,9 @@ const store = createStore({
     },
     setCurrentFolderID(state, payload) {
       state.currentFolderID = payload;
+    },
+    setCurrentBreadcrumbs(state, payload) {
+      state.currentBreadcrumbs = payload;
     },
   },
   actions: {

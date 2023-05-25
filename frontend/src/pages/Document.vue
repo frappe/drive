@@ -30,6 +30,7 @@ export default {
       content: null,
       document: null,
       isWriteable: false,
+      breadcrumbs: [],
     };
   },
   computed: {
@@ -96,11 +97,26 @@ export default {
           this.content = JSON.parse(data.content);
           this.document = data.document;
           this.isWriteable = !!data.write;
+          let currentBreadcrumbs = [];
+          currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
+          currentBreadcrumbs.push({
+            label: data.title,
+            route: `/document/${this.entityName}`,
+          });
+          if (currentBreadcrumbs.length > 4) {
+            currentBreadcrumbs.splice(1, currentBreadcrumbs.length - 4, {
+              label: "...",
+              route: "",
+            });
+          }
+          console.log(currentBreadcrumbs);
+          this.breadcrumbs = currentBreadcrumbs;
+          this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
         },
         onError(data) {
           console.log(data);
         },
-        auto: true,
+        auto: false,
       };
     },
   },

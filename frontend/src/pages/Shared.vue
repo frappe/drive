@@ -15,7 +15,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :show-info-button="showInfoButton" />
       </template>
@@ -36,7 +35,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :show-info-button="showInfoButton" />
       </template>
@@ -334,7 +332,9 @@ export default {
       this.entityContext = undefined;
     },
   },
-
+  mounted() {
+    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
+  },
   resources: {
     folderContents() {
       return {

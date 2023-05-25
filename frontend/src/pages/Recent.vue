@@ -15,7 +15,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
@@ -35,7 +34,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :show-info-button="showInfoButton" />
       </template>
       <template #placeholder>
@@ -151,6 +149,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     window.addEventListener(
       "dragover",
       function (e) {

@@ -17,7 +17,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :show-info-button="showInfoButton" />
       </template>
@@ -663,6 +662,7 @@ export default {
             });
           }
           this.breadcrumbs = breadcrumbs;
+          this.$store.commit("setCurrentBreadcrumbs", breadcrumbs);
         },
         auto: Boolean(this.entityName),
       };

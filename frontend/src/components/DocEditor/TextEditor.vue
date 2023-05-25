@@ -1,12 +1,12 @@
 <template>
   <div class="sticky top-0 z-10">
     <div class="w-full bg-white">
-      <input
+      <!--       <input
         :value="title"
         :placeholder="oldTitle"
         class="text-3xl font-semibold focus:outline-0 form-input mx-5 my-2 border-gray-400 placeholder-gray-500"
         @input="$emit('update:title', $event.target.value)"
-        @change="$resources.updateDocumentTitle.submit()" />
+        @change="$resources.updateDocumentTitle.submit()" /> -->
     </div>
     <div v-if="editable" class="w-full">
       <MenuBar :entityName="entityName" />

@@ -2,8 +2,9 @@
   <div
     ondragstart="return false;"
     ondrop="return false;"
-    class="mb-[15px] min-h-8 flex gap-3 flex-wrap justify-between items-center w-full px-5 md:px-0">
-    <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
+    class="mb-2 min-h-8 flex gap-3 flex-wrap justify-end items-center w-full px-5 md:px-0">
+    <!--     <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
+ -->
     <div class="flex gap-3 basis-auto">
       <Dropdown
         v-if="actionItems.length > 0"

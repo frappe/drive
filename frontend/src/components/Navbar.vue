@@ -4,9 +4,8 @@
     ondrop="return false;"
     class="bg-white"
     :class="{ 'shadow-sm': $route.meta.documentPage }">
-    <div
-      class="mx-auto py-2 px-5 md:pl-3 h-16 md:h-12 z-10 flex justify-between">
-      <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
+    <div class="mx-auto py-2 px-5 h-16 md:h-12 z-10 flex justify-between">
+      <Breadcrumbs :breadcrumb-links="currentBreadcrumbs" />
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
@@ -20,12 +19,12 @@
             <FeatherIcon v-else name="x" class="w-6 h-6" />
           </button>
         </div>
-        <Button
+        <!--         <Button
           v-if="$route.meta.documentPage && isLoggedIn"
           icon-left="chevron-left"
           @click="$router.go(-1)">
           Back to Files
-        </Button>
+        </Button> -->
       </div>
       <div
         v-if="!$route.meta.documentPage"
@@ -178,6 +177,9 @@ export default {
     },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
+    },
+    currentBreadcrumbs() {
+      return this.$store.state.currentBreadcrumbs;
     },
   },
   methods: {
