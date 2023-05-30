@@ -17,7 +17,9 @@ def create_user_directory():
     """
 
     user_directory_name = _get_user_directory_name()
-    user_directory_path = Path(frappe.get_site_path("private"), user_directory_name)
+    user_directory_path = Path(
+        frappe.get_site_path("private/files"), user_directory_name
+    )
     user_directory_path.mkdir(exist_ok=False)
 
     full_name = frappe.get_value("User", frappe.session.user, "full_name")
