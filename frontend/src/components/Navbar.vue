@@ -2,7 +2,7 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white"
+    class="bg-white z-10 sticky top-0"
     :class="{ 'shadow-sm': $route.meta.documentPage }">
     <div class="mx-auto py-2 px-5 h-16 md:h-12 z-10 flex justify-between">
       <Breadcrumbs :breadcrumb-links="currentBreadcrumbs" />

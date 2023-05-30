@@ -1,13 +1,10 @@
 <template>
   <TextEditor
     v-model="content"
-    v-model:title="title"
     :fixed-menu="true"
     placeholder="Start typing ..."
     :editable="isWriteable"
-    :old-title="oldTitle"
-    :entityName="entityName"
-    @save-title="$resources.updateDocumentTitle.submit()" />
+    :entityName="entityName" />
 </template>
 
 <script>
@@ -30,7 +27,6 @@ export default {
       content: null,
       document: null,
       isWriteable: false,
-      breadcrumbs: [],
     };
   },
   computed: {
@@ -46,6 +42,20 @@ export default {
   },
   async mounted() {
     this.entityName ? await this.$resources.getDocument.fetch() : null;
+    let currentBreadcrumbs = [];
+    currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
+    currentBreadcrumbs.push({
+      label: this.title,
+      route: `/document/${this.entityName}`,
+    });
+    if (currentBreadcrumbs.length > 4) {
+      currentBreadcrumbs.splice(1, currentBreadcrumbs.length - 4, {
+        label: "...",
+        route: "",
+      });
+    }
+    this.breadcrumbs = currentBreadcrumbs;
+    this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
     this.timer = setInterval(() => {
       this.$resources.updateDocument.submit();
     }, 30000);
@@ -97,26 +107,11 @@ export default {
           this.content = JSON.parse(data.content);
           this.document = data.document;
           this.isWriteable = !!data.write;
-          let currentBreadcrumbs = [];
-          currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
-          currentBreadcrumbs.push({
-            label: data.title,
-            route: `/document/${this.entityName}`,
-          });
-          if (currentBreadcrumbs.length > 4) {
-            currentBreadcrumbs.splice(1, currentBreadcrumbs.length - 4, {
-              label: "...",
-              route: "",
-            });
-          }
-          console.log(currentBreadcrumbs);
-          this.breadcrumbs = currentBreadcrumbs;
-          this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
         },
         onError(data) {
           console.log(data);
         },
-        auto: false,
+        auto: true,
       };
     },
   },

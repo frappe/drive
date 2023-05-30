@@ -221,20 +221,18 @@ def get_doc_content(entity_name, trigger_download=0):
     return drive_entity
 
 
-@frappe.whitelist()
+""" @frappe.whitelist()
 def rename_doc_entity(entity_name, title):
+    doc_name = frappe.db.get_value("Drive Entity", entity_name, "document")
+    frappe.db.set_value("Drive Document", doc_name, "title", title)
     frappe.db.set_value("Drive Entity", entity_name, "title", title)
-    return
+    return """
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, content, title):
-    drive_entity = frappe.get_doc("Drive Entity", entity_name)
+def save_doc(entity_name, doc_name, content):
     drive_document = frappe.get_doc("Drive Document", doc_name)
-    drive_entity.title = title
-    drive_document.title = title
     drive_document.content = content
-    drive_entity.save()
     drive_document.save()
     return
 

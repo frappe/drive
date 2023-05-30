@@ -1,13 +1,5 @@
 <template>
   <div class="sticky top-0 z-10">
-    <div class="w-full bg-white">
-      <!--       <input
-        :value="title"
-        :placeholder="oldTitle"
-        class="text-3xl font-semibold focus:outline-0 form-input mx-5 my-2 border-gray-400 placeholder-gray-500"
-        @input="$emit('update:title', $event.target.value)"
-        @change="$resources.updateDocumentTitle.submit()" /> -->
-    </div>
     <div v-if="editable" class="w-full">
       <MenuBar :entityName="entityName" />
       <TextEditorFixedMenu :buttons="fixedMenu" class="shadow-sm" />
@@ -63,16 +55,6 @@ export default {
       type: String,
       required: false,
     },
-    title: {
-      default: "",
-      type: String,
-      required: false,
-    },
-    oldTitle: {
-      default: "",
-      type: String,
-      required: false,
-    },
     modelValue: {
       type: Object,
       default: null,
@@ -94,7 +76,7 @@ export default {
       default: () => [],
     },
   },
-  emits: ["update:modelValue", "update:title", "saveTitle"],
+  emits: ["update:modelValue"],
   data() {
     return {
       editor: null,

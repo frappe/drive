@@ -62,7 +62,7 @@ export default {
     },
   },
   resources: {
-    updateDocumentTitle() {
+    /*     updateDocumentTitle() {
       return {
         url: "drive.api.files.rename_doc_entity",
         debounce: 250,
@@ -74,6 +74,34 @@ export default {
           console.log(data);
         },
         auto: false,
+      };
+    }, */
+    updateDocumentTitle() {
+      return {
+        url: "drive.api.files.call_controller_method",
+        debounce: 250,
+        params: {
+          method: "rename",
+          entity_name: this.currentEntityName,
+          new_title: this.titleVal,
+        },
+        validate(params) {
+          if (!params?.new_title) {
+            return "New name is required";
+          }
+        },
+        onSuccess(data) {
+          this.newName = "";
+          this.errorMessage = "";
+          this.$emit("success", data);
+        },
+        onError(error) {
+          if (error.messages) {
+            this.errorMessage = error.messages.join("\n");
+          } else {
+            this.errorMessage = error.message;
+          }
+        },
       };
     },
   },
