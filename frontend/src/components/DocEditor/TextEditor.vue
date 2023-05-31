@@ -209,8 +209,4 @@ export default {
 .ProseMirror-focused:focus-visible {
   outline: none;
 }
-
-#editorElem {
-  @page size: A4;
-}
 </style>
