@@ -1,4 +1,4 @@
-<template>
+<template v-if="contentLoaded">
   <TextEditor
     v-model="content"
     :fixed-menu="true"
@@ -25,6 +25,7 @@ export default {
       oldTitle: null,
       title: null,
       content: null,
+      contentLoaded: false,
       document: null,
       isWriteable: false,
     };
@@ -41,7 +42,8 @@ export default {
     },
   },
   async mounted() {
-    this.entityName ? await this.$resources.getDocument.fetch() : null;
+    await this.$resources.getDocument.fetch();
+    this.content = JSON.parse(this.$resources.getDocument.data.content);
     let currentBreadcrumbs = [];
     currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
     currentBreadcrumbs.push({
@@ -60,9 +62,9 @@ export default {
       this.$resources.updateDocument.submit();
     }, 30000);
   },
-  async beforeUnmount() {
+  beforeUnmount() {
     clearInterval(this.timer);
-    await this.$resources.updateDocument.submit();
+    this.$resources.updateDocument.submit();
   },
   resources: {
     updateDocumentTitle() {
@@ -104,14 +106,15 @@ export default {
         onSuccess(data) {
           this.title = data.title;
           this.oldTitle = data.title;
-          this.content = JSON.parse(data.content);
+          /* Assigning content here for some reason fails :/ */
           this.document = data.document;
           this.isWriteable = !!data.write;
+          this.contentLoaded = true;
         },
         onError(data) {
           console.log(data);
         },
-        auto: true,
+        auto: false,
       };
     },
   },
