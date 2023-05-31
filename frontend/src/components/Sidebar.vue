@@ -70,7 +70,7 @@ export default {
               this.$route.name === "Folder"
             ) {
               return true;
-            } else if (this.$route.name === "Favourite") {
+            } else if (this.$route.name === "Favourites") {
               return true;
             }
           },

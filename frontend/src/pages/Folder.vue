@@ -637,14 +637,25 @@ export default {
         onSuccess(data) {
           this.isSharedFolder = data.is_shared;
           let breadcrumbs = [];
-          if (this.isSharedFolder)
+          if (this.isSharedFolder) {
             breadcrumbs.push({
               label: "Shared With Me",
               route: "/shared",
             });
+          } else if (
+            this.$store.state.currentBreadcrumbs[0].route === "/favourites"
+          ) {
+            breadcrumbs.push({
+              label: "Favourites",
+              route: "/favourites",
+            });
+          }
           data.entities.forEach((entity, index) => {
             if (index === 0) {
-              const isHome = entity.owner === this.userId;
+              //const isHome = entity.owner === this.userId;
+              isHome
+                ? this.$store.state.currentBreadcrumbs[0].label === "Home"
+                : null;
               breadcrumbs.push({
                 label: isHome ? "Home" : entity.title,
                 route: isHome ? "/" : `/folder/${entity.name}`,
