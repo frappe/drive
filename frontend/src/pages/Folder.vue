@@ -445,8 +445,6 @@ export default {
         this.showRemoveDialog = true;
     };
     window.addEventListener("keydown", this.deleteListener);
-
-    await this.$store.commit("setCurrentFolderID", this.entityName);
     window.addEventListener(
       "dragover",
       function (e) {
@@ -474,7 +472,9 @@ export default {
       componentContext.$resources.folderContents.fetch();
     });
   },
-
+  async updated() {
+    await this.$store.commit("setCurrentFolderID", this.entityName);
+  },
   unmounted() {
     window.removeEventListener("keydown", this.pasteListener);
     window.removeEventListener("keydown", this.deleteListener);
