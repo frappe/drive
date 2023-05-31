@@ -557,6 +557,7 @@ def list_favourites(order_by="modified"):
         DriveEntity.creation,
         DriveEntity.file_size,
         DriveEntity.mime_type,
+        DriveEntity.color,
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_comments,
         DocShare.read,

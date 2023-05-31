@@ -70,6 +70,7 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_comments,
+        DriveEntity.color,
         DriveEntity.allow_download,
         DocShare.read,
         DocShare.write,
