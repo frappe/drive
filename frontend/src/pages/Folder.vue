@@ -652,14 +652,14 @@ export default {
           }
           data.entities.forEach((entity, index) => {
             if (index === 0) {
-              //const isHome = entity.owner === this.userId;
-              isHome
-                ? this.$store.state.currentBreadcrumbs[0].label === "Home"
-                : null;
-              breadcrumbs.push({
-                label: isHome ? "Home" : entity.title,
-                route: isHome ? "/" : `/folder/${entity.name}`,
-              });
+              const isHome =
+                this.$store.state.currentBreadcrumbs[0].label === "Home";
+              if (isHome) {
+                breadcrumbs.push({
+                  label: "Home",
+                  route: "/",
+                });
+              }
             } else {
               breadcrumbs.push({
                 label: entity.title,
