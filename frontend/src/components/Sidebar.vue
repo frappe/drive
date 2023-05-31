@@ -42,7 +42,14 @@ export default {
           route: "/",
           icon: "home",
           highlight: () => {
-            return this.$route.fullPath === "/";
+            if (this.$route.name === "Home") {
+              return true;
+            } else if (
+              this.$store.state.currentBreadcrumbs[0].label === "Home" &&
+              this.$route.name === "Folder"
+            ) {
+              return true;
+            }
           },
         },
         {
@@ -58,7 +65,14 @@ export default {
           route: "/favourites",
           icon: "star",
           highlight: () => {
-            return this.$route.fullPath.endsWith("/favourites");
+            if (
+              this.$store.state.currentBreadcrumbs[0].route === "/favourites" &&
+              this.$route.name === "Folder"
+            ) {
+              return true;
+            } else if (this.$route.name === "Favourite") {
+              return true;
+            }
           },
         },
         {
@@ -66,7 +80,14 @@ export default {
           route: "/shared",
           icon: "share-2",
           highlight: () => {
-            return this.$route.fullPath.includes("/shared");
+            if (
+              this.$store.state.currentBreadcrumbs[0].route === "/shared" &&
+              this.$route.name === "Folder"
+            ) {
+              return true;
+            } else if (this.$route.name === "Shared") {
+              return true;
+            }
           },
         },
         {
