@@ -4,7 +4,7 @@
       v-for="(item, index) in breadcrumbLinks"
       :key="item.label"
       v-slot="{ href, navigate }"
-      class="text-2xl font-medium"
+      class="text-xl font-medium"
       :class="isLastItem(index) ? 'text-inherit' : 'text-gray-600'"
       :to="item.route">
       <a v-if="documentRoute(item)" :href="href" @click="navigate">
@@ -15,7 +15,7 @@
         v-else="documentRoute(item)"
         v-model="title"
         :placeholder="item.label"
-        class="text-2xl font-semibold focus:outline-0 form-input border-gray-400 placeholder-gray-500"
+        class="text-xl font-semibold focus:outline-0 form-input border-gray-400 placeholder-gray-500"
         @input="$resources.updateDocumentTitle.submit()" />
     </router-link>
   </div>
