@@ -426,7 +426,6 @@ export default {
       }
     },
     async pasteEntities(newParent = this.$store.state.currentFolderID) {
-      console.log(newParent);
       const method =
         this.$store.state.pasteData.action === "cut" ? "move" : "copy";
       for (let i = 0; i < this.$store.state.pasteData.entities.length; i++) {
@@ -502,6 +501,8 @@ export default {
         url: "drive.api.files.get_home_folder_id",
         onSuccess(data) {
           this.$store.commit("setCurrentFolderID", data);
+          this.$store.commit("setHomeFolderID", data);
+          localStorage.setItem("HomeFolderID", data);
         },
       };
     },

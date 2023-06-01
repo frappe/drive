@@ -15,7 +15,7 @@
         v-else="documentRoute(item)"
         v-model="title"
         :placeholder="item.label"
-        class="text-xl font-semibold focus:outline-0 form-input border-gray-400 placeholder-gray-500"
+        class="text-xl font-semibold focus:outline-0 focus:form-input focus:text-xl border-gray-400 placeholder-gray-500"
         @input="$resources.updateDocumentTitle.submit()" />
     </router-link>
   </div>

@@ -14,7 +14,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :action-loading="actionLoading"
           :show-upload-button="false" />
@@ -36,7 +35,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :action-loading="actionLoading"
           :show-upload-button="false" />
@@ -187,6 +185,7 @@ export default {
   },
 
   mounted() {
+    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     this.deleteListener = (e) => {
       if (e.key === "Delete" && this.selectedEntities.length)
         this.showDeleteDialog = true;

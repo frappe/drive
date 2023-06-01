@@ -38,7 +38,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :breadcrumbs="breadcrumbs"
           :column-headers="columnHeaders"
           :show-info-button="showInfoButton" />
       </template>
@@ -637,30 +636,27 @@ export default {
         onSuccess(data) {
           this.isSharedFolder = data.is_shared;
           let breadcrumbs = [];
-          if (this.isSharedFolder) {
+          if (this.$store.state.currentBreadcrumbs[0].route === "/") {
+            breadcrumbs.push({
+              label: "Home",
+              route: "/",
+            });
+          }
+          if (this.$store.state.currentBreadcrumbs[0].route === "/shared") {
             breadcrumbs.push({
               label: "Shared With Me",
               route: "/shared",
             });
-          } else if (
-            this.$store.state.currentBreadcrumbs[0].route === "/favourites"
-          ) {
+          }
+          if (this.$store.state.currentBreadcrumbs[0].route === "/favourites") {
             breadcrumbs.push({
               label: "Favourites",
               route: "/favourites",
             });
           }
           data.entities.forEach((entity, index) => {
-            if (index === 0) {
-              const isHome =
-                this.$store.state.currentBreadcrumbs[0].label === "Home";
-              if (isHome) {
-                breadcrumbs.push({
-                  label: "Home",
-                  route: "/",
-                });
-              }
-            } else {
+            if (localStorage.getItem("HomeFolderID") !== entity.name) {
+              /* Skip adding `Username's Drive` backend id to the breadcrumbs */
               breadcrumbs.push({
                 label: entity.title,
                 route: `/folder/${entity.name}`,
