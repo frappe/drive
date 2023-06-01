@@ -5,7 +5,9 @@
     class="bg-white z-10 sticky top-0"
     :class="{ 'shadow-sm': $route.meta.documentPage }">
     <div class="mx-auto py-2 px-5 h-16 md:h-12 z-10 flex justify-between">
-      <Breadcrumbs :breadcrumb-links="currentBreadcrumbs" />
+      <Breadcrumbs
+        :breadcrumb-links="currentBreadcrumbs"
+        class="hidden md:block" />
       <div class="flex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
