@@ -43,21 +43,17 @@ export default {
   },
   async mounted() {
     await this.$resources.getDocument.fetch();
-    this.content = JSON.parse(this.$resources.getDocument.data.content);
-    let currentBreadcrumbs = [];
-    currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
-    currentBreadcrumbs.push({
-      label: this.title,
-      route: `/document/${this.entityName}`,
-    });
-    if (currentBreadcrumbs.length > 4) {
-      currentBreadcrumbs.splice(1, currentBreadcrumbs.length - 4, {
-        label: "...",
-        route: "",
+    if (!localStorage.getItem("currentBreadcrumbs").includes("/document")) {
+      let currentBreadcrumbs = [];
+      currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
+      currentBreadcrumbs.push({
+        label: this.title,
+        route: `/document/${this.entityName}`,
       });
+      this.breadcrumbs = currentBreadcrumbs;
+      this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
+      this.content = JSON.parse(this.$resources.getDocument.data.content);
     }
-    this.breadcrumbs = currentBreadcrumbs;
-    this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
     this.timer = setInterval(() => {
       this.$resources.updateDocument.submit();
     }, 30000);
