@@ -208,20 +208,31 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entity-name="entityName"
-      @success="$resources.folderContents.fetch()" />
+      :entity-name="entityName" />
+    <!-- Ideally convert the component to recieve both an array or a single entity -->
+    <GeneralDialog
+      v-model="showRemoveDialog"
+      :entities="[entityName]"
+      :for="'remove'"
+      @success="
+        () => {
+          $router.go(-1);
+        }
+      " />
   </div>
 </template>
 
 <script>
 import { Dropdown } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
+import GeneralDialog from "@/components/GeneralDialog.vue";
 
 export default {
   name: "MenuBar",
   components: {
     Dropdown,
     ShareDialog,
+    GeneralDialog,
   },
   props: {
     entityName: {
@@ -233,6 +244,7 @@ export default {
   data() {
     return {
       showShareDialog: false,
+      showRemoveDialog: false,
       fileMenuOptions: [
         /*         {
           group: "New",
@@ -274,7 +286,13 @@ export default {
         {
           group: "Delete",
           hideLabel: true,
-          items: [{ icon: "trash-2", label: "Delete File" }],
+          items: [
+            {
+              icon: "trash-2",
+              label: "Delete File",
+              handler: () => (this.showRemoveDialog = true),
+            },
+          ],
         },
       ],
     };

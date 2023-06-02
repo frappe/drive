@@ -101,9 +101,11 @@ export default {
       return {
         url: this.dialogData.methodName,
         params: {
-          entity_names: JSON.stringify(
-            this.entities.map((entity) => entity.name)
-          ),
+          /* FIX THIS! */
+          entity_names:
+            this.entities.length > 1
+              ? JSON.stringify(this.entities.map((entity) => entity.name))
+              : JSON.stringify(this.entities),
         },
         onSuccess(data) {
           this.$emit("success", data);

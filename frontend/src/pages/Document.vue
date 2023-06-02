@@ -45,7 +45,6 @@ export default {
     await this.$resources.getDocument.fetch();
     let currentBreadcrumbs = [];
     currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
-    console.log(currentBreadcrumbs.slice(-1));
     if (
       !currentBreadcrumbs[currentBreadcrumbs.length - 1].route.includes(
         "/document"
