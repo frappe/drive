@@ -234,7 +234,7 @@ export default {
     return {
       showShareDialog: false,
       fileMenuOptions: [
-        {
+        /*         {
           group: "New",
           hideLabel: true,
           items: [
@@ -244,7 +244,7 @@ export default {
               handler: () => this.emitter.emit("createNewDocument"),
             },
           ],
-        },
+        }, */
         {
           group: "Current File",
           hideLabel: true,
