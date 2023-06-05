@@ -9,16 +9,25 @@ def create_tag(title, color="gray"):
     :param title: Tag name
     :param color: Tag color
     """
-
+    
+    title_lower = title.lower()
+    
     doc = frappe.get_doc(
         {
             "doctype": "Drive Tag",
-            "title": title,
+            "title": title_lower,
             "color": color,
         }
     )
-    doc.insert()
 
+    tag_exists = frappe.db.exists({
+        "doctype":"Drive Tag",
+        "owner" : frappe.session.user,
+        "title" : title_lower
+    })
+    if tag_exists:
+        frappe.throw("Tag already exists")
+    doc.save()
     return doc.name
 
 
