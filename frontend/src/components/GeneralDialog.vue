@@ -34,7 +34,7 @@ export default {
       required: true,
     },
     entities: {
-      type: Array,
+      type: [Array, String],
       required: true,
     },
     for: {
@@ -101,11 +101,10 @@ export default {
       return {
         url: this.dialogData.methodName,
         params: {
-          /* FIX THIS! */
           entity_names:
-            this.entities.length > 1
-              ? JSON.stringify(this.entities.map((entity) => entity.name))
-              : JSON.stringify(this.entities),
+            typeof this.entities === "string"
+              ? JSON.stringify([this.entities])
+              : JSON.stringify(this.entities.map((entity) => entity.name)),
         },
         onSuccess(data) {
           this.$emit("success", data);

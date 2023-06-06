@@ -212,7 +212,7 @@
     <!-- Ideally convert the component to recieve both an array or a single entity -->
     <GeneralDialog
       v-model="showRemoveDialog"
-      :entities="[entityName]"
+      :entities="entityName"
       :for="'remove'"
       @success="
         () => {
