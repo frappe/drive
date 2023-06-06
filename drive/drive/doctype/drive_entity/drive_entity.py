@@ -182,7 +182,6 @@ class DriveEntity(NestedSet):
                 }
             )
             drive_entity.flags.file_created = True
-            frappe.local.rollback_observers.append(drive_entity)
             drive_entity.insert()
 
         if new_parent == parent_user_directory.name:
