@@ -66,7 +66,6 @@ def create_document_entity(title, content, parent=None):
     drive_entity.document = drive_doc
 
     drive_entity.flags.file_created = True
-    frappe.local.rollback_observers.append(drive_entity)
     drive_entity.save()
 
     if parent == user_directory.name:
@@ -151,7 +150,7 @@ def upload_file(fullpath=None, parent=None):
                 }
             )
             drive_entity.flags.file_created = True
-            frappe.local.rollback_observers.append(drive_entity)
+            # frappe.local.rollback_observers.append(drive_entity)
             drive_entity.insert()
 
             if parent == user_directory.name:
@@ -360,8 +359,12 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
     )
-    return query.run(as_dict=True)
-
+    result = query.run(as_dict=True)
+    for i in result:
+        if(i.is_group):
+            child_count = get_children_count(i.name)
+            i["item_count"] = child_count
+    return result
 
 @frappe.whitelist()
 def get_entity(entity_name, fields=None):
@@ -683,3 +686,12 @@ def call_controller_method(entity_name, method):
     drive_entity.is_whitelisted(method)
     frappe.local.form_dict.pop("cmd")
     return drive_entity.run_method(method, **frappe.local.form_dict)
+
+
+@frappe.whitelist()
+def get_children_count(drive_entity):
+    children_count = frappe.db.count(
+        'Drive Entity',
+        {'parent_drive_entity':drive_entity}
+        )
+    return children_count
