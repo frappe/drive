@@ -51,7 +51,7 @@
         <!--
 
           Pushed implementation
-
+          
         <Button
           class="stroke-1.5 ml-4 md:ml-5"
           appearance="minimal"
@@ -162,6 +162,9 @@ export default {
         },
       ],
       accountOptions: [
+        {
+          label: this.$store.state.user.fullName,
+        },
         {
           label: "Log out",
           handler: () => this.$store.dispatch("logout"),
