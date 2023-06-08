@@ -615,7 +615,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? "-"
+              ? entity.item_count + " items"
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);

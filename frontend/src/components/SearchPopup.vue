@@ -13,40 +13,39 @@
         <div
           v-for="entity in filteredEntities"
           :key="entity"
-          class="flex flex-row cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3"
+          class="flex items-center cursor-pointer hover:bg-gray-100 rounded-xl py-2 px-3 mb-2"
           @click="openEntity(entity)">
-          <div class="flex grow items-center">
-            <img
-              :src="
-                getIconUrl(
-                  entity.is_group ? 'folder' : formatMimeType(entity.mime_type)
-                )
-              "
-              class="w-6 mr-4" />
-            <div>
-              <div class="text-lg text-gray-900 font-medium truncate">
-                {{ entity.title }}
-              </div>
-              <div class="text-[13px] text-gray-600">{{ entity.owner }}</div>
+          <img
+            :src="
+              getIconUrl(
+                entity.is_group ? 'folder' : formatMimeType(entity.mime_type)
+              )
+            "
+            class="w-6 h-6 mr-3" />
+          <div class="flex flex-col">
+            <div class="text-base text-gray-900 font-medium truncate mb-1">
+              {{ entity.title }}
             </div>
-          </div>
-          <div class="text-[13px] text-gray-600 whitespace-nowrap my-auto">
-            {{ entity.modified }}
+            <div class="text-sm text-gray-600 mb-1">{{ entity.owner }}</div>
+            <div class="text-xs text-gray-600">{{ entity.modified }}</div>
           </div>
         </div>
       </div>
-      <div v-else class="mx-2.5 mb-2.5 mt-6 space-x-2.5 flex">
-        <div
-          v-for="item in filterItems"
-          :key="item"
-          class="w-28 border rounded-lg flex flex-col cursor-pointer"
-          :class="{ 'bg-gray-200': selectedFilterItems[item.imgSrc] }"
-          @click="
-            selectedFilterItems[item.imgSrc] = !selectedFilterItems[item.imgSrc]
-          ">
-          <img :src="getIconUrl(item.imgSrc)" class="h-[22px] mt-3.5 mb-3" />
-          <div class="text-sm text-gray-700 text-center mb-2">
-            {{ item.title }}
+      <div v-else class="mx-2.5 mt-6">
+        <div class="flex flex-wrap">
+          <div
+            v-for="item in filterItems"
+            :key="item"
+            class="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 xl:w-1/6 2xl:w-1/8 border rounded-lg flex flex-col items-center justify-center cursor-pointer mb-2.5 mr-2.5"
+            :class="{ 'bg-gray-200': selectedFilterItems[item.imgSrc] }"
+            @click="
+              selectedFilterItems[item.imgSrc] =
+                !selectedFilterItems[item.imgSrc]
+            ">
+            <img :src="getIconUrl(item.imgSrc)" class="w-10 h-10 my-3" />
+            <div class="text-sm text-gray-700 text-center">
+              {{ item.title }}
+            </div>
           </div>
         </div>
       </div>
