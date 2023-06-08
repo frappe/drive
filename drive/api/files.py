@@ -28,11 +28,11 @@ def if_folder_exists(folder_name, parent):
     existing_folder = frappe.db.get_value(
         "Drive Entity", values, ["name", "title", "is_group", "is_active"], as_dict=1
     )
-    if not existing_folder:
-        new_folder = create_folder(folder_name, parent)
-        return new_folder.name
-    else:
+    if existing_folder:
         return existing_folder.name
+    new_folder = create_folder(folder_name, parent)
+    return new_folder.name
+        
 
 
 @frappe.whitelist()
