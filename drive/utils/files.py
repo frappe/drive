@@ -33,7 +33,7 @@ def create_user_directory():
         }
     )
     user_directory.flags.file_created = True
-    frappe.local.rollback_observers.append(user_directory)
+    # frappe.local.rollback_observers.append(user_directory)
     user_directory.insert()
     return frappe._dict({"name": user_directory.name, "path": user_directory.path})
 
