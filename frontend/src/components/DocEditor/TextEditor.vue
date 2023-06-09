@@ -25,6 +25,7 @@ import Link from "@tiptap/extension-link";
 import Typography from "@tiptap/extension-typography";
 import TextStyle from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
+import FontFamily from "@tiptap/extension-font-family";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
 import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
@@ -159,10 +160,13 @@ export default {
         TableHeader,
         TableCell,
         Typography,
+        TextStyle,
+        FontFamily.configure({
+          types: ["textStyle"],
+        }),
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
-        TextStyle,
         Color,
         Highlight.configure({ multicolor: true }),
         Image,
