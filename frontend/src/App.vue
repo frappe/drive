@@ -61,6 +61,7 @@ export default {
     return {
       dropzone: null,
       showMobileSidebar: false,
+      computedFullPath: "",
     };
   },
   computed: {
@@ -91,7 +92,7 @@ export default {
     this.dropzone = new Dropzone(this.$el.parentNode, {
       paramName: "file",
       parallelUploads: 1,
-      autoProcessQueue: true,
+      autoProcessQueue: false,
       clickable: "#dropzoneElement",
       previewsContainer: "#dropzoneElement",
       uploadMultiple: false,
@@ -144,7 +145,20 @@ export default {
         name: file.name,
         progress: 0,
       });
-      non_merge_mode(file);
+      if (this.files.length === 1) {
+        if (file.fullPath || file.webkitRelativePath) {
+          non_merge_mode(file);
+          componentContext.computedFullPath = file.new_full_path;
+        }
+        this.options.autoProcessQueue = true;
+      }
+      if (file.fullPath || file.webkitRelativePath) {
+        file.new_full_path = componentContext.computedFullPath;
+      }
+    });
+    this.dropzone.on("queuecomplete", function (file) {
+      this.files = [];
+      componentContext.computedFullPath = "";
     });
 
     this.dropzone.on("uploadprogress", function (file, progress) {
