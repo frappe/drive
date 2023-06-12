@@ -114,10 +114,14 @@ export default {
       },
       sending: function (file, xhr, formData) {
         file.parent ? formData.append("parent", file.parent) : null;
-        file.webkitRelativePath
-          ? formData.append("fullpath", file.webkitRelativePath)
-          : null;
-        file.fullPath ? formData.append("fullpath", file.fullPath) : null;
+        if (file.new_full_path) {
+          formData.append("fullpath", file.new_full_path);
+        } else {
+          file.webkitRelativePath
+            ? formData.append("fullpath", file.webkitRelativePath)
+            : null;
+          file.fullPath ? formData.append("fullpath", file.fullPath) : null;
+        }
       },
       params: function (files, xhr, chunk) {
         if (chunk) {
@@ -132,6 +136,7 @@ export default {
         }
       },
     });
+
     this.dropzone.on("addedfile", function (file) {
       file.parent = componentContext.$store.state.currentFolderID;
       componentContext.$store.commit("pushToUploads", {
@@ -139,7 +144,9 @@ export default {
         name: file.name,
         progress: 0,
       });
+      non_merge_mode(file);
     });
+
     this.dropzone.on("uploadprogress", function (file, progress) {
       componentContext.$store.commit("updateUpload", {
         uuid: file.upload.uuid,
@@ -193,12 +200,82 @@ export default {
     },
   },
 };
+
+function does_root_folder_full_path_exist(k, file_parent) {
+  const url =
+    window.location.origin +
+    "/api/method/" +
+    `drive.api.files.does_entity_exist?name=${k}&parent_entity=${file_parent}`;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", url, false); // Here i am seeting third parameter as false for a synchronous request
+  xhr.send();
+
+  if (xhr.status === 200) {
+    const json = JSON.parse(xhr.responseText);
+    return json.message;
+  } else {
+    throw new Error(`Request failed with status ${xhr.status}`);
+  }
+}
+
+function root_folder_full_path_new_name(k, file_parent) {
+  const url =
+    window.location.origin +
+    "/api/method/" +
+    `drive.utils.files.get_new_title?entity=${k}&parent_name=${file_parent}`;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", url, false); // Here i am seeting third parameter as false for a synchronous request
+  xhr.send();
+
+  if (xhr.status === 200) {
+    const json = JSON.parse(xhr.responseText);
+    return json.message;
+  } else {
+    throw new Error(`Request failed with status ${xhr.status}`);
+  }
+}
+
+function root_folder_full_path(full_path) {
+  let s = full_path;
+  let k = s.substring(0, s.indexOf("/"));
+  return k;
+}
+
+function new_full_path_name(k, s, x) {
+  let f = x.replace(k, s);
+  return f;
+}
+
+function non_merge_mode(file) {
+  let a;
+
+  if (file.webkitRelativePath) {
+    a = file.webkitRelativePath;
+  } else {
+    a = file.fullPath;
+  }
+  let k = root_folder_full_path(a);
+  let t = does_root_folder_full_path_exist(k, file.parent);
+  if (t) {
+    let s = root_folder_full_path_new_name(k, file.parent);
+    let z = new_full_path_name(k, s, a);
+    console.log(z);
+    file.new_full_path = z;
+  } else {
+    file.new_full_path = a;
+  }
+}
 </script>
 
 <style>
 html {
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
 }
 </style>
