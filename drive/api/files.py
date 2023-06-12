@@ -32,7 +32,6 @@ def if_folder_exists(folder_name, parent):
         return existing_folder.name
     new_folder = create_folder(folder_name, parent)
     return new_folder.name
-        
 
 
 @frappe.whitelist()
@@ -361,10 +360,11 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
     )
     result = query.run(as_dict=True)
     for i in result:
-        if(i.is_group):
+        if i.is_group:
             child_count = get_children_count(i.name)
             i["item_count"] = child_count
     return result
+
 
 @frappe.whitelist()
 def get_entity(entity_name, fields=None):
@@ -691,7 +691,14 @@ def call_controller_method(entity_name, method):
 @frappe.whitelist()
 def get_children_count(drive_entity):
     children_count = frappe.db.count(
-        'Drive Entity',
-        {'parent_drive_entity':drive_entity}
-        )
+        "Drive Entity", {"parent_drive_entity": drive_entity}
+    )
     return children_count
+
+
+@frappe.whitelist()
+def does_entity_exist(name=None, parent_entity=None):
+    result = frappe.db.exists(
+        "Drive Entity", {"parent_drive_entity": parent_entity, "title": name}
+    )
+    return bool(result)
