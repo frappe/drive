@@ -38,6 +38,7 @@ export default {
           "Align Center",
           "Align Right",
           "FontColor",
+          ["Sans-serif", "Serif", "Monospace"],
           "Separator",
           "Image",
           "Video",

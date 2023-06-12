@@ -25,6 +25,7 @@ import ArrowGoBack from "./icons/arrow-go-back-line.vue";
 import ArrowGoForward from "./icons/arrow-go-forward-line.vue";
 import Separator from "./icons/separator.vue";
 import Table from "./icons/table-2.vue";
+import FontFamily from "./icons/font-family.vue";
 
 export default {
   Paragraph: {
@@ -135,6 +136,25 @@ export default {
     isActive: (editor) =>
       editor.isActive("textStyle") || editor.isActive("highlight"),
     component: defineAsyncComponent(() => import("./FontColor.vue")),
+  },
+  "Sans-serif": {
+    label: "Sans Serif",
+    text: "Sans Serif",
+    icon: FontFamily,
+    action: (editor) => editor.chain().focus().setFontFamily("Inter").run(),
+    isActive: (editor) => false,
+  },
+  Serif: {
+    label: "Serif",
+    text: "Serif",
+    action: (editor) => editor.chain().focus().setFontFamily("ui-serif").run(),
+    isActive: (editor) => false,
+  },
+  Monospace: {
+    label: "Monospace",
+    text: "Monospace",
+    action: (editor) => editor.chain().focus().setFontFamily("monospace").run(),
+    isActive: (editor) => false,
   },
   Blockquote: {
     label: "Blockquote",
