@@ -26,6 +26,7 @@ import Typography from "@tiptap/extension-typography";
 import TextStyle from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
 import FontFamily from "@tiptap/extension-font-family";
+import { FontSize } from "./font-size";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
 import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
@@ -164,6 +165,7 @@ export default {
         FontFamily.configure({
           types: ["textStyle"],
         }),
+        FontSize,
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),

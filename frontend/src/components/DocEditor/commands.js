@@ -1,11 +1,6 @@
 import { defineAsyncComponent } from "vue";
-import H1 from "./icons/h-1.vue";
-import H2 from "./icons/h-2.vue";
-import H3 from "./icons/h-3.vue";
-import H4 from "./icons/h-4.vue";
-import H5 from "./icons/h-5.vue";
-import H6 from "./icons/h-6.vue";
-import Text from "./icons/text.vue";
+
+/* Icons */
 import StrikeThrough from "./icons/strikethrough.vue";
 import Bold from "./icons/bold.vue";
 import Italic from "./icons/italic.vue";
@@ -25,7 +20,6 @@ import ArrowGoBack from "./icons/arrow-go-back-line.vue";
 import ArrowGoForward from "./icons/arrow-go-forward-line.vue";
 import Separator from "./icons/separator.vue";
 import Table from "./icons/table-2.vue";
-import FontFamily from "./icons/font-family.vue";
 
 export default {
   Undo: {
@@ -39,11 +33,6 @@ export default {
     icon: ArrowGoForward,
     action: (editor) => editor.chain().focus().redo().run(),
     isActive: (editor) => false,
-  },
-  Paragraph: {
-    label: "Normal Text",
-    action: (editor) => editor.chain().focus().setParagraph().run(),
-    isActive: (editor) => editor.isActive("paragraph"),
   },
   "Heading 1": {
     label: "Heading 1",
@@ -162,6 +151,33 @@ export default {
     isActive: (editor) =>
       editor.isActive("textStyle", { fontFamily: "monospace" }),
   },
+  "text-xs": {
+    label: "Extra Small",
+    action: (editor) => editor.chain().focus().setFontSize("0.75rem").run(),
+    isActive: (editor) => editor.isActive("textStyle", { fontSize: "0.75rem" }),
+  },
+  "text-sm": {
+    label: "Small",
+    action: (editor) => editor.chain().focus().setFontSize("0.875rem").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", { fontSize: "0.875rem" }),
+  },
+  "text-base": {
+    label: "Normal",
+    action: (editor) => editor.chain().focus().setParagraph().run(),
+    isActive: (editor) => editor.isActive("paragraph"),
+  },
+  "text-lg": {
+    label: "Large",
+    action: (editor) => editor.chain().focus().setFontSize("1.25rem").run(),
+    isActive: (editor) => editor.isActive("textStyle", { fontSize: "1.25rem" }),
+  },
+  "text-xl": {
+    label: "Extra Large",
+    action: (editor) => editor.chain().focus().setFontSize("1.5rem").run(),
+    isActive: (editor) => editor.isActive("textStyle", { fontSize: "1.5rem" }),
+  },
+
   Blockquote: {
     label: "Blockquote",
     icon: DoubleQuotes,
