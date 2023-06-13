@@ -28,16 +28,26 @@ import Table from "./icons/table-2.vue";
 import FontFamily from "./icons/font-family.vue";
 
 export default {
+  Undo: {
+    label: "Undo",
+    icon: ArrowGoBack,
+    action: (editor) => editor.chain().focus().undo().run(),
+    isActive: (editor) => false,
+  },
+  Redo: {
+    label: "Redo",
+    icon: ArrowGoForward,
+    action: (editor) => editor.chain().focus().redo().run(),
+    isActive: (editor) => false,
+  },
   Paragraph: {
-    label: "Paragraph",
-    icon: Text,
+    label: "Normal Text",
     action: (editor) => editor.chain().focus().setParagraph().run(),
     isActive: (editor) => editor.isActive("paragraph"),
   },
   "Heading 1": {
     label: "Heading 1",
-    text: "H1",
-    icon: H1,
+    text: "Heading 1",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 1 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 1 }),
@@ -45,43 +55,38 @@ export default {
   "Heading 2": {
     label: "Heading 2",
     text: "H2",
-    icon: H2,
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 2 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 2 }),
   },
   "Heading 3": {
     label: "Heading 3",
-    text: "H3",
-    icon: H3,
+    text: "Heading 3",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 3 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 3 }),
   },
   "Heading 4": {
     label: "Heading 4",
-    text: "H4",
-    icon: H4,
+    text: "Heading 4",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 4 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 4 }),
   },
-  "Heading 5": {
+  /*   "Heading 5": {
     label: "Heading 5",
-    text: "H5",
-    icon: H5,
+    text: "Heading 5",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 5 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 5 }),
   },
   "Heading 6": {
     label: "Heading 6",
-    text: "H6",
-    icon: H6,
+    text: "Heading 6",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 6 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 6 }),
-  },
+  }, */
   Bold: {
     label: "Bold",
     icon: Bold,
@@ -140,21 +145,22 @@ export default {
   "Sans-serif": {
     label: "Sans Serif",
     text: "Sans Serif",
-    icon: FontFamily,
     action: (editor) => editor.chain().focus().setFontFamily("Inter").run(),
-    isActive: (editor) => false,
+    isActive: (editor) => editor.isActive("textStyle", { fontFamily: "Inter" }),
   },
   Serif: {
     label: "Serif",
     text: "Serif",
     action: (editor) => editor.chain().focus().setFontFamily("ui-serif").run(),
-    isActive: (editor) => false,
+    isActive: (editor) =>
+      editor.isActive("textStyle", { fontFamily: "ui-serif" }),
   },
   Monospace: {
     label: "Monospace",
     text: "Monospace",
     action: (editor) => editor.chain().focus().setFontFamily("monospace").run(),
-    isActive: (editor) => false,
+    isActive: (editor) =>
+      editor.isActive("textStyle", { fontFamily: "monospace" }),
   },
   Blockquote: {
     label: "Blockquote",
@@ -197,18 +203,6 @@ export default {
     icon: Video,
     isActive: (editor) => false,
     component: defineAsyncComponent(() => import("./InsertVideo.vue")),
-  },
-  Undo: {
-    label: "Undo",
-    icon: ArrowGoBack,
-    action: (editor) => editor.chain().focus().undo().run(),
-    isActive: (editor) => false,
-  },
-  Redo: {
-    label: "Redo",
-    icon: ArrowGoForward,
-    action: (editor) => editor.chain().focus().redo().run(),
-    isActive: (editor) => false,
   },
   InsertTable: {
     label: "Insert Table",

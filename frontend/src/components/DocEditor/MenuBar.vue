@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 bg-white">
+  <div class="px-3 bg-white">
     <Dropdown :options="fileMenuOptions">
       <template v-slot="{ open }">
         <button
