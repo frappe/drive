@@ -147,13 +147,23 @@ export default {
       });
       if (this.files.length === 1) {
         if (file.fullPath || file.webkitRelativePath) {
-          non_merge_mode(file);
-          componentContext.computedFullPath = file.new_full_path;
+          componentContext.computedFullPath = non_merge_mode(file);
         }
         this.options.autoProcessQueue = true;
       }
       if (file.fullPath || file.webkitRelativePath) {
-        file.new_full_path = componentContext.computedFullPath;
+        let a;
+        if (file.webkitRelativePath) {
+          a = file.webkitRelativePath;
+        } else {
+          a = file.fullPath;
+        }
+        let k = root_folder_full_path(a);
+        file.new_full_path = new_full_path_name(
+          k,
+          componentContext.computedFullPath,
+          a
+        );
       }
     });
     this.dropzone.on("queuecomplete", function (file) {
@@ -264,7 +274,7 @@ function new_full_path_name(k, s, x) {
 
 function non_merge_mode(file) {
   let a;
-
+  let s;
   if (file.webkitRelativePath) {
     a = file.webkitRelativePath;
   } else {
@@ -273,13 +283,14 @@ function non_merge_mode(file) {
   let k = root_folder_full_path(a);
   let t = does_root_folder_full_path_exist(k, file.parent);
   if (t) {
-    let s = root_folder_full_path_new_name(k, file.parent);
+    s = root_folder_full_path_new_name(k, file.parent);
     let z = new_full_path_name(k, s, a);
-    console.log(z);
     file.new_full_path = z;
   } else {
     file.new_full_path = a;
+    s = k;
   }
+  return s;
 }
 </script>
 
