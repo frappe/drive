@@ -18,15 +18,17 @@ export default {
         buttons = this.buttons;
       } else {
         buttons = [
+          "Undo",
+          "Redo",
+          "Separator",
           [
             "Heading 1",
             "Heading 2",
             "Heading 3",
             "Heading 4",
-            "Heading 5",
-            "Heading 6",
+            /*      "Heading 5",
+            "Heading 6", */
           ],
-          "Paragraph",
           "Separator",
           "Bold",
           "Italic",
@@ -37,8 +39,12 @@ export default {
           "Align Left",
           "Align Center",
           "Align Right",
+          "Separator",
           "FontColor",
+          "Separator",
           ["Sans-serif", "Serif", "Monospace"],
+          "Separator",
+          ["text-xs", "text-sm", "text-base", "text-lg", "text-xl"],
           "Separator",
           "Image",
           "Video",
@@ -62,8 +68,6 @@ export default {
             "DeleteTable",
           ],
           "Separator",
-          "Undo",
-          "Redo",
         ];
       }
       return buttons.map(createEditorButton);

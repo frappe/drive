@@ -1,11 +1,6 @@
 import { defineAsyncComponent } from "vue";
-import H1 from "./icons/h-1.vue";
-import H2 from "./icons/h-2.vue";
-import H3 from "./icons/h-3.vue";
-import H4 from "./icons/h-4.vue";
-import H5 from "./icons/h-5.vue";
-import H6 from "./icons/h-6.vue";
-import Text from "./icons/text.vue";
+
+/* Icons */
 import StrikeThrough from "./icons/strikethrough.vue";
 import Bold from "./icons/bold.vue";
 import Italic from "./icons/italic.vue";
@@ -25,19 +20,23 @@ import ArrowGoBack from "./icons/arrow-go-back-line.vue";
 import ArrowGoForward from "./icons/arrow-go-forward-line.vue";
 import Separator from "./icons/separator.vue";
 import Table from "./icons/table-2.vue";
-import FontFamily from "./icons/font-family.vue";
 
 export default {
-  Paragraph: {
-    label: "Paragraph",
-    icon: Text,
-    action: (editor) => editor.chain().focus().setParagraph().run(),
-    isActive: (editor) => editor.isActive("paragraph"),
+  Undo: {
+    label: "Undo",
+    icon: ArrowGoBack,
+    action: (editor) => editor.chain().focus().undo().run(),
+    isActive: (editor) => false,
+  },
+  Redo: {
+    label: "Redo",
+    icon: ArrowGoForward,
+    action: (editor) => editor.chain().focus().redo().run(),
+    isActive: (editor) => false,
   },
   "Heading 1": {
     label: "Heading 1",
-    text: "H1",
-    icon: H1,
+    text: "Heading 1",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 1 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 1 }),
@@ -45,43 +44,38 @@ export default {
   "Heading 2": {
     label: "Heading 2",
     text: "H2",
-    icon: H2,
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 2 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 2 }),
   },
   "Heading 3": {
     label: "Heading 3",
-    text: "H3",
-    icon: H3,
+    text: "Heading 3",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 3 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 3 }),
   },
   "Heading 4": {
     label: "Heading 4",
-    text: "H4",
-    icon: H4,
+    text: "Heading 4",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 4 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 4 }),
   },
-  "Heading 5": {
+  /*   "Heading 5": {
     label: "Heading 5",
-    text: "H5",
-    icon: H5,
+    text: "Heading 5",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 5 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 5 }),
   },
   "Heading 6": {
     label: "Heading 6",
-    text: "H6",
-    icon: H6,
+    text: "Heading 6",
     action: (editor) =>
       editor.chain().focus().toggleHeading({ level: 6 }).run(),
     isActive: (editor) => editor.isActive("heading", { level: 6 }),
-  },
+  }, */
   Bold: {
     label: "Bold",
     icon: Bold,
@@ -140,22 +134,50 @@ export default {
   "Sans-serif": {
     label: "Sans Serif",
     text: "Sans Serif",
-    icon: FontFamily,
     action: (editor) => editor.chain().focus().setFontFamily("Inter").run(),
-    isActive: (editor) => false,
+    isActive: (editor) => editor.isActive("textStyle", { fontFamily: "Inter" }),
   },
   Serif: {
     label: "Serif",
     text: "Serif",
     action: (editor) => editor.chain().focus().setFontFamily("ui-serif").run(),
-    isActive: (editor) => false,
+    isActive: (editor) =>
+      editor.isActive("textStyle", { fontFamily: "ui-serif" }),
   },
   Monospace: {
     label: "Monospace",
     text: "Monospace",
     action: (editor) => editor.chain().focus().setFontFamily("monospace").run(),
-    isActive: (editor) => false,
+    isActive: (editor) =>
+      editor.isActive("textStyle", { fontFamily: "monospace" }),
   },
+  "text-xs": {
+    label: "Extra Small",
+    action: (editor) => editor.chain().focus().setFontSize("0.75rem").run(),
+    isActive: (editor) => editor.isActive("textStyle", { fontSize: "0.75rem" }),
+  },
+  "text-sm": {
+    label: "Small",
+    action: (editor) => editor.chain().focus().setFontSize("0.875rem").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", { fontSize: "0.875rem" }),
+  },
+  "text-base": {
+    label: "Normal",
+    action: (editor) => editor.chain().focus().setParagraph().run(),
+    isActive: (editor) => editor.isActive("paragraph"),
+  },
+  "text-lg": {
+    label: "Large",
+    action: (editor) => editor.chain().focus().setFontSize("1.25rem").run(),
+    isActive: (editor) => editor.isActive("textStyle", { fontSize: "1.25rem" }),
+  },
+  "text-xl": {
+    label: "Extra Large",
+    action: (editor) => editor.chain().focus().setFontSize("1.5rem").run(),
+    isActive: (editor) => editor.isActive("textStyle", { fontSize: "1.5rem" }),
+  },
+
   Blockquote: {
     label: "Blockquote",
     icon: DoubleQuotes,
@@ -197,18 +219,6 @@ export default {
     icon: Video,
     isActive: (editor) => false,
     component: defineAsyncComponent(() => import("./InsertVideo.vue")),
-  },
-  Undo: {
-    label: "Undo",
-    icon: ArrowGoBack,
-    action: (editor) => editor.chain().focus().undo().run(),
-    isActive: (editor) => false,
-  },
-  Redo: {
-    label: "Redo",
-    icon: ArrowGoForward,
-    action: (editor) => editor.chain().focus().redo().run(),
-    isActive: (editor) => false,
   },
   InsertTable: {
     label: "Insert Table",
