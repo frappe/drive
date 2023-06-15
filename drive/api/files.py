@@ -625,6 +625,11 @@ def add_or_remove_favourites(entity_names):
             )
             doc.insert()
 
+# def toggle_is_active(doc):
+#     doc.is_active = 0 if doc.is_active else 1
+#     frappe.db.set_value('Drive Entity', doc.name, 'is_active',doc.is_active)
+#     for child in doc.get_children():
+#         toggle_is_active(child)
 
 @frappe.whitelist()
 def remove_or_restore(entity_names):
@@ -634,17 +639,14 @@ def remove_or_restore(entity_names):
     :param entity_names: List of document-names
     :type entity_names: list[str]
     """
-
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
 
-    def toggle_is_active(doc):
+    def depth_zero_toggle_is_active(doc):
         doc.is_active = 0 if doc.is_active else 1
-        doc.save()
-        for child in doc.get_children():
-            toggle_is_active(child)
+        frappe.db.set_value('Drive Entity', doc.name, 'is_active',doc.is_active)
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
@@ -662,9 +664,8 @@ def remove_or_restore(entity_names):
             )
             if parent_is_active:
                 doc.move(doc.parent_before_trash)
-
-        toggle_is_active(doc)
-
+        depth_zero_toggle_is_active(doc)
+        #frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
 
 @frappe.whitelist()
 def call_controller_method(entity_name, method):
