@@ -3,6 +3,7 @@
 
 import frappe
 from pypika import Order
+from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
@@ -179,6 +180,15 @@ def get_file_with_permissions(entity_name):
         "allow_comments",
     ]
     entity = get_entity(entity_name, fields)
+    entity_ancestors = get_ancestors_of("Drive Entity", entity)
+    flag = False
+    for z_entity_name in entity_ancestors:
+        result = frappe.db.exists("Drive Entity", {"name":z_entity_name,"is_active": 0})
+        if result:
+            flag = True
+            break
+    if flag == True:
+        frappe.throw("Parent Folder has been deleted")
     if entity.is_group:
         frappe.throw("Specified entity is not a file", IsADirectoryError)
     if not entity.is_active:
