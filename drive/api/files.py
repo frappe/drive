@@ -188,7 +188,8 @@ def create_folder(title, parent=None):
         {"doctype": "Drive Entity", "parent_drive_entity": parent, "title": title}
     )
     if entity_exists:
-        frappe.throw(f"Folder '{title}' already exists", FileExistsError)
+        suggested_name = get_new_title(title,parent)
+        frappe.throw(f"Folder '{title}' already exists.\n Suggested: {suggested_name}", FileExistsError)
 
     drive_entity = frappe.get_doc(
         {
@@ -646,7 +647,7 @@ def remove_or_restore(entity_names):
 
     def depth_zero_toggle_is_active(doc):
         doc.is_active = 0 if doc.is_active else 1
-        frappe.db.set_value('Drive Entity', doc.name, 'is_active',doc.is_active)
+        frappe.db.set_value("Drive Entity", doc.name, "is_active", doc.is_active)
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
@@ -665,7 +666,8 @@ def remove_or_restore(entity_names):
             if parent_is_active:
                 doc.move(doc.parent_before_trash)
         depth_zero_toggle_is_active(doc)
-        #frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
+        # frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
+
 
 @frappe.whitelist()
 def call_controller_method(entity_name, method):
