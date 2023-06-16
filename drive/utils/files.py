@@ -64,9 +64,7 @@ def _get_user_directory_name(user=None):
     return hashlib.md5(user.encode("utf-8")).hexdigest()
 
 
-frappe.whitelist()
-
-
+@frappe.whitelist()
 def get_new_title(entity, parent_name):
     """
     Returns new title for an entity if same title exists for another entity at the same level

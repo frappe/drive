@@ -28,11 +28,10 @@ def if_folder_exists(folder_name, parent):
     existing_folder = frappe.db.get_value(
         "Drive Entity", values, ["name", "title", "is_group", "is_active"], as_dict=1
     )
-    if not existing_folder:
-        new_folder = create_folder(folder_name, parent)
-        return new_folder.name
-    else:
+    if existing_folder:
         return existing_folder.name
+    new_folder = create_folder(folder_name, parent)
+    return new_folder.name
 
 
 @frappe.whitelist()
@@ -189,7 +188,8 @@ def create_folder(title, parent=None):
         {"doctype": "Drive Entity", "parent_drive_entity": parent, "title": title}
     )
     if entity_exists:
-        frappe.throw(f"Folder '{title}' already exists", FileExistsError)
+        suggested_name = get_new_title(title,parent)
+        frappe.throw(f"Folder '{title}' already exists.\n Suggested: {suggested_name}", FileExistsError)
 
     drive_entity = frappe.get_doc(
         {
@@ -361,10 +361,11 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
     )
     result = query.run(as_dict=True)
     for i in result:
-        if(i.is_group):
+        if i.is_group:
             child_count = get_children_count(i.name)
             i["item_count"] = child_count
     return result
+
 
 @frappe.whitelist()
 def get_entity(entity_name, fields=None):
@@ -625,6 +626,11 @@ def add_or_remove_favourites(entity_names):
             )
             doc.insert()
 
+# def toggle_is_active(doc):
+#     doc.is_active = 0 if doc.is_active else 1
+#     frappe.db.set_value('Drive Entity', doc.name, 'is_active',doc.is_active)
+#     for child in doc.get_children():
+#         toggle_is_active(child)
 
 @frappe.whitelist()
 def remove_or_restore(entity_names):
@@ -634,17 +640,14 @@ def remove_or_restore(entity_names):
     :param entity_names: List of document-names
     :type entity_names: list[str]
     """
-
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
 
-    def toggle_is_active(doc):
+    def depth_zero_toggle_is_active(doc):
         doc.is_active = 0 if doc.is_active else 1
-        doc.save()
-        for child in doc.get_children():
-            toggle_is_active(child)
+        frappe.db.set_value("Drive Entity", doc.name, "is_active", doc.is_active)
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
@@ -662,8 +665,8 @@ def remove_or_restore(entity_names):
             )
             if parent_is_active:
                 doc.move(doc.parent_before_trash)
-
-        toggle_is_active(doc)
+        depth_zero_toggle_is_active(doc)
+        # frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
 
 
 @frappe.whitelist()
@@ -691,7 +694,14 @@ def call_controller_method(entity_name, method):
 @frappe.whitelist()
 def get_children_count(drive_entity):
     children_count = frappe.db.count(
-        'Drive Entity',
-        {'parent_drive_entity':drive_entity}
-        )
+        "Drive Entity", {"parent_drive_entity": drive_entity}
+    )
     return children_count
+
+
+@frappe.whitelist()
+def does_entity_exist(name=None, parent_entity=None):
+    result = frappe.db.exists(
+        "Drive Entity", {"parent_drive_entity": parent_entity, "title": name}
+    )
+    return bool(result)
