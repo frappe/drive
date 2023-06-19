@@ -515,6 +515,9 @@ def unshare_entities(entity_names, move=False):
         doc.unshare(frappe.session.user)
 
 
+def delete_background_job(entity,ignore_permissions):
+    frappe.delete_doc("Drive Entity", entity, ignore_permissions=ignore_permissions)
+
 @frappe.whitelist()
 def delete_entities(entity_names):
     """
@@ -544,7 +547,9 @@ def delete_entities(entity_names):
             doctype="Drive Entity", doc=entity, ptype="write", user=frappe.session.user
         )
         ignore_permissions = owns_root_entity or has_write_access
-        frappe.delete_doc("Drive Entity", entity, ignore_permissions=ignore_permissions)
+        doc = frappe.get_doc("Drive Entity", entity)
+        frappe.db.set_value("Drive Entity", doc.name, "is_active",-1)
+        frappe.enqueue(delete_background_job,queue="default",timeout=None,entity=entity,ignore_permissions=ignore_permissions)
 
 
 @frappe.whitelist()
