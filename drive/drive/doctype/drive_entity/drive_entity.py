@@ -47,7 +47,7 @@ class DriveEntity(NestedSet):
             )
 
     def on_trash(self):
-            frappe.db.delete("Drive Favourite", {"entity": self.name})
+        frappe.db.delete("Drive Favourite", {"entity": self.name})
             if self.is_group:
                 for child in self.get_children():
                     has_write_access = frappe.has_permission(
@@ -58,6 +58,7 @@ class DriveEntity(NestedSet):
                     )
                     child.delete(ignore_permissions=has_write_access)
             super().on_trash()
+            
 
     def after_delete(self):
         if self.document:
