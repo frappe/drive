@@ -547,8 +547,7 @@ def delete_entities(entity_names):
             doctype="Drive Entity", doc=entity, ptype="write", user=frappe.session.user
         )
         ignore_permissions = owns_root_entity or has_write_access
-        doc = frappe.get_doc("Drive Entity", entity)
-        frappe.db.set_value("Drive Entity", doc.name, "is_active",-1)
+        frappe.db.set_value("Drive Entity",entity, "is_active",-1)
         frappe.enqueue(delete_background_job,queue="default",timeout=None,entity=entity,ignore_permissions=ignore_permissions)
 
 
