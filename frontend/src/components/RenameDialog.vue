@@ -76,12 +76,22 @@ export default {
     },
     performRename() {
       const trimmedName = this.newName.trim();
-      const newTitle = this.addExtension(trimmedName);
-      this.$resources.rename.submit({
+      if(this.entity.is_group===1)
+      {   
+       this.$resources.rename.submit({
+        method: 'rename',
+        entity_name: this.entityName,
+        new_title: trimmedName
+      });
+      }
+      else{
+        const newTitle = this.addExtension(trimmedName);
+        this.$resources.rename.submit({
         method: 'rename',
         entity_name: this.entityName,
         new_title: newTitle
       });
+      }
     },
   },
   updated() {
