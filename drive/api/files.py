@@ -15,7 +15,7 @@ import hashlib
 import json
 from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
-
+from datetime import date, timedelta
 
 def if_folder_exists(folder_name, parent):
     values = {
@@ -717,3 +717,12 @@ def does_entity_exist(name=None, parent_entity=None):
         "Drive Entity", {"parent_drive_entity": parent_entity, "title": name}
     )
     return bool(result)
+
+
+
+def auto_delete_from_trash():
+    days_before = (date.today()-timedelta(days=30)).isoformat()
+    result = frappe.db.get_all('Drive Entity',
+                               filters={ 'is_active': 0, 'trashed_on': ['<',days_before]},
+                               fields=['name'])
+    delete_entities(result)
