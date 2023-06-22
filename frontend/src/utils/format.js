@@ -45,7 +45,7 @@ export function formatMimeType(mimeType) {
         icon = "presentation";
         break;
       case "vnd.openxmlformats-officedocument.wordprocessingml.document":
-        icon = "doc";
+        icon = "word";
         break;
     }
   return icon;
