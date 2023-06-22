@@ -1,32 +1,18 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'Rename' }">
     <template #body-content>
-      <Input
-        v-model="newName"
-        type="text"
-        :value="newName"
-        @keydown.enter="
-          (e) =>
-            $resources.rename.submit({
-              method: 'rename',
-              entity_name: entityName,
-              new_title: e.target.value.trim(),
-            })
-        " />
+      <Input v-model="newName" type="text" />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button class="ml-auto" @click="open = false">Cancel</Button>
-        <Button
-          appearance="primary"
-          class="ml-4"
-          :loading="$resources.rename.loading"
-          @click="$resources.rename.submit()">
+        <Button appearance="primary" class="ml-4" :loading="$resources.rename.loading" @click="performRename">
           Rename
         </Button>
       </div>
     </template>
   </Dialog>
 </template>
+
 <script>
 import { Dialog, Input, ErrorMessage } from "frappe-ui";
 
@@ -71,12 +57,36 @@ export default {
         }
       },
     },
+    fileName() {
+      if (this.entity) {
+        const parts = this.entity.title.split('.');
+        parts.pop();
+        return parts.join('.');
+      }
+      return '';
+    },
   },
-
+  methods: {
+    addExtension(newName) {
+      if (this.entity) {
+        const extension = this.entity.title.split('.').pop();
+        return `${newName}.${extension}`;
+      }
+      return newName;
+    },
+    performRename() {
+      const trimmedName = this.newName.trim();
+      const newTitle = this.addExtension(trimmedName);
+      this.$resources.rename.submit({
+        method: 'rename',
+        entity_name: this.entityName,
+        new_title: newTitle
+      });
+    },
+  },
   updated() {
-    this.newName = this.entity?.title;
+    this.newName = this.fileName;
   },
-
   resources: {
     rename() {
       return {
