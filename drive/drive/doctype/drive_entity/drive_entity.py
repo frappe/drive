@@ -1,6 +1,3 @@
-# Copyright (c) 2021, mituldavid and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe.utils.nestedset import NestedSet, get_ancestors_of
 from pathlib import Path

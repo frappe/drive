@@ -203,7 +203,7 @@ bench --site mydrive.localhost clear-cache
 bench use mydrive.localhost
 ```
 
-### Step 10: Install the Dive app onto the site created 
+### Step 10: Install the Drive app onto the site created 
 
 ```shell
 bench get-app https://github.com/frappe/drive
