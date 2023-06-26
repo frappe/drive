@@ -1,6 +1,3 @@
-# Copyright (c) 2021, mituldavid and Contributors
-# See license.txt
-
 import frappe
 
 no_cache = 1

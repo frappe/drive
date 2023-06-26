@@ -114,14 +114,15 @@ export default {
         }
       },
       sending: function (file, xhr, formData) {
-        file.parent ? formData.append("parent", file.parent) : null;
+        if (file.parent) {
+          formData.append("parent", file.parent);
+        }
         if (file.new_full_path) {
           formData.append("fullpath", file.new_full_path);
-        } else {
-          file.webkitRelativePath
-            ? formData.append("fullpath", file.webkitRelativePath)
-            : null;
-          file.fullPath ? formData.append("fullpath", file.fullPath) : null;
+        } else if (file.webkitRelativePath) {
+          formData.append("fullpath", file.webkitRelativePath);
+        } else if (file.fullPath) {
+          formData.append("fullpath", file.fullPath);
         }
       },
       params: function (files, xhr, chunk) {
