@@ -164,8 +164,10 @@ export default {
   },
   "text-base": {
     label: "Normal",
-    action: (editor) => editor.chain().focus().setParagraph().run(),
-    isActive: (editor) => editor.isActive("paragraph"),
+    action: (editor) => editor.chain().focus().setFontSize("1rem").run(),
+    isActive: (editor) =>
+      editor.isActive("paragraph") ||
+      editor.isActive("textStyle", { fontSize: "1rem" }),
   },
   "text-lg": {
     label: "Large",
