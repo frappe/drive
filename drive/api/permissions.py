@@ -1,6 +1,3 @@
-# Copyright (c) 2021, mituldavid and contributors
-# For license information, please see license.txt
-
 import frappe
 from pypika import Order
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of

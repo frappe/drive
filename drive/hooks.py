@@ -6,7 +6,7 @@ app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "An easy to use, document sharing and management solution."
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
-app_email = "hello@frappe.io"
+app_email = "developers@frappe.io"
 app_license = "GNU Affero General Public License v3.0"
 
 website_route_rules = [
@@ -119,23 +119,11 @@ home_page = "drive"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"drive.tasks.all"
-# 	],
-# 	"daily": [
-# 		"drive.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"drive.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"drive.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"drive.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    "daily": [
+            "drive.api.files.auto_delete_from_trash"
+    ],
+}
 
 # Testing
 # -------
