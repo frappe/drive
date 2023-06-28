@@ -115,6 +115,7 @@ import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
+import { folderDownload } from "@/utils/folderDownload";
 
 export default {
   name: "Home",
@@ -195,12 +196,18 @@ export default {
           label: "Download",
           icon: "download",
           handler: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            if(this.selectedEntities[0].is_group===1)
+            {
+              folderDownload(this.selectedEntities[0]);
+              //downloadImages();
+            }
+            else{
+              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            }
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
+              this.selectedEntities.length === 1  
             );
           },
         },
