@@ -275,6 +275,7 @@ def get_file_content(entity_name, trigger_download=0):
             filename=drive_entity.title.encode("utf-8"),
         )
         response.headers.add("Content-Length", str(drive_entity.file_size))
+        response.headers.add("Content-Type", response.mimetype)
         return response
 
 
