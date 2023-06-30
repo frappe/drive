@@ -31,7 +31,6 @@ function temp(entity_name, parentZip) {
             const folder = parentZip.folder(entity.title);
             return temp(entity.name, folder);
           } else {
-            console.log("success...");
             return get_file_content(entity.name)
               .then((fileContent) => {
                 parentZip.file(entity.title, fileContent);
@@ -54,23 +53,20 @@ function temp(entity_name, parentZip) {
 }
 
 function get_file_content(entity_name) {
-  return new Promise((resolve, reject) => {
-    const fileUrl = window.location.origin +
-      "/api/method/" +
-      `drive.api.files.get_file_content?entity_name=${entity_name}`;
+  const fileUrl = window.location.origin +
+    "/api/method/" +
+    `drive.api.files.get_file_content?entity_name=${entity_name}`;
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", fileUrl);
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        resolve(xhr.response);
+  return fetch(fileUrl)
+    .then(response => {
+      if (response.ok) {
+        return response.blob();
       } else {
-        reject(new Error(`Request failed with status ${xhr.status}`));
+        throw new Error(`Request failed with status ${response.status}`);
       }
-    };
-    xhr.send();
-  });
+    });
 }
+
 
 function get_children(entity_name) {
   return new Promise((resolve, reject) => {
