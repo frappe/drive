@@ -6,7 +6,7 @@ export function folderDownload(root_entity) {
 
   temp(root_entity.name, zip)
     .then(() => {
-      return zip.generateAsync({ type: 'blob' });
+      return zip.generateAsync({ type: 'blob', streamFiles: true });
     })
     .then((content) => {
       const downloadLink = document.createElement('a');
