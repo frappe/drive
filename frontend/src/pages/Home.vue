@@ -210,10 +210,15 @@ export default {
               window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
             }
           },
-          isEnabled: () => {
-            return (
-              true
-            );
+          isEnabled: () =>{
+              const allEntitiesSatisfyCondition = this.selectedEntities.every(entity => {
+                return (
+                  entity.allow_download ||
+                  entity.write ||
+                  entity.owner === "me"
+                );
+              });
+              return allEntitiesSatisfyCondition;
           },
         },
         {
