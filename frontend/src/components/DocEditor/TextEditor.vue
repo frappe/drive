@@ -383,13 +383,13 @@ export default {
     this.emitter.on("toggleCommentMode", () => {
       this.isCommentModeOn = true;
     });
-    const ydoc = new Y.Doc();
+    /*     const ydoc = new Y.Doc();
     const provider = new HocuspocusProvider({
       // Tiny test currently running https://github.com/ueberdosis/hocuspocus/blob/main/packages/server/src/Hocuspocus.ts
       url: "wss://network.arjun.lol",
       name: JSON.stringify(this.entityName),
       document: ydoc,
-    });
+    }); */
     let componentContext = this;
     this.editor = new Editor({
       editable: this.editable,
@@ -429,7 +429,8 @@ export default {
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
-        Collaboration.configure({
+        ,
+        /*         Collaboration.configure({
           document: provider.document,
         }),
         CollaborationCursor.configure({
@@ -438,8 +439,7 @@ export default {
             name: componentContext.currentUserName,
             color: componentContext.getRandomColor(),
           },
-        }),
-        LineHeight,
+        }) */ LineHeight,
         Link.configure({
           openOnClick: false,
         }),
