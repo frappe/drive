@@ -82,6 +82,7 @@ import MenuBar from "./MenuBar.vue";
 import { Button, Input } from "frappe-ui";
 import { v4 as uuidv4 } from "uuid";
 import { Comment } from "./comment";
+import { LineHeight } from "./lineHeight";
 import OuterCommentVue from "./OuterComment.vue";
 
 export default {
@@ -403,6 +404,7 @@ export default {
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
+        LineHeight,
         Link.configure({
           openOnClick: false,
         }),
