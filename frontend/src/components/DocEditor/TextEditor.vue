@@ -84,6 +84,9 @@ import { v4 as uuidv4 } from "uuid";
 import { Comment } from "./comment";
 import { LineHeight } from "./lineHeight";
 import OuterCommentVue from "./OuterComment.vue";
+import Collaboration from "@tiptap/extension-collaboration";
+import * as Y from "yjs";
+import { WebrtcProvider } from "y-webrtc";
 
 export default {
   name: "TextEditor",
@@ -366,6 +369,11 @@ export default {
       this.isCommentModeOn = true;
     });
     let componentContext = this;
+    const ydoc = new Y.Doc();
+    const provider = new WebrtcProvider("roomName", ydoc, {
+      signaling: ["ws://localhost:4444"],
+    });
+    const yarray = ydoc.get("array", Y.Array);
     this.editor = new Editor({
       editable: this.editable,
       content: this.modelValue,
@@ -394,6 +402,7 @@ export default {
       extensions: [
         StarterKit.configure({
           ...this.starterkitOptions,
+          history: false,
         }),
         Table.configure({
           resizable: true,
@@ -403,6 +412,10 @@ export default {
         }),
         TextAlign.configure({
           types: ["heading", "paragraph"],
+        }),
+        Collaboration.configure({
+          document: ydoc,
+          field: "roomName",
         }),
         LineHeight,
         Link.configure({
