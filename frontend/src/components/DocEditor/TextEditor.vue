@@ -371,7 +371,8 @@ export default {
     let componentContext = this;
     const ydoc = new Y.Doc();
     const provider = new WebrtcProvider("roomName", ydoc, {
-      signaling: ["ws://localhost:4444"],
+      // Tiny NAT jumping experiment (src: https://github.com/yjs/y-webrtc/blob/master/bin/server.js)
+      signaling: ["ws://network.arjun.lol"],
     });
     const yarray = ydoc.get("array", Y.Array);
     this.editor = new Editor({
