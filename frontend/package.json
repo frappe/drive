@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.8",
+    "@hocuspocus/provider": "^2.2.0",
     "@tiptap/core": "^2.0.3",
     "@tiptap/extension-collaboration": "^2.0.3",
+    "@tiptap/extension-collaboration-cursor": "^2.0.3",
     "@tiptap/extension-font-family": "^2.0.3",
     "@tiptap/extension-text-style": "^2.0.3",
     "@tiptap/extension-underline": "^2.0.3",
@@ -40,8 +42,7 @@
     "vuex": "^4.1.0",
     "xlsx": "^0.18.5",
     "y-prosemirror": "^1.0.20",
-    "y-webrtc": "^10.2.5",
-    "yjs": "^13.6.6"
+    "yjs": "^13.5.39"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

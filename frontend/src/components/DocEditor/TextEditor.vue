@@ -85,8 +85,9 @@ import { Comment } from "./comment";
 import { LineHeight } from "./lineHeight";
 import OuterCommentVue from "./OuterComment.vue";
 import Collaboration from "@tiptap/extension-collaboration";
+import { HocuspocusProvider } from "@hocuspocus/provider";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
-import { WebrtcProvider } from "y-webrtc";
 
 export default {
   name: "TextEditor",
@@ -149,6 +150,7 @@ export default {
   data() {
     return {
       editor: null,
+      provider: null,
       tempEditable: false,
       isTextSelected: false,
       currentMode: "",
@@ -162,6 +164,18 @@ export default {
     };
   },
   methods: {
+    getRandomColor() {
+      const list = [
+        "#958DF1",
+        "#F98181",
+        "#FBBC88",
+        "#FAF594",
+        "#70CFF8",
+        "#94FADB",
+        "#B9F18D",
+      ];
+      return list[Math.floor(Math.random() * list.length)];
+    },
     discardComment() {
       this.commentText = "";
       this.isCommentModeOn = false;
@@ -239,10 +253,12 @@ export default {
     },
     setComment(val) {
       const localVal = val || this.commentText;
+
       if (!localVal.trim().length) return;
       const currentSelectedComment = JSON.parse(
         JSON.stringify(this.activeCommentsInstance)
       );
+
       const commentsArray =
         typeof currentSelectedComment.comments === "string"
           ? JSON.parse(currentSelectedComment.comments)
@@ -364,16 +380,17 @@ export default {
     },
   },
   mounted() {
-    console.log(this.modelValue);
     this.emitter.on("toggleCommentMode", () => {
       this.isCommentModeOn = true;
     });
-    let componentContext = this;
     const ydoc = new Y.Doc();
-    const provider = new WebrtcProvider("roomName", ydoc, {
-      signaling: ["ws://localhost:4444"],
+    const provider = new HocuspocusProvider({
+      // Tiny test currently running https://github.com/ueberdosis/hocuspocus/blob/main/packages/server/src/Hocuspocus.ts
+      url: "wss://network.arjun.lol",
+      name: JSON.stringify(this.entityName),
+      document: ydoc,
     });
-    const yarray = ydoc.get("array", Y.Array);
+    let componentContext = this;
     this.editor = new Editor({
       editable: this.editable,
       content: this.modelValue,
@@ -384,7 +401,6 @@ export default {
           componentContext.editor.getJSON()
         );
         componentContext.findCommentsAndStoreValues();
-        console.log("sip");
       },
       onUpdate() {
         componentContext.$emit(
@@ -414,8 +430,14 @@ export default {
           types: ["heading", "paragraph"],
         }),
         Collaboration.configure({
-          document: ydoc,
-          field: "roomName",
+          document: provider.document,
+        }),
+        CollaborationCursor.configure({
+          provider: provider,
+          user: {
+            name: componentContext.currentUserName,
+            color: componentContext.getRandomColor(),
+          },
         }),
         LineHeight,
         Link.configure({
@@ -476,5 +498,29 @@ span[data-comment] {
   user-select: all;
   padding: 0 2px 0 2px;
   border-radius: 2px;
+}
+.collaboration-cursor__caret {
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  border-radius: 3px 3px 3px 0;
+  color: #0d0d0d;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  padding: 0.1rem 0.3rem;
+  position: absolute;
+  top: -1.4em;
+  user-select: none;
+  white-space: nowrap;
 }
 </style>
