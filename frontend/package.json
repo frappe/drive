@@ -28,6 +28,7 @@
     "feather-icons": "^4.29.0",
     "frappe-ui": "0.0.101",
     "fuzzysort": "^2.0.4",
+    "jszip": "^3.10.1",
     "lucide-vue-next": "^0.206.0",
     "mitt": "^3.0.0",
     "sass": "^1.62.0",
