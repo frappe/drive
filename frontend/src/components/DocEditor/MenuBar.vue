@@ -1,5 +1,5 @@
 <template>
-  <div class="px-3 bg-white">
+  <div class="flex px-3 bg-white">
     <Dropdown :options="fileMenuOptions">
       <template v-slot="{ open }">
         <button
@@ -205,6 +205,20 @@
         </button>
       </template>
     </Dropdown>
+    <!--     <div class="ml-auto">
+    <Dropdown
+      :options="modeMenuOptions">
+      <template v-slot="{ open }">
+        <button
+          :class="[
+            'rounded-md px-2 py-1 text-base font-medium',
+            open ? 'bg-slate-100' : 'bg-white-200',
+          ]">
+          {{ this.currentMode }}
+        </button>
+      </template>
+    </Dropdown>
+  </div> -->
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
@@ -240,11 +254,18 @@ export default {
       type: String,
       required: false,
     },
+    currentMode: {
+      default: "",
+      type: String,
+      required: false,
+    },
   },
+  emits: ["toggleCommentMode", "toggleEditMode", "toggleReadMode"],
   data() {
     return {
       showShareDialog: false,
       showRemoveDialog: false,
+      modeButtonText: "",
       fileMenuOptions: [
         /*         {
           group: "New",
@@ -291,6 +312,42 @@ export default {
               icon: "trash-2",
               label: "Delete File",
               handler: () => (this.showRemoveDialog = true),
+            },
+          ],
+        },
+      ],
+      modeMenuOptions: [
+        {
+          group: "Mode",
+          hideLabel: true,
+          items: [
+            {
+              icon: "eye",
+              label: "Reading",
+              handler: () => {
+                console.log("This should be Reading");
+                console.log(this.currentMode);
+                this.$emit("toggleReadMode"), (this.modeButtonText = "Reading");
+              },
+            },
+            {
+              icon: "edit-3",
+              label: "Editing",
+              handler: () => {
+                console.log("This should be Editing");
+                console.log(this.currentMode);
+                this.$emit("toggleEditMode"), (this.modeButtonText = "Editing");
+              },
+            },
+            {
+              icon: "message-square",
+              label: "Suggesting",
+              handler: () => {
+                console.log("This should be Suggesting");
+                console.log(this.currentMode);
+                this.$emit("toggleCommentMode"),
+                  (this.modeButtonText = "Suggest");
+              },
             },
           ],
         },

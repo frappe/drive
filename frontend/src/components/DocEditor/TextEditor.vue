@@ -1,16 +1,61 @@
 <template>
   <div class="sticky top-0 z-10">
     <div v-if="editable" class="w-full">
-      <MenuBar :entityName="entityName" />
-      <TextEditorFixedMenu :buttons="fixedMenu" class="shadow-sm" />
+      <!-- <MenuBar 
+          :entityName="entityName" 
+          :currentMode="currentMode" 
+          @toggle-comment-mode="() => this.toggleCommentMode()" 
+          @toggle-edit-mode="() => this.toggleEditMode()" 
+          @toggle-read-mode="() => this.toggleReadMode()"
+          /> -->
+      <MenuBar :entity-name="entityName" :current-mode="currentMode" />
+      <TextEditorFixedMenu :buttons="fixedMenu" />
     </div>
   </div>
-  <editor-content id="editorElem" :editor="editor" />
+  <TextEditorBubbleMenu
+    v-if="editable && !isCommentModeOn"
+    :options="bubbleMenuOptions"
+    :buttons="bubbleMenu" />
+  <BubbleMenu
+    v-if="isCommentModeOn"
+    :editor="editor"
+    :should-show="
+      ({ editor }) =>
+        isCommentModeOn &&
+        !editor.state.selection.empty &&
+        !activeCommentsInstance.uuid
+    ">
+    <div class="p-4 rounded-md border bg-white border-gray-100 shadow-lg">
+      <textarea
+        cols="50"
+        rows="4"
+        placeholder="Type your comment"
+        style="resize: none"
+        v-model="commentText"
+        class="placeholder-gray-500 form-input block w-full mb-2"
+        @keypress.enter.stop.prevent="() => setComment()" />
+      <section class="flex justify-end gap-2">
+        <Button @click="() => discardComment()">Discard</Button>
+        <Button appearance="primary" @click="() => setComment()">Done</Button>
+      </section>
+    </div>
+  </BubbleMenu>
+  <div class="flex w-screen items-start justify-center space-x-4 mt-3">
+    <editor-content
+      id="editorElem"
+      class="bg-white shadow-sm rounded-md border"
+      :editor="editor" />
+    <OuterCommentVue
+      :active-comments-instance="activeCommentsInstance"
+      :all-comments="allComments"
+      :focus-content="focusContent"
+      @set-comment="setComment" />
+  </div>
 </template>
 
 <script>
 import { normalizeClass, computed } from "vue";
-import { Editor, EditorContent } from "@tiptap/vue-3";
+import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -30,15 +75,24 @@ import { FontSize } from "./font-size";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
 import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
+import TextEditorBubbleMenu from "./TextEditorBubbleMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
 import MenuBar from "./MenuBar.vue";
+import { Button, Input } from "frappe-ui";
+import { v4 as uuidv4 } from "uuid";
+import { Comment } from "./comment";
+import OuterCommentVue from "./OuterComment.vue";
 
 export default {
   name: "TextEditor",
+  inheritAttrs: false,
   components: {
     EditorContent,
+    BubbleMenu,
     TextEditorFixedMenu,
+    TextEditorBubbleMenu,
+    OuterCommentVue,
     MenuBar,
   },
   provide() {
@@ -46,6 +100,7 @@ export default {
       editor: computed(() => this.editor),
     };
   },
+  expose: ["editor"],
   inheritAttrs: false,
   props: {
     fixedMenu: {
@@ -65,6 +120,10 @@ export default {
       type: String,
       default: "",
     },
+    /* isWritable: {
+      type: Boolean,
+      default: true,
+    }, */
     editable: {
       type: Boolean,
       default: true,
@@ -72,6 +131,10 @@ export default {
     bubbleMenu: {
       type: [Boolean, Array],
       default: false,
+    },
+    bubbleMenuOptions: {
+      type: Object,
+      default: () => ({}),
     },
     mentions: {
       type: Array,
@@ -82,9 +145,151 @@ export default {
   data() {
     return {
       editor: null,
+      tempEditable: false,
+      isTextSelected: false,
+      currentMode: "",
+      commentText: "",
+      isCommentModeOn: false,
+      activeCommentsInstance: {
+        uuid: "",
+        comments: [],
+      },
+      allComments: [],
     };
   },
+  methods: {
+    discardComment() {
+      this.commentText = "";
+      this.isCommentModeOn = false;
+    },
+    getIsCommentModeOn() {
+      return this.isCommentModeOn;
+    },
+    toggleCommentMode() {
+      console.log("fired");
+      this.tempEditable = true;
+      this.isCommentModeOn = true;
+      this.currentMode = "Suggesting";
+    },
+    toggleEditMode() {
+      console.log("toggleEditMode");
+      this.tempEditable = true;
+      this.isCommentModeOn = false;
+      this.currentMode = "Editing";
+    },
+    toggleReadMode() {
+      console.log("toggleReadMode");
+      this.tempEditable = false;
+      this.isCommentModeOn = false;
+      this.currentMode = "Reading";
+    },
+    focusContent({ from, to }) {
+      this.editor.chain().setTextSelection({ from, to }).run();
+    },
+    findCommentsAndStoreValues() {
+      const tempComments = [];
+      this.editor.state.doc.descendants((node, pos) => {
+        const { marks } = node;
+        marks.forEach((mark) => {
+          if (mark.type.name === "comment") {
+            const markComments = mark.attrs.comment;
+            const jsonComments = markComments ? JSON.parse(markComments) : null;
+            if (
+              jsonComments !== null &&
+              !tempComments.find(
+                (el) => el.jsonComments.uuid === jsonComments.uuid
+              )
+            ) {
+              tempComments.push({
+                node,
+                jsonComments,
+                from: pos,
+                to: pos + (node.text?.length || 0),
+                text: node.text,
+              });
+            }
+          }
+        });
+      });
+      this.$emit("update:modelValue", this.editor.getJSON());
+      return (this.allComments = tempComments);
+    },
+    setCurrentComment() {
+      if (this.isCommentModeOn) {
+        let newVal = this.editor.isActive("comment");
+        if (newVal) {
+          setTimeout(() => (this.showCommentMenu = newVal), 50);
+          this.showAddCommentSection = !this.editor.state.selection.empty;
+          const parsedComment = JSON.parse(
+            this.editor.getAttributes("comment").comment
+          );
+          parsedComment.comment =
+            typeof parsedComment.comments === "string"
+              ? JSON.parse(parsedComment.comments)
+              : parsedComment.comments;
+          this.activeCommentsInstance = parsedComment;
+        } else {
+          this.activeCommentsInstance = {};
+        }
+      }
+    },
+    setComment(val) {
+      const localVal = val || this.commentText;
+      if (!localVal.trim().length) return;
+      const currentSelectedComment = JSON.parse(
+        JSON.stringify(this.activeCommentsInstance)
+      );
+      const commentsArray =
+        typeof currentSelectedComment.comments === "string"
+          ? JSON.parse(currentSelectedComment.comments)
+          : currentSelectedComment.comments;
+      if (commentsArray) {
+        commentsArray.push({
+          userName: this.currentUserName,
+          time: Date.now(),
+          content: localVal,
+        });
+        const commentWithUuid = JSON.stringify({
+          uuid: this.activeCommentsInstance.uuid || uuidv4(),
+          comments: commentsArray,
+        });
+        this.editor.chain().setComment(commentWithUuid).run();
+      } else {
+        const commentWithUuid = JSON.stringify({
+          uuid: uuidv4(),
+          comments: [
+            {
+              userName: this.currentUserName,
+              time: Date.now(),
+              content: localVal,
+            },
+          ],
+        });
+        this.editor.chain().setComment(commentWithUuid).run();
+      }
+      setTimeout(() => (this.commentText = ""), 50);
+      this.isCommentModeOn = false;
+    },
+  },
   computed: {
+    /*     editable(){
+          return this.isWritable && this.tempEditable
+        }, */
+
+    currentUserName() {
+      return this.$store.state.user.fullName;
+    },
+    /*     currentMode() {
+          if (this.isCommentModeOn) {
+            this.tempEditable = false
+            return "Suggesting"
+          } else if (this.tempEditable) {
+            return "Editing"
+          } else {
+            return "Reading"
+          }
+        }, */
+
     editorProps() {
       return {
         attributes: {
@@ -117,13 +322,20 @@ export default {
     },
   },
   watch: {
+    /*     allComments: {
+      handler(newVal) {
+        if (newVal) { // check if userid is available
+          console.log(newVal)
+        }
+      },
+      immediate: true // make this watch function is called when component created
+    }, */
     modelValue(value) {
       const isSame =
         JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
       if (isSame) {
         return;
       }
-
       this.editor.commands.setContent(value, false);
     },
     title() {
@@ -135,6 +347,9 @@ export default {
     },
     editorProps: {
       deep: true,
+      attributes: {
+        spellcheck: "false",
+      },
       handler(value) {
         if (this.editor) {
           this.editor.setOptions({
@@ -145,10 +360,36 @@ export default {
     },
   },
   mounted() {
+    console.log(this.modelValue);
+    this.emitter.on("toggleCommentMode", () => {
+      this.isCommentModeOn = true;
+    });
+    let componentContext = this;
     this.editor = new Editor({
+      editable: this.editable,
       content: this.modelValue,
       editorProps: this.editorProps,
-      editable: this.editable,
+      onCreate() {
+        componentContext.$emit(
+          "update:modelValue",
+          componentContext.editor.getJSON()
+        );
+        componentContext.findCommentsAndStoreValues();
+        console.log("sip");
+      },
+      onUpdate() {
+        componentContext.$emit(
+          "update:modelValue",
+          componentContext.editor.getJSON()
+        );
+        componentContext.findCommentsAndStoreValues();
+        componentContext.setCurrentComment();
+      },
+      onSelectionUpdate() {
+        componentContext.setCurrentComment();
+        componentContext.isTextSelected =
+          !!componentContext.editor.state.selection.content().size;
+      },
       extensions: [
         StarterKit.configure({
           ...this.starterkitOptions,
@@ -156,45 +397,45 @@ export default {
         Table.configure({
           resizable: true,
         }),
+        FontFamily.configure({
+          types: ["textStyle"],
+        }),
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+        }),
+        Link.configure({
+          openOnClick: false,
+        }),
+        Comment.configure({
+          isCommentModeOn: this.isCommentModeOn,
+        }),
+        Placeholder.configure({
+          showOnlyWhenEditable: true,
+          placeholder: () => {
+            return this.placeholder;
+          },
+        }),
+        Highlight.configure({
+          multicolor: true,
+        }),
+        configureMention(this.mentions),
         Underline,
         TableRow,
         TableHeader,
         TableCell,
         Typography,
         TextStyle,
-        FontFamily.configure({
-          types: ["textStyle"],
-        }),
         FontSize,
-        TextAlign.configure({
-          types: ["heading", "paragraph"],
-        }),
         Color,
-        Highlight.configure({ multicolor: true }),
         Image,
         Video,
-        Link.configure({
-          openOnClick: false,
-        }),
-        Placeholder.configure({
-          showOnlyWhenEditable: false,
-          placeholder: () => {
-            return this.placeholder;
-          },
-        }),
-        configureMention(this.mentions),
-        ...(this.extensions || []),
       ],
-      onUpdate: () => {
-        this.$emit("update:modelValue", this.editor.getJSON());
-      },
     });
   },
   beforeUnmount() {
     this.editor.destroy();
     this.editor = null;
   },
-  expose: ["editor"],
 };
 </script>
 
@@ -207,12 +448,18 @@ export default {
   max-width: 816px;
   min-height: 1056px;
   padding: 2cm;
-  margin: 0.5cm auto;
-  background: white;
-  border: 1px solid #cbd5e1;
 }
+
 /* Firefox */
 .ProseMirror-focused:focus-visible {
   outline: none;
+}
+
+span[data-comment] {
+  background: rgba(2, 137, 255, 0.25);
+  border-bottom: 2px rgb(2, 137, 255) solid;
+  user-select: all;
+  padding: 0 2px 0 2px;
+  border-radius: 2px;
 }
 </style>

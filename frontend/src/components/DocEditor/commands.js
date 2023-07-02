@@ -1,6 +1,7 @@
 import { defineAsyncComponent } from "vue";
 
 /* Icons */
+import { MessageSquare } from "lucide-vue-next";
 import StrikeThrough from "./icons/strikethrough.vue";
 import Bold from "./icons/bold.vue";
 import Italic from "./icons/italic.vue";
@@ -307,6 +308,12 @@ export default {
   },
   Separator: {
     type: "separator",
+  },
+  CommentMode: {
+    label: "New Comment",
+    icon: MessageSquare,
+    action: "toggleCommentMode",
+    isActive: (editor) => editor.isActive("comment"),
   },
   /*   setColumns: {
     label: 'Add Columns',
