@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-flex bg-white px-4 py-1 w-full mb-4">
+  <div class="inline-flex bg-white px-4 py-1 w-full shadow-sm">
     <div class="inline-flex items-center gap-1">
       <template v-for="button in buttons" :key="button.label">
         <div
@@ -80,12 +80,18 @@ export default {
   name: "TipTapMenu",
   props: ["buttons"],
   inject: ["editor"],
+  emits: ["toggleCommentMode"],
   components: {
     Popover,
   },
+
   methods: {
     onButtonClick(button) {
-      button.action(this.editor);
+      if (typeof button.action === "string") {
+        this.emitter.emit(button.action);
+      } else {
+        button.action(this.editor);
+      }
     },
   },
 };

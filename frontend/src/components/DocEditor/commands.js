@@ -1,6 +1,7 @@
 import { defineAsyncComponent } from "vue";
 
 /* Icons */
+import { MessageSquare } from "lucide-vue-next";
 import StrikeThrough from "./icons/strikethrough.vue";
 import Bold from "./icons/bold.vue";
 import Italic from "./icons/italic.vue";
@@ -20,6 +21,7 @@ import ArrowGoBack from "./icons/arrow-go-back-line.vue";
 import ArrowGoForward from "./icons/arrow-go-forward-line.vue";
 import Separator from "./icons/separator.vue";
 import Table from "./icons/table-2.vue";
+import LineHeight from "./icons/line-height.vue";
 
 export default {
   Undo: {
@@ -179,7 +181,42 @@ export default {
     action: (editor) => editor.chain().focus().setFontSize("1.5rem").run(),
     isActive: (editor) => editor.isActive("textStyle", { fontSize: "1.5rem" }),
   },
-
+  "line height 100%": {
+    label: "1",
+    icon: LineHeight,
+    action: (editor) => editor.chain().focus().setLineHeight("100%").run(),
+    isActive: (editor) => false,
+  },
+  "line height 115%": {
+    label: "1.15",
+    icon: LineHeight,
+    action: (editor) => editor.chain().focus().setLineHeight("115%").run(),
+    isActive: (editor) => false,
+  },
+  "line height 150%": {
+    label: "1.5",
+    icon: LineHeight,
+    action: (editor) => editor.chain().focus().setLineHeight("150%").run(),
+    isActive: (editor) => false,
+  },
+  "line height 200%": {
+    label: "2",
+    icon: LineHeight,
+    action: (editor) => editor.chain().focus().setLineHeight("200%").run(),
+    isActive: (editor) => false,
+  },
+  "line height 250%": {
+    label: "2.5",
+    icon: LineHeight,
+    action: (editor) => editor.chain().focus().setLineHeight("250%").run(),
+    isActive: (editor) => false,
+  },
+  "line height 300%": {
+    label: "3",
+    icon: LineHeight,
+    action: (editor) => editor.chain().focus().setLineHeight("300%").run(),
+    isActive: (editor) => false,
+  },
   Blockquote: {
     label: "Blockquote",
     icon: DoubleQuotes,
@@ -307,6 +344,12 @@ export default {
   },
   Separator: {
     type: "separator",
+  },
+  CommentMode: {
+    label: "New Comment",
+    icon: MessageSquare,
+    action: "toggleCommentMode",
+    isActive: (editor) => editor.isActive("comment"),
   },
   /*   setColumns: {
     label: 'Add Columns',
