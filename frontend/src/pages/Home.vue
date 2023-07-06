@@ -115,7 +115,10 @@ import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
-import { folderDownload, selectedEntitiesDownload } from "@/utils/folderDownload";
+import {
+  folderDownload,
+  selectedEntitiesDownload,
+} from "@/utils/folderDownload";
 
 export default {
   name: "Home",
@@ -196,29 +199,41 @@ export default {
           label: "Download",
           icon: "download",
           handler: () => {
-           if(this.selectedEntities.length>1)
-            {
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 &&
+              !this.selectedEntities[0].is_group
+            );
+          },
+        },
+        {
+          label: "Download as ZIP",
+          icon: "download",
+          handler: () => {
+            if (this.selectedEntities.length > 1) {
               let selected_entities = this.selectedEntities;
               selectedEntitiesDownload(selected_entities);
-            }
-            else if(this.selectedEntities[0].is_group===1)
-            {
+            } else if (this.selectedEntities[0].is_group === 1) {
               folderDownload(this.selectedEntities[0]);
             }
-            else
-            {
-              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
-            }
           },
-          isEnabled: () =>{
-              const allEntitiesSatisfyCondition = this.selectedEntities.every(entity => {
+          isEnabled: () => {
+            if (
+              this.selectedEntities.length === 1 &&
+              !this.selectedEntities[0].is_group
+            ) {
+              return false;
+            }
+            const allEntitiesSatisfyCondition = this.selectedEntities.every(
+              (entity) => {
                 return (
-                  entity.allow_download ||
-                  entity.write ||
-                  entity.owner === "me"
+                  entity.allow_download || entity.write || entity.owner === "me"
                 );
-              });
-              return allEntitiesSatisfyCondition;
+              }
+            );
+            return allEntitiesSatisfyCondition;
           },
         },
         {
