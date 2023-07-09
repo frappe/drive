@@ -1,13 +1,14 @@
 import frappe
 import os
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 from io import BytesIO
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from werkzeug.utils import secure_filename
 from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
+
 
 @frappe.whitelist()
 def create_image_thumbnail(entity_name):
@@ -27,6 +28,7 @@ def create_image_thumbnail(entity_name):
     with DistributedLock(drive_entity.path, exclusive=False):
         image_path = drive_entity.path
         with Image.open(image_path) as image:
+            image = ImageOps.exif_transpose(image)
             width, height = image.size
             image.thumbnail((width, height))
             thumbnail_data = BytesIO()
