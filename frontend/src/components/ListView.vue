@@ -91,7 +91,7 @@
 </template>
 <script>
 import { formatMimeType } from "@/utils/format";
-import getIconUrl from "@/utils/getIconUrl";
+import { getIconUrl } from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
