@@ -4,7 +4,7 @@ export function getIconUrl(mime_type) {
 
 export async function thumbnail_getIconUrl(mime_type, name) {
   if (mime_type === "image") {
-    return get_file_content(name).then((fileContent) => {
+    return get_thumbnail_content(name).then((fileContent) => {
       return URL.createObjectURL(fileContent);
     });
   } else {
@@ -14,10 +14,10 @@ export async function thumbnail_getIconUrl(mime_type, name) {
   }
 }
 
-function get_file_content(entity_name) {
+function get_thumbnail_content(entity_name) {
   const fileUrl =
     "/api/method/" +
-    `drive.api.files.get_file_content?entity_name=${entity_name}`;
+    `drive.api.thumbnail_generator.create_image_thumbnail?entity_name=${entity_name}`;
 
   return fetch(fileUrl).then((response) => {
     if (response.ok) {
