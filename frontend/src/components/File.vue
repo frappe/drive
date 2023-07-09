@@ -1,6 +1,9 @@
 <template>
   <div class="h-32 place-items-center grid">
-    <img :src="link" class="h-32 w-full object-cover" :draggable="false" />
+    <img
+      :src="link"
+      class="h-32 w-full object-cover object-contain"
+      :draggable="false" />
   </div>
   <div class="px-3.5 h-16 content-center grid">
     <h3 class="truncate text-[14px] font-medium">{{ this.title }}</h3>

@@ -30,11 +30,16 @@ def create_image_thumbnail(entity_name):
         with Image.open(image_path) as image:
             image = ImageOps.exif_transpose(image)
             width, height = image.size
-            image.thumbnail((width, height))
+            image.thumbnail((300,300))
             thumbnail_data = BytesIO()
-            image.save(thumbnail_data, format='JPEG')
+            image.save(thumbnail_data, format="JPEG")
             thumbnail_data.seek(0)
-            response = Response(wrap_file(frappe.request.environ,thumbnail_data), direct_passthrough=True)
-            response.headers.set('Content-Type', 'image/jpeg')
-            response.headers.set('Content-Disposition', 'inline', filename=drive_entity.title)
+            response = Response(
+                wrap_file(frappe.request.environ, thumbnail_data),
+                direct_passthrough=True,
+            )
+            response.headers.set("Content-Type", "image/jpeg")
+            response.headers.set(
+                "Content-Disposition", "inline", filename=drive_entity.title
+            )
             return response
