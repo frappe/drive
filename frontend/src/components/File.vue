@@ -1,14 +1,13 @@
 <template>
   <div class="h-32 place-items-center grid">
-    <img
-      :src="link"
-      class="h-32 w-full object-cover object-contain"
-      :draggable="false" />
+    <img :src="link" class="h-32 w-full object-cover" :draggable="false" />
   </div>
   <div class="px-3.5 h-16 content-center grid">
     <h3 class="truncate text-[14px] font-medium">{{ this.title }}</h3>
     <div class="truncate text-sm text-gray-600 flex mt-1 place-items-center">
-      <img :src="link_default" class="h-3.5 mr-1.5" />
+      <img
+        :src="getIconUrl(formatMimeType(this.mime_type))"
+        class="h-3.5 mr-1.5" />
       <p>{{ getFileSubtitle() }}</p>
     </div>
   </div>
@@ -34,15 +33,10 @@ export default {
         `/src/assets/images/icons/${this.mime_type}.svg`,
         import.meta.url
       ),
-      link_default: new URL(
-        `/src/assets/images/icons/${this.mime_type}.svg`,
-        import.meta.url
-      ),
     };
   },
   created() {
     this.thumbnailUrl();
-    this.default_thumbnailUrl();
   },
   methods: {
     async thumbnailUrl() {
@@ -51,10 +45,6 @@ export default {
         this.name
       );
       this.link = result;
-    },
-    async default_thumbnailUrl() {
-      let result = await getIconUrl(formatMimeType(this.mime_type));
-      this.link_default = result;
     },
     getFileSubtitle() {
       let fileSubtitle = formatMimeType(this.mime_type);
