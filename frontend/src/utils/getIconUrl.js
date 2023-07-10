@@ -1,4 +1,4 @@
-export function getIconUrl(mime_type) {
+export async function getIconUrl(mime_type) {
   return new URL(`/src/assets/images/icons/${mime_type}.svg`, import.meta.url);
 }
 
