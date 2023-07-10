@@ -30,7 +30,7 @@ def create_image_thumbnail(entity_name):
         with Image.open(image_path) as image:
             image = ImageOps.exif_transpose(image)
             width, height = image.size
-            image.thumbnail((300,300))
+            image.thumbnail((0.3*width,0.3*height))
             thumbnail_data = BytesIO()
             image.save(thumbnail_data, format="JPEG")
             thumbnail_data.seek(0)
