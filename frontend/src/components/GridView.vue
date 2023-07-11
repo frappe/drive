@@ -86,6 +86,7 @@
             ">
             <File
               :mime_type="file.mime_type"
+              :file_ext="file.file_ext"
               :name="file.name"
               :title="file.title"
               :modified="file.modified" />

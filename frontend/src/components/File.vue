@@ -20,6 +20,7 @@ export default {
   name: "File",
   props: {
     mime_type: String,
+    file_ext: String,
     name: String,
     title: String,
     modified: String,
@@ -42,7 +43,8 @@ export default {
     async thumbnailUrl() {
       let result = await thumbnail_getIconUrl(
         formatMimeType(this.mime_type),
-        this.name
+        this.name,
+        this.file_ext
       );
       this.link = result;
     },

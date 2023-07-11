@@ -2,8 +2,8 @@ export function getIconUrl(mime_type) {
   return new URL(`/src/assets/images/icons/${mime_type}.svg`, import.meta.url);
 }
 
-export async function thumbnail_getIconUrl(mime_type, name) {
-  if (mime_type === "image") {
+export async function thumbnail_getIconUrl(mime_type, name, file_ext) {
+  if (mime_type === "image" && file_ext !== ".svg") {
     return get_thumbnail_content(name).then((fileContent) => {
       return URL.createObjectURL(fileContent);
     });
