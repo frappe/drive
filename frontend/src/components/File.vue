@@ -1,6 +1,6 @@
 <template>
   <div class="h-32 place-items-center grid">
-    <img :src="link" class="h-32 w-full object-cover" :draggable="false" />
+    <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-3.5 h-16 content-center grid">
     <h3 class="truncate text-[14px] font-medium">{{ this.title }}</h3>
@@ -36,6 +36,15 @@ export default {
       ),
     };
   },
+  computed: {
+    parsedStyled() {
+      if (typeof this.link === "string") {
+        return "h-32 w-full object-cover rounded-t-md";
+      } else {
+        return "h-14 w-max";
+      }
+    },
+  },
   created() {
     this.thumbnailUrl();
   },
@@ -46,6 +55,7 @@ export default {
         this.name,
         this.file_ext
       );
+      console.log(typeof result);
       this.link = result;
     },
     getFileSubtitle() {
