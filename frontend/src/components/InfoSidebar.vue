@@ -169,7 +169,7 @@ import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
-import getIconUrl from "@/utils/getIconUrl";
+import { getIconUrl } from "@/utils/getIconUrl";
 
 export default {
   name: "InfoSidebar",
