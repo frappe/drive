@@ -27,10 +27,10 @@ def create_image_thumbnail(entity_name):
 
     with DistributedLock(drive_entity.path, exclusive=False):
         image_path = drive_entity.path
-        with Image.open(image_path).convert('RGB') as image:
+        with Image.open(image_path).convert("RGB") as image:
             image = ImageOps.exif_transpose(image)
             width, height = image.size
-            image.thumbnail((0.3*width,0.3*height))
+            image.thumbnail((250, 250))
             thumbnail_data = BytesIO()
             image.save(thumbnail_data, format="JPEG")
             thumbnail_data.seek(0)
