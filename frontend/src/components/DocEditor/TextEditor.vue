@@ -1,6 +1,6 @@
 <template>
   <div class="sticky top-0 z-10">
-    <div v-if="editable" class="w-full">
+    <div v-if="editor && editable" class="w-full">
       <!-- <MenuBar 
           :entityName="entityName" 
           :currentMode="currentMode" 
@@ -8,12 +8,15 @@
           @toggle-edit-mode="() => this.toggleEditMode()" 
           @toggle-read-mode="() => this.toggleReadMode()"
           /> -->
-      <MenuBar :entity-name="entityName" :current-mode="currentMode" />
+      <MenuBar
+        v-if="editor && editable"
+        :entity-name="entityName"
+        :current-mode="currentMode" />
       <TextEditorFixedMenu :buttons="fixedMenu" />
     </div>
   </div>
   <TextEditorBubbleMenu
-    v-if="editable && !isCommentModeOn"
+    v-if="editor && editable"
     :options="bubbleMenuOptions"
     :buttons="bubbleMenu" />
   <BubbleMenu
@@ -46,9 +49,11 @@
       class="bg-white shadow-sm rounded-md border"
       :editor="editor" />
     <OuterCommentVue
+      v-if="isCommentModeOn"
       :active-comments-instance="activeCommentsInstance"
       :all-comments="allComments"
       :focus-content="focusContent"
+      :is-comment-mode-on="isCommentModeOn"
       @set-comment="setComment" />
   </div>
 </template>
@@ -85,9 +90,9 @@ import { Comment } from "./comment";
 import { LineHeight } from "./lineHeight";
 import OuterCommentVue from "./OuterComment.vue";
 import Collaboration from "@tiptap/extension-collaboration";
-import { HocuspocusProvider } from "@hocuspocus/provider";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
+import { WebrtcProvider } from "y-webrtc";
 
 export default {
   name: "TextEditor",
@@ -117,9 +122,16 @@ export default {
       type: String,
       required: false,
     },
+    documentName: {
+      default: "",
+      type: String,
+      required: false,
+    },
     modelValue: {
       type: Object,
-      default: null,
+    },
+    initialContent: {
+      type: Object,
     },
     placeholder: {
       type: String,
@@ -131,7 +143,7 @@ export default {
     }, */
     editable: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     bubbleMenu: {
       type: [Boolean, Array],
@@ -184,19 +196,16 @@ export default {
       return this.isCommentModeOn;
     },
     toggleCommentMode() {
-      console.log("fired");
       this.tempEditable = true;
       this.isCommentModeOn = true;
       this.currentMode = "Suggesting";
     },
     toggleEditMode() {
-      console.log("toggleEditMode");
       this.tempEditable = true;
       this.isCommentModeOn = false;
       this.currentMode = "Editing";
     },
     toggleReadMode() {
-      console.log("toggleReadMode");
       this.tempEditable = false;
       this.isCommentModeOn = false;
       this.currentMode = "Reading";
@@ -229,36 +238,31 @@ export default {
           }
         });
       });
-      this.$emit("update:modelValue", this.editor.getJSON());
       return (this.allComments = tempComments);
     },
     setCurrentComment() {
-      if (this.isCommentModeOn) {
-        let newVal = this.editor.isActive("comment");
-        if (newVal) {
-          setTimeout(() => (this.showCommentMenu = newVal), 50);
-          this.showAddCommentSection = !this.editor.state.selection.empty;
-          const parsedComment = JSON.parse(
-            this.editor.getAttributes("comment").comment
-          );
-          parsedComment.comment =
-            typeof parsedComment.comments === "string"
-              ? JSON.parse(parsedComment.comments)
-              : parsedComment.comments;
-          this.activeCommentsInstance = parsedComment;
-        } else {
-          this.activeCommentsInstance = {};
-        }
+      let newVal = this.editor.isActive("comment");
+      if (newVal) {
+        setTimeout(() => (this.showCommentMenu = newVal), 50);
+        this.showAddCommentSection = !this.editor.state.selection.empty;
+        const parsedComment = JSON.parse(
+          this.editor.getAttributes("comment").comment
+        );
+        parsedComment.comment =
+          typeof parsedComment.comments === "string"
+            ? JSON.parse(parsedComment.comments)
+            : parsedComment.comments;
+        this.activeCommentsInstance = parsedComment;
+      } else {
+        this.activeCommentsInstance = {};
       }
     },
     setComment(val) {
       const localVal = val || this.commentText;
-
       if (!localVal.trim().length) return;
       const currentSelectedComment = JSON.parse(
         JSON.stringify(this.activeCommentsInstance)
       );
-
       const commentsArray =
         typeof currentSelectedComment.comments === "string"
           ? JSON.parse(currentSelectedComment.comments)
@@ -287,8 +291,8 @@ export default {
           ],
         });
         this.editor.chain().setComment(commentWithUuid).run();
+        this.commentText = "";
       }
-      this.commentText = false;
     },
   },
   computed: {
@@ -299,23 +303,11 @@ export default {
     currentUserName() {
       return this.$store.state.user.fullName;
     },
-    /*     currentMode() {
-          if (this.isCommentModeOn) {
-            this.tempEditable = false
-            return "Suggesting"
-          } else if (this.tempEditable) {
-            return "Editing"
-          } else {
-            return "Reading"
-          }
-        }, */
-
     editorProps() {
       return {
         attributes: {
           class: normalizeClass([
             "prose prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100",
-            this.editorClass,
           ]),
         },
         clipboardTextParser: (text, $context) => {
@@ -342,7 +334,7 @@ export default {
     },
   },
   watch: {
-    /*     allComments: {
+    /*         allComments: {
       handler(newVal) {
         if (newVal) { // check if userid is available
           console.log(newVal)
@@ -350,14 +342,14 @@ export default {
       },
       immediate: true // make this watch function is called when component created
     }, */
-    modelValue(value) {
+    /*     modelValue(value) {
       const isSame =
         JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
       if (isSame) {
         return;
       }
       this.editor.commands.setContent(value, false);
-    },
+    }, */
     title() {
       this.$emit("update:title", this.title);
       this.$emit("saveTitle", this.title);
@@ -383,30 +375,26 @@ export default {
     this.emitter.on("toggleCommentMode", () => {
       this.isCommentModeOn = true;
     });
-    /*     const ydoc = new Y.Doc();
-    const provider = new HocuspocusProvider({
-      // Tiny test currently running https://github.com/ueberdosis/hocuspocus/blob/main/packages/server/src/Hocuspocus.ts
-      url: "wss://network.arjun.lol",
-      name: JSON.stringify(this.entityName),
-      document: ydoc,
-    }); */
+    const doc = new Y.Doc();
+    Y.applyUpdate(doc, this.modelValue);
+    // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
+    const webrtcProvider = new WebrtcProvider(
+      JSON.stringify(this.entityName),
+      doc,
+      { signaling: ["wss://network.arjun.lol"] }
+    );
+    this.provider = webrtcProvider;
+
     let componentContext = this;
     this.editor = new Editor({
       editable: this.editable,
-      content: this.modelValue,
       editorProps: this.editorProps,
       onCreate() {
-        componentContext.$emit(
-          "update:modelValue",
-          componentContext.editor.getJSON()
-        );
         componentContext.findCommentsAndStoreValues();
+        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
       },
       onUpdate() {
-        componentContext.$emit(
-          "update:modelValue",
-          componentContext.editor.getJSON()
-        );
+        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
         componentContext.findCommentsAndStoreValues();
         componentContext.setCurrentComment();
       },
@@ -430,28 +418,33 @@ export default {
           types: ["heading", "paragraph"],
         }),
         ,
-        /*         Collaboration.configure({
-          document: provider.document,
+        Collaboration.configure({
+          document: doc,
         }),
         CollaborationCursor.configure({
-          provider: provider,
+          provider: webrtcProvider,
           user: {
-            name: componentContext.currentUserName,
-            color: componentContext.getRandomColor(),
+            name: this.currentUserName,
+            color: this.getRandomColor(),
           },
-        }) */ LineHeight,
+        }),
+        LineHeight,
         Link.configure({
           openOnClick: false,
         }),
         Comment.configure({
           isCommentModeOn: this.isCommentModeOn,
         }),
-        Placeholder.configure({
+
+        // This is incompatible with the `CollaborationCursor` extension
+        // Refer to https://github.com/ueberdosis/tiptap/issues/4065
+        /* Placeholder.configure({
           showOnlyWhenEditable: true,
           placeholder: () => {
             return this.placeholder;
           },
-        }),
+        }), */
+
         Highlight.configure({
           multicolor: true,
         }),
@@ -471,6 +464,8 @@ export default {
   },
   beforeUnmount() {
     this.editor.destroy();
+    this.provider.destroy();
+    this.provider = null;
     this.editor = null;
   },
 };

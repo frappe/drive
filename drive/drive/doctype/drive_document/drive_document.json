@@ -17,14 +17,15 @@
       "reqd": 1
     },
     {
+      "default": "AAA=",
       "fieldname": "content",
-      "fieldtype": "JSON",
+      "fieldtype": "Long Text",
       "label": "Content"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2023-04-29 18:23:26.882838",
+  "modified": "2023-07-10 21:49:49.435029",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",

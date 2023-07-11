@@ -1,7 +1,9 @@
-<template v-if="contentLoaded">
+<template>
   <TextEditor
+    v-if="contentLoaded"
     v-model="content"
     :fixed-menu="true"
+    :bubble-menu="false"
     placeholder="Start typing ..."
     :editable="isWriteable"
     :entityName="entityName" />
@@ -9,6 +11,8 @@
 
 <script>
 import TextEditor from "@/components/DocEditor/TextEditor.vue";
+import { fromUint8Array, toUint8Array } from "js-base64";
+
 export default {
   components: {
     TextEditor,
@@ -41,30 +45,52 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
   },
-  async mounted() {
-    await this.$resources.getDocument.fetch();
-    let currentBreadcrumbs = [];
-    currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
-    if (
-      !currentBreadcrumbs[currentBreadcrumbs.length - 1].route.includes(
-        "/document"
-      )
-    ) {
-      currentBreadcrumbs.push({
-        label: this.title,
-        route: `/document/${this.entityName}`,
+
+  mounted() {
+    this.$resources.getDocument
+      .fetch()
+      .then(() => {
+        this.title = this.$resources.getDocument.data.title;
+        this.oldTitle = this.$resources.getDocument.title;
+        this.content = this.$resources.getDocument.data.content;
+        this.document = this.$resources.getDocument.data.document;
+        this.isWriteable = !!this.$resources.getDocument.data.write;
+      })
+      .then(() => {
+        this.content = toUint8Array(this.$resources.getDocument.data.content);
+        this.contentLoaded = true;
+        let currentBreadcrumbs = [];
+        currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
+        if (
+          !currentBreadcrumbs[currentBreadcrumbs.length - 1].route.includes(
+            "/document"
+          )
+        ) {
+          currentBreadcrumbs.push({
+            label: this.title,
+            route: `/document/${this.entityName}`,
+          });
+          this.breadcrumbs = currentBreadcrumbs;
+          this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
+        }
+        this.timer = setInterval(() => {
+          this.$resources.updateDocument.submit({
+            entity_name: this.entityName,
+            doc_name: this.document,
+            title: this.titleVal,
+            content: fromUint8Array(this.content),
+          });
+        }, 10000);
       });
-      this.breadcrumbs = currentBreadcrumbs;
-      this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
-    }
-    this.content = JSON.parse(this.$resources.getDocument.data.content);
-    this.timer = setInterval(() => {
-      this.$resources.updateDocument.submit();
-    }, 30000);
   },
   beforeUnmount() {
     clearInterval(this.timer);
-    this.$resources.updateDocument.submit();
+    this.$resources.updateDocument.submit({
+      entity_name: this.entityName,
+      doc_name: this.document,
+      title: this.titleVal,
+      content: fromUint8Array(this.content),
+    });
   },
   resources: {
     updateDocumentTitle() {
@@ -85,12 +111,6 @@ export default {
       return {
         url: "drive.api.files.save_doc",
         debounce: 500,
-        params: {
-          entity_name: this.entityName,
-          doc_name: this.document,
-          title: this.titleVal,
-          content: this.content,
-        },
         onError(data) {
           console.log(data);
         },
@@ -103,18 +123,24 @@ export default {
         params: {
           entity_name: this.entityName,
         },
-        onSuccess(data) {
-          this.title = data.title;
-          this.oldTitle = data.title;
-          /* Assigning content here for some reason fails :/ */
-          this.document = data.document;
-          this.isWriteable = !!data.write;
-          this.contentLoaded = true;
-        },
         onError(data) {
           console.log(data);
         },
         auto: false,
+      };
+    },
+    Document() {
+      return {
+        type: "document",
+        doctype: "Drive Document",
+        name: this.document,
+        auto: false,
+        realtime: true,
+        whitelistedMethods: {
+          submitVote: "submit_vote",
+          stopPoll: "stop_poll",
+          retractVote: "retract_vote",
+        },
       };
     },
   },
