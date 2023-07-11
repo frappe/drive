@@ -84,22 +84,11 @@
             @contextmenu="
               handleEntityContext(file, $event, displayOrderedEntities)
             ">
-            <div class="h-32 place-items-center grid">
-              <img
-                :src="getIconUrl(formatMimeType(file.mime_type))"
-                class="h-14"
-                :draggable="false" />
-            </div>
-            <div class="px-3.5 h-16 content-center grid">
-              <h3 class="truncate text-[14px] font-medium">{{ file.title }}</h3>
-              <div
-                class="truncate text-sm text-gray-600 flex mt-1 place-items-center">
-                <img
-                  :src="getIconUrl(formatMimeType(file.mime_type))"
-                  class="h-3.5 mr-1.5" />
-                <p>{{ getFileSubtitle(file) }}</p>
-              </div>
-            </div>
+            <File
+              :mime_type="file.mime_type"
+              :name="file.name"
+              :title="file.title"
+              :modified="file.modified" />
           </div>
         </div>
       </div>
@@ -113,12 +102,14 @@
 </template>
 
 <script>
-import { formatMimeType } from "@/utils/format";
-import getIconUrl from "@/utils/getIconUrl";
+import File from "@/components/File.vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
   name: "GridView",
+  components: {
+    File,
+  },
   props: {
     folderContents: {
       type: Array,
@@ -137,7 +128,7 @@ export default {
     "fetchFolderContents",
   ],
   setup() {
-    return { formatMimeType, getIconUrl };
+    return;
   },
   data: () => ({
     selectionElementStyle: {},
@@ -249,12 +240,6 @@ export default {
     },
     updateContainerRect() {
       this.containerRect = this.$refs["container"]?.getBoundingClientRect();
-    },
-    getFileSubtitle(file) {
-      let fileSubtitle = formatMimeType(file.mime_type);
-      fileSubtitle =
-        fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1);
-      return `${fileSubtitle} ∙ ${file.modified}`;
     },
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null);

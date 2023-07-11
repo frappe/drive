@@ -57,7 +57,7 @@ import { Input } from "frappe-ui";
 import { formatSize, formatDate } from "@/utils/format";
 import getFilteredEntities from "../utils/fuzzySearcher";
 import { formatMimeType } from "@/utils/format";
-import getIconUrl from "@/utils/getIconUrl";
+import { getIconUrl } from "@/utils/getIconUrl";
 
 export default {
   name: "SearchPopup",
