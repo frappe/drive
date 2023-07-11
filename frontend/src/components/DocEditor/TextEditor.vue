@@ -274,6 +274,7 @@ export default {
           comments: commentsArray,
         });
         this.editor.chain().setComment(commentWithUuid).run();
+        this.commentText = "";
       } else {
         const commentWithUuid = JSON.stringify({
           uuid: uuidv4(),
@@ -287,8 +288,7 @@ export default {
         });
         this.editor.chain().setComment(commentWithUuid).run();
       }
-      setTimeout(() => (this.commentText = ""), 50);
-      this.isCommentModeOn = false;
+      this.commentText = false;
     },
   },
   computed: {
