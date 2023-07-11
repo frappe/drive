@@ -5,6 +5,8 @@
 tags
 drive/docs/current
 drive/public/frontend
+node_modules
+frontend/node_modules
 drive/public/node_modules
 drive/www/drive.html
 .yarn-integrity
