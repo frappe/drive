@@ -26,20 +26,27 @@ def create_image_thumbnail(entity_name):
         raise frappe.PermissionError("You do not have permission to view this file")
 
     with DistributedLock(drive_entity.path, exclusive=False):
-        image_path = drive_entity.path
-        with Image.open(image_path).convert("RGB") as image:
-            image = ImageOps.exif_transpose(image)
-            width, height = image.size
-            image.thumbnail((250, 250))
-            thumbnail_data = BytesIO()
-            image.save(thumbnail_data, format="JPEG")
-            thumbnail_data.seek(0)
-            response = Response(
-                wrap_file(frappe.request.environ, thumbnail_data),
-                direct_passthrough=True,
-            )
-            response.headers.set("Content-Type", "image/jpeg")
-            response.headers.set(
-                "Content-Disposition", "inline", filename=drive_entity.title
-            )
-            return response
+        if (frappe.cache().exists(entity_name)):
+             cached_thumbnbail = frappe.cache().get_value(entity_name)
+             response = Response(wrap_file(frappe.request.environ, cached_thumbnbail),direct_passthrough=True,)
+             response.headers.set("Content-Type", "image/jpeg")
+             response.headers.set("Content-Disposition", "inline", filename=entity_name)
+        
+        else:
+            image_path = drive_entity.path
+            with Image.open(image_path).convert("RGB") as image:
+                image = ImageOps.exif_transpose(image)
+                image.thumbnail((250, 250))
+                thumbnail_data = BytesIO()
+                image.save(thumbnail_data, format="JPEG")
+                thumbnail_data.seek(0)
+                response = Response(
+                    wrap_file(frappe.request.environ, thumbnail_data),
+                    direct_passthrough=True,
+                )
+                response.headers.set("Content-Type", "image/jpeg")
+                response.headers.set(
+                    "Content-Disposition", "inline", filename=drive_entity.title
+                )
+                frappe.cache().set_value(entity_name, thumbnail_data)
+        return response
