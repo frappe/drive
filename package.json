@@ -4,8 +4,5 @@
     "postinstall": "cd frontend && npm install",
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build"
-  },
-  "dependencies": {
-    "jszip": "^3.10.1"
   }
 }
