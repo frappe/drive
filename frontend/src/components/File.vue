@@ -55,7 +55,6 @@ export default {
         this.name,
         this.file_ext
       );
-      console.log(typeof result);
       this.link = result;
     },
     getFileSubtitle() {
