@@ -14,6 +14,7 @@ from drive.utils.files import get_user_directory, create_user_directory, get_new
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
 
+
 def if_folder_exists(folder_name, parent):
     values = {
         "title": folder_name,
@@ -90,6 +91,7 @@ def upload_file(fullpath=None, parent=None):
     file = frappe.request.files["file"]
     try:
         user_directory = get_user_directory()
+
     except FileNotFoundError:
         user_directory = create_user_directory()
 
@@ -185,8 +187,11 @@ def create_folder(title, parent=None):
         {"doctype": "Drive Entity", "parent_drive_entity": parent, "title": title}
     )
     if entity_exists:
-        suggested_name = get_new_title(title,parent)
-        frappe.throw(f"Folder '{title}' already exists.\n Suggested: {suggested_name}", FileExistsError)
+        suggested_name = get_new_title(title, parent)
+        frappe.throw(
+            f"Folder '{title}' already exists.\n Suggested: {suggested_name}",
+            FileExistsError,
+        )
 
     drive_entity = frappe.get_doc(
         {
@@ -313,12 +318,14 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
     entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
     flag = False
     for z_entity_name in entity_ancestors:
-        result = frappe.db.exists("Drive Entity", {"name":z_entity_name,"is_active": 0})
+        result = frappe.db.exists(
+            "Drive Entity", {"name": z_entity_name, "is_active": 0}
+        )
         if result:
             flag = True
             break
     if flag == True:
-        frappe.throw("Parent Folder has been deleted")                     
+        frappe.throw("Parent Folder has been deleted")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DocShare = frappe.qb.DocType("DocShare")
@@ -513,8 +520,9 @@ def unshare_entities(entity_names, move=False):
         doc.unshare(frappe.session.user)
 
 
-def delete_background_job(entity,ignore_permissions):
+def delete_background_job(entity, ignore_permissions):
     frappe.delete_doc("Drive Entity", entity, ignore_permissions=ignore_permissions)
+
 
 @frappe.whitelist()
 def delete_entities(entity_names):
@@ -545,8 +553,14 @@ def delete_entities(entity_names):
             doctype="Drive Entity", doc=entity, ptype="write", user=frappe.session.user
         )
         ignore_permissions = owns_root_entity or has_write_access
-        frappe.db.set_value("Drive Entity",entity, "is_active",-1)
-        frappe.enqueue(delete_background_job,queue="default",timeout=None,entity=entity,ignore_permissions=ignore_permissions)
+        frappe.db.set_value("Drive Entity", entity, "is_active", -1)
+        frappe.enqueue(
+            delete_background_job,
+            queue="default",
+            timeout=None,
+            entity=entity,
+            ignore_permissions=ignore_permissions,
+        )
 
 
 @frappe.whitelist()
@@ -636,11 +650,13 @@ def add_or_remove_favourites(entity_names):
             )
             doc.insert()
 
+
 # def toggle_is_active(doc):
 #     doc.is_active = 0 if doc.is_active else 1
 #     frappe.db.set_value('Drive Entity', doc.name, 'is_active',doc.is_active)
 #     for child in doc.get_children():
 #         toggle_is_active(child)
+
 
 @frappe.whitelist()
 def remove_or_restore(entity_names):
@@ -717,10 +733,22 @@ def does_entity_exist(name=None, parent_entity=None):
     return bool(result)
 
 
-
 def auto_delete_from_trash():
-    days_before = (date.today()-timedelta(days=30)).isoformat()
-    result = frappe.db.get_all('Drive Entity',
-                               filters={ 'is_active': 0, 'trashed_on': ['<',days_before]},
-                               fields=['name'])
+    days_before = (date.today() - timedelta(days=30)).isoformat()
+    result = frappe.db.get_all(
+        "Drive Entity",
+        filters={"is_active": 0, "trashed_on": ["<", days_before]},
+        fields=["name"],
+    )
     delete_entities(result)
+
+
+@frappe.whitelist()
+def get_user_directory_size():
+    user_directory = get_user_directory(0)
+    user_path = Path(user_directory.path)
+    user_directory_size = os.path.getsize(user_path)
+    cmd = f"du -sh {Path(user_directory.path)} | grep -oP '^[\d.]+[KMG]' "
+    result = os.popen(cmd)
+    size = result.read().strip()
+    return size
