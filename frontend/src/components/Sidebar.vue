@@ -119,9 +119,6 @@ export default {
     getRootFolderSize() {
       return {
         url: "drive.api.files.get_user_directory_size",
-        onSuccess(data) {
-          console.log(data);
-        },
         onError(error) {
           console.log(error);
         },
