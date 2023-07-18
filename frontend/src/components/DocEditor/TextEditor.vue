@@ -377,11 +377,12 @@ export default {
     });
     const doc = new Y.Doc();
     Y.applyUpdate(doc, this.modelValue);
+    // Tiny test
     // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
     const webrtcProvider = new WebrtcProvider(
       JSON.stringify(this.entityName),
       doc,
-      { signaling: ["wss://network.arjun.lol"] }
+      { signaling: ["wss://network.arjunchoudhary.com"] }
     );
     this.provider = webrtcProvider;
 
