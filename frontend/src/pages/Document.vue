@@ -5,7 +5,7 @@
     :fixed-menu="true"
     :bubble-menu="false"
     placeholder="Start typing ..."
-    :editable="isWriteable"
+    :isWritable="isWriteable"
     :entityName="entityName" />
 </template>
 

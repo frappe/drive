@@ -3,7 +3,7 @@
     <article
       v-for="(comment, i) in allComments"
       :key="i + ''"
-      class="bg-white shadow-sm rounded-md border flex flex-col gap-2 mb-8 p-2 pb-0"
+      class="current-comment bg-white shadow-sm rounded-md border flex flex-col gap-2 mb-8 p-2 pb-0"
       :class="[
         `${
           comment.jsonComments.uuid === activeCommentsInstance.uuid
@@ -44,12 +44,13 @@
               : 'max-h-0 border-blue-300'
           }`,
         ]">
-        <Input
+        <textarea
           :ref="
             (el) => {
               textareaRefs[comment.jsonComments.uuid] = el;
             }
           "
+          class="placeholder-gray-500 form-textarea block w-full resize-none"
           v-model="commentText"
           placeholder="Add comment..."
           @keypress.enter.stop.prevent="setComment" />
@@ -104,3 +105,15 @@ watch(activeCommentInstanceUuid, (val) => {
   }, 100);
 });
 </script>
+
+<style lang="scss">
+.current-comment {
+  transition: all 0.1s ease-in-out;
+
+  &.active {
+    transform: translate(-2rem, 1rem);
+    box-shadow: -3px 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+</style>

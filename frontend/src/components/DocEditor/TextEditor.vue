@@ -1,18 +1,13 @@
 <template>
   <div class="sticky top-0 z-10">
-    <div v-if="editor && editable" class="w-full">
-      <!-- <MenuBar 
-          :entityName="entityName" 
-          :currentMode="currentMode" 
-          @toggle-comment-mode="() => this.toggleCommentMode()" 
-          @toggle-edit-mode="() => this.toggleEditMode()" 
-          @toggle-read-mode="() => this.toggleReadMode()"
-          /> -->
+    <div class="w-full">
       <MenuBar
-        v-if="editor && editable"
-        :entity-name="entityName"
-        :current-mode="currentMode" />
-      <TextEditorFixedMenu :buttons="fixedMenu" />
+        v-if="editor"
+        :entityName="entityName"
+        :editable="editable"
+        :is-comment-mode-on="isCommentModeOn"
+        :is-read-only="isReadOnly" />
+      <TextEditorFixedMenu v-if="editor && editable" :buttons="fixedMenu" />
     </div>
   </div>
   <TextEditorBubbleMenu
@@ -22,6 +17,9 @@
   <BubbleMenu
     v-if="isCommentModeOn"
     :editor="editor"
+    :tippy-options="{
+      placement: 'bottom',
+    }"
     :should-show="
       ({ editor }) =>
         isCommentModeOn &&
@@ -49,7 +47,7 @@
       class="bg-white shadow-sm rounded-md border"
       :editor="editor" />
     <OuterCommentVue
-      v-if="isCommentModeOn"
+      v-if="!!allComments.length"
       :active-comments-instance="activeCommentsInstance"
       :all-comments="allComments"
       :focus-content="focusContent"
@@ -137,11 +135,7 @@ export default {
       type: String,
       default: "",
     },
-    /* isWritable: {
-      type: Boolean,
-      default: true,
-    }, */
-    editable: {
+    isWritable: {
       type: Boolean,
       default: false,
     },
@@ -163,11 +157,12 @@ export default {
     return {
       editor: null,
       provider: null,
-      tempEditable: false,
+      tempEditable: true,
       isTextSelected: false,
       currentMode: "",
       commentText: "",
       isCommentModeOn: false,
+      isReadOnly: false,
       activeCommentsInstance: {
         uuid: "",
         comments: [],
@@ -195,20 +190,17 @@ export default {
     getIsCommentModeOn() {
       return this.isCommentModeOn;
     },
-    toggleCommentMode() {
-      this.tempEditable = true;
+    /*     toggleCommentMode() {
+      this.tempEditable = false
       this.isCommentModeOn = true;
-      this.currentMode = "Suggesting";
-    },
+    }, */
     toggleEditMode() {
       this.tempEditable = true;
-      this.isCommentModeOn = false;
-      this.currentMode = "Editing";
+      this.isCommentModeOn = !this.isCommentModeOn;
     },
     toggleReadMode() {
-      this.tempEditable = false;
+      this.editor.setEditable(false);
       this.isCommentModeOn = false;
-      this.currentMode = "Reading";
     },
     focusContent({ from, to }) {
       this.editor.chain().setTextSelection({ from, to }).run();
@@ -296,9 +288,9 @@ export default {
     },
   },
   computed: {
-    /*     editable(){
-          return this.isWritable && this.tempEditable
-        }, */
+    editable() {
+      return this.isWritable && this.tempEditable;
+    },
 
     currentUserName() {
       return this.$store.state.user.fullName;
@@ -372,20 +364,25 @@ export default {
     },
   },
   mounted() {
+    //this.isWritable ? this.tempEditable = true : null
+    //this.editable ? this.toggleEditMode() : this.toggleReadMode()
+    /* Bubble Menu
     this.emitter.on("toggleCommentMode", () => {
       this.isCommentModeOn = true;
-    });
+      console.log(this.editor.state.selection.content().size)
+    }); */
+
     const doc = new Y.Doc();
     Y.applyUpdate(doc, this.modelValue);
     // Tiny test
     // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
+
     const webrtcProvider = new WebrtcProvider(
       JSON.stringify(this.entityName),
       doc,
       { signaling: ["wss://network.arjunchoudhary.com"] }
     );
     this.provider = webrtcProvider;
-
     let componentContext = this;
     this.editor = new Editor({
       editable: this.editable,
@@ -462,6 +459,18 @@ export default {
         Video,
       ],
     });
+    this.emitter.on("toggleReadMode", () => {
+      (this.isReadOnly = true), (this.tempEditable = false);
+      this.isCommentModeOn = false;
+    });
+    this.emitter.on("toggleEditMode", () => {
+      (this.isReadOnly = false), (this.tempEditable = true);
+      this.isCommentModeOn = false;
+    });
+    this.emitter.on("toggleCommentMode", () => {
+      (this.isReadOnly = false), (this.tempEditable = false);
+      this.isCommentModeOn = true;
+    });
   },
   beforeUnmount() {
     this.editor.destroy();
@@ -518,5 +527,14 @@ span[data-comment] {
   top: -1.4em;
   user-select: none;
   white-space: nowrap;
+}
+
+html {
+  -webkit-user-select: text;
+  /* Safari */
+  -ms-user-select: text;
+  /* IE 10 and IE 11 */
+  user-select: text;
+  /* Standard syntax */
 }
 </style>

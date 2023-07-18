@@ -1,5 +1,5 @@
 <template>
-  <div class="flex px-3 bg-white">
+  <div class="flex px-3 bg-white pb-2 shadow-sm">
     <Dropdown :options="fileMenuOptions">
       <template v-slot="{ open }">
         <button
@@ -205,20 +205,13 @@
         </button>
       </template>
     </Dropdown>
-    <!--     <div class="ml-auto">
-    <Dropdown
-      :options="modeMenuOptions">
-      <template v-slot="{ open }">
-        <button
-          :class="[
-            'rounded-md px-2 py-1 text-base font-medium',
-            open ? 'bg-slate-100' : 'bg-white-200',
-          ]">
-          {{ this.currentMode }}
-        </button>
-      </template>
-    </Dropdown>
-  </div> -->
+    <div class="ml-auto">
+      <Dropdown :options="modeMenuOptions">
+        <template v-slot="{ open }">
+          <Button :icon-left="modeButtonIcon" :label="modeButtonText" />
+        </template>
+      </Dropdown>
+    </div>
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
@@ -254,18 +247,39 @@ export default {
       type: String,
       required: false,
     },
-    currentMode: {
-      default: "",
-      type: String,
+    editable: {
+      type: Boolean,
       required: false,
+    },
+    isCommentModeOn: {
+      type: Boolean,
+      required: true,
+    },
+    isReadOnly: {
+      type: Boolean,
+      required: true,
     },
   },
   emits: ["toggleCommentMode", "toggleEditMode", "toggleReadMode"],
+  computed: {
+    modeButtonText() {
+      if (this.editable) {
+        this.modeButtonIcon = "edit-3";
+        return "Editing";
+      } else if (this.isReadOnly) {
+        this.modeButtonIcon = "eye";
+        return "Reading";
+      } else if (this.isCommentModeOn) {
+        this.modeButtonIcon = "message-square";
+        return "Suggesting";
+      }
+    },
+  },
   data() {
     return {
       showShareDialog: false,
       showRemoveDialog: false,
-      modeButtonText: "",
+      modeButtonIcon: "",
       fileMenuOptions: [
         /*         {
           group: "New",
@@ -325,28 +339,21 @@ export default {
               icon: "eye",
               label: "Reading",
               handler: () => {
-                console.log("This should be Reading");
-                console.log(this.currentMode);
-                this.$emit("toggleReadMode"), (this.modeButtonText = "Reading");
+                this.emitter.emit("toggleReadMode");
               },
             },
             {
               icon: "edit-3",
               label: "Editing",
               handler: () => {
-                console.log("This should be Editing");
-                console.log(this.currentMode);
-                this.$emit("toggleEditMode"), (this.modeButtonText = "Editing");
+                this.emitter.emit("toggleEditMode");
               },
             },
             {
               icon: "message-square",
               label: "Suggesting",
               handler: () => {
-                console.log("This should be Suggesting");
-                console.log(this.currentMode);
-                this.$emit("toggleCommentMode"),
-                  (this.modeButtonText = "Suggest");
+                this.emitter.emit("toggleCommentMode");
               },
             },
           ],
