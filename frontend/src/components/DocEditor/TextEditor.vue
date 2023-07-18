@@ -91,6 +91,7 @@ import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
+import { IndexeddbPersistence } from "y-indexeddb";
 
 export default {
   name: "TextEditor",
@@ -376,6 +377,11 @@ export default {
     Y.applyUpdate(doc, this.modelValue);
     // Tiny test
     // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
+
+    const indexeddbProvider = new IndexeddbPersistence(
+      JSON.stringify(this.entityName),
+      doc
+    );
 
     const webrtcProvider = new WebrtcProvider(
       JSON.stringify(this.entityName),
