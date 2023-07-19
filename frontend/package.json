@@ -32,6 +32,7 @@
     "frappe-ui": "0.0.101",
     "fuzzysort": "^2.0.4",
     "js-base64": "^3.7.5",
+    "jszip": "^3.10.1",
     "lucide-vue-next": "^0.206.0",
     "mitt": "^3.0.0",
     "sass": "^1.62.0",
@@ -41,8 +42,8 @@
     "vue-router": "^4.1.6",
     "vuex": "^4.1.0",
     "xlsx": "^0.18.5",
+    "y-indexeddb": "^9.0.11",
     "y-prosemirror": "^1.0.20",
-    "jszip": "^3.10.1",
     "y-webrtc": "^10.2.5",
     "yjs": "^13.5.39"
   },
