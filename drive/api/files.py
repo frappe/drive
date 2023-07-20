@@ -745,10 +745,11 @@ def auto_delete_from_trash():
 
 @frappe.whitelist()
 def get_user_directory_size():
-    user_directory = get_user_directory(0)
-    user_path = Path(user_directory.path)
-    user_directory_size = os.path.getsize(user_path)
-    cmd = f"du -sh {Path(user_directory.path)} | grep -oP '^[\d.]+[KMG]' "
-    result = os.popen(cmd)
-    size = result.read().strip()
+    try:
+        user_directory = get_user_directory(0)
+        cmd = f"du -sh {Path(user_directory.path)} | grep -oP '^[\d.]+[KMG]' "
+        result = os.popen(cmd)
+        size = result.read().strip()
+    except :
+        size = "0M"
     return size

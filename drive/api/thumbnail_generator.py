@@ -8,6 +8,7 @@ from werkzeug.wsgi import wrap_file
 from werkzeug.utils import secure_filename
 from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
+import cv2
 
 
 @frappe.whitelist()
@@ -26,12 +27,14 @@ def create_image_thumbnail(entity_name):
         raise frappe.PermissionError("You do not have permission to view this file")
 
     with DistributedLock(drive_entity.path, exclusive=False):
-        if (frappe.cache().exists(entity_name)):
-             cached_thumbnbail = frappe.cache().get_value(entity_name)
-             response = Response(wrap_file(frappe.request.environ, cached_thumbnbail),direct_passthrough=True,)
-             response.headers.set("Content-Type", "image/jpeg")
-             response.headers.set("Content-Disposition", "inline", filename=entity_name)
-        
+        if frappe.cache().exists(entity_name):
+            cached_thumbnbail = frappe.cache().get_value(entity_name)
+            response = Response(
+                wrap_file(frappe.request.environ, cached_thumbnbail),
+                direct_passthrough=True,
+            )
+            response.headers.set("Content-Type", "image/jpeg")
+            response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
             image_path = drive_entity.path
             with Image.open(image_path).convert("RGB") as image:
@@ -49,4 +52,54 @@ def create_image_thumbnail(entity_name):
                     "Content-Disposition", "inline", filename=drive_entity.title
                 )
                 frappe.cache().set_value(entity_name, thumbnail_data)
+        return response
+
+
+@frappe.whitelist()
+def create_video_thumbnail(entity_name):
+    drive_entity = frappe.get_value(
+        "Drive Entity",
+        entity_name,
+        ["is_group", "path", "title", "mime_type", "file_size"],
+        as_dict=1,
+    )
+    if not drive_entity or drive_entity.is_group:
+        raise ValueError
+    if not frappe.has_permission(
+        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+    ):
+        raise frappe.PermissionError("You do not have permission to view this file")
+
+    with DistributedLock(drive_entity.path, exclusive=False):
+        if frappe.cache().exists(entity_name):
+            cached_thumbnbail = frappe.cache().get_value(entity_name)
+            response = Response(
+                wrap_file(frappe.request.environ, cached_thumbnbail),
+                direct_passthrough=True,
+            )
+            response.headers.set("Content-Type", "image/jpeg")
+            response.headers.set("Content-Disposition", "inline", filename=entity_name)
+        else:
+            video_path = drive_entity.path
+            cap = cv2.VideoCapture(video_path)
+            frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            target_frame = int(frame_count / 2)
+            cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+            ret, frame = cap.read()
+            cap.release()
+            thumbnail_data = BytesIO()
+            _, thumbnail_encoded = cv2.imencode(
+                ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+            )
+            thumbnail_data.write(thumbnail_encoded)
+            thumbnail_data.seek(0)
+            response = Response(
+                wrap_file(frappe.request.environ, thumbnail_data),
+                direct_passthrough=True,
+            )
+            response.headers.set("Content-Type", "image/jpeg")
+            response.headers.set(
+                "Content-Disposition", "inline", filename=drive_entity.title
+            )
+            frappe.cache().set_value(entity_name, thumbnail_data)
         return response

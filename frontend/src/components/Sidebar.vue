@@ -27,7 +27,7 @@
         class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 mt-auto rounded-lg focus:outline-none flex items-center">
         <FeatherIcon name="cloud" class="stroke-1.5 w-5 h-5" />
         Used :
-        {{ $resources.getRootFolderSize.data }}
+        {{ $resources.getRootFolderSize.data + "B" }}
       </span>
     </div>
   </div>
@@ -40,12 +40,6 @@ export default {
   name: "Sidebar",
   components: { FeatherIcon, FrappeDriveLogo },
   emits: ["toggleMobileSidebar"],
-  // mounted() {
-  //   this.$resources.getRootFolderSize.fetch();
-  // },
-  /*   data() {
-    folderSize: this.getRootFolderSize()
-  }, */
   computed: {
     sidebarItems() {
       return [
@@ -125,9 +119,6 @@ export default {
     getRootFolderSize() {
       return {
         url: "drive.api.files.get_user_directory_size",
-        onSuccess(data) {
-          console.log(data);
-        },
         onError(error) {
           console.log(error);
         },
@@ -135,18 +126,5 @@ export default {
       };
     },
   },
-  // methods: {
-  //   getRootFolderSize() {
-  //     const url = "/api/method/" + `drive.api.files.get_user_directory_size`;
-  //     return fetch(url).then((response) => {
-  //       if (response.ok) {
-  //         console.log(response);
-
-  //       } else {
-  //         throw new Error(`Request failed with status ${response.status}`);
-  //       }
-  //     });
-  //   },
-  // },
 };
 </script>
