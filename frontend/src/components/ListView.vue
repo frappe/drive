@@ -133,11 +133,11 @@ export default {
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
 
-    this.selectAllListener = (e) => {
+    /* this.selectAllListener = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.$emit("entitySelected", this.folderContents);
     };
-
+ */
     this.copyListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
