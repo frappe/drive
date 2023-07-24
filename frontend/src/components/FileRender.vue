@@ -7,6 +7,18 @@
     class="p-8 z-10 bg-[#252728] rounded-md text-neutral-100 text-xl text-center font-medium">
     {{ preview.error }}
   </div>
+  <div class="absolute max-h-[65vh] max-w-[65vw] z-10">
+    <video-player
+      class="video-js vjs-fluid"
+      type="video/mp4"
+      v-if="
+        isVideo &&
+        videoOptions.sources[0].src &&
+        !this.preview.error &&
+        !this.preview.loading
+      "
+      :options="videoOptions" />
+  </div>
   <img
     v-if="isImage"
     :src="preview.url"
@@ -38,6 +50,7 @@
 </template>
 <script>
 import { LoadingIndicator } from "frappe-ui";
+import VideoPlayer from "@/components/VideoPlayer.vue";
 import * as docx from "docx-preview";
 import { read, utils } from "xlsx";
 import canvasDatagrid from "canvas-datagrid";
@@ -47,6 +60,7 @@ export default {
   name: "FileRender",
   components: {
     LoadingIndicator,
+    VideoPlayer,
   },
   props: {
     previewEntity: {
@@ -61,9 +75,22 @@ export default {
         error: null,
         url: "",
       },
+      videoOptions: {
+        autoplay: true,
+        controls: true,
+        fluid: true,
+        responsive: true,
+        sources: [
+          {
+            src: "",
+            type: "",
+          },
+        ],
+      },
       textFileContent: "",
       isPdf: this.previewEntity.mime_type === "application/pdf",
       isImage: this.previewEntity.mime_type?.startsWith("image/"),
+      isVideo: this.previewEntity.mime_type?.startsWith("video/"),
       isFrappeDoc: this.previewEntity.mime_type === "frappe_doc",
       isTxt:
         this.previewEntity.mime_type?.startsWith("text/") ||
@@ -114,6 +141,15 @@ export default {
         // Size limit = 400
         this.preview.error = "File is too large to preview";
         this.preview.loading = false;
+      } else if (this.isVideo) {
+        /*  this.preview.url = `/api/method/drive.api.files.get_file_content?entity_name=${this.previewEntity.name}`  */
+        this.videoOptions.sources[0].src = `/api/method/drive.api.files.get_file_content?entity_name=${this.previewEntity.name}`;
+        this.videoOptions.sources[0].type = this.previewEntity.mime_type;
+        if (this.previewEntity.mime_type !== "video/webm" || "video/mp4") {
+          /* Take a gamble its a valid H264/H265 file*/
+          this.videoOptions.sources[0].type = "video/mp4";
+        }
+        this.preview.loading = false;
       } else if (this.isFrappeDoc) {
         this.$router.push({
           name: "Document",
@@ -128,6 +164,7 @@ export default {
         Accept: "application/json",
         "Content-Type": "application/json; charset=utf-8",
         "X-Frappe-Site-Name": window.location.hostname,
+        Range: "bytes=0-10000000",
       };
       const res = await fetch(
         `/api/method/drive.api.files.get_file_content?entity_name=${this.previewEntity.name}`,

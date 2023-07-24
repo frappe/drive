@@ -268,6 +268,19 @@ def get_file_content(entity_name, trigger_download=0):
     ):
         raise frappe.PermissionError("You do not have permission to view this file")
     with DistributedLock(drive_entity.path, exclusive=False):
+        range_header = frappe.request.headers.get("Range")
+        # if range_header is not None:
+        # h = range_header.replace("bytes=", "").split("-")
+        # print (h)
+        # start = int(h[0]) if h[0] != "" else 0
+        # end = int(h[1]) if h[1] != "" else file_size - 1
+        # start, end = get_range_header(range_header, file_size)
+        # size = end - start + 1
+        # print (size)
+        # response.headers.add("Content-Range", f"bytes {start}-{end}/{drive_entity.file_size}")
+        # status_code = status.HTTP_206_PARTIAL_CONTENT
+        # Figure out a sane way to handle blob range streaming requests
+
         file = open(drive_entity.path, "rb")
         response = Response(
             wrap_file(frappe.request.environ, file), direct_passthrough=True
@@ -281,6 +294,7 @@ def get_file_content(entity_name, trigger_download=0):
         )
         response.headers.add("Content-Length", str(drive_entity.file_size))
         response.headers.add("Content-Type", response.mimetype)
+        response.headers.add("Accept-Range", "bytes")
         return response
 
 
@@ -750,6 +764,6 @@ def get_user_directory_size():
         cmd = f"du -sh {Path(user_directory.path)} | grep -oP '^[\d.]+[KMG]' "
         result = os.popen(cmd)
         size = result.read().strip()
-    except :
+    except:
         size = "0M"
     return size
