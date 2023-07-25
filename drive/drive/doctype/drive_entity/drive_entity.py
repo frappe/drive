@@ -156,6 +156,28 @@ class DriveEntity(NestedSet):
 
             for child in self.get_children():
                 child.copy(name, parent_user_directory)
+        
+        elif self.document is not None:
+            drive_doc_content = frappe.db.get_value(
+                "Drive Document", self.document, "content"
+            )
+
+            new_drive_doc = frappe.new_doc("Drive Document")
+            new_drive_doc.title = title
+            new_drive_doc.content = drive_doc_content
+            new_drive_doc.save()
+
+            drive_entity = frappe.get_doc(
+                {
+                    "doctype": "Drive Entity",
+                    "name": name,
+                    "title": title,
+                    "mime_type": self.mime_type,
+                    "parent_drive_entity": new_parent,
+                    "document": new_drive_doc,
+                }
+            )
+            drive_entity.insert()
 
         else:
             save_path = Path(parent_user_directory.path) / f"{new_parent}_{title}"
