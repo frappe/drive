@@ -3,7 +3,7 @@
     v-if="contentLoaded"
     v-model="content"
     :fixed-menu="true"
-    :bubble-menu="false"
+    :bubble-menu="true"
     placeholder="Start typing ..."
     :isWritable="isWriteable"
     :entityName="entityName" />

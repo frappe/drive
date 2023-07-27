@@ -345,10 +345,10 @@ export default {
   Separator: {
     type: "separator",
   },
-  CommentMode: {
+  "New Comment": {
     label: "New Comment",
     icon: MessageSquare,
-    action: "toggleCommentMode",
+    action: "emitToggleCommentMenu",
     isActive: (editor) => editor.isActive("comment"),
   },
   /*   setColumns: {

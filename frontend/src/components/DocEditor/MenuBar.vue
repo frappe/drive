@@ -205,13 +205,13 @@
         </button>
       </template>
     </Dropdown>
-    <div class="ml-auto">
+    <!--     <div class="ml-auto">
       <Dropdown :options="modeMenuOptions">
         <template v-slot="{ open }">
           <Button :icon-left="modeButtonIcon" :label="modeButtonText" />
         </template>
       </Dropdown>
-    </div>
+    </div> -->
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
@@ -253,11 +253,11 @@ export default {
     },
     isCommentModeOn: {
       type: Boolean,
-      required: true,
+      required: false,
     },
     isReadOnly: {
       type: Boolean,
-      required: true,
+      required: false,
     },
   },
   emits: ["toggleCommentMode", "toggleEditMode", "toggleReadMode"],

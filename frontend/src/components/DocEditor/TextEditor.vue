@@ -10,36 +10,37 @@
       <TextEditorFixedMenu v-if="editor && editable" :buttons="fixedMenu" />
     </div>
   </div>
-  <TextEditorBubbleMenu
-    v-if="editor && editable"
-    :options="bubbleMenuOptions"
-    :buttons="bubbleMenu" />
   <BubbleMenu
-    v-if="isCommentModeOn"
-    :editor="editor"
-    :tippy-options="{
-      placement: 'bottom',
-    }"
-    :should-show="
-      ({ editor }) =>
-        isCommentModeOn &&
+    v-on-outside-click="toggleCommentMenu"
+    v-if="editor && editable"
+    :editor="editor">
+    <div
+      id="comment-box"
+      v-if="
+        showCommentMenu &&
         !editor.state.selection.empty &&
         !activeCommentsInstance.uuid
-    ">
-    <div class="p-4 rounded-md border bg-white border-gray-100 shadow-lg">
-      <textarea
-        cols="50"
-        rows="4"
-        placeholder="Type your comment"
-        style="resize: none"
-        v-model="commentText"
-        class="placeholder-gray-500 form-input block w-full mb-2"
-        @keypress.enter.stop.prevent="() => setComment()" />
-      <section class="flex justify-end gap-2">
-        <Button @click="() => discardComment()">Discard</Button>
-        <Button appearance="primary" @click="() => setComment()">Done</Button>
-      </section>
+      "
+      :editor="editor">
+      <div
+        class="absolute top-10 left-40 w-96 p-4 rounded-md border bg-white border-gray-100 shadow-lg">
+        <textarea
+          v-model="commentText"
+          cols="50"
+          rows="4"
+          placeholder="Type your comment"
+          style="resize: none"
+          class="placeholder-gray-500 form-input block w-full mb-2"
+          @keypress.enter.stop.prevent="() => setComment()" />
+        <section class="flex justify-end gap-2">
+          <Button @click="() => discardComment()">Discard</Button>
+          <Button appearance="primary" @click="() => setComment()">Done</Button>
+        </section>
+      </div>
     </div>
+    <Menu
+      class="rounded-md border border-gray-100 shadow-lg"
+      :buttons="bubbleMenuButtons" />
   </BubbleMenu>
   <div class="flex w-screen items-start justify-center space-x-4 mt-3">
     <editor-content
@@ -82,7 +83,7 @@ import TextEditorBubbleMenu from "./TextEditorBubbleMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
 import MenuBar from "./MenuBar.vue";
-import { Button, Input } from "frappe-ui";
+import { Button, Input, onOutsideClickDirective } from "frappe-ui";
 import { v4 as uuidv4 } from "uuid";
 import { Comment } from "./comment";
 import { LineHeight } from "./lineHeight";
@@ -92,6 +93,8 @@ import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
 import { IndexeddbPersistence } from "y-indexeddb";
+import { createEditorButton } from "./utils";
+import Menu from "./Menu.vue";
 
 export default {
   name: "TextEditor",
@@ -101,8 +104,12 @@ export default {
     BubbleMenu,
     TextEditorFixedMenu,
     TextEditorBubbleMenu,
+    Menu,
     OuterCommentVue,
     MenuBar,
+  },
+  directives: {
+    onOutsideClick: onOutsideClickDirective,
   },
   provide() {
     return {
@@ -157,10 +164,21 @@ export default {
   data() {
     return {
       editor: null,
+      buttons: [
+        "Link",
+        "Separator",
+        "Bold",
+        "Italic",
+        "Underline",
+        "Strikethrough",
+        "Separator",
+        "New Comment",
+      ],
       provider: null,
       tempEditable: true,
       isTextSelected: false,
       currentMode: "",
+      showCommentMenu: false,
       commentText: "",
       isCommentModeOn: false,
       isReadOnly: false,
@@ -172,6 +190,11 @@ export default {
     };
   },
   methods: {
+    toggleCommentMenu() {
+      if (this.showCommentMenu === true) {
+        this.showCommentMenu = false;
+      }
+    },
     getRandomColor() {
       const list = [
         "#958DF1",
@@ -190,18 +213,6 @@ export default {
     },
     getIsCommentModeOn() {
       return this.isCommentModeOn;
-    },
-    /*     toggleCommentMode() {
-      this.tempEditable = false
-      this.isCommentModeOn = true;
-    }, */
-    toggleEditMode() {
-      this.tempEditable = true;
-      this.isCommentModeOn = !this.isCommentModeOn;
-    },
-    toggleReadMode() {
-      this.editor.setEditable(false);
-      this.isCommentModeOn = false;
     },
     focusContent({ from, to }) {
       this.editor.chain().setTextSelection({ from, to }).run();
@@ -236,7 +247,6 @@ export default {
     setCurrentComment() {
       let newVal = this.editor.isActive("comment");
       if (newVal) {
-        setTimeout(() => (this.showCommentMenu = newVal), 50);
         this.showAddCommentSection = !this.editor.state.selection.empty;
         const parsedComment = JSON.parse(
           this.editor.getAttributes("comment").comment
@@ -292,7 +302,9 @@ export default {
     editable() {
       return this.isWritable && this.tempEditable;
     },
-
+    bubbleMenuButtons() {
+      return this.buttons.map(createEditorButton);
+    },
     currentUserName() {
       return this.$store.state.user.fullName;
     },
@@ -477,6 +489,9 @@ export default {
       (this.isReadOnly = false), (this.tempEditable = false);
       this.isCommentModeOn = true;
     });
+    this.emitter.on("emitToggleCommentMenu", () => {
+      this.showCommentMenu = !this.showCommentMenu;
+    });
   },
   beforeUnmount() {
     this.editor.destroy();
@@ -536,11 +551,11 @@ span[data-comment] {
 }
 
 html {
-  -webkit-user-select: text;
+  -webkit-user-select: none;
   /* Safari */
-  -ms-user-select: text;
+  -ms-user-select: none;
   /* IE 10 and IE 11 */
-  user-select: text;
+  user-select: none;
   /* Standard syntax */
 }
 </style>
