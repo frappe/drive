@@ -116,6 +116,11 @@ home_page = "drive"
 # 	}
 # }
 
+
+fixtures = [
+    {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}
+]
+
 # Scheduled Tasks
 # ---------------
 
