@@ -15,16 +15,6 @@ class DriveEntity(NestedSet):
     def before_save(self):
         self.version = self.version + 1
 
-    # def get_children(self):
-    # 	if int(frappe.__version__.split('.')[0]) >= 14:
-    # 		super().get_children(self)
-    # 	else:
-    # 		child_names = frappe.get_list(
-    # 			self.doctype, filters={self.nsm_parent_field: self.name}, pluck="name"
-    # 		)
-    # 		for name in child_names:
-    # 			yield frappe.get_doc(self.doctype, name)
-
     def after_insert(self):
         """Copy parent permissions to new child entity"""
 
@@ -56,15 +46,19 @@ class DriveEntity(NestedSet):
                 child.delete(ignore_permissions=has_write_access)
             super().on_trash()
             
-
     def after_delete(self):
         if self.document:
             frappe.delete_doc("Drive Document", self.document)
         """Remove file once document is deleted"""
         if self.path:
-            path = Path(self.path)
-            path.unlink()
-
+            max_attempts = 3
+            for attempt in range(max_attempts):
+                try:
+                    Path(self.path).unlink()
+                    break
+                except Exception as e:
+                    print(f"Attempt {attempt + 1}: Failed to delete file - {e}")
+    
     def on_rollback(self):
         if self.flags.file_created:
             shutil.rmtree(self.path) if self.is_group else self.path.unlink()
