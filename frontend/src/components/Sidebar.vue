@@ -1,5 +1,5 @@
-<template class="bg-gray-50">
-  <FrappeDriveLogo class="h-4 mb-8" />
+<template class="bg-gray-200">
+  <UserDropdown />
   <div
     ondragstart="return false;"
     ondrop="return false;"
@@ -13,11 +13,11 @@
         <a
           :class="[
             item.highlight()
-              ? 'bg-gray-200 text-gray-900'
-              : 'text-gray-800 hover:bg-gray-50',
+              ? 'bg-white shadow-sm text-gray-900'
+              : 'text-gray-800 hover:bg-gray-100',
           ]"
           :href="href"
-          class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center"
+          class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 rounded focus:outline-none flex items-center"
           @click="navigate && $emit('toggleMobileSidebar')">
           <FeatherIcon :name="item.icon" class="stroke-1.5 w-5 h-5" />
           {{ item.label }}
@@ -33,16 +33,23 @@
   </div>
 </template>
 <script>
+import UserDropdown from "@/components/UserDropdown.vue";
 import { FeatherIcon } from "frappe-ui";
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon, FrappeDriveLogo },
+  components: { FeatherIcon, FrappeDriveLogo, UserDropdown },
   emits: ["toggleMobileSidebar"],
   computed: {
     sidebarItems() {
       return [
+        {
+          label: "Search",
+          route: () => {},
+          icon: "search",
+          highlight: () => {},
+        },
         {
           label: "Home",
           route: "/",

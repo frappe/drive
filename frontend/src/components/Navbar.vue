@@ -2,13 +2,13 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white z-10 sticky top-0"
+    class="bg-white z-10 sticky top-0 border-b"
     :class="{ 'shadow-sm': $route.meta.documentPage }">
     <div class="mx-auto py-2 px-5 h-16 md:h-12 z-10 flex justify-between">
       <Breadcrumbs
         :breadcrumb-links="currentBreadcrumbs"
         class="hidden md:block" />
-      <div class="flex items-center">
+      <div class="flpex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
           <button
@@ -31,21 +31,24 @@
       <div
         v-if="!$route.meta.documentPage"
         class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
-        <SearchPopup
+        <!-- <SearchPopup
           v-if="isLoggedIn"
-          @open-entity="(entity) => openEntity(entity)" />
+          @open-entity="(entity) => openEntity(entity)" /> -->
       </div>
       <div v-if="isLoggedIn" class="flex items-center">
         <Dropdown
           :options="$store.state.hasWriteAccess ? addOptions : []"
           placement="left"
           class="basis-5/12 lg:basis-auto">
-          <Button
-            v-if="$store.state.hasWriteAccess"
-            id="upload-button"
-            class="ml-4 md:ml-8 mr-5 h-8 w-8 rounded-full"
-            appearance="primary"
-            icon="plus"></Button>
+          <Button v-if="$store.state.hasWriteAccess" variant="solid">
+            <template #prefix>
+              <FeatherIcon name="upload" class="w-4" />
+            </template>
+            Upload
+            <template #suffix>
+              <FeatherIcon name="chevron-down" class="w-4" />
+            </template>
+          </Button>
         </Dropdown>
         <div v-if="$store.state.hasWriteAccess" class="border h-5"></div>
         <!--
@@ -58,20 +61,13 @@
           icon="bell"></Button>
           
         -->
-        <div class="relative ml-3">
-          <Dropdown :options="accountOptions" placement="right">
-            <button
-              id="user-menu"
-              class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
-              aria-label="User menu"
-              aria-haspopup="true">
-              <div class="flex items-center gap-4">
-                <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-                <Avatar :label="fullName" :imageURL="imageURL" />
-              </div>
-            </button>
-          </Dropdown>
-        </div>
+        <Dropdown :options="accountOptions" placement="right">
+          <button
+            id="user-menu"
+            class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
+            aria-label="User menu"
+            aria-haspopup="true"></button>
+        </Dropdown>
       </div>
     </div>
   </nav>

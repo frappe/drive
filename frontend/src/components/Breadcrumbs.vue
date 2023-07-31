@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center text-base">
+  <div class="flex justify-items-center items-center text-base">
     <router-link
       v-for="(item, index) in breadcrumbLinks"
       :key="item.label"

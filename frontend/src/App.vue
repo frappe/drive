@@ -13,7 +13,7 @@
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div
           v-if="showSidebar"
-          class="px-2 border-r w-[240px] bg-gray-50 hidden md:py-4 md:block">
+          class="px-2 border-r w-[240px] bg-gray-50 hidden md:py-2 md:block">
           <Sidebar />
         </div>
         <div class="flex-1 overflow-y-auto overflow-x-hidden">
