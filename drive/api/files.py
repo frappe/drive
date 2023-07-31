@@ -298,7 +298,7 @@ def get_file_content(entity_name, trigger_download=0):
         return response
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
     """
     Return list of DriveEntity records present in this folder
@@ -322,13 +322,24 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         frappe.throw("Specified entity is not a folder", NotADirectoryError)
     if not parent_is_active:
         frappe.throw("Specified folder has been trashed by the owner")
-    if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-    ):
-        frappe.throw(
-            "Cannot access folder due to insufficient permissions",
-            frappe.PermissionError,
-        )
+    share_every_perm = False
+    if frappe.db.exists(
+                {
+                    "doctype": "DocShare",
+                    "share_doctype": "Drive Entity",
+                    "share_name": entity_name,
+                    "everyone": 1,
+                }
+            ):
+                share_every_perm = True
+    if not share_every_perm:
+        if not frappe.has_permission(
+            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+        ):
+            frappe.throw(
+                "Cannot access folder due to insufficient permissions",
+                frappe.PermissionError,
+            )
     entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
     flag = False
     for z_entity_name in entity_ancestors:
