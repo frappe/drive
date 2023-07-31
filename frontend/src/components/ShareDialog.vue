@@ -293,7 +293,7 @@ export default {
     async getLink() {
       this.showAlert = false;
       const link = this.$resources.entity.data.is_group
-        ? `${window.location.origin}/drive/folder/${this.entityName}`
+        ? `${window.location.origin}/drive/foldershare/${this.entityName}`
         : `${window.location.origin}/drive/file/${this.entityName}`;
       try {
         await navigator.clipboard.writeText(link);
