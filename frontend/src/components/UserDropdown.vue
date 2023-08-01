@@ -15,19 +15,19 @@
         <span class="hidden text-base font-medium text-gray-900 sm:inline">
           {{ fullName }}
         </span>
-        <LucideChevronDown class="hidden h-4 w-4 sm:inline" />
+        <FeatherIcon name="chevron-down" class="hidden h-4 w-4 sm:inline" />
       </button>
     </template>
   </Dropdown>
 </template>
 <script>
-import { Dropdown, Link, Avatar } from "frappe-ui";
+import { Dropdown, FeatherIcon, Avatar } from "frappe-ui";
 
 export default {
   name: "UserDropdown",
   components: {
     Dropdown,
-    Link,
+    FeatherIcon,
     Avatar,
   },
   methods: {
