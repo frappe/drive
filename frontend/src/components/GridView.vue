@@ -16,7 +16,7 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="w-[212px] rounded-lg border group select-none entity"
+            class="w-44 h-44 rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
@@ -33,11 +33,11 @@
             @dragenter.prevent
             @dragover.prevent
             @mousedown.stop>
-            <div class="h-32 place-items-center grid">
+            <div class="h-3/5 place-items-center grid">
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="46"
+                width="40"
                 height="40"
                 viewBox="0 0 46 40"
                 fill="#32a852"
@@ -48,10 +48,10 @@
                   d="M43.125 11V9C43.125 6.79086 41.3341 5 39.125 5H20.312C20.1914 5 20.0749 4.95643 19.9839 4.8773L14.6572 0.245394C14.4752 0.0871501 14.2422 0 14.001 0H6.87501C4.66587 0 2.87501 1.79086 2.87501 4V11C2.87501 11.5523 3.32272 12 3.87501 12H42.125C42.6773 12 43.125 11.5523 43.125 11Z" />
               </svg>
             </div>
-            <div class="px-3.5 pb-2.5">
-              <h3 class="truncate text-[14px] font-medium">
+            <div class="px-2 pb-1 h-2/5 content-center grid">
+              <span class="truncate text-sm font-medium mb-1">
                 {{ folder.title }}
-              </h3>
+              </span>
               <p class="truncate text-sm text-gray-600 mt-1">
                 {{ folder.modified }}
               </p>
@@ -68,7 +68,7 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-[212px] rounded-lg border group select-none entity"
+            class="w-44 h-44 rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(file)
