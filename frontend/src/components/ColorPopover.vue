@@ -7,7 +7,7 @@
     <template #target="{ togglePopover, isOpen }">
       <div
         :active="isOpen"
-        class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3 cursor-pointer"
+        class="h-7 flex items-center hover:bg-gray-100 rounded px-3 cursor-pointer"
         @click="togglePopover()">
         <FeatherIcon
           name="droplet"
