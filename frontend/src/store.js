@@ -37,6 +37,14 @@ const store = createStore({
     currentBreadcrumbs: JSON.parse(
       localStorage.getItem("currentBreadcrumbs")
     ) || [{ label: "", route: "" }],
+    ctaButton: {
+      prefix: "upload",
+      suffix: "chevron-down",
+      text: "Upload",
+      emit: "",
+      theme: "red",
+      variant: "solid",
+    },
   },
   getters: {
     isLoggedIn: (state) => {
@@ -97,6 +105,9 @@ const store = createStore({
     setCurrentBreadcrumbs(state, payload) {
       localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload));
       state.currentBreadcrumbs = payload;
+    },
+    setCtaButton(state, payload) {
+      state.ctaButton = payload;
     },
   },
   actions: {

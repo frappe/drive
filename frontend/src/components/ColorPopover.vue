@@ -39,7 +39,6 @@
 
 <script>
 import { Popover, FeatherIcon } from "frappe-ui";
-import { theme } from "@/utils/theme";
 
 export default {
   name: "ColorPopover",
@@ -54,27 +53,22 @@ export default {
   data() {
     return {
       colors: [
-        "slate",
-        "gray",
-        "zinc",
-        "neutral",
-        "stone",
-        "red",
-        "orange",
-        "amber",
-        "yellow",
-        "lime",
-        "green",
-        "emerald",
-        "teal",
-        "cyan",
-        "sky",
-        "blue",
-        "indigo",
-        "violet",
-        "purple",
-        "fuchsia",
-      ].map((color) => theme.colors[color]["500"]),
+        "#525252",
+        "#E39B4C",
+        "#EF7323",
+        "#9DA2A7",
+        "#F13849",
+        "#5F33DE",
+        "#D12FD5",
+        "#23D25E",
+        "#20C1F4",
+        "#33CDB1",
+        "#A533ED",
+        "#CA413D",
+        "#775225",
+        "#FFE35A",
+        "#2374D2",
+      ],
     };
   },
   resources: {

@@ -47,6 +47,12 @@ export default {
   },
 
   mounted() {
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
     this.$resources.getDocument
       .fetch()
       .then(() => {

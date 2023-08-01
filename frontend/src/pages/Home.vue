@@ -394,6 +394,12 @@ export default {
 
   async mounted() {
     await this.$resources.getHomeID.fetch();
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
     this.$store.commit("setCurrentBreadcrumbs", [
       { label: "Home", route: "/" },
     ]);

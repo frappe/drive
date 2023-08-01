@@ -92,6 +92,14 @@ export default {
       window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.entityName}&trigger_download=1`;
     },
   },
+  mounted() {
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
+  },
   resources: {
     file() {
       return {

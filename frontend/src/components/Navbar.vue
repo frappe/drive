@@ -40,13 +40,15 @@
           :options="$store.state.hasWriteAccess ? addOptions : []"
           placement="left"
           class="basis-5/12 lg:basis-auto">
-          <Button v-if="$store.state.hasWriteAccess" variant="solid">
-            <template #prefix>
-              <FeatherIcon name="upload" class="w-4" />
+          <Button
+            :variant="$store.state.ctaButton.variant"
+            :theme="$store.state.ctaButton.theme">
+            <template v-if="$store.state.ctaButton.prefix" #prefix>
+              <FeatherIcon :name="$store.state.ctaButton.prefix" class="w-4" />
             </template>
-            Upload
-            <template #suffix>
-              <FeatherIcon name="chevron-down" class="w-4" />
+            {{ $store.state.ctaButton.text }}
+            <template v-if="$store.state.ctaButton.suffix" #suffix>
+              <FeatherIcon :name="$store.state.ctaButton.suffix" class="w-4" />
             </template>
           </Button>
         </Dropdown>

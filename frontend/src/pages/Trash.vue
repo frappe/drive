@@ -186,6 +186,12 @@ export default {
 
   mounted() {
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
+    this.$store.commit("setCtaButton", {
+      text: "Empty Trash",
+      prefix: "trash-2",
+      variant: "outline",
+      theme: "red",
+    });
     this.deleteListener = (e) => {
       if (e.key === "Delete" && this.selectedEntities.length)
         this.showDeleteDialog = true;
