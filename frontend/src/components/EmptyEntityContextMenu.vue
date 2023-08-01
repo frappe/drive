@@ -2,12 +2,12 @@
   <div
     v-if="actionItems.length > 0"
     ref="emptyContextMenu"
-    class="bg-white rounded-md absolute shadow-sm p-2 z-20 space-y-0.5 border"
+    class="bg-white rounded-md absolute shadow-2xl p-1.5 z-20 space-y-0.5 border"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
       :key="index"
-      class="text-sm h-7 hover:bg-gray-100 cursor-pointer rounded-md flex px-3 items-center"
+      class="text-sm h-7 hover:bg-gray-100 cursor-pointer rounded flex px-3 items-center"
       @click="
         () => {
           item.handler();
