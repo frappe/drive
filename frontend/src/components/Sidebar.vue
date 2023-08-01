@@ -4,7 +4,7 @@
     ondragstart="return false;"
     ondrop="return false;"
     class="flex flex-col justify-between">
-    <div class="text-lg">
+    <div class="text-sm">
       <router-link
         v-for="item in sidebarItems"
         :key="item.label"
@@ -17,15 +17,15 @@
               : 'text-gray-800 hover:bg-gray-100',
           ]"
           :href="href"
-          class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 rounded focus:outline-none flex items-center"
+          class="w-full h-7 px-2 py-1 gap-3 rounded focus:outline-none flex items-center"
           @click="navigate && $emit('toggleMobileSidebar')">
-          <FeatherIcon :name="item.icon" class="stroke-1.5 w-5 h-5" />
+          <FeatherIcon :name="item.icon" class="stroke-1.5 w-4 h-4" />
           {{ item.label }}
         </a>
       </router-link>
       <span
-        class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 mt-auto rounded-lg focus:outline-none flex items-center">
-        <FeatherIcon name="cloud" class="stroke-1.5 w-5 h-5" />
+        class="w-[256px] h-7 px-3 py-4 gap-3 mt-auto rounded-lg focus:outline-none flex items-center">
+        <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
         Used :
         {{ $resources.getRootFolderSize.data + "B" }}
       </span>
