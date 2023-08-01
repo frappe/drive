@@ -1,8 +1,8 @@
 <template>
-  <div class="h-3/5 place-items-center grid">
+  <div class="h-2/3 place-items-center grid">
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
-  <div class="px-2 pb-1 h-2/5 content-center grid">
+  <div class="px-2 pb-1 h-1/3 content-center grid">
     <span class="truncate text-sm font-medium mb-1">{{ this.title }}</span>
     <div class="truncate text-sm text-gray-600 flex mt-1 place-items-center">
       <img
@@ -39,7 +39,7 @@ export default {
   computed: {
     parsedStyled() {
       if (typeof this.link === "string") {
-        return "h-32 w-full object-cover rounded-t-md";
+        return "h-full w-full object-cover rounded-t-md";
       } else {
         return "h-10 w-10";
       }
