@@ -13,27 +13,43 @@
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div
           v-if="showSidebar"
-          class="px-2 border-r w-[240px] bg-gray-50 hidden md:py-2 md:block">
+          class="px-2 border-r w-[256px] bg-gray-50 hidden md:py-2 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-auto overflow-x-hidden">
-          <router-view v-slot="{ Component }">
-            <Navbar
-              v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-              :mobile-sidebar-is-open="showMobileSidebar"
-              @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
-            <component :is="Component" ref="currentPage" />
-          </router-view>
-        </div>
-        <Transition
-          enter-from-class="translate-x-[150%] opacity-0"
-          leave-to-class="translate-x-[150%] opacity-0"
-          enter-active-class="transition duration-700"
-          leave-active-class="transition duration-700">
-          <div v-if="showInfoSidebar" class="border-l md:pt-6 flex">
-            <InfoSidebar :entity="$store.state.entityInfo" />
+        <div class="flex-1 overflow-y-hidden overflow-x-hidden">
+          <Navbar
+            v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
+            :mobile-sidebar-is-open="showMobileSidebar"
+            @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
+          <div class="flex w-full h-full overflow-y-hidden overflow-x-hidden">
+            <div class="flex w-full h-full overflow-y-auto overflow-x-hidden">
+              <router-view v-slot="{ Component }">
+                <component :is="Component" ref="currentPage" />
+              </router-view>
+            </div>
+
+            <div class="flex max-w-[950px]">
+              <Transition
+                enter-from-class="translate-x-[150%] opacity-0"
+                leave-to-class="translate-x-[150%] opacity-0"
+                enter-active-class="transition duration-200"
+                leave-active-class="transition duration-200">
+                <div v-if="showInfoSidebar" class="border-l z-0">
+                  <InfoSidebar :entity="$store.state.entityInfo" />
+                </div>
+              </Transition>
+              <div
+                class="flex flex-col items-center h-full overflow-y-hidden z-0 border-l max-w-[50px] min-w-[50px] px-1 bg-white">
+                <Button class="my-2" variant="minimal">
+                  <FeatherIcon name="alert-circle" class="w-5 h-5" />
+                </Button>
+                <Button class="my-2" variant="minimal">
+                  <FeatherIcon name="message-circle" class="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
           </div>
-        </Transition>
+        </div>
       </div>
       <router-view v-else />
     </div>
@@ -47,6 +63,7 @@ import Sidebar from "@/components/Sidebar.vue";
 import InfoSidebar from "@/components/InfoSidebar.vue";
 import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
+import { Button, FeatherIcon } from "frappe-ui";
 
 export default {
   name: "App",
@@ -56,6 +73,8 @@ export default {
     InfoSidebar,
     MobileSidebar,
     UploadTracker,
+    Button,
+    FeatherIcon,
   },
   data() {
     return {

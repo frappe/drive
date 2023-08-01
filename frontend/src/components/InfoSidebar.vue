@@ -1,12 +1,6 @@
 <template>
   <div class="min-w-[400px] max-w-[400px] flex flex-col">
-    <div v-if="$store.state.showInfo" class="mx-5 mb-3">
-      <div class="my-4">
-        <FeatherIcon
-          name="x"
-          class="h-4 cursor-pointer"
-          @click="$store.commit('setShowInfo', false)" />
-      </div>
+    <div v-if="$store.state.showInfo" class="w-full border-b p-5 mb-3">
       <div class="flex items-center">
         <svg
           v-if="entity.is_group"
@@ -49,7 +43,7 @@
     </div>
     <div
       v-if="!tab"
-      class="px-5 py-6 space-y-7 h-full flex flex-col z-0 overflow-y-auto">
+      class="px-5 py-6 space-y-7 h-full flex flex-col overflow-y-auto">
       <FileRender
         v-if="isImage && $store.state.showInfo"
         :preview-entity="entity" />
