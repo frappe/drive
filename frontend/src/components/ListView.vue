@@ -26,7 +26,7 @@
             v-for="entity in folderContents"
             :id="entity.name"
             :key="entity.name"
-            class="rounded select-none text-base border-b"
+            class="entity rounded select-none text-base border-b"
             :class="
               selectedEntities.includes(entity)
                 ? 'bg-green-100 rounded-xl'
