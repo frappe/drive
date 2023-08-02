@@ -11,14 +11,14 @@
       :to="item.route">
       <a
         :class="[
-          item.highlight()
-            ? 'bg-white shadow-sm text-gray-900'
-            : 'text-gray-800 hover:bg-gray-100',
+          item.highlight() ? 'bg-white shadow-sm ' : ' hover:bg-gray-100',
         ]"
         :href="href"
-        class="text-sm w-full mb-0.5 h-7 px-2 py-1 gap-3 rounded focus:outline-none flex items-center"
+        class="text-gray-700 text-sm w-full mb-0.5 h-7 px-2 py-1 gap-3 rounded focus:outline-none flex items-center"
         @click="navigate && $emit('toggleMobileSidebar')">
-        <FeatherIcon :name="item.icon" class="stroke-1.5 w-4 h-4" />
+        <FeatherIcon
+          :name="item.icon"
+          class="text-gray-700 stroke-1.5 w-4 h-4" />
         {{ item.label }}
       </a>
     </router-link>

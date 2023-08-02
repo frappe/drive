@@ -50,7 +50,7 @@
               <span class="truncate text-sm font-medium mb-1">
                 {{ folder.title }}
               </span>
-              <p class="truncate text-sm text-gray-600 mt-1">
+              <p class="truncate text-xs text-gray-600 mt-1">
                 {{ folder.modified }}
               </p>
             </div>
