@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from PIL import Image, ImageOps
 from io import BytesIO
+from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from werkzeug.utils import secure_filename
@@ -11,7 +12,7 @@ from drive.locks.distributed_lock import DistributedLock
 import cv2
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def create_image_thumbnail(entity_name):
     drive_entity = frappe.get_value(
         "Drive Entity",
@@ -21,11 +22,25 @@ def create_image_thumbnail(entity_name):
     )
     if not drive_entity or drive_entity.is_group:
         raise ValueError
-    if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-    ):
-        raise frappe.PermissionError("You do not have permission to view this file")
-
+    entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    flag = False
+    for z_entity_name in entity_ancestors:
+        result = frappe.db.exists(
+                {
+                    "doctype": "DocShare",
+                    "share_doctype": "Drive Entity",
+                    "share_name": z_entity_name,
+                    "everyone": 1,
+                }
+            )
+        if result:
+            flag = True
+            break
+    if not flag:
+        if not frappe.has_permission(
+            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+        ):
+            raise frappe.PermissionError("You do not have permission to view this file")
     with DistributedLock(drive_entity.path, exclusive=False):
         if frappe.cache().exists(entity_name):
             cached_thumbnbail = frappe.cache().get_value(entity_name)
@@ -55,7 +70,7 @@ def create_image_thumbnail(entity_name):
         return response
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def create_video_thumbnail(entity_name):
     drive_entity = frappe.get_value(
         "Drive Entity",
@@ -65,11 +80,25 @@ def create_video_thumbnail(entity_name):
     )
     if not drive_entity or drive_entity.is_group:
         raise ValueError
-    if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-    ):
-        raise frappe.PermissionError("You do not have permission to view this file")
-
+    entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    flag = False
+    for z_entity_name in entity_ancestors:
+        result = frappe.db.exists(
+                {
+                    "doctype": "DocShare",
+                    "share_doctype": "Drive Entity",
+                    "share_name": z_entity_name,
+                    "everyone": 1,
+                }
+            )
+        if result:
+            flag = True
+            break
+    if not flag:
+        if not frappe.has_permission(
+            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+        ):
+            raise frappe.PermissionError("You do not have permission to view this file")
     with DistributedLock(drive_entity.path, exclusive=False):
         if frappe.cache().exists(entity_name):
             cached_thumbnbail = frappe.cache().get_value(entity_name)
