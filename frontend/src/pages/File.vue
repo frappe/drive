@@ -69,13 +69,13 @@ export default {
       dropdownItems: [
         {
           label: "Log out",
-          handler: () => this.$store.dispatch("logout"),
+          onClick: () => this.$store.dispatch("logout"),
         },
       ],
       actionItems: [
         {
           label: "Download",
-          handler: () => {
+          onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.entityName}&trigger_download=1`;
           },
         },

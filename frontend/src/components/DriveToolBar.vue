@@ -107,7 +107,7 @@ export default {
     orderByItems() {
       return this.columnHeaders.map((header) => ({
         ...header,
-        handler: () => {
+        onClick: () => {
           this.$store.commit("setSortOrder", {
             field: header.field,
             label: header.label,

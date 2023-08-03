@@ -9,7 +9,7 @@
       :to="item.route">
       <a v-if="documentRoute(item)" :href="href" @click="navigate">
         {{ item.label }}
-        <span v-if="!isLastItem(index)" class="px-2">{{ ">" }}</span>
+        <span v-if="!isLastItem(index)" class="pl-1 pr-2">{{ "/" }}</span>
       </a>
       <input
         v-else="documentRoute(item)"
