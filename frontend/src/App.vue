@@ -29,24 +29,7 @@
             </div>
 
             <div class="flex max-w-[950px]">
-              <Transition
-                enter-from-class="translate-x-[150%] opacity-0"
-                leave-to-class="translate-x-[150%] opacity-0"
-                enter-active-class="transition duration-200"
-                leave-active-class="transition duration-200">
-                <div v-if="showInfoSidebar" class="border-l z-0">
-                  <InfoSidebar :entity="$store.state.entityInfo" />
-                </div>
-              </Transition>
-              <div
-                class="flex flex-col items-center h-full overflow-y-hidden z-0 border-l max-w-[50px] min-w-[50px] px-1 bg-white">
-                <Button class="my-2" variant="minimal">
-                  <FeatherIcon name="alert-circle" class="w-5 h-5" />
-                </Button>
-                <Button class="my-2" variant="minimal">
-                  <FeatherIcon name="message-circle" class="w-5 h-5" />
-                </Button>
-              </div>
+              <InfoSidebar :entity="$store.state.entityInfo" />
             </div>
           </div>
         </div>
