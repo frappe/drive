@@ -1,5 +1,5 @@
 <template>
-  <div class="h-2/3 place-items-center grid">
+  <div class="h-2/3 flex items-center justify-center">
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid">
@@ -39,7 +39,7 @@ export default {
   computed: {
     parsedStyled() {
       if (typeof this.link === "string") {
-        return "h-full w-full object-cover rounded-t-md";
+        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-2px)]";
       } else {
         return "h-10 w-10";
       }
