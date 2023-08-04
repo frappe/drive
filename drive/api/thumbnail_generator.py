@@ -9,8 +9,14 @@ from werkzeug.wsgi import wrap_file
 from werkzeug.utils import secure_filename
 from drive.utils.files import get_user_directory, create_user_directory, get_new_title
 from drive.locks.distributed_lock import DistributedLock
-from drive.utils.files import get_user_directory, create_user_directory, get_new_title, get_user_thumbnails_directory, create_user_thumbnails_directory, create_thumbnail
-import cv2
+from drive.utils.files import (
+    get_user_directory,
+    create_user_directory,
+    get_new_title,
+    get_user_thumbnails_directory,
+    create_user_thumbnails_directory,
+    create_thumbnail,
+)
 
 @frappe.whitelist(allow_guest=True)
 def create_image_thumbnail(entity_name):
@@ -26,19 +32,22 @@ def create_image_thumbnail(entity_name):
     flag = False
     for z_entity_name in entity_ancestors:
         result = frappe.db.exists(
-                {
-                    "doctype": "DocShare",
-                    "share_doctype": "Drive Entity",
-                    "share_name": z_entity_name,
-                    "everyone": 1,
-                }
-            )
+            {
+                "doctype": "DocShare",
+                "share_doctype": "Drive Entity",
+                "share_name": z_entity_name,
+                "everyone": 1,
+            }
+        )
         if result:
             flag = True
             break
     if not flag:
         if not frappe.has_permission(
-            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+            doctype="Drive Entity",
+            doc=entity_name,
+            ptype="read",
+            user=frappe.session.user,
         ):
             raise frappe.PermissionError("You do not have permission to view this file")
     with DistributedLock(drive_entity.path, exclusive=False):
@@ -52,17 +61,20 @@ def create_image_thumbnail(entity_name):
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
             user_thumbnails_directory = get_user_thumbnails_directory()
-            thumbnail_getpath= Path(user_thumbnails_directory,entity_name)
+            thumbnail_getpath = Path(user_thumbnails_directory, entity_name)
             with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
                 thumbnail_data = BytesIO(file.read())
             response = Response(
-                wrap_file(frappe.request.environ,thumbnail_data),
+                wrap_file(frappe.request.environ, thumbnail_data),
                 direct_passthrough=True,
             )
             response.headers.set("Content-Type", "image/jpeg")
-            response.headers.set("Content-Disposition", "inline",filename=entity_name)
-            frappe.cache().set_value(entity_name,)
+            response.headers.set("Content-Disposition", "inline", filename=entity_name)
+            frappe.cache().set_value(
+                entity_name,thumbnail_data
+            )
         return response
+
 
 @frappe.whitelist(allow_guest=True)
 def create_video_thumbnail(entity_name):
@@ -78,19 +90,22 @@ def create_video_thumbnail(entity_name):
     flag = False
     for z_entity_name in entity_ancestors:
         result = frappe.db.exists(
-                {
-                    "doctype": "DocShare",
-                    "share_doctype": "Drive Entity",
-                    "share_name": z_entity_name,
-                    "everyone": 1,
-                }
-            )
+            {
+                "doctype": "DocShare",
+                "share_doctype": "Drive Entity",
+                "share_name": z_entity_name,
+                "everyone": 1,
+            }
+        )
         if result:
             flag = True
             break
     if not flag:
         if not frappe.has_permission(
-            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+            doctype="Drive Entity",
+            doc=entity_name,
+            ptype="read",
+            user=frappe.session.user,
         ):
             raise frappe.PermissionError("You do not have permission to view this file")
     with DistributedLock(drive_entity.path, exclusive=False):
@@ -104,14 +119,16 @@ def create_video_thumbnail(entity_name):
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
             user_thumbnails_directory = get_user_thumbnails_directory()
-            thumbnail_getpath= Path(user_thumbnails_directory,entity_name)
+            thumbnail_getpath = Path(user_thumbnails_directory, entity_name)
             with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
                 thumbnail_data = BytesIO(file.read())
             response = Response(
-                wrap_file(frappe.request.environ,thumbnail_data),
+                wrap_file(frappe.request.environ, thumbnail_data),
                 direct_passthrough=True,
             )
             response.headers.set("Content-Type", "image/jpeg")
-            response.headers.set("Content-Disposition", "inline",filename=entity_name)
-            frappe.cache().set_value(entity_name,)
+            response.headers.set("Content-Disposition", "inline", filename=entity_name)
+            frappe.cache().set_value(
+                entity_name,thumbnail_data
+            )
         return response
