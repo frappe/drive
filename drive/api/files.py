@@ -10,7 +10,7 @@ import uuid
 import mimetypes
 import hashlib
 import json
-from drive.utils.files import get_user_directory, create_user_directory, get_new_title
+from drive.utils.files import get_user_directory, create_user_directory, get_new_title, get_user_thumbnails_directory, create_user_thumbnails_directory, create_thumbnail
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
 
@@ -68,7 +68,6 @@ def create_document_entity(title, content, parent=None):
     if parent == user_directory.name:
         drive_entity.share(frappe.session.user, write=1, share=1)
     return drive_entity
-
 
 @frappe.whitelist()
 def upload_file(fullpath=None, parent=None):
@@ -150,13 +149,11 @@ def upload_file(fullpath=None, parent=None):
             drive_entity.flags.file_created = True
             # frappe.local.rollback_observers.append(drive_entity)
             drive_entity.insert()
-
             if parent == user_directory.name:
                 drive_entity.share(frappe.session.user, write=1, share=1)
-
+            frappe.enqueue(create_thumbnail,queue="default",timeout=None,now=True,entity_name=name,path=path,mime_type=mime_type,)
             return drive_entity
-
-
+        
 @frappe.whitelist()
 def create_folder(title, parent=None):
     """
