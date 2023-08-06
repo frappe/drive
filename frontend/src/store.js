@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import { call } from "frappe-ui";
+import { clear } from "idb-keyval";
 
 let getCookies = () => {
   return Object.fromEntries(
@@ -102,6 +103,7 @@ const store = createStore({
   actions: {
     async login({ commit }, payload) {
       commit("setAuth", { loading: true });
+      clear();
       let res = await call("login", {
         usr: payload.email,
         pwd: payload.password,
@@ -124,6 +126,7 @@ const store = createStore({
     async logout({ commit }) {
       commit("setAuth", { loading: true });
       await call("logout");
+      clear();
       window.location.reload();
     },
     clearUploads({ commit }) {
