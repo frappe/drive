@@ -7,14 +7,21 @@
     placeholder="Start typing ..."
     :isWritable="isWriteable"
     :entityName="entityName" />
+  <div v-if="$route.meta.documentPage" class="flex max-w-[950px]">
+    <DocInfoSidebar
+      v-if="$route.meta.documentPage"
+      :entity="$store.state.entityInfo" />
+  </div>
 </template>
 
 <script>
+import DocInfoSidebar from "@/components/DocInfoSidebar.vue";
 import TextEditor from "@/components/DocEditor/TextEditor.vue";
 import { fromUint8Array, toUint8Array } from "js-base64";
 
 export default {
   components: {
+    DocInfoSidebar,
     TextEditor,
   },
   props: {
@@ -47,6 +54,7 @@ export default {
   },
 
   mounted() {
+    this.$store.commit("setShowInfo", true);
     this.$store.commit("setCtaButton", {
       text: "Upload",
       prefix: "upload",
@@ -90,6 +98,7 @@ export default {
       });
   },
   beforeUnmount() {
+    this.$store.commit("setShowInfo", false);
     clearInterval(this.timer);
     this.$resources.updateDocument.submit({
       entity_name: this.entityName,

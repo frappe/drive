@@ -1,9 +1,9 @@
 <template>
-  <section class="text-base float-right w-3/12 flex flex-col gap-2">
+  <section class="text-base float-right w-full flex flex-col">
     <article
       v-for="(comment, i) in allComments"
       :key="i + ''"
-      class="current-comment bg-white shadow-sm rounded-md border flex flex-col gap-2 mb-8 p-2 pb-0"
+      class="current-comment bg-white flex flex-col border-b"
       :class="[
         `${
           comment.jsonComments.uuid === activeCommentsInstance.uuid
@@ -17,21 +17,29 @@
       <div
         v-for="(jsonComment, j) in comment.jsonComments.comments"
         :key="`${j}_${Math.random()}`"
-        class="border-b py-2 px-2 pb-6">
-        <div class="flex justify-start items-center mb-2">
-          <Avatar class="mr-2" :label="jsonComment.userName" />
-          <div class="">
-            <span class="text-sm font-semibold">
-              {{ jsonComment.userName }}
+        class="my-4">
+        <div class="mb-2 flex gap-3 items-center">
+          <!--           <Avatar class="mr-2" :label="jsonComment.userName" />
+ -->
+          <Avatar
+            :label="jsonComment.userName"
+            :image-u-r-l="jsonComment.user_image"
+            class="h-7 w-7" />
+          <div>
+            <span class="my-1">
+              <span class="text-sm font-medium">
+                {{ jsonComment.userName }}
+              </span>
+              <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
+              <span class="text-gray-700 text-sm">
+                {{ formatDate(jsonComment.time) }}
+              </span>
             </span>
-            <br />
-            <span class="text-sm text-slate-600">
-              {{ formatDate(jsonComment.time) }}
-            </span>
+            <div class="text-base text-gray-700">
+              {{ jsonComment.content }}
+            </div>
           </div>
         </div>
-
-        <p class="pl-1">{{ jsonComment.content }}</p>
       </div>
 
       <section
@@ -44,20 +52,26 @@
               : 'max-h-0 border-blue-300'
           }`,
         ]">
-        <textarea
-          :ref="
-            (el) => {
-              textareaRefs[comment.jsonComments.uuid] = el;
-            }
-          "
-          class="placeholder-gray-500 form-textarea block w-full resize-none"
-          v-model="commentText"
-          placeholder="Add comment..."
-          @keypress.enter.stop.prevent="setComment" />
-
-        <section class="flex flex-row gap-2 justify-end">
+        <div class="flex items-center gap-3">
+          <Avatar label="Admin" class="h-7 w-7" />
+          <textarea
+            :ref="
+              (el) => {
+                textareaRefs[comment.jsonComments.uuid] = el;
+              }
+            "
+            class="placeholder-gray-500 max-h-8 form-textarea block w-full resize-none"
+            v-model="commentText"
+            placeholder="Add comment..."
+            @keypress.enter.stop.prevent="setComment" />
+          <!-- <Input
+                      v-model="newComment"
+                      type="text"
+                      class="border-gray-400 placeholder-gray-500 w-full grow bg-white focus:bg-white"
+                      placeholder="Add comment"
+                      @keydown.enter="postComment" /> -->
           <Button appearance="primary" @click="setComment">Add</Button>
-        </section>
+        </div>
       </section>
     </article>
   </section>
@@ -68,7 +82,7 @@ import { ref, watch, computed } from "vue";
 import { Avatar, Button, Input } from "frappe-ui";
 import { formatDate } from "@/utils/format";
 
-const emit = defineEmits(["setComment"]);
+const emit = defineEmits(["setComment", "focusContent"]);
 
 interface Props {
   allComments: any[];
@@ -76,7 +90,7 @@ interface Props {
     uuid: "";
     comments: [];
   };
-  focusContent: ({ from, to }: { from: number; to: number }) => void;
+  /* focusContent: ({ from, to }: { from: number; to: number }) => void; */
   /* formatDate: (d: any) => string | null */
 }
 
@@ -89,6 +103,10 @@ const textareaRefs = ref<Record<string, any>>({});
 const activeCommentInstanceUuid = computed(
   () => props.activeCommentsInstance.uuid
 );
+
+const focusContent = (val) => {
+  emit("focusContent", val);
+};
 
 const setComment = () => {
   emit("setComment", commentText.value);
@@ -108,12 +126,11 @@ watch(activeCommentInstanceUuid, (val) => {
 
 <style lang="scss">
 .current-comment {
-  transition: all 0.1s ease-in-out;
+  transition: all 0.05s;
 
   &.active {
-    transform: translate(-2rem, 1rem);
-    box-shadow: -3px 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding-top: 45px;
+    padding-bottom: 45px;
   }
 }
 </style>

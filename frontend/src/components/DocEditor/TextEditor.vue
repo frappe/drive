@@ -1,59 +1,56 @@
 <template>
-  <div class="sticky top-0 z-10">
-    <div class="w-full">
-      <MenuBar
-        v-if="editor"
-        :entityName="entityName"
-        :editable="editable"
-        :is-comment-mode-on="isCommentModeOn"
-        :is-read-only="isReadOnly" />
-      <TextEditorFixedMenu v-if="editor && editable" :buttons="fixedMenu" />
-    </div>
-  </div>
-  <BubbleMenu
-    v-on-outside-click="toggleCommentMenu"
-    v-if="editor && editable"
-    :editor="editor">
+  <div class="flex-col w-full">
+    <!-- <TextEditorFixedMenu v-if="editor && editable" :buttons="fixedMenu" /> -->
     <div
-      id="comment-box"
-      v-if="
-        showCommentMenu &&
-        !editor.state.selection.empty &&
-        !activeCommentsInstance.uuid
-      "
+      class="flex text-sm justify-center items-center text-gray-600 h-12 w-full">
+      Created {{ $store.state.entityInfo.creation }}
+    </div>
+    <BubbleMenu
+      v-on-outside-click="toggleCommentMenu"
+      v-if="editor && editable"
       :editor="editor">
       <div
-        class="absolute top-10 left-40 w-96 p-4 rounded-md border bg-white border-gray-100 shadow-lg">
-        <textarea
-          v-model="commentText"
-          cols="50"
-          rows="4"
-          placeholder="Type your comment"
-          style="resize: none"
-          class="placeholder-gray-500 form-input block w-full mb-2"
-          @keypress.enter.stop.prevent="() => setComment()" />
-        <section class="flex justify-end gap-2">
-          <Button @click="() => discardComment()">Discard</Button>
-          <Button appearance="primary" @click="() => setComment()">Done</Button>
-        </section>
+        id="comment-box"
+        v-if="
+          showCommentMenu &&
+          !editor.state.selection.empty &&
+          !activeCommentsInstance.uuid
+        "
+        :editor="editor">
+        <div
+          class="absolute top-10 left-40 w-96 p-4 rounded-md border bg-white border-gray-100 shadow-lg">
+          <textarea
+            v-model="commentText"
+            cols="50"
+            rows="4"
+            placeholder="Type your comment"
+            style="resize: none"
+            class="placeholder-gray-500 form-input block w-full mb-2"
+            @keypress.enter.stop.prevent="() => setComment()" />
+          <section class="flex justify-end gap-2">
+            <Button @click="() => discardComment()">Discard</Button>
+            <Button appearance="primary" @click="() => setComment()">
+              Done
+            </Button>
+          </section>
+        </div>
       </div>
-    </div>
-    <Menu
-      class="rounded-md border border-gray-100 shadow-lg"
-      :buttons="bubbleMenuButtons" />
-  </BubbleMenu>
-  <div class="flex w-screen items-start justify-center space-x-4 mt-3">
-    <editor-content
-      id="editorElem"
-      class="bg-white shadow-sm rounded-md border"
-      :editor="editor" />
-    <OuterCommentVue
+      <Menu
+        class="rounded-md border border-gray-100 shadow-lg"
+        :buttons="bubbleMenuButtons" />
+    </BubbleMenu>
+    <div class="flex w-full items-start justify-center">
+      <editor-content
+        class="flex w-full items-start justify-center"
+        :editor="editor" />
+      <!-- <OuterCommentVue
       v-if="!!allComments.length"
       :active-comments-instance="activeCommentsInstance"
       :all-comments="allComments"
-      :focus-content="focusContent"
+      @focus-content-emit="focusContent"
       :is-comment-mode-on="isCommentModeOn"
-      @set-comment="setComment" />
+      @set-comment="setComment" /> -->
+    </div>
   </div>
 </template>
 
@@ -339,14 +336,27 @@ export default {
     },
   },
   watch: {
-    /*         allComments: {
+    activeCommentsInstance: {
       handler(newVal) {
-        if (newVal) { // check if userid is available
-          console.log(newVal)
+        if (newVal) {
+          // check if userid is available
+          this.$store.commit(
+            "setActiveCommentsInstance",
+            JSON.stringify(newVal)
+          );
         }
       },
-      immediate: true // make this watch function is called when component created
-    }, */
+      immediate: true,
+    },
+    allComments: {
+      handler(newVal) {
+        if (newVal) {
+          // check if userid is available
+          this.$store.commit("setAllComments", JSON.stringify(newVal));
+        }
+      },
+      immediate: true, // make this watch function is called when component created
+    },
     /*     modelValue(value) {
       const isSame =
         JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
@@ -384,6 +394,16 @@ export default {
       this.isCommentModeOn = true;
       console.log(this.editor.state.selection.content().size)
     }); */
+
+    this.emitter.on("setContentEmit", (val) => {
+      console.log(val);
+      this.setComment(val);
+    });
+
+    this.emitter.on("focusContentEmit", (val) => {
+      console.log(val);
+      this.focusContent(val);
+    });
 
     const doc = new Y.Doc();
     Y.applyUpdate(doc, this.modelValue);
@@ -494,6 +514,8 @@ export default {
     });
   },
   beforeUnmount() {
+    console.log("fired");
+    console.log(this.allComments);
     this.editor.destroy();
     this.provider.destroy();
     this.provider = null;
@@ -507,10 +529,10 @@ export default {
   outline: none;
   caret-color: theme("colors.blue.600");
   word-break: break-word;
-  min-width: 816px;
-  max-width: 816px;
-  min-height: 1056px;
-  padding: 2cm;
+  min-width: 1100px;
+  max-width: 1100px;
+  min-height: 90vh;
+  padding: 2rem;
 }
 
 /* Firefox */

@@ -594,6 +594,7 @@ export default {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
           this.previewEntity = data;
+          this.$store.commit("setEntityInfo", data);
         },
         onError(data) {
           console.log(data);
