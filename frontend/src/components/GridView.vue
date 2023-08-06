@@ -16,12 +16,12 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="w-40 h-40 rounded-lg border group select-none entity"
+            class="p-2 w-44 h-30 rounded-lg border-2 group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
-                ? 'bg-green-100 border-2 border-[#5BB98C]'
-                : 'hover:shadow-2xl'
+                ? 'bg-green-100 border-[#5BB98C]'
+                : 'border-gray-50 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(folder)"
             @click="selectEntity(folder, $event, displayOrderedEntities)"
@@ -33,24 +33,24 @@
             @dragenter.prevent
             @dragover.prevent
             @mousedown.stop>
-            <div class="h-2/3 place-items-center grid">
+            <div class="flex items-start">
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="40"
-                height="40"
+                width="30"
+                height="30"
                 viewBox="0 0 40 40"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
               </svg>
             </div>
-            <div class="px-2 pb-1 h-1/3 content-center grid">
-              <span class="truncate text-sm font-medium mb-1">
+            <div class="content-center grid">
+              <span class="truncate text-sm font-medium mt-4">
                 {{ folder.title }}
               </span>
-              <p class="truncate text-xs text-gray-600 mt-1">
-                {{ folder.modified }}
+              <p class="truncate text-xs text-gray-600 mt-2">
+                {{ folder.file_size }}
               </p>
             </div>
           </div>
@@ -65,12 +65,12 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-40 h-40 rounded-lg border group select-none entity"
+            class="w-44 h-44 rounded-lg border-2 group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(file)
-                ? 'bg-green-100 border-2 border-[#5BB98C]'
-                : 'hover:shadow-2xl'
+                ? 'bg-green-100 border-[#5BB98C]'
+                : 'border-gray-50 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(file)"
             @click="selectEntity(file, $event, displayOrderedEntities)"
@@ -93,7 +93,7 @@
     </div>
     <div
       id="selectionElement"
-      class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
+      class="h-20 w-20 absolute border-2 bg-green-100 border-[#5BB98C] opacity-50 mix-blend-multiply"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
   </div>
@@ -274,6 +274,7 @@ export default {
       );
     },
     dblClickEntity(entity) {
+      this.$store.commit("setEntityInfo", entity);
       this.$emit("openEntity", entity);
     },
     deselectAll() {
@@ -286,6 +287,7 @@ export default {
       if (this.selectedEntities.length <= 1) {
         this.selectEntity(entity, event, entities);
       }
+      console.log(entity);
       this.$store.commit("setEntityInfo", entity);
       this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
     },

@@ -2,10 +2,9 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white z-10 sticky top-0 border-b"
-    :class="{ 'border-none': $route.meta.documentPage }">
+    class="bg-white z-10 sticky top-0 border-b">
     <div
-      class="mx-auto py-2 px-5 h-16 md:h-12 z-10 flex items-center justify-between">
+      class="mx-auto pl-4 py-2 pr-2 h-16 md:h-12 z-10 flex items-center justify-between">
       <Breadcrumbs
         :breadcrumb-links="currentBreadcrumbs"
         class="hidden md:block" />

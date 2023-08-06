@@ -81,7 +81,7 @@
     </div>
     <div
       id="selectionElement"
-      class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
+      class="h-20 w-20 absolute border-2 bg-green-100 border-[#5BB98C] opacity-50 mix-blend-multiply"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
   </div>
@@ -252,6 +252,7 @@ export default {
       );
     },
     dblClickEntity(entity) {
+      this.$store.commit("setEntityInfo", entity);
       this.$emit("openEntity", entity);
     },
     deselectAll() {

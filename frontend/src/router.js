@@ -16,7 +16,7 @@ const routes = [
   {
     path: "/document/:entityName",
     name: "Document",
-    meta: { sidebar: false, documentPage: true, isHybridRoute: true },
+    meta: { sidebar: true, documentPage: true, isHybridRoute: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
   },
