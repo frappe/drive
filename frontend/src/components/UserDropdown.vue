@@ -7,7 +7,7 @@
         onClick: () => logout(),
       },
     ]">
-    <template v-slot="{ open }">
+    <template #default>
       <button
         class="flex w-full items-center space-x-2 rounded-md p-2 text-left"
         :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'">
@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     logout() {
-      this.$session.logout.submit();
+      this.$store.dispatch("logout");
     },
   },
   computed: {
