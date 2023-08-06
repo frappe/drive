@@ -504,7 +504,7 @@ def list_entity_comments(entity_name):
             & (Comment.reference_doctype == "Drive Entity")
             & (Comment.reference_name == entity_name)
         )
-        .orderby(Comment.creation, order=Order.desc)
+        .orderby(Comment.creation, order=Order.asc)
     )
     return query.run(as_dict=True)
 

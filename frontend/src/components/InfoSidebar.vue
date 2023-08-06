@@ -5,22 +5,19 @@
     enter-active-class="transition duration-200"
     leave-active-class="transition duration-200">
     <div
-      v-if="showInfoSidebar && entity"
+      v-if="showInfoSidebar"
       class="flex flex-col justify-start w-full min-w-[400px] max-w-[400px] min-h-full border-l z-0">
-      <div class="w-full border-b p-4">
+      <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
           <svg
             v-if="entity.is_group"
             :style="{ fill: entity.color }"
             :draggable="false"
             class="h-5 mr-2.5"
-            viewBox="0 0 46 40"
-            fill="#32a852"
+            viewBox="0 0 40 40"
             xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M0.368197 17.3301C0.17175 15.5535 1.56262 14.0004 3.35002 14.0004H42.65C44.4374 14.0004 45.8283 15.5535 45.6318 17.3301L43.7155 34.6599C43.3794 37.6999 40.8104 40.0004 37.7519 40.0004H8.24812C5.18961 40.0004 2.62062 37.6999 2.28447 34.6599L0.368197 17.3301Z" />
-            <path
-              d="M43.125 11V9C43.125 6.79086 41.3341 5 39.125 5H20.312C20.1914 5 20.0749 4.95643 19.9839 4.8773L14.6572 0.245394C14.4752 0.0871501 14.2422 0 14.001 0H6.87501C4.66587 0 2.87501 1.79086 2.87501 4V11C2.87501 11.5523 3.32272 12 3.87501 12H42.125C42.6773 12 43.125 11.5523 43.125 11Z" />
+              d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
           </svg>
           <img
             v-else
@@ -32,8 +29,6 @@
           </div>
         </div>
       </div>
-      <!-- :class="$store.state.showInfo ? 'min-h-[45px]' : 'min-h-[48px]'" -->
-      <!-- grow  min-h-full -->
       <div v-if="entity">
         <div class="flex flex-col justify-start">
           <div
@@ -44,12 +39,19 @@
                 : 'text-gray-600 cursor-pointer flex-none '
             "
             @click="tab = 0">
-            <span class="font-medium text-lg">Info</span>
+            <div class="flex items-center">
+              <FeatherIcon name="alert-circle" class="h-4 mr-2 stroke-2" />
+              <span class="font-medium text-lg">Info</span>
+            </div>
+
             <div
               v-if="tab === 0"
               class="space-y-7 min-h-full flex-auto flex flex-col z-0 overflow-y-auto">
               <FileRender
-                v-if="isImage && showInfoSidebar"
+                v-if="
+                  $store.state.entityInfo.mime_type?.startsWith('image') &&
+                  showInfoSidebar
+                "
                 :preview-entity="entity" />
               <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium my-4">Manage Access</div>
@@ -125,9 +127,12 @@
             class="p-4 border-b"
             :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
             @click="tab = 1">
-            <span class="font-medium text-lg">Comments</span>
+            <div class="flex items-center">
+              <FeatherIcon name="message-circle" class="h-4 mr-2 stroke-2" />
+              <span class="font-medium text-lg">Comments</span>
+            </div>
             <div v-if="tab === 1" class="h-full overflow-y-auto">
-              <div v-if="entity.allow_comments" class="space-y-5">
+              <div v-if="entity.allow_comments" class="space-y-6 pb-4">
                 <div
                   v-for="comment in $resources.comments.data"
                   :key="comment"
@@ -160,7 +165,6 @@
                     <Input
                       v-model="newComment"
                       type="text"
-                      class="border-gray-400 placeholder-gray-500 w-full grow bg-white focus:bg-white"
                       placeholder="Add comment"
                       @keydown.enter="postComment" />
                   </div>
@@ -176,54 +180,69 @@
           </div>
         </div>
       </div>
-      <ShareDialog
-        v-if="showShareDialog"
-        v-model="showShareDialog"
-        :entity-name="entity.name" />
+      <div
+        v-else
+        class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center">
+        <svg viewBox="0 0 78 85" class="w-1/6 fill-transparent stroke-2 pb-6">
+          <path
+            d="M42 31H66 M42 51H66 M42 25H55 M42 45H55 M65 9V8C65 4.13401 61.866 1 58 1H8C4.13401 1 1 4.13401 1 8V66C1 69.866 4.13401 73 8 73H10 M70 12H20C16.134 12 13 15.134 13 19V77C13 80.866 16.134 84 20 84H70C73.866 84 77 80.866 77 77V19C77 15.134 73.866 12 70 12Z"
+            stroke="#525252" />
+          <path
+            d="M32 43H26C24.8954 43 24 43.8954 24 45V51C24 52.1046 24.8954 53 26 53H32C33.1046 53 34 52.1046 34 51V45C34 43.8954 33.1046 43 32 43Z M32 23H26C24.8954 23 24 23.8954 24 25V31C24 32.1046 24.8954 33 26 33H32C33.1046 33 34 32.1046 34 31V25C34 23.8954 33.1046 23 32 23Z"
+            stroke="#525252" />
+        </svg>
+        <p class="text-base font-medium">No file selected</p>
+        <p class="text-sm text-gray-600">
+          Select a file to get more information
+        </p>
+      </div>
     </div>
   </Transition>
 
   <div
     class="flex flex-col items-center h-full overflow-y-hidden z-0 border-l max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
-      @click="tab = 0"
       class="mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-100'
+          : ' hover:bg-gray-50',
       ]"
-      variant="minimal">
+      variant="minimal"
+      @click="switchTab(0)">
       <FeatherIcon
         name="alert-circle"
-        stroke-width="2"
         :class="[
           tab === 0 && showInfoSidebar
             ? 'text-black-overlay-700'
             : 'text-gray-600',
         ]"
-        class="text-gray-600 w-full h-full" />
+        class="text-gray-600 w-full h-full stroke-2" />
     </Button>
     <Button
-      @click="tab = 1"
       class="text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-100'
+          : ' hover:bg-gray-50',
       ]"
-      variant="minimal">
+      variant="minimal"
+      @click="switchTab(1)">
       <FeatherIcon
         name="message-circle"
-        stroke-width="2"
         :class="[
           tab === 1 && showInfoSidebar
             ? 'text-black-overlay-700'
             : 'text-gray-600',
         ]"
-        class="text-gray-600 w-full h-full" />
+        class="text-gray-600 w-full h-full stroke-2" />
     </Button>
   </div>
+
+  <ShareDialog
+    v-if="showShareDialog && entity"
+    v-model="showShareDialog"
+    :entity-name="entity.name" />
 </template>
 
 <script>
@@ -247,12 +266,12 @@ export default {
     FileRender,
   },
 
-  props: {
+  /*   props: {
     entity: {
       type: Object,
       required: true,
     },
-  },
+  }, */
 
   setup() {
     return { formatMimeType, getIconUrl };
@@ -267,6 +286,16 @@ export default {
     };
   },
 
+  watch: {
+    entity() {
+      if (this.entity) {
+        this.$resources.comments.fetch();
+        this.$resources.userTags.fetch();
+        this.$resources.entityTags.fetch();
+      }
+    },
+  },
+
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
@@ -277,8 +306,8 @@ export default {
     imageURL() {
       return this.$store.state.user.imageURL;
     },
-    isImage() {
-      return this.entity.mime_type?.startsWith("image/");
+    entity() {
+      return this.$store.state.entityInfo;
     },
     formattedMimeType() {
       if (this.entity.is_group) return "Folder";
@@ -292,11 +321,19 @@ export default {
       );
     },
     showInfoSidebar() {
-      return this.$store.state.showInfo && this.$store.state.entityInfo;
+      return this.$store.state.showInfo;
     },
   },
 
   methods: {
+    switchTab(val) {
+      if (this.tab === val) {
+        this.$store.commit("setShowInfo", !this.$store.state.showInfo);
+      } else {
+        this.tab = val;
+      }
+    },
+
     async postComment() {
       if (this.newComment.length) {
         try {
@@ -320,7 +357,7 @@ export default {
     comments() {
       return {
         url: "drive.api.files.list_entity_comments",
-        params: { entity_name: this.entity.name },
+        params: { entity_name: this.entity?.name },
         onSuccess(data) {
           data.forEach((comment) => {
             comment.creation = formatDate(comment.creation);
@@ -329,7 +366,7 @@ export default {
         onError(error) {
           console.log(error);
         },
-        auto: true,
+        auto: false,
       };
     },
     userTags() {
@@ -340,19 +377,19 @@ export default {
             console.log(error.messages);
           }
         },
-        auto: true,
+        auto: false,
       };
     },
     entityTags() {
       return {
         url: "drive.api.tags.get_entity_tags",
-        params: { entity: this.entity.name },
+        params: { entity: this.entity?.name },
         onError(error) {
           if (error.messages) {
             console.log(error.messages);
           }
         },
-        auto: true,
+        auto: false,
       };
     },
   },

@@ -27,9 +27,8 @@
                 <component :is="Component" ref="currentPage" />
               </router-view>
             </div>
-
-            <div class="flex max-w-[950px]">
-              <InfoSidebar :entity="$store.state.entityInfo" />
+            <div v-if="!$route.meta.documentPage" class="flex max-w-[950px]">
+              <InfoSidebar v-if="!$route.meta.documentPage" />
             </div>
           </div>
         </div>
@@ -83,12 +82,12 @@ export default {
       return this.$store.state.showInfo && this.$store.state.entityInfo;
     },
   },
-  watch: {
+  /* watch: {
     $route() {
       this.$store.commit("setEntityInfo", null);
       this.$store.commit("setShowInfo", false);
     },
-  },
+  }, */
   async mounted() {
     let componentContext = this;
     this.dropzone = new Dropzone(this.$el.parentNode, {
@@ -296,3 +295,25 @@ function non_merge_mode(file) {
   return s;
 }
 </script>
+
+<style>
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(237, 237, 237);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #2f3237;
+}
+</style>
