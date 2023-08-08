@@ -10,7 +10,14 @@ import uuid
 import mimetypes
 import hashlib
 import json
-from drive.utils.files import get_user_directory, create_user_directory, get_new_title
+from drive.utils.files import (
+    get_user_directory,
+    create_user_directory,
+    get_new_title,
+    get_user_thumbnails_directory,
+    create_user_thumbnails_directory,
+    create_thumbnail,
+)
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
 
@@ -150,10 +157,20 @@ def upload_file(fullpath=None, parent=None):
             drive_entity.flags.file_created = True
             # frappe.local.rollback_observers.append(drive_entity)
             drive_entity.insert()
-
             if parent == user_directory.name:
                 drive_entity.share(frappe.session.user, write=1, share=1)
-
+            
+            if(mime_type.startswith("image") or mime_type.startswith("video")):
+                frappe.enqueue(
+                    create_thumbnail,
+                    queue="default",
+                    timeout=None,
+                    now=True,
+                    #will set to false once reactivity in new UI is solved 
+                    entity_name=name,
+                    path=path,
+                    mime_type=mime_type,
+                )
             return drive_entity
 
 
@@ -324,17 +341,20 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         frappe.throw("Specified folder has been trashed by the owner")
     share_every_perm = False
     if frappe.db.exists(
-                {
-                    "doctype": "DocShare",
-                    "share_doctype": "Drive Entity",
-                    "share_name": entity_name,
-                    "everyone": 1,
-                }
-            ):
-                share_every_perm = True
+        {
+            "doctype": "DocShare",
+            "share_doctype": "Drive Entity",
+            "share_name": entity_name,
+            "everyone": 1,
+        }
+    ):
+        share_every_perm = True
     if not share_every_perm:
         if not frappe.has_permission(
-            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+            doctype="Drive Entity",
+            doc=entity_name,
+            ptype="read",
+            user=frappe.session.user,
         ):
             frappe.throw(
                 "Cannot access folder due to insufficient permissions",

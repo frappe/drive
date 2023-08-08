@@ -2,6 +2,9 @@ import frappe
 import os
 from pathlib import Path
 import hashlib
+from PIL import Image, ImageOps
+from drive.locks.distributed_lock import DistributedLock
+import cv2
 
 
 def create_user_directory():
@@ -90,3 +93,73 @@ def get_new_title(entity, parent_name):
         if new_title not in sibling_entity_titles:
             return new_title
         i += 1
+
+
+def create_user_thumbnails_directory():
+    user_directory_name = _get_user_directory_name()
+    user_directory_thumnails_path = Path(
+        frappe.get_site_path("private/files"), user_directory_name, "thumbnails"
+    )
+    user_directory_thumnails_path.mkdir(exist_ok=False)
+    return user_directory_thumnails_path
+
+
+def get_user_thumbnails_directory(user=None):
+    user_directory_name = _get_user_directory_name(user)
+    user_directory_thumnails_path = Path(
+        frappe.get_site_path("private/files"), user_directory_name, "thumbnails"
+    )
+    if not os.path.exists(user_directory_thumnails_path):
+        raise FileNotFoundError("User thumbnails directory does not exist")
+    return user_directory_thumnails_path
+
+
+def create_thumbnail(entity_name, path, mime_type):
+    user_thumbnails_directory = None
+    try:
+        user_thumbnails_directory = get_user_thumbnails_directory()
+    except FileNotFoundError:
+        user_thumbnails_directory = create_user_thumbnails_directory()
+
+    thumbnail_savepath = Path(user_thumbnails_directory, entity_name)
+    with DistributedLock(path, exclusive=False):
+        if mime_type.startswith("image"):
+            max_retries = 3
+            retry_count = 0
+            while retry_count < max_retries:
+                try:
+                    image_path = path
+                    with Image.open(image_path).convert("RGB") as image:
+                        image = ImageOps.exif_transpose(image)
+                        image.thumbnail((250, 250))
+                        image.save(str(thumbnail_savepath) + ".thumbnail", format="JPEG")
+                    break
+                except Exception as e:
+                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
+                    retry_count += 1
+            else:
+                print("Failed to create thumbnail after maximum retries.")
+
+        if mime_type.startswith("video"):
+            max_retries = 3
+            retry_count = 0
+            while retry_count < max_retries:
+                try:
+                    video_path = str(path)
+                    cap = cv2.VideoCapture(video_path)
+                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                    target_frame = int(frame_count / 2)
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                    ret, frame = cap.read()
+                    cap.release()
+                    _, thumbnail_encoded = cv2.imencode(
+                        ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+                    )
+                    with open(str(thumbnail_savepath) + ".thumbnail", "wb") as f:
+                        f.write(thumbnail_encoded)
+                    break
+                except Exception as e:
+                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
+                    retry_count += 1
+            else:
+                print("Failed to create thumbnail after maximum retries.")

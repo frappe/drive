@@ -3,7 +3,9 @@ from frappe.utils.nestedset import NestedSet, get_ancestors_of
 from pathlib import Path
 import shutil
 import uuid
-from drive.utils.files import get_user_directory, create_user_directory, get_new_title
+from drive.utils.files import get_user_directory, create_user_directory, get_new_title, get_user_thumbnails_directory
+
+
 
 class DriveEntity(NestedSet):
     nsm_parent_field = "parent_drive_entity"
@@ -45,7 +47,7 @@ class DriveEntity(NestedSet):
                 )
                 child.delete(ignore_permissions=has_write_access)
             super().on_trash()
-            
+
     def after_delete(self):
         if self.document:
             frappe.delete_doc("Drive Document", self.document)
@@ -58,7 +60,17 @@ class DriveEntity(NestedSet):
                     break
                 except Exception as e:
                     print(f"Attempt {attempt + 1}: Failed to delete file - {e}")
-    
+        if (self.mime_type.startswith("image") or self.mime_type.startswith("video")):
+            max_attempts = 3
+            for attempt in range(max_attempts):
+                try:
+                    user_thumbnails_directory = get_user_thumbnails_directory()
+                    thumbnail_getpath = Path(user_thumbnails_directory,self.name)
+                    Path(str(thumbnail_getpath) + ".thumbnail").unlink()
+                    break
+                except Exception as e:
+                    print(f"Attempt {attempt + 1}: Failed to delete thumbnail - {e}")
+
     def on_rollback(self):
         if self.flags.file_created:
             shutil.rmtree(self.path) if self.is_group else self.path.unlink()
@@ -150,7 +162,7 @@ class DriveEntity(NestedSet):
 
             for child in self.get_children():
                 child.copy(name, parent_user_directory)
-        
+
         elif self.document is not None:
             drive_doc_content = frappe.db.get_value(
                 "Drive Document", self.document, "content"
