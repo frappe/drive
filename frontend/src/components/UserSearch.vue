@@ -116,14 +116,15 @@ export default {
         "X-Frappe-Site-Name": window.location.hostname,
       };
       const res = await fetch(
-        `/api/method/frappe.desk.search.search_link?doctype=User&filters={"ignore_user_type":1}&txt=${txt}`,
+        `/api/method/drive.utils.users.get_users_with_drive_user_role?txt=${txt}`,
         {
           method: "GET",
           headers,
         }
       );
       if (res.ok) {
-        const data = await res.json();
+        const temp_response = await res.json();
+        const data = temp_response.message;
         this.searchResults = data.results.filter(
           (x) => x.value !== this.userId
         );
