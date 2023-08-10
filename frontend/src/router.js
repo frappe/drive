@@ -10,7 +10,7 @@ const routes = [
   {
     path: "/folder/:entityName",
     name: "Folder",
-    meta: { isHybridRoute: true },
+    meta: { isHybridRoute: false },
     component: () => import("@/pages/Folder.vue"),
     props: true,
   },

@@ -245,14 +245,18 @@ export default {
             ) {
               return false;
             }
-            const allEntitiesSatisfyCondition = this.selectedEntities.every(
-              (entity) => {
-                return (
-                  entity.allow_download || entity.write || entity.owner === "me"
-                );
-              }
-            );
-            return allEntitiesSatisfyCondition;
+            if (this.selectedEntities.length) {
+              const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                (entity) => {
+                  return (
+                    entity.allow_download ||
+                    entity.write ||
+                    entity.owner === "me"
+                  );
+                }
+              );
+              return allEntitiesSatisfyCondition;
+            }
           },
         },
         {
