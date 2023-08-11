@@ -69,13 +69,13 @@ export default {
       dropdownItems: [
         {
           label: "Log out",
-          handler: () => this.$store.dispatch("logout"),
+          onClick: () => this.$store.dispatch("logout"),
         },
       ],
       actionItems: [
         {
           label: "Download",
-          handler: () => {
+          onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.entityName}&trigger_download=1`;
           },
         },
@@ -91,6 +91,14 @@ export default {
     download() {
       window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.entityName}&trigger_download=1`;
     },
+  },
+  mounted() {
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
   },
   resources: {
     file() {

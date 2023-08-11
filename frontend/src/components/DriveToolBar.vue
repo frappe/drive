@@ -11,12 +11,12 @@
         :options="actionItems"
         placement="left"
         class="basis-5/12 lg:basis-auto">
-        <Button
+        <!-- <Button
           class="text-sm h-8 w-full"
           icon-right="chevron-down"
           :loading="actionLoading">
           <span class="hidden md:inline">Actions</span>
-        </Button>
+        </Button> -->
       </Dropdown>
       <Dropdown
         v-if="columnHeaders"
@@ -107,7 +107,7 @@ export default {
     orderByItems() {
       return this.columnHeaders.map((header) => ({
         ...header,
-        handler: () => {
+        onClick: () => {
           this.$store.commit("setSortOrder", {
             field: header.field,
             label: header.label,

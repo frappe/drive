@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full p-4">
+  <div class="h-full w-full p-4">
     <FolderContentsError
       v-if="$resources.recentDriveEntity.error"
       :error="$resources.recentDriveEntity.error" />
@@ -63,7 +63,7 @@ import FilePreview from "@/components/FilePreview.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
-import { entries, get } from "idb-keyval";
+import { entries, get, clear } from "idb-keyval";
 
 export default {
   name: "Recent",
@@ -150,6 +150,12 @@ export default {
   },
   mounted() {
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
+    this.$store.commit("setCtaButton", {
+      text: "Clear Recents",
+      prefix: "trash-2",
+      variant: "outline",
+      theme: "red",
+    });
     window.addEventListener(
       "dragover",
       function (e) {

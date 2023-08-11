@@ -36,11 +36,12 @@ const Video = Node.create({
         (editor.isEditable ? " cursor-pointer" : "");
 
       const video = document.createElement("video");
-      if (editor.isEditable) {
+      /* if (editor.isEditable) {
         video.className = "pointer-events-none";
-      }
+      } */
+      video.setAttribute("controls", "");
       video.src = node.attrs.src;
-      if (!editor.isEditable) {
+      /* if (!editor.isEditable) {
         video.setAttribute("controls", "");
       } else {
         let videoPill = document.createElement("div");
@@ -48,7 +49,7 @@ const Video = Node.create({
           "absolute top-0 right-0 text-xs m-2 bg-gray-800 text-white px-2 py-1 rounded-md";
         videoPill.innerHTML = "Video";
         div.append(videoPill);
-      }
+      } */
       div.append(video);
       return {
         dom: div,

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full p-4">
+  <div class="h-full w-full p-4">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />
@@ -333,6 +333,12 @@ export default {
     },
   },
   mounted() {
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
   },
   resources: {

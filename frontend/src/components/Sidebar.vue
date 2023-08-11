@@ -1,53 +1,59 @@
-<template class="bg-gray-50">
-  <FrappeDriveLogo class="h-4 mb-8" />
+<template class="bg-gray-200">
+  <UserDropdown />
   <div
     ondragstart="return false;"
     ondrop="return false;"
     class="flex flex-col justify-between">
-    <div class="text-lg">
-      <router-link
-        v-for="item in sidebarItems"
-        :key="item.label"
-        v-slot="{ href, navigate }"
-        :to="item.route">
-        <a
-          :class="[
-            item.highlight()
-              ? 'bg-gray-200 text-gray-900'
-              : 'text-gray-800 hover:bg-gray-50',
-          ]"
-          :href="href"
-          class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center"
-          @click="navigate && $emit('toggleMobileSidebar')">
-          <FeatherIcon :name="item.icon" class="stroke-1.5 w-5 h-5" />
-          {{ item.label }}
-        </a>
-      </router-link>
-      <span
-        class="w-[224px] h-7 mb-1 px-3 py-4 gap-3 mt-auto rounded-lg focus:outline-none flex items-center">
-        <FeatherIcon name="cloud" class="stroke-1.5 w-5 h-5" />
-        Used :
-        {{ $resources.getRootFolderSize.data + "B" }}
-      </span>
-    </div>
+    <router-link
+      v-for="item in sidebarItems"
+      :key="item.label"
+      v-slot="{ href, navigate }"
+      :to="item.route">
+      <a
+        :class="[
+          item.highlight() ? 'bg-white shadow-sm ' : ' hover:bg-gray-100',
+        ]"
+        :href="href"
+        class="text-gray-700 text-sm w-full mb-0.5 h-7 px-2 py-1 gap-3 rounded focus:outline-none flex items-center"
+        @click="navigate && $emit('toggleMobileSidebar')">
+        <FeatherIcon :name="item.icon" class="text-gray-600 stroke-2 w-4 h-4" />
+        {{ item.label }}
+      </a>
+    </router-link>
+    <!-- <span
+      class="w-[256px] h-7 px-3 py-4 gap-3 mt-auto rounded-lg focus:outline-none flex items-center">
+      <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
+      Used :
+      {{ $resources.getRootFolderSize.data + "B" }}
+    </span> -->
   </div>
 </template>
 <script>
+import UserDropdown from "@/components/UserDropdown.vue";
 import { FeatherIcon } from "frappe-ui";
-import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon, FrappeDriveLogo },
+  components: { FeatherIcon, UserDropdown },
   emits: ["toggleMobileSidebar"],
   computed: {
     sidebarItems() {
       return [
+        /* {
+          label: "Search",
+          route: () => {},
+          icon: "search",
+          highlight: () => {},
+        }, */
         {
           label: "Home",
           route: "/",
           icon: "home",
           highlight: () => {
+            return this.$store.state.currentBreadcrumbs[0].label === "Home";
+          },
+          /* highlight: () => {
+            
             if (this.$route.name === "Home") {
               return true;
             } else if (
@@ -56,14 +62,20 @@ export default {
             ) {
               return true;
             }
-          },
+            else if (
+              this.$store.state.currentBreadcrumbs[0].label === "Home" &&
+              this.$route.name === "Document"
+            ) {
+              return true
+            }
+          }, */
         },
         {
           label: "Recents",
           route: "/recent",
           icon: "clock",
           highlight: () => {
-            return this.$route.fullPath.endsWith("/recent");
+            return this.$route.fullPath.startsWith("/recent");
           },
         },
         {

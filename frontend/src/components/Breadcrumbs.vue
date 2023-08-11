@@ -1,21 +1,21 @@
 <template>
-  <div class="flex items-center text-base">
+  <div class="flex justify-items-center items-center text-base">
     <router-link
       v-for="(item, index) in breadcrumbLinks"
       :key="item.label"
       v-slot="{ href, navigate }"
-      class="text-xl font-medium"
-      :class="isLastItem(index) ? 'text-inherit' : 'text-gray-600'"
+      class="text-lg font-medium"
+      :class="isLastItem(index) ? 'text-gray-900' : 'text-gray-600'"
       :to="item.route">
       <a v-if="documentRoute(item)" :href="href" @click="navigate">
         {{ item.label }}
-        <span v-if="!isLastItem(index)" class="px-2">{{ ">" }}</span>
+        <span v-if="!isLastItem(index)" class="pr-1">{{ "/" }}</span>
       </a>
       <input
         v-else="documentRoute(item)"
         v-model="title"
         :placeholder="item.label"
-        class="text-xl font-semibold focus:outline-0 focus:form-input focus:text-xl border-gray-400 placeholder-gray-500"
+        class="p-0 border-none text-lg font-medium focus:form-input focus:outline-0 focus:border-gray-200 focus:text-lg focus:font-medium focus:pl-1 placeholder-gray-500"
         @input="$resources.updateDocumentTitle.submit()" />
     </router-link>
   </div>
