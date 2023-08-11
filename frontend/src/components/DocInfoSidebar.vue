@@ -2,11 +2,11 @@
   <Transition
     enter-from-class="translate-x-[150%] opacity-0"
     leave-to-class="translate-x-[150%] opacity-0"
-    enter-active-class="transition duration-200"
-    leave-active-class="transition duration-200">
+    enter-active-class="transition duration-125"
+    leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="flex flex-col justify-start w-full min-w-[400px] max-w-[400px] min-h-full border-l z-0">
+      class="flex flex-col justify-start scroll-pb-44 w-full min-w-[350px] max-w-[350px] min-h-full border-l z-0 overflow-y-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
           <svg
@@ -44,13 +44,10 @@
                 : 'text-gray-600 cursor-pointer flex-none '
             "
             @click="tab = 0">
-            <span class="font-medium text-lg">Info</span>
+            <span class="font-medium text-lg">Doc Info</span>
             <div
               v-if="tab === 0"
               class="space-y-7 min-h-full flex-auto flex flex-col z-0 overflow-y-auto">
-              <FileRender
-                v-if="isImage && showInfoSidebar"
-                :preview-entity="entity" />
               <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium my-4">Manage Access</div>
                 <div class="flex flex-row">
@@ -121,62 +118,61 @@
               </div>
             </div>
           </div>
+
+          <!-- Figure out a way to fetch and store document comments to show here -->
+
+          <span v-if="tab === 1" class="font-medium text-lg">Comments</span>
           <div
+            v-if="tab === 1"
             class="p-4 border-b"
             :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
-            @click="tab = 1">
-            <span class="font-medium text-lg">Comments</span>
-            <div v-if="tab === 1" class="h-full overflow-y-auto">
-              <div v-if="entity.allow_comments" class="space-y-5">
-                <div
-                  v-for="comment in $resources.comments.data"
-                  :key="comment"
-                  class="flex gap-3 my-4 items-center">
-                  <Avatar
-                    :label="comment.comment_by"
-                    :image-u-r-l="comment.user_image"
-                    class="h-7 w-7" />
-                  <div>
-                    <span class="my-1">
-                      <span class="text-sm font-medium">
-                        {{ comment.comment_by }}
-                      </span>
-                      <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
-                      <span class="text-gray-700 text-sm">
-                        {{ comment.creation }}
-                      </span>
+            @click="tab = 1"></div>
+          <div v-if="tab === 1" class="h-full overflow-y-auto">
+            <div v-if="entity.allow_comments" class="space-y-5">
+              <div
+                v-for="comment in $resources.comments.data"
+                :key="comment"
+                class="flex gap-3 my-4 items-center">
+                <Avatar
+                  :label="comment.comment_by"
+                  :image="comment.user_image"
+                  class="h-7 w-7" />
+                <div>
+                  <span class="my-1">
+                    <span class="text-sm font-medium">
+                      {{ comment.comment_by }}
                     </span>
-                    <div class="text-base text-gray-700">
-                      {{ comment.content }}
-                    </div>
+                    <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
+                    <span class="text-gray-700 text-sm">
+                      {{ comment.creation }}
+                    </span>
+                  </span>
+                  <div class="text-base text-gray-700">
+                    {{ comment.content }}
                   </div>
                 </div>
-                <div v-if="userId != 'Guest'" class="flex items-center gap-3">
-                  <Avatar
-                    :label="fullName"
-                    :image-u-r-l="imageURL"
-                    class="h-7 w-7" />
-                  <div class="flex">
-                    <Input
-                      v-model="newComment"
-                      type="text"
-                      class="border-gray-400 placeholder-gray-500 w-full grow bg-white focus:bg-white"
-                      placeholder="Add comment"
-                      @keydown.enter="postComment" />
-                  </div>
-                  <Button @click="postComment" variant="solid">Add</Button>
+              </div>
+              <div v-if="userId != 'Guest'" class="flex items-center gap-3">
+                <Avatar :label="fullName" :image="imageURL" class="h-7 w-7" />
+                <div class="flex">
+                  <Input
+                    v-model="newComment"
+                    type="text"
+                    class="border-gray-400 placeholder-gray-500 w-full grow bg-white focus:bg-white"
+                    placeholder="Add comment"
+                    @keydown.enter="postComment" />
                 </div>
+                <Button @click="postComment" variant="solid">Add</Button>
               </div>
-              <OuterCommentVue
-                v-if="!!allComments.length"
-                :active-comments-instance="activeCommentsInstance"
-                :all-comments="allComments"
-                @focus-content="triggerFocusContent"
-                @set-comment="triggerSetContent" />
-              <div v-else class="text-gray-600 text-base mt-2">
-                Comments have been disabled for this
-                {{ entity.is_group ? "folder" : "file" }} by its owner.
-              </div>
+            </div>
+            <OuterCommentVue
+              v-if="!!allComments.length"
+              :active-comments-instance="activeCommentsInstance"
+              :all-comments="allComments"
+              @focus-content="triggerFocusContent"
+              @set-comment="triggerSetContent" />
+            <div v-else class="text-gray-600 text-base mt-2">
+              There are no comments for the current document
             </div>
           </div>
         </div>
@@ -225,8 +221,9 @@
         class="stroke-2 text-gray-600 w-full h-full" />
     </Button>
     <Button
+      v-if="$route.meta.documentPage"
       @click="tab = 1"
-      class="text-gray-600 py-4"
+      class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
           ? 'text-black bg-gray-300'
@@ -313,7 +310,6 @@ export default {
   watch: {
     entity() {
       if (this.entity) {
-        this.$resources.comments.fetch();
         this.$resources.userTags.fetch();
         this.$resources.entityTags.fetch();
       }
@@ -322,7 +318,10 @@ export default {
 
   methods: {
     switchTab(val) {
-      if (this.tab === val) {
+      if (this.$store.state.showInfo == false) {
+        this.$store.commit("setShowInfo", !this.$store.state.showInfo);
+        this.tab = val;
+      } else if (this.tab == val) {
         this.$store.commit("setShowInfo", !this.$store.state.showInfo);
       } else {
         this.tab = val;

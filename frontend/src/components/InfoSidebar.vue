@@ -2,12 +2,12 @@
   <Transition
     enter-from-class="translate-x-[150%] opacity-0"
     leave-to-class="translate-x-[150%] opacity-0"
-    enter-active-class="transition duration-200"
-    leave-active-class="transition duration-200">
+    enter-active-class="transition duration-125"
+    leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="flex flex-col justify-start w-full min-w-[400px] max-w-[400px] min-h-full border-l z-0">
-      <div v-if="entity" class="w-full border-b p-4">
+      class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
+      <div v-if="entity" class="w-full border-b p-4 overflow-visible">
         <div class="flex items-center">
           <svg
             v-if="entity.is_group"
@@ -30,9 +30,9 @@
         </div>
       </div>
       <div v-if="entity">
-        <div class="flex flex-col justify-start">
+        <div v-if="tab === 0" class="h-full pb-12">
           <div
-            class="p-4 border-b"
+            class="p-4 border-b z-10 sticky top-0 bg-white"
             :class="
               tab === 0
                 ? 'flex-auto'
@@ -43,140 +43,141 @@
               <FeatherIcon name="alert-circle" class="h-4 mr-2 stroke-2" />
               <span class="font-medium text-lg">Info</span>
             </div>
-
-            <div
-              v-if="tab === 0"
-              class="space-y-7 min-h-full flex-auto flex flex-col z-0 overflow-y-auto">
-              <FileRender
-                v-if="
-                  $store.state.entityInfo.mime_type?.startsWith('image') &&
-                  showInfoSidebar
-                "
-                :preview-entity="entity" />
-              <div v-if="entity.owner === 'me'">
-                <div class="text-lg font-medium my-4">Manage Access</div>
-                <div class="flex flex-row">
-                  <Button class="h-7" @click="showShareDialog = true">
-                    Share
-                  </Button>
-                </div>
+          </div>
+          <div
+            class="relative p-4 min-h-full flex-auto flex flex-col overflow-y-auto">
+            <FileRender
+              v-if="
+                $store.state.entityInfo.mime_type?.startsWith('image') &&
+                showInfoSidebar
+              "
+              class="border-2"
+              :preview-entity="entity" />
+          </div>
+          <div class="p-4 space-y-4">
+            <div v-if="entity.owner === 'me'">
+              <div class="text-lg font-medium mb-2">Manage Access</div>
+              <div class="flex flex-row">
+                <Button class="h-7" @click="showShareDialog = true">
+                  Share
+                </Button>
               </div>
-              <div
-                v-if="
-                  entity.owner === 'me' || $resources.entityTags.data?.length
-                ">
-                <div class="text-lg font-medium mb-4">Tag</div>
-                <div class="flex flex-wrap gap-2">
-                  <Tag
-                    v-for="tag in $resources.entityTags.data"
-                    :key="tag"
-                    :tag="tag"
-                    :entity="entity"
-                    @success="
-                      () => {
-                        $resources.userTags.fetch();
-                        $resources.entityTags.fetch();
-                      }
-                    " />
-                  <Button
-                    v-if="!addTag && entity.owner === 'me'"
-                    class="h-6 text-[12px] text-gray-800"
-                    icon-left="plus"
-                    @click="addTag = true">
-                    Add tag
-                  </Button>
-                </div>
-
-                <TagInput
-                  v-if="addTag"
-                  :class="{ 'mt-2': $resources.entityTags.data.length }"
+            </div>
+            <div
+              v-if="
+                entity.owner === 'me' || $resources.entityTags.data?.length
+              ">
+              <div class="text-lg font-medium my-2">Tag</div>
+              <div class="flex flex-wrap gap-2">
+                <Tag
+                  v-for="tag in $resources.entityTags.data"
+                  :key="tag"
+                  :tag="tag"
                   :entity="entity"
-                  :unadded-tags="unaddedTags"
                   @success="
                     () => {
                       $resources.userTags.fetch();
                       $resources.entityTags.fetch();
-                      addTag = false;
                     }
-                  "
-                  @close="addTag = false" />
+                  " />
+                <Button
+                  v-if="!addTag && entity.owner === 'me'"
+                  class="h-6 text-[12px] text-gray-800"
+                  icon-left="plus"
+                  @click="addTag = true">
+                  Add tag
+                </Button>
               </div>
-              <div class="text-lg font-medium mb-4">Properties</div>
-              <div class="flex text-base">
-                <div class="w-1/2 text-gray-600 space-y-2">
-                  <div>Type</div>
-                  <div>Size</div>
-                  <div>Modified</div>
-                  <div>Created</div>
-                  <div>Owner</div>
-                </div>
-                <div class="w-1/2 space-y-2">
-                  <div>{{ formattedMimeType }}</div>
-                  <div>{{ entity.file_size }}</div>
-                  <div>{{ entity.modified }}</div>
-                  <div>{{ entity.creation }}</div>
-                  <div>{{ entity.owner }}</div>
-                </div>
+
+              <TagInput
+                v-if="addTag"
+                :class="{ 'mt-2': $resources.entityTags.data.length }"
+                :entity="entity"
+                :unadded-tags="unaddedTags"
+                @success="
+                  () => {
+                    $resources.userTags.fetch();
+                    $resources.entityTags.fetch();
+                    addTag = false;
+                  }
+                "
+                @close="addTag = false" />
+            </div>
+            <div class="text-lg font-medium my-3">General Info</div>
+            <div class="flex text-base">
+              <div class="w-1/2 text-gray-600 space-y-2">
+                <div>Type</div>
+                <div>Size</div>
+                <div>Modified</div>
+                <div>Created</div>
+                <div>Owner</div>
               </div>
-              <div class="text-gray-600 text-base">
-                Viewers can download this file.
+              <div class="w-1/2 space-y-2">
+                <div>{{ formattedMimeType }}</div>
+                <div>{{ entity.file_size }}</div>
+                <div>{{ entity.modified }}</div>
+                <div>{{ entity.creation }}</div>
+                <div>{{ entity.owner }}</div>
               </div>
             </div>
+            <div class="text-gray-600 text-base">
+              Viewers can download this file.
+            </div>
           </div>
+        </div>
+        <div v-if="tab === 1" class="h-full pb-12">
           <div
-            class="p-4 border-b"
+            v-if="tab === 1"
+            class="z-10 p-4 border-b sticky top-0 bg-white"
             :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
             @click="tab = 1">
             <div class="flex items-center">
               <FeatherIcon name="message-circle" class="h-4 mr-2 stroke-2" />
               <span class="font-medium text-lg">Comments</span>
             </div>
-            <div v-if="tab === 1" class="h-full overflow-y-auto">
-              <div v-if="entity.allow_comments" class="space-y-6 pb-4">
-                <div
-                  v-for="comment in $resources.comments.data"
-                  :key="comment"
-                  class="flex gap-3 my-4 items-center">
-                  <Avatar
-                    :label="comment.comment_by"
-                    :image-u-r-l="comment.user_image"
-                    class="h-7 w-7" />
-                  <div>
-                    <span class="my-1">
-                      <span class="text-sm font-medium">
-                        {{ comment.comment_by }}
-                      </span>
-                      <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
-                      <span class="text-gray-700 text-sm">
-                        {{ comment.creation }}
-                      </span>
-                    </span>
-                    <div class="text-base text-gray-700">
-                      {{ comment.content }}
-                    </div>
-                  </div>
+          </div>
+          <div
+            v-if="entity.allow_comments"
+            class="space-y-6 px-4 overflow-y-auto pb-4">
+            <div
+              v-for="comment in $resources.comments.data"
+              :key="comment"
+              class="flex gap-3 my-4 items-center">
+              <Avatar
+                :label="comment.comment_by"
+                :image="comment.user_image"
+                class="h-7 w-7" />
+              <div>
+                <span class="my-1">
+                  <span class="text-sm font-medium">
+                    {{ comment.comment_by }}
+                  </span>
+                  <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
+                  <span class="text-gray-700 text-sm">
+                    {{ comment.creation }}
+                  </span>
+                </span>
+                <div class="text-base text-gray-700">
+                  {{ comment.content }}
                 </div>
-                <div v-if="userId != 'Guest'" class="flex items-center gap-3">
-                  <Avatar
-                    :label="fullName"
-                    :image-u-r-l="imageURL"
-                    class="h-7 w-7" />
-                  <div class="flex">
-                    <Input
-                      v-model="newComment"
-                      type="text"
-                      placeholder="Add comment"
-                      @keydown.enter="postComment" />
-                  </div>
-                  <Button @click="postComment" variant="solid">Add</Button>
-                </div>
-              </div>
-
-              <div v-else class="text-gray-600 text-base mt-2">
-                Comments have been disabled for this
-                {{ entity.is_group ? "folder" : "file" }} by its owner.
               </div>
             </div>
+            <div v-if="userId != 'Guest'" class="flex items-center gap-3 my-4">
+              <Avatar :label="fullName" :image="imageURL" class="h-7 w-7" />
+              <div class="flex">
+                <Input
+                  v-model="newComment"
+                  type="text"
+                  placeholder="Add comment"
+                  @keydown.enter="postComment" />
+              </div>
+              <Button @click="postComment" variant="solid">Add</Button>
+            </div>
+          </div>
+
+          <div v-else class="text-gray-600 text-base mt-2 p-4">
+            Comments have been disabled for this
+            {{ entity.is_group ? "folder" : "file" }} by its owner.
           </div>
         </div>
       </div>
@@ -200,7 +201,7 @@
   </Transition>
 
   <div
-    class="flex flex-col items-center h-full overflow-y-hidden z-0 border-l max-w-[50px] min-w-[50px] p-2 bg-white">
+    class="flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
       class="mb-2 py-4 text-gray-600"
       :class="[
@@ -253,6 +254,7 @@ import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
+import { useStorage } from "@vueuse/core";
 
 export default {
   name: "InfoSidebar",
@@ -287,12 +289,14 @@ export default {
   },
 
   watch: {
-    entity() {
-      if (this.entity) {
-        this.$resources.comments.fetch();
-        this.$resources.userTags.fetch();
-        this.$resources.entityTags.fetch();
-      }
+    entity: {
+      handler() {
+        if (this.entity) {
+          this.$resources.comments.fetch();
+          this.$resources.userTags.fetch();
+          this.$resources.entityTags.fetch();
+        }
+      },
     },
   },
 
@@ -327,7 +331,10 @@ export default {
 
   methods: {
     switchTab(val) {
-      if (this.tab === val) {
+      if (this.$store.state.showInfo == false) {
+        this.$store.commit("setShowInfo", !this.$store.state.showInfo);
+        this.tab = val;
+      } else if (this.tab == val) {
         this.$store.commit("setShowInfo", !this.$store.state.showInfo);
       } else {
         this.tab = val;

@@ -1,7 +1,6 @@
 <template>
   <div
     class="flex text-gray-900 h-screen antialiased overflow-y-hidden"
-    :class="{ 'bg-slate-50': $route.meta.documentPage }"
     @contextmenu.prevent="handleDefaultContext($event)">
     <UploadTracker v-if="showUploadTracker" />
     <div
@@ -22,14 +21,25 @@
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
           <div class="flex w-full h-full overflow-y-hidden overflow-x-hidden">
-            <div class="flex w-full h-full overflow-y-auto overflow-x-hidden">
+            <div
+              class="flex w-full h-full overflow-x-hidden"
+              :class="
+                $route.meta.documentPage
+                  ? 'overflow-y-hidden'
+                  : 'overflow-y-auto'
+              ">
               <router-view v-slot="{ Component }">
                 <component :is="Component" ref="currentPage" />
               </router-view>
             </div>
-            <div v-if="!$route.meta.documentPage" class="flex max-w-[950px]">
-              <InfoSidebar v-if="!$route.meta.documentPage" />
-            </div>
+            <DocInfoSidebar
+              v-if="
+                $store.state.entityInfo?.document && !$route.meta.documentPage
+              " />
+            <InfoSidebar
+              v-if="
+                !$store.state.entityInfo?.document && !$route.meta.documentPage
+              " />
           </div>
         </div>
       </div>
@@ -46,6 +56,7 @@ import InfoSidebar from "@/components/InfoSidebar.vue";
 import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
 import { Button, FeatherIcon } from "frappe-ui";
+import DocInfoSidebar from "./components/DocInfoSidebar.vue";
 
 export default {
   name: "App",
@@ -57,6 +68,7 @@ export default {
     UploadTracker,
     Button,
     FeatherIcon,
+    DocInfoSidebar,
   },
   data() {
     return {
