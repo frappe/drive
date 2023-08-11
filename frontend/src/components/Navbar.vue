@@ -128,23 +128,23 @@ export default {
         {
           label: "Upload file",
           icon: "upload",
-          handler: () => this.emitter.emit("uploadFile"),
+          onClick: () => this.emitter.emit("uploadFile"),
         },
         {
           label: "Upload Folder",
           icon: "folder",
-          handler: () => this.emitter.emit("uploadFolder"),
+          onClick: () => this.emitter.emit("uploadFolder"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: "New folder",
           icon: "folder-plus",
-          handler: () => (this.showNewFolderDialog = true),
+          onClick: () => (this.showNewFolderDialog = true),
         },
         {
           label: "New Document",
           icon: "file-text",
-          handler: async () => {
+          onClick: async () => {
             await this.$resources.createDocument.submit({
               title: "Untitled Document",
               content: null,

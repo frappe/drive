@@ -26,7 +26,7 @@
             v-for="entity in folderContents"
             :id="entity.name"
             :key="entity.name"
-            class="entity rounded select-none text-base border-b"
+            class="entity rounded select-none text-base border-b cursor-pointer"
             :class="
               selectedEntities.includes(entity)
                 ? 'bg-green-100 rounded-xl'
@@ -200,10 +200,12 @@ export default {
         this.folderContents
       );
       this.$emit("entitySelected", selectedEntities);
-      this.$store.commit(
-        "setEntityInfo",
-        selectedEntities[selectedEntities.length - 1]
-      );
+      if (selectedEntities.length) {
+        this.$store.commit(
+          "setEntityInfo",
+          selectedEntities[selectedEntities.length - 1]
+        );
+      }
     },
     handleMouseup() {
       this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };

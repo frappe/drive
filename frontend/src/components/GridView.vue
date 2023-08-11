@@ -16,7 +16,7 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="p-2 w-44 h-30 rounded-lg border-2 group select-none entity"
+            class="cursor-pointer p-2 w-44 h-30 rounded-lg border-2 group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
@@ -65,7 +65,7 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-44 h-44 rounded-lg border-2 group select-none entity"
+            class="w-44 h-44 rounded-lg border-2 group select-none entity cursor-pointer"
             draggable="true"
             :class="
               selectedEntities.includes(file)

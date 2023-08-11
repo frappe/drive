@@ -5,17 +5,17 @@
       :key="item.label"
       v-slot="{ href, navigate }"
       class="text-lg font-medium"
-      :class="isLastItem(index) ? 'text-inherit' : 'text-gray-600'"
+      :class="isLastItem(index) ? 'text-gray-900' : 'text-gray-600'"
       :to="item.route">
       <a v-if="documentRoute(item)" :href="href" @click="navigate">
         {{ item.label }}
-        <span v-if="!isLastItem(index)" class="pl-1 pr-2">{{ "/" }}</span>
+        <span v-if="!isLastItem(index)" class="pr-1">{{ "/" }}</span>
       </a>
       <input
         v-else="documentRoute(item)"
         v-model="title"
         :placeholder="item.label"
-        class="text-lg font-semibold focus:outline-0 focus:form-input focus:text-lg border-gray-400 placeholder-gray-500"
+        class="p-0 border-none text-lg font-medium focus:form-input focus:outline-0 focus:border-gray-200 focus:text-lg focus:font-medium focus:pl-1 placeholder-gray-500"
         @input="$resources.updateDocumentTitle.submit()" />
     </router-link>
   </div>
