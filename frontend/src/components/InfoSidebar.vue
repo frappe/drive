@@ -254,7 +254,6 @@ import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
-import { useStorage } from "@vueuse/core";
 
 export default {
   name: "InfoSidebar",
