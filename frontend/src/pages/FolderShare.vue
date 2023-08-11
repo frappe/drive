@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full p-4" @contextmenu="toggleEmptyContext">
+  <div class="h-full p-4" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />
@@ -96,7 +96,7 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entity-name="selectedEntities[0].name"
+      :entity-name="shareName"
       @success="$resources.folderContents.fetch()" />
   </div>
 </template>
@@ -121,7 +121,7 @@ import {
 } from "@/utils/folderDownload";
 
 export default {
-  name: "Home",
+  name: "Folder",
   components: {
     ListView,
     GridView,
@@ -136,19 +136,31 @@ export default {
     EntityContextMenu,
     EmptyEntityContextMenu,
   },
+  props: {
+    entityName: {
+      type: String,
+      required: false,
+      default: "",
+    },
+  },
   data: () => ({
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
-    showNewFolderDialog: false,
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
+    showNewFolderDialog: false,
     entityContext: {},
+    breadcrumbs: [{ label: "Home", route: "/" }],
+    isSharedFolder: false,
   }),
   computed: {
+    userId() {
+      return this.$store.state.auth.user_id;
+    },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
     },
@@ -156,6 +168,11 @@ export default {
       return this.$store.state.sortOrder.ascending
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
+    },
+    shareName() {
+      return this.selectedEntities[0]
+        ? this.selectedEntities[0].name
+        : this.entityName;
     },
     emptyActionItems() {
       return [
@@ -187,9 +204,11 @@ export default {
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
-            this.pasteEntities();
+            this.pasteEntities(this.entityName);
           },
-          isEnabled: () => this.$store.state.pasteData.entities.length,
+          isEnabled: () =>
+            this.$store.state.pasteData.entities.length &&
+            this.$store.state.hasWriteAccess,
         },
       ].filter((item) => item.isEnabled());
     },
@@ -247,7 +266,11 @@ export default {
             this.showShareDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return (
+              (this.selectedEntities.length === 1 ||
+                (this.entityName && !this.selectedEntities.length)) &&
+              !this.isSharedFolder
+            );
           },
         },
         {
@@ -279,7 +302,11 @@ export default {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return (
+              this.selectedEntities.length === 1 &&
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === "me")
+            );
           },
         },
         {
@@ -292,7 +319,10 @@ export default {
             });
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0;
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me" || x.write)
+            );
           },
         },
         {
@@ -318,7 +348,9 @@ export default {
             return (
               this.$store.state.pasteData.entities.length &&
               this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group
+              this.selectedEntities[0].is_group &&
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === "me")
             );
           },
         },
@@ -359,13 +391,31 @@ export default {
           },
         },
         {
+          label: "Remove",
+          icon: "trash-2",
+          handler: () => {
+            this.$resources.removeEntity.submit();
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner != "me") &&
+              (this.selectedEntities.every((x) => x.write) ||
+                !this.isSharedFolder)
+            );
+          },
+        },
+        {
           label: "Move to Trash",
           icon: "trash-2",
           handler: () => {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0;
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me")
+            );
           },
         },
       ].filter((item) => item.isEnabled());
@@ -395,42 +445,38 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
+  watch: {
+    async entityName() {
+      await this.$resources.folderAccess.fetch();
+      this.$store.commit(
+        "setHasWriteAccess",
+        !!this.$resources.folderAccess.data?.write
+      );
+      this.selectedEntities = [];
+    },
+  },
 
   async mounted() {
-    await this.$resources.getHomeID.fetch();
-    this.$store.commit("setCtaButton", {
-      text: "Upload",
-      prefix: "upload",
-      suffix: "chevron-down",
-      variant: "solid",
-    });
-    this.$store.commit("setCurrentBreadcrumbs", [
-      { label: "Home", route: "/" },
-    ]);
-    this.emitter.on("fetchFolderContents", () => {
-      this.$resources.folderContents.fetch();
-    });
-
-    this.emitter.on("createNewDocument", () => {
-      this.newDocument();
-    });
-
     this.pasteListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
         (e.key === "v" || e.key === "V") &&
-        this.$store.state.pasteData.entities.length
+        this.$store.state.pasteData.entities.length &&
+        this.$store.state.hasWriteAccess
       )
-        this.pasteEntities();
+        this.pasteEntities(this.entityName);
     };
     window.addEventListener("keydown", this.pasteListener);
 
     this.deleteListener = (e) => {
-      if (e.key === "Delete" && this.selectedEntities.length)
+      if (
+        e.key === "Delete" &&
+        this.selectedEntities.length &&
+        this.selectedEntities.every((x) => x.owner === "me")
+      )
         this.showRemoveDialog = true;
     };
     window.addEventListener("keydown", this.deleteListener);
-
     window.addEventListener(
       "dragover",
       function (e) {
@@ -447,12 +493,24 @@ export default {
       },
       false
     );
-    this.$store.commit("setHasWriteAccess", true);
+
+    await this.$resources.folderAccess.fetch();
+    this.$store.commit(
+      "setHasWriteAccess",
+      !!this.$resources.folderAccess.data?.write
+    );
+    let componentContext = this;
+    this.emitter.on("fetchFolderContents", () => {
+      componentContext.$resources.folderContents.fetch();
+    });
+  },
+  async updated() {
+    await this.$store.commit("setCurrentFolderID", this.entityName);
   },
   unmounted() {
-    this.$store.commit("setHasWriteAccess", false);
     window.removeEventListener("keydown", this.pasteListener);
     window.removeEventListener("keydown", this.deleteListener);
+    this.$store.commit("setHasWriteAccess", false);
   },
   methods: {
     openEntity(entity) {
@@ -467,7 +525,8 @@ export default {
         this.showPreview = true;
       }
     },
-    async pasteEntities(newParent = this.$store.state.currentFolderID) {
+
+    async pasteEntities(newParent = null) {
       const method =
         this.$store.state.pasteData.action === "cut" ? "move" : "copy";
       for (let i = 0; i < this.$store.state.pasteData.entities.length; i++) {
@@ -481,10 +540,12 @@ export default {
       this.$store.commit("setPasteData", { entities: [], action: null });
       this.$resources.folderContents.fetch();
     },
+
     hidePreview() {
       this.showPreview = false;
       this.previewEntity = null;
     },
+
     toggleEntityContext(event) {
       if (!event) this.showEntityContext = false;
       else {
@@ -503,11 +564,6 @@ export default {
         this.hidePreview();
         this.showEntityContext = false;
         this.showEmptyEntityContextMenu = true;
-        this.entityContext = event;
-      } else if (this.selectedEntities.length > 0) {
-        this.hidePreview();
-        this.showEntityContext = true;
-        this.showEmptyEntityContextMenu = false;
         this.entityContext = event;
       }
     },
@@ -531,20 +587,48 @@ export default {
       });
     },
   },
+
   resources: {
+    folderAccess() {
+      return {
+        url: "drive.api.permissions.get_user_access",
+        params: { entity_name: this.entityName },
+      };
+    },
+
+    // createFolder() {
+    //   return {
+    //     url: "drive.api.files.create_folder",
+    //     params: {
+    //       title: this.folderName,
+    //       parent: this.parent,
+    //     },
+    //     validate(params) {
+    //       if (!params?.title) {
+    //         return "Folder name is required";
+    //       }
+    //     },
+    //     onSuccess() {
+    //       this.$resources.folderContents.fetch();
+    //     },
+    //     onError(error) {
+    //       if (error.messages) {
+    //         this.errorMessage = error.messages.join("\n");
+    //       } else {
+    //         this.errorMessage = error.message;
+    //       }
+    //     },
+    //   };
+    // },
+
     pasteEntity() {
       return {
         url: "drive.api.files.call_controller_method",
         method: "POST",
-      };
-    },
-    getHomeID() {
-      return {
-        url: "drive.api.files.get_home_folder_id",
-        onSuccess(data) {
-          this.$store.commit("setCurrentFolderID", data);
-          this.$store.commit("setHomeFolderID", data);
-          localStorage.setItem("HomeFolderID", data);
+        validate(params) {
+          if (!params?.new_parent) {
+            return "New parent is required";
+          }
         },
       };
     },
@@ -552,10 +636,12 @@ export default {
     folderContents() {
       return {
         url: "drive.api.files.list_folder_contents",
+        // cache: ['folderContents', this.entityName],
         params: {
+          entity_name: this.entityName,
           order_by: this.orderBy,
           fields:
-            "name,title,is_group,owner,modified,file_size,mime_type,creation",
+            "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
           this.$resources.folderContents.error = null;
@@ -566,10 +652,60 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = "me";
+            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
         },
         auto: true,
+      };
+    },
+
+    pathEntities() {
+      return {
+        url: "drive.api.files.get_entities_in_path",
+        // cache: ['pathEntities', this.entityName],
+        params: {
+          entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          this.isSharedFolder = data.is_shared;
+          let breadcrumbs = [];
+          if (this.$store.state.currentBreadcrumbs[0].route === "/") {
+            breadcrumbs.push({
+              label: "Home",
+              route: "/",
+            });
+          }
+          if (this.$store.state.currentBreadcrumbs[0].route === "/shared") {
+            breadcrumbs.push({
+              label: "Shared With Me",
+              route: "/shared",
+            });
+          }
+          if (this.$store.state.currentBreadcrumbs[0].route === "/favourites") {
+            breadcrumbs.push({
+              label: "Favourites",
+              route: "/favourites",
+            });
+          }
+          data.entities.forEach((entity, index) => {
+            if (localStorage.getItem("HomeFolderID") !== entity.name) {
+              /* Skip adding `Username's Drive` backend id to the breadcrumbs */
+              breadcrumbs.push({
+                label: entity.title,
+                route: `/folder/${entity.name}`,
+              });
+            }
+          });
+          if (breadcrumbs.length > 4) {
+            breadcrumbs.splice(1, breadcrumbs.length - 4, {
+              label: "...",
+              route: "",
+            });
+          }
+          this.breadcrumbs = breadcrumbs;
+          this.$store.commit("setCurrentBreadcrumbs", breadcrumbs);
+        },
+        auto: Boolean(this.entityName),
       };
     },
 
@@ -598,7 +734,6 @@ export default {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
           this.previewEntity = data;
-          this.$store.commit("setEntityInfo", data);
         },
         onError(data) {
           console.log(data);
@@ -606,17 +741,26 @@ export default {
         auto: false,
       };
     },
+
+    removeEntity() {
+      return {
+        url: "drive.api.files.unshare_entities",
+        params: {
+          entity_names: JSON.stringify(
+            this.selectedEntities.map((entity) => entity.name)
+          ),
+          move: true,
+        },
+        onSuccess() {
+          this.$resources.folderContents.fetch();
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      };
+    },
   },
 };
 </script>
-
-<style>
-html {
-  -webkit-user-select: none;
-  /* Safari */
-  -ms-user-select: none;
-  /* IE 10 and IE 11 */
-  user-select: none;
-  /* Standard syntax */
-}
-</style>

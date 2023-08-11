@@ -10,7 +10,15 @@ const routes = [
   {
     path: "/folder/:entityName",
     name: "Folder",
+    meta: { isHybridRoute: false },
     component: () => import("@/pages/Folder.vue"),
+    props: true,
+  },
+  {
+    path: "/foldershare/:entityName",
+    name: "FolderShare",
+    meta: { sidebar: false, isHybridRoute: true },
+    component: () => import("@/pages/FolderShare.vue"),
     props: true,
   },
   {

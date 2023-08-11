@@ -245,14 +245,18 @@ export default {
             ) {
               return false;
             }
-            const allEntitiesSatisfyCondition = this.selectedEntities.every(
-              (entity) => {
-                return (
-                  entity.allow_download || entity.write || entity.owner === "me"
-                );
-              }
-            );
-            return allEntitiesSatisfyCondition;
+            if (this.selectedEntities.length) {
+              const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                (entity) => {
+                  return (
+                    entity.allow_download ||
+                    entity.write ||
+                    entity.owner === "me"
+                  );
+                }
+              );
+              return allEntitiesSatisfyCondition;
+            }
           },
         },
         {
@@ -262,11 +266,7 @@ export default {
             this.showShareDialog = true;
           },
           isEnabled: () => {
-            return (
-              (this.selectedEntities.length === 1 ||
-                (this.entityName && !this.selectedEntities.length)) &&
-              !this.isSharedFolder
-            );
+            return this.selectedEntities.length === 1;
           },
         },
         {
