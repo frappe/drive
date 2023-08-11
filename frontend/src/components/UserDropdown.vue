@@ -11,7 +11,7 @@
       <button
         class="flex w-full items-center space-x-2 rounded-md p-2 text-left"
         :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'">
-        <Avatar :imageURL="imageURL" :label="fullName" size="md" />
+        <Avatar :image="imageURL" :label="fullName" size="md" />
         <span class="hidden text-base font-medium text-gray-900 sm:inline">
           {{ fullName }}
         </span>
