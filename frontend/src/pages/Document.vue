@@ -7,21 +7,14 @@
     placeholder="Start typing ..."
     :isWritable="isWriteable"
     :entityName="entityName" />
-  <div v-if="$route.meta.documentPage" class="flex max-w-[950px]">
-    <DocInfoSidebar
-      v-if="$route.meta.documentPage"
-      :entity="$store.state.entityInfo" />
-  </div>
 </template>
 
 <script>
-import DocInfoSidebar from "@/components/DocInfoSidebar.vue";
 import TextEditor from "@/components/DocEditor/TextEditor.vue";
 import { fromUint8Array, toUint8Array } from "js-base64";
 
 export default {
   components: {
-    DocInfoSidebar,
     TextEditor,
   },
   props: {
@@ -51,8 +44,19 @@ export default {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },
+    comments() {
+      return this.$store.state.allComments;
+    },
   },
-
+  /*   watch:{
+    comments: {
+      handler(){
+        console.log(this.$store.state.allComments)
+      },
+      // check if userid is available
+      immediate: true,
+    },
+  }, */
   mounted() {
     this.$store.commit("setShowInfo", true);
     this.$store.commit("setCtaButton", {
@@ -93,18 +97,20 @@ export default {
             doc_name: this.document,
             title: this.titleVal,
             content: fromUint8Array(this.content),
+            comments: this.comments,
           });
         }, 10000);
       });
   },
   beforeUnmount() {
-    this.$store.commit("setShowInfo", false);
+    /* this.$store.commit("setShowInfo", false); */
     clearInterval(this.timer);
     this.$resources.updateDocument.submit({
       entity_name: this.entityName,
       doc_name: this.document,
       title: this.titleVal,
       content: fromUint8Array(this.content),
+      comments: this.comments,
     });
   },
   resources: {
@@ -144,7 +150,7 @@ export default {
         auto: false,
       };
     },
-    Document() {
+    /*     Document() {
       return {
         type: "document",
         doctype: "Drive Document",
@@ -157,7 +163,7 @@ export default {
           retractVote: "retract_vote",
         },
       };
-    },
+    }, */
   },
 };
 </script>

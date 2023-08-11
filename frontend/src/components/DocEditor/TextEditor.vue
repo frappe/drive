@@ -1,13 +1,19 @@
 <template>
-  <div class="flex-col w-full">
-    <!-- <TextEditorFixedMenu v-if="editor && editable" :buttons="fixedMenu" /> -->
+  <div class="flex-col w-full overflow-y-auto">
     <div
       class="flex text-sm justify-center items-center text-gray-600 h-12 w-full">
       Created {{ $store.state.entityInfo.creation }}
     </div>
+    <div class="flex w-full items-start justify-center">
+      <editor-content
+        class="flex w-full items-start justify-center"
+        :editor="editor" />
+    </div>
     <BubbleMenu
       v-on-outside-click="toggleCommentMenu"
-      v-if="editor && editable"
+      v-if="editor"
+      :tippy-options="{ duration: 50, animation: 'shift-away' }"
+      :should-show="shouldShow"
       :editor="editor">
       <div
         id="comment-box"
@@ -39,24 +45,18 @@
         class="rounded-md border border-gray-100 shadow-lg"
         :buttons="bubbleMenuButtons" />
     </BubbleMenu>
-    <div class="flex w-full items-start justify-center">
-      <editor-content
-        class="flex w-full items-start justify-center"
-        :editor="editor" />
-      <!-- <OuterCommentVue
-      v-if="!!allComments.length"
-      :active-comments-instance="activeCommentsInstance"
-      :all-comments="allComments"
-      @focus-content-emit="focusContent"
-      :is-comment-mode-on="isCommentModeOn"
-      @set-comment="setComment" /> -->
-    </div>
   </div>
+  <DocMenuAndInfoBar :editor="editor" />
 </template>
 
 <script>
 import { normalizeClass, computed } from "vue";
-import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
+import {
+  Editor,
+  EditorContent,
+  BubbleMenu,
+  isTextSelection,
+} from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -91,6 +91,7 @@ import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { createEditorButton } from "./utils";
+import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue";
 import Menu from "./Menu.vue";
 
 export default {
@@ -104,6 +105,7 @@ export default {
     Menu,
     OuterCommentVue,
     MenuBar,
+    DocMenuAndInfoBar,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -114,7 +116,6 @@ export default {
     };
   },
   expose: ["editor"],
-  inheritAttrs: false,
   props: {
     fixedMenu: {
       type: [Boolean, Array],
@@ -187,6 +188,25 @@ export default {
     };
   },
   methods: {
+    shouldShow({ view, state, from, to }) {
+      const { doc, selection } = state;
+      const { empty } = selection;
+
+      // Sometime check for `empty` is not enough.
+      // Doubleclick an empty paragraph returns a node size of 2.
+      // So we check also for an empty text size.
+      const isEmptyTextBlock =
+        !doc.textBetween(from, to).length && isTextSelection(state.selection);
+
+      const isMediaSelected =
+        this.editor.isActive("image") || this.editor.isActive("video");
+
+      if (isMediaSelected) {
+        return false;
+      } else {
+        return !(!view.hasFocus() || empty || isEmptyTextBlock);
+      }
+    },
     toggleCommentMenu() {
       if (this.showCommentMenu === true) {
         this.showCommentMenu = false;
@@ -194,13 +214,16 @@ export default {
     },
     getRandomColor() {
       const list = [
-        "#958DF1",
-        "#F98181",
-        "#FBBC88",
-        "#FAF594",
-        "#70CFF8",
-        "#94FADB",
-        "#B9F18D",
+        "#525252",
+        "#775225",
+        "#e11d48",
+        "#20C1F4",
+        "#2374D2",
+        "#fbbf24",
+        "#E39B4C",
+        "#16a34a",
+        "#EF7323",
+        "#9333ea",
       ];
       return list[Math.floor(Math.random() * list.length)];
     },
@@ -244,6 +267,7 @@ export default {
     setCurrentComment() {
       let newVal = this.editor.isActive("comment");
       if (newVal) {
+        console.log(newVal);
         this.showAddCommentSection = !this.editor.state.selection.empty;
         const parsedComment = JSON.parse(
           this.editor.getAttributes("comment").comment
@@ -270,6 +294,7 @@ export default {
       if (commentsArray) {
         commentsArray.push({
           userName: this.currentUserName,
+          userImage: this.currentUserImage,
           time: Date.now(),
           content: localVal,
         });
@@ -285,6 +310,7 @@ export default {
           comments: [
             {
               userName: this.currentUserName,
+              userImage: this.currentUserImage,
               time: Date.now(),
               content: localVal,
             },
@@ -305,11 +331,14 @@ export default {
     currentUserName() {
       return this.$store.state.user.fullName;
     },
+    currentUserImage() {
+      return this.$store.state.user.imageURL;
+    },
     editorProps() {
       return {
         attributes: {
           class: normalizeClass([
-            "prose prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100",
+            "prose prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100",
           ]),
         },
         clipboardTextParser: (text, $context) => {
@@ -351,20 +380,11 @@ export default {
     allComments: {
       handler(newVal) {
         if (newVal) {
-          // check if userid is available
           this.$store.commit("setAllComments", JSON.stringify(newVal));
         }
       },
       immediate: true, // make this watch function is called when component created
     },
-    /*     modelValue(value) {
-      const isSame =
-        JSON.stringify(this.editor.getJSON()) === JSON.stringify(value);
-      if (isSame) {
-        return;
-      }
-      this.editor.commands.setContent(value, false);
-    }, */
     title() {
       this.$emit("update:title", this.title);
       this.$emit("saveTitle", this.title);
@@ -387,24 +407,6 @@ export default {
     },
   },
   mounted() {
-    //this.isWritable ? this.tempEditable = true : null
-    //this.editable ? this.toggleEditMode() : this.toggleReadMode()
-    /* Bubble Menu
-    this.emitter.on("toggleCommentMode", () => {
-      this.isCommentModeOn = true;
-      console.log(this.editor.state.selection.content().size)
-    }); */
-
-    this.emitter.on("setContentEmit", (val) => {
-      console.log(val);
-      this.setComment(val);
-    });
-
-    this.emitter.on("focusContentEmit", (val) => {
-      console.log(val);
-      this.focusContent(val);
-    });
-
     const doc = new Y.Doc();
     Y.applyUpdate(doc, this.modelValue);
     // Tiny test
@@ -460,7 +462,8 @@ export default {
         CollaborationCursor.configure({
           provider: webrtcProvider,
           user: {
-            name: this.currentUserName,
+            name: this.currentUserName.toLowerCase(),
+            avatar: this.currentUserImage,
             color: this.getRandomColor(),
           },
         }),
@@ -471,16 +474,9 @@ export default {
         Comment.configure({
           isCommentModeOn: this.isCommentModeOn,
         }),
-
-        // This is incompatible with the `CollaborationCursor` extension
-        // Refer to https://github.com/ueberdosis/tiptap/issues/4065
-        /* Placeholder.configure({
-          showOnlyWhenEditable: true,
-          placeholder: () => {
-            return this.placeholder;
-          },
-        }), */
-
+        Placeholder.configure({
+          placeholder: "Start typing ...",
+        }),
         Highlight.configure({
           multicolor: true,
         }),
@@ -514,8 +510,6 @@ export default {
     });
   },
   beforeUnmount() {
-    console.log("fired");
-    console.log(this.allComments);
     this.editor.destroy();
     this.provider.destroy();
     this.provider = null;
@@ -529,10 +523,16 @@ export default {
   outline: none;
   caret-color: theme("colors.blue.600");
   word-break: break-word;
-  min-width: 1100px;
-  max-width: 1100px;
+  min-width: 75%;
+  max-width: 75%;
   min-height: 90vh;
-  padding: 2rem;
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  padding: 1rem;
 }
 
 /* Firefox */
@@ -541,11 +541,11 @@ export default {
 }
 
 span[data-comment] {
-  background: rgba(2, 137, 255, 0.25);
-  border-bottom: 2px rgb(2, 137, 255) solid;
+  background: rgb(228, 245, 233);
+  border-bottom: 2px rgb(91, 185, 140) dashed;
   user-select: all;
   padding: 0 2px 0 2px;
-  border-radius: 2px;
+  border-radius: 5px 5px 0px 0px;
 }
 .collaboration-cursor__caret {
   border-left: 1px solid #0d0d0d;
@@ -558,26 +558,17 @@ span[data-comment] {
 }
 /* Render the username above the caret */
 .collaboration-cursor__label {
-  border-radius: 3px 3px 3px 0;
-  color: #0d0d0d;
-  font-size: 12px;
+  border-radius: 1rem;
+  color: #ffffffd0;
+  font-size: 13px;
   font-style: normal;
   font-weight: 600;
   left: -1px;
   line-height: normal;
-  padding: 0.1rem 0.3rem;
+  padding: 0.2rem 0.5rem;
   position: absolute;
   top: -1.4em;
   user-select: none;
   white-space: nowrap;
-}
-
-html {
-  -webkit-user-select: none;
-  /* Safari */
-  -ms-user-select: none;
-  /* IE 10 and IE 11 */
-  user-select: none;
-  /* Standard syntax */
 }
 </style>

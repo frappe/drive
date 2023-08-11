@@ -3,7 +3,7 @@
     <article
       v-for="(comment, i) in allComments"
       :key="i + ''"
-      class="current-comment bg-white flex flex-col border-b"
+      class="current-comment bg-white flex flex-col border-b last:border-b-0 pt-4"
       :class="[
         `${
           comment.jsonComments.uuid === activeCommentsInstance.uuid
@@ -17,13 +17,13 @@
       <div
         v-for="(jsonComment, j) in comment.jsonComments.comments"
         :key="`${j}_${Math.random()}`"
-        class="my-4">
+        class="my-2">
         <div class="mb-2 flex gap-3 items-center">
           <!--           <Avatar class="mr-2" :label="jsonComment.userName" />
  -->
           <Avatar
             :label="jsonComment.userName"
-            :image-u-r-l="jsonComment.user_image"
+            :image="jsonComment.userImage"
             class="h-7 w-7" />
           <div>
             <span class="my-1">
@@ -44,7 +44,7 @@
 
       <section
         v-if="comment.jsonComments.uuid === activeCommentsInstance.uuid"
-        class="flex flex-col gap-2 pb-2"
+        class="flex flex-col"
         :class="[
           `${
             comment.jsonComments.uuid === activeCommentsInstance.uuid
@@ -52,8 +52,8 @@
               : 'max-h-0 border-blue-300'
           }`,
         ]">
-        <div class="flex items-center gap-3">
-          <Avatar label="Admin" class="h-7 w-7" />
+        <div class="flex items-center gap-3 mt-2 mb-4">
+          <Avatar :label="fullName" :image="imageURL" class="h-7 w-7" />
           <textarea
             :ref="
               (el) => {
@@ -64,13 +64,8 @@
             v-model="commentText"
             placeholder="Add comment..."
             @keypress.enter.stop.prevent="setComment" />
-          <!-- <Input
-                      v-model="newComment"
-                      type="text"
-                      class="border-gray-400 placeholder-gray-500 w-full grow bg-white focus:bg-white"
-                      placeholder="Add comment"
-                      @keydown.enter="postComment" /> -->
-          <Button appearance="primary" @click="setComment">Add</Button>
+
+          <Button variant="solid" @click="setComment">Add</Button>
         </div>
       </section>
     </article>
@@ -78,11 +73,14 @@
 </template>
 
 <script setup lang="ts">
+import { useStore } from "vuex";
 import { ref, watch, computed } from "vue";
 import { Avatar, Button, Input } from "frappe-ui";
 import { formatDate } from "@/utils/format";
 
-const emit = defineEmits(["setComment", "focusContent"]);
+const store = useStore();
+
+const emit = defineEmits(["setComment"]);
 
 interface Props {
   allComments: any[];
@@ -90,8 +88,7 @@ interface Props {
     uuid: "";
     comments: [];
   };
-  /* focusContent: ({ from, to }: { from: number; to: number }) => void; */
-  /* formatDate: (d: any) => string | null */
+  focusContent: ({ from, to }: { from: number; to: number }) => void;
 }
 
 const props = defineProps<Props>();
@@ -104,9 +101,9 @@ const activeCommentInstanceUuid = computed(
   () => props.activeCommentsInstance.uuid
 );
 
-const focusContent = (val) => {
-  emit("focusContent", val);
-};
+const fullName = computed(() => store.state.user.fullName);
+
+const imageURL = computed(() => store.state.user.imageURL);
 
 const setComment = () => {
   emit("setComment", commentText.value);
@@ -126,11 +123,11 @@ watch(activeCommentInstanceUuid, (val) => {
 
 <style lang="scss">
 .current-comment {
-  transition: all 0.05s;
+  transition: all 0.15s ease-in-out;
 
   &.active {
-    padding-top: 45px;
-    padding-bottom: 45px;
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 }
 </style>
