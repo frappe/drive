@@ -1,33 +1,26 @@
 <template>
+  <!-- Main container no scroll -->
   <div
-    class="flex text-gray-900 h-screen antialiased overflow-y-hidden"
+    class="flex w-screen h-screen antialiased overflow-hidden"
     @contextmenu.prevent="handleDefaultContext($event)">
-    <UploadTracker v-if="showUploadTracker" />
-    <div
-      class="h-full max-h-full w-full max-w-full flex flex-col"
-      :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }">
+    <!-- Main container with scroll -->
+    <div class="h-full w-full flex flex-col">
       <div
         v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-        class="flex h-full overflow-x-hidden">
+        class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div
           v-if="showSidebar"
           class="px-2 border-r w-[220px] bg-gray-50 hidden md:py-2 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-hidden overflow-x-hidden">
+        <div class="h-full w-full overflow-hidden">
           <Navbar
             v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
-          <div class="flex w-full h-full overflow-y-hidden overflow-x-hidden">
-            <div
-              class="flex w-full h-full overflow-x-hidden"
-              :class="
-                $route.meta.documentPage
-                  ? 'overflow-y-hidden'
-                  : 'overflow-y-auto'
-              ">
+          <div class="flex w-full h-full overflow-hidden">
+            <div class="flex w-full h-[95vh] overflow-y-scroll">
               <router-view v-slot="{ Component }">
                 <component :is="Component" ref="currentPage" />
               </router-view>
@@ -43,10 +36,12 @@
           </div>
         </div>
       </div>
+      <!-- Auth -->
       <router-view v-else />
     </div>
   </div>
   <div id="dropzoneElement" class="hidden" />
+  <UploadTracker v-if="showUploadTracker" />
 </template>
 <script>
 import Dropzone from "dropzone";
