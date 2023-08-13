@@ -6,7 +6,7 @@
     leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="flex flex-col justify-start scroll-pb-44 w-full min-w-[350px] max-w-[350px] min-h-full border-l z-0 overflow-y-auto">
+      class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
           <svg
@@ -188,7 +188,7 @@
             d="M32 43H26C24.8954 43 24 43.8954 24 45V51C24 52.1046 24.8954 53 26 53H32C33.1046 53 34 52.1046 34 51V45C34 43.8954 33.1046 43 32 43Z M32 23H26C24.8954 23 24 23.8954 24 25V31C24 32.1046 24.8954 33 26 33H32C33.1046 33 34 32.1046 34 31V25C34 23.8954 33.1046 23 32 23Z"
             stroke="#525252" />
         </svg>
-        <p class="text-base font-medium">No file selected</p>
+        <p class="text-base text-gray-700 font-medium">No file selected</p>
         <p class="text-sm text-gray-600">
           Select a file to get more information
         </p>
