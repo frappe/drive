@@ -98,8 +98,9 @@ export default {
             title: this.titleVal,
             content: fromUint8Array(this.content),
             comments: this.comments,
+            file_size: fromUint8Array(this.content).length,
           });
-        }, 10000);
+        }, 30000);
       });
   },
   beforeUnmount() {
@@ -111,6 +112,7 @@ export default {
       title: this.titleVal,
       content: fromUint8Array(this.content),
       comments: this.comments,
+      file_size: fromUint8Array(this.content).length,
     });
   },
   resources: {
