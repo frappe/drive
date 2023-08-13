@@ -7,7 +7,7 @@
         onClick: () => logout(),
       },
     ]">
-    <template #default>
+    <template v-slot="{ open }">
       <button
         class="flex w-full items-center space-x-2 rounded-md p-2 text-left"
         :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'">
