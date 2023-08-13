@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-col w-full overflow-y-auto">
+  <div class="flex-col w-full overflow-y-scroll">
     <div
       class="flex text-sm justify-center items-center text-gray-600 h-12 w-full">
       Created {{ $store.state.entityInfo.creation }}
@@ -10,21 +10,21 @@
         :editor="editor" />
     </div>
     <BubbleMenu
-      v-on-outside-click="toggleCommentMenu"
       v-if="editor"
+      v-on-outside-click="toggleCommentMenu"
       :tippy-options="{ duration: 50, animation: 'shift-away' }"
       :should-show="shouldShow"
       :editor="editor">
       <div
-        id="comment-box"
         v-if="
           showCommentMenu &&
           !editor.state.selection.empty &&
           !activeCommentsInstance.uuid
         "
+        id="comment-box"
         :editor="editor">
         <div
-          class="absolute top-10 left-40 w-96 p-4 rounded-md border bg-white border-gray-100 shadow-lg">
+          class="absolute top-10 left-0 w-96 p-4 rounded-md border bg-white border-gray-100 shadow-2xl">
           <textarea
             v-model="commentText"
             cols="50"
@@ -65,6 +65,7 @@ import Table from "@tiptap/extension-table";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
+import CharacterCount from "@tiptap/extension-character-count";
 import Image from "./image-extension";
 import Video from "./video-extension";
 import Link from "@tiptap/extension-link";
@@ -72,19 +73,18 @@ import Typography from "@tiptap/extension-typography";
 import TextStyle from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
 import FontFamily from "@tiptap/extension-font-family";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
 import { FontSize } from "./font-size";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
-import TextEditorFixedMenu from "./TextEditorFixedMenu.vue";
-import TextEditorBubbleMenu from "./TextEditorBubbleMenu.vue";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
-import MenuBar from "./MenuBar.vue";
-import { Button, Input, onOutsideClickDirective } from "frappe-ui";
+import { onOutsideClickDirective } from "frappe-ui";
 import { v4 as uuidv4 } from "uuid";
 import { Comment } from "./comment";
 import { LineHeight } from "./lineHeight";
-import OuterCommentVue from "./OuterComment.vue";
+import { Indent } from "./indent";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
@@ -96,15 +96,10 @@ import Menu from "./Menu.vue";
 
 export default {
   name: "TextEditor",
-  inheritAttrs: false,
   components: {
     EditorContent,
     BubbleMenu,
-    TextEditorFixedMenu,
-    TextEditorBubbleMenu,
     Menu,
-    OuterCommentVue,
-    MenuBar,
     DocMenuAndInfoBar,
   },
   directives: {
@@ -115,6 +110,7 @@ export default {
       editor: computed(() => this.editor),
     };
   },
+  inheritAttrs: false,
   expose: ["editor"],
   props: {
     fixedMenu: {
@@ -132,10 +128,9 @@ export default {
       required: false,
     },
     modelValue: {
-      type: Object,
-    },
-    initialContent: {
-      type: Object,
+      type: Uint8Array,
+      required: true,
+      default: null,
     },
     placeholder: {
       type: String,
@@ -162,17 +157,9 @@ export default {
   data() {
     return {
       editor: null,
-      buttons: [
-        "Link",
-        "Separator",
-        "Bold",
-        "Italic",
-        "Underline",
-        "Strikethrough",
-        "Separator",
-        "New Comment",
-      ],
+      buttons: ["Link", "Separator", "New Comment"],
       provider: null,
+      localStore: null,
       tempEditable: true,
       isTextSelected: false,
       currentMode: "",
@@ -186,6 +173,197 @@ export default {
       },
       allComments: [],
     };
+  },
+  computed: {
+    editable() {
+      return this.isWritable && this.tempEditable;
+    },
+    bubbleMenuButtons() {
+      return this.buttons.map(createEditorButton);
+    },
+    currentUserName() {
+      return this.$store.state.user.fullName;
+    },
+    currentUserImage() {
+      return this.$store.state.user.imageURL;
+    },
+    editorProps() {
+      return {
+        attributes: {
+          class: normalizeClass([
+            "prose prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
+          ]),
+        },
+        clipboardTextParser: (text, $context) => {
+          if (!detectMarkdown(text)) return;
+          if (
+            !confirm(
+              "Do you want to convert markdown content to HTML before pasting?"
+            )
+          )
+            return;
+
+          let dom = document.createElement("div");
+          dom.innerHTML = markdownToHTML(text);
+          let parser =
+            this.editor.view.someProp("clipboardParser") ||
+            this.editor.view.someProp("domParser") ||
+            DOMParser.fromSchema(this.editor.schema);
+          return parser.parseSlice(dom, {
+            preserveWhitespace: true,
+            context: $context,
+          });
+        },
+      };
+    },
+  },
+  watch: {
+    activeCommentsInstance: {
+      handler(newVal) {
+        if (newVal) {
+          // check if userid is available
+          this.$store.commit(
+            "setActiveCommentsInstance",
+            JSON.stringify(newVal)
+          );
+        }
+      },
+      immediate: true,
+    },
+    allComments: {
+      handler(newVal) {
+        if (newVal) {
+          this.$store.commit("setAllComments", JSON.stringify(newVal));
+        }
+      },
+      immediate: true, // make this watch function is called when component created
+    },
+    editable(value) {
+      this.editor.setEditable(value);
+    },
+    editorProps: {
+      deep: true,
+      attributes: {
+        spellcheck: "false",
+      },
+      handler(value) {
+        if (this.editor) {
+          this.editor.setOptions({
+            editorProps: value,
+          });
+        }
+      },
+    },
+  },
+  mounted() {
+    const doc = new Y.Doc();
+    Y.applyUpdate(doc, this.modelValue);
+    // Tiny test
+    // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
+
+    const indexeddbProvider = new IndexeddbPersistence(
+      // Find a sane time to wipe IDB safely
+      JSON.stringify(this.entityName),
+      doc
+    );
+    const webrtcProvider = new WebrtcProvider(
+      JSON.stringify(this.entityName),
+      doc,
+      { signaling: ["wss://network.arjunchoudhary.com"] }
+    );
+    this.provider = webrtcProvider;
+    this.localStore = indexeddbProvider;
+    let componentContext = this;
+    this.editor = new Editor({
+      editable: this.editable,
+      editorProps: this.editorProps,
+      onCreate() {
+        componentContext.findCommentsAndStoreValues();
+        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
+      },
+      onUpdate() {
+        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
+        componentContext.findCommentsAndStoreValues();
+        componentContext.setCurrentComment();
+      },
+      onSelectionUpdate() {
+        componentContext.setCurrentComment();
+        componentContext.isTextSelected =
+          !!componentContext.editor.state.selection.content().size;
+      },
+      // eslint-disable-next-line no-sparse-arrays
+      extensions: [
+        StarterKit.configure({
+          history: false,
+        }),
+        Table.configure({
+          resizable: true,
+        }),
+        FontFamily.configure({
+          types: ["textStyle"],
+        }),
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+        }),
+        ,
+        Collaboration.configure({
+          document: doc,
+        }),
+        CollaborationCursor.configure({
+          provider: webrtcProvider,
+          user: {
+            name: this.currentUserName.toLowerCase(),
+            avatar: this.currentUserImage,
+            color: this.getRandomColor(),
+          },
+        }),
+        LineHeight,
+        Indent,
+        Link.configure({
+          openOnClick: false,
+        }),
+        Comment.configure({
+          isCommentModeOn: this.isCommentModeOn,
+        }),
+        Placeholder.configure({
+          placeholder: "Start typing",
+        }),
+        Highlight.configure({
+          multicolor: true,
+        }),
+        configureMention(this.mentions),
+        TaskList.configure({
+          HTMLAttributes: {
+            class: "not-prose",
+          },
+        }),
+        TaskItem.configure({
+          HTMLAttributes: {
+            class: "my-task-item",
+          },
+        }),
+        CharacterCount,
+        Underline,
+        TableRow,
+        TableHeader,
+        TableCell,
+        Typography,
+        TextStyle,
+        FontSize,
+        Color,
+        Image,
+        Video,
+      ],
+    });
+    this.emitter.on("emitToggleCommentMenu", () => {
+      this.showCommentMenu = !this.showCommentMenu;
+    });
+  },
+  beforeUnmount() {
+    this.editor.destroy();
+    this.provider.destroy();
+    this.provider = null;
+    this.editor = null;
   },
   methods: {
     shouldShow({ view, state, from, to }) {
@@ -267,7 +445,6 @@ export default {
     setCurrentComment() {
       let newVal = this.editor.isActive("comment");
       if (newVal) {
-        console.log(newVal);
         this.showAddCommentSection = !this.editor.state.selection.empty;
         const parsedComment = JSON.parse(
           this.editor.getAttributes("comment").comment
@@ -321,200 +498,6 @@ export default {
       }
     },
   },
-  computed: {
-    editable() {
-      return this.isWritable && this.tempEditable;
-    },
-    bubbleMenuButtons() {
-      return this.buttons.map(createEditorButton);
-    },
-    currentUserName() {
-      return this.$store.state.user.fullName;
-    },
-    currentUserImage() {
-      return this.$store.state.user.imageURL;
-    },
-    editorProps() {
-      return {
-        attributes: {
-          class: normalizeClass([
-            "prose prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100",
-          ]),
-        },
-        clipboardTextParser: (text, $context) => {
-          if (!detectMarkdown(text)) return;
-          if (
-            !confirm(
-              "Do you want to convert markdown content to HTML before pasting?"
-            )
-          )
-            return;
-
-          let dom = document.createElement("div");
-          dom.innerHTML = markdownToHTML(text);
-          let parser =
-            this.editor.view.someProp("clipboardParser") ||
-            this.editor.view.someProp("domParser") ||
-            DOMParser.fromSchema(this.editor.schema);
-          return parser.parseSlice(dom, {
-            preserveWhitespace: true,
-            context: $context,
-          });
-        },
-      };
-    },
-  },
-  watch: {
-    activeCommentsInstance: {
-      handler(newVal) {
-        if (newVal) {
-          // check if userid is available
-          this.$store.commit(
-            "setActiveCommentsInstance",
-            JSON.stringify(newVal)
-          );
-        }
-      },
-      immediate: true,
-    },
-    allComments: {
-      handler(newVal) {
-        if (newVal) {
-          this.$store.commit("setAllComments", JSON.stringify(newVal));
-        }
-      },
-      immediate: true, // make this watch function is called when component created
-    },
-    title() {
-      this.$emit("update:title", this.title);
-      this.$emit("saveTitle", this.title);
-    },
-    editable(value) {
-      this.editor.setEditable(value);
-    },
-    editorProps: {
-      deep: true,
-      attributes: {
-        spellcheck: "false",
-      },
-      handler(value) {
-        if (this.editor) {
-          this.editor.setOptions({
-            editorProps: value,
-          });
-        }
-      },
-    },
-  },
-  mounted() {
-    const doc = new Y.Doc();
-    Y.applyUpdate(doc, this.modelValue);
-    // Tiny test
-    // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
-
-    const indexeddbProvider = new IndexeddbPersistence(
-      JSON.stringify(this.entityName),
-      doc
-    );
-
-    const webrtcProvider = new WebrtcProvider(
-      JSON.stringify(this.entityName),
-      doc,
-      { signaling: ["wss://network.arjunchoudhary.com"] }
-    );
-    this.provider = webrtcProvider;
-    let componentContext = this;
-    this.editor = new Editor({
-      editable: this.editable,
-      editorProps: this.editorProps,
-      onCreate() {
-        componentContext.findCommentsAndStoreValues();
-        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
-      },
-      onUpdate() {
-        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
-        componentContext.findCommentsAndStoreValues();
-        componentContext.setCurrentComment();
-      },
-      onSelectionUpdate() {
-        componentContext.setCurrentComment();
-        componentContext.isTextSelected =
-          !!componentContext.editor.state.selection.content().size;
-      },
-      extensions: [
-        StarterKit.configure({
-          ...this.starterkitOptions,
-          history: false,
-        }),
-        Table.configure({
-          resizable: true,
-        }),
-        FontFamily.configure({
-          types: ["textStyle"],
-        }),
-        TextAlign.configure({
-          types: ["heading", "paragraph"],
-        }),
-        ,
-        Collaboration.configure({
-          document: doc,
-        }),
-        CollaborationCursor.configure({
-          provider: webrtcProvider,
-          user: {
-            name: this.currentUserName.toLowerCase(),
-            avatar: this.currentUserImage,
-            color: this.getRandomColor(),
-          },
-        }),
-        LineHeight,
-        Link.configure({
-          openOnClick: false,
-        }),
-        Comment.configure({
-          isCommentModeOn: this.isCommentModeOn,
-        }),
-        Placeholder.configure({
-          placeholder: "Start typing ...",
-        }),
-        Highlight.configure({
-          multicolor: true,
-        }),
-        configureMention(this.mentions),
-        Underline,
-        TableRow,
-        TableHeader,
-        TableCell,
-        Typography,
-        TextStyle,
-        FontSize,
-        Color,
-        Image,
-        Video,
-      ],
-    });
-    this.emitter.on("toggleReadMode", () => {
-      (this.isReadOnly = true), (this.tempEditable = false);
-      this.isCommentModeOn = false;
-    });
-    this.emitter.on("toggleEditMode", () => {
-      (this.isReadOnly = false), (this.tempEditable = true);
-      this.isCommentModeOn = false;
-    });
-    this.emitter.on("toggleCommentMode", () => {
-      (this.isReadOnly = false), (this.tempEditable = false);
-      this.isCommentModeOn = true;
-    });
-    this.emitter.on("emitToggleCommentMenu", () => {
-      this.showCommentMenu = !this.showCommentMenu;
-    });
-  },
-  beforeUnmount() {
-    this.editor.destroy();
-    this.provider.destroy();
-    this.provider = null;
-    this.editor = null;
-  },
 };
 </script>
 
@@ -532,7 +515,7 @@ export default {
   /* IE 10 and IE 11 */
   user-select: none;
   /* Standard syntax */
-  padding: 1rem;
+  padding: 0px;
 }
 
 /* Firefox */
@@ -570,5 +553,34 @@ span[data-comment] {
   top: -1.4em;
   user-select: none;
   white-space: nowrap;
+}
+s {
+  font-size: inherit;
+}
+.my-task-item {
+  display: flex;
+}
+
+.my-task-item input {
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  margin-right: 5px;
+}
+.my-task-item input[type="checkbox"]:hover {
+  outline: none;
+  background-color: #0d0d0d;
+}
+.my-task-item input[type="checkbox"]:focus {
+  outline: none;
+  background-color: #0d0d0d;
+}
+.my-task-item input[type="checkbox"]:active {
+  outline: none;
+  background-color: #0d0d0d;
+}
+.my-task-item input[type="checkbox"]:checked {
+  outline: none;
+  background-color: #0d0d0d;
 }
 </style>

@@ -6,24 +6,10 @@
     leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="flex flex-col justify-start scroll-pb-44 min-w-[350px] max-w-[350px] min-h-full border-l z-0 overflow-y-auto">
+      class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
-          <svg
-            v-if="entity.is_group"
-            :style="{ fill: entity.color }"
-            :draggable="false"
-            class="h-5 mr-2.5"
-            viewBox="0 0 46 40"
-            fill="#32a852"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0.368197 17.3301C0.17175 15.5535 1.56262 14.0004 3.35002 14.0004H42.65C44.4374 14.0004 45.8283 15.5535 45.6318 17.3301L43.7155 34.6599C43.3794 37.6999 40.8104 40.0004 37.7519 40.0004H8.24812C5.18961 40.0004 2.62062 37.6999 2.28447 34.6599L0.368197 17.3301Z" />
-            <path
-              d="M43.125 11V9C43.125 6.79086 41.3341 5 39.125 5H20.312C20.1914 5 20.0749 4.95643 19.9839 4.8773L14.6572 0.245394C14.4752 0.0871501 14.2422 0 14.001 0H6.87501C4.66587 0 2.87501 1.79086 2.87501 4V11C2.87501 11.5523 3.32272 12 3.87501 12H42.125C42.6773 12 43.125 11.5523 43.125 11Z" />
-          </svg>
           <img
-            v-else
             :src="getIconUrl(formatMimeType(entity.mime_type))"
             :draggable="false"
             class="h-5 mr-2.5" />
@@ -34,7 +20,7 @@
       </div>
       <!-- :class="$store.state.showInfo ? 'min-h-[45px]' : 'min-h-[48px]'" -->
       <!-- grow  min-h-full -->
-      <div v-if="entity">
+      <div v-if="entity && editor">
         <div class="flex flex-col justify-start">
           <div
             v-if="tab === 0"
@@ -45,10 +31,26 @@
                 : 'text-gray-600 cursor-pointer flex-none '
             "
             @click="tab = 0">
-            <span class="font-medium text-lg">Doc Info</span>
             <div
               v-if="tab === 0"
               class="space-y-7 min-h-full flex-auto flex flex-col z-0 overflow-y-auto">
+              <span class="font-medium text-lg">Doc Info</span>
+              <div class="flex text-base">
+                <div class="w-1/2 text-gray-600 space-y-2">
+                  <div>Words</div>
+                  <div>Characters</div>
+                  <div>Reading Time</div>
+                </div>
+                <div class="w-1/2 space-y-2">
+                  <div>{{ editor.storage.characterCount.words() }}</div>
+                  <div>{{ editor.storage.characterCount.characters() }}</div>
+                  <div>
+                    ~
+                    {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
+                    min
+                  </div>
+                </div>
+              </div>
               <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium my-4">Manage Access</div>
                 <div class="flex flex-row">
@@ -191,7 +193,7 @@
             d="M32 43H26C24.8954 43 24 43.8954 24 45V51C24 52.1046 24.8954 53 26 53H32C33.1046 53 34 52.1046 34 51V45C34 43.8954 33.1046 43 32 43Z M32 23H26C24.8954 23 24 23.8954 24 25V31C24 32.1046 24.8954 33 26 33H32C33.1046 33 34 32.1046 34 31V25C34 23.8954 33.1046 23 32 23Z"
             stroke="#525252" />
         </svg>
-        <p class="text-base font-medium">No file selected</p>
+        <p class="text-base text-gray-700 font-medium">No file selected</p>
         <p class="text-sm text-gray-600">
           Select a file to get more information
         </p>
@@ -199,13 +201,13 @@
 
       <div
         v-if="tab === 2"
-        class="p-4 border-b space-y-2"
+        class="p-4 border-b"
         :class="
           tab === 2 ? 'flex-auto' : 'text-gray-600 cursor-pointer flex-none '
         "
         @click="tab = 2">
         <span class="font-medium text-lg">Typography</span>
-        <div class="space-y-2" v-if="tab === 2">
+        <div class="space-y-4">
           <span class="font-medium text-gray-600 text-md">Presets</span>
           <div
             class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
@@ -282,61 +284,61 @@
             </Button>
           </div>
 
-          <Popover>
+          <div>
+            <span class="font-medium text-gray-600 text-md">Formatting</span>
+            <Popover>
+              <template #target="{ togglePopover }">
+                <Button
+                  variant="minimal"
+                  class="w-full border text-lg text-gray-800 my-2 transition-colors hover:bg-gray-100"
+                  :set="
+                    (activeBtn =
+                      fontFamilyOptions.find((f) => f.isActive(editor)) ||
+                      fontFamilyOptions[0])
+                  "
+                  @click="togglePopover">
+                  <span>
+                    {{ activeBtn.label }}
+                  </span>
+                </Button>
+              </template>
+              <template #body="{ close }">
+                <ul class="rounded bg-white p-2 shadow-sm border">
+                  <li
+                    v-for="option in fontFamilyOptions"
+                    v-show="
+                      option.isDisabled ? !option.isDisabled(editor) : true
+                    "
+                    :key="option.label"
+                    class="w-full">
+                    <button
+                      class="w-full rounded h-7 px-4 text-left text-base hover:bg-gray-50"
+                      @click="
+                        () => {
+                          onButtonClick(option);
+                          close();
+                        }
+                      ">
+                      {{ option.label }}
+                    </button>
+                  </li>
+                </ul>
+              </template>
+            </Popover>
+
+            <!-- <Popover class="border rounded-l rounded-r">
             <template #target="{ togglePopover }">
+              <button class="px-0 border-r rounded-l rounded-r-none" variant="ghost"><Plus class="text-gray-600 px-1 w-6" /></button>
               <Button
                 variant="minimal"
-                class="flex-auto w-full border text-lg text-gray-800 transition-colors hover:bg-gray-100"
-                :set="
-                  (activeBtn =
-                    fontFamilyOptions.find((f) => f.isActive(editor)) ||
-                    fontFamilyOptions[0])
-                "
+                class="w-8 rounded-none text-lg text-gray-800 transition-colors"
+                :set="(activeBtn = fontSizeOptions.find((f) => f.isActive(editor)) || fontSizeOptions[0])"
                 @click="togglePopover">
                 <span>
                   {{ activeBtn.label }}
                 </span>
               </Button>
-            </template>
-            <template #body="{ close }">
-              <ul class="rounded bg-white p-2 shadow-sm border">
-                <li
-                  v-for="option in fontFamilyOptions"
-                  v-show="option.isDisabled ? !option.isDisabled(editor) : true"
-                  :key="option.label"
-                  class="w-full">
-                  <button
-                    class="rounded text-left text-base hover:bg-gray-50"
-                    @click="
-                      () => {
-                        onButtonClick(option);
-                        close();
-                      }
-                    ">
-                    {{ option.label }}
-                  </button>
-                </li>
-              </ul>
-            </template>
-          </Popover>
-
-          <Input />
-
-          <Popover>
-            <template #target="{ togglePopover }">
-              <Button
-                variant="minimal"
-                class="border flex-auto w-1/3 text-lg text-gray-800 transition-colors hover:bg-gray-100"
-                :set="
-                  (activeBtn =
-                    fontSizeOptions.find((f) => f.isActive(editor)) ||
-                    fontSizeOptions[0])
-                "
-                @click="togglePopover">
-                <span>
-                  {{ activeBtn.label }}
-                </span>
-              </Button>
+              <button class="border-l rounded-r rounded-l-none" variant="ghost"><Minus class="text-gray-600 px-1 w-6" /></button>
             </template>
             <template #body="{ close }">
               <ul class="rounded border bg-white p-1 shadow-sm">
@@ -346,7 +348,7 @@
                   :key="option.label"
                   class="w-full">
                   <button
-                    class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
+                    class="w-full rounded px-0.5 py-1 text-left text-base hover:bg-gray-50"
                     @click="
                       () => {
                         onButtonClick(option);
@@ -358,143 +360,9 @@
                 </li>
               </ul>
             </template>
-          </Popover>
-
-          <Popover>
-            <template #target="{ togglePopover }">
-              <Button
-                variant="minimal"
-                class="flex-auto w-full border text-lg text-gray-800 transition-colors hover:bg-gray-100"
-                :set="
-                  (activeBtn =
-                    lineOptions.find((f) => f.isActive(editor)) ||
-                    lineOptions[0])
-                "
-                @click="togglePopover">
-                <span>Line Height: {{ activeBtn.label }}</span>
-              </Button>
-            </template>
-            <template #body="{ close }">
-              <ul class="rounded border bg-white p-1 shadow-md">
-                <li
-                  v-for="option in lineOptions"
-                  v-show="option.isDisabled ? !option.isDisabled(editor) : true"
-                  :key="option.label"
-                  class="w-full">
-                  <button
-                    class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
-                    @click="
-                      () => {
-                        onButtonClick(option);
-                        close();
-                      }
-                    ">
-                    {{ option.label }}
-                  </button>
-                </li>
-              </ul>
-            </template>
-          </Popover>
-
-          <div
-            class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('bold')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleBold().run()">
-              <FeatherIcon name="bold" class="w-4" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('italic')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleItalic().run()">
-              <FeatherIcon name="italic" class="w-4" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('underline')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleUnderline().run()">
-              <FeatherIcon name="underline" class="w-4" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('strike')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleStrike().run()">
-              <FeatherIcon name="/" class="w-4" />
-            </Button>
-          </div>
-
-          <div class="my-4">
-            <span class="font-medium text-lg">Items</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button @click="editor.chain().focus().toggleOrderedList().run()">
-                <FeatherIcon name="list" class="w-4" />
-              </Button>
-              <Button @click="editor.chain().focus().toggleBulletList().run()">
-                <FeatherIcon name="list" class="w-4" />
-              </Button>
-            </div>
-          </div>
-          <div class="my-4">
-            <span class="font-medium text-lg">Alignment</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button
-                @click="editor.chain().focus().setTextAlign('left').run()">
-                <FeatherIcon name="align-left" class="w-4" />
-              </Button>
-              <Button
-                @click="editor.chain().focus().setTextAlign('center').run()">
-                <FeatherIcon name="align-center" class="w-4" />
-              </Button>
-              <Button
-                @click="editor.chain().focus().setTextAlign('right').run()">
-                <FeatherIcon name="align-right" class="w-4" />
-              </Button>
-              <Button
-                @click="editor.chain().focus().setTextAlign('justify').run()">
-                <FeatherIcon name="align-justify" class="w-4" />
-              </Button>
-            </div>
-          </div>
-          <div class="my-4">
-            <span class="font-medium text-lg">Items</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button @click="editor.chain().focus().toggleOrderedList().run()">
-                <FeatherIcon name="list" class="w-4" />
-              </Button>
-              <Button @click="editor.chain().focus().toggleBulletList().run()">
-                <FeatherIcon name="list" class="w-4" />
-              </Button>
-            </div>
-          </div>
-          <div class="my-4">
-            <span class="font-medium text-lg">Decorations</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button @click="editor.chain().focus().toggleCodeBlock().run()">
-                <FeatherIcon name="code" class="w-4" />
-              </Button>
-              <Button @click="editor.chain().focus().toggleBlockquote().run()">
-                <FeatherIcon name="message-square" class="w-4" />
-              </Button>
-            </div>
+          </Popover> -->
             <div class="p-2">
-              <div class="text-sm text-gray-700">Text Color</div>
+              <div class="text-sm font-medium text-gray-700">Color</div>
               <div class="mt-1 grid grid-cols-8 gap-1">
                 <div
                   class="flex"
@@ -503,7 +371,7 @@
                   :text="color.name">
                   <button
                     :aria-label="color.name"
-                    class="flex h-5 w-5 items-center justify-center rounded border text-base"
+                    class="flex h-5 w-5 items-center justify-center rounded-sm border text-base"
                     :style="{
                       color: color.hex,
                     }"
@@ -512,8 +380,10 @@
                   </button>
                 </div>
               </div>
-              <div class="mt-2 text-sm text-gray-700">Background Color</div>
-              <div class="mt-1 grid grid-cols-8 gap-1">
+              <div class="mt-2 text-sm font-medium text-gray-700">
+                Highlight
+              </div>
+              <div class="mt-1 grid grid-cols-8 gap-1 mb-2">
                 <div
                   class="flex"
                   v-for="color in backgroundColors"
@@ -521,7 +391,7 @@
                   :text="color.name">
                   <button
                     :aria-label="color.name"
-                    class="flex h-5 w-5 items-center justify-center rounded border text-base text-gray-900"
+                    class="flex h-5 w-5 items-center justify-center rounded-sm border text-base text-gray-900"
                     :class="
                       !color.hex ? 'border-gray-200' : 'border-transparent'
                     "
@@ -534,112 +404,566 @@
                 </div>
               </div>
             </div>
+
+            <div
+              class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive('bold')
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().toggleBold().run()">
+                <FeatherIcon name="bold" class="w-4 stroke-2" />
+              </Button>
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive('italic')
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().toggleItalic().run()">
+                <FeatherIcon name="italic" class="w-4 stroke-2" />
+              </Button>
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive('underline')
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().toggleUnderline().run()">
+                <FeatherIcon name="underline" class="w-4 stroke-2" />
+              </Button>
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive('strike')
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().toggleStrike().run()">
+                <Strikethrough class="w-4 stroke-2" />
+              </Button>
+            </div>
+          </div>
+
+          <div class="my-4">
+            <span class="font-medium text-gray-600 text-md">Lists</span>
+            <div
+              class="flex flex-row my-2 w-full justify-stretch items-stretch rounded p-0.5 space-x-2 h-8">
+              <Button
+                class="w-full text-gray-600"
+                @click="editor.chain().focus().toggleOrderedList().run()">
+                <template #prefix>
+                  <List class="w-4 stroke-2" />
+                </template>
+                Numbered
+              </Button>
+              <Button
+                class="w-full text-gray-600"
+                @click="editor.chain().focus().toggleBulletList().run()">
+                <template #prefix>
+                  <ListOrdered class="w-4" />
+                </template>
+                Bullet
+              </Button>
+              <Button
+                class="w-full text-gray-600"
+                @click="editor.chain().focus().toggleTaskList().run()">
+                <template #prefix>
+                  <ListChecks class="w-4" />
+                </template>
+                Check
+              </Button>
+            </div>
+          </div>
+
+          <div class="my-4">
+            <span class="font-medium text-gray-600 text-md">Alignment</span>
+            <div
+              class="flex flex-row my-2 w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive({ textAlign: 'left' })
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().setTextAlign('left').run()">
+                <FeatherIcon name="align-left" class="w-4 stroke-2" />
+              </Button>
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive({ textAlign: 'center' })
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().setTextAlign('center').run()">
+                <FeatherIcon name="align-center" class="w-4 stroke-2" />
+              </Button>
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive({ textAlign: 'right' })
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().setTextAlign('right').run()">
+                <FeatherIcon name="align-right" class="w-4 stroke-2" />
+              </Button>
+              <Button
+                class="w-full"
+                :class="
+                  editor.isActive({ textAlign: 'justify' })
+                    ? 'bg-white shadow-sm'
+                    : 'bg-transparent'
+                "
+                @click="editor.chain().focus().setTextAlign('justify').run()">
+                <FeatherIcon name="align-justify" class="w-4 stroke-2" />
+              </Button>
+            </div>
+            <div
+              class="flex flex-row w-full justify-stretch mb-4 items-stretch rounded p-0.5 space-x-0.5 h-8">
+              <!-- <Button
+              class="w-full"
+              :class="
+                editor.isActive('heading', { level: 1 })
+                  ? 'bg-white shadow-sm'
+                  : 'bg-transparent'
+              "
+              @click="
+                editor
+                  .chain()
+                  .focus()
+                  .unsetFontSize()
+                  .toggleHeading({ level: 1 })
+                  .run()
+              ">
+              Title
+            </Button> -->
+
+              <Button
+                class="flex-auto shadow-none w-full border h-8 p-0 text-gray-800 transition-colors hover:bg-gray-100"
+                :class="
+                  editor.isActive('heading', { level: 1 })
+                    ? 'bg-white shadow-sm'
+                    : ''
+                "
+                @click="editor.chain().focus().indent().run()">
+                <IndentIcon class="h-4" />
+              </Button>
+              <Button
+                class="flex-auto shadow-none w-full border h-8 p-0 text-gray-800 transition-colors hover:bg-gray-100"
+                :class="
+                  editor.isActive('heading', { level: 1 })
+                    ? 'bg-white shadow-sm'
+                    : ''
+                "
+                @click="editor.chain().focus().outdent().run()">
+                <OutdentIcon class="h-4" />
+              </Button>
+
+              <Popover>
+                <template #target="{ togglePopover }">
+                  <Button
+                    variant="minimal"
+                    class="flex-auto w-full h-8 p-0 border text-gray-800 transition-colors hover:bg-gray-100"
+                    :set="
+                      (activeBtn =
+                        lineOptions.find((f) => f.isActive(editor)) ||
+                        lineOptions[0])
+                    "
+                    @click="togglePopover">
+                    <template #prefix><LineHeight class="h-6" /></template>
+                    <span>{{ activeBtn.label }}</span>
+                  </Button>
+                </template>
+                <template #body="{ close }">
+                  <ul class="rounded border bg-white p-1 shadow-md">
+                    <li
+                      v-for="option in lineOptions"
+                      v-show="
+                        option.isDisabled ? !option.isDisabled(editor) : true
+                      "
+                      :key="option.label"
+                      class="w-full">
+                      <button
+                        class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
+                        @click="
+                          () => {
+                            onButtonClick(option);
+                            close();
+                          }
+                        ">
+                        {{ option.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </template>
+              </Popover>
+            </div>
+          </div>
+          <div class="my-4">
+            <span class="font-medium text-gray-600 text-md">Blocks</span>
+            <div class="flex items-stretch w-full space-x-2 justify-center">
+              <Button @click="editor.chain().focus().toggleCodeBlock().run()">
+                <template #prefix><Code2 name="code" class="w-4" /></template>
+                Code
+              </Button>
+              <Button @click="editor.chain().focus().toggleBlockquote().run()">
+                <template #prefix>
+                  <QuoteIcon name="quote" class="w-4" />
+                </template>
+                Quote
+              </Button>
+            </div>
           </div>
         </div>
       </div>
       <div
         v-if="tab === 3"
-        class="p-4 border-b space-y-2"
+        class="p-4 border-b"
         :class="
           tab === 3 ? 'flex-auto' : 'text-gray-600 cursor-pointer flex-none '
         "
         @click="tab = 3">
-        <span class="font-medium text-lg">Insert</span>
-        <div class="space-y-2 space-x-2">
-          <Button class="h-7" @click="addImageDialog = true">Image</Button>
+        <span class="font-medium text-lg mb-[0.25px]">Insert</span>
+        <div>
+          <span class="font-medium text-gray-600 text-md">Media</span>
+
+          <Button class="w-full justify-start" @click="addImageDialog = true">
+            <template #prefix>
+              <ImagePlus class="text-gray-700 w-4" />
+              Image
+            </template>
+          </Button>
           <InsertImage v-model="addImageDialog" :editor="editor" />
-          <Button class="h-7" @click="addVideoDialog = true">Video</Button>
+
+          <Button
+            class="w-full justify-start mb-2"
+            @click="addVideoDialog = true">
+            <template #prefix>
+              <FileVideo class="text-gray-700 w-4" />
+              Video
+            </template>
+          </Button>
           <InsertVideo v-model="addVideoDialog" :editor="editor" />
+        </div>
+        <span class="font-medium text-gray-600 text-md">Lines</span>
+        <div class="my-2">
           <Button
             class="px-2"
             @click="editor.chain().focus().setHorizontalRule().run()">
-            —
+            ——————
           </Button>
         </div>
-        <div class="flex-col items-start w-full space-x-2 justify-start">
-          <span class="font-medium text-lg">Table</span>
+        <span class="font-medium text-gray-600 text-md">Table</span>
+        <div class="flex space-x-2 my-2">
+          <Button
+            class="w-full"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .run()
+            ">
+            <template #prefix>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5"></path>
+                <path d="M3 10h18"></path>
+                <path d="M10 3v18"></path>
+                <path d="M16 19h6"></path>
+                <path d="M19 16v6"></path>
+              </svg>
+              New Table
+            </template>
+          </Button>
+          <Button
+            v-if="editor.can().deleteTable()"
+            class="w-full"
+            @click="editor.chain().focus().deleteTable().run()">
+            <template #prefix>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10"></path>
+                <path d="M3 10h18"></path>
+                <path d="M10 3v18"></path>
+                <path d="M16 19h6"></path>
+              </svg>
+              Delete Table
+            </template>
+          </Button>
+        </div>
+
+        <div v-if="editor.can().deleteTable()" class="space-y-2">
+          <span class="font-medium text-gray-600 text-md">Row</span>
           <div class="flex items-stretch w-full space-x-2 justify-center">
             <Button
-              class="px-2"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-                  .run()
-              ">
-              Table
-            </Button>
-          </div>
-          <div class="flex items-center w-full space-x-2 justify-center">
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().addColumnBefore().run()">
-              Column Left
-            </Button>
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().addColumnAfter().run()">
-              Column Right
-            </Button>
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().deleteColumn().run()">
-              Delete Column
-            </Button>
-          </div>
-          <div class="flex items-stretch w-full space-x-2 justify-center">
-            <Button
-              class="px-2"
+              class="px-2 w-full"
               @click="editor.chain().focus().addRowBefore().run()">
-              Row Above
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-row-insert-top"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="1"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M4 18v-4a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1z"></path>
+                <path d="M12 9v-4"></path>
+                <path d="M10 7l4 0"></path>
+              </svg>
             </Button>
             <Button
-              class="px-2"
+              class="px-2 w-full"
               @click="editor.chain().focus().addRowAfter().run()">
-              Row Below
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-row-insert-bottom"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="1"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M20 6v4a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1z"></path>
+                <path d="M12 15l0 4"></path>
+                <path d="M14 17l-4 0"></path>
+              </svg>
             </Button>
             <Button
-              class="px-2"
+              class="px-2 w-full"
               @click="editor.chain().focus().deleteRow().run()">
-              Delete Row
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-row-remove"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="1"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M20 6v4a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1z"></path>
+                <path d="M10 16l4 4"></path>
+                <path d="M10 20l4 -4"></path>
+              </svg>
             </Button>
           </div>
-          <div class="flex items-stretch w-full space-x-2 justify-center">
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().mergeCells().run()">
-              Merge Cells
-            </Button>
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().splitCell().run()">
-              Split Cells
-            </Button>
+
+          <div class="space-y-2">
+            <span class="font-medium text-gray-600 text-md my-4">Column</span>
+            <div class="flex items-stretch w-full space-x-2 justify-center">
+              <Button
+                class="px-2 w-full"
+                @click="editor.chain().focus().addColumnBefore().run()">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-column-insert-left"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="1"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path
+                    d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"></path>
+                  <path d="M5 12l4 0"></path>
+                  <path d="M7 10l0 4"></path>
+                </svg>
+              </Button>
+              <Button
+                class="w-full text-gray-600"
+                @click="editor.chain().focus().addColumnAfter().run()">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-column-insert-right"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="1"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path
+                    d="M6 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"></path>
+                  <path d="M15 12l4 0"></path>
+                  <path d="M17 10l0 4"></path>
+                </svg>
+              </Button>
+              <Button
+                class="px-2 w-full"
+                @click="editor.chain().focus().deleteColumn().run()">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-column-remove"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="1"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path
+                    d="M6 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"></path>
+                  <path d="M16 10l4 4"></path>
+                  <path d="M16 14l4 -4"></path>
+                </svg>
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <span class="font-medium text-gray-600 text-md">Cells</span>
+            <div class="flex items-stretch w-full space-x-2 justify-center">
+              <Button
+                class="px-2 w-full"
+                @click="editor.chain().focus().mergeCells().run()">
+                <template #prefix>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24">
+                    <path
+                      d="M21 20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V20ZM19 11V5H13.001V7H15L12 10L9 7H11V5H5V11H7V13H5V19H11V17H9L12 14L15 17H13.001V19H19V13H17V11H19ZM11 13H9V11H11V13ZM15 13H13V11H15V13Z"></path>
+                  </svg>
+                </template>
+                Merge
+              </Button>
+              <Button
+                class="px-2 w-full"
+                @click="editor.chain().focus().splitCell().run()">
+                <template #prefix>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24">
+                    <path
+                      d="M21 20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V20ZM19 11V5H13.001V7H15L12 10L9 7H11V5H5V11H7V13H5V19H11V17H9L12 14L15 17H13.001V19H19V13H17V11H19ZM11 13H9V11H11V13ZM15 13H13V11H15V13Z"></path>
+                  </svg>
+                </template>
+                Split
+              </Button>
+              <Button
+                class="px-2 w-full"
+                @click="editor.chain().focus().toggleHeaderCell().run()">
+                <template #prefix>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24">
+                    <path
+                      d="M15 21H9V10H15V21ZM17 21V10H22V20C22 20.5523 21.5523 21 21 21H17ZM7 21H3C2.44772 21 2 20.5523 2 20V10H7V21ZM22 8H2V4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V8Z"
+                      fill="currentColor"></path>
+                  </svg>
+                </template>
+                Header
+              </Button>
+            </div>
+          </div>
+        </div>
+        <!--         <div class="flex-col items-start w-full space-x-2 justify-start">
+          <span class="font-medium text-gray-600 text-md">Header</span>
+          <div class="flex items-stretch w-full space-x-2 justify-center">   
           </div>
           <div class="flex items-stretch w-full space-x-2 justify-center">
             <Button
               class="px-2"
               @click="editor.chain().focus().toggleHeaderColumn().run()">
+              <template #prefix>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-table-column" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z"></path>
+                  <path d="M10 10h11"></path>
+                  <path d="M10 3v18"></path>
+                  <path d="M9 3l-6 6"></path>
+                  <path d="M10 7l-7 7"></path>
+                  <path d="M10 12l-7 7"></path>
+                  <path d="M10 17l-4 4"></path>
+                </svg>
+            </template>
               Header Col
             </Button>
             <Button
               class="px-2"
               @click="editor.chain().focus().toggleHeaderRow().run()">
+              <template #prefix>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-table-row" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z"></path>
+                  <path d="M9 3l-6 6"></path>
+                  <path d="M14 3l-7 7"></path>
+                  <path d="M19 3l-7 7"></path>
+                  <path d="M21 6l-4 4"></path>
+                  <path d="M3 10h18"></path>
+                  <path d="M10 10v11"></path>
+                </svg>
+            </template>
               Header Row
             </Button>
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().toggleHeaderCell().run()">
-              Header Cell
-            </Button>
-            <Button
-              class="px-2"
-              @click="editor.chain().focus().deleteTable().run()">
-              Delete Table
-            </Button>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </Transition>
@@ -724,7 +1048,7 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, Popover, Dropdown } from "frappe-ui";
+import { FeatherIcon, Avatar, Input, Popover } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
@@ -733,6 +1057,23 @@ import { getIconUrl } from "@/utils/getIconUrl";
 import { v4 as uuidv4 } from "uuid";
 import { defineAsyncComponent } from "vue";
 import OuterCommentVue from "@/components/DocEditor/OuterComment.vue";
+import LineHeight from "./icons/line-height.vue";
+import {
+  Plus,
+  Minus,
+  Strikethrough,
+  ListOrdered,
+  ListChecks,
+  List,
+  IndentIcon,
+  OutdentIcon,
+} from "lucide-vue-next";
+import { QuoteIcon } from "lucide-vue-next";
+import { Code } from "lucide-vue-next";
+import { Code2 } from "lucide-vue-next";
+import { ImagePlus } from "lucide-vue-next";
+import { FileVideo } from "lucide-vue-next";
+import { Table2Icon } from "lucide-vue-next";
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -747,6 +1088,21 @@ export default {
     Popover,
     InsertImage: defineAsyncComponent(() => import("./InsertImage.vue")),
     InsertVideo: defineAsyncComponent(() => import("./InsertVideo.vue")),
+    LineHeight,
+    Plus,
+    Minus,
+    Strikethrough,
+    ListOrdered,
+    ListChecks,
+    List,
+    IndentIcon,
+    OutdentIcon,
+    QuoteIcon,
+    Code,
+    Code2,
+    ImagePlus,
+    FileVideo,
+    Table2Icon,
   },
   emits: ["setContentEmit", "focusContentEmit"],
   setup() {
@@ -764,35 +1120,64 @@ export default {
       addTag: false,
       fontSizeOptions: [
         {
-          label: "Extra Small",
+          label: "16",
+          action: (editor) => editor.chain().focus().setFontSize("16px").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontSize: "16px" }),
+        },
+        {
+          label: "11",
           action: (editor) => editor.chain().focus().setFontSize("11px").run(),
           isActive: (editor) =>
             editor.isActive("textStyle", { fontSize: "11px" }),
         },
         {
-          label: "Small",
-          action: (editor) => editor.chain().focus().setFontSize("13px").run(),
+          label: "12",
+          action: (editor) => editor.chain().focus().setFontSize("12px").run(),
           isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "13px" }),
+            editor.isActive("textStyle", { fontSize: "12px" }),
         },
         {
-          label: "Normal",
-          action: (editor) => editor.chain().focus().setFontSize("15px").run(),
+          label: "14",
+          action: (editor) => editor.chain().focus().setFontSize("14px").run(),
           isActive: (editor) =>
-            editor.isActive("paragraph") ||
-            editor.isActive("textStyle", { fontSize: "15px" }),
+            editor.isActive("textStyle", { fontSize: "14px" }),
         },
         {
-          label: "Large",
-          action: (editor) => editor.chain().focus().setFontSize("22px").run(),
+          label: "18",
+          action: (editor) => editor.chain().focus().setFontSize("18px").run(),
           isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "22px" }),
+            editor.isActive("textStyle", { fontSize: "18px" }),
         },
         {
-          label: "Extra Large",
-          action: (editor) => editor.chain().focus().setFontSize("32px").run(),
+          label: "24",
+          action: (editor) => editor.chain().focus().setFontSize("24px").run(),
           isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "32px" }),
+            editor.isActive("textStyle", { fontSize: "24px" }),
+        },
+        {
+          label: "30",
+          action: (editor) => editor.chain().focus().setFontSize("30px").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontSize: "30px" }),
+        },
+        {
+          label: "36",
+          action: (editor) => editor.chain().focus().setFontSize("36px").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontSize: "36px" }),
+        },
+        {
+          label: "48",
+          action: (editor) => editor.chain().focus().setFontSize("48px").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontSize: "48px" }),
+        },
+        {
+          label: "60",
+          action: (editor) => editor.chain().focus().setFontSize("60px").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontSize: "60px" }),
         },
       ],
       lineOptions: [
@@ -872,7 +1257,7 @@ export default {
       return this.$store.state.user.imageURL;
     },
     entity() {
-      return localStorage.getItem("entityInfo");
+      return this.$store.state.entityInfo;
     },
     unaddedTags() {
       return this.$resources.userTags.data.filter(
@@ -881,7 +1266,6 @@ export default {
       );
     },
     allComments() {
-      console.log(this.$store.state.allComments);
       return JSON.parse(this.$store.state.allComments);
     },
     activeCommentsInstance() {

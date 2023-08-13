@@ -9,21 +9,7 @@
       class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
-          <svg
-            v-if="entity.is_group"
-            :style="{ fill: entity.color }"
-            :draggable="false"
-            class="h-5 mr-2.5"
-            viewBox="0 0 46 40"
-            fill="#32a852"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0.368197 17.3301C0.17175 15.5535 1.56262 14.0004 3.35002 14.0004H42.65C44.4374 14.0004 45.8283 15.5535 45.6318 17.3301L43.7155 34.6599C43.3794 37.6999 40.8104 40.0004 37.7519 40.0004H8.24812C5.18961 40.0004 2.62062 37.6999 2.28447 34.6599L0.368197 17.3301Z" />
-            <path
-              d="M43.125 11V9C43.125 6.79086 41.3341 5 39.125 5H20.312C20.1914 5 20.0749 4.95643 19.9839 4.8773L14.6572 0.245394C14.4752 0.0871501 14.2422 0 14.001 0H6.87501C4.66587 0 2.87501 1.79086 2.87501 4V11C2.87501 11.5523 3.32272 12 3.87501 12H42.125C42.6773 12 43.125 11.5523 43.125 11Z" />
-          </svg>
           <img
-            v-else
             :src="getIconUrl(formatMimeType(entity.mime_type))"
             :draggable="false"
             class="h-5 mr-2.5" />
@@ -243,12 +229,11 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, call, Input } from "frappe-ui";
+import { FeatherIcon, Avatar, Input } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
-import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import OuterCommentVue from "@/components/DocEditor/OuterComment.vue";
 

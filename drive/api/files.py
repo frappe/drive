@@ -248,10 +248,11 @@ def rename_doc_entity(entity_name, title):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, content):
+def save_doc(entity_name, doc_name, content, file_size):
     drive_document = frappe.get_doc("Drive Document", doc_name)
     drive_document.content = content
     drive_document.save()
+    frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
     return
 
 

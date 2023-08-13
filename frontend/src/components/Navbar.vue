@@ -94,6 +94,7 @@ import SearchPopup from "@/components/SearchPopup.vue";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import { formatDate } from "@/utils/format";
 
 export default {
   name: "Navbar",
@@ -207,6 +208,9 @@ export default {
       return {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          this.$store.commit("setEntityInfo", data);
           this.previewEntity = data;
         },
         onError(data) {
