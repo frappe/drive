@@ -103,7 +103,7 @@
                   <div>Owner</div>
                 </div>
                 <div class="w-1/2 space-y-2">
-                  <div>{{ formattedMimeType }}</div>
+                  <div>Frappe Doc</div>
                   <div>{{ entity.file_size }}</div>
                   <div>{{ entity.modified }}</div>
                   <div>{{ entity.creation }}</div>
@@ -207,7 +207,7 @@
       ]"
       class="mb-2 py-4 text-gray-600"
       variant="minimal"
-      @click="tab = 0">
+      @click="switchTab(0)">
       <FeatherIcon
         name="alert-circle"
         :class="[
@@ -226,7 +226,7 @@
           : ' hover:bg-gray-100',
       ]"
       variant="minimal"
-      @click="tab = 1">
+      @click="switchTab(1)">
       <FeatherIcon
         name="message-circle"
         :class="[
