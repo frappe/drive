@@ -9,10 +9,21 @@
       class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
-          <img
-            :src="getIconUrl(formatMimeType(entity.mime_type))"
-            :draggable="false"
-            class="h-5 mr-2.5" />
+          <svg
+            width="20px"
+            class="mr-2.5"
+            height="20px"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M0 3C0 1.34315 1.34315 0 3 0H11C12.6569 0 14 1.34315 14 3V11C14 12.6569 12.6569 14 11 14H3C1.34315 14 0 12.6569 0 11V3Z"
+              fill="#525252" />
+            <path d="M3.5 4H10.5V5H3.5V4Z" fill="#FBFFFF" />
+            <path d="M3.5 6.5H10.5V7.5H3.5V6.5Z" fill="#FBFFFF" />
+            <path d="M3.5 9H8.5V10H3.5V9Z" fill="#FBFFFF" />
+          </svg>
+          <img :draggable="false" class="h-5 mr-2.5" />
           <div class="font-medium truncate text-xl">
             {{ entity.title }}
           </div>
@@ -148,7 +159,7 @@
                     placeholder="Add comment"
                     @keydown.enter="postComment" />
                 </div>
-                <Button @click="postComment" variant="solid">Add</Button>
+                <Button variant="solid" @click="postComment">Add</Button>
               </div>
             </div>
             <OuterCommentVue
@@ -189,14 +200,14 @@
   <div
     class="flex flex-col items-center h-full overflow-y-hidden z-0 border-l max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
-      @click="tab = 0"
-      class="mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
           ? 'text-black bg-gray-300'
           : ' hover:bg-gray-100',
       ]"
-      variant="minimal">
+      class="mb-2 py-4 text-gray-600"
+      variant="minimal"
+      @click="tab = 0">
       <FeatherIcon
         name="alert-circle"
         :class="[
@@ -208,14 +219,14 @@
     </Button>
     <Button
       v-if="$route.meta.documentPage"
-      @click="tab = 1"
       class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
           ? 'text-black bg-gray-300'
           : ' hover:bg-gray-100',
       ]"
-      variant="minimal">
+      variant="minimal"
+      @click="tab = 1">
       <FeatherIcon
         name="message-circle"
         :class="[
@@ -233,8 +244,6 @@ import { FeatherIcon, Avatar, Input } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
-import FileRender from "@/components/FileRender.vue";
-import { getIconUrl } from "@/utils/getIconUrl";
 import OuterCommentVue from "@/components/DocEditor/OuterComment.vue";
 
 export default {
@@ -246,14 +255,13 @@ export default {
     ShareDialog,
     TagInput,
     Tag,
-    FileRender,
     OuterCommentVue,
   },
   emits: ["setContentEmit", "focusContentEmit"],
-  setup() {
+  /* setup() {
     return { formatMimeType, getIconUrl };
   },
-
+ */
   data() {
     return {
       tab: 0,
