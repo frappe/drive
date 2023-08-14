@@ -12,7 +12,7 @@
       <div class="flex mt-5">
         <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
-          appearance="danger"
+          theme="red"
           icon-left="trash-2"
           class="ml-4"
           :loading="$resources.delete.loading"

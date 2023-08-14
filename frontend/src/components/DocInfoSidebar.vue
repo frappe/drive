@@ -202,8 +202,8 @@
     <Button
       :class="[
         tab === 0 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-100'
+          : ' hover:bg-gray-50',
       ]"
       class="mb-2 py-4 text-gray-600"
       variant="minimal"
