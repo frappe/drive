@@ -13,7 +13,7 @@
         :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'">
         <Avatar :image="imageURL" :label="fullName" size="md" />
         <span class="hidden text-base font-medium text-gray-900 sm:inline">
-          {{ fullName }}
+          {{ firstName }}
         </span>
         <FeatherIcon name="chevron-down" class="hidden h-4 w-4 sm:inline" />
       </button>
