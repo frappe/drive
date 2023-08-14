@@ -185,13 +185,11 @@ export default {
   },
 
   mounted() {
-    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
-    this.$store.commit("setCtaButton", {
-      text: "Empty Trash",
-      prefix: "trash-2",
-      variant: "outline",
-      theme: "red",
+    this.emitter.on("clearTrashed", () => {
+      this.clearTrashed();
+      this.showDeleteDialog = true;
     });
+    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     this.deleteListener = (e) => {
       if (e.key === "Delete" && this.selectedEntities.length)
         this.showDeleteDialog = true;
@@ -218,6 +216,9 @@ export default {
     window.removeEventListener("keydown", this.deleteListener);
   },
   methods: {
+    clearTrashed() {
+      this.selectedEntities = this.$resources.folderContents.data;
+    },
     toggleEntityContext(event) {
       if (!event) this.showEntityContext = false;
       else {

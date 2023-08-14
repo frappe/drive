@@ -453,12 +453,6 @@ export default {
   },
 
   async mounted() {
-    this.$store.commit("setCtaButton", {
-      text: "Upload",
-      prefix: "upload",
-      suffix: "chevron-down",
-      variant: "solid",
-    });
     this.pasteListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&

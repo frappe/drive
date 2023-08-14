@@ -149,13 +149,10 @@ export default {
     },
   },
   mounted() {
-    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
-    this.$store.commit("setCtaButton", {
-      text: "Clear Recents",
-      prefix: "trash-2",
-      variant: "outline",
-      theme: "red",
+    this.emitter.on("clearRecents", () => {
+      this.clearEntites();
     });
+    this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     window.addEventListener(
       "dragover",
       function (e) {
@@ -183,6 +180,10 @@ export default {
     );
   },
   methods: {
+    clearEntites() {
+      this.entities = [];
+      this.sortedEntries = [];
+    },
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
