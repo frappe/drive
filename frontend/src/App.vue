@@ -20,7 +20,7 @@
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
           <div class="flex w-full h-full overflow-hidden">
-            <div class="flex w-full h-[95vh] overflow-y-scroll">
+            <div class="flex w-full h-[94%] overflow-y-scroll">
               <router-view v-slot="{ Component }">
                 <component :is="Component" ref="currentPage" />
               </router-view>
