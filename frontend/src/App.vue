@@ -1,44 +1,47 @@
 <template>
+  <!-- Main container no scroll -->
   <div
-    class="flex text-gray-900 h-screen antialiased overflow-y-hidden"
-    :class="{ 'bg-slate-50': $route.meta.documentPage }"
+    class="flex w-screen h-screen antialiased overflow-hidden"
     @contextmenu.prevent="handleDefaultContext($event)">
-    <UploadTracker v-if="showUploadTracker" />
-    <div
-      class="h-full max-h-full w-full max-w-full flex flex-col"
-      :class="{ 'sm:bg-gray-50': $route.meta.isPublicRoute }">
+    <!-- Main container with scroll -->
+    <div class="h-full w-full flex flex-col">
       <div
         v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-        class="flex h-full overflow-x-hidden">
+        class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div
           v-if="showSidebar"
-          class="px-2 border-r w-[240px] bg-gray-50 hidden md:py-4 md:block">
+          class="px-2 border-r w-[220px] bg-gray-50 hidden md:py-2 md:block">
           <Sidebar />
         </div>
-        <div class="flex-1 overflow-y-auto overflow-x-hidden">
-          <router-view v-slot="{ Component }">
-            <Navbar
-              v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-              :mobile-sidebar-is-open="showMobileSidebar"
-              @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
-            <component :is="Component" ref="currentPage" />
-          </router-view>
-        </div>
-        <Transition
-          enter-from-class="translate-x-[150%] opacity-0"
-          leave-to-class="translate-x-[150%] opacity-0"
-          enter-active-class="transition duration-700"
-          leave-active-class="transition duration-700">
-          <div v-if="showInfoSidebar" class="border-l md:pt-6 flex">
-            <InfoSidebar :entity="$store.state.entityInfo" />
+        <div class="h-full w-full overflow-hidden">
+          <Navbar
+            v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
+            :mobile-sidebar-is-open="showMobileSidebar"
+            @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
+          <div class="flex w-full h-full overflow-hidden">
+            <div class="flex w-full h-[95vh] overflow-y-scroll">
+              <router-view v-slot="{ Component }">
+                <component :is="Component" ref="currentPage" />
+              </router-view>
+            </div>
+            <DocInfoSidebar
+              v-if="
+                $store.state.entityInfo?.document && !$route.meta.documentPage
+              " />
+            <InfoSidebar
+              v-if="
+                !$store.state.entityInfo?.document && !$route.meta.documentPage
+              " />
           </div>
-        </Transition>
+        </div>
       </div>
+      <!-- Auth -->
       <router-view v-else />
     </div>
   </div>
   <div id="dropzoneElement" class="hidden" />
+  <UploadTracker v-if="showUploadTracker" />
 </template>
 <script>
 import Dropzone from "dropzone";
@@ -47,6 +50,8 @@ import Sidebar from "@/components/Sidebar.vue";
 import InfoSidebar from "@/components/InfoSidebar.vue";
 import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
+import { Button, FeatherIcon } from "frappe-ui";
+import DocInfoSidebar from "./components/DocInfoSidebar.vue";
 
 export default {
   name: "App",
@@ -56,6 +61,9 @@ export default {
     InfoSidebar,
     MobileSidebar,
     UploadTracker,
+    Button,
+    FeatherIcon,
+    DocInfoSidebar,
   },
   data() {
     return {
@@ -81,12 +89,12 @@ export default {
       return this.$store.state.showInfo && this.$store.state.entityInfo;
     },
   },
-  watch: {
+  /* watch: {
     $route() {
       this.$store.commit("setEntityInfo", null);
       this.$store.commit("setShowInfo", false);
     },
-  },
+  }, */
   async mounted() {
     let componentContext = this;
     this.dropzone = new Dropzone(this.$el.parentNode, {
@@ -294,3 +302,25 @@ function non_merge_mode(file) {
   return s;
 }
 </script>
+
+<style>
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(237, 237, 237);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #2f3237;
+}
+</style>

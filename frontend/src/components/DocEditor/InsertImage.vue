@@ -1,21 +1,33 @@
 <template>
-  <slot v-bind="{ onClick: openDialog }"></slot>
-  <Dialog
-    :options="{ title: 'Add Image' }"
-    v-model="addImageDialog.show"
-    @after-leave="reset">
+  <Dialog :options="{ title: 'Add Image' }" v-model="open" @after-leave="reset">
     <template #body-content>
-      <label
-        class="relative cursor-pointer rounded-lg bg-gray-100 py-1 focus-within:bg-gray-200 hover:bg-gray-200">
-        <input
-          type="file"
-          class="w-full opacity-0"
-          @change="onImageSelect"
-          accept="image/*" />
-        <span class="absolute inset-0 select-none px-2 py-1 text-base">
-          {{ addImageDialog.file ? "Select another image" : "Select an image" }}
-        </span>
-      </label>
+      <FileUploader
+        file-types="image/*"
+        @success="(file) => (addImageDialog.url = file.file_url)">
+        <template v-slot="{ file, progress, uploading, openFileSelector }">
+          <div class="flex items-center space-x-2">
+            <Button @click="openFileSelector">
+              {{
+                uploading
+                  ? `Uploading ${progress}%`
+                  : addImageDialog.url
+                  ? "Change Image"
+                  : "Upload Image"
+              }}
+            </Button>
+            <Button
+              v-if="addImageDialog.url"
+              @click="
+                () => {
+                  addImageDialog.url = null;
+                  addImageDialog.file = null;
+                }
+              ">
+              Remove
+            </Button>
+          </div>
+        </template>
+      </FileUploader>
       <img
         v-if="addImageDialog.url"
         :src="addImageDialog.url"
@@ -30,39 +42,58 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, Button } from "frappe-ui";
-import fileToBase64 from "@/utils/file-to-base64";
+import { Button, Dialog, FileUploader } from "frappe-ui";
 
 export default {
   name: "InsertImage",
-  props: ["editor"],
-  expose: ["openDialog"],
+  props: {
+    modelValue: {
+      type: Boolean,
+      required: false,
+    },
+    editor: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
-      addImageDialog: { url: "", file: null, show: false },
+      addImageDialog: { url: "", file: null },
     };
   },
-  components: { Button, Dialog },
-  methods: {
-    openDialog() {
-      this.addImageDialog.show = true;
+  components: { Button, Dialog, FileUploader },
+  computed: {
+    open: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+        if (!value) {
+          this.errorMessage = "";
+        }
+      },
     },
+  },
+  methods: {
     onImageSelect(e) {
       let file = e.target.files[0];
       if (!file) {
         return;
       }
       this.addImageDialog.file = file;
-      fileToBase64(file).then((base64) => {
-        this.addImageDialog.url = base64;
-      });
     },
+
     addImage(src) {
-      this.editor.chain().focus().setImage({ src }).run();
+      this.editor
+        .chain()
+        .focus()
+        .insertContent(`<img src="${src}"></img>`)
+        .run();
       this.reset();
     },
     reset() {
-      this.addImageDialog = this.$options.data().addImageDialog;
+      this.open = false;
     },
   },
 };

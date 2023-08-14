@@ -74,11 +74,11 @@ export default {
           title: this.folderName,
           parent: this.parent,
         },
-        validate(params) {
+        /* validate(params) {
           if (!params?.title) {
             return "Folder name is required";
           }
-        },
+        }, */
         onSuccess(data) {
           this.folderName = "";
           this.$emit("success", data);

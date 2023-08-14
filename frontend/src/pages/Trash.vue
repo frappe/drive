@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full p-4">
+  <div class="h-full w-full p-4">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />
@@ -186,6 +186,12 @@ export default {
 
   mounted() {
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
+    this.$store.commit("setCtaButton", {
+      text: "Empty Trash",
+      prefix: "trash-2",
+      variant: "outline",
+      theme: "red",
+    });
     this.deleteListener = (e) => {
       if (e.key === "Delete" && this.selectedEntities.length)
         this.showDeleteDialog = true;

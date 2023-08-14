@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full p-4" @contextmenu="toggleEmptyContext">
+  <div class="h-full w-full p-4" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />
@@ -398,6 +398,12 @@ export default {
 
   async mounted() {
     await this.$resources.getHomeID.fetch();
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
     this.$store.commit("setCurrentBreadcrumbs", [
       { label: "Home", route: "/" },
     ]);
@@ -591,6 +597,9 @@ export default {
       return {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          this.$store.commit("setEntityInfo", data);
           this.previewEntity = data;
         },
         onError(data) {

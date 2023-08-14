@@ -1,9 +1,5 @@
 <template>
-  <slot v-bind="{ onClick: openDialog }"></slot>
-  <Dialog
-    :options="{ title: 'Add Video' }"
-    v-model="addVideoDialog.show"
-    @after-leave="reset">
+  <Dialog :options="{ title: 'Add Video' }" v-model="open" @after-leave="reset">
     <template #body-content>
       <FileUploader
         file-types="video/*"
@@ -36,8 +32,7 @@
         v-if="addVideoDialog.url"
         :src="addVideoDialog.url"
         class="mt-2 w-full rounded-lg"
-        type="video/mp4"
-        controls />
+        type="video/mp4" />
     </template>
     <template #actions>
       <Button appearance="primary" @click="addVideo(addVideoDialog.url)">
@@ -52,18 +47,36 @@ import { Button, Dialog, FileUploader } from "frappe-ui";
 
 export default {
   name: "InsertImage",
-  props: ["editor"],
-  expose: ["openDialog"],
+  props: {
+    modelValue: {
+      type: Boolean,
+      required: false,
+    },
+    editor: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
-      addVideoDialog: { url: "", file: null, show: false },
+      addVideoDialog: { url: "", file: null },
     };
   },
   components: { Button, Dialog, FileUploader },
-  methods: {
-    openDialog() {
-      this.addVideoDialog.show = true;
+  computed: {
+    open: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+        if (!value) {
+          this.errorMessage = "";
+        }
+      },
     },
+  },
+  methods: {
     onVideoSelect(e) {
       let file = e.target.files[0];
       if (!file) {
@@ -81,7 +94,7 @@ export default {
       this.reset();
     },
     reset() {
-      this.addVideoDialog = this.$options.data().addVideoDialog;
+      this.open = false;
     },
   },
 };

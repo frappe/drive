@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-flex bg-white px-4 py-1 w-full shadow-sm">
+  <div class="inline-flex border bg-white px-2 py-1 w-full shadow-lg">
     <div class="inline-flex items-center gap-1">
       <template v-for="button in buttons" :key="button.label">
         <div

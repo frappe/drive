@@ -16,12 +16,12 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="w-[212px] rounded-lg border group select-none entity"
+            class="cursor-pointer p-2 w-44 h-30 rounded-lg border-2 group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
-                ? 'bg-blue-100'
-                : 'hover:bg-blue-50'
+                ? 'bg-green-100 border-[#5BB98C]'
+                : 'border-gray-50 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(folder)"
             @click="selectEntity(folder, $event, displayOrderedEntities)"
@@ -33,27 +33,24 @@
             @dragenter.prevent
             @dragover.prevent
             @mousedown.stop>
-            <div class="h-32 place-items-center grid">
+            <div class="flex items-start">
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="46"
-                height="40"
-                viewBox="0 0 46 40"
-                fill="#32a852"
+                width="30"
+                height="30"
+                viewBox="0 0 40 40"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
-                  d="M0.368197 17.3301C0.17175 15.5535 1.56262 14.0004 3.35002 14.0004H42.65C44.4374 14.0004 45.8283 15.5535 45.6318 17.3301L43.7155 34.6599C43.3794 37.6999 40.8104 40.0004 37.7519 40.0004H8.24812C5.18961 40.0004 2.62062 37.6999 2.28447 34.6599L0.368197 17.3301Z" />
-                <path
-                  d="M43.125 11V9C43.125 6.79086 41.3341 5 39.125 5H20.312C20.1914 5 20.0749 4.95643 19.9839 4.8773L14.6572 0.245394C14.4752 0.0871501 14.2422 0 14.001 0H6.87501C4.66587 0 2.87501 1.79086 2.87501 4V11C2.87501 11.5523 3.32272 12 3.87501 12H42.125C42.6773 12 43.125 11.5523 43.125 11Z" />
+                  d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
               </svg>
             </div>
-            <div class="px-3.5 pb-2.5">
-              <h3 class="truncate text-[14px] font-medium">
+            <div class="content-center grid">
+              <span class="truncate text-sm font-medium mt-4">
                 {{ folder.title }}
-              </h3>
-              <p class="truncate text-sm text-gray-600 mt-1">
-                {{ folder.modified }}
+              </span>
+              <p class="truncate text-xs text-gray-600 mt-2">
+                {{ folder.file_size }}
               </p>
             </div>
           </div>
@@ -68,12 +65,12 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-[212px] rounded-lg border group select-none entity"
+            class="w-44 h-44 rounded-lg border-2 group select-none entity cursor-pointer"
             draggable="true"
             :class="
               selectedEntities.includes(file)
-                ? 'bg-blue-100'
-                : 'hover:bg-blue-50'
+                ? 'bg-green-100 border-[#5BB98C]'
+                : 'border-gray-50 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(file)"
             @click="selectEntity(file, $event, displayOrderedEntities)"
@@ -96,7 +93,7 @@
     </div>
     <div
       id="selectionElement"
-      class="h-20 w-20 absolute border border-blue-700 bg-blue-100 opacity-50 mix-blend-multiply"
+      class="h-20 w-20 absolute border-2 bg-green-100 border-[#5BB98C] opacity-50 mix-blend-multiply"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
   </div>
@@ -277,6 +274,7 @@ export default {
       );
     },
     dblClickEntity(entity) {
+      this.$store.commit("setEntityInfo", entity);
       this.$emit("openEntity", entity);
     },
     deselectAll() {
@@ -289,6 +287,7 @@ export default {
       if (this.selectedEntities.length <= 1) {
         this.selectEntity(entity, event, entities);
       }
+      console.log(entity);
       this.$store.commit("setEntityInfo", entity);
       this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
     },

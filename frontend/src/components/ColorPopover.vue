@@ -7,7 +7,7 @@
     <template #target="{ togglePopover, isOpen }">
       <div
         :active="isOpen"
-        class="h-7 flex items-center hover:bg-gray-100 rounded-lg px-3 cursor-pointer"
+        class="h-7 flex items-center hover:bg-gray-100 rounded px-3 cursor-pointer"
         @click="togglePopover()">
         <FeatherIcon
           name="droplet"
@@ -39,7 +39,6 @@
 
 <script>
 import { Popover, FeatherIcon } from "frappe-ui";
-import { theme } from "@/utils/theme";
 
 export default {
   name: "ColorPopover",
@@ -54,27 +53,17 @@ export default {
   data() {
     return {
       colors: [
-        "slate",
-        "gray",
-        "zinc",
-        "neutral",
-        "stone",
-        "red",
-        "orange",
-        "amber",
-        "yellow",
-        "lime",
-        "green",
-        "emerald",
-        "teal",
-        "cyan",
-        "sky",
-        "blue",
-        "indigo",
-        "violet",
-        "purple",
-        "fuchsia",
-      ].map((color) => theme.colors[color]["500"]),
+        "#525252",
+        "#775225",
+        "#e11d48",
+        "#20C1F4",
+        "#2374D2",
+        "#fbbf24",
+        "#E39B4C",
+        "#16a34a",
+        "#EF7323",
+        "#9333ea",
+      ],
     };
   },
   resources: {

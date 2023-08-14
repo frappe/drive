@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full p-4" @contextmenu="toggleEmptyContext">
+  <div class="h-full w-full p-4" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />
@@ -453,6 +453,12 @@ export default {
   },
 
   async mounted() {
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
     this.pasteListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -729,6 +735,9 @@ export default {
       return {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          this.$store.commit("setEntityInfo", data);
           this.previewEntity = data;
         },
         onError(data) {

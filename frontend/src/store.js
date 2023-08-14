@@ -30,7 +30,7 @@ const store = createStore({
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     entityInfo: null,
     pasteData: { entities: [], action: null },
-    showInfo: false,
+    showInfo: localStorage.getItem("showInfo") || false,
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
@@ -38,6 +38,15 @@ const store = createStore({
     currentBreadcrumbs: JSON.parse(
       localStorage.getItem("currentBreadcrumbs")
     ) || [{ label: "", route: "" }],
+    ctaButton: {
+      prefix: "upload",
+      suffix: "chevron-down",
+      text: "Upload",
+      emit: "",
+      variant: "solid",
+    },
+    allComments: "",
+    activeCommentsInstance: "",
   },
   getters: {
     isLoggedIn: (state) => {
@@ -78,13 +87,22 @@ const store = createStore({
       state.view = payload;
     },
     setEntityInfo(state, payload) {
+      localStorage.setItem("entityInfo", payload);
       state.entityInfo = payload;
     },
     setPasteData(state, payload) {
       state.pasteData = payload;
     },
     setShowInfo(state, payload) {
+      localStorage.setItem("showInfo", payload);
       state.showInfo = payload;
+    },
+    setAllComments(state, payload) {
+      /* localStorage.setItem("allDocComments",payload); */
+      state.allComments = payload;
+    },
+    setActiveCommentsInstance(state, payload) {
+      state.activeCommentsInstance = payload;
     },
     setHasWriteAccess(state, payload) {
       state.hasWriteAccess = payload;
@@ -98,6 +116,9 @@ const store = createStore({
     setCurrentBreadcrumbs(state, payload) {
       localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload));
       state.currentBreadcrumbs = payload;
+    },
+    setCtaButton(state, payload) {
+      state.ctaButton = payload;
     },
   },
   actions: {

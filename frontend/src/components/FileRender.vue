@@ -4,7 +4,7 @@
     class="w-10 h-10 z-10 text-neutral-100 mx-auto" />
   <div
     v-else-if="preview.error"
-    class="p-8 z-10 bg-[#252728] rounded-md text-neutral-100 text-xl text-center font-medium">
+    class="p-8 z-10 bg-gray-900 text-white rounded-md text-neutral-100 text-xl text-center font-medium">
     {{ preview.error }}
   </div>
   <div class="absolute max-h-[65vh] max-w-[65vw] z-10">

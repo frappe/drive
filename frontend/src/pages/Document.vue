@@ -44,9 +44,27 @@ export default {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },
+    comments() {
+      return this.$store.state.allComments;
+    },
   },
-
+  /*   watch:{
+    comments: {
+      handler(){
+        console.log(this.$store.state.allComments)
+      },
+      // check if userid is available
+      immediate: true,
+    },
+  }, */
   mounted() {
+    this.$store.commit("setShowInfo", true);
+    this.$store.commit("setCtaButton", {
+      text: "Upload",
+      prefix: "upload",
+      suffix: "chevron-down",
+      variant: "solid",
+    });
     this.$resources.getDocument
       .fetch()
       .then(() => {
@@ -79,17 +97,22 @@ export default {
             doc_name: this.document,
             title: this.titleVal,
             content: fromUint8Array(this.content),
+            comments: this.comments,
+            file_size: fromUint8Array(this.content).length,
           });
-        }, 10000);
+        }, 30000);
       });
   },
   beforeUnmount() {
+    /* this.$store.commit("setShowInfo", false); */
     clearInterval(this.timer);
     this.$resources.updateDocument.submit({
       entity_name: this.entityName,
       doc_name: this.document,
       title: this.titleVal,
       content: fromUint8Array(this.content),
+      comments: this.comments,
+      file_size: fromUint8Array(this.content).length,
     });
   },
   resources: {
@@ -129,7 +152,7 @@ export default {
         auto: false,
       };
     },
-    Document() {
+    /*     Document() {
       return {
         type: "document",
         doctype: "Drive Document",
@@ -142,7 +165,7 @@ export default {
           retractVote: "retract_vote",
         },
       };
-    },
+    }, */
   },
 };
 </script>
