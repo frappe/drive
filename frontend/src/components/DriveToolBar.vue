@@ -6,18 +6,18 @@
     <!--     <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
  -->
     <div class="flex gap-3 basis-auto">
-      <Dropdown
+      <!-- <Dropdown
         v-if="actionItems.length > 0"
         :options="actionItems"
         placement="left"
         class="basis-5/12 lg:basis-auto">
-        <!-- <Button
+        <Button
           class="text-sm h-8 w-full"
           icon-right="chevron-down"
           :loading="actionLoading">
           <span class="hidden md:inline">Actions</span>
-        </Button> -->
-      </Dropdown>
+        </Button>
+      </Dropdown> -->
       <Dropdown
         v-if="columnHeaders"
         :options="orderByItems"
