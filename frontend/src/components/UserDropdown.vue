@@ -36,8 +36,8 @@ export default {
     },
   },
   computed: {
-    fullName() {
-      return this.$store.state.user.fullName;
+    firstName() {
+      return this.$store.state.user.fullName.split(" ");
     },
     imageURL() {
       return this.$store.state.user.imageURL;
