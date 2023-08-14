@@ -117,17 +117,13 @@ home_page = "drive"
 # }
 
 
-fixtures = [
-    {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}
-]
+fixtures = [{"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}]
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
-    "daily": [
-            "drive.api.files.auto_delete_from_trash"
-    ],
+    "daily": ["drive.api.files.auto_delete_from_trash"],
 }
 
 # Testing
@@ -184,3 +180,8 @@ scheduler_events = {
 # auth_hooks = [
 # 	"drive.auth.validate"
 # ]
+
+website_redirects = [
+	{"source": "/", "target": "/drive"},
+    {"source": "/me", "target": "/drive"},
+]
