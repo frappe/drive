@@ -1257,7 +1257,7 @@ export default {
       return this.$store.state.user.imageURL;
     },
     entity() {
-      return this.$store.state.entityInfo;
+      return this.$store.state.entityInfo[0];
     },
     unaddedTags() {
       return this.$resources.userTags.data.filter(
