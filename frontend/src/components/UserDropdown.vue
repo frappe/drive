@@ -39,6 +39,9 @@ export default {
     firstName() {
       return this.$store.state.user.fullName.split(" ");
     },
+    fullName() {
+      return this.$store.state.user.fullName;
+    },
     imageURL() {
       return this.$store.state.user.imageURL;
     },
