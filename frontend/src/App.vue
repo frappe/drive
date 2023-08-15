@@ -25,14 +25,7 @@
                 <component :is="Component" ref="currentPage" />
               </router-view>
             </div>
-            <DocInfoSidebar
-              v-if="
-                $store.state.entityInfo?.document && !$route.meta.documentPage
-              " />
-            <InfoSidebar
-              v-if="
-                !$store.state.entityInfo?.document && !$route.meta.documentPage
-              " />
+            <InfoSidebar v-if="!$route.meta.documentPage" />
           </div>
         </div>
       </div>

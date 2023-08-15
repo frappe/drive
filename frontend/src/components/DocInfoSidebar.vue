@@ -300,15 +300,6 @@ export default {
       return this.$store.state.showInfo;
     },
   },
-  watch: {
-    entity() {
-      if (this.entity) {
-        this.$resources.userTags.fetch();
-        this.$resources.entityTags.fetch();
-      }
-    },
-  },
-
   methods: {
     switchTab(val) {
       if (this.$store.state.showInfo == false) {
@@ -348,7 +339,7 @@ export default {
     entityTags() {
       return {
         url: "drive.api.tags.get_entity_tags",
-        params: { entity: this.entity.name },
+        params: { entity: this.entity?.name },
         onError(error) {
           if (error.messages) {
             console.log(error.messages);

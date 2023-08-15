@@ -7,30 +7,39 @@
     <div
       v-if="showInfoSidebar"
       class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
-      <div v-if="entity" class="w-full border-b p-4 overflow-visible">
-        <div class="flex items-center">
-          <svg
-            v-if="entity.is_group"
-            :style="{ fill: entity.color }"
-            :draggable="false"
-            class="h-5 mr-2.5"
-            viewBox="0 0 40 40"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
-          </svg>
-          <img
-            v-else
-            :src="getIconUrl(formatMimeType(entity.mime_type))"
-            :draggable="false"
-            class="h-5 mr-2.5" />
-          <div class="font-medium truncate text-xl">
-            {{ entity.title }}
+      <div v-if="typeof entity === 'number'">
+        <div class="w-full p-4 border-b overflow-visible">
+          <div class="flex items-center">
+            <div class="font-medium truncate text-xl">
+              {{ $store.state.entityInfo.length }} items selected
+            </div>
           </div>
         </div>
       </div>
-      <div v-if="entity">
-        <div v-if="tab === 0" class="h-full pb-12">
+      <div v-else-if="entity">
+        <div class="w-full p-4 border-b overflow-visible">
+          <div class="flex items-center">
+            <svg
+              v-if="entity.is_group"
+              :style="{ fill: entity.color }"
+              :draggable="false"
+              class="h-5 mr-2.5"
+              viewBox="0 0 40 40"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
+            </svg>
+            <img
+              v-else
+              :src="getIconUrl(formatMimeType(entity.mime_type))"
+              :draggable="false"
+              class="h-5 mr-2.5" />
+            <div class="font-medium truncate text-xl">
+              {{ entity.title }}
+            </div>
+          </div>
+        </div>
+        <div v-if="tab === 0" class="h-full border-b pb-12">
           <div
             class="p-4 border-b z-10 sticky top-0 bg-white"
             :class="
@@ -47,11 +56,7 @@
           <div
             class="relative p-4 min-h-full flex-auto flex flex-col overflow-y-auto">
             <FileRender
-              v-if="
-                $store.state.entityInfo.mime_type?.startsWith('image') &&
-                showInfoSidebar
-              "
-              class="border-2"
+              v-if="entity.mime_type?.startsWith('image') && showInfoSidebar"
               :preview-entity="entity" />
           </div>
           <div class="p-4 space-y-4">
@@ -63,10 +68,7 @@
                 </Button>
               </div>
             </div>
-            <div
-              v-if="
-                entity.owner === 'me' || $resources.entityTags.data?.length
-              ">
+            <div v-if="entity.owner === 'me' || $resources.entityTags.data">
               <div class="text-lg font-medium my-2">Tag</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
@@ -174,8 +176,7 @@
               <Button @click="postComment" variant="solid">Add</Button>
             </div>
           </div>
-
-          <div v-else class="text-gray-600 text-base mt-2 p-4">
+          <div v-else class="text-gray-600 text-base mt-2 p-4 border-b">
             Comments have been disabled for this
             {{ entity.is_group ? "folder" : "file" }} by its owner.
           </div>
@@ -267,13 +268,6 @@ export default {
     FileRender,
   },
 
-  /*   props: {
-    entity: {
-      type: Object,
-      required: true,
-    },
-  }, */
-
   setup() {
     return { formatMimeType, getIconUrl };
   },
@@ -289,8 +283,12 @@ export default {
 
   watch: {
     entity: {
-      handler() {
-        if (this.entity) {
+      handler(newVal, oldVal) {
+        if (
+          newVal !== oldVal &&
+          typeof newVal !== "number" &&
+          typeof newVal !== "undefined"
+        ) {
           this.$resources.comments.fetch();
           this.$resources.userTags.fetch();
           this.$resources.entityTags.fetch();
@@ -310,7 +308,16 @@ export default {
       return this.$store.state.user.imageURL;
     },
     entity() {
-      return this.$store.state.entityInfo;
+      if (
+        this.$store.state.entityInfo &&
+        this.$store.state.entityInfo.length > 1
+      ) {
+        return this.$store.state.entityInfo.length;
+      } else if (this.$store.state.entityInfo) {
+        return this.$store.state.entityInfo[0];
+      } else {
+        return false;
+      }
     },
     formattedMimeType() {
       if (this.entity.is_group) return "Folder";
