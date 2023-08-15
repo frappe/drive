@@ -5,7 +5,11 @@
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button class="ml-auto" @click="open = false">Cancel</Button>
-        <Button appearance="primary" class="ml-4" :loading="$resources.rename.loading" @click="performRename">
+        <Button
+          variant="solid"
+          class="ml-4"
+          :loading="$resources.rename.loading"
+          @click="performRename">
           Rename
         </Button>
       </div>
@@ -58,39 +62,36 @@ export default {
       },
     },
     fileName() {
-      if (this.entity) {
-        const parts = this.entity.title.split('.');
+      if (this.entity?.title) {
+        const parts = this.entity.title.split(".");
         parts.pop();
-        return parts.join('.');
+        return parts.join(".") ? parts.join(".") : this.entity?.title;
       }
-      return '';
     },
   },
   methods: {
     addExtension(newName) {
       if (this.entity) {
-        const extension = this.entity.title.split('.').pop();
+        const extension = this.entity.title.split(".").pop();
         return `${newName}.${extension}`;
       }
       return newName;
     },
     performRename() {
       const trimmedName = this.newName.trim();
-      if(this.entity.is_group===1)
-      {   
-       this.$resources.rename.submit({
-        method: 'rename',
-        entity_name: this.entityName,
-        new_title: trimmedName
-      });
-      }
-      else{
+      if (this.entity.is_group || this.entity.document) {
+        this.$resources.rename.submit({
+          method: "rename",
+          entity_name: this.entityName,
+          new_title: trimmedName,
+        });
+      } else {
         const newTitle = this.addExtension(trimmedName);
         this.$resources.rename.submit({
-        method: 'rename',
-        entity_name: this.entityName,
-        new_title: newTitle
-      });
+          method: "rename",
+          entity_name: this.entityName,
+          new_title: newTitle,
+        });
       }
     },
   },

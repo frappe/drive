@@ -21,6 +21,8 @@
   </div>
 </template>
 <script>
+import { useTitle } from "@vueuse/core";
+
 export default {
   name: "Breadcrumbs",
   data() {
@@ -35,6 +37,15 @@ export default {
       required: true,
     },
   },
+
+  watch: {
+    title: {
+      handler(value) {
+        useTitle(value);
+      },
+    },
+  },
+
   computed: {
     titleVal() {
       return this.title ? this.title : this.oldTitle;
@@ -84,11 +95,6 @@ export default {
           method: "rename",
           entity_name: this.currentEntityName,
           new_title: this.titleVal,
-        },
-        validate(params) {
-          if (!params?.new_title) {
-            return "New name is required";
-          }
         },
         onSuccess(data) {
           this.newName = "";

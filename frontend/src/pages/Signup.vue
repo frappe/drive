@@ -23,7 +23,7 @@
       <Button
         class="mt-4 focus:ring-0 focus:ring-offset-0"
         :loading="loading"
-        appearance="primary">
+        variant="solid">
         Submit
       </Button>
       <div class="mt-10 text-center border-t">

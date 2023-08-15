@@ -35,20 +35,40 @@
           v-if="isLoggedIn"
           @open-entity="(entity) => openEntity(entity)" /> -->
       </div>
+      <!-- $store.state.hasWriteAccess -->
       <div v-if="isLoggedIn" class="flex items-center">
+        <Button
+          v-if="$route.name === 'Recent'"
+          class="bg-red-100 text-red-700"
+          variant="minimal"
+          @click="callClear">
+          <template #prefix>
+            <FeatherIcon name="trash-2" class="w-4" />
+          </template>
+          Clear Recents
+        </Button>
+        <Button
+          v-else-if="$route.name === 'Trash'"
+          @click="emitter.emit('clearTrashed')"
+          class="bg-red-100 text-red-700"
+          variant="minimal">
+          <template #prefix>
+            <FeatherIcon name="trash-2" class="w-4" />
+          </template>
+          Empty Trash
+        </Button>
         <Dropdown
-          :options="$store.state.hasWriteAccess ? addOptions : []"
+          v-else
+          :options="addOptions"
           placement="left"
           class="basis-5/12 lg:basis-auto">
-          <Button
-            :variant="$store.state.ctaButton.variant"
-            :theme="$store.state.ctaButton.theme">
-            <template v-if="$store.state.ctaButton.prefix" #prefix>
-              <FeatherIcon :name="$store.state.ctaButton.prefix" class="w-4" />
+          <Button variant="solid">
+            <template #prefix>
+              <FeatherIcon name="upload" class="w-4" />
             </template>
-            {{ $store.state.ctaButton.text }}
-            <template v-if="$store.state.ctaButton.suffix" #suffix>
-              <FeatherIcon :name="$store.state.ctaButton.suffix" class="w-4" />
+            Upload
+            <template #suffix>
+              <FeatherIcon name="chevron-down" class="w-4" />
             </template>
           </Button>
         </Dropdown>
@@ -95,6 +115,7 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { formatDate } from "@/utils/format";
+import { clear } from "idb-keyval";
 
 export default {
   name: "Navbar",
@@ -119,7 +140,10 @@ export default {
       required: true,
     },
   },
-  emits: ["toggleMobileSidebar"],
+  emits: ["toggleMobileSidebar", "clearRecents", "clearRecents"],
+  setup() {
+    return { clear };
+  },
   data() {
     return {
       previewEntity: null,
@@ -187,6 +211,10 @@ export default {
     },
   },
   methods: {
+    callClear() {
+      this.emitter.emit("clearRecents");
+      clear();
+    },
     openEntity(entity) {
       if (entity.is_group) {
         this.$router.push({

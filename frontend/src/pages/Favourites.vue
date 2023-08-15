@@ -282,12 +282,6 @@ export default {
   },
 
   mounted() {
-    this.$store.commit("setCtaButton", {
-      text: "Upload",
-      prefix: "upload",
-      suffix: "chevron-down",
-      variant: "solid",
-    });
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     window.addEventListener(
       "dragover",

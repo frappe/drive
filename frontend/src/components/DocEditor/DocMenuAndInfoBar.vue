@@ -33,7 +33,7 @@
             @click="tab = 0">
             <div
               v-if="tab === 0"
-              class="space-y-7 min-h-full flex-auto flex flex-col z-0 overflow-y-auto">
+              class="space-y-7 h-full flex-auto flex flex-col z-0">
               <span class="font-medium text-lg">Doc Info</span>
               <div class="flex text-base">
                 <div class="w-1/2 text-gray-600 space-y-2">
@@ -131,7 +131,7 @@
             :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
             @click="tab = 1">
             <span class="font-medium text-lg">Comments</span>
-            <div v-if="tab === 1" class="h-full overflow-y-auto">
+            <div v-if="tab === 1" class="h-full">
               <div v-if="entity.allow_comments" class="space-y-5">
                 <div
                   v-for="comment in $resources.comments.data"

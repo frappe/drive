@@ -13,18 +13,20 @@
             })
         " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
-    </template>
-    <template #actions>
-      <Button
-        appearance="primary"
-        :loading="$resources.createFolder.loading"
-        @click="$resources.createFolder.submit()">
-        Create
-      </Button>
-      <Button @click="open = false">Cancel</Button>
+      <div class="flex mt-8">
+        <Button class="ml-auto" @click="open = false">Cancel</Button>
+        <Button
+          variant="solid"
+          class="ml-4"
+          :loading="$resources.createFolder.loading"
+          @click="$resources.createFolder.submit()">
+          Create
+        </Button>
+      </div>
     </template>
   </Dialog>
 </template>
+
 <script>
 import { Dialog, Input, ErrorMessage } from "frappe-ui";
 

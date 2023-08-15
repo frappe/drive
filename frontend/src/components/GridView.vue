@@ -287,7 +287,6 @@ export default {
       if (this.selectedEntities.length <= 1) {
         this.selectEntity(entity, event, entities);
       }
-      console.log(entity);
       this.$store.commit("setEntityInfo", entity);
       this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
     },
