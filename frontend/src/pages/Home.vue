@@ -202,10 +202,14 @@ export default {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
-            );
+            if (this.selectedEntities.length === 1) {
+              if (
+                this.selectedEntities.length === 1 &&
+                !this.selectedEntities[0].is_group
+              ) {
+                return !this.selectedEntities[0].document;
+              }
+            }
           },
         },
         {

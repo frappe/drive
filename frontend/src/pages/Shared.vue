@@ -140,12 +140,17 @@ export default {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group &&
-              (this.selectedEntities[0].allow_download ||
-                this.selectedEntities[0].write)
-            );
+            if (this.selectedEntities.length === 1) {
+              if (
+                this.selectedEntities.length === 1 &&
+                !this.selectedEntities[0].is_group &&
+                (this.selectedEntities[0].allow_download ||
+                  this.selectedEntities[0].write)
+              ) {
+                console.log(this.selectedEntities[0]);
+                return !this.selectedEntities[0].document;
+              }
+            }
           },
         },
         // {
