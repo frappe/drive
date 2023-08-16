@@ -739,7 +739,7 @@ export default {
         onSuccess(data) {
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
-          this.$store.commit("setEntityInfo", data);
+          this.$store.commit("setEntityInfo", [data]);
           this.previewEntity = data;
         },
         onError(data) {
