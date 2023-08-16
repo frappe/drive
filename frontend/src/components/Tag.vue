@@ -2,18 +2,23 @@
   <Popover transition="default">
     <template #target="{ togglePopover }">
       <Badge
-        :color="tag.color"
-        class="h-6 cursor-pointer"
+        class="flex items-center content-center font-medium"
+        variant="subtle"
+        :theme="`${tag.color}`"
         :style="{
-          fontSize: '12px',
           cursor: entity.owner === 'me' ? 'pointer' : 'default',
         }"
         @click="if (entity.owner === 'me') togglePopover();">
-        {{ `• ${tag.title}` }}
+        {{ `${tag.title}` }}
+        <FeatherIcon
+          v-if="entity.owner === 'me'"
+          @click="$resources.removeTag.submit()"
+          class="h-3"
+          name="x" />
       </Badge>
     </template>
     <template #body-main="{ togglePopover }">
-      <div class="bg-white rounded-xl shadow-md p-1 z-10 space-y-0.5 absolute">
+      <div class="bg-white rounded shadow-md p-1 z-10 space-y-0.5 absolute">
         <Popover
           placement="right"
           trigger="hover"
@@ -21,12 +26,12 @@
           :leave-delay="0.6">
           <template #target>
             <div
-              class="hover:bg-gray-100 cursor-pointer rounded-lg flex items-center px-1.5 py-1 w-24">
-              <FeatherIcon name="droplet" class="w-3 h-3 text-gray-700 mr-1" />
-              <div class="text-gray-800 text-xs">Color</div>
+              class="hover:bg-gray-100 cursor-pointer rounded flex items-center px-1.5 py-1 w-24">
+              <FeatherIcon name="droplet" class="w-4 h-4 text-gray-700 mr-1" />
+              <div class="text-gray-800 text-base">Color</div>
               <FeatherIcon
                 name="chevron-right"
-                class="w-3 h-3 text-gray-700 ml-auto" />
+                class="w-4 h-4 text-gray-700 ml-auto" />
             </div>
           </template>
           <template #body-main="{ togglePopover: toggleColors }">
@@ -34,7 +39,9 @@
               <button
                 v-for="color in colors"
                 :key="color"
-                :class="`h-4 w-4 rounded-full bg-${color}-500`"
+                :class="`h-5 w-5 rounded-full bg-${
+                  color === 'orange' ? 'amber' : color
+                }-600`"
                 @click="
                   $resources.updateColor.submit({
                     tag: tag.name,
@@ -48,13 +55,13 @@
         <div
           v-for="item in tagActions"
           :key="item"
-          class="hover:bg-gray-100 cursor-pointer rounded-lg flex items-center px-1.5 py-1 w-24"
+          class="hover:bg-gray-100 cursor-pointer rounded flex items-center px-1.5 py-1 w-24"
           @click="
             item.handler();
             togglePopover();
           ">
-          <FeatherIcon :name="item.icon" class="w-3 h-3 text-gray-700 mr-1" />
-          <div class="text-gray-800 text-xs">{{ item.label }}</div>
+          <FeatherIcon :name="item.icon" class="w-4 h-4 text-gray-700 mr-1" />
+          <div class="text-gray-800 text-base">{{ item.label }}</div>
         </div>
       </div>
     </template>
@@ -90,18 +97,11 @@ export default {
 
   data() {
     return {
-      colors: ["blue", "green", "yellow", "red", "gray"],
+      colors: ["gray", "blue", "green", "orange", "red"],
       tagActions: [
         {
-          label: "Remove",
-          icon: "x",
-          handler: () => {
-            this.$resources.removeTag.submit();
-          },
-        },
-        {
           label: "Delete",
-          icon: "trash",
+          icon: "trash-2",
           handler: () => {
             this.$resources.deleteTag.submit();
           },

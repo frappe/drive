@@ -6,7 +6,7 @@
         v-focus
         v-on-outside-click="closeInput"
         type="text"
-        class="h-6"
+        class="h-6 w-full"
         @input="tagInputText = $event"
         @keydown.enter="
           (e) =>

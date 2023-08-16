@@ -82,18 +82,21 @@
                       $resources.entityTags.fetch();
                     }
                   " />
-                <Button
+                <Badge
                   v-if="!addTag && entity.owner === 'me'"
-                  class="h-6 text-[12px] text-gray-800"
-                  icon-left="plus"
+                  class="flex items-center content-center text-sm cursor-pointer"
                   @click="addTag = true">
+                  <FeatherIcon
+                    v-if="entity.owner === 'me'"
+                    class="h-4 mr-1"
+                    name="plus" />
                   Add tag
-                </Button>
+                </Badge>
               </div>
 
               <TagInput
                 v-if="addTag"
-                :class="{ 'mt-2': $resources.entityTags.data.length }"
+                :class="{ 'w-full mt-2': $resources.entityTags.data.length }"
                 :entity="entity"
                 :unadded-tags="unaddedTags"
                 @success="
@@ -296,7 +299,6 @@ export default {
       },
     },
   },
-
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
@@ -334,7 +336,6 @@ export default {
       return this.$store.state.showInfo;
     },
   },
-
   methods: {
     switchTab(val) {
       if (this.$store.state.showInfo == false) {
@@ -344,6 +345,17 @@ export default {
         this.$store.commit("setShowInfo", !this.$store.state.showInfo);
       } else {
         this.tab = val;
+      }
+    },
+
+    mounted() {
+      if (
+        typeof this.entity !== "number" &&
+        typeof this.entity !== "undefined"
+      ) {
+        this.$resources.comments.fetch();
+        this.$resources.userTags.fetch();
+        this.$resources.entityTags.fetch();
       }
     },
 
