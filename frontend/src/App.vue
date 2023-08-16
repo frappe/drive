@@ -25,14 +25,7 @@
                 <component :is="Component" ref="currentPage" />
               </router-view>
             </div>
-            <DocInfoSidebar
-              v-if="
-                $store.state.entityInfo?.document && !$route.meta.documentPage
-              " />
-            <InfoSidebar
-              v-if="
-                !$store.state.entityInfo?.document && !$route.meta.documentPage
-              " />
+            <InfoSidebar v-if="!$route.meta.documentPage" />
           </div>
         </div>
       </div>
@@ -84,9 +77,6 @@ export default {
     },
     showUploadTracker() {
       return this.isLoggedIn && this.$store.state.uploads.length > 0;
-    },
-    showInfoSidebar() {
-      return this.$store.state.showInfo && this.$store.state.entityInfo;
     },
   },
   /* watch: {

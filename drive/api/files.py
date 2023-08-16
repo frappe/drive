@@ -299,7 +299,13 @@ def get_file_content(entity_name, trigger_download=0):
         # status_code = status.HTTP_206_PARTIAL_CONTENT
         # Figure out a sane way to handle blob range streaming requests
 
+        try:
         file = open(drive_entity.path, "rb")
+        except TypeError:
+            response = Response(frappe.request.environ)
+            response.status_code = 204
+            return response
+
         response = Response(
             wrap_file(frappe.request.environ, file), direct_passthrough=True
         )

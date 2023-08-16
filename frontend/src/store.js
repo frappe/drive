@@ -30,7 +30,7 @@ const store = createStore({
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     entityInfo: JSON.parse(localStorage.getItem("entityInfo")) || null,
     pasteData: { entities: [], action: null },
-    showInfo: localStorage.getItem("showInfo") || false,
+    showInfo: false,
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",

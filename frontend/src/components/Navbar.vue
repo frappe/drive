@@ -72,7 +72,7 @@
             </template>
           </Button>
         </Dropdown>
-        <div v-if="$store.state.hasWriteAccess" class="border h-5"></div>
+        <div v-if="$store.state.hasWriteAccess"></div>
         <!--
 
           Pushed implementation
@@ -108,9 +108,7 @@
     @hide="hidePreview" />
 </template>
 <script>
-import { Avatar, Dropdown, FeatherIcon, Button } from "frappe-ui";
-import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
-import SearchPopup from "@/components/SearchPopup.vue";
+import { Dropdown, FeatherIcon, Button } from "frappe-ui";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -121,10 +119,7 @@ export default {
   name: "Navbar",
   components: {
     FilePreview,
-    FrappeDriveLogo,
-    SearchPopup,
     NewFolderDialog,
-    Avatar,
     Dropdown,
     FeatherIcon,
     Button,
@@ -238,7 +233,7 @@ export default {
         onSuccess(data) {
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
-          this.$store.commit("setEntityInfo", data);
+          this.$store.commit("setEntityInfo", [data]);
           this.previewEntity = data;
         },
         onError(data) {
@@ -250,8 +245,3 @@ export default {
   },
 };
 </script>
-<style>
-#upload-button {
-  border-radius: 100%;
-}
-</style>

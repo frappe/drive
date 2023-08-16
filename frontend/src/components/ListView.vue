@@ -200,12 +200,7 @@ export default {
         this.folderContents
       );
       this.$emit("entitySelected", selectedEntities);
-      if (selectedEntities.length) {
-        this.$store.commit(
-          "setEntityInfo",
-          selectedEntities[selectedEntities.length - 1]
-        );
-      }
+      this.$store.commit("setEntityInfo", selectedEntities);
     },
     handleMouseup() {
       this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 };
@@ -246,28 +241,26 @@ export default {
         });
       } else {
         selectedEntities = [entity];
-        this.$emit("entitySelected", selectedEntities);
       }
-      this.$store.commit(
-        "setEntityInfo",
-        selectedEntities[selectedEntities.length - 1]
-      );
+      this.$emit("entitySelected", selectedEntities);
+      this.$store.commit("setEntityInfo", selectedEntities);
     },
     dblClickEntity(entity) {
-      this.$store.commit("setEntityInfo", entity);
+      this.$store.commit("setEntityInfo", [entity]);
       this.$emit("openEntity", entity);
     },
     deselectAll() {
       this.$emit("entitySelected", []);
-      this.$store.commit("setEntityInfo", null);
+      this.$store.commit("setEntityInfo", []);
       this.$emit("showEntityContext", null);
+      this.$emit("showEmptyEntityContext", null);
     },
     handleEntityContext(entity, event, entities) {
       event.preventDefault(event);
       if (this.selectedEntities.length <= 1) {
         this.selectEntity(entity, event, entities);
       }
-      this.$store.commit("setEntityInfo", entity);
+      this.$store.commit("setEntityInfo", [entity]);
       this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
     },
     dragStart(entity, event) {

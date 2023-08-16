@@ -80,18 +80,21 @@
                         $resources.entityTags.fetch();
                       }
                     " />
-                  <Button
+                  <Badge
                     v-if="!addTag && entity.owner === 'me'"
-                    class="h-6 text-[12px] text-gray-800"
-                    icon-left="plus"
+                    class="flex items-center content-center text-sm cursor-pointer"
                     @click="addTag = true">
+                    <FeatherIcon
+                      v-if="entity.owner === 'me'"
+                      class="h-4 mr-1"
+                      name="plus" />
                     Add tag
-                  </Button>
+                  </Badge>
                 </div>
 
                 <TagInput
                   v-if="addTag"
-                  :class="{ 'mt-2': $resources.entityTags.data.length }"
+                  :class="{ 'w-full mt-2': $resources.entityTags.data.length }"
                   :entity="entity"
                   :unadded-tags="unaddedTags"
                   @success="
@@ -1257,7 +1260,7 @@ export default {
       return this.$store.state.user.imageURL;
     },
     entity() {
-      return this.$store.state.entityInfo;
+      return this.$store.state.entityInfo[0];
     },
     unaddedTags() {
       return this.$resources.userTags.data.filter(
@@ -1301,15 +1304,6 @@ export default {
       ];
     },
   },
-  watch: {
-    entity() {
-      if (this.entity) {
-        this.$resources.userTags.fetch();
-        this.$resources.entityTags.fetch();
-      }
-    },
-  },
-
   methods: {
     switchTab(val) {
       if (this.$store.state.showInfo == false) {
@@ -1399,7 +1393,7 @@ export default {
             console.log(error.messages);
           }
         },
-        auto: false,
+        auto: true,
       };
     },
     entityTags() {
@@ -1411,7 +1405,7 @@ export default {
             console.log(error.messages);
           }
         },
-        auto: false,
+        auto: true,
       };
     },
   },
