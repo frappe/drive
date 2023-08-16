@@ -300,7 +300,7 @@ def get_file_content(entity_name, trigger_download=0):
         # Figure out a sane way to handle blob range streaming requests
 
         try:
-        file = open(drive_entity.path, "rb")
+            file = open(drive_entity.path, "rb")
         except TypeError:
             response = Response(frappe.request.environ)
             response.status_code = 204
