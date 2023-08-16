@@ -2,7 +2,7 @@
   <div class="flex-col w-full overflow-y-scroll">
     <div
       class="flex text-sm justify-center items-center text-gray-600 h-12 w-full">
-      Created {{ $store.state.entityInfo.creation }}
+      Created {{ $store.state.entityInfo[0].creation }}
     </div>
     <div class="flex w-full items-start justify-center">
       <editor-content

@@ -78,9 +78,6 @@ export default {
     showUploadTracker() {
       return this.isLoggedIn && this.$store.state.uploads.length > 0;
     },
-    showInfoSidebar() {
-      return this.$store.state.showInfo && this.$store.state.entityInfo;
-    },
   },
   /* watch: {
     $route() {
