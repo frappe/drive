@@ -21,22 +21,18 @@
             <FeatherIcon v-else name="x" class="w-6 h-6" />
           </button>
         </div>
-        <!--         <Button
-          v-if="$route.meta.documentPage && isLoggedIn"
-          icon-left="chevron-left"
-          @click="$router.go(-1)">
-          Back to Files
-        </Button> -->
-      </div>
-      <div
-        v-if="!$route.meta.documentPage"
-        class="relative ml-auto mt-2.5 md:mt-0.5 z-10">
-        <!-- <SearchPopup
-          v-if="isLoggedIn"
-          @open-entity="(entity) => openEntity(entity)" /> -->
       </div>
       <!-- $store.state.hasWriteAccess -->
+
       <div v-if="isLoggedIn" class="flex items-center">
+        <Dropdown
+          :options="fileOptions"
+          placement="left"
+          class="basis-5/12 lg:basis-auto mr-2">
+          <Button v-if="$route.meta.documentPage && isLoggedIn" variant="ghost">
+            <FeatherIcon class="h-4" name="more-horizontal" />
+          </Button>
+        </Dropdown>
         <Button
           v-if="$route.name === 'Recent'"
           class="bg-red-100 text-red-700"
@@ -59,7 +55,7 @@
         </Button>
         <Dropdown
           v-else
-          :options="addOptions"
+          :options="newEntityOptions"
           placement="left"
           class="basis-5/12 lg:basis-auto">
           <Button variant="solid">
@@ -83,13 +79,6 @@
           icon="bell"></Button>
           
         -->
-        <Dropdown :options="accountOptions" placement="right">
-          <button
-            id="user-menu"
-            class="flex items-center max-w-xs text-sm text-white rounded-full focus:outline-none focus:shadow-solid"
-            aria-label="User menu"
-            aria-haspopup="true"></button>
-        </Dropdown>
       </div>
     </div>
   </nav>
@@ -114,6 +103,7 @@ import FilePreview from "@/components/FilePreview.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { formatDate } from "@/utils/format";
 import { clear } from "idb-keyval";
+import { FileDown } from "lucide-vue-next";
 
 export default {
   name: "Navbar",
@@ -144,7 +134,7 @@ export default {
       previewEntity: null,
       showPreview: false,
       showNewFolderDialog: false,
-      addOptions: [
+      newEntityOptions: [
         {
           label: "Upload file",
           icon: "upload",
@@ -179,13 +169,11 @@ export default {
           isEnabled: () => this.selectedEntities.length === 0,
         },
       ],
-      accountOptions: [
+      fileOptions: [
         {
-          label: this.$store.state.user.fullName,
-        },
-        {
-          label: "Log out",
-          handler: () => this.$store.dispatch("logout"),
+          icon: FileDown,
+          label: "Export to PDF",
+          onClick: () => this.emitter.emit("exportDocToPDF"),
         },
       ],
       showSearchPopup: false,

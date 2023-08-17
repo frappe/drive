@@ -1,13 +1,7 @@
 <template>
   <div class="flex-col w-full overflow-y-scroll">
-    <div
-      class="flex text-sm justify-center items-center text-gray-600 h-12 w-full">
-      Created {{ $store.state.entityInfo[0].creation }}
-    </div>
     <div class="flex w-full items-start justify-center">
-      <editor-content
-        class="flex w-full items-start justify-center"
-        :editor="editor" />
+      <editor-content id="editor-capture" class="" :editor="editor" />
     </div>
     <BubbleMenu
       v-if="editor"
@@ -256,6 +250,11 @@ export default {
     },
   },
   mounted() {
+    this.emitter.on("exportDocToPDF", () => {
+      if (this.editor) {
+        this.printEditorContent();
+      }
+    });
     const doc = new Y.Doc();
     Y.applyUpdate(doc, this.modelValue);
     // Tiny test
@@ -366,6 +365,65 @@ export default {
     this.editor = null;
   },
   methods: {
+    printHtml(dom) {
+      const style = Array.from(document.querySelectorAll("style, link")).reduce(
+        (str, style) => str + style.outerHTML,
+        ""
+      );
+      const content = style + dom.outerHTML;
+
+      const iframe = document.createElement("iframe");
+      iframe.id = "el-tiptap-iframe";
+      iframe.setAttribute(
+        "style",
+        "position: absolute; width: 0; height: 0; top: -10px; left: -10px;"
+      );
+      document.body.appendChild(iframe);
+
+      const frameWindow = iframe.contentWindow;
+      const doc =
+        iframe.contentDocument ||
+        (iframe.contentWindow && iframe.contentWindow.document);
+
+      if (doc) {
+        doc.open();
+        doc.write(content);
+        doc.close();
+      }
+
+      if (frameWindow) {
+        iframe.onload = function () {
+          try {
+            setTimeout(() => {
+              frameWindow.focus();
+              try {
+                if (!frameWindow.document.execCommand("print", false)) {
+                  frameWindow.print();
+                }
+              } catch (e) {
+                frameWindow.print();
+              }
+              frameWindow.close();
+            }, 10);
+          } catch (err) {
+            console.error(err);
+          }
+
+          setTimeout(function () {
+            document.body.removeChild(iframe);
+          }, 100);
+        };
+      }
+    },
+
+    printEditorContent() {
+      const editorContent = document.getElementById("editor-capture");
+      if (editorContent) {
+        this.printHtml(editorContent);
+        return true;
+      }
+      return false;
+    },
     shouldShow({ view, state, from, to }) {
       const { doc, selection } = state;
       const { empty } = selection;
@@ -506,21 +564,30 @@ export default {
   outline: none;
   caret-color: theme("colors.blue.600");
   word-break: break-word;
-  min-width: 75%;
-  max-width: 75%;
-  min-height: 90vh;
   -webkit-user-select: none;
-  /* Safari */
   -ms-user-select: none;
-  /* IE 10 and IE 11 */
   user-select: none;
-  /* Standard syntax */
   padding: 0px;
 }
 
 /* Firefox */
 .ProseMirror-focused:focus-visible {
   outline: none;
+}
+
+#editor-capture {
+  background: white;
+  padding: 4em;
+  min-width: 21cm;
+  max-width: 21cm;
+  min-height: 29.7cm;
+  max-height: 29.7cm;
+}
+
+/* print */
+@page {
+  size: a4;
+  margin: 0;
 }
 
 span[data-comment] {
@@ -554,10 +621,9 @@ span[data-comment] {
   user-select: none;
   white-space: nowrap;
 }
-s {
-  font-size: inherit;
-}
-.my-task-item {
+
+/* Check list */
+*/ .my-task-item {
   display: flex;
 }
 
