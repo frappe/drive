@@ -251,7 +251,7 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, call, Input } from "frappe-ui";
+import { FeatherIcon, Avatar, call, Input, Badge } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
@@ -269,6 +269,7 @@ export default {
     TagInput,
     Tag,
     FileRender,
+    Badge,
   },
 
   setup() {

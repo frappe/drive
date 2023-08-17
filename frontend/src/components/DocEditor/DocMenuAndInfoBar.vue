@@ -1051,7 +1051,7 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, Popover } from "frappe-ui";
+import { FeatherIcon, Avatar, Input, Popover, Badge } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
@@ -1106,6 +1106,7 @@ export default {
     ImagePlus,
     FileVideo,
     Table2Icon,
+    Badge,
   },
   emits: ["setContentEmit", "focusContentEmit"],
   setup() {
