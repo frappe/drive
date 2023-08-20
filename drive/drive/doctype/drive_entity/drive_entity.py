@@ -3,9 +3,14 @@ from frappe.utils.nestedset import NestedSet, get_ancestors_of
 from pathlib import Path
 import shutil
 import uuid
-from drive.utils.files import get_user_directory, create_user_directory, get_new_title, get_user_thumbnails_directory
-
-
+from drive.utils.files import (
+    get_user_directory,
+    create_user_directory,
+    get_new_title,
+    get_user_thumbnails_directory,
+    create_user_thumbnails_directory,
+    create_thumbnail,
+)
 
 class DriveEntity(NestedSet):
     nsm_parent_field = "parent_drive_entity"
@@ -211,6 +216,18 @@ class DriveEntity(NestedSet):
 
         if new_parent == parent_user_directory.name:
             drive_entity.share(frappe.session.user, write=1, share=1)
+
+        if(drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith("video")):
+                frappe.enqueue(
+                    create_thumbnail,
+                    queue="default",
+                    timeout=None,
+                    now=True,
+                    #will set to false once reactivity in new UI is solved 
+                    entity_name=name,
+                    path=path,
+                    mime_type= drive_entity.mime_type,
+                )
 
     @frappe.whitelist()
     def rename(self, new_title):
