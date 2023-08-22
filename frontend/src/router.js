@@ -8,18 +8,31 @@ const routes = [
     component: () => import("@/pages/Home.vue"),
   },
   {
+    path: "/file/:entityName",
+    name: "File",
+    component: () => import("@/pages/File.vue"),
+    meta: { sidebar: true },
+    props: true,
+  },
+  {
     path: "/folder/:entityName",
     name: "Folder",
-    meta: { isHybridRoute: false },
     component: () => import("@/pages/Folder.vue"),
     props: true,
   },
   {
-    path: "/foldershare/:entityName",
+    path: "/s/folder/:entityName",
     name: "FolderShare",
-    meta: { sidebar: false, isHybridRoute: true },
+    meta: { isHybridRoute: false, isPublicRoute: true },
     component: () => import("@/pages/FolderShare.vue"),
     props: true,
+  },
+  {
+    path: "/s/file/:entityName",
+    name: "FileShare",
+    component: () => import("@/pages/FileShare.vue"),
+    props: true,
+    meta: { isHybridRoute: false, isPublicRoute: true },
   },
   {
     path: "/document/:entityName",
@@ -47,15 +60,6 @@ const routes = [
     path: "/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
-  },
-  {
-    path: "/file/:entityName",
-    name: "File",
-    component: () => import("@/pages/File.vue"),
-    props: true,
-    meta: {
-      isHybridRoute: true,
-    },
   },
   {
     path: "/login",

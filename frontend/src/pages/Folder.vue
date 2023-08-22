@@ -521,6 +521,10 @@ export default {
           params: { entityName: entity.name },
         });
       } else {
+        this.$router.push({
+          name: "File",
+          params: { entityName: entity.name },
+        });
         this.previewEntity = entity;
         this.showPreview = true;
       }
