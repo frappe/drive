@@ -80,6 +80,11 @@
           
         -->
       </div>
+      <div v-else>
+        <Button @click="$router.push({ name: 'Login' })" variant="solid">
+          Sign In
+        </Button>
+      </div>
     </div>
   </nav>
   <NewFolderDialog
