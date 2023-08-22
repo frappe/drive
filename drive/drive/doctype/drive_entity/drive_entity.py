@@ -355,9 +355,6 @@ class DriveEntity(NestedSet):
         :param notify: 1 if the user should be notified. Defaults to 1
         """
 
-        if self.owner == user: 
-            raise PermissionError
-
         flags = (
             {"ignore_share_permission": True}
             if frappe.session.user == self.owner
@@ -392,9 +389,6 @@ class DriveEntity(NestedSet):
 
         :param user: User with whom this is to be shared
         """
-
-        if self.owner == user: 
-            raise PermissionError
 
         if (
             frappe.has_permission(
