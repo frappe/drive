@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New Folder' }">
+  <Dialog v-model="open" :options="{ title: 'New Folder', size: 'xs' }">
     <template #body-content>
       <Input
         v-model="folderName"
@@ -14,10 +14,9 @@
         " />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
-        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
           variant="solid"
-          class="ml-4"
+          class="w-full"
           :loading="$resources.createFolder.loading"
           @click="$resources.createFolder.submit()">
           Create
