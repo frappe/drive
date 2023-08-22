@@ -52,30 +52,13 @@ export default {
           highlight: () => {
             return this.$store.state.currentBreadcrumbs[0].label === "Home";
           },
-          /* highlight: () => {
-            
-            if (this.$route.name === "Home") {
-              return true;
-            } else if (
-              this.$store.state.currentBreadcrumbs[0].label === "Home" &&
-              this.$route.name === "Folder"
-            ) {
-              return true;
-            }
-            else if (
-              this.$store.state.currentBreadcrumbs[0].label === "Home" &&
-              this.$route.name === "Document"
-            ) {
-              return true
-            }
-          }, */
         },
         {
           label: "Recents",
           route: "/recent",
           icon: "clock",
           highlight: () => {
-            return this.$route.fullPath.startsWith("/recent");
+            return this.$store.state.currentBreadcrumbs[0].label === "Recents";
           },
         },
         {
@@ -83,14 +66,9 @@ export default {
           route: "/favourites",
           icon: "star",
           highlight: () => {
-            if (
-              this.$store.state.currentBreadcrumbs[0].route === "/favourites" &&
-              this.$route.name === "Folder"
-            ) {
-              return true;
-            } else if (this.$route.name === "Favourites") {
-              return true;
-            }
+            return (
+              this.$store.state.currentBreadcrumbs[0].label === "Favourites"
+            );
           },
         },
         {
@@ -98,14 +76,9 @@ export default {
           route: "/shared",
           icon: "share-2",
           highlight: () => {
-            if (
-              this.$store.state.currentBreadcrumbs[0].route === "/shared" &&
-              this.$route.name === "Folder"
-            ) {
-              return true;
-            } else if (this.$route.name === "Shared") {
-              return true;
-            }
+            return (
+              this.$store.state.currentBreadcrumbs[0].label === "Shared With Me"
+            );
           },
         },
         {
@@ -113,15 +86,7 @@ export default {
           route: "/trash",
           icon: "trash-2",
           highlight: () => {
-            return this.$route.fullPath.endsWith("/trash");
-          },
-        },
-        {
-          label: "Workspace",
-          route: "/workspace",
-          icon: "tool",
-          highlight: () => {
-            return this.$route.fullPath.endsWith("/workspace");
+            return this.$store.state.currentBreadcrumbs[0].label === "Trash";
           },
         },
       ];
