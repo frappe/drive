@@ -1,143 +1,194 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: `Share '${$resources.entity.data?.title}'` }">
+    :options="{
+      title: `Share '${$resources.entity.data?.title}'`,
+      size: 'md',
+    }">
     <template #body-content>
-      <div ref="dialogContent" class="text-left min-w-[16rem]">
-        <div class="border rounded-xl py-2 px-[18px]">
-          <div class="flex flex-row">
-            <div class="flex my-auto">
-              <FeatherIcon
-                name="globe"
+      <div class="pt-2 pb-2 mb-4">
+        <div class="flex flex-row pl-2">
+          <FeatherIcon
+            v-if="generalAccess.read || generalAccess.write"
+            name="globe"
+            :stroke-width="2"
+            class="h-5 text-red-500 my-auto mr-2" />
+
+          <FeatherIcon
+            v-else
+            name="lock"
+            :stroke-width="2"
+            class="h-5 text-gray-600 my-auto mr-2" />
+
+          <!-- <Building2
+                name="building"
                 :stroke-width="2"
-                class="h-5 text-yellow-600" />
-            </div>
-            <div class="grow ml-4">
-              <div class="text-[14px] font-medium text-gray-900">
-                Public access
-              </div>
-              <p class="text-base text-gray-700">{{ accessMessage }}</p>
-            </div>
-            <div class="flex my-auto">
-              <Switch
-                v-model="generalAccess.read"
-                :class="generalAccess.read ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-                @click="updateAccess({ read: !generalAccess.read })">
-                <span
-                  :class="
-                    generalAccess.read ? 'translate-x-3.5' : 'translate-x-1'
-                  "
-                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-              </Switch>
-            </div>
-          </div>
-          <div v-if="generalAccess.read" class="flex flex-row mt-3">
-            <div class="grow text-[14px] text-gray-900">Allow edit</div>
-            <div class="flex my-auto">
-              <Switch
-                v-model="generalAccess.write"
-                :class="generalAccess.write ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-                @click="updateAccess({ write: !generalAccess.write })">
-                <span
-                  :class="
-                    generalAccess.write ? 'translate-x-3.5' : 'translate-x-1'
-                  "
-                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-              </Switch>
-            </div>
-          </div>
+                class="h-5 text-green-600 my-auto"
+                />  -->
 
-          <div v-if="generalAccess.read" class="flex flex-row mt-2">
-            <div class="grow text-[14px] text-gray-900">Allow download</div>
-            <div class="flex my-auto">
-              <Switch
-                v-model="allowDownload"
-                :class="allowDownload ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-                @click="$resources.toggleAllowDownload.submit()">
-                <span
-                  :class="allowDownload ? 'translate-x-3.5' : 'translate-x-1'"
-                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-              </Switch>
-            </div>
-          </div>
-        </div>
-        <div class="border rounded-xl py-2 px-2 mt-5">
-          <UserSearch
-            @submit="
-              ({ user, write }) =>
-                $resources.share.submit({
-                  method: 'share',
-                  entity_name: entityName,
-                  user,
-                  write,
-                  share: 1,
-                })
-            " />
-          <ErrorMessage
-            v-if="$resources.share.error"
-            class="mt-2"
-            :message="errorMessage" />
-
-          <div
-            v-if="$resources.sharedWith.data?.length > 0"
-            class="flex flex-row mt-3">
-            <div class="grow text-[14px] text-gray-900">Allow comments</div>
-            <div class="flex my-auto">
-              <Switch
-                v-model="allowComments"
-                :class="allowComments ? 'bg-blue-500' : 'bg-gray-200'"
-                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-                @click="$resources.toggleAllowComments.submit()">
-                <span
-                  :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
-                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-              </Switch>
-            </div>
-          </div>
-
-          <div
-            v-if="$resources.sharedWith.data?.length > 0"
-            class="flex mt-5 text-[14px] text-gray-600">
-            Members
-          </div>
-          <div
-            v-for="user in $resources.sharedWith.data"
-            :key="user.user"
-            class="mt-3 flex flex-row w-full gap-2 items-center antialiased">
-            <div class="overflow-hidden rounded-full h-9 w-9">
-              <img
-                v-if="user.user_image"
-                :src="user.user_image"
-                class="object-cover rounded-full h-7 w-7" />
-              <div
-                v-else
-                class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
-                {{ user.full_name[0] }}
+          <Popover transition="default">
+            <template #target="{ togglePopover }">
+              <Button appearance="minimal" @click="togglePopover()">
+                <template #suffix>
+                  <ChevronsUpDown class="w-4" />
+                </template>
+                {{ generalAccess.read ? "Public Access" : "Restricted Access" }}
+              </Button>
+            </template>
+            <template #body-main="{ togglePopover }">
+              <div class="flex flex-col p-1">
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
+                  variant="ghost"
+                  @click="
+                    $resources.updateAccess
+                      .submit({
+                        method: 'set_general_access',
+                        entity_name: entityName,
+                        new_access: { read: false, write: false, share: false },
+                      })
+                      .then(togglePopover())
+                  ">
+                  Restricted Acess
+                  <Check v-if="!generalAccess.read" class="h-4" />
+                </div>
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
+                  variant="ghost"
+                  @click="
+                    $resources.updateAccess
+                      .submit({
+                        method: 'set_general_access',
+                        entity_name: entityName,
+                        new_access: { read: true, write: false, share: false },
+                      })
+                      .then(togglePopover())
+                  ">
+                  Public Access
+                  <Check v-if="generalAccess.read" class="h-4" />
+                </div>
               </div>
-            </div>
-            <div class="grow truncate">
-              <div class="text-gray-900 text-[14px] font-medium">
-                {{ user.full_name }}
-              </div>
-              <div class="text-gray-600 text-base">{{ user.user }}</div>
-            </div>
+            </template>
+          </Popover>
+          <!--              -->
+
+          <div v-if="generalAccess.read" class="flex ml-auto my-auto">
             <Popover transition="default">
               <template #target="{ togglePopover }">
-                <Button
-                  icon-right="chevron-down"
-                  :loading="user.loading"
-                  class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700 text-[13px] rounded-lg"
-                  appearance="minimal"
-                  @click="togglePopover()">
-                  {{ user.write ? "Can edit" : "Can view" }}
+                <Button appearance="minimal" @click="togglePopover()">
+                  <template #suffix>
+                    <ChevronsUpDown class="w-4" />
+                  </template>
+                  {{ generalAccess.read ? "Can view" : "Can edit" }}
                 </Button>
               </template>
               <template #body-main="{ togglePopover }">
-                <div class="p-1">
+                <div class="flex flex-col p-1">
                   <div
+                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                    @click="
+                      $resources.updateAccess
+                        .submit({
+                          method: 'set_general_access',
+                          entity_name: entityName,
+                          new_access: {
+                            read: true,
+                            write: false,
+                            share: false,
+                          },
+                        })
+                        .then(togglePopover())
+                    ">
+                    Can view
+                    <Check
+                      v-if="generalAccess.read && !generalAccess.write"
+                      class="h-4 ml-2" />
+                  </div>
+                  <div
+                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                    @click="
+                      $resources.updateAccess
+                        .submit({
+                          method: 'set_general_access',
+                          entity_name: entityName,
+                          new_access: { read: true, write: true, share: false },
+                        })
+                        .then(togglePopover())
+                    ">
+                    Can edit
+                    <Check v-if="generalAccess.write" class="h-4 ml-2" />
+                  </div>
+                </div>
+              </template>
+            </Popover>
+          </div>
+        </div>
+        <span class="pl-9.5 py-2 text-base text-gray-700">
+          {{ accessMessage }}
+        </span>
+      </div>
+
+      <UserSearch
+        @submit="
+          ({ user, write }) =>
+            $resources.share.submit({
+              method: 'share',
+              entity_name: entityName,
+              user,
+              write,
+              share: 1,
+            })
+        " />
+      <ErrorMessage
+        v-if="$resources.share.error"
+        class="mt-2"
+        :message="errorMessage" />
+
+      <div class="flex mt-5 text-base text-gray-600">Users with access</div>
+      <div class="flex flex-col">
+        <div
+          v-for="user in $resources.sharedWith.data"
+          :key="user.user"
+          class="mt-3 flex flex-row w-full gap-2 items-center space-y-2">
+          <div class="overflow-hidden rounded-full h-9 w-9">
+            <img
+              v-if="user.user_image"
+              :src="user.user_image"
+              class="object-cover rounded-full h-7 w-7" />
+            <div
+              v-else
+              class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
+              {{ user.full_name[0] }}
+            </div>
+          </div>
+          <div class="grow truncate">
+            <div class="text-gray-900 text-[14px] font-medium">
+              {{ user.full_name }}
+            </div>
+            <div class="text-gray-600 text-base">{{ user.user }}</div>
+          </div>
+          <Button
+            v-if="user.user === entity.owner"
+            variant="minimal"
+            class="text-gray-600">
+            Owner
+          </Button>
+          <Popover v-else transition="default">
+            <template #target="{ togglePopover }">
+              <Button
+                :loading="user.loading"
+                class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
+                appearance="minimal"
+                @click="togglePopover()">
+                <template #prefix>
+                  <ChevronsUpDown class="w-4" />
+                </template>
+                {{ user.write ? "Can edit" : "Can view" }}
+              </Button>
+            </template>
+            <template #body-main="{ togglePopover }">
+              <div class="p-1">
+                <!-- <div
                     v-for="item in ['Viewer', 'Editor', 'Remove']"
                     :key="item">
                     <div
@@ -167,29 +218,95 @@
                       ">
                       {{ item }}
                     </div>
-                  </div>
+                  </div> -->
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                  @click="
+                    $resources.share
+                      .submit({
+                        entity_name: entityName,
+                        method: 'share',
+                        user: user.user,
+                        write: 0,
+                        share: 0,
+                      })
+                      .then(togglePopover())
+                  ">
+                  Can view
+                  <Check v-if="!user.write" class="h-4 ml-2" />
                 </div>
-              </template>
-            </Popover>
-          </div>
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                  @click="
+                    $resources.share
+                      .submit({
+                        entity_name: entityName,
+                        method: 'share',
+                        user: user.user,
+                        write: 1,
+                        share: 0,
+                      })
+                      .then(togglePopover())
+                  ">
+                  Can edit
+                  <Check v-if="user.write" class="h-4 ml-2" />
+                </div>
+                <!-- <div
+                      class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                      @click="$resources.share.submit({
+                          entity_name: entityName,
+                          method: 'share',
+                          user: user.user,
+                          write: 1,
+                          share: 1,
+                        })
+                        .then(togglePopover())">
+                     Can share
+                     <Check v-if="generalAccess.write" class="h-4 ml-2"/>
+                    </div> -->
+                <div
+                  class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                  @click="
+                    $resources.share
+                      .submit({
+                        method: 'set_general_access',
+                        entity_name: entityName,
+                        method: 'unshare',
+                        user: user.user,
+                      })
+                      .then(togglePopover())
+                  ">
+                  Remove
+                </div>
+              </div>
+            </template>
+          </Popover>
         </div>
-        <div class="flex mt-5">
-          <Button
-            icon-left="link"
-            appearance="white"
-            class="h-7 rounded-lg"
-            @click="getLink">
-            Copy link
-          </Button>
-          <Button
-            appearance="minimal"
-            class="ml-auto text-gray-700 hover:bg-white focus:bg-white active:bg-white h-7 rounded-lg"
-            icon-right="info">
-            Learn about sharing
-          </Button>
-        </div>
-        <Alert v-if="showAlert" :title="alertMessage" class="mt-5"></Alert>
       </div>
+      <div class="flex justify-items-center content-center mt-6">
+        <div class="flex justify-items-center content-center">
+          <Button variant="ghost" @click="getLink">
+            <Link class="w-4" />
+          </Button>
+          <div class="border h-7 mx-1"></div>
+          <Button
+            v-model="allowComments"
+            variant="ghost"
+            @click="toggleComments">
+            <MessageCircle v-if="allowComments" class="w-4" />
+            <MessageCircleOff v-else class="w-4" />
+          </Button>
+          <Button
+            v-model="allowDownload"
+            variant="ghost"
+            @click="toggleDownload">
+            <ArrowDownToLine v-if="allowDownload" class="w-4" />
+            <ArrowDownToLineOff v-else class="w-4" />
+          </Button>
+        </div>
+        <Button variant="solid" class="ml-auto px-8">Share</Button>
+      </div>
+      <Alert v-if="showAlert" :title="alertMessage" class="mt-5"></Alert>
     </template>
   </Dialog>
 </template>
@@ -201,9 +318,20 @@ import {
   Button,
   Alert,
   Popover,
+  toast,
 } from "frappe-ui";
 import { Switch } from "@headlessui/vue";
 import UserSearch from "@/components/UserSearch.vue";
+import { MessagesSquare } from "lucide-vue-next";
+import MessageCircleOff from "@/components/message-circle-off.vue";
+import { MessageCircle } from "lucide-vue-next";
+import { ArrowDownToLine } from "lucide-vue-next";
+import ArrowDownToLineOff from "@/components/arrow-down-to-line-off.vue";
+import { Link } from "lucide-vue-next";
+import { Building2 } from "lucide-vue-next";
+import { ChevronsUpDown } from "lucide-vue-next";
+import { Check } from "lucide-vue-next";
+import { Trash } from "lucide-vue-next";
 
 export default {
   name: "ShareDialog",
@@ -216,6 +344,17 @@ export default {
     Alert,
     Switch,
     Popover,
+    MessagesSquare,
+    MessageCircleOff,
+    MessageCircle,
+    ArrowDownToLine,
+    ArrowDownToLineOff,
+    Link,
+    toast,
+    Building2,
+    ChevronsUpDown,
+    Check,
+    Trash,
   },
   props: {
     modelValue: {
@@ -237,21 +376,24 @@ export default {
       errorMessage: "",
       showAlert: false,
       alertMessage: "",
+      entity: null,
     };
   },
   computed: {
+    accessMessage() {
+      if (this.generalAccess.read) {
+        return this.generalAccess.write
+          ? "Anyone with the link can edit"
+          : "Anyone with the link can view";
+      } else {
+        return "Only users with access can view this file";
+      }
+    },
     accessChanged() {
       return (
         JSON.stringify(this.generalAccess) !==
         JSON.stringify(this.$resources.generalAccess.data)
       );
-    },
-    accessMessage() {
-      if (this.generalAccess.read)
-        return this.generalAccess.write
-          ? "Anyone with the link can edit"
-          : "Anyone with the link can view";
-      return "Publish and share link with anyone";
     },
     open: {
       get() {
@@ -265,18 +407,35 @@ export default {
       },
     },
   },
-  mounted() {
-    const targetElement = this.$refs.dialogContent?.closest(".overflow-hidden");
-    if (targetElement) {
-      targetElement.classList.remove("overflow-hidden");
-      targetElement.classList.add("self-center");
-      targetElement.childNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE)
-          node.classList.add("rounded-lg");
-      });
-    }
-  },
   methods: {
+    toggleComments() {
+      toast({
+        title: this.allowComments
+          ? "Comments turned off"
+          : "Comments turned on",
+        text: this.allowComments
+          ? "Users cannot read and write comments"
+          : "Users can read and write comments",
+        icon: "message-circle",
+        position: "bottom-right",
+        iconClasses: "text-black-500",
+      });
+      this.$resources.toggleAllowComments.submit();
+    },
+    toggleDownload() {
+      toast({
+        title: this.allowDownload
+          ? "Downloading turned off"
+          : "Downloading turned on",
+        text: this.allowDownload
+          ? "Users cannot download this"
+          : "Users can download this",
+        icon: "download",
+        position: "bottom-right",
+        iconClasses: "text-black-500",
+      });
+      this.$resources.toggleAllowDownload.submit();
+    },
     updateAccess(updatedAccess) {
       this.saveLoading = true;
       const newAccess = { ...this.generalAccess, ...updatedAccess };
@@ -293,16 +452,16 @@ export default {
     async getLink() {
       this.showAlert = false;
       const link = this.$resources.entity.data.is_group
-        ? `${window.location.origin}/drive/foldershare/${this.entityName}`
-        : `${window.location.origin}/drive/file/${this.entityName}`;
-      try {
-        await navigator.clipboard.writeText(link);
-        this.alertMessage = "Link copied successfully";
-        this.showAlert = true;
-      } catch ($e) {
-        this.alertMessage = "Some error occurred while copying the link";
-        this.showAlert = true;
-      }
+        ? `${window.location.origin}/drive/s/folder/${this.entityName}`
+        : `${window.location.origin}/drive/s/file/${this.entityName}`;
+      await navigator.clipboard.writeText(link);
+      toast({
+        title: "Done",
+        text: "Copied Link!",
+        icon: "check",
+        position: "bottom-right",
+        iconClasses: "text-blue-500",
+      });
     },
   },
   resources: {
@@ -312,6 +471,9 @@ export default {
         params: {
           entity_name: this.entityName,
         },
+        onSuccess(data) {
+          console.log(data);
+        },
         auto: true,
       };
     },
@@ -320,9 +482,10 @@ export default {
         url: "drive.api.files.get_entity",
         params: {
           entity_name: this.entityName,
-          fields: "title,is_group,allow_comments,allow_download",
+          fields: "title,is_group,allow_comments,allow_download,owner",
         },
         onSuccess(data) {
+          this.entity = data;
           this.allowComments = !!data.allow_comments;
           this.allowDownload = !!data.allow_download;
         },

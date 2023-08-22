@@ -5,9 +5,7 @@
     @contextmenu.prevent="handleDefaultContext($event)">
     <!-- Main container with scroll -->
     <div class="h-full w-full flex flex-col">
-      <div
-        v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-        class="flex h-full overflow-hidden">
+      <div v-if="isLoggedIn" class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div
           v-if="showSidebar"
@@ -16,7 +14,6 @@
         </div>
         <div class="h-full w-full overflow-hidden">
           <Navbar
-            v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
           <div class="flex w-full h-full overflow-hidden">
@@ -35,6 +32,7 @@
   </div>
   <div id="dropzoneElement" class="hidden" />
   <UploadTracker v-if="showUploadTracker" />
+  <Toasts />
 </template>
 <script>
 import Dropzone from "dropzone";
@@ -45,6 +43,7 @@ import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
 import { Button, FeatherIcon } from "frappe-ui";
 import DocInfoSidebar from "./components/DocInfoSidebar.vue";
+import { Toasts } from "frappe-ui";
 
 export default {
   name: "App",
@@ -57,6 +56,7 @@ export default {
     Button,
     FeatherIcon,
     DocInfoSidebar,
+    Toasts,
   },
   data() {
     return {
