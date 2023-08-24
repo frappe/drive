@@ -159,14 +159,14 @@ def upload_file(fullpath=None, parent=None):
             drive_entity.insert()
             if parent == user_directory.name:
                 drive_entity.share(frappe.session.user, write=1, share=1)
-            
-            if(mime_type.startswith("image") or mime_type.startswith("video")):
+
+            if mime_type.startswith("image") or mime_type.startswith("video"):
                 frappe.enqueue(
                     create_thumbnail,
                     queue="default",
                     timeout=None,
                     now=True,
-                    #will set to false once reactivity in new UI is solved 
+                    # will set to false once reactivity in new UI is solved
                     entity_name=name,
                     path=path,
                     mime_type=mime_type,
@@ -269,9 +269,25 @@ def get_file_content(entity_name, trigger_download=0):
     :raises FileLockedError: If the file has been writer-locked
     """
 
-    if frappe.session.user == "Guest":
-        frappe.set_user("Administrator")
+    share_every_perm = False
+    if frappe.db.exists(
+        {
+            "doctype": "DocShare",
+            "share_doctype": "Drive Entity",
+            "share_name": entity_name,
+            "everyone": 1,
+        }
+    ):
+        share_every_perm = True
 
+    if not share_every_perm:
+        if not frappe.has_permission(
+            doctype="Drive Entity",
+            doc=entity_name,
+            ptype="read",
+            user=frappe.session.user,
+        ):
+            raise frappe.PermissionError("You do not have permission to view this file")
     trigger_download = int(trigger_download)
     drive_entity = frappe.get_value(
         "Drive Entity",
@@ -281,10 +297,7 @@ def get_file_content(entity_name, trigger_download=0):
     )
     if not drive_entity or drive_entity.is_group:
         raise ValueError
-    if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-    ):
-        raise frappe.PermissionError("You do not have permission to view this file")
+
     with DistributedLock(drive_entity.path, exclusive=False):
         range_header = frappe.request.headers.get("Range")
         # if range_header is not None:
@@ -443,12 +456,27 @@ def get_entity(entity_name, fields=None):
     :rtype: frappe._dict
     """
 
-    if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+    share_every_perm = False
+    if frappe.db.exists(
+        {
+            "doctype": "DocShare",
+            "share_doctype": "Drive Entity",
+            "share_name": entity_name,
+            "everyone": 1,
+        }
     ):
-        frappe.throw(
-            "Cannot access path due to insufficient permissions", frappe.PermissionError
-        )
+        share_every_perm = True
+    if not share_every_perm:
+        if not frappe.has_permission(
+            doctype="Drive Entity",
+            doc=entity_name,
+            ptype="read",
+            user=frappe.session.user,
+        ):
+            frappe.throw(
+                "Cannot access path due to insufficient permissions",
+                frappe.PermissionError,
+            )
     fields = fields or ["name", "title", "owner"]
     return frappe.db.get_value("Drive Entity", entity_name, fields, as_dict=1)
 
@@ -520,9 +548,6 @@ def get_shared_entities_in_path(entities):
 
 @frappe.whitelist(allow_guest=True)
 def list_entity_comments(entity_name):
-    if frappe.session.user == "Guest":
-        frappe.set_user("Administrator")
-
     Comment = frappe.qb.DocType("Comment")
     User = frappe.qb.DocType("User")
     selectedFields = [

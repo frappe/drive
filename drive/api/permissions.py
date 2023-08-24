@@ -24,7 +24,7 @@ def get_shared_with_list(entity_name):
 
     entity_owner = frappe.db.get_value("Drive Entity", entity_name, "owner")
 
-    users = frappe.db.get_list(
+    users = frappe.db.get_all(
         "DocShare",
         filters={
             "share_doctype": "Drive Entity",
@@ -35,12 +35,12 @@ def get_shared_with_list(entity_name):
         order_by="name",
         fields=["user", "read", "write", "share", "everyone", "modified"],
     )
-    
+
     # Extra read to always have the owner and current user sorted first :c
     # Returns current user even though we currently hide share chaining option
 
     if entity_owner == frappe.session.user:
-        current_user = frappe.db.get_list(
+        current_user = frappe.db.get_all(
             "DocShare",
             filters={
                 "share_doctype": "Drive Entity",
@@ -53,7 +53,7 @@ def get_shared_with_list(entity_name):
         users = current_user + users
 
     else:
-        entity_owner = frappe.db.get_list(
+        entity_owner = frappe.db.get_all(
             "DocShare",
             filters={
                 "share_doctype": "Drive Entity",
@@ -185,11 +185,7 @@ def get_file_with_permissions(entity_name):
     :rtype: frappe._dict
     """
 
-    if frappe.session.user == "Guest":
-        frappe.set_user("Administrator")
-        user_access = get_general_access(entity_name)
-    else:
-        user_access = get_user_access(entity_name)
+    user_access = get_user_access(entity_name)
 
     if not user_access:
         frappe.throw(
@@ -238,11 +234,7 @@ def get_doc_with_permissions(entity_name):
     :rtype: frappe._dict
     """
 
-    if frappe.session.user == "Guest":
-        # frappe.set_user("Administrator")
-        user_access = get_general_access(entity_name)
-    else:
-        user_access = get_user_access(entity_name)
+    user_access = get_user_access(entity_name)
 
     if not user_access:
         frappe.throw(
@@ -290,6 +282,16 @@ def get_user_access(entity_name):
     )
 
     if user_access:
+        if not frappe.has_permission(
+            doctype="Drive Entity",
+            doc=entity_name,
+            ptype="write",
+            user=frappe.session.user,
+        ):
+            frappe.throw(
+                "PermissionError: Either this file does not exist, or you don't have access to it",
+                frappe.PermissionError,
+            )
         return user_access
 
     return get_general_access(entity_name)
