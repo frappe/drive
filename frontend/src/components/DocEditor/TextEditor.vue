@@ -262,11 +262,11 @@ export default {
 
     const indexeddbProvider = new IndexeddbPersistence(
       // Find a sane time to wipe IDB safely
-      JSON.stringify(this.entityName),
+      "fdoc" + JSON.stringify(this.entityName),
       doc
     );
     const webrtcProvider = new WebrtcProvider(
-      JSON.stringify(this.entityName),
+      "fdoc" + JSON.stringify(this.entityName),
       doc,
       { signaling: ["wss://network.arjunchoudhary.com"] }
     );
@@ -360,6 +360,7 @@ export default {
   },
   beforeUnmount() {
     this.editor.destroy();
+    this.localStore.clearData();
     this.provider.destroy();
     this.provider = null;
     this.editor = null;
