@@ -1,13 +1,12 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Rename' }">
+  <Dialog v-model="open" :options="{ title: 'Rename', size: 'xs' }">
     <template #body-content>
       <Input v-model="newName" type="text" />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
-        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
           variant="solid"
-          class="ml-4"
+          class="w-full"
           :loading="$resources.rename.loading"
           @click="performRename">
           Rename
@@ -43,6 +42,7 @@ export default {
     return {
       newName: "",
       errorMessage: "",
+      extension: "",
     };
   },
   computed: {

@@ -26,10 +26,10 @@
             v-for="entity in folderContents"
             :id="entity.name"
             :key="entity.name"
-            class="entity rounded select-none text-base border-b cursor-pointer"
+            class="entity select-none text-base border-b cursor-pointer"
             :class="
               selectedEntities.includes(entity)
-                ? 'bg-green-100 rounded-xl'
+                ? 'bg-green-100'
                 : 'hover:shadow-xl'
             "
             :draggable="true"

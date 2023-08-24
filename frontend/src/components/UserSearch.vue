@@ -1,74 +1,35 @@
 <template>
-  <div class="flex justify-between">
-    <div class="flex bg-gray-100 rounded-lg">
-      <Popover transition="default">
-        <template #target="{ open: openUsers, close: closeUsers }">
-          <div class="flex items-center justify-between h-[34px]">
-            <Input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Add people or Email"
-              class="h-7 focus:bg-inherit"
-              @input="handleInput($event, openUsers, closeUsers)" />
-            <Popover transition="default">
-              <template #target="{ togglePopover: toggleAccess }">
-                <Button
-                  icon-right="chevron-down"
-                  class="text-gray-900 text-[13px] rounded-lg h-7 w-full"
-                  appearance="minimal"
-                  @click="toggleAccess">
-                  {{ newUserAccess }}
-                </Button>
-              </template>
-              <template #body-main="{ togglePopover: toggleAccess }">
-                <div class="p-1">
-                  <div v-for="item in ['Can view', 'Can edit']" :key="item">
-                    <div
-                      class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                      @click="
-                        () => {
-                          newUserAccess = item;
-                          toggleAccess();
-                        }
-                      ">
-                      {{ item }}
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </Popover>
-          </div>
-        </template>
-        <template #body-main="{ togglePopover: toggleUsers }">
-          <div class="p-1">
-            <div v-for="result in searchResults" :key="result.value">
-              <div
-                class="hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
-                @click="
-                  () => {
-                    selectResult(result.value);
-                    toggleUsers();
-                  }
-                ">
-                <div class="text-gray-900 text-[13px]">
-                  {{ result.value }}
-                </div>
-                <div class="text-xs text-gray-600">
-                  {{ result.description }}
-                </div>
-              </div>
+  <Popover transition="default">
+    <template #target="{ open: openUsers, close: closeUsers }">
+      <Input
+        v-model="searchQuery"
+        type="text"
+        class="w-full"
+        placeholder="Add people or Email"
+        @input="handleInput($event, openUsers, closeUsers)" />
+    </template>
+    <template #body-main="{ togglePopover: toggleUsers }">
+      <div class="p-1">
+        <div v-for="result in searchResults" :key="result.value">
+          <div
+            class="hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
+            @click="
+              () => {
+                selectResult(result.value);
+                toggleUsers();
+              }
+            ">
+            <div class="text-gray-900 text-[13px]">
+              {{ result.value }}
+            </div>
+            <div class="text-xs text-gray-600">
+              {{ result.description }}
             </div>
           </div>
-        </template>
-      </Popover>
-    </div>
-    <Button
-      class="min-w-[75px] h-8 rounded-lg"
-      appearance="primary"
-      @click="selectResult(searchQuery)">
-      Invite
-    </Button>
-  </div>
+        </div>
+      </div>
+    </template>
+  </Popover>
 </template>
 
 <script>

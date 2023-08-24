@@ -1,103 +1,89 @@
 <template>
-  <div class="h-full p-4" @contextmenu="toggleEmptyContext">
-    <FolderContentsError
-      v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error" />
+  <Navbar />
+  <div class="flex h-full w-full">
+    <div class="h-full w-full p-4">
+      <FolderContentsError
+        v-if="$resources.folderContents.error"
+        :error="$resources.folderContents.error" />
 
-    <GridView
-      v-else-if="$store.state.view === 'grid'"
-      :folder-contents="$resources.folderContents.data"
-      :selected-entities="selectedEntities"
-      @entity-selected="(selected) => (selectedEntities = selected)"
-      @open-entity="(entity) => openEntity(entity)"
-      @show-entity-context="(event) => toggleEntityContext(event)"
-      @show-empty-entity-context="(event) => toggleEmptyContext(event)"
-      @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()">
-      <template #toolbar>
-        <DriveToolBar
-          :action-items="actionItems"
-          :column-headers="columnHeaders"
-          :show-info-button="showInfoButton" />
-      </template>
-      <template #placeholder>
-        <NoFilesSection />
-      </template>
-    </GridView>
+      <GridView
+        v-else-if="$store.state.view === 'grid'"
+        :folder-contents="$resources.folderContents.data"
+        :selected-entities="selectedEntities"
+        @entity-selected="(selected) => (selectedEntities = selected)"
+        @open-entity="(entity) => openEntity(entity)"
+        @show-entity-context="(event) => toggleEntityContext(event)"
+        @close-context-menu-event="closeContextMenu"
+        @fetch-folder-contents="() => $resources.folderContents.fetch()">
+        <template #toolbar>
+          <DriveToolBar
+            :action-items="actionItems"
+            :column-headers="columnHeaders"
+            :show-info-button="showInfoButton" />
+        </template>
+        <template #placeholder>
+          <NoFilesSection />
+        </template>
+      </GridView>
 
-    <ListView
-      v-else
-      :folder-contents="$resources.folderContents.data"
-      :selected-entities="selectedEntities"
-      @entity-selected="(selected) => (selectedEntities = selected)"
-      @open-entity="(entity) => openEntity(entity)"
-      @show-entity-context="(event) => toggleEntityContext(event)"
-      @show-empty-entity-context="(event) => toggleEmptyContext(event)"
-      @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()">
-      <template #toolbar>
-        <DriveToolBar
-          :action-items="actionItems"
-          :column-headers="columnHeaders"
-          :show-info-button="showInfoButton" />
-      </template>
-      <template #placeholder>
-        <NoFilesSection />
-      </template>
-    </ListView>
+      <ListView
+        v-else
+        :folder-contents="$resources.folderContents.data"
+        :selected-entities="selectedEntities"
+        @entity-selected="(selected) => (selectedEntities = selected)"
+        @open-entity="(entity) => openEntity(entity)"
+        @show-entity-context="(event) => toggleEntityContext(event)"
+        @close-context-menu-event="closeContextMenu"
+        @fetch-folder-contents="() => $resources.folderContents.fetch()">
+        <template #toolbar>
+          <DriveToolBar
+            :action-items="actionItems"
+            :column-headers="columnHeaders"
+            :show-info-button="showInfoButton" />
+        </template>
+        <template #placeholder>
+          <NoFilesSection />
+        </template>
+      </ListView>
 
-    <FilePreview
-      v-if="showPreview"
-      :preview-entity="previewEntity"
-      @hide="hidePreview" />
-    <EntityContextMenu
-      v-if="showEntityContext"
-      v-on-outside-click="closeContextMenu"
-      :entity-name="selectedEntities[0].name"
-      :action-items="actionItems"
-      :entity-context="entityContext"
-      :close="closeContextMenu" />
-    <EmptyEntityContextMenu
-      v-if="showEmptyEntityContextMenu"
-      v-on-outside-click="closeContextMenu"
-      :action-items="emptyActionItems"
-      :entity-context="entityContext"
-      :close="closeContextMenu" />
-    <NewFolderDialog
-      v-model="showNewFolderDialog"
-      :parent="$route.params.entityName"
-      @success="
-        () => {
-          emitter.emit('fetchFolderContents');
-          showNewFolderDialog = false;
-        }
-      " />
-    <RenameDialog
-      v-model="showRenameDialog"
-      :entity="selectedEntities[0]"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showRenameDialog = false;
-          selectedEntities = [];
-        }
-      " />
-    <GeneralDialog
-      v-model="showRemoveDialog"
-      :entities="selectedEntities"
-      :for="'remove'"
-      @success="
-        () => {
-          $resources.folderContents.fetch();
-          showRemoveDialog = false;
-          selectedEntities = [];
-        }
-      " />
-    <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
-      :entity-name="shareName"
-      @success="$resources.folderContents.fetch()" />
+      <FilePreview
+        v-if="showPreview"
+        :preview-entity="previewEntity"
+        @hide="hidePreview" />
+      <EntityContextMenu
+        v-if="showEntityContext"
+        v-on-outside-click="closeContextMenu"
+        :entity-name="selectedEntities[0].name"
+        :action-items="actionItems"
+        :entity-context="entityContext"
+        :close="closeContextMenu" />
+      <EmptyEntityContextMenu
+        v-if="showEmptyEntityContextMenu"
+        v-on-outside-click="closeContextMenu"
+        :action-items="emptyActionItems"
+        :entity-context="entityContext"
+        :close="closeContextMenu" />
+      <NewFolderDialog
+        v-model="showNewFolderDialog"
+        :parent="$route.params.entityName"
+        @success="
+          () => {
+            emitter.emit('fetchFolderContents');
+            showNewFolderDialog = false;
+          }
+        " />
+      <RenameDialog
+        v-model="showRenameDialog"
+        :entity="selectedEntities[0]"
+        @success="
+          () => {
+            $resources.folderContents.fetch();
+            showRenameDialog = false;
+            selectedEntities = [];
+          }
+        " />
+    </div>
+    <InfoSidebar class="border-l" />
   </div>
 </template>
 
@@ -119,6 +105,8 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload";
+import Navbar from "@/components/Navbar.vue";
+import InfoSidebar from "@/components/InfoSidebar.vue";
 
 export default {
   name: "Folder",
@@ -130,11 +118,11 @@ export default {
     FilePreview,
     NewFolderDialog,
     RenameDialog,
-    ShareDialog,
-    GeneralDialog,
     FolderContentsError,
     EntityContextMenu,
     EmptyEntityContextMenu,
+    Navbar,
+    InfoSidebar,
   },
   props: {
     entityName: {
@@ -156,6 +144,7 @@ export default {
     entityContext: {},
     breadcrumbs: [{ label: "Home", route: "/" }],
     isSharedFolder: false,
+    entity: null,
   }),
   computed: {
     userId() {
@@ -217,7 +206,7 @@ export default {
         {
           label: "Download",
           icon: "download",
-          handler: () => {
+          onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
@@ -234,7 +223,7 @@ export default {
         {
           label: "Download as ZIP",
           icon: "download",
-          handler: () => {
+          onClick: () => {
             if (this.selectedEntities.length > 1) {
               let selected_entities = this.selectedEntities;
               selectedEntitiesDownload(selected_entities);
@@ -264,23 +253,9 @@ export default {
           },
         },
         {
-          label: "Share",
-          icon: "share-2",
-          handler: () => {
-            this.showShareDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              (this.selectedEntities.length === 1 ||
-                (this.entityName && !this.selectedEntities.length)) &&
-              !this.isSharedFolder
-            );
-          },
-        },
-        {
           label: "View details",
           icon: "eye",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", true);
           },
           isEnabled: () => {
@@ -292,7 +267,7 @@ export default {
         {
           label: "Hide details",
           icon: "eye-off",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", false);
           },
           isEnabled: () => {
@@ -302,7 +277,7 @@ export default {
         {
           label: "Rename",
           icon: "edit",
-          handler: () => {
+          onClick: () => {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
@@ -310,115 +285,6 @@ export default {
               this.selectedEntities.length === 1 &&
               (this.selectedEntities[0].write ||
                 this.selectedEntities[0].owner === "me")
-            );
-          },
-        },
-        {
-          label: "Cut",
-          icon: "scissors",
-          handler: () => {
-            this.$store.commit("setPasteData", {
-              entities: this.selectedEntities.map((x) => x.name),
-              action: "cut",
-            });
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me" || x.write)
-            );
-          },
-        },
-        {
-          label: "Copy",
-          icon: "copy",
-          handler: () => {
-            this.$store.commit("setPasteData", {
-              entities: this.selectedEntities.map((x) => x.name),
-              action: "copy",
-            });
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length > 0;
-          },
-        },
-        {
-          label: "Paste into Folder",
-          icon: "clipboard",
-          handler: async () => {
-            this.pasteEntities(this.selectedEntities[0].name);
-          },
-          isEnabled: () => {
-            return (
-              this.$store.state.pasteData.entities.length &&
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "me")
-            );
-          },
-        },
-        {
-          label: "Add to Favourites",
-          icon: "star",
-          handler: () => {
-            this.$resources.toggleFavourite.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => !x.is_favourite)
-            );
-          },
-        },
-        {
-          label: "Remove from Favourites",
-          icon: "x-circle",
-          handler: () => {
-            this.$resources.toggleFavourite.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.is_favourite)
-            );
-          },
-        },
-        {
-          label: "Change Color",
-          icon: "droplet",
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group
-            );
-          },
-        },
-        {
-          label: "Remove",
-          icon: "trash-2",
-          handler: () => {
-            this.$resources.removeEntity.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner != "me") &&
-              (this.selectedEntities.every((x) => x.write) ||
-                !this.isSharedFolder)
-            );
-          },
-        },
-        {
-          label: "Move to Trash",
-          icon: "trash-2",
-          handler: () => {
-            this.showRemoveDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me")
             );
           },
         },
@@ -461,6 +327,13 @@ export default {
   },
 
   async mounted() {
+    /* let breadcrumbs = [];
+    console.log(this.entity.title)
+    breadcrumbs.push({
+      label: this.entity.title,
+      route: `/s/file/${this.entityName}`,
+    });
+    this.$store.commit("setCurrentBreadcrumbs", breadcrumbs); */
     this.pasteListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -498,11 +371,6 @@ export default {
       false
     );
 
-    await this.$resources.folderAccess.fetch();
-    this.$store.commit(
-      "setHasWriteAccess",
-      !!this.$resources.folderAccess.data?.write
-    );
     let componentContext = this;
     this.emitter.on("fetchFolderContents", () => {
       componentContext.$resources.folderContents.fetch();
@@ -521,28 +389,17 @@ export default {
       if (entity.is_group) {
         this.selectedEntities = [];
         this.$router.push({
-          name: "Folder",
+          name: "FolderShare",
           params: { entityName: entity.name },
         });
       } else {
+        this.$router.push({
+          name: "FileShare",
+          params: { entityName: entity.name },
+        });
         this.previewEntity = entity;
         this.showPreview = true;
       }
-    },
-
-    async pasteEntities(newParent = null) {
-      const method =
-        this.$store.state.pasteData.action === "cut" ? "move" : "copy";
-      for (let i = 0; i < this.$store.state.pasteData.entities.length; i++) {
-        await this.$resources.pasteEntity.submit({
-          method,
-          entity_name: this.$store.state.pasteData.entities[i],
-          new_parent: newParent,
-        });
-      }
-      this.selectedEntities = [];
-      this.$store.commit("setPasteData", { entities: [], action: null });
-      this.$resources.folderContents.fetch();
     },
 
     hidePreview() {
@@ -559,18 +416,6 @@ export default {
         this.entityContext = event;
       }
     },
-    toggleEmptyContext(event) {
-      if (!event) {
-        this.showEntityContext = false;
-        this.showEmptyEntityContextMenu = false;
-      } else if (this.selectedEntities.length === 0) {
-        this.selectedEntities = [];
-        this.hidePreview();
-        this.showEntityContext = false;
-        this.showEmptyEntityContextMenu = true;
-        this.entityContext = event;
-      }
-    },
     closeContextMenu() {
       this.showEntityContext = false;
       this.showEmptyEntityContextMenu = false;
@@ -579,64 +424,29 @@ export default {
     triggerFetchFolderEmit() {
       this.emitter.emit("fetchFolderContents");
     },
-    async newDocument() {
-      await this.$resources.createDocument.submit({
-        title: "Untitled Document",
-        content: null,
-        parent: this.$store.state.currentFolderID,
-      });
-      this.$router.push({
-        name: "Document",
-        params: { entityName: this.previewEntity.name },
-      });
-    },
   },
 
   resources: {
-    folderAccess() {
+    currentFolder() {
       return {
-        url: "drive.api.permissions.get_user_access",
-        params: { entity_name: this.entityName },
-      };
-    },
-
-    // createFolder() {
-    //   return {
-    //     url: "drive.api.files.create_folder",
-    //     params: {
-    //       title: this.folderName,
-    //       parent: this.parent,
-    //     },
-    //     validate(params) {
-    //       if (!params?.title) {
-    //         return "Folder name is required";
-    //       }
-    //     },
-    //     onSuccess() {
-    //       this.$resources.folderContents.fetch();
-    //     },
-    //     onError(error) {
-    //       if (error.messages) {
-    //         this.errorMessage = error.messages.join("\n");
-    //       } else {
-    //         this.errorMessage = error.message;
-    //       }
-    //     },
-    //   };
-    // },
-
-    pasteEntity() {
-      return {
-        url: "drive.api.files.call_controller_method",
-        method: "POST",
-        validate(params) {
-          if (!params?.new_parent) {
-            return "New parent is required";
-          }
+        url: "drive.api.permissions.get_file_with_permissions",
+        params: {
+          entity_name: this.entityName,
         },
+        onSuccess(data) {
+          data.size_in_bytes = data.file_size;
+          data.file_size = data.is_group ? "-" : formatSize(data.file_size);
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          console.log(data);
+          this.entity = data;
+        },
+        onError(error) {
+          console.log(error);
+        },
+        auto: true,
       };
     },
-
     folderContents() {
       return {
         url: "drive.api.files.list_folder_contents",
@@ -660,112 +470,6 @@ export default {
           });
         },
         auto: true,
-      };
-    },
-
-    pathEntities() {
-      return {
-        url: "drive.api.files.get_entities_in_path",
-        // cache: ['pathEntities', this.entityName],
-        params: {
-          entity_name: this.entityName,
-        },
-        onSuccess(data) {
-          this.isSharedFolder = data.is_shared;
-          let breadcrumbs = [];
-          if (this.$store.state.currentBreadcrumbs[0].route === "/") {
-            breadcrumbs.push({
-              label: "Home",
-              route: "/",
-            });
-          }
-          if (this.$store.state.currentBreadcrumbs[0].route === "/shared") {
-            breadcrumbs.push({
-              label: "Shared With Me",
-              route: "/shared",
-            });
-          }
-          if (this.$store.state.currentBreadcrumbs[0].route === "/favourites") {
-            breadcrumbs.push({
-              label: "Favourites",
-              route: "/favourites",
-            });
-          }
-          data.entities.forEach((entity, index) => {
-            if (localStorage.getItem("HomeFolderID") !== entity.name) {
-              /* Skip adding `Username's Drive` backend id to the breadcrumbs */
-              breadcrumbs.push({
-                label: entity.title,
-                route: `/folder/${entity.name}`,
-              });
-            }
-          });
-          if (breadcrumbs.length > 4) {
-            breadcrumbs.splice(1, breadcrumbs.length - 4, {
-              label: "...",
-              route: "",
-            });
-          }
-          this.breadcrumbs = breadcrumbs;
-          this.$store.commit("setCurrentBreadcrumbs", breadcrumbs);
-        },
-        auto: Boolean(this.entityName),
-      };
-    },
-
-    toggleFavourite() {
-      return {
-        url: "drive.api.files.add_or_remove_favourites",
-        params: {
-          entity_names: JSON.stringify(
-            this.selectedEntities?.map((entity) => entity.name)
-          ),
-        },
-        onSuccess() {
-          this.$resources.folderContents.fetch();
-          this.selectedEntities = [];
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
-      };
-    },
-
-    createDocument() {
-      return {
-        url: "drive.api.files.create_document_entity",
-        onSuccess(data) {
-          data.modified = formatDate(data.modified);
-          data.creation = formatDate(data.creation);
-          this.$store.commit("setEntityInfo", [data]);
-          this.previewEntity = data;
-        },
-        onError(data) {
-          console.log(data);
-        },
-        auto: false,
-      };
-    },
-
-    removeEntity() {
-      return {
-        url: "drive.api.files.unshare_entities",
-        params: {
-          entity_names: JSON.stringify(
-            this.selectedEntities.map((entity) => entity.name)
-          ),
-          move: true,
-        },
-        onSuccess() {
-          this.$resources.folderContents.fetch();
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
       };
     },
   },

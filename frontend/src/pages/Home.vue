@@ -198,7 +198,7 @@ export default {
         {
           label: "Download",
           icon: "download",
-          handler: () => {
+          onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
@@ -215,7 +215,7 @@ export default {
         {
           label: "Download as ZIP",
           icon: "download",
-          handler: () => {
+          onClick: () => {
             if (this.selectedEntities.length > 1) {
               let selected_entities = this.selectedEntities;
               selectedEntitiesDownload(selected_entities);
@@ -247,7 +247,7 @@ export default {
         {
           label: "Share",
           icon: "share-2",
-          handler: () => {
+          onClick: () => {
             this.showShareDialog = true;
           },
           isEnabled: () => {
@@ -257,7 +257,7 @@ export default {
         {
           label: "View details",
           icon: "eye",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", true);
           },
           isEnabled: () => {
@@ -269,7 +269,7 @@ export default {
         {
           label: "Hide details",
           icon: "eye-off",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", false);
           },
           isEnabled: () => {
@@ -279,7 +279,7 @@ export default {
         {
           label: "Rename",
           icon: "edit",
-          handler: () => {
+          onClick: () => {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
@@ -289,7 +289,7 @@ export default {
         {
           label: "Cut",
           icon: "scissors",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setPasteData", {
               entities: this.selectedEntities.map((x) => x.name),
               action: "cut",
@@ -302,7 +302,7 @@ export default {
         {
           label: "Copy",
           icon: "copy",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setPasteData", {
               entities: this.selectedEntities.map((x) => x.name),
               action: "copy",
@@ -315,7 +315,7 @@ export default {
         {
           label: "Paste into Folder",
           icon: "clipboard",
-          handler: async () => {
+          onClick: async () => {
             this.pasteEntities(this.selectedEntities[0].name);
           },
           isEnabled: () => {
@@ -329,7 +329,7 @@ export default {
         {
           label: "Add to Favourites",
           icon: "star",
-          handler: () => {
+          onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
           isEnabled: () => {
@@ -342,7 +342,7 @@ export default {
         {
           label: "Remove from Favourites",
           icon: "x-circle",
-          handler: () => {
+          onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
           isEnabled: () => {
@@ -365,7 +365,7 @@ export default {
         {
           label: "Move to Trash",
           icon: "trash-2",
-          handler: () => {
+          onClick: () => {
             this.showRemoveDialog = true;
           },
           isEnabled: () => {
@@ -461,6 +461,10 @@ export default {
           params: { entityName: entity.name },
         });
       } else {
+        this.$router.push({
+          name: "File",
+          params: { entityName: entity.name },
+        });
         this.previewEntity = entity;
         this.showPreview = true;
       }

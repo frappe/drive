@@ -7,8 +7,8 @@
     class="p-8 z-10 bg-gray-900 text-white rounded-md text-neutral-100 text-xl text-center font-medium">
     {{ preview.error }}
   </div>
-  <div class="absolute max-h-[65vh] max-w-[65vw] z-10">
-    <video-player
+  <div>
+    <!--     <video-player
       class="video-js vjs-fluid"
       type="video/mp4"
       v-if="
@@ -17,18 +17,25 @@
         !this.preview.error &&
         !this.preview.loading
       "
-      :options="videoOptions" />
+      :options="videoOptions" /> -->
+    <video
+      v-if="
+        isVideo &&
+        videoOptions.sources[0].src &&
+        !preview.error &&
+        !preview.loading
+      "
+      controls
+      type="video/mp4"
+      :src="videoOptions.sources[0].src"></video>
   </div>
-  <img
-    v-if="isImage"
-    :src="preview.url"
-    class="object-contain max-h-[95vh] max-w-[80vw] z-10" />
+  <img v-if="isImage" :src="preview.url" class="object-contain max-h-[85vh]" />
   <div
     v-if="isTxt"
     id="container"
-    class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-auto">
+    class="w-full h-full overflow-auto p-4 text-base border">
     <pre
-      class="p-3 font-mono min-w-[80vw] min-h-[95vh] bg-white overflow-x-scroll overflow-y-scroll"
+      class="p-3 font-mono f-full h-full bg-white overflow-x-scroll overflow-y-scroll"
       >{{ textFileContent }}</pre
     >
   </div>
@@ -137,7 +144,7 @@ export default {
       if (!isSupportedType) {
         this.preview.error = "Previews are not supported for this file type";
         this.preview.loading = false;
-      } else if (this.previewEntity.size_in_bytes > 100 * 2048 * 2048) {
+      } else if (this.previewEntity.size_in_bytes > 1000 * 2048 * 2048) {
         // Size limit = 400
         this.preview.error = "File is too large to preview";
         this.preview.loading = false;

@@ -2,7 +2,7 @@
   <Popover transition="default">
     <template #target="{ togglePopover }">
       <Badge
-        class="flex items-center content-center font-medium"
+        class="text-xs font-medium px-2"
         variant="subtle"
         :theme="`${tag.color}`"
         :style="{
@@ -13,7 +13,7 @@
         <FeatherIcon
           v-if="entity.owner === 'me'"
           @click="$resources.removeTag.submit()"
-          class="h-3"
+          class="my-auto h-3 stroke-2"
           name="x" />
       </Badge>
     </template>

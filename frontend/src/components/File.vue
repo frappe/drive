@@ -3,11 +3,9 @@
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid">
-    <span class="truncate text-sm font-medium mb-1">{{ this.title }}</span>
+    <span class="truncate text-sm font-medium mb-1">{{ title }}</span>
     <div class="truncate text-xs text-gray-600 flex mt-1 place-items-center">
-      <img
-        :src="getIconUrl(formatMimeType(this.mime_type))"
-        class="h-3.5 mr-1.5" />
+      <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
       <p>{{ getFileSubtitle() }}</p>
     </div>
   </div>

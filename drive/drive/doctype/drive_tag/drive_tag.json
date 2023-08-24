@@ -21,26 +21,13 @@
       "label": "Color"
     }
   ],
-  "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2023-03-10 22:04:21.826690",
+  "modified": "2023-08-23 17:37:06.183457",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Tag",
   "owner": "Administrator",
   "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    },
     {
       "create": 1,
       "delete": 1,

@@ -5,22 +5,24 @@
     @contextmenu.prevent="handleDefaultContext($event)">
     <!-- Main container with scroll -->
     <div class="h-full w-full flex flex-col">
-      <div
-        v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
-        class="flex h-full overflow-hidden">
+      <div v-if="isLoggedIn" class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
-        <div
-          v-if="showSidebar"
-          class="px-2 border-r w-[220px] bg-gray-50 hidden md:py-2 md:block">
+        <div v-if="showSidebar" class="p-2 border-r w-[280px] bg-gray-50">
           <Sidebar />
         </div>
         <div class="h-full w-full overflow-hidden">
           <Navbar
-            v-if="(isLoggedIn && !isHybridRoute) || $route.meta.documentPage"
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
           <div class="flex w-full h-full overflow-hidden">
-            <div class="flex w-full h-[94%] overflow-y-scroll">
+            <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
+            <div
+              class="flex w-full h-[calc(100vh-52px)]"
+              :class="
+                $route.meta.documentPage
+                  ? ' overflow-y-hidden'
+                  : 'overflow-y-scroll'
+              ">
               <router-view v-slot="{ Component }">
                 <component :is="Component" ref="currentPage" />
               </router-view>
@@ -35,6 +37,7 @@
   </div>
   <div id="dropzoneElement" class="hidden" />
   <UploadTracker v-if="showUploadTracker" />
+  <Toasts />
 </template>
 <script>
 import Dropzone from "dropzone";
@@ -45,6 +48,7 @@ import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
 import { Button, FeatherIcon } from "frappe-ui";
 import DocInfoSidebar from "./components/DocInfoSidebar.vue";
+import { Toasts } from "frappe-ui";
 
 export default {
   name: "App",
@@ -57,6 +61,7 @@ export default {
     Button,
     FeatherIcon,
     DocInfoSidebar,
+    Toasts,
   },
   data() {
     return {

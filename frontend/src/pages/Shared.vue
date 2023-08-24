@@ -119,7 +119,7 @@ export default {
     showEntityContext: false,
     entityContext: {},
     selectedEntities: [],
-    breadcrumbs: [{ label: "Shared With Me", route: "/shared" }],
+    breadcrumbs: [{ label: "Shared", route: "/shared" }],
   }),
 
   computed: {
@@ -153,19 +153,19 @@ export default {
             }
           },
         },
-        // {
-        //   label: 'Share',
-        //   icon: 'share-2',
-        //   handler: () => {
-        //     this.showShareDialog = true;
-        //   },
-        //   isEnabled: () => {
-        //     return (
-        //       this.selectedEntities.length === 1 &&
-        //       this.selectedEntities[0].write
-        //     );
-        //   },
-        // },
+        {
+          label: "Share",
+          icon: "share-2",
+          handler: () => {
+            this.showShareDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].write
+            );
+          },
+        },
         {
           label: "View details",
           icon: "eye",
@@ -316,6 +316,10 @@ export default {
           params: { entityName: entity.name },
         });
       } else {
+        this.$router.push({
+          name: "File",
+          params: { entityName: entity.name },
+        });
         this.previewEntity = entity;
         this.showPreview = true;
       }

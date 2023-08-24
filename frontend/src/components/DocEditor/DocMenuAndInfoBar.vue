@@ -34,7 +34,10 @@
             <div
               v-if="tab === 0"
               class="space-y-7 h-full flex-auto flex flex-col z-0">
-              <span class="font-medium text-lg">Doc Info</span>
+              <div class="flex items-center">
+                <FeatherIcon name="alert-circle" class="h-4 mr-2 stroke-2" />
+                <span class="font-medium text-lg">Doc Info</span>
+              </div>
               <div class="flex text-base">
                 <div class="w-1/2 text-gray-600 space-y-2">
                   <div>Words</div>
@@ -54,7 +57,10 @@
               <div v-if="entity.owner === 'me'">
                 <div class="text-lg font-medium my-4">Manage Access</div>
                 <div class="flex flex-row">
-                  <Button class="h-7" @click="showShareDialog = true">
+                  <Button
+                    icon-left="share-2"
+                    class="h-7"
+                    @click="showShareDialog = true">
                     Share
                   </Button>
                 </div>
@@ -123,9 +129,9 @@
                   <div>{{ entity.owner }}</div>
                 </div>
               </div>
-              <div class="text-gray-600 text-base">
+              <!-- <div class="text-gray-600 text-base">
                 Viewers can download this file.
-              </div>
+              </div> -->
             </div>
           </div>
           <div
@@ -977,18 +983,16 @@
       class="mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-200'
+          : ' hover:bg-gray-50',
       ]"
       variant="minimal">
       <FeatherIcon
         name="alert-circle"
         :class="[
-          tab === 0 && showInfoSidebar
-            ? 'text-black-overlay-700'
-            : 'text-gray-600',
+          tab === 0 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
-        class="stroke-2 text-gray-600 w-full h-full" />
+        class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
       v-if="$route.meta.documentPage"
@@ -996,56 +1000,50 @@
       class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-200'
+          : ' hover:bg-gray-50',
       ]"
       variant="minimal">
       <FeatherIcon
         name="message-circle"
         :class="[
-          tab === 1 && showInfoSidebar
-            ? 'text-black-overlay-700'
-            : 'text-gray-600',
+          tab === 1 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
-        class="stroke-2 text-gray-600 w-full h-full" />
+        class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
       v-if="$route.meta.documentPage"
       class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 2 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-200'
+          : ' hover:bg-gray-50',
       ]"
       variant="minimal"
       @click="tab = 2">
       <FeatherIcon
         name="type"
         :class="[
-          tab === 2 && showInfoSidebar
-            ? 'text-black-overlay-700'
-            : 'text-gray-600',
+          tab === 2 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
-        class="stroke-2 text-gray-600 w-full h-full" />
+        class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
       v-if="$route.meta.documentPage"
       class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 3 && showInfoSidebar
-          ? 'text-black bg-gray-300'
-          : ' hover:bg-gray-100',
+          ? 'text-black bg-gray-200'
+          : ' hover:bg-gray-50',
       ]"
       variant="minimal"
       @click="tab = 3">
       <FeatherIcon
         name="plus"
         :class="[
-          tab === 3 && showInfoSidebar
-            ? 'text-black-overlay-700'
-            : 'text-gray-600',
+          tab === 3 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
-        class="stroke-2 text-gray-600 w-full h-full" />
+        class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
   </div>
 </template>

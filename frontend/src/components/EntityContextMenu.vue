@@ -10,8 +10,8 @@
       class="text-sm"
       @click="
         () => {
-          if (item.handler) {
-            item.handler();
+          if (item.onClick) {
+            item.onClick();
             close();
           }
         }

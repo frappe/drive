@@ -146,10 +146,9 @@
       "options": "Drive Document"
     }
   ],
-  "index_web_pages_for_search": 1,
   "is_tree": 1,
   "links": [],
-  "modified": "2023-04-18 12:04:50.424640",
+  "modified": "2023-08-23 17:36:56.636519",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",
@@ -157,19 +156,6 @@
   "nsm_parent_field": "parent_drive_entity",
   "owner": "Administrator",
   "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "if_owner": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "All",
-      "share": 1,
-      "write": 1
-    },
     {
       "create": 1,
       "delete": 1,
