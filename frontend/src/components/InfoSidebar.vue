@@ -41,7 +41,7 @@
         </div>
         <div v-if="tab === 0" class="h-full border-b pb-12">
           <div
-            class="p-4 border-b z-10 sticky top-0 bg-white"
+            class="p-4 z-10 sticky top-0 bg-white"
             :class="
               tab === 0
                 ? 'flex-auto'
@@ -54,6 +54,7 @@
             </div>
           </div>
           <div
+            v-if="entity.mime_type?.startsWith('image') && showInfoSidebar"
             class="relative p-4 min-h-full flex-auto flex flex-col overflow-y-auto">
             <FileRender
               v-if="entity.mime_type?.startsWith('image') && showInfoSidebar"
@@ -63,7 +64,10 @@
             <div v-if="entity.owner === 'me'">
               <div class="text-lg font-medium mb-2">Manage Access</div>
               <div class="flex flex-row">
-                <Button class="h-7" @click="showShareDialog = true">
+                <Button
+                  icon-left="share-2"
+                  class="h-7"
+                  @click="showShareDialog = true">
                   Share
                 </Button>
               </div>
@@ -84,11 +88,11 @@
                   " />
                 <Badge
                   v-if="!addTag && entity.owner === 'me'"
-                  class="flex items-center content-center text-sm cursor-pointer"
+                  class="flex items-center content-center cursor-pointer pl-2 pr-4 font-medium text-xs"
                   @click="addTag = true">
                   <FeatherIcon
                     v-if="entity.owner === 'me'"
-                    class="h-4 mr-1"
+                    class="h-3 stroke-2"
                     name="plus" />
                   Add tag
                 </Badge>
@@ -125,15 +129,15 @@
                 <div>{{ entity.owner }}</div>
               </div>
             </div>
-            <div class="text-gray-600 text-base">
+            <!-- <div class="text-gray-600 text-base">
               Viewers can download this file.
-            </div>
+            </div> -->
           </div>
         </div>
         <div v-if="tab === 1" class="h-full pb-12">
           <div
             v-if="tab === 1"
-            class="z-10 p-4 border-b sticky top-0 bg-white"
+            class="z-10 p-4 sticky top-0 bg-white"
             :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
             @click="tab = 1">
             <div class="flex items-center">
@@ -210,7 +214,7 @@
       class="mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
-          ? 'text-black bg-gray-100'
+          ? 'text-black bg-gray-200'
           : ' hover:bg-gray-50',
       ]"
       variant="minimal"
@@ -218,17 +222,15 @@
       <FeatherIcon
         name="alert-circle"
         :class="[
-          tab === 0 && showInfoSidebar
-            ? 'text-black-overlay-700'
-            : 'text-gray-600',
+          tab === 0 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
-        class="text-gray-600 w-full h-full stroke-2" />
+        class="text-gray-600 w-full h-full stroke-1.5" />
     </Button>
     <Button
       class="text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
-          ? 'text-black bg-gray-100'
+          ? 'text-black bg-gray-200'
           : ' hover:bg-gray-50',
       ]"
       variant="minimal"
@@ -236,11 +238,9 @@
       <FeatherIcon
         name="message-circle"
         :class="[
-          tab === 1 && showInfoSidebar
-            ? 'text-black-overlay-700'
-            : 'text-gray-600',
+          tab === 1 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
-        class="text-gray-600 w-full h-full stroke-2" />
+        class="text-gray-600 w-full h-full stroke-1.5" />
     </Button>
   </div>
 
