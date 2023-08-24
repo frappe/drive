@@ -79,7 +79,7 @@
                   <template #suffix>
                     <ChevronsUpDown class="w-4" />
                   </template>
-                  {{ generalAccess.read ? "Can view" : "Can edit" }}
+                  {{ generalAccess.write ? "Can edit" : "Can view" }}
                 </Button>
               </template>
               <template #body-main="{ togglePopover }">
@@ -145,7 +145,7 @@
         :message="errorMessage" />
 
       <div class="flex mt-5 text-base text-gray-600">Users with access</div>
-      <div class="flex flex-col">
+      <div v-if="!$resources.entity.loading" class="flex flex-col">
         <div
           v-for="user in $resources.sharedWith.data"
           :key="user.user"
@@ -486,6 +486,7 @@ export default {
         },
         onSuccess(data) {
           this.entity = data;
+          console.log(this.entity);
           this.allowComments = !!data.allow_comments;
           this.allowDownload = !!data.allow_download;
         },

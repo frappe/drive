@@ -1,9 +1,6 @@
 <template class="bg-gray-200">
   <UserDropdown />
-  <div
-    ondragstart="return false;"
-    ondrop="return false;"
-    class="flex flex-col justify-between">
+  <div ondragstart="return false;" ondrop="return false;" class="my-2">
     <router-link
       v-for="item in sidebarItems"
       :key="item.label"
@@ -14,9 +11,11 @@
           item.highlight() ? 'bg-white shadow-sm ' : ' hover:bg-gray-100',
         ]"
         :href="href"
-        class="text-gray-700 text-sm w-full mb-0.5 h-7 px-2 py-1 gap-3 rounded focus:outline-none flex items-center"
+        class="flex items-center text-gray-800 text-sm w-full mb-0.5 h-7 px-3 py-1 gap-3 rounded focus:outline-none transition"
         @click="navigate && $emit('toggleMobileSidebar')">
-        <FeatherIcon :name="item.icon" class="text-gray-600 stroke-2 w-4 h-4" />
+        <FeatherIcon
+          :name="item.icon"
+          class="stroke-1.5 w-4 h-4 text-gray-800" />
         {{ item.label }}
       </a>
     </router-link>
@@ -72,13 +71,11 @@ export default {
           },
         },
         {
-          label: "Shared With Me",
+          label: "Shared",
           route: "/shared",
-          icon: "share-2",
+          icon: "users",
           highlight: () => {
-            return (
-              this.$store.state.currentBreadcrumbs[0].label === "Shared With Me"
-            );
+            return this.$store.state.currentBreadcrumbs[0].label === "Shared";
           },
         },
         {

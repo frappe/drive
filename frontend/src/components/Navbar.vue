@@ -5,9 +5,7 @@
     class="bg-white top-0 border-b w-full">
     <div
       class="mx-auto pl-4 py-2 pr-2 h-12 z-10 flex items-center justify-between">
-      <Breadcrumbs
-        :breadcrumb-links="currentBreadcrumbs"
-        class="hidden md:block" />
+      <Breadcrumbs class="hidden md:block" />
       <div class="flpex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
@@ -193,9 +191,6 @@ export default {
     },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
-    },
-    currentBreadcrumbs() {
-      return this.$store.state.currentBreadcrumbs;
     },
   },
   methods: {
