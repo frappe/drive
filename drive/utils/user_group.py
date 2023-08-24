@@ -7,7 +7,6 @@ def get_name_of_all_user_groups():
         user_groups = frappe.get_all("User Group")
         return {"user_groups": user_groups}
     except Exception as e:
-        frappe.log_error(title="Fetching User Groups Failed", message=str(e))
         return {"message": "Failed to fetch user groups.", "error": str(e)}
 
 
