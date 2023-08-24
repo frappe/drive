@@ -4,38 +4,54 @@
       v-for="(item, index) in breadcrumbLinks"
       :key="item.label"
       v-slot="{ href, navigate }"
-      class="text-lg font-medium"
-      :class="isLastItem(index) ? 'text-gray-900' : 'text-gray-600'"
+      class="text-lg font-medium text-gray-600"
       :to="item.route">
-      <a v-if="documentRoute(item)" :href="href" @click="navigate">
+      <a
+        v-if="!isLastItem(index)"
+        :class="[
+          breadcrumbLinks.length === 1 || isLastItem(index)
+            ? 'text-black'
+            : ' hover:text-gray-800',
+        ]"
+        :href="href"
+        @click="navigate">
         {{ item.label }}
-        <span v-if="!isLastItem(index)" class="pr-1">{{ "/" }}</span>
+        <span v-if="breadcrumbLinks.length > 1" class="text-gray-600 pr-1">
+          {{ "/" }}
+        </span>
       </a>
-      <input
-        v-else="documentRoute(item)"
-        v-model="title"
-        :placeholder="item.label"
-        class="p-0 border-none text-lg font-medium focus:form-input focus:outline-0 focus:border-gray-200 focus:text-lg focus:font-medium focus:pl-1 placeholder-gray-500"
-        @input="$resources.updateDocumentTitle.submit()" />
+      <span v-else class="text-black" @click="showRenameDialog = true">
+        {{ currentTitle }}
+      </span>
     </router-link>
   </div>
+  <RenameDialog
+    v-model="showRenameDialog"
+    :entity="{
+      name: currentEntityName,
+      title: currentTitle,
+      is_group: $route.name === 'Folder' ? 1 : 0,
+    }"
+    @success="
+      () => {
+        showRenameDialog = false;
+        $resources.getUpdatedEntityTitle.fetch();
+      }
+    " />
 </template>
 <script>
 import { useTitle } from "@vueuse/core";
+import RenameDialog from "@/components/RenameDialog.vue";
 
 export default {
   name: "Breadcrumbs",
+  components: { RenameDialog },
   data() {
     return {
       title: "",
       oldTitle: "",
+      showRenameDialog: false,
     };
-  },
-  props: {
-    breadcrumbLinks: {
-      type: Array,
-      required: true,
-    },
   },
 
   watch: {
@@ -47,11 +63,17 @@ export default {
   },
 
   computed: {
-    titleVal() {
-      return this.title ? this.title : this.oldTitle;
+    breadcrumbLinks() {
+      return this.$store.state.currentBreadcrumbs;
     },
-    currentTitle() {
-      return this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
+    currentTitle: {
+      get() {
+        return this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
+      },
+      set(newValue) {
+        return (this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label =
+          newValue);
+      },
     },
     currentRoute() {
       return this.breadcrumbLinks[this.breadcrumbLinks.length - 1].route;
@@ -60,46 +82,23 @@ export default {
       return this.currentRoute.split("/")[2];
     },
   },
-  updated() {
-    this.title = this.currentTitle;
-    this.oldTitle = this.currentTitle;
-  },
   methods: {
-    documentRoute(item) {
-      return !item.route.startsWith("/document");
-    },
     isLastItem(index) {
-      return index === this.breadcrumbLinks.length - 1;
+      return this.breadcrumbLinks.length > 1
+        ? index === this.breadcrumbLinks.length - 1
+        : false;
     },
   },
   resources: {
-    /*     updateDocumentTitle() {
+    getUpdatedEntityTitle() {
       return {
-        url: "drive.api.files.rename_doc_entity",
-        debounce: 250,
+        url: "drive.api.files.get_entity",
         params: {
           entity_name: this.currentEntityName,
-          title: this.titleVal,
-        },
-        onError(data) {
-          console.log(data);
-        },
-        auto: false,
-      };
-    }, */
-    updateDocumentTitle() {
-      return {
-        url: "drive.api.files.call_controller_method",
-        debounce: 250,
-        params: {
-          method: "rename",
-          entity_name: this.currentEntityName,
-          new_title: this.titleVal,
+          fields: "title",
         },
         onSuccess(data) {
-          this.newName = "";
-          this.errorMessage = "";
-          this.$emit("success", data);
+          this.currentTitle = data.title;
         },
         onError(error) {
           if (error.messages) {
