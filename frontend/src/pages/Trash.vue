@@ -126,7 +126,7 @@ export default {
         {
           label: "Empty Trash",
           icon: "trash-2",
-          handler: () => {
+          onClick: () => {
             this.showDeleteDialog = true;
           },
           isEnabled: () => {
@@ -139,7 +139,7 @@ export default {
         {
           label: "Restore",
           icon: "refresh-ccw",
-          handler: () => {
+          onClick: () => {
             this.showRestoreDialog = true;
           },
           isEnabled: () => {
@@ -149,7 +149,7 @@ export default {
         {
           label: "Delete Forever",
           icon: "trash-2",
-          handler: () => {
+          onClick: () => {
             this.showDeleteDialog = true;
           },
           isEnabled: () => {

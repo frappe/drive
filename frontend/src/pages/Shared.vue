@@ -119,7 +119,7 @@ export default {
     showEntityContext: false,
     entityContext: {},
     selectedEntities: [],
-    breadcrumbs: [{ label: "Shared With Me", route: "/shared" }],
+    breadcrumbs: [{ label: "Shared", route: "/shared" }],
   }),
 
   computed: {
