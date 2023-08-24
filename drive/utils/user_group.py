@@ -5,7 +5,6 @@ import frappe
 def create_user_group(group_name, members=[]):
     try:
         # Create a new User Group
-        group_name = str(group_name).lower()
         new_group = frappe.get_doc(
             {
                 "doctype": "User Group",
@@ -88,3 +87,38 @@ def add_users_to_group(group_name, user_emails=[]):
             }
     except Exception as e:
         return {"message": ("Failed to add users to the group."), "error": str(e)}
+
+
+
+@frappe.whitelist()
+def remove_users_from_group(group_name, user_emails=[]):
+    try:
+        # Get the User Group document
+        user_group = frappe.get_doc("User Group", group_name)
+        
+        # Remove specified users from the group
+        removed_users = []
+        existing_members = [member.user for member in user_group.user_group_members]
+        
+        for user_email in user_emails:
+            if user_email in existing_members:
+                user_group.user_group_members = [member for member in user_group.user_group_members if member.user != user_email]
+                removed_users.append(user_email)
+        
+        if removed_users:
+            user_group.save(ignore_permissions=True)
+            return {
+                "message": ("Users removed from the group successfully."),
+                "removed_users": removed_users,
+                "user_group": user_group.name
+            }
+        else:
+            return {
+                "message": ("No specified users were found in the group."),
+                "user_group": user_group.name
+            }
+    except Exception as e:
+        return {
+            "message": ("Failed to remove users from the group."),
+            "error": str(e)
+        }
