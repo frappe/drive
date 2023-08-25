@@ -43,7 +43,6 @@ def get_users_with_drive_user_role(txt=""):
 @frappe.whitelist()
 def get_all_users_on_site():
     try:
-
         has_rw_access = has_read_write_access_to_doctype(frappe.session.user, "User")
         if not has_rw_access:
             return {
@@ -72,7 +71,6 @@ def get_all_users_on_site():
 
 @frappe.whitelist()
 def add_drive_user_role(user_id):
-    
     has_rw_access = has_read_write_access_to_doctype(frappe.session.user, "User")
 
     if not has_rw_access:
@@ -97,16 +95,14 @@ def add_drive_user_role(user_id):
         }
 
     usr = frappe.get_doc("User", user_id)
-    
+
     usr.add_roles("Drive User")
 
     return {"status": "sucess", "message": "Drive User role has been sucessfully added"}
 
 
-
 @frappe.whitelist()
 def remove_drive_user_role(user_id):
-
     has_rw_access = has_read_write_access_to_doctype(frappe.session.user, "User")
 
     if not has_rw_access:
@@ -131,21 +127,23 @@ def remove_drive_user_role(user_id):
         }
 
     usr = frappe.get_doc("User", user_id)
-    
+
     usr.remove_roles("Drive User")
 
-    return {"status": "sucess", "message": "Drive User role has been sucessfully removed"}
-
+    return {
+        "status": "sucess",
+        "message": "Drive User role has been sucessfully removed",
+    }
 
 
 def has_read_write_access_to_doctype(user_id, doctype_name):
     """
     Check if a user has both read and write access to a DocType.
-    
+
     Args:
         user_id (str): The name of the user to check.
         doctype_name (str): The name of the DocType to check access for.
-        
+
     Returns:
         bool: True if the user has both read and write access to the DocType, False otherwise.
     """
@@ -154,6 +152,6 @@ def has_read_write_access_to_doctype(user_id, doctype_name):
             if frappe.has_permission(doctype_name, user=user_id, ptype="write"):
                 return True
     except frappe.PermissionError:
-        pass  
-    
+        pass
+
     return False
