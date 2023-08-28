@@ -83,22 +83,15 @@ def upload_file(fullpath=None, parent=None):
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
 
-    :param file: Request object containing uploaded chunks
+    :param fullpath: Full path of the uploaded file
     :param parent: Document-name of the parent folder. Defaults to the user directory
-    :param chunk_index: Index of chunk present in the current upload request
-    :param total_chunk_count: Total number of chunks for the file
-    :param chunk_byte_offset: Position in the file at which the current chunk starts
-    :param total_file_size: Total size of the file in bytes
     :raises PermissionError: If the user does not have write access to the specified parent folder
     :raises FileExistsError: If a file with the same name already exists in the specified parent folder
     :raises ValueError: If the size of the stored file does not match the specified filesize
-    :return: DriveEntity doc once entire file has been uploaded
+    :return: DriveEntity doc once the entire file has been uploaded
     """
-
-    file = frappe.request.files["file"]
     try:
         user_directory = get_user_directory()
-
     except FileNotFoundError:
         user_directory = create_user_directory()
 
@@ -113,19 +106,21 @@ def upload_file(fullpath=None, parent=None):
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
         frappe.throw(
-            "Cannot upload to this folder due to insufficient permissions",
-            frappe.PermissionError,
+            "Cannot upload due to insufficient permissions", frappe.PermissionError
         )
 
+    file = frappe.request.files["file"]
     title = get_new_title(file.filename, parent)
 
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
+
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
 
     if current_chunk == 0 and save_path.exists():
         frappe.throw(f"File '{title}' already exists", FileExistsError)
-    with open(save_path, "ab") as f:
+
+    with save_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
         f.write(file.stream.read())
 
@@ -133,45 +128,50 @@ def upload_file(fullpath=None, parent=None):
         file_size = save_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
             save_path.unlink()
-            frappe.throw(
-                "Size on disk does not match the specified filesize", ValueError
-            )
-        else:
-            mime_type, encoding = mimetypes.guess_type(save_path)
-            file_name, file_ext = os.path.splitext(title)
-            name = uuid.uuid4().hex
-            path = save_path.parent / f"{name}{save_path.suffix}"
-            save_path.rename(path)
-            drive_entity = frappe.get_doc(
-                {
-                    "doctype": "Drive Entity",
-                    "name": name,
-                    "title": title,
-                    "parent_drive_entity": parent,
-                    "path": path,
-                    "file_size": file_size,
-                    "file_ext": file_ext,
-                    "mime_type": mime_type,
-                }
-            )
-            drive_entity.flags.file_created = True
-            # frappe.local.rollback_observers.append(drive_entity)
-            drive_entity.insert()
-            if parent == user_directory.name:
-                drive_entity.share(frappe.session.user, write=1, share=1)
+            frappe.throw("Size on disk does not match specified filesize", ValueError)
 
-            if mime_type.startswith("image") or mime_type.startswith("video"):
-                frappe.enqueue(
-                    create_thumbnail,
-                    queue="default",
-                    timeout=None,
-                    now=True,
-                    # will set to false once reactivity in new UI is solved
-                    entity_name=name,
-                    path=path,
-                    mime_type=mime_type,
-                )
-            return drive_entity
+        mime_type, _ = mimetypes.guess_type(save_path)
+        file_name, file_ext = os.path.splitext(title)
+        name = uuid.uuid4().hex
+        path = save_path.parent / f"{name}{save_path.suffix}"
+        save_path.rename(path)
+
+        drive_entity = create_drive_entity(
+            name, title, parent, path, file_size, file_ext, mime_type
+        )
+
+        if parent == user_directory.name:
+            drive_entity.share(frappe.session.user, write=1, share=1)
+
+        if mime_type.startswith(("image", "video")):
+            frappe.enqueue(
+                create_thumbnail,
+                queue="default",
+                timeout=None,
+                now=True,
+                # will set to false once reactivity in new UI is solved
+                entity_name=name,
+                path=path,
+                mime_type=mime_type,
+            )
+        return drive_entity
+
+def create_drive_entity(name, title, parent, path, file_size, file_ext, mime_type):
+    drive_entity = frappe.get_doc(
+        {
+            "doctype": "Drive Entity",
+            "name": name,
+            "title": title,
+            "parent_drive_entity": parent,
+            "path": path,
+            "file_size": file_size,
+            "file_ext": file_ext,
+            "mime_type": mime_type,
+        }
+    )
+    drive_entity.flags.file_created = True
+    drive_entity.insert()
+    return drive_entity
 
 
 @frappe.whitelist()
