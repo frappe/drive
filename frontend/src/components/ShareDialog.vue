@@ -130,13 +130,11 @@
 
       <UserSearch
         @submit="
-          ({ user, write }) =>
+          (user) =>
             $resources.share.submit({
               method: 'share',
               entity_name: entityName,
-              user,
-              write,
-              share: 1,
+              user: user.email,
             })
         " />
       <ErrorMessage
@@ -471,9 +469,6 @@ export default {
         params: {
           entity_name: this.entityName,
         },
-        onSuccess(data) {
-          console.log(data);
-        },
         auto: true,
       };
     },
@@ -486,7 +481,6 @@ export default {
         },
         onSuccess(data) {
           this.entity = data;
-          console.log(this.entity);
           this.allowComments = !!data.allow_comments;
           this.allowDownload = !!data.allow_download;
         },
@@ -515,8 +509,8 @@ export default {
           entity_name: this.entityName,
         },
         validate(params) {
-          if (!params?.user) {
-            return "No user was specified";
+          if (params) {
+            return "You selected a group" + JSON.stringify(params);
           }
         },
         onSuccess() {

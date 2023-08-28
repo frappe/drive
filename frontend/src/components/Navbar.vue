@@ -5,8 +5,9 @@
     class="bg-white top-0 border-b w-full">
     <div
       class="mx-auto pl-4 py-2 pr-2 h-12 z-10 flex items-center justify-between">
-      <Breadcrumbs class="hidden md:block" />
-      <div class="flpex items-center">
+      <Breadcrumbs />
+      <!--       
+  <div class="flex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
         <div class="flex items-center md:hidden">
           <button
@@ -19,8 +20,8 @@
             <FeatherIcon v-else name="x" class="w-6 h-6" />
           </button>
         </div>
-      </div>
-      <!-- $store.state.hasWriteAccess -->
+      </div> 
+       $store.state.hasWriteAccess -->
 
       <div v-if="isLoggedIn" class="flex items-center">
         <Dropdown

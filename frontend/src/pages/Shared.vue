@@ -1,12 +1,12 @@
 <template>
   <div class="h-full w-full p-4">
     <FolderContentsError
-      v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error" />
+      v-if="$resources.sharedWithMe.error"
+      :error="$resources.sharedWithMe.error" />
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="$resources.sharedWithMe.data"
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
@@ -26,7 +26,7 @@
 
     <ListView
       v-else
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="$resources.sharedWithMe.data"
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
@@ -59,7 +59,7 @@
       :entity="selectedEntities[0]"
       @success="
         () => {
-          $resources.folderContents.fetch();
+          $resources.sharedWithMe.fetch();
           showRenameDialog = false;
           selectedEntities = [];
         }
@@ -70,7 +70,7 @@
       :for="'unshare'"
       @success="
         () => {
-          $resources.folderContents.fetch();
+          $resources.sharedWithMe.fetch();
           showRemoveDialog = false;
           selectedEntities = [];
         }
@@ -79,7 +79,7 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entity-name="selectedEntities[0].name"
-      @success="$resources.folderContents.fetch()" />
+      @success="$resources.sharedWithMe.fetch()" />
   </div>
 </template>
 
@@ -233,7 +233,7 @@ export default {
             }
             this.selectedEntities = [];
             this.$store.commit("setPasteData", { entities: [], action: null });
-            this.$resources.folderContents.fetch();
+            this.$resources.sharedWithMe.fetch();
           },
           isEnabled: () => {
             return (
@@ -345,14 +345,35 @@ export default {
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
   },
   resources: {
-    folderContents() {
+    /*  sharedWithMe() {
       return {
         url: "drive.api.permissions.get_shared_with_me",
         params: {
           order_by: this.orderBy,
         },
         onSuccess(data) {
-          this.$resources.folderContents.error = null;
+          this.$resources.sharedWithMe.error = null;
+          data.forEach((entity) => {
+            entity.size_in_bytes = entity.file_size;
+            entity.file_size = entity.is_group
+              ? "-"
+              : formatSize(entity.file_size);
+            entity.modified = formatDate(entity.modified);
+            entity.creation = formatDate(entity.creation);
+          });
+        },
+        auto: true,
+      };
+    }, */
+
+    sharedWithMe() {
+      return {
+        url: "drive.api.permissions.get_shared_with_me",
+        params: {
+          order_by: this.orderBy,
+        },
+        onSuccess(data) {
+          this.$resources.sharedWithMe.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
@@ -387,7 +408,7 @@ export default {
           ),
         },
         onSuccess() {
-          this.$resources.folderContents.fetch();
+          this.$resources.sharedWithMe.fetch();
           this.selectedEntities = [];
         },
         onError(error) {
