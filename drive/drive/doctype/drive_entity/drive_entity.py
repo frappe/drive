@@ -11,6 +11,8 @@ from drive.utils.files import (
     create_user_thumbnails_directory,
     create_thumbnail,
 )
+from drive.utils.user_group import (add_new_user_group_docshare)
+
 
 class DriveEntity(NestedSet):
     nsm_parent_field = "parent_drive_entity"
@@ -65,12 +67,12 @@ class DriveEntity(NestedSet):
                     break
                 except Exception as e:
                     print(f"Attempt {attempt + 1}: Failed to delete file - {e}")
-        if (self.mime_type.startswith("image") or self.mime_type.startswith("video")):
+        if self.mime_type.startswith("image") or self.mime_type.startswith("video"):
             max_attempts = 3
             for attempt in range(max_attempts):
                 try:
                     user_thumbnails_directory = get_user_thumbnails_directory()
-                    thumbnail_getpath = Path(user_thumbnails_directory,self.name)
+                    thumbnail_getpath = Path(user_thumbnails_directory, self.name)
                     Path(str(thumbnail_getpath) + ".thumbnail").unlink()
                     break
                 except Exception as e:
@@ -217,17 +219,19 @@ class DriveEntity(NestedSet):
         if new_parent == parent_user_directory.name:
             drive_entity.share(frappe.session.user, write=1, share=1)
 
-        if(drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith("video")):
-                frappe.enqueue(
-                    create_thumbnail,
-                    queue="default",
-                    timeout=None,
-                    now=True,
-                    #will set to false once reactivity in new UI is solved 
-                    entity_name=name,
-                    path=path,
-                    mime_type= drive_entity.mime_type,
-                )
+        if drive_entity.mime_type.startswith(
+            "image"
+        ) or drive_entity.mime_type.startswith("video"):
+            frappe.enqueue(
+                create_thumbnail,
+                queue="default",
+                timeout=None,
+                now=True,
+                # will set to false once reactivity in new UI is solved
+                entity_name=name,
+                path=path,
+                mime_type=drive_entity.mime_type,
+            )
 
     @frappe.whitelist()
     def rename(self, new_title):
@@ -344,7 +348,7 @@ class DriveEntity(NestedSet):
                 child.toggle_allow_download()
 
     @frappe.whitelist()
-    def share(self, user, write=0, share=1, notify=1):
+    def share(self, user, write=0, share=1, notify=1,is_user_group=None):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -360,6 +364,8 @@ class DriveEntity(NestedSet):
             if frappe.session.user == self.owner
             else None
         )
+        if is_user_group:
+            return add_new_user_group_docshare(self.name,user)
         if self.is_group:
             for child in self.get_children():
                 child.share(user, write, share, 0)

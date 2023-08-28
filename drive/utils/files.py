@@ -132,10 +132,14 @@ def create_thumbnail(entity_name, path, mime_type):
                     with Image.open(image_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
                         image.thumbnail((250, 250))
-                        image.save(str(thumbnail_savepath) + ".thumbnail", format="JPEG")
+                        image.save(
+                            str(thumbnail_savepath) + ".thumbnail", format="JPEG"
+                        )
                     break
                 except Exception as e:
-                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
+                    print(
+                        f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}"
+                    )
                     retry_count += 1
             else:
                 print("Failed to create thumbnail after maximum retries.")
@@ -159,7 +163,9 @@ def create_thumbnail(entity_name, path, mime_type):
                         f.write(thumbnail_encoded)
                     break
                 except Exception as e:
-                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
+                    print(
+                        f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}"
+                    )
                     retry_count += 1
             else:
                 print("Failed to create thumbnail after maximum retries.")

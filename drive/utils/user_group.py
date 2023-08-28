@@ -31,6 +31,7 @@ def get_users_in_group(group_name):
 @frappe.whitelist()
 def create_user_group(group_name, members=[]):
     try:
+        group_name = group_name.title()        
         # Create a new User Group
         new_group = frappe.get_doc(
             {
@@ -161,3 +162,28 @@ def remove_users_from_group(group_name, user_emails=[]):
             }
     except Exception as e:
         return {"message": ("Failed to remove users from the group."), "error": str(e)}
+
+
+@frappe.whitelist()
+def get_entity_shared_with_user_groups(entity_name):
+    try:
+        user_group_list = frappe.db.get_list(
+            "Drive DocShare", filters={"entity_name": ["like", f"%{entity_name}%"]}, fields=["user_group"]
+        )
+        user_groups = [item["user_group"] for item in user_group_list]
+        return user_groups
+    except Exception as e:
+        return {
+            "message": ("Failed to fetch entity shared with user group."),
+            "error": str(e),
+        }
+
+def add_new_user_group_docshare(entity_name, user_group):
+    try:
+        new_doc = frappe.new_doc("Drive DocShare")
+        new_doc.entity_name = entity_name
+        new_doc.user_group = user_group
+        new_doc.insert()
+        return new_doc
+    except Exception as e:
+        frappe.throw("Error while adding new record: {0}").format(str(e))
