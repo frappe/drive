@@ -5,7 +5,8 @@ import frappe
 def get_name_of_all_user_groups():
     try:
         user_groups = frappe.get_all("User Group")
-        return {"user_groups": user_groups}
+        return user_groups
+
     except Exception as e:
         return {"message": "Failed to fetch user groups.", "error": str(e)}
 
@@ -15,10 +16,16 @@ def get_users_in_group(group_name):
     try:
         user_group = frappe.get_doc("User Group", group_name)
         users = [member.user for member in user_group.user_group_members]
-        return {"users": users}
+        for index, value in enumerate(users):
+            user_info = frappe.db.get_value(
+                "User", value, ["user_image", "full_name", "email"], as_dict=True
+            )
+            users[index] = user_info
+        print(users)
+        return users
+
     except Exception as e:
         return {"message": "Failed to fetch users in the group.", "error": str(e)}
-
 
 
 @frappe.whitelist()
@@ -42,6 +49,18 @@ def create_user_group(group_name, members=[]):
 
     except Exception as e:
         return {"message": ("User Group creation failed."), "error": str(e)}
+
+
+@frappe.whitelist()
+def delete_user_group(group_name):
+    try:
+        frappe.delete_doc("User Group", group_name)
+        return {
+            "message": ("User Group deleted successfully."),
+        }
+
+    except Exception as e:
+        return {"message": ("User Group deletion failed."), "error": str(e)}
 
 
 @frappe.whitelist()
