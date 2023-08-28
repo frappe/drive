@@ -2,6 +2,11 @@
   <Dropdown
     :options="[
       {
+        icon: 'settings',
+        label: 'Settings',
+        onClick: () => (showSettings = true),
+      },
+      {
         icon: 'log-out',
         label: 'Log out',
         onClick: () => logout(),
@@ -19,9 +24,11 @@
       </button>
     </template>
   </Dropdown>
+  <Settings v-if="showSettings" v-model="showSettings" />
 </template>
 <script>
 import { Dropdown, FeatherIcon, Avatar } from "frappe-ui";
+import Settings from "@/components/Settings.vue";
 
 export default {
   name: "UserDropdown",
@@ -29,7 +36,11 @@ export default {
     Dropdown,
     FeatherIcon,
     Avatar,
+    Settings,
   },
+  data: () => ({
+    showSettings: false,
+  }),
   methods: {
     logout() {
       this.$store.dispatch("logout");
