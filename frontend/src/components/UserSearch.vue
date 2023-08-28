@@ -5,25 +5,32 @@
         v-model="searchQuery"
         type="text"
         class="w-full"
-        placeholder="Add people or Email"
+        placeholder="Search for users, email or group"
         @input="handleInput($event, openUsers, closeUsers)" />
     </template>
     <template #body-main="{ togglePopover: toggleUsers }">
       <div class="p-1">
-        <div v-for="result in searchResults" :key="result.value">
+        <div v-for="result in searchResults" :key="result.email">
           <div
-            class="hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
+            class="flex items-center hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
             @click="
               () => {
-                selectResult(result.value);
+                selectResult(result);
                 toggleUsers();
               }
             ">
-            <div class="text-gray-900 text-[13px]">
-              {{ result.value }}
-            </div>
-            <div class="text-xs text-gray-600">
-              {{ result.description }}
+            <Avatar
+              class="mr-4"
+              size="xl"
+              :image="result.user_image"
+              :label="result.full_name || result.name" />
+            <div>
+              <div class="text-gray-900 text-[13px]">
+                {{ result.full_name || result.name }}
+              </div>
+              <div class="text-xs text-gray-600">
+                {{ result.email }}
+              </div>
             </div>
           </div>
         </div>
@@ -33,7 +40,7 @@
 </template>
 
 <script>
-import { Popover, Button, Input } from "frappe-ui";
+import { Popover, Button, Input, Avatar } from "frappe-ui";
 
 export default {
   name: "UserSearch",
@@ -41,6 +48,7 @@ export default {
     Popover,
     Button,
     Input,
+    Avatar,
   },
   emits: ["submit"],
   data() {
@@ -55,9 +63,6 @@ export default {
     userId() {
       return this.$store.state.auth.user_id;
     },
-    writeAccess() {
-      return this.newUserAccess === "Can view" ? 0 : 1;
-    },
   },
   methods: {
     async handleInput(event, open, close) {
@@ -67,7 +72,7 @@ export default {
       this.searchResults.length > 0 ? open() : close();
     },
     selectResult(value) {
-      this.$emit("submit", { user: value, write: this.writeAccess });
+      this.$emit("submit", value);
       this.searchQuery = "";
     },
     async search(txt) {
@@ -77,7 +82,7 @@ export default {
         "X-Frappe-Site-Name": window.location.hostname,
       };
       const res = await fetch(
-        `/api/method/drive.utils.users.get_users_with_drive_user_role?txt=${txt}`,
+        `/api/method/drive.utils.users.get_users_with_drive_user_role_and_groups?txt=${txt}`,
         {
           method: "GET",
           headers,
@@ -86,9 +91,7 @@ export default {
       if (res.ok) {
         const temp_response = await res.json();
         const data = temp_response.message;
-        this.searchResults = data.results.filter(
-          (x) => x.value !== this.userId
-        );
+        this.searchResults = data.filter((x) => x.email !== this.userId);
       }
     },
   },
