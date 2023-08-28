@@ -4,6 +4,7 @@ from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
+from drive.utils.user_group import get_entity_shared_with_user_groups
 
 
 @frappe.whitelist()
@@ -73,6 +74,11 @@ def get_shared_with_list(entity_name):
         user.update(user_info)
 
     return users
+
+@frappe.whitelist()
+def get_shared_user_group_list(entity_name):
+    user_group_list  =  get_entity_shared_with_user_groups(entity_name)
+    return user_group_list
 
 
 @frappe.whitelist()
@@ -209,7 +215,9 @@ def get_file_with_permissions(entity_name):
     entity_ancestors = get_ancestors_of("Drive Entity", entity)
     flag = False
     for z_entity_name in entity_ancestors:
-        result = frappe.db.exists("Drive Entity", {"name":z_entity_name,"is_active": 0})
+        result = frappe.db.exists(
+            "Drive Entity", {"name": z_entity_name, "is_active": 0}
+        )
         if result:
             flag = True
             break

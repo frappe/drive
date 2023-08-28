@@ -3,7 +3,7 @@
     v-model="open"
     :options="{
       title: `Share '${$resources.entity.data?.title}'`,
-      size: 'md',
+      size: '2xl',
     }">
     <template #body-content>
       <div class="pt-2 pb-2 mb-4">
@@ -134,7 +134,8 @@
             $resources.share.submit({
               method: 'share',
               entity_name: entityName,
-              user: user.email,
+              is_user_group: user.email ? false : true,
+              user: user.email ? user.email : user.name,
             })
         " />
       <ErrorMessage
@@ -281,6 +282,23 @@
           </Popover>
         </div>
       </div>
+
+      <div class="flex mt-5 text-base text-gray-600">Groups with access</div>
+      <div v-if="!$resources.entity.loading" class="flex flex-col">
+        <div
+          v-for="group in $resources.sharedWithUserGroup.data"
+          :key="group"
+          class="mt-3 flex flex-row w-full gap-2 items-center space-y-2">
+          <Avatar size="xl" :label="group"></Avatar>
+          <div class="grow truncate">
+            <div class="text-gray-900 text-[14px] font-medium">
+              {{ group }}
+            </div>
+            <div class="text-gray-600 text-base">{{ group }}</div>
+          </div>
+        </div>
+      </div>
+
       <div class="flex justify-items-center content-center mt-6">
         <div class="flex justify-items-center content-center">
           <Button variant="ghost" @click="getLink">
@@ -317,6 +335,7 @@ import {
   Alert,
   Popover,
   toast,
+  Avatar,
 } from "frappe-ui";
 import { Switch } from "@headlessui/vue";
 import UserSearch from "@/components/UserSearch.vue";
@@ -352,6 +371,7 @@ export default {
     Building2,
     ChevronsUpDown,
     Check,
+    Avatar,
     Trash,
   },
   props: {
@@ -472,6 +492,15 @@ export default {
         auto: true,
       };
     },
+    sharedWithUserGroup() {
+      return {
+        url: "drive.api.permissions.get_shared_user_group_list",
+        params: {
+          entity_name: this.entityName,
+        },
+        auto: true,
+      };
+    },
     entity() {
       return {
         url: "drive.api.files.get_entity",
@@ -508,14 +537,10 @@ export default {
           method: "share",
           entity_name: this.entityName,
         },
-        validate(params) {
-          if (params) {
-            return "You selected a group" + JSON.stringify(params);
-          }
-        },
         onSuccess() {
           this.$resources.share.error = null;
           this.$resources.sharedWith.fetch();
+          this.$resources.sharedWithUserGroup.fetch();
         },
         onError(error) {
           if (error.messages) {

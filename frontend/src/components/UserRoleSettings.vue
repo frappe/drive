@@ -29,7 +29,6 @@
     </div>
 
     <div
-      v-if="AllRoles?.length"
       class="flex flex-col h-full w-full overflow-x-hidden overflow-y-scroll">
       <div
         @click="viewGroupDetails(group.name)"
@@ -54,11 +53,11 @@
         <div class="mx-3 h-px border-t border-gray-200 w-full"></div>
       </div>
     </div>
-    <div v-else class="h-full w-full flex flex-col items-center justify-center">
+    <!-- <div v-else class="h-full w-full flex flex-col items-center justify-center">
       <FeatherIcon class="h-10 stroke-1 text-gray-600" name="users" />
       <span class="text-gray-800 text-sm">You dont have any roles</span>
       <span class="text-gray-700 text-xs">Create a new role</span>
-    </div>
+    </div> -->
     <span class="text-xs pb-4 text-gray-600 mt-auto">
       This page is only available to Administrators
     </span>
@@ -146,6 +145,7 @@ export default {
       return {
         url: "drive.utils.user_group.get_name_of_all_user_groups",
         onSuccess(data) {
+          console.log(data);
           this.AllRoles = data;
         },
         onError(data) {

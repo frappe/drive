@@ -18,6 +18,7 @@ from drive.utils.files import (
     create_thumbnail,
 )
 
+
 @frappe.whitelist(allow_guest=True)
 def create_image_thumbnail(entity_name):
     drive_entity = frappe.get_value(
@@ -70,9 +71,7 @@ def create_image_thumbnail(entity_name):
             )
             response.headers.set("Content-Type", "image/jpeg")
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
-            frappe.cache().set_value(
-                entity_name,thumbnail_data
-            )
+            frappe.cache().set_value(entity_name, thumbnail_data)
         return response
 
 
@@ -128,7 +127,5 @@ def create_video_thumbnail(entity_name):
             )
             response.headers.set("Content-Type", "image/jpeg")
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
-            frappe.cache().set_value(
-                entity_name,thumbnail_data
-            )
+            frappe.cache().set_value(entity_name, thumbnail_data)
         return response
