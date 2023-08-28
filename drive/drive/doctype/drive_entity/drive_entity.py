@@ -11,7 +11,7 @@ from drive.utils.files import (
     create_user_thumbnails_directory,
     create_thumbnail,
 )
-from drive.utils.user_group import (add_new_user_group_docshare)
+from drive.utils.user_group import (add_new_user_group_docshare, does_exist_user_group_docshare)
 
 
 class DriveEntity(NestedSet):
@@ -348,7 +348,7 @@ class DriveEntity(NestedSet):
                 child.toggle_allow_download()
 
     @frappe.whitelist()
-    def share(self, user, write=0, share=1, notify=1,is_user_group=None):
+    def share(self, user, write=0, share=1, notify=1, is_user_group=None):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -365,7 +365,8 @@ class DriveEntity(NestedSet):
             else None
         )
         if is_user_group:
-            return add_new_user_group_docshare(self.name,user)
+            if not does_exist_user_group_docshare(self.name,user):
+                return add_new_user_group_docshare(self.name, user)
         if self.is_group:
             for child in self.get_children():
                 child.share(user, write, share, 0)
