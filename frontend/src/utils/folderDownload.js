@@ -116,21 +116,16 @@ function get_file_content(entity_name) {
 }
 
 function get_children(entity_name) {
-  return new Promise((resolve, reject) => {
-    const url =
-      "/api/method/" +
-      `drive.api.nested_folder.folder_contents?entity_name=${entity_name}`;
+  const url =
+    "/api/method/" +
+    `drive.api.nested_folder.folder_contents?entity_name=${entity_name}`;
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        const json = JSON.parse(xhr.responseText);
-        resolve(json.message);
-      } else {
-        reject(new Error(`Request failed with status ${xhr.status}`));
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
       }
-    };
-    xhr.send();
-  });
+      return response.json();
+    })
+    .then((json) => json.message);
 }

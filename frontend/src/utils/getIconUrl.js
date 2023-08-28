@@ -4,13 +4,21 @@ export function getIconUrl(mime_type) {
 
 export async function thumbnail_getIconUrl(mime_type, name, file_ext) {
   if (mime_type === "image" && file_ext !== ".svg") {
-    return get_thumbnail_content(name).then((fileContent) => {
-      return URL.createObjectURL(fileContent);
-    });
+    return get_thumbnail_content(name)
+      .then((fileContent) => {
+        return URL.createObjectURL(fileContent);
+      })
+      .catch(() => {
+        return getIconUrl(mime_type); // Return the default icon URL on failure
+      });
   } else if (mime_type === "video") {
-    return get_thumbnail_video_content(name).then((fileContent) => {
-      return URL.createObjectURL(fileContent);
-    });
+    return get_thumbnail_video_content(name)
+      .then((fileContent) => {
+        return URL.createObjectURL(fileContent);
+      })
+      .catch(() => {
+        return getIconUrl(mime_type); // Return the default icon URL on failure
+      });
   } else {
     return Promise.resolve(
       new URL(`/src/assets/images/icons/${mime_type}.svg`, import.meta.url)
