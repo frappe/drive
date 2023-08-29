@@ -3,7 +3,7 @@
     v-model="open"
     :options="{
       title: `Share '${$resources.entity.data?.title}'`,
-      size: '2xl',
+      size: 'lg',
     }">
     <template #body-content>
       <div class="pt-2 pb-2 mb-4">
@@ -129,6 +129,8 @@
       </div>
 
       <UserSearch
+        :search-groups="false"
+        place-holder-text="Search for users or emails"
         @submit="
           (user) =>
             $resources.share.submit({
@@ -148,17 +150,12 @@
         <div
           v-for="user in $resources.sharedWith.data"
           :key="user.user"
-          class="mt-3 flex flex-row w-full gap-2 items-center space-y-2">
+          class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
           <div class="overflow-hidden rounded-full h-9 w-9">
-            <img
-              v-if="user.user_image"
-              :src="user.user_image"
-              class="object-cover rounded-full h-7 w-7" />
-            <div
-              v-else
-              class="flex items-center justify-center w-full h-full text-base text-gray-600 uppercase bg-gray-200">
-              {{ user.full_name[0] }}
-            </div>
+            <Avatar
+              :image="user.user_image"
+              :label="user.full_name"
+              size="xl" />
           </div>
           <div class="grow truncate">
             <div class="text-gray-900 text-[14px] font-medium">
@@ -283,8 +280,10 @@
         </div>
       </div>
 
-      <div class="flex mt-5 text-base text-gray-600">Groups with access</div>
-      <div v-if="!$resources.entity.loading" class="flex flex-col">
+      <div
+        v-if="$resources.sharedWithUserGroup.data?.length"
+        class="flex flex-col">
+        <div class="flex mt-5 text-base text-gray-600">Groups with access</div>
         <div
           v-for="group in $resources.sharedWithUserGroup.data"
           :key="group"
@@ -320,7 +319,9 @@
             <ArrowDownToLineOff v-else class="w-4" />
           </Button>
         </div>
-        <Button variant="solid" class="ml-auto px-8">Share</Button>
+        <Button variant="solid" @click="open = false" class="ml-auto px-8">
+          Share
+        </Button>
       </div>
       <Alert v-if="showAlert" :title="alertMessage" class="mt-5"></Alert>
     </template>
