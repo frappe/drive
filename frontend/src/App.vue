@@ -7,7 +7,9 @@
     <div class="h-full w-full flex flex-col">
       <div v-if="isLoggedIn" class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
-        <div v-if="showSidebar" class="p-2 border-r w-[280px] bg-gray-50">
+        <div
+          v-if="showSidebar"
+          class="p-2 border-r w-[280px] bg-gray-50 border-gray-300">
           <Sidebar />
         </div>
         <div class="h-full w-full overflow-hidden">
