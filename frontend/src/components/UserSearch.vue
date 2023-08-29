@@ -5,7 +5,7 @@
         v-model="searchQuery"
         type="text"
         class="w-full"
-        placeholder="Search for users, email or group"
+        :placeholder="placeHolderText"
         @input="handleInput($event, openUsers, closeUsers)" />
     </template>
     <template #body-main="{ togglePopover: toggleUsers }">
@@ -50,6 +50,18 @@ export default {
     Input,
     Avatar,
   },
+  props: {
+    placeHolderText: {
+      type: String,
+      default: "Search for users or emails",
+      required: false,
+    },
+    searchGroups: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+  },
   emits: ["submit"],
   data() {
     return {
@@ -76,23 +88,20 @@ export default {
       this.searchQuery = "";
     },
     async search(txt) {
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json; charset=utf-8",
-        "X-Frappe-Site-Name": window.location.hostname,
+      await this.$resources.search.fetch({ txt: txt });
+    },
+  },
+  resources: {
+    search() {
+      return {
+        url: this.searchGroups
+          ? "drive.utils.users.get_users_with_drive_user_role_and_groups"
+          : "drive.utils.users.get_users_with_drive_user_role",
+        auto: false,
+        onSuccess(data) {
+          this.searchResults = data.filter((x) => x.email !== this.userId);
+        },
       };
-      const res = await fetch(
-        `/api/method/drive.utils.users.get_users_with_drive_user_role_and_groups?txt=${txt}`,
-        {
-          method: "GET",
-          headers,
-        }
-      );
-      if (res.ok) {
-        const temp_response = await res.json();
-        const data = temp_response.message;
-        this.searchResults = data.filter((x) => x.email !== this.userId);
-      }
     },
   },
 };
