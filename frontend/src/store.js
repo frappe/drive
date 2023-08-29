@@ -28,7 +28,7 @@ const store = createStore({
       ascending: false,
     },
     view: JSON.parse(localStorage.getItem("view")) || "grid",
-    entityInfo: JSON.parse(localStorage.getItem("entityInfo")) || null,
+    entityInfo: JSON.parse(localStorage.getItem("selectedEntities")) || null,
     pasteData: { entities: [], action: null },
     showInfo: false,
     hasWriteAccess: false,
@@ -80,7 +80,7 @@ const store = createStore({
       state.view = payload;
     },
     setEntityInfo(state, payload) {
-      localStorage.setItem("entityInfo", JSON.stringify(payload));
+      localStorage.setItem("selectedEntities", JSON.stringify(payload));
       state.entityInfo = payload;
     },
     setPasteData(state, payload) {
