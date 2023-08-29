@@ -31,6 +31,7 @@
       name: currentEntityName,
       title: currentTitle,
       is_group: $route.name === 'Folder' ? 1 : 0,
+      document: $route.name === 'Document' ? 1 : 0,
     }"
     @success="
       () => {
