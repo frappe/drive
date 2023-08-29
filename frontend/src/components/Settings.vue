@@ -11,7 +11,7 @@
               class="flex h-7 w-full items-center gap-2 rounded px-2 py-1"
               :class="[
                 activeTab?.label == tab.label
-                  ? 'bg-white shadow-sm'
+                  ? 'bg-gray-200'
                   : 'hover:bg-gray-100',
               ]"
               v-for="tab in tabs"

@@ -1,11 +1,11 @@
 <template>
   <Dropdown
     :options="[
-      {
+      /* {
         icon: 'settings',
         label: 'Settings',
         onClick: () => (showSettings = true),
-      },
+      }, */
       {
         icon: 'log-out',
         label: 'Log out',
