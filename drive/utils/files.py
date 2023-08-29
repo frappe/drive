@@ -111,9 +111,9 @@ def get_user_thumbnails_directory(user=None):
     )
     if not os.path.exists(user_directory_thumnails_path):
         try:
-            user_thumbnails_directory = create_user_thumbnails_directory()
+            user_directory_thumnails_path = create_user_thumbnails_directory()
         except FileNotFoundError:
-            user_thumbnails_directory = create_user_thumbnails_directory()
+            user_directory_thumnails_path = create_user_thumbnails_directory()
     return user_directory_thumnails_path
 
 
