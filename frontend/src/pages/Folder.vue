@@ -752,7 +752,6 @@ export default {
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
-          console.log(data);
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -770,49 +769,28 @@ export default {
 
     pathEntities() {
       return {
-        url: "drive.api.files.get_entities_in_path",
+        url: "drive.api.files.get_entity",
         // cache: ['pathEntities', this.entityName],
         params: {
           entity_name: this.entityName,
+          fields: "title",
         },
         onSuccess(data) {
           this.isSharedFolder = data.is_shared;
-          let breadcrumbs = [];
-          if (this.$store.state.currentBreadcrumbs[0].route === "/") {
-            breadcrumbs.push({
-              label: "Home",
-              route: "/",
+          let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
+          // Duplicate folder in breadcrumb but unique entity ID
+          const index = currentBreadcrumbs.findIndex(
+            (item) => item.route === "/folder/" + this.entityName
+          );
+          if (index !== -1) {
+            const slicedBreadCrumb = currentBreadcrumbs.slice(0, index + 1);
+            this.$store.commit("setCurrentBreadcrumbs", slicedBreadCrumb);
+          } else {
+            currentBreadcrumbs.push({
+              label: data.title,
+              route: `/folder/${this.entityName}`,
             });
           }
-          if (this.$store.state.currentBreadcrumbs[0].route === "/shared") {
-            breadcrumbs.push({
-              label: "Shared",
-              route: "/shared",
-            });
-          }
-          if (this.$store.state.currentBreadcrumbs[0].route === "/favourites") {
-            breadcrumbs.push({
-              label: "Favourites",
-              route: "/favourites",
-            });
-          }
-          data.entities.forEach((entity, index) => {
-            if (localStorage.getItem("HomeFolderID") !== entity.name) {
-              /* Skip adding `Username's Drive` backend id to the breadcrumbs */
-              breadcrumbs.push({
-                label: entity.title,
-                route: `/folder/${entity.name}`,
-              });
-            }
-          });
-          if (breadcrumbs.length > 4) {
-            breadcrumbs.splice(1, breadcrumbs.length - 4, {
-              label: "...",
-              route: "",
-            });
-          }
-          this.breadcrumbs = breadcrumbs;
-          this.$store.commit("setCurrentBreadcrumbs", breadcrumbs);
         },
         auto: Boolean(this.entityName),
       };
