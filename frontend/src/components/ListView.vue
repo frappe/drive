@@ -43,13 +43,13 @@
             @drop="isGroupOnDrop(entity)">
             <td class="min-w-[15rem] px-2.5 py-3 lg:w-3/6" :draggable="false">
               <div
-                class="flex items-center text-gray-900 text-[14px] font-medium truncate"
+                class="flex items-center text-gray-800 text-sm font-medium truncate"
                 :draggable="false">
                 <svg
                   v-if="entity.is_group"
                   :style="{ fill: entity.color }"
                   :draggable="false"
-                  class="h-[22px] mr-5"
+                  class="h-[20px] mr-3"
                   viewBox="0 0 40 40"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -59,7 +59,7 @@
                   v-else
                   :src="getIconUrl(formatMimeType(entity.mime_type))"
                   :draggable="false"
-                  class="h-[21px] mr-5" />
+                  class="h-[20px] mr-3" />
                 {{ entity.title }}
               </div>
             </td>

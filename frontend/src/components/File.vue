@@ -1,9 +1,12 @@
 <template>
-  <div class="h-2/3 flex items-center justify-center">
+  <div
+    class="h-2/3 flex items-center justify-center bg-gray-50 rounded-t-[calc(theme(borderRadius.lg)-1px)]">
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid">
-    <span class="truncate text-sm font-medium mb-1">{{ title }}</span>
+    <span class="truncate text-sm font-medium text-gray-800 mb-1">
+      {{ title }}
+    </span>
     <div class="truncate text-xs text-gray-600 flex mt-1 place-items-center">
       <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
       <p>{{ getFileSubtitle() }}</p>
@@ -37,7 +40,7 @@ export default {
   computed: {
     parsedStyled() {
       if (typeof this.link === "string") {
-        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-2px)]";
+        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]";
       } else {
         return "h-10 w-10";
       }

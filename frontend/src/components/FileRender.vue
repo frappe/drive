@@ -7,8 +7,8 @@
     class="p-8 z-10 bg-gray-900 text-white rounded-md text-neutral-100 text-xl text-center font-medium">
     {{ preview.error }}
   </div>
-  <div>
-    <!--     <video-player
+
+  <!--     <video-player
       class="video-js vjs-fluid"
       type="video/mp4"
       v-if="
@@ -18,17 +18,16 @@
         !this.preview.loading
       "
       :options="videoOptions" /> -->
-    <video
-      v-if="
-        isVideo &&
-        videoOptions.sources[0].src &&
-        !preview.error &&
-        !preview.loading
-      "
-      controls
-      type="video/mp4"
-      :src="videoOptions.sources[0].src"></video>
-  </div>
+  <video
+    v-if="
+      isVideo &&
+      videoOptions.sources[0].src &&
+      !preview.error &&
+      !preview.loading
+    "
+    controls
+    type="video/mp4"
+    :src="videoOptions.sources[0].src"></video>
   <img v-if="isImage" :src="preview.url" class="object-contain max-h-[85vh]" />
   <div
     v-if="isTxt"

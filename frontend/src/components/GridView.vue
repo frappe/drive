@@ -16,12 +16,12 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="cursor-pointer p-2 w-44 h-30 rounded-lg border-2 group select-none entity"
+            class="cursor-pointer p-2 w-44 h-30 rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
                 ? 'bg-green-100 border-[#5BB98C]'
-                : 'border-gray-50 hover:shadow-2xl'
+                : 'border-gray-200 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(folder)"
             @click="selectEntity(folder, $event, displayOrderedEntities)"
@@ -46,7 +46,7 @@
               </svg>
             </div>
             <div class="content-center grid">
-              <span class="truncate text-sm font-medium mt-4">
+              <span class="truncate text-sm font-medium text-gray-800 mt-4">
                 {{ folder.title }}
               </span>
               <p class="truncate text-xs text-gray-600 mt-2">
@@ -65,12 +65,12 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-44 h-44 rounded-lg border-2 group select-none entity cursor-pointer"
+            class="w-44 h-44 rounded-lg border group select-none entity cursor-pointer"
             draggable="true"
             :class="
               selectedEntities.includes(file)
                 ? 'bg-green-100 border-[#5BB98C]'
-                : 'border-gray-50 hover:shadow-2xl'
+                : 'border-gray-200 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(file)"
             @click="selectEntity(file, $event, displayOrderedEntities)"
