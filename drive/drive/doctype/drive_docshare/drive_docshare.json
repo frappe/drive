@@ -7,7 +7,7 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["entity_name", "user_group"],
+  "field_order": ["entity_name", "user_group", "read", "write", "share"],
   "fields": [
     {
       "fieldname": "entity_name",
@@ -22,13 +22,30 @@
       "fieldtype": "Link",
       "label": "User Group",
       "options": "User Group",
-      "reqd": 1,
-      "unique": 1
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "read",
+      "fieldtype": "Check",
+      "label": "Read"
+    },
+    {
+      "default": "0",
+      "fieldname": "write",
+      "fieldtype": "Check",
+      "label": "Write"
+    },
+    {
+      "default": "0",
+      "fieldname": "share",
+      "fieldtype": "Check",
+      "label": "Share"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2023-08-28 12:27:00.855875",
+  "modified": "2023-08-29 13:34:56.844913",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive DocShare",
