@@ -1,10 +1,9 @@
 <template>
   <Teleport to="#modals">
-    <div class="fixed bottom-0 right-0 w-full p-6 sm:w-96 z-10">
-      <div class="rounded-lg bg-white shadow-lg">
-        <div
-          class="flex items-center justify-between rounded-sm bg-gray-50 p-4"
-          :class="{ shadow: !collapsed }">
+    <div
+      class="fixed bottom-0 right-0 w-full m-6 sm:w-96 z-10 rounded border shadow-2xl">
+      <div class="rounded-lg bg-white">
+        <div class="flex items-center justify-between rounded-t bg-gray-50 p-2">
           <div v-if="uploadsInProgress.length > 0" class="text-sm">
             Uploading {{ uploadsInProgress.length }}
             {{ uploadsInProgress.length == 1 ? "item" : "items" }}
@@ -28,20 +27,19 @@
             </button>
           </div>
         </div>
-        <div v-if="!collapsed" class="max-h-64 overflow-y-auto bg-white">
-          <div
-            v-for="upload in uploads"
-            :key="upload.uuid"
-            class="truncate border-b">
-            <div class="flex items-center gap-3 p-4">
+        <div
+          v-if="!collapsed"
+          class="max-h-64 overflow-y-auto bg-white rounded-b">
+          <div v-for="upload in uploads" :key="upload.uuid" class="truncate">
+            <div class="flex items-center gap-3 p-2">
               <div
                 v-if="upload.completed"
-                class="m-[0.125rem] flex h-7 w-7 items-center justify-center rounded-full p-1 text-white"
+                class="m-[0.125rem] flex h-6 w-6 items-center justify-center rounded-full p-1 text-white"
                 :class="upload.error ? 'bg-red-400' : 'bg-[#59B179]'">
                 <FeatherIcon
                   :name="upload.error ? 'x' : 'check'"
-                  class="h-3.5 w-3.5"
-                  :stroke-width="2.5" />
+                  class="h-4 w-4"
+                  :stroke-width="2" />
               </div>
               <div v-else class="h-8 w-8 rounded-full">
                 <ProgressRing
