@@ -7,9 +7,7 @@
       v-slot="{ href, navigate }"
       :to="item.route">
       <a
-        :class="[
-          item.highlight() ? 'bg-white shadow-sm ' : ' hover:bg-gray-100',
-        ]"
+        :class="[item.highlight() ? 'bg-gray-200 ' : ' hover:bg-gray-100']"
         :href="href"
         class="flex items-center text-gray-800 text-sm w-full mb-0.5 h-7 px-3 py-1 gap-3 rounded focus:outline-none transition"
         @click="navigate && $emit('toggleMobileSidebar')">
