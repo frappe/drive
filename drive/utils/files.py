@@ -110,7 +110,10 @@ def get_user_thumbnails_directory(user=None):
         frappe.get_site_path("private/files"), user_directory_name, "thumbnails"
     )
     if not os.path.exists(user_directory_thumnails_path):
-        raise FileNotFoundError("User thumbnails directory does not exist")
+        try:
+            user_thumbnails_directory = create_user_thumbnails_directory()
+        except FileNotFoundError:
+            user_thumbnails_directory = create_user_thumbnails_directory()
     return user_directory_thumnails_path
 
 
