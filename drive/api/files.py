@@ -20,6 +20,7 @@ from drive.utils.files import (
 )
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
+import magic
 
 
 def if_folder_exists(folder_name, parent):
@@ -116,8 +117,9 @@ def upload_file(fullpath=None, parent=None):
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
-
+    
     if current_chunk == 0 and save_path.exists():
+        print(save_path)
         frappe.throw(f"File '{title}' already exists", FileExistsError)
 
     with save_path.open("ab") as f:
@@ -131,6 +133,12 @@ def upload_file(fullpath=None, parent=None):
             frappe.throw("Size on disk does not match specified filesize", ValueError)
 
         mime_type, _ = mimetypes.guess_type(save_path)
+        
+        if (mime_type is None):
+            # Read the first 2KB of the binary stream to determine the file type if string checking failed
+            # Do a rejection workflow to reject undesired mime types
+            mime_type = magic.from_buffer(open(save_path, "rb").read(2048), mime=True)
+
         file_name, file_ext = os.path.splitext(title)
         name = uuid.uuid4().hex
         path = save_path.parent / f"{name}{save_path.suffix}"
