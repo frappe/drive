@@ -102,10 +102,11 @@ export default {
       previewsContainer: "#dropzoneElement",
       uploadMultiple: false,
       chunking: true,
+      retryChunks: true,
       forceChunking: true,
       url: "/api/method/drive.api.files.upload_file",
       maxFilesize: 10 * 1024, // 10GB
-      timeout: 10000,
+      timeout: 120000, // 2 minutes
       chunkSize: 5 * 1024 * 1024, // 5MB
       headers: {
         "X-Frappe-CSRF-Token": window.csrf_token,
