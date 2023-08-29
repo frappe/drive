@@ -471,8 +471,8 @@ export default {
     async getLink() {
       this.showAlert = false;
       const link = this.$resources.entity.data.is_group
-        ? `${window.location.origin}/drive/s/folder/${this.entityName}`
-        : `${window.location.origin}/drive/s/file/${this.entityName}`;
+        ? `${window.location.origin}/drive/folder/${this.entityName}`
+        : `${window.location.origin}/drive/file/${this.entityName}`;
       await navigator.clipboard.writeText(link);
       toast({
         title: "Done",
