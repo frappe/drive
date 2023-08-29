@@ -979,7 +979,7 @@
   <div
     class="flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
-      @click="tab = 0"
+      @click="switchTab(0)"
       class="mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
@@ -996,7 +996,7 @@
     </Button>
     <Button
       v-if="$route.meta.documentPage"
-      @click="tab = 1"
+      @click="switchTab(1)"
       class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
@@ -1020,7 +1020,7 @@
           : ' hover:bg-gray-50',
       ]"
       variant="minimal"
-      @click="tab = 2">
+      @click="switchTab(2)">
       <FeatherIcon
         name="type"
         :class="[
@@ -1037,7 +1037,7 @@
           : ' hover:bg-gray-50',
       ]"
       variant="minimal"
-      @click="tab = 3">
+      @click="switchTab(3)">
       <FeatherIcon
         name="plus"
         :class="[
