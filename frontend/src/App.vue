@@ -5,10 +5,12 @@
     @contextmenu.prevent="handleDefaultContext($event)">
     <!-- Main container with scroll -->
     <div class="h-full w-full flex flex-col">
-      <div v-if="isLoggedIn" class="flex h-full overflow-hidden">
+      <div
+        v-if="isLoggedIn || $route.meta.isHybridRoute"
+        class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
         <div
-          v-if="showSidebar"
+          v-if="isLoggedIn"
           class="p-2 border-r w-[280px] bg-gray-50 border-gray-300">
           <Sidebar />
         </div>

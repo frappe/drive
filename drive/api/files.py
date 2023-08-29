@@ -408,6 +408,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         DriveEntity.document,
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
+        DriveEntity.allow_download,
         DriveEntity.allow_comments,
         DocShare.read,
         fn.Max(DocShare.write).as_("write"),

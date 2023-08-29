@@ -5,7 +5,7 @@
     class="bg-white top-0 border-b w-full">
     <div
       class="mx-auto pl-4 py-2 pr-2 h-12 z-10 flex items-center justify-between">
-      <Breadcrumbs />
+      <Breadcrumbs v-if="isLoggedIn" />
       <!--       
   <div class="flex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
@@ -79,7 +79,7 @@
           
         -->
       </div>
-      <div v-else>
+      <div v-else class="ml-auto">
         <Button @click="$router.push({ name: 'Login' })" variant="solid">
           Sign In
         </Button>

@@ -54,11 +54,11 @@
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
       :entity-name="selectedEntities[0].name"
-      :action-items="actionItems"
+      :action-items="isLoggedIn ? actionItems : guestActionItems"
       :entity-context="entityContext"
       :close="closeContextMenu" />
     <EmptyEntityContextMenu
-      v-if="showEmptyEntityContextMenu"
+      v-if="showEmptyEntityContextMenu && isLoggedIn"
       v-on-outside-click="closeContextMenu"
       :action-items="emptyActionItems"
       :entity-context="entityContext"
@@ -158,6 +158,9 @@ export default {
     isSharedFolder: false,
   }),
   computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
     userId() {
       return this.$store.state.auth.user_id;
     },
@@ -222,12 +225,11 @@ export default {
           },
           isEnabled: () => {
             if (this.selectedEntities.length === 1) {
-              if (
-                this.selectedEntities.length === 1 &&
-                !this.selectedEntities[0].is_group
-              ) {
-                return !this.selectedEntities[0].document;
-              }
+              return (
+                this.selectedEntities[0].allow_download &&
+                !this.selectedEntities[0].is_group &&
+                !this.selectedEntities[0].document
+              );
             }
           },
         },
@@ -415,6 +417,108 @@ export default {
             return (
               this.selectedEntities.length > 0 &&
               this.selectedEntities.every((x) => x.owner === "me")
+            );
+          },
+        },
+      ].filter((item) => item.isEnabled());
+    },
+    guestActionItems() {
+      return [
+        {
+          label: "Download",
+          icon: "download",
+          onClick: () => {
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+          },
+          isEnabled: () => {
+            if (this.selectedEntities.length === 1) {
+              if (
+                this.selectedEntities[0].allow_download &&
+                this.selectedEntities.length === 1 &&
+                !this.selectedEntities[0].is_group
+              ) {
+                return !this.selectedEntities[0].document;
+              }
+            }
+          },
+        },
+        {
+          label: "Download as ZIP",
+          icon: "download",
+          onClick: () => {
+            if (this.selectedEntities.length > 1) {
+              let selected_entities = this.selectedEntities;
+              selectedEntitiesDownload(selected_entities);
+            } else if (this.selectedEntities[0].is_group === 1) {
+              folderDownload(this.selectedEntities[0]);
+            }
+          },
+          isEnabled: () => {
+            if (
+              this.selectedEntities[0].allow_download &&
+              this.selectedEntities.length === 1 &&
+              !this.selectedEntities[0].is_group
+            ) {
+              return false;
+            }
+            if (this.selectedEntities.length) {
+              const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                (entity) => {
+                  return (
+                    entity.allow_download ||
+                    entity.write ||
+                    entity.owner === "me"
+                  );
+                }
+              );
+              return allEntitiesSatisfyCondition;
+            }
+          },
+        },
+        {
+          label: "View details",
+          icon: "eye",
+          onClick: () => {
+            this.$store.commit("setShowInfo", true);
+          },
+          isEnabled: () => {
+            return (
+              !this.$store.state.showInfo && this.selectedEntities.length === 1
+            );
+          },
+        },
+        {
+          label: "Hide details",
+          icon: "eye-off",
+          onClick: () => {
+            this.$store.commit("setShowInfo", false);
+          },
+          isEnabled: () => {
+            return this.$store.state.showInfo;
+          },
+        },
+        {
+          label: "Rename",
+          icon: "edit",
+          onClick: () => {
+            this.showRenameDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 &&
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === "me")
+            );
+          },
+        },
+        {
+          label: "Change Color",
+          icon: "droplet",
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].is_group &&
+              this.selectedEntities[0].write
             );
           },
         },
@@ -648,6 +752,7 @@ export default {
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
+          console.log(data);
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
