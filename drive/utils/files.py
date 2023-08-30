@@ -34,6 +34,11 @@ def create_user_directory():
     )
     user_directory.flags.file_created = True
     # frappe.local.rollback_observers.append(user_directory)
+    # (Placeholder) till we make login and onboarding
+    # user_directory breaks if its not created by a `drive_user`
+    user = frappe.get_doc("User", frappe.session.user)
+    user.flags.ignore_permlevel_for_fields = ["roles"]
+    user.add_roles("Drive User")
     user_directory.insert()
     return frappe._dict({"name": user_directory.name, "path": user_directory.path})
 
