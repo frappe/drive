@@ -1,14 +1,14 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'Rename', size: 'xs' }">
     <template #body-content>
-      <Input v-model="newName" type="text" />
+      <Input v-model="newName" :placeholder="currentName" type="text" />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button
           variant="solid"
           class="w-full"
           :loading="$resources.rename.loading"
-          @click="performRename">
+          @click="$resources.rename.submit">
           Rename
         </Button>
       </div>
@@ -43,11 +43,21 @@ export default {
       newName: "",
       errorMessage: "",
       extension: "",
+      currentName: "",
     };
   },
   computed: {
     entityName() {
       return this.entity?.name;
+    },
+    fullName() {
+      if (this.entity?.is_group || this.entity?.document) {
+        return this.newName;
+      } else {
+        return this.newName.slice(-1) === "."
+          ? this.newName + this.extension
+          : this.newName + "." + this.extension;
+      }
     },
     open: {
       get() {
@@ -61,42 +71,31 @@ export default {
         }
       },
     },
-    fileName() {
-      if (this.entity?.title) {
-        const parts = this.entity.title.split(".");
-        parts.pop();
-        return parts.join(".") ? parts.join(".") : this.entity?.title;
-      }
-    },
   },
-  methods: {
-    addExtension(newName) {
-      if (this.entity) {
-        const extension = this.entity.title.split(".").pop();
-        return `${newName}.${extension}`;
-      }
-      return newName;
+  watch: {
+    entity: {
+      handler(newVal) {
+        if (newVal) {
+          if (this.entity.is_group || this.entity.document) {
+            this.currentName = this.entity.title;
+          } else {
+            // Sometimes the filename wont have an extension
+            const parts = this.entity?.title.split(".");
+            if (parts.length > 1) {
+              this.extension = parts.pop();
+              this.currentName =
+                this.entity.title.substring(
+                  0,
+                  this.entity.title.lastIndexOf(".")
+                ) || this.entity.title;
+            } else {
+              this.currentName = this.entity.title;
+            }
+          }
+        }
+      },
+      immediate: true,
     },
-    performRename() {
-      const trimmedName = this.newName.trim();
-      if (this.entity.is_group || this.entity.document) {
-        this.$resources.rename.submit({
-          method: "rename",
-          entity_name: this.entityName,
-          new_title: trimmedName,
-        });
-      } else {
-        const newTitle = this.addExtension(trimmedName);
-        this.$resources.rename.submit({
-          method: "rename",
-          entity_name: this.entityName,
-          new_title: newTitle,
-        });
-      }
-    },
-  },
-  updated() {
-    this.newName = this.fileName;
   },
   resources: {
     rename() {
@@ -105,19 +104,21 @@ export default {
         params: {
           method: "rename",
           entity_name: this.entityName,
-          new_title: this.newName,
-        },
-        validate(params) {
-          if (!params?.new_title) {
-            return "New name is required";
-          }
+          // https://stackoverflow.com/questions/7296594/array-join-vs-string-concat
+          // Interestingly faster than join
+          new_title: this.fullName,
         },
         onSuccess(data) {
           this.newName = "";
+          this.currentName = "";
+          this.extension = "";
           this.errorMessage = "";
           this.$emit("success", data);
         },
         onError(error) {
+          this.newName = "";
+          this.currentName = "";
+          this.extension = "";
           if (error.messages) {
             this.errorMessage = error.messages.join("\n");
           } else {
