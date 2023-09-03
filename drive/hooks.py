@@ -182,7 +182,7 @@ scheduler_events = {
 # ]
 
 website_redirects = [
-	{"source": "/", "target": "/drive"},
-    {"source": "/me", "target": "/drive"},
+    {"source": "/", "target": "/drive"},
+    {"source": "/me", "target": "/drive/home"},
     {"source": "/login", "target": "/drive/login"},
 ]
