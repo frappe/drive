@@ -140,8 +140,10 @@ export default {
         params: {
           entity_name: this.entityName,
         },
-        onError(data) {
-          console.log(data);
+        onError(error) {
+          console.log(error);
+          if (error?.messages.some((x) => x.startsWith("PermissionError")))
+            window.location.href = "/";
         },
         auto: false,
       };

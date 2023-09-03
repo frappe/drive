@@ -403,7 +403,7 @@ export default {
   async mounted() {
     await this.$resources.getHomeID.fetch();
     this.$store.commit("setCurrentBreadcrumbs", [
-      { label: "Home", route: "/" },
+      { label: "Home", route: "/home" },
     ]);
     this.emitter.on("fetchFolderContents", () => {
       this.$resources.folderContents.fetch();

@@ -37,7 +37,7 @@ const store = createStore({
     homeFolderID: "",
     currentBreadcrumbs: JSON.parse(
       localStorage.getItem("currentBreadcrumbs")
-    ) || [{ label: "Home", route: "/" }],
+    ) || [{ label: "Home", route: "/home" }],
     allComments: "",
     activeCommentsInstance: "",
   },

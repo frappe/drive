@@ -154,7 +154,7 @@ export default {
     showEmptyEntityContextMenu: false,
     showNewFolderDialog: false,
     entityContext: {},
-    breadcrumbs: [{ label: "Home", route: "/" }],
+    breadcrumbs: [{ label: "Folder", route: "/folder" }],
     isSharedFolder: false,
   }),
   computed: {

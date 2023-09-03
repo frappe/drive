@@ -74,7 +74,7 @@ export default {
             password: this.password,
           });
           if (res) {
-            this.$router.push("/");
+            this.$router.push("/home");
           }
         }
       } catch (error) {

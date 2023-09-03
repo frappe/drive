@@ -3,7 +3,7 @@ import store from "./store";
 
 const routes = [
   {
-    path: "/",
+    path: "/home",
     name: "Home",
     component: () => import("@/pages/Home.vue"),
   },
@@ -83,6 +83,8 @@ let router = createRouter({
   routes,
 });
 
+const HybridRouteArray = ["File", "Folder", "Document"];
+
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.isPublicRoute)) {
     if (store.getters.isLoggedIn) {
@@ -95,6 +97,11 @@ router.beforeEach((to, from, next) => {
       store.getters.isLoggedIn ||
       to.matched.some((record) => record.meta.isHybridRoute)
     ) {
+      if (from.path === "/" && HybridRouteArray.includes(to.name)) {
+        store.commit("setCurrentBreadcrumbs", [
+          { label: "Shared", route: "/shared" },
+        ]);
+      }
       next();
     } else {
       import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
