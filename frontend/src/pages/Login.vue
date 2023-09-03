@@ -10,16 +10,14 @@
         placeholder="johndoe@mail.com"
         name="email"
         autocomplete="email"
-        :type="email !== 'Administrator' ? 'email' : 'text'"
-        required />
+        :type="email !== 'Administrator' ? 'email' : 'text'" />
       <Input
         v-model="password"
         label="Password"
         type="password"
         placeholder="••••••••"
         name="password"
-        autocomplete="current-password"
-        required />
+        autocomplete="current-password" />
       <ErrorMessage :message="errorMessage" class="mt-4" />
       <Button
         class="mt-4 focus:ring-0 focus:ring-offset-0"
