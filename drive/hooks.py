@@ -184,4 +184,5 @@ scheduler_events = {
 website_redirects = [
 	{"source": "/", "target": "/drive"},
     {"source": "/me", "target": "/drive"},
+    {"source": "/login", "target": "/drive/login"},
 ]
