@@ -40,7 +40,8 @@
         :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
-  <DocMenuAndInfoBar :editor="editor" />
+  <DocMenuAndInfoBar v-if="isWritable" :editor="editor" />
+  <InfoSidebar v-else :editor="editor" />
 </template>
 
 <script>
@@ -87,6 +88,7 @@ import { IndexeddbPersistence } from "y-indexeddb";
 import { createEditorButton } from "./utils";
 import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue";
 import Menu from "./Menu.vue";
+import InfoSidebar from "../InfoSidebar.vue";
 
 export default {
   name: "TextEditor",
@@ -95,6 +97,7 @@ export default {
     BubbleMenu,
     Menu,
     DocMenuAndInfoBar,
+    InfoSidebar,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,

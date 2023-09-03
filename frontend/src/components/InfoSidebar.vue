@@ -40,7 +40,7 @@
           </div>
         </div>
         <div v-if="tab === 0" class="h-full border-b pb-12">
-          <div
+          <!--           <div
             class="p-4 z-10 sticky top-0 bg-white"
             :class="
               tab === 0
@@ -50,19 +50,24 @@
             @click="tab = 0">
             <div class="flex items-center">
               <FeatherIcon name="alert-circle" class="h-4 mr-2 stroke-2" />
-              <span class="font-medium text-lg">Info</span>
+              <span class="font-medium text-lg">Information</span>
             </div>
-          </div>
+          </div> -->
           <div
-            v-if="entity.mime_type?.startsWith('image') && showInfoSidebar"
+            v-if="
+              (entity.mime_type?.startsWith('video') ||
+                entity.mime_type?.startsWith('image')) &&
+              showInfoSidebar
+            "
             class="relative p-4 min-h-full flex-auto flex flex-col overflow-y-auto">
-            <FileRender
+            <!-- <FileRender
               v-if="entity.mime_type?.startsWith('image') && showInfoSidebar"
-              :preview-entity="entity" />
+              :preview-entity="entity" /> -->
+            <img :src="thumbnailLink" />
           </div>
-          <div class="p-4 space-y-4">
+          <div class="p-4 space-y-7">
             <div v-if="entity.owner === 'me'">
-              <div class="text-lg font-medium mb-2">Manage Access</div>
+              <div class="text-lg font-medium mb-4">Manage Access</div>
               <div class="flex flex-row">
                 <Button
                   icon-left="share-2"
@@ -73,7 +78,7 @@
               </div>
             </div>
             <div v-if="entity.owner === 'me' || $resources.entityTags.data">
-              <div class="text-lg font-medium my-2">Tag</div>
+              <div class="text-lg font-medium my-4">Tag</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
                   v-for="tag in $resources.entityTags.data"
@@ -112,7 +117,7 @@
                 "
                 @close="addTag = false" />
             </div>
-            <div class="text-lg font-medium my-3">General Info</div>
+            <div class="text-lg font-medium">Properties</div>
             <div class="flex text-base">
               <div class="w-1/2 text-gray-600 space-y-2">
                 <div>Type</div>
@@ -135,13 +140,8 @@
           </div>
         </div>
         <div v-if="tab === 1" class="h-full pb-12">
-          <div
-            v-if="tab === 1"
-            class="z-10 p-4 sticky top-0 bg-white"
-            :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
-            @click="tab = 1">
+          <div v-if="tab === 1" class="pl-4 pt-4 sticky top-0 bg-white">
             <div class="flex items-center">
-              <FeatherIcon name="message-circle" class="h-4 mr-2 stroke-2" />
               <span class="font-medium text-lg">Comments</span>
             </div>
           </div>
@@ -258,6 +258,8 @@ import Tag from "@/components/Tag.vue";
 import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
+import File from "@/components/File.vue";
+import { thumbnail_getIconUrl } from "@/utils/getIconUrl";
 
 export default {
   name: "InfoSidebar",
@@ -270,6 +272,7 @@ export default {
     Tag,
     FileRender,
     Badge,
+    File,
   },
 
   setup() {
@@ -282,6 +285,7 @@ export default {
       newComment: "",
       showShareDialog: false,
       addTag: false,
+      thumbnailLink: "",
     };
   },
 
@@ -293,6 +297,7 @@ export default {
           typeof newVal !== "number" &&
           typeof newVal !== "undefined"
         ) {
+          this.thumbnailUrl();
           this.$resources.comments.fetch();
           this.$resources.userTags.fetch();
           this.$resources.entityTags.fetch();
@@ -349,15 +354,14 @@ export default {
       }
     },
 
-    mounted() {
-      if (
-        typeof this.entity !== "number" &&
-        typeof this.entity !== "undefined"
-      ) {
-        this.$resources.comments.fetch();
-        this.$resources.userTags.fetch();
-        this.$resources.entityTags.fetch();
-      }
+    async thumbnailUrl() {
+      let result = await thumbnail_getIconUrl(
+        formatMimeType(this.entity.mime_type),
+        this.entity.name,
+        this.file_ext
+      );
+      console.log(this.entity.name);
+      this.thumbnailLink = result;
     },
 
     async postComment() {

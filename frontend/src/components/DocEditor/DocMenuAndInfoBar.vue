@@ -35,8 +35,7 @@
               v-if="tab === 0"
               class="space-y-7 h-full flex-auto flex flex-col z-0">
               <div class="flex items-center">
-                <FeatherIcon name="alert-circle" class="h-4 mr-2 stroke-2" />
-                <span class="font-medium text-lg">Doc Info</span>
+                <span class="font-medium text-lg">Information</span>
               </div>
               <div class="flex text-base">
                 <div class="w-1/2 text-gray-600 space-y-2">
@@ -73,7 +72,7 @@
                 v-if="
                   entity.owner === 'me' || $resources.entityTags.data?.length
                 ">
-                <div class="text-lg font-medium mb-4">Tag</div>
+                <div class="text-lg font-medium my-4">Tag</div>
                 <div class="flex flex-wrap gap-2">
                   <Tag
                     v-for="tag in $resources.entityTags.data"
@@ -988,7 +987,7 @@
       ]"
       variant="minimal">
       <FeatherIcon
-        name="alert-circle"
+        name="info"
         :class="[
           tab === 0 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
