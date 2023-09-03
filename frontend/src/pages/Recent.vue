@@ -100,7 +100,7 @@ export default {
         {
           label: "View details",
           icon: "eye",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", true);
           },
           isEnabled: () => {
@@ -112,7 +112,7 @@ export default {
         {
           label: "Hide details",
           icon: "eye-off",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", false);
           },
           isEnabled: () => {
@@ -122,7 +122,7 @@ export default {
         {
           label: "Add to Favourites",
           icon: "star",
-          handler: () => {
+          onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
           isEnabled: () => {
@@ -221,7 +221,7 @@ export default {
     recentDriveEntity() {
       return {
         method: "GET",
-        url: "drive.api.files.get_entity",
+        url: "drive.api.permissions.get_file_with_permissions",
         params: {
           entity_name: "entity_name",
           fields:

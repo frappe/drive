@@ -158,7 +158,7 @@ export default {
         {
           label: "Download",
           icon: "download",
-          handler: () => {
+          onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
@@ -188,7 +188,7 @@ export default {
         {
           label: "View details",
           icon: "eye",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", true);
           },
           isEnabled: () => {
@@ -200,7 +200,7 @@ export default {
         {
           label: "Hide details",
           icon: "eye-off",
-          handler: () => {
+          onClick: () => {
             this.$store.commit("setShowInfo", false);
           },
           isEnabled: () => {
@@ -210,7 +210,7 @@ export default {
         {
           label: "Rename",
           icon: "edit",
-          handler: () => {
+          onClick: () => {
             this.showRenameDialog = true;
           },
           isEnabled: () => {
@@ -223,7 +223,7 @@ export default {
         {
           label: "Remove from Favourites",
           icon: "x-circle",
-          handler: () => {
+          onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
           isEnabled: () => {

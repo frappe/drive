@@ -4,7 +4,7 @@
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid">
-    <span class="truncate text-sm font-medium text-gray-800 mb-1">
+    <span class="truncate text-sm text-gray-800 mb-1">
       {{ title }}
     </span>
     <div class="truncate text-xs text-gray-600 flex mt-1 place-items-center">
@@ -42,7 +42,7 @@ export default {
       if (typeof this.link === "string") {
         return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]";
       } else {
-        return "h-10 w-10";
+        return "h-8 w-8";
       }
     },
   },

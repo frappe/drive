@@ -11,12 +11,12 @@
       @mousedown="(event) => handleMousedown(event)">
       <div v-if="folders.length > 0" class="mt-3">
         <div class="text-gray-600 font-medium">Folders</div>
-        <div class="flex flex-row flex-wrap gap-5 mt-4">
+        <div class="flex flex-row flex-wrap gap-4 mt-4">
           <div
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="cursor-pointer p-2 w-44 h-30 rounded-lg border group select-none entity"
+            class="cursor-pointer p-2 w-40 h-24 rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
@@ -37,8 +37,8 @@
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="30"
-                height="30"
+                width="28"
+                height="28"
                 viewBox="0 0 40 40"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -46,10 +46,10 @@
               </svg>
             </div>
             <div class="content-center grid">
-              <span class="truncate text-sm font-medium text-gray-800 mt-4">
+              <span class="truncate text-sm text-gray-800 mt-4">
                 {{ folder.title }}
               </span>
-              <p class="truncate text-xs text-gray-600 mt-2">
+              <p class="truncate text-xs text-gray-600 mt-1">
                 {{ folder.file_size }}
               </p>
             </div>
@@ -60,12 +60,12 @@
         v-if="files.length > 0"
         :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
         <div class="text-gray-600 font-medium">Files</div>
-        <div class="flex flex-row flex-wrap gap-5 mt-4">
+        <div class="inline-flex flex-row flex-wrap gap-4 mt-4">
           <div
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-44 h-44 rounded-lg border group select-none entity cursor-pointer"
+            class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer"
             draggable="true"
             :class="
               selectedEntities.includes(file)
