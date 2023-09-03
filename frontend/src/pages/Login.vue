@@ -36,6 +36,27 @@
           </span>
         </div>
       </div>
+      <Button
+        v-for="provider in $resources.authProviders.data"
+        :key="provider.name"
+        class="mb-4 focus:ring-0 focus:ring-offset-0"
+        variant="solid"
+        @click="redirect(provider.auth_url)">
+        Login via {{ provider.provider_name }}
+        <template v-if="provider.name == 'frappe'" #prefix>
+          <svg
+            class="h-4"
+            style="fill: white"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 3.68891V5.37783H11.5H18V3.68891V2H11.5H5V3.68891Z" />
+            <path
+              d="M5 15.9374V21.2443H7.07628H9.15256V17.6341V14.0238H13.1502H17.1478V12.3272V10.6305H11.0739H5V15.9374Z" />
+          </svg>
+        </template>
+      </Button>
       <router-link class="text-base text-center" to="/signup">
         Sign up for a new account
       </router-link>
@@ -64,6 +85,9 @@ export default {
     };
   },
   methods: {
+    redirect(link) {
+      window.location.href = link;
+    },
     async login() {
       try {
         this.errorMessage = null;
@@ -82,6 +106,19 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+  },
+  resources: {
+    authProviders() {
+      return {
+        url: "drive.api.api.oauth_providers",
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+        auto: true,
+      };
     },
   },
 };
