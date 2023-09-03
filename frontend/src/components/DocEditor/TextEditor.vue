@@ -41,7 +41,7 @@
     </BubbleMenu>
   </div>
   <DocMenuAndInfoBar v-if="isWritable" :editor="editor" />
-  <InfoSidebar v-else :editor="editor" />
+  <InfoSidebar v-else />
 </template>
 
 <script>
@@ -627,7 +627,7 @@ span[data-comment] {
 }
 
 /* Check list */
-*/ .my-task-item {
+.my-task-item {
   display: flex;
 }
 

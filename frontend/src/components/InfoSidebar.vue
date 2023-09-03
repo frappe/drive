@@ -77,8 +77,11 @@
                 </Button>
               </div>
             </div>
-            <div v-if="entity.owner === 'me' || $resources.entityTags.data">
-              <div class="text-lg font-medium my-4">Tag</div>
+            <div
+              v-if="
+                entity.owner === 'me' || $resources.entityTags.data?.length
+              ">
+              <div class="text-lg font-medium my-4">Tags</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
                   v-for="tag in $resources.entityTags.data"
@@ -360,7 +363,6 @@ export default {
         this.entity.name,
         this.file_ext
       );
-      console.log(this.entity.name);
       this.thumbnailLink = result;
     },
 

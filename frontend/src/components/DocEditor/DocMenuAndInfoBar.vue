@@ -72,7 +72,7 @@
                 v-if="
                   entity.owner === 'me' || $resources.entityTags.data?.length
                 ">
-                <div class="text-lg font-medium my-4">Tag</div>
+                <div class="text-lg font-medium my-4">Tags</div>
                 <div class="flex flex-wrap gap-2">
                   <Tag
                     v-for="tag in $resources.entityTags.data"
