@@ -40,10 +40,9 @@
         class="mb-4 focus:ring-0 focus:ring-offset-0"
         variant="solid"
         @click="redirect(provider.auth_url)">
-        Login via {{ provider.provider_name }}
         <template v-if="provider.name == 'frappe'" #prefix>
           <svg
-            class="h-4"
+            class="h-4.5"
             style="fill: white"
             width="24"
             height="24"
@@ -54,6 +53,7 @@
               d="M5 15.9374V21.2443H7.07628H9.15256V17.6341V14.0238H13.1502H17.1478V12.3272V10.6305H11.0739H5V15.9374Z" />
           </svg>
         </template>
+        Login via {{ provider.provider_name }}
       </Button>
       <router-link class="text-base text-center" to="/signup">
         Sign up for a new account
