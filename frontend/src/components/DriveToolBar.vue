@@ -3,9 +3,25 @@
     ondragstart="return false;"
     ondrop="return false;"
     class="mb-2 min-h-8 flex gap-3 flex-wrap justify-end items-center w-full px-5 md:px-0">
-    <!--     <Breadcrumbs v-if="breadcrumbs" :breadcrumb-links="breadcrumbs" />
- -->
-    <div class="flex gap-3 basis-auto">
+    <div class="flex gap-3 w-full justify-end">
+      <div
+        v-if="$route.name === 'Shared'"
+        class="mr-auto bg-gray-100 rounded-[10px] p-0.5 space-x-0.5 h-8 flex">
+        <Button
+          variant="ghost"
+          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          :class="[$store.state.shareView === 'with' ? 'bg-white shadow' : '']"
+          @click="$store.commit('toggleShareView', 'with')">
+          Shared with me
+        </Button>
+        <Button
+          variant="ghost"
+          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          :class="[$store.state.shareView === 'by' ? 'bg-white shadow' : '']"
+          @click="$store.commit('toggleShareView', 'by')">
+          Shared by me
+        </Button>
+      </div>
       <!-- <Dropdown
         v-if="actionItems.length > 0"
         :options="actionItems"
@@ -22,7 +38,7 @@
         v-if="columnHeaders"
         :options="orderByItems"
         placement="right"
-        class="basis-5/12 lg:basis-auto">
+        class="basis-5/12 basis-auto">
         <div class="flex items-center whitespace-nowrap">
           <Button
             class="text-sm h-8 px-2 border-r border-slate-200 rounded-r-none"
@@ -51,14 +67,16 @@
       </Dropdown>
       <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5 h-8 flex">
         <Button
+          variant="ghost"
           icon="grid"
-          class="h-7"
-          :style="[$store.state.view === 'grid' && { background: '#FFF' }]"
+          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          :class="[$store.state.view === 'grid' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleView', 'grid')"></Button>
         <Button
+          variant="ghost"
           icon="list"
-          class="h-7"
-          :style="[$store.state.view === 'list' && { background: '#FFF' }]"
+          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          :class="[$store.state.view === 'list' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleView', 'list')"></Button>
       </div>
     </div>

@@ -28,6 +28,7 @@ const store = createStore({
       ascending: false,
     },
     view: JSON.parse(localStorage.getItem("view")) || "grid",
+    shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     entityInfo: JSON.parse(localStorage.getItem("selectedEntities")) || null,
     pasteData: { entities: [], action: null },
     showInfo: false,
@@ -78,6 +79,10 @@ const store = createStore({
     toggleView(state, payload) {
       localStorage.setItem("view", JSON.stringify(payload));
       state.view = payload;
+    },
+    toggleShareView(state, payload) {
+      localStorage.setItem("shareView", JSON.stringify(payload));
+      state.shareView = payload;
     },
     setEntityInfo(state, payload) {
       localStorage.setItem("selectedEntities", JSON.stringify(payload));

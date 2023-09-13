@@ -1,5 +1,5 @@
 import frappe
-from pypika import Order
+from pypika import Order, Query, Table, Field
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
@@ -79,6 +79,73 @@ def get_shared_with_list(entity_name):
 def get_shared_user_group_list(entity_name):
     user_group_list  =  get_entity_shared_with_user_groups(entity_name)
     return user_group_list
+
+
+@frappe.whitelist()
+def get_shared_by_me(get_all=False, order_by="modified"):
+    """
+    Return the list of files and folders shared with the current user
+
+    :param entity_name: Document-name of the folder whose contents are to be listed.
+    :raises NotADirectoryError: If this DriveEntity doc is not a folder
+    :return: List of DriveEntities with permissions
+    :rtype: list[frappe._dict]
+    """
+
+    DocShare = frappe.qb.DocType("DocShare")
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    DriveFavourite = frappe.qb.DocType("Drive Favourite")
+    selectedFields = [
+        DriveEntity.name,
+        DriveEntity.title,
+        DriveEntity.is_group,
+        DriveEntity.owner,
+        DriveEntity.modified,
+        DriveEntity.creation,
+        DriveEntity.file_size,
+        DriveEntity.mime_type,
+        DriveEntity.parent_drive_entity,
+        DriveEntity.allow_comments,
+        DriveEntity.color,
+        DriveEntity.document,
+        DriveEntity.allow_download,
+        DocShare.read,
+        DocShare.write,
+        DocShare.everyone,
+        DocShare.share,
+        DriveFavourite.entity.as_("is_favourite"),
+    ]
+
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .left_join(DocShare)
+        .on((DocShare.share_name == DriveEntity.name) & (DriveEntity.owner == frappe.session.user))
+        .left_join(DriveFavourite)
+        .on(
+            (DriveFavourite.entity == DriveEntity.name)
+            & (DriveFavourite.user == frappe.session.user)
+        )
+        .select(*selectedFields)
+        .where(
+            (DriveEntity.is_active == 1)
+            & ((DocShare.user != frappe.session.user) | (DocShare.everyone == 1))
+        )
+        .groupby(DriveEntity.name)
+    )
+    if get_all:
+        return query.run(as_dict=True)
+
+    result = query.orderby(
+        order_by.split()[0],
+        order=Order.desc if order_by.endswith("desc") else Order.asc,
+    ).run(as_dict=True)
+    names = [x.name for x in result]
+    print(query.get_sql())
+    # Return highest level entity
+    return filter(
+        lambda x: x.parent_drive_entity not in names,
+        result,
+    )
 
 
 @frappe.whitelist()
