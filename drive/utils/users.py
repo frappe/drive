@@ -101,9 +101,7 @@ def add_drive_user_role(user_id):
     if not drive_user:
         return {"status": "error", "message": "User with given email does not exist"}
 
-    user_role_exists = frappe.db.exists(
-        "Has Role", {"parent": user_id, "role": "Drive User"}
-    )
+    user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": "Drive User"})
 
     if user_role_exists is not None:
         return {
@@ -133,9 +131,7 @@ def remove_drive_user_role(user_id):
     if not drive_user:
         return {"status": "error", "message": "User with given email does not exist"}
 
-    user_role_exists = frappe.db.exists(
-        "Has Role", {"parent": user_id, "role": "Drive User"}
-    )
+    user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": "Drive User"})
 
     if user_role_exists is None:
         return {

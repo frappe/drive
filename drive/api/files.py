@@ -106,9 +106,7 @@ def upload_file(fullpath=None, parent=None):
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
-        frappe.throw(
-            "Cannot upload due to insufficient permissions", frappe.PermissionError
-        )
+        frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
     file = frappe.request.files["file"]
     title = get_new_title(file.filename, parent)
@@ -117,7 +115,7 @@ def upload_file(fullpath=None, parent=None):
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
-    
+
     if current_chunk == 0 and save_path.exists():
         print(save_path)
         frappe.throw(f"File '{title}' already exists", FileExistsError)
@@ -133,8 +131,8 @@ def upload_file(fullpath=None, parent=None):
             frappe.throw("Size on disk does not match specified filesize", ValueError)
 
         mime_type, _ = mimetypes.guess_type(save_path)
-        
-        if (mime_type is None):
+
+        if mime_type is None:
             # Read the first 2KB of the binary stream to determine the file type if string checking failed
             # Do a rejection workflow to reject undesired mime types
             mime_type = magic.from_buffer(open(save_path, "rb").read(2048), mime=True)
@@ -328,9 +326,7 @@ def get_file_content(entity_name, trigger_download=0):
             response.status_code = 204
             return response
 
-        response = Response(
-            wrap_file(frappe.request.environ, file), direct_passthrough=True
-        )
+        response = Response(wrap_file(frappe.request.environ, file), direct_passthrough=True)
         response.mimetype = drive_entity.mime_type or "application/octet-stream"
         content_dispostion = "attachment" if trigger_download else "inline"
         response.headers.add(
@@ -392,9 +388,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
     entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
     flag = False
     for z_entity_name in entity_ancestors:
-        result = frappe.db.exists(
-            "Drive Entity", {"name": z_entity_name, "is_active": 0}
-        )
+        result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
         if result:
             flag = True
             break
@@ -439,8 +433,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         )
         .select(*selectedFields)
         .where(
-            (DriveEntity.parent_drive_entity == entity_name)
-            & (DriveEntity.is_active == is_active)
+            (DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == is_active)
         )
         .groupby(DriveEntity.name)
         .orderby(
@@ -509,14 +502,11 @@ def get_entities_in_path(entity_name, fields=None, shared=False):
     if not frappe.has_permission(
         doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
     ):
-        frappe.throw(
-            "Cannot access path due to insufficient permissions", frappe.PermissionError
-        )
+        frappe.throw("Cannot access path due to insufficient permissions", frappe.PermissionError)
     path = get_ancestors_of("Drive Entity", entity_name, "lft asc")
     path.append(entity_name)
     entities = [
-        frappe.db.get_value("Drive Entity", entity, fields, as_dict=True)
-        for entity in path
+        frappe.db.get_value("Drive Entity", entity, fields, as_dict=True) for entity in path
     ]
 
     if entities[0].owner != frappe.session.user:
@@ -543,9 +533,7 @@ def get_shared_entities_in_path(entities):
     while not highest_level_reached:
         if frappe.db.exists(
             "DocShare", {"user": frappe.session.user, "share_name": entities[i].name}
-        ) or frappe.db.exists(
-            "DocShare", {"everyone": 1, "share_name": entities[i].name}
-        ):
+        ) or frappe.db.exists("DocShare", {"everyone": 1, "share_name": entities[i].name}):
             shared_entities.insert(0, entities[i])
             i -= 1
         else:
@@ -794,9 +782,7 @@ def call_controller_method(entity_name, method):
     :return: The result of the controller method
     """
 
-    drive_entity = frappe.get_doc(
-        "Drive Entity", frappe.local.form_dict.pop("entity_name")
-    )
+    drive_entity = frappe.get_doc("Drive Entity", frappe.local.form_dict.pop("entity_name"))
     if not drive_entity:
         frappe.throw("Entity does not exist", ValueError)
     method = frappe.local.form_dict.pop("method")
@@ -807,9 +793,7 @@ def call_controller_method(entity_name, method):
 
 @frappe.whitelist()
 def get_children_count(drive_entity):
-    children_count = frappe.db.count(
-        "Drive Entity", {"parent_drive_entity": drive_entity}
-    )
+    children_count = frappe.db.count("Drive Entity", {"parent_drive_entity": drive_entity})
     return children_count
 
 

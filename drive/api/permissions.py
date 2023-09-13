@@ -75,9 +75,10 @@ def get_shared_with_list(entity_name):
 
     return users
 
+
 @frappe.whitelist()
 def get_shared_user_group_list(entity_name):
-    user_group_list  =  get_entity_shared_with_user_groups(entity_name)
+    user_group_list = get_entity_shared_with_user_groups(entity_name)
     return user_group_list
 
 
@@ -186,10 +187,7 @@ def get_shared_with_me(get_all=False, order_by="modified"):
     query = (
         frappe.qb.from_(DriveEntity)
         .inner_join(DocShare)
-        .on(
-            (DocShare.share_name == DriveEntity.name)
-            & (DocShare.user == frappe.session.user)
-        )
+        .on((DocShare.share_name == DriveEntity.name) & (DocShare.user == frappe.session.user))
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
@@ -282,9 +280,7 @@ def get_file_with_permissions(entity_name):
     entity_ancestors = get_ancestors_of("Drive Entity", entity)
     flag = False
     for z_entity_name in entity_ancestors:
-        result = frappe.db.exists(
-            "Drive Entity", {"name": z_entity_name, "is_active": 0}
-        )
+        result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
         if result:
             flag = True
             break

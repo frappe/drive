@@ -49,10 +49,7 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_upload_file(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
         doc = self.mock_chunked_upload_request(file_path, file_size)
@@ -65,15 +62,10 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_single_chunk_upload(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
-        doc = self.mock_chunked_upload_request(
-            file_path, file_size, chunk_size=file_size
-        )
+        doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
         self.assertEqual(doc.title, file_path.name)
         self.assertEqual(doc.file_size, file_size)
         self.assertEqual(doc.parent_drive_entity, get_user_directory().name)
@@ -83,23 +75,15 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_upload_with_inaccurate_file_size(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
         with self.assertRaises(ValueError):
-            doc = self.mock_chunked_upload_request(
-                file_path, file_size, total_file_size=1024
-            )
+            doc = self.mock_chunked_upload_request(file_path, file_size, total_file_size=1024)
 
     def test_upload_existing_file(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
         doc = self.mock_chunked_upload_request(file_path, file_size)
@@ -133,15 +117,10 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_get_file_content(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
-        doc = self.mock_chunked_upload_request(
-            file_path, file_size, chunk_size=file_size
-        )
+        doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
         file_content = get_file_content(doc.name)
         headers = file_content.headers
         self.assertEqual(file_content.status_code, 200)
@@ -154,15 +133,10 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_download_file(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
-        doc = self.mock_chunked_upload_request(
-            file_path, file_size, chunk_size=file_size
-        )
+        doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
         file_content = get_file_content(doc.name, trigger_download=1)
         headers = file_content.headers
         self.assertEqual(file_content.status_code, 200)
@@ -186,15 +160,10 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_unauthorized_get_file_content(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
-        doc = self.mock_chunked_upload_request(
-            file_path, file_size, chunk_size=file_size
-        )
+        doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
         frappe.set_user("Guest")
         with self.assertRaises(frappe.PermissionError):
             file_content = get_file_content(doc.name)
@@ -203,15 +172,10 @@ class TestFilesAPI(unittest.TestCase):
 
     def test_get_locked_file_content(self):
         file_path = (
-            Path(frappe.get_app_path("drive"))
-            / "tests"
-            / "fixtures"
-            / "sample_text_file.txt"
+            Path(frappe.get_app_path("drive")) / "tests" / "fixtures" / "sample_text_file.txt"
         )
         file_size = file_path.stat().st_size
-        doc = self.mock_chunked_upload_request(
-            file_path, file_size, chunk_size=file_size
-        )
+        doc = self.mock_chunked_upload_request(file_path, file_size, chunk_size=file_size)
         with DistributedLock(doc.path, exclusive=True):
             with self.assertRaises(FileLockedError):
                 file_content = get_file_content(doc.name)

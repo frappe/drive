@@ -11,7 +11,7 @@ from drive.utils.files import (
     create_user_thumbnails_directory,
     create_thumbnail,
 )
-from drive.utils.user_group import (add_new_user_group_docshare, does_exist_user_group_docshare)
+from drive.utils.user_group import add_new_user_group_docshare, does_exist_user_group_docshare
 
 
 class DriveEntity(NestedSet):
@@ -130,9 +130,7 @@ class DriveEntity(NestedSet):
             except FileNotFoundError:
                 parent_user_directory = create_user_directory()
             new_parent = new_parent or parent_user_directory.name
-            parent_is_group = frappe.db.get_value(
-                "Drive Entity", new_parent, "is_group"
-            )
+            parent_is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
             if not parent_is_group:
                 raise NotADirectoryError()
             if not frappe.has_permission(
@@ -171,9 +169,7 @@ class DriveEntity(NestedSet):
                 child.copy(name, parent_user_directory)
 
         elif self.document is not None:
-            drive_doc_content = frappe.db.get_value(
-                "Drive Document", self.document, "content"
-            )
+            drive_doc_content = frappe.db.get_value("Drive Document", self.document, "content")
 
             new_drive_doc = frappe.new_doc("Drive Document")
             new_drive_doc.title = title
@@ -219,9 +215,9 @@ class DriveEntity(NestedSet):
         if new_parent == parent_user_directory.name:
             drive_entity.share(frappe.session.user, write=1, share=1)
 
-        if drive_entity.mime_type.startswith(
-            "image"
-        ) or drive_entity.mime_type.startswith("video"):
+        if drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith(
+            "video"
+        ):
             frappe.enqueue(
                 create_thumbnail,
                 queue="default",
@@ -287,9 +283,7 @@ class DriveEntity(NestedSet):
 
         if new_access["read"]:
             flags = (
-                {"ignore_share_permission": True}
-                if frappe.session.user == self.owner
-                else None
+                {"ignore_share_permission": True} if frappe.session.user == self.owner else None
             )
             frappe.share.add_docshare(
                 "Drive Entity",
@@ -301,11 +295,7 @@ class DriveEntity(NestedSet):
             )
 
         else:
-            flags = (
-                {"ignore_permissions": True}
-                if frappe.session.user == self.owner
-                else None
-            )
+            flags = {"ignore_permissions": True} if frappe.session.user == self.owner else None
             if frappe.db.exists(
                 {
                     "doctype": "DocShare",
@@ -359,13 +349,9 @@ class DriveEntity(NestedSet):
         :param notify: 1 if the user should be notified. Defaults to 1
         """
 
-        flags = (
-            {"ignore_share_permission": True}
-            if frappe.session.user == self.owner
-            else None
-        )
+        flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
         if is_user_group:
-            if not does_exist_user_group_docshare(self.name,user):
+            if not does_exist_user_group_docshare(self.name, user):
                 return add_new_user_group_docshare(self.name, user)
         if self.is_group:
             for child in self.get_children():

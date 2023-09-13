@@ -142,9 +142,7 @@ def remove_users_from_group(group_name, user_emails=[]):
         for user_email in user_emails:
             if user_email in existing_members:
                 user_group.user_group_members = [
-                    member
-                    for member in user_group.user_group_members
-                    if member.user != user_email
+                    member for member in user_group.user_group_members if member.user != user_email
                 ]
                 removed_users.append(user_email)
 
@@ -192,12 +190,10 @@ def add_new_user_group_docshare(entity_name, user_group):
         frappe.throw("Error while adding new record: {0}").format(str(e))
 
 
-
 def does_exist_user_group_docshare(entity_name, user_group):
-    exists = frappe.db.exists("Drive DocShare", {
-        "entity_name": entity_name,
-        "user_group": user_group
-    })
+    exists = frappe.db.exists(
+        "Drive DocShare", {"entity_name": entity_name, "user_group": user_group}
+    )
     if exists:
         frappe.throw("User Group already added ")
     else:
