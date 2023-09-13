@@ -188,7 +188,7 @@ export default {
       return {
         attributes: {
           class: normalizeClass([
-            "prose prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
+            "prose prose-sm font-normal prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
           ]),
         },
         clipboardTextParser: (text, $context) => {
@@ -572,6 +572,8 @@ export default {
   -ms-user-select: none;
   user-select: none;
   padding: 0px;
+  /* font-family: 'Newsreader', serif; */
+  /* font-family: 'DM Serif Display', serif; */
 }
 
 /* Firefox */
@@ -616,6 +618,7 @@ span[data-comment] {
   color: #ffffffd0;
   font-size: 13px;
   font-style: normal;
+  font-family: "Inter";
   font-weight: 600;
   left: -1px;
   line-height: normal;

@@ -41,7 +41,7 @@
   <div
     v-if="isDocx"
     id="container"
-    class="object-contain max-h-[95vh] max-w-[80vw] z-10 overflow-y-scroll"></div>
+    class="object-contain max-h-[95vh] max-w-[75vw] z-10 overflow-y-scroll"></div>
   <div
     v-if="isXlsx"
     id="ctr"

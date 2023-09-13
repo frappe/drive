@@ -58,7 +58,7 @@ export default {
     },
   }, */
   mounted() {
-    this.$store.commit("setShowInfo", true);
+    //this.$store.commit("setShowInfo", true);
     this.$resources.getDocument
       .fetch()
       .then(() => {

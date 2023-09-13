@@ -224,6 +224,7 @@ export default {
           data.creation = formatDate(data.creation);
           this.$store.commit("setEntityInfo", [data]);
           this.previewEntity = data;
+          data.owner = "me";
         },
         onError(data) {
           console.log(data);

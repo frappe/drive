@@ -31,10 +31,13 @@
       <img
         v-if="addImageDialog.url"
         :src="addImageDialog.url"
-        class="mt-2 w-full rounded-lg" />
+        class="mt-2 w-full rounded-lg space-x-2" />
     </template>
     <template #actions>
-      <Button appearance="primary" @click="addImage(addImageDialog.url)">
+      <Button
+        class="mr-2"
+        appearance="primary"
+        @click="addImage(addImageDialog.url)">
         Insert Image
       </Button>
       <Button @click="reset">Cancel</Button>
