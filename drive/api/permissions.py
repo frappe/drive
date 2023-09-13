@@ -141,7 +141,6 @@ def get_shared_by_me(get_all=False, order_by="modified"):
         order=Order.desc if order_by.endswith("desc") else Order.asc,
     ).run(as_dict=True)
     names = [x.name for x in result]
-    print(query.get_sql())
     # Return highest level entity
     return filter(
         lambda x: x.parent_drive_entity not in names,
