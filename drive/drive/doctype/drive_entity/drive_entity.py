@@ -67,16 +67,17 @@ class DriveEntity(NestedSet):
                     break
                 except Exception as e:
                     print(f"Attempt {attempt + 1}: Failed to delete file - {e}")
-        if self.mime_type.startswith("image") or self.mime_type.startswith("video"):
-            max_attempts = 3
-            for attempt in range(max_attempts):
-                try:
-                    user_thumbnails_directory = get_user_thumbnails_directory()
-                    thumbnail_getpath = Path(user_thumbnails_directory, self.name)
-                    Path(str(thumbnail_getpath) + ".thumbnail").unlink()
-                    break
-                except Exception as e:
-                    print(f"Attempt {attempt + 1}: Failed to delete thumbnail - {e}")
+        if self.mime_type:
+            if self.mime_type.startswith("image") or self.mime_type.startswith("video"):
+                max_attempts = 3
+                for attempt in range(max_attempts):
+                    try:
+                        user_thumbnails_directory = get_user_thumbnails_directory()
+                        thumbnail_getpath = Path(user_thumbnails_directory, self.name)
+                        Path(str(thumbnail_getpath) + ".thumbnail").unlink()
+                        break
+                    except Exception as e:
+                        print(f"Attempt {attempt + 1}: Failed to delete thumbnail - {e}")
 
     def on_rollback(self):
         if self.flags.file_created:
