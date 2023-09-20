@@ -8,8 +8,9 @@
       {{ title }}
     </span>
     <div class="truncate text-xs text-gray-600 flex mt-1 place-items-center">
-      <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
-      <p>{{ getFileSubtitle() }}</p>
+      <!-- <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
+      <p>{{ getFileSubtitle() }}</p> -->
+      <p>{{ this.modified }}</p>
     </div>
   </div>
 </template>

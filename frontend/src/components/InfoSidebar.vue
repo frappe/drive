@@ -207,7 +207,7 @@
   <div
     class="flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
-      class="py-4 text-gray-600"
+      class="animate mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
           ? 'text-black bg-gray-200'
@@ -216,14 +216,14 @@
       variant="minimal"
       @click="switchTab(0)">
       <FeatherIcon
-        name="alert-circle"
+        name="info"
         :class="[
           tab === 0 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
         ]"
         class="text-gray-600 w-full h-full stroke-1.5" />
     </Button>
     <Button
-      class="text-gray-600 py-4"
+      class="animate mb-2 text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
           ? 'text-black bg-gray-200'
@@ -255,7 +255,6 @@ import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import File from "@/components/File.vue";
-import { useTextareaAutosize } from "@vueuse/core";
 import { thumbnail_getIconUrl } from "@/utils/getIconUrl";
 
 export default {
@@ -420,3 +419,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.animate:active {
+  transform: scaleX(0.985) scaleY(0.985) translateY(0.5px);
+}
+</style>

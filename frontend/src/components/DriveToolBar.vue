@@ -9,14 +9,14 @@
         class="mr-auto bg-gray-100 rounded-[10px] p-0.5 space-x-0.5 h-8 flex">
         <Button
           variant="ghost"
-          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          class="animate h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
           :class="[$store.state.shareView === 'with' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleShareView', 'with')">
           Shared with me
         </Button>
         <Button
           variant="ghost"
-          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          class="animate h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
           :class="[$store.state.shareView === 'by' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleShareView', 'by')">
           Shared by me
@@ -69,13 +69,13 @@
         <Button
           variant="ghost"
           icon="grid"
-          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          class="animate h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
           :class="[$store.state.view === 'grid' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleView', 'grid')"></Button>
         <Button
           variant="ghost"
           icon="list"
-          class="h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
+          class="animate h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
           :class="[$store.state.view === 'list' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleView', 'list')"></Button>
       </div>
@@ -151,3 +151,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.animate:active {
+  transform: scaleX(0.985) scaleY(0.985) translateY(0.5px);
+}
+</style>

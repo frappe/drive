@@ -8,10 +8,12 @@
       :to="item.route">
       <a
         :class="[
-          item.highlight() ? 'bg-white shadow-sm' : ' hover:bg-gray-100',
+          item.highlight()
+            ? 'bg-white shadow-sm border-[0.5px] border-gray-200'
+            : ' hover:bg-gray-100',
         ]"
         :href="href"
-        class="flex items-center text-gray-800 text-sm w-full mb-0.5 h-7 px-3 py-1 gap-3 rounded focus:outline-none transition"
+        class="sidebar-animate flex items-center text-gray-800 text-sm w-full mb-0.5 h-7 px-3 py-1 gap-3 rounded focus:outline-none transition"
         @click="navigate && $emit('toggleMobileSidebar')">
         <FeatherIcon
           :name="item.icon"
@@ -102,3 +104,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.sidebar-animate:active {
+  transform: scaleX(0.985) scaleY(0.985) translateY(0.5px);
+}
+</style>
