@@ -10,7 +10,7 @@
       <div v-if="typeof entity === 'number'">
         <div class="w-full p-4 border-b overflow-visible">
           <div class="flex items-center">
-            <div class="font-medium truncate text-xl">
+            <div class="font-medium truncate text-lg">
               {{ $store.state.entityInfo.length }} items selected
             </div>
           </div>
@@ -23,7 +23,7 @@
               v-if="entity.is_group"
               :style="{ fill: entity.color }"
               :draggable="false"
-              class="h-5 mr-2.5"
+              class="h-4 mr-2.5"
               viewBox="0 0 40 40"
               xmlns="http://www.w3.org/2000/svg">
               <path
@@ -33,13 +33,13 @@
               v-else
               :src="getIconUrl(formatMimeType(entity.mime_type))"
               :draggable="false"
-              class="h-5 mr-2.5" />
-            <div class="font-medium truncate text-xl">
+              class="h-4 mr-2.5" />
+            <div class="font-medium truncate text-lg">
               {{ entity.title }}
             </div>
           </div>
         </div>
-        <div v-if="tab === 0" class="h-full border-b pb-12">
+        <div v-if="tab === 0" class="h-full border-b">
           <!--           <div
             class="p-4 z-10 sticky top-0 bg-white"
             :class="
@@ -60,14 +60,11 @@
               showInfoSidebar
             "
             class="relative p-4 min-h-full flex-auto flex flex-col overflow-y-auto">
-            <!-- <FileRender
-              v-if="entity.mime_type?.startsWith('image') && showInfoSidebar"
-              :preview-entity="entity" /> -->
             <img :src="thumbnailLink" />
           </div>
-          <div class="p-4 space-y-7">
+          <div class="p-4 space-y-8">
             <div v-if="entity.owner === 'me'">
-              <div class="text-lg font-medium mb-4">Manage Access</div>
+              <div class="text-lg font-medium mb-3">Manage Access</div>
               <div class="flex flex-row">
                 <Button
                   icon-left="share-2"
@@ -77,11 +74,12 @@
                 </Button>
               </div>
             </div>
+
             <div
               v-if="
                 entity.owner === 'me' || $resources.entityTags.data?.length
               ">
-              <div class="text-lg font-medium my-4">Tags</div>
+              <div class="text-lg font-medium mb-3">Tags</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
                   v-for="tag in $resources.entityTags.data"
@@ -96,7 +94,7 @@
                   " />
                 <Badge
                   v-if="!addTag && entity.owner === 'me'"
-                  class="flex items-center content-center cursor-pointer pl-2 pr-4 font-medium text-xs"
+                  class="flex items-center content-center cursor-pointer font-medium"
                   @click="addTag = true">
                   <FeatherIcon
                     v-if="entity.owner === 'me'"
@@ -108,7 +106,7 @@
 
               <TagInput
                 v-if="addTag"
-                :class="{ 'w-full mt-2': $resources.entityTags.data.length }"
+                :class="{ 'w-full': $resources.entityTags.data.length }"
                 :entity="entity"
                 :unadded-tags="unaddedTags"
                 @success="
@@ -120,54 +118,49 @@
                 "
                 @close="addTag = false" />
             </div>
-            <div class="text-lg font-medium">Properties</div>
-            <div class="flex text-base">
-              <div class="w-1/2 text-gray-600 space-y-2">
-                <div>Type</div>
-                <div>Size</div>
-                <div>Modified</div>
-                <div>Created</div>
-                <div>Owner</div>
-              </div>
-              <div class="w-1/2 space-y-2">
-                <div>{{ formattedMimeType }}</div>
-                <div>{{ entity.file_size }}</div>
-                <div>{{ entity.modified }}</div>
-                <div>{{ entity.creation }}</div>
-                <div>{{ entity.owner }}</div>
+            <div>
+              <div class="text-lg font-medium mb-3">Properties</div>
+              <div class="flex text-base">
+                <div class="w-1/2 text-gray-600 space-y-2">
+                  <div>Type</div>
+                  <div>Size</div>
+                  <div>Modified</div>
+                  <div>Created</div>
+                  <div>Owner</div>
+                </div>
+                <div class="w-1/2 space-y-2">
+                  <div>{{ formattedMimeType }}</div>
+                  <div>{{ entity.file_size }}</div>
+                  <div>{{ entity.modified }}</div>
+                  <div>{{ entity.creation }}</div>
+                  <div>{{ entity.owner }}</div>
+                </div>
               </div>
             </div>
-            <!-- <div class="text-gray-600 text-base">
-              Viewers can download this file.
-            </div> -->
           </div>
         </div>
         <div v-if="tab === 1" class="h-full pb-12">
-          <div v-if="tab === 1" class="pl-4 pt-4 sticky top-0 bg-white">
-            <div class="flex items-center">
-              <span class="font-medium text-lg">Comments</span>
-            </div>
+          <div class="flex items-center pl-4 pt-4 sticky top-0 bg-white">
+            <span class="font-medium text-lg mb-3">Comments</span>
           </div>
           <div
             v-if="entity.allow_comments"
-            class="space-y-6 px-4 overflow-y-auto pb-4">
+            class="px-4 overflow-y-auto pb-4 space-y-6">
             <div
               v-for="comment in $resources.comments.data"
               :key="comment"
-              class="flex gap-3 my-4 items-center">
+              class="flex gap-3 items-center">
               <Avatar
                 :label="comment.comment_by"
                 :image="comment.user_image"
                 class="h-7 w-7" />
               <div>
-                <span class="my-1">
-                  <span class="text-sm font-medium">
-                    {{ comment.comment_by }}
-                  </span>
-                  <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
-                  <span class="text-gray-700 text-sm">
-                    {{ comment.creation }}
-                  </span>
+                <span class="text-sm font-medium">
+                  {{ comment.comment_by }}
+                </span>
+                <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
+                <span class="text-gray-700 text-sm">
+                  {{ comment.creation }}
                 </span>
                 <div class="text-base text-gray-700">
                   {{ comment.content }}
@@ -214,7 +207,7 @@
   <div
     class="flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
-      class="mb-2 py-4 text-gray-600"
+      class="py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
           ? 'text-black bg-gray-200'
@@ -262,6 +255,7 @@ import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import File from "@/components/File.vue";
+import { useTextareaAutosize } from "@vueuse/core";
 import { thumbnail_getIconUrl } from "@/utils/getIconUrl";
 
 export default {
@@ -291,7 +285,6 @@ export default {
       thumbnailLink: "",
     };
   },
-
   watch: {
     entity: {
       handler(newVal, oldVal) {

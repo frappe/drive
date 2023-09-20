@@ -12,14 +12,12 @@
           <img
             :src="getIconUrl(formatMimeType(entity.mime_type))"
             :draggable="false"
-            class="h-5 mr-2.5" />
-          <div class="font-medium truncate text-xl">
+            class="h-4 mr-2.5" />
+          <div class="font-medium truncate text-lg">
             {{ entity.title }}
           </div>
         </div>
       </div>
-      <!-- :class="$store.state.showInfo ? 'min-h-[45px]' : 'min-h-[48px]'" -->
-      <!-- grow  min-h-full -->
       <div v-if="entity && editor">
         <div class="flex flex-col justify-start">
           <div
@@ -34,27 +32,32 @@
             <div
               v-if="tab === 0"
               class="space-y-7 h-full flex-auto flex flex-col z-0">
-              <div class="flex items-center">
-                <span class="font-medium text-lg">Information</span>
-              </div>
-              <div class="flex text-base">
-                <div class="w-1/2 text-gray-600 space-y-2">
-                  <div>Words</div>
-                  <div>Characters</div>
-                  <div>Reading Time</div>
+              <div>
+                <div class="flex items-center">
+                  <span class="font-medium text-lg mb-2">Information</span>
                 </div>
-                <div class="w-1/2 space-y-2">
-                  <div>{{ editor.storage.characterCount.words() }}</div>
-                  <div>{{ editor.storage.characterCount.characters() }}</div>
-                  <div>
-                    ~
-                    {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
-                    min
+
+                <div class="flex text-base">
+                  <div class="w-1/2 text-gray-600 space-y-2">
+                    <div>Words</div>
+                    <div>Characters</div>
+                    <div>Reading Time</div>
+                  </div>
+                  <div class="w-1/2 space-y-2">
+                    <div>{{ editor.storage.characterCount.words() }}</div>
+                    <div>{{ editor.storage.characterCount.characters() }}</div>
+                    <div>
+                      ~
+                      {{
+                        Math.ceil(editor.storage.characterCount.words() / 200)
+                      }}
+                      min
+                    </div>
                   </div>
                 </div>
               </div>
               <div v-if="entity.owner === 'me'">
-                <div class="text-lg font-medium my-4">Manage Access</div>
+                <div class="text-base font-medium mb-2">Manage Access</div>
                 <div class="flex flex-row">
                   <Button
                     icon-left="share-2"
@@ -72,7 +75,7 @@
                 v-if="
                   entity.owner === 'me' || $resources.entityTags.data?.length
                 ">
-                <div class="text-lg font-medium my-4">Tags</div>
+                <div class="text-lg font-medium mb-2">Tags</div>
                 <div class="flex flex-wrap gap-2">
                   <Tag
                     v-for="tag in $resources.entityTags.data"
@@ -87,11 +90,11 @@
                     " />
                   <Badge
                     v-if="!addTag && entity.owner === 'me'"
-                    class="flex items-center content-center text-sm cursor-pointer"
+                    class="flex items-center content-center cursor-pointer font-medium"
                     @click="addTag = true">
                     <FeatherIcon
                       v-if="entity.owner === 'me'"
-                      class="h-4 mr-1"
+                      class="h-3 stroke-2"
                       name="plus" />
                     Add tag
                   </Badge>
@@ -99,7 +102,7 @@
 
                 <TagInput
                   v-if="addTag"
-                  :class="{ 'w-full mt-2': $resources.entityTags.data.length }"
+                  :class="{ 'w-full': $resources.entityTags.data.length }"
                   :entity="entity"
                   :unadded-tags="unaddedTags"
                   @success="
@@ -111,26 +114,25 @@
                   "
                   @close="addTag = false" />
               </div>
-              <div class="text-lg font-medium mb-4">Properties</div>
-              <div class="flex text-base">
-                <div class="w-1/2 text-gray-600 space-y-2">
-                  <div>Type</div>
-                  <div>Size</div>
-                  <div>Modified</div>
-                  <div>Created</div>
-                  <div>Owner</div>
-                </div>
-                <div class="w-1/2 space-y-2">
-                  <div>Frappe Doc</div>
-                  <div>{{ entity.file_size }}</div>
-                  <div>{{ entity.modified }}</div>
-                  <div>{{ entity.creation }}</div>
-                  <div>{{ entity.owner }}</div>
+              <div>
+                <div class="text-lg font-medium mb-3">Properties</div>
+                <div class="flex text-base">
+                  <div class="w-1/2 text-gray-600 space-y-2">
+                    <div>Type</div>
+                    <div>Size</div>
+                    <div>Modified</div>
+                    <div>Created</div>
+                    <div>Owner</div>
+                  </div>
+                  <div class="w-1/2 space-y-2">
+                    <div>Frappe Doc</div>
+                    <div>{{ entity.file_size }}</div>
+                    <div>{{ entity.modified }}</div>
+                    <div>{{ entity.creation }}</div>
+                    <div>{{ entity.owner }}</div>
+                  </div>
                 </div>
               </div>
-              <!-- <div class="text-gray-600 text-base">
-                Viewers can download this file.
-              </div> -->
             </div>
           </div>
           <div
@@ -140,43 +142,6 @@
             @click="tab = 1">
             <span class="font-medium text-lg">Comments</span>
             <div v-if="tab === 1" class="h-full">
-              <div v-if="entity.allow_comments" class="space-y-5">
-                <div
-                  v-for="comment in $resources.comments.data"
-                  :key="comment"
-                  class="flex gap-3 my-4 items-center">
-                  <Avatar
-                    :label="comment.comment_by"
-                    :image="comment.user_image"
-                    class="h-7 w-7" />
-                  <div>
-                    <span class="my-1">
-                      <span class="text-sm font-medium">
-                        {{ comment.comment_by }}
-                      </span>
-                      <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
-                      <span class="text-gray-700 text-sm">
-                        {{ comment.creation }}
-                      </span>
-                    </span>
-                    <div class="text-base text-gray-700">
-                      {{ comment.content }}
-                    </div>
-                  </div>
-                </div>
-                <div v-if="userId != 'Guest'" class="flex items-center gap-3">
-                  <Avatar :label="fullName" :image="imageURL" class="h-7 w-7" />
-                  <div class="flex">
-                    <Input
-                      v-model="newComment"
-                      type="text"
-                      class="border-gray-400 placeholder-gray-500 w-full grow bg-white focus:bg-white"
-                      placeholder="Add comment"
-                      @keydown.enter="postComment" />
-                  </div>
-                  <Button @click="postComment" variant="solid">Add</Button>
-                </div>
-              </div>
               <OuterCommentVue
                 v-if="!!allComments.length"
                 :active-comments-instance="activeCommentsInstance"
