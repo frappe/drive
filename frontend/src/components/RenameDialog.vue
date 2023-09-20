@@ -1,7 +1,12 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'Rename', size: 'xs' }">
     <template #body-content>
-      <Input v-model="newName" :placeholder="currentName" type="text" />
+      <Input
+        ref="input"
+        v-model="newName"
+        :placeholder="currentName"
+        type="text"
+        @keyup.enter="$resources.rename.submit" />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button
@@ -17,7 +22,9 @@
 </template>
 
 <script>
+import { ref } from "vue";
 import { Dialog, Input, ErrorMessage } from "frappe-ui";
+import { useFocus } from "@vueuse/core";
 
 export default {
   name: "RenameDialog",
@@ -25,6 +32,14 @@ export default {
     Dialog,
     Input,
     ErrorMessage,
+  },
+  setup() {
+    const input = ref();
+    const { focused } = useFocus(input, { initialValue: true });
+    return {
+      input,
+      focused,
+    };
   },
   props: {
     modelValue: {

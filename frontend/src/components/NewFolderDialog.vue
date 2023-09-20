@@ -2,10 +2,11 @@
   <Dialog v-model="open" :options="{ title: 'New Folder', size: 'xs' }">
     <template #body-content>
       <Input
+        ref="input"
         v-model="folderName"
+        placeholder="Untitled Folder"
         type="text"
-        placeholder="Folder Name"
-        @keydown.enter="
+        @keyup.enter="
           (e) =>
             $resources.createFolder.submit({
               title: e.target.value.trim(),
@@ -27,6 +28,8 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useFocus } from "@vueuse/core";
 import { Dialog, Input, ErrorMessage } from "frappe-ui";
 
 export default {
@@ -35,6 +38,14 @@ export default {
     Dialog,
     Input,
     ErrorMessage,
+  },
+  setup() {
+    const input = ref();
+    const { focused } = useFocus(input, { initialValue: true });
+    return {
+      input,
+      focused,
+    };
   },
   props: {
     modelValue: {

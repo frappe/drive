@@ -398,6 +398,9 @@ export default {
       entity: null,
     };
   },
+  created() {
+    console.log("share");
+  },
   computed: {
     accessMessage() {
       if (this.generalAccess.read) {

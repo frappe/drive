@@ -140,37 +140,47 @@ export default {
       showNewFolderDialog: false,
       newEntityOptions: [
         {
-          label: "Upload file",
-          icon: "upload",
-          onClick: () => this.emitter.emit("uploadFile"),
+          group: "Upload",
+          items: [
+            {
+              label: "Upload file",
+              icon: "upload",
+              onClick: () => this.emitter.emit("uploadFile"),
+            },
+            {
+              label: "Upload Folder",
+              icon: "folder",
+              onClick: () => this.emitter.emit("uploadFolder"),
+              isEnabled: () => this.selectedEntities.length === 0,
+            },
+          ],
         },
         {
-          label: "Upload Folder",
-          icon: "folder",
-          onClick: () => this.emitter.emit("uploadFolder"),
-          isEnabled: () => this.selectedEntities.length === 0,
-        },
-        {
-          label: "New folder",
-          icon: "folder-plus",
-          onClick: () => (this.showNewFolderDialog = true),
-        },
-        {
-          label: "New Document",
-          icon: "file-text",
-          onClick: async () => {
-            await this.$resources.createDocument.submit({
-              title: "Untitled Document",
-              content: null,
-              parent: this.$store.state.currentFolderID,
-            });
-            this.$router.push({
-              name: "Document",
-              params: { entityName: this.previewEntity.name },
-            });
-          },
+          group: "New",
+          items: [
+            {
+              label: "New folder",
+              icon: "folder-plus",
+              onClick: () => (this.showNewFolderDialog = true),
+            },
+            {
+              label: "New Document",
+              icon: "file-text",
+              onClick: async () => {
+                await this.$resources.createDocument.submit({
+                  title: "Untitled Document",
+                  content: null,
+                  parent: this.$store.state.currentFolderID,
+                });
+                this.$router.push({
+                  name: "Document",
+                  params: { entityName: this.previewEntity.name },
+                });
+              },
 
-          isEnabled: () => this.selectedEntities.length === 0,
+              isEnabled: () => this.selectedEntities.length === 0,
+            },
+          ],
         },
       ],
       fileOptions: [

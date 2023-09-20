@@ -61,6 +61,7 @@
       @hide="hidePreview" />
 
     <RenameDialog
+      v-if="showRenameDialog"
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
       @success="
@@ -71,6 +72,7 @@
         }
       " />
     <GeneralDialog
+      v-if="showUnshareDialog"
       v-model="showUnshareDialog"
       :entities="selectedEntities"
       :for="'unshare'"
@@ -82,6 +84,7 @@
         }
       " />
     <GeneralDialog
+      v-if="showRemoveDialog"
       v-model="showRemoveDialog"
       :entities="selectedEntities"
       :for="'remove'"

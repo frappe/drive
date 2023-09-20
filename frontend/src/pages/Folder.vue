@@ -64,6 +64,7 @@
       :entity-context="entityContext"
       :close="closeContextMenu" />
     <NewFolderDialog
+      v-if="showNewFolderDialog"
       v-model="showNewFolderDialog"
       :parent="$route.params.entityName"
       @success="
@@ -73,6 +74,7 @@
         }
       " />
     <RenameDialog
+      v-if="showRenameDialog"
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
       @success="
@@ -83,6 +85,7 @@
         }
       " />
     <GeneralDialog
+      v-if="showRemoveDialog"
       v-model="showRemoveDialog"
       :entities="selectedEntities"
       :for="'remove'"

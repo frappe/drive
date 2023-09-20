@@ -26,6 +26,7 @@
     </router-link>
   </div>
   <RenameDialog
+    v-if="showRenameDialog"
     v-model="showRenameDialog"
     :entity="{
       name: currentEntityName,
