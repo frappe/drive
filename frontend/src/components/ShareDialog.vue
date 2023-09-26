@@ -41,13 +41,12 @@
                   class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
                   variant="ghost"
                   @click="
-                    $resources.updateAccess
-                      .submit({
-                        method: 'set_general_access',
-                        entity_name: entityName,
-                        new_access: { read: false, write: false, share: false },
-                      })
-                      .then(togglePopover())
+                    (generalAccess = {
+                      read: false,
+                      write: false,
+                      share: false,
+                    }),
+                      togglePopover()
                   ">
                   Restricted Acess
                   <Check v-if="!generalAccess.read" class="h-4" />
@@ -56,13 +55,12 @@
                   class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
                   variant="ghost"
                   @click="
-                    $resources.updateAccess
-                      .submit({
-                        method: 'set_general_access',
-                        entity_name: entityName,
-                        new_access: { read: true, write: false, share: false },
-                      })
-                      .then(togglePopover())
+                    (generalAccess = {
+                      read: true,
+                      write: false,
+                      share: false,
+                    }),
+                      togglePopover()
                   ">
                   Public Access
                   <Check v-if="generalAccess.read" class="h-4" />
@@ -70,8 +68,6 @@
               </div>
             </template>
           </Popover>
-          <!--              -->
-
           <div v-if="generalAccess.read" class="flex ml-auto my-auto">
             <Popover transition="default">
               <template #target="{ togglePopover }">
@@ -87,17 +83,12 @@
                   <div
                     class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                     @click="
-                      $resources.updateAccess
-                        .submit({
-                          method: 'set_general_access',
-                          entity_name: entityName,
-                          new_access: {
-                            read: true,
-                            write: false,
-                            share: false,
-                          },
-                        })
-                        .then(togglePopover())
+                      (generalAccess = {
+                        read: true,
+                        write: false,
+                        share: false,
+                      }),
+                        togglePopover()
                     ">
                     Can view
                     <Check
@@ -107,13 +98,12 @@
                   <div
                     class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                     @click="
-                      $resources.updateAccess
-                        .submit({
-                          method: 'set_general_access',
-                          entity_name: entityName,
-                          new_access: { read: true, write: true, share: false },
-                        })
-                        .then(togglePopover())
+                      (generalAccess = {
+                        read: true,
+                        write: true,
+                        share: false,
+                      }),
+                        togglePopover()
                     ">
                     Can edit
                     <Check v-if="generalAccess.write" class="h-4 ml-2" />
@@ -151,12 +141,7 @@
           v-for="user in $resources.sharedWith.data"
           :key="user.user"
           class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
-          <div class="overflow-hidden rounded-full h-9 w-9">
-            <Avatar
-              :image="user.user_image"
-              :label="user.full_name"
-              size="xl" />
-          </div>
+          <Avatar :image="user.user_image" :label="user.full_name" size="xl" />
           <div class="grow truncate">
             <div class="text-gray-900 text-[14px] font-medium">
               {{ user.full_name }}
@@ -319,7 +304,7 @@
             <ArrowDownToLineOff v-else class="w-4" />
           </Button>
         </div>
-        <Button variant="solid" @click="open = false" class="ml-auto px-8">
+        <Button variant="solid" @click="submit" class="ml-auto px-8">
           Share
         </Button>
       </div>
@@ -398,9 +383,6 @@ export default {
       entity: null,
     };
   },
-  created() {
-    console.log("share");
-  },
   computed: {
     accessMessage() {
       if (this.generalAccess.read) {
@@ -430,6 +412,14 @@ export default {
     },
   },
   methods: {
+    submit() {
+      this.$resources.updateAccess.submit({
+        method: "set_general_access",
+        entity_name: this.entityName,
+        new_access: this.generalAccess,
+      });
+      this.open = false;
+    },
     toggleComments() {
       toast({
         title: this.allowComments
@@ -442,7 +432,7 @@ export default {
         position: "bottom-right",
         iconClasses: "text-black-500",
       });
-      this.$resources.toggleAllowComments.submit();
+      this.allowComments = !this.allowComments;
     },
     toggleDownload() {
       toast({
@@ -456,7 +446,7 @@ export default {
         position: "bottom-right",
         iconClasses: "text-black-500",
       });
-      this.$resources.toggleAllowDownload.submit();
+      this.allowDownload = !this.allowDownload;
     },
     updateAccess(updatedAccess) {
       this.saveLoading = true;
@@ -469,6 +459,8 @@ export default {
         })
         .then(() => {
           this.saveLoading = false;
+          this.$resources.toggleAllowDownload.submit();
+          this.$resources.toggleAllowComments.submit();
         });
     },
     async getLink() {
@@ -561,9 +553,9 @@ export default {
         params: {
           entity_name: this.entityName,
           method: "toggle_allow_comments",
+          value: this.allowComments,
         },
         onSuccess() {
-          this.$resources.entity.fetch();
           this.$emit("success");
         },
         onError(error) {
@@ -579,9 +571,9 @@ export default {
         params: {
           entity_name: this.entityName,
           method: "toggle_allow_download",
+          value: this.allowDownload,
         },
         onSuccess() {
-          this.$resources.entity.fetch();
           this.$emit("success");
         },
         onError(error) {

@@ -313,26 +313,26 @@ class DriveEntity(NestedSet):
                 child.set_general_access(new_access)
 
     @frappe.whitelist()
-    def toggle_allow_comments(self):
+    def toggle_allow_comments(self, value):
         """
         Toggle allow comments for entity
 
         """
 
-        self.allow_comments = not self.allow_comments
+        self.allow_comments = value
         self.save()
         if self.is_group:
             for child in self.get_children():
                 child.toggle_allow_comments()
 
     @frappe.whitelist()
-    def toggle_allow_download(self):
+    def toggle_allow_download(self, value):
         """
         Toggle allow download for entity
 
         """
 
-        self.allow_download = not self.allow_download
+        self.allow_comments = value
         self.save()
         if self.is_group:
             for child in self.get_children():
