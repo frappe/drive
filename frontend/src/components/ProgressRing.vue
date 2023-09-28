@@ -37,7 +37,7 @@ export default {
     },
     primaryClass: {
       type: String,
-      default: "text-green-500",
+      default: "text-black",
     },
     secondaryClass: {
       type: String,

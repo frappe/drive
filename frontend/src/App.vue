@@ -40,7 +40,15 @@
     </div>
   </div>
   <div id="dropzoneElement" class="hidden" />
-  <UploadTracker v-if="showUploadTracker" />
+  <Transition
+    enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+    enter-from-class="translate-y-1 opacity-0"
+    enter-to-class="translate-y-0 opacity-100"
+    leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+    leave-from-class="translate-y-0 opacity-100"
+    leave-to-class="translate-y-1 opacity-0">
+    <UploadTracker v-if="showUploadTracker" />
+  </Transition>
   <Toasts />
 </template>
 <script>
@@ -52,7 +60,7 @@ import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
 import { Button, FeatherIcon } from "frappe-ui";
 import DocInfoSidebar from "./components/DocInfoSidebar.vue";
-import { Toasts } from "frappe-ui";
+import { Toasts } from "@/utils/toasts.js";
 
 export default {
   name: "App",
