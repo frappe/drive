@@ -79,7 +79,7 @@ export default {
         onSuccess(data) {
           this.entity = data;
           data.size_in_bytes = data.file_size;
-          data.file_size = data.is_group ? "-" : formatSize(data.file_size);
+          data.file_size = formatSize(data.file_size);
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
           data.owner = data.owner === this.userId ? "me" : data.owner;

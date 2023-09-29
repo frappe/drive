@@ -98,8 +98,24 @@ export default {
     actionItems() {
       return [
         {
-          label: "View details",
+          label: "Preview",
           icon: "eye",
+          onClick: () => {
+            this.openEntity(this.selectedEntities[0]);
+          },
+          isEnabled: () => {
+            if (this.selectedEntities.length === 1) {
+              return true;
+            }
+          },
+        },
+        {
+          label: "Divider",
+          isEnabled: () => this.selectedEntities.length === 1,
+        },
+        {
+          label: "Show Info",
+          icon: "info",
           onClick: () => {
             this.$store.commit("setShowInfo", true);
           },
@@ -110,8 +126,8 @@ export default {
           },
         },
         {
-          label: "Hide details",
-          icon: "eye-off",
+          label: "Hide Info",
+          icon: "info",
           onClick: () => {
             this.$store.commit("setShowInfo", false);
           },
@@ -120,7 +136,7 @@ export default {
           },
         },
         {
-          label: "Add to Favourites",
+          label: "Favourite",
           icon: "star",
           onClick: () => {
             this.$resources.toggleFavourite.submit();
@@ -133,8 +149,8 @@ export default {
           },
         },
         {
-          label: "Remove from Favourites",
-          icon: "x-circle",
+          label: "Unfavourite",
+          icon: "star",
           handler: () => {
             this.$resources.toggleFavourite.submit();
           },

@@ -54,7 +54,7 @@
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
       :entity-name="selectedEntities[0].name"
-      :action-items="isLoggedIn ? actionItems : guestActionItems"
+      :action-items="actionItems"
       :entity-context="entityContext"
       :close="closeContextMenu" />
     <EmptyEntityContextMenu
@@ -96,6 +96,17 @@
           selectedEntities = [];
         }
       " />
+    <GeneralDialog
+      v-model="showUnshareDialog"
+      :entities="selectedEntities"
+      :for="'unshare'"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showUnshareDialog = false;
+          selectedEntities = [];
+        }
+      " />
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
@@ -122,6 +133,7 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload";
+import { getLink } from "@/utils/getLink";
 
 export default {
   name: "Folder",
@@ -153,12 +165,19 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
+    showUnshareDialog: false,
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
     showNewFolderDialog: false,
     entityContext: {},
     breadcrumbs: [{ label: "Folder", route: "/folder" }],
     isSharedFolder: false,
+    folderAccess: {
+      read: 0,
+      write: 0,
+      share: 0,
+      owner: "",
+    },
   }),
   computed: {
     isLoggedIn() {
@@ -219,313 +238,638 @@ export default {
       ].filter((item) => item.isEnabled());
     },
     actionItems() {
-      return [
-        {
-          label: "Download",
-          icon: "download",
-          onClick: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+      /* Owner actions */
+      if (this.folderAccess.owner === this.$store.state.auth.user_id) {
+        return [
+          {
+            label: "Preview",
+            icon: "eye",
+            onClick: () => {
+              this.openEntity(this.selectedEntities[0]);
+            },
+            isEnabled: () => {
+              if (this.selectedEntities.length === 1) {
+                return true;
+              }
+            },
           },
-          isEnabled: () => {
-            if (this.selectedEntities.length === 1) {
-              return (
-                this.selectedEntities[0].allow_download &&
-                !this.selectedEntities[0].is_group &&
-                !this.selectedEntities[0].document
-              );
-            }
+          {
+            label: "Divider",
+            isEnabled: () => this.selectedEntities.length === 1,
           },
-        },
-        {
-          label: "Download as ZIP",
-          icon: "download",
-          onClick: () => {
-            if (this.selectedEntities.length > 1) {
-              let selected_entities = this.selectedEntities;
-              selectedEntitiesDownload(selected_entities);
-            } else if (this.selectedEntities[0].is_group === 1) {
-              folderDownload(this.selectedEntities[0]);
-            }
+          {
+            label: "Download",
+            icon: "download",
+            onClick: () => {
+              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            },
+            isEnabled: () => {
+              if (this.selectedEntities.length === 1) {
+                return (
+                  !this.selectedEntities[0].is_group ||
+                  !!this.selectedEntities[0].document
+                );
+              }
+            },
           },
-          isEnabled: () => {
-            if (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
-            ) {
-              return false;
-            }
-            if (this.selectedEntities.length) {
-              const allEntitiesSatisfyCondition = this.selectedEntities.every(
-                (entity) => {
-                  return (
-                    entity.allow_download ||
-                    entity.write ||
-                    entity.owner === "me"
-                  );
-                }
-              );
-              return allEntitiesSatisfyCondition;
-            }
-          },
-        },
-        {
-          label: "Share",
-          icon: "share-2",
-          onClick: () => {
-            this.showShareDialog = true;
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length === 1;
-          },
-        },
-        {
-          label: "View details",
-          icon: "eye",
-          onClick: () => {
-            this.$store.commit("setShowInfo", true);
-          },
-          isEnabled: () => {
-            return (
-              !this.$store.state.showInfo && this.selectedEntities.length === 1
-            );
-          },
-        },
-        {
-          label: "Hide details",
-          icon: "eye-off",
-          onClick: () => {
-            this.$store.commit("setShowInfo", false);
-          },
-          isEnabled: () => {
-            return this.$store.state.showInfo;
-          },
-        },
-        {
-          label: "Rename",
-          icon: "edit",
-          onClick: () => {
-            this.showRenameDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "me")
-            );
-          },
-        },
-        {
-          label: "Cut",
-          icon: "scissors",
-          onClick: () => {
-            this.$store.commit("setPasteData", {
-              entities: this.selectedEntities.map((x) => x.name),
-              action: "cut",
-            });
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me" || x.write)
-            );
-          },
-        },
-        {
-          label: "Copy",
-          icon: "copy",
-          onClick: () => {
-            this.$store.commit("setPasteData", {
-              entities: this.selectedEntities.map((x) => x.name),
-              action: "copy",
-            });
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length > 0;
-          },
-        },
-        {
-          label: "Paste into Folder",
-          icon: "clipboard",
-          onClick: async () => {
-            this.pasteEntities(this.selectedEntities[0].name);
-          },
-          isEnabled: () => {
-            return (
-              this.$store.state.pasteData.entities.length &&
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "me")
-            );
-          },
-        },
-        {
-          label: "Add to Favourites",
-          icon: "star",
-          onClick: () => {
-            this.$resources.toggleFavourite.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => !x.is_favourite)
-            );
-          },
-        },
-        {
-          label: "Remove from Favourites",
-          icon: "x-circle",
-          onClick: () => {
-            this.$resources.toggleFavourite.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.is_favourite)
-            );
-          },
-        },
-        {
-          label: "Change Color",
-          icon: "droplet",
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group
-            );
-          },
-        },
-        {
-          label: "Remove",
-          icon: "trash-2",
-          onClick: () => {
-            this.$resources.removeEntity.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner != "me") &&
-              (this.selectedEntities.every((x) => x.write) ||
-                !this.isSharedFolder)
-            );
-          },
-        },
-        {
-          label: "Move to Trash",
-          icon: "trash-2",
-          onClick: () => {
-            this.showRemoveDialog = true;
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me")
-            );
-          },
-        },
-      ].filter((item) => item.isEnabled());
-    },
-    guestActionItems() {
-      return [
-        {
-          label: "Download",
-          icon: "download",
-          onClick: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
-          },
-          isEnabled: () => {
-            if (this.selectedEntities.length === 1) {
+          /* Folder Download */
+          {
+            label: "Download",
+            icon: "download",
+            onClick: () => {
+              if (this.selectedEntities.length > 1) {
+                let selected_entities = this.selectedEntities;
+                selectedEntitiesDownload(selected_entities);
+              } else if (this.selectedEntities[0].is_group === 1) {
+                folderDownload(this.selectedEntities[0]);
+              }
+            },
+            isEnabled: () => {
               if (
-                this.selectedEntities[0].allow_download &&
+                this.selectedEntities.length > 1 ||
+                (this.selectedEntities.length === 1 &&
+                  this.selectedEntities[0].is_group === 1)
+              ) {
+                const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                  (entity) => {
+                    return (
+                      entity.allow_download ||
+                      entity.write ||
+                      entity.owner === "me"
+                    );
+                  }
+                );
+                return allEntitiesSatisfyCondition;
+              }
+            },
+          },
+          {
+            label: "Share",
+            icon: "share-2",
+            onClick: () => {
+              this.showShareDialog = true;
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length === 1;
+            },
+          },
+          {
+            label: "Get Link",
+            icon: "link",
+            onClick: () => {
+              getLink(this.selectedEntities[0]);
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length === 1;
+            },
+          },
+          {
+            label: "Divider",
+            isEnabled: () => true,
+          },
+          {
+            label: "Rename",
+            icon: "edit",
+            onClick: () => {
+              this.showRenameDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                (this.selectedEntities[0].write ||
+                  this.selectedEntities[0].owner === "me")
+              );
+            },
+          },
+          {
+            label: "Cut",
+            icon: "scissors",
+            onClick: () => {
+              this.$store.commit("setPasteData", {
+                entities: this.selectedEntities.map((x) => x.name),
+                action: "cut",
+              });
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner === "me" || x.write)
+              );
+            },
+          },
+          {
+            label: "Copy",
+            icon: "copy",
+            onClick: () => {
+              this.$store.commit("setPasteData", {
+                entities: this.selectedEntities.map((x) => x.name),
+                action: "copy",
+              });
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length > 0;
+            },
+          },
+          {
+            label: "Show Info",
+            icon: "info",
+            onClick: () => {
+              this.$store.commit("setShowInfo", true);
+            },
+            isEnabled: () => {
+              return (
+                !this.$store.state.showInfo &&
+                this.selectedEntities.length === 1
+              );
+            },
+          },
+          {
+            label: "Hide Info",
+            icon: "info",
+            onClick: () => {
+              this.$store.commit("setShowInfo", false);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.showInfo && this.selectedEntities.length === 1
+              );
+            },
+          },
+          {
+            label: "Paste",
+            icon: "clipboard",
+            onClick: async () => {
+              this.pasteEntities(this.selectedEntities[0].name);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.pasteData.entities.length &&
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group &&
+                (this.selectedEntities[0].write ||
+                  this.selectedEntities[0].owner === "me")
+              );
+            },
+          },
+          {
+            label: "Favourite",
+            icon: "star",
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => !x.is_favourite)
+              );
+            },
+          },
+          {
+            label: "Unfavourite",
+            icon: "star",
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.is_favourite)
+              );
+            },
+          },
+          {
+            label: "Color",
+            icon: "droplet",
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group
+              );
+            },
+          },
+          {
+            label: "Divider",
+            isEnabled: () => true,
+          },
+          /* Unshare */
+          /*           {
+            label: "Delete",
+            icon: "trash-2",
+            danger: true,
+            onClick: () => {
+              this.$resources.removeEntity.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner != "me") &&
+                (this.selectedEntities.every((x) => x.write) ||
+                  !this.isSharedFolder)
+              );
+            },
+          }, */
+          {
+            label: "Delete",
+            icon: "trash-2",
+            danger: true,
+            onClick: () => {
+              this.showRemoveDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner === "me")
+              );
+            },
+          },
+        ].filter((item) => item.isEnabled());
+      } else if (this.folderAccess.write === 1) {
+        return [
+          {
+            label: "Preview",
+            icon: "eye",
+            onClick: () => {
+              this.openEntity(this.selectedEntities[0]);
+            },
+            isEnabled: () => {
+              if (this.selectedEntities.length === 1) {
+                return true;
+              }
+            },
+          },
+          {
+            label: "Divider",
+            isEnabled: () => this.selectedEntities.length === 1,
+          },
+          {
+            label: "Download",
+            icon: "download",
+            onClick: () => {
+              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            },
+            isEnabled: () => {
+              if (
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].allow_download
+              ) {
+                return (
+                  !this.selectedEntities[0].is_group ||
+                  !this.selectedEntities[0].document
+                );
+              }
+            },
+          },
+          {
+            label: "Download as ZIP",
+            icon: "download",
+            onClick: () => {
+              if (this.selectedEntities.length > 1) {
+                let selected_entities = this.selectedEntities;
+                selectedEntitiesDownload(selected_entities);
+              } else if (this.selectedEntities[0].is_group === 1) {
+                folderDownload(this.selectedEntities[0]);
+              }
+            },
+            isEnabled: () => {
+              if (
                 this.selectedEntities.length === 1 &&
                 !this.selectedEntities[0].is_group
               ) {
-                return !this.selectedEntities[0].document;
+                return false;
               }
-            }
+              if (this.selectedEntities.length) {
+                const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                  (entity) => {
+                    return (
+                      entity.allow_download ||
+                      entity.write ||
+                      entity.owner === "me"
+                    );
+                  }
+                );
+                return allEntitiesSatisfyCondition;
+              }
+            },
           },
-        },
-        {
-          label: "Download as ZIP",
-          icon: "download",
-          onClick: () => {
-            if (this.selectedEntities.length > 1) {
-              let selected_entities = this.selectedEntities;
-              selectedEntitiesDownload(selected_entities);
-            } else if (this.selectedEntities[0].is_group === 1) {
-              folderDownload(this.selectedEntities[0]);
-            }
+          {
+            label: "Share",
+            icon: "share-2",
+            onClick: () => {
+              this.showShareDialog = true;
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length === 1;
+            },
           },
-          isEnabled: () => {
-            if (
-              this.selectedEntities[0].allow_download &&
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
-            ) {
-              return false;
-            }
-            if (this.selectedEntities.length) {
-              const allEntitiesSatisfyCondition = this.selectedEntities.every(
-                (entity) => {
-                  return (
-                    entity.allow_download ||
-                    entity.write ||
-                    entity.owner === "me"
-                  );
-                }
+          {
+            label: "View details",
+            icon: "eye",
+            onClick: () => {
+              this.$store.commit("setShowInfo", true);
+            },
+            isEnabled: () => {
+              return (
+                !this.$store.state.showInfo &&
+                this.selectedEntities.length === 1
               );
-              return allEntitiesSatisfyCondition;
-            }
+            },
           },
-        },
-        {
-          label: "View details",
-          icon: "eye",
-          onClick: () => {
-            this.$store.commit("setShowInfo", true);
+          {
+            label: "Hide details",
+            icon: "eye-off",
+            onClick: () => {
+              this.$store.commit("setShowInfo", false);
+            },
+            isEnabled: () => {
+              return this.$store.state.showInfo;
+            },
           },
-          isEnabled: () => {
-            return (
-              !this.$store.state.showInfo && this.selectedEntities.length === 1
-            );
+          {
+            label: "Rename",
+            icon: "edit",
+            onClick: () => {
+              this.showRenameDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                (this.selectedEntities[0].write ||
+                  this.selectedEntities[0].owner === "me")
+              );
+            },
           },
-        },
-        {
-          label: "Hide details",
-          icon: "eye-off",
-          onClick: () => {
-            this.$store.commit("setShowInfo", false);
+          {
+            label: "Cut",
+            icon: "scissors",
+            onClick: () => {
+              this.$store.commit("setPasteData", {
+                entities: this.selectedEntities.map((x) => x.name),
+                action: "cut",
+              });
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner === "me" || x.write)
+              );
+            },
           },
-          isEnabled: () => {
-            return this.$store.state.showInfo;
+          {
+            label: "Copy",
+            icon: "copy",
+            onClick: () => {
+              this.$store.commit("setPasteData", {
+                entities: this.selectedEntities.map((x) => x.name),
+                action: "copy",
+              });
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length > 0;
+            },
           },
-        },
-        {
-          label: "Rename",
-          icon: "edit",
-          onClick: () => {
-            this.showRenameDialog = true;
+          {
+            label: "Paste into Folder",
+            icon: "clipboard",
+            onClick: async () => {
+              this.pasteEntities(this.selectedEntities[0].name);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.pasteData.entities.length &&
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group &&
+                (this.selectedEntities[0].write ||
+                  this.selectedEntities[0].owner === "me")
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "me")
-            );
+          {
+            label: "Add to Favourites",
+            icon: "star",
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => !x.is_favourite)
+              );
+            },
           },
-        },
-        {
-          label: "Change Color",
-          icon: "droplet",
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group &&
-              this.selectedEntities[0].write
-            );
+          {
+            label: "Remove from Favourites",
+            icon: "x-circle",
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.is_favourite)
+              );
+            },
           },
-        },
-      ].filter((item) => item.isEnabled());
+          {
+            label: "Change Color",
+            icon: "droplet",
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group
+              );
+            },
+          },
+          {
+            label: "Remove",
+            icon: "trash-2",
+            onClick: () => {
+              this.$resources.removeEntity.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner != "me") &&
+                (this.selectedEntities.every((x) => x.write) ||
+                  !this.isSharedFolder)
+              );
+            },
+          },
+          {
+            label: "Move to Trash",
+            icon: "trash-2",
+            onClick: () => {
+              this.showRemoveDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner === "me")
+              );
+            },
+          },
+        ].filter((item) => item.isEnabled());
+      } else {
+        return [
+          {
+            label: "Download",
+            icon: "download",
+            onClick: () => {
+              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            },
+            isEnabled: () => {
+              if (
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].allow_download
+              ) {
+                return (
+                  !this.selectedEntities[0].is_group ||
+                  !this.selectedEntities[0].document
+                );
+              }
+            },
+          },
+          {
+            label: "Download as ZIP",
+            icon: "download",
+            onClick: () => {
+              if (this.selectedEntities.length > 1) {
+                let selected_entities = this.selectedEntities;
+                selectedEntitiesDownload(selected_entities);
+              } else if (this.selectedEntities[0].is_group === 1) {
+                folderDownload(this.selectedEntities[0]);
+              }
+            },
+            isEnabled: () => {
+              if (this.selectedEntities.length === 1) {
+                return (
+                  this.selectedEntities[0].allow_download &&
+                  !this.selectedEntities[0].is_group
+                );
+              }
+              if (this.selectedEntities.length) {
+                const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                  (entity) => {
+                    return (
+                      entity.allow_download ||
+                      entity.write ||
+                      entity.owner === "me"
+                    );
+                  }
+                );
+                return allEntitiesSatisfyCondition;
+              }
+            },
+          },
+          {
+            label: "Show Info",
+            icon: "info",
+            onClick: () => {
+              this.$store.commit("setShowInfo", true);
+            },
+            isEnabled: () => {
+              return (
+                !this.$store.state.showInfo &&
+                this.selectedEntities.length === 1
+              );
+            },
+          },
+          {
+            label: "Hide Info",
+            icon: "info",
+            onClick: () => {
+              this.$store.commit("setShowInfo", false);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.showInfo && this.selectedEntities.length === 1
+              );
+            },
+          },
+          {
+            label: "Copy",
+            icon: "copy",
+            onClick: () => {
+              this.$store.commit("setPasteData", {
+                entities: this.selectedEntities.map((x) => x.name),
+                action: "copy",
+              });
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length > 0;
+            },
+          },
+          {
+            label: "Paste into Folder",
+            icon: "clipboard",
+            onClick: async () => {
+              const method =
+                this.$store.state.pasteData.action === "cut" ? "move" : "copy";
+              for (
+                let i = 0;
+                i < this.$store.state.pasteData.entities.length;
+                i++
+              ) {
+                await this.$resources.pasteEntity.submit({
+                  method,
+                  entity_name: this.$store.state.pasteData.entities[i],
+                  new_parent: this.selectedEntities[0].name,
+                });
+              }
+              this.selectedEntities = [];
+              this.$store.commit("setPasteData", {
+                entities: [],
+                action: null,
+              });
+              this.fetchUpdate(this.shareView);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.pasteData.entities.length &&
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group &&
+                this.selectedEntities[0].write
+              );
+            },
+          },
+          {
+            label: "Favourite",
+            icon: "star",
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => !x.is_favourite)
+              );
+            },
+          },
+          {
+            label: "Unfavourite",
+            icon: "star",
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.is_favourite)
+              );
+            },
+          },
+          {
+            label: "Unshare",
+            icon: "trash-2",
+            danger: true,
+            onClick: () => {
+              this.showUnshareDialog = true;
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length > 0;
+            },
+          },
+        ].filter((item) => item.isEnabled());
+      }
     },
     columnHeaders() {
       return [
@@ -704,34 +1048,12 @@ export default {
       return {
         url: "drive.api.permissions.get_user_access",
         params: { entity_name: this.entityName },
+        onSuccess(data) {
+          this.folderAccess = data;
+        },
+        auto: true,
       };
     },
-
-    // createFolder() {
-    //   return {
-    //     url: "drive.api.files.create_folder",
-    //     params: {
-    //       title: this.folderName,
-    //       parent: this.parent,
-    //     },
-    //     validate(params) {
-    //       if (!params?.title) {
-    //         return "Folder name is required";
-    //       }
-    //     },
-    //     onSuccess() {
-    //       this.$resources.folderContents.fetch();
-    //     },
-    //     onError(error) {
-    //       if (error.messages) {
-    //         this.errorMessage = error.messages.join("\n");
-    //       } else {
-    //         this.errorMessage = error.message;
-    //       }
-    //     },
-    //   };
-    // },
-
     pasteEntity() {
       return {
         url: "drive.api.files.call_controller_method",
@@ -743,7 +1065,6 @@ export default {
         },
       };
     },
-
     folderContents() {
       return {
         url: "drive.api.files.list_folder_contents",
@@ -755,6 +1076,7 @@ export default {
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
+          console.log(data);
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -780,6 +1102,7 @@ export default {
         },
         onSuccess(data) {
           this.isSharedFolder = data.is_shared;
+          console.log(data);
           let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
           // Duplicate folder in breadcrumb but unique entity ID
           const index = currentBreadcrumbs.findIndex(

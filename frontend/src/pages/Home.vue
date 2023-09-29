@@ -118,6 +118,7 @@ import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
+import { getLink } from "@/utils/getLink";
 import {
   folderDownload,
   selectedEntitiesDownload,
@@ -175,6 +176,10 @@ export default {
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
+          label: "Divider",
+          isEnabled: () => true,
+        },
+        {
           label: "New Folder",
           icon: "folder-plus",
           handler: () => (this.showNewFolderDialog = true),
@@ -199,6 +204,22 @@ export default {
     actionItems() {
       return [
         {
+          label: "Preview",
+          icon: "eye",
+          onClick: () => {
+            this.openEntity(this.selectedEntities[0]);
+          },
+          isEnabled: () => {
+            if (this.selectedEntities.length === 1) {
+              return true;
+            }
+          },
+        },
+        {
+          label: "Divider",
+          isEnabled: () => this.selectedEntities.length === 1,
+        },
+        {
           label: "Download",
           icon: "download",
           onClick: () => {
@@ -215,8 +236,9 @@ export default {
             }
           },
         },
+        /* Folder Download */
         {
-          label: "Download as ZIP",
+          label: "Download",
           icon: "download",
           onClick: () => {
             if (this.selectedEntities.length > 1) {
@@ -258,30 +280,22 @@ export default {
           },
         },
         {
-          label: "View details",
-          icon: "eye",
+          label: "Get Link",
+          icon: "link",
           onClick: () => {
-            this.$store.commit("setShowInfo", true);
+            getLink(this.selectedEntities[0]);
           },
           isEnabled: () => {
-            return (
-              !this.$store.state.showInfo && this.selectedEntities.length === 1
-            );
+            return this.selectedEntities.length === 1;
           },
         },
         {
-          label: "Hide details",
-          icon: "eye-off",
-          onClick: () => {
-            this.$store.commit("setShowInfo", false);
-          },
-          isEnabled: () => {
-            return this.$store.state.showInfo;
-          },
+          label: "Divider",
+          isEnabled: () => true,
         },
         {
           label: "Rename",
-          icon: "edit",
+          icon: "edit-3",
           onClick: () => {
             this.showRenameDialog = true;
           },
@@ -316,7 +330,31 @@ export default {
           },
         },
         {
-          label: "Paste into Folder",
+          label: "Show Info",
+          icon: "info",
+          onClick: () => {
+            this.$store.commit("setShowInfo", true);
+          },
+          isEnabled: () => {
+            return (
+              !this.$store.state.showInfo && this.selectedEntities.length === 1
+            );
+          },
+        },
+        {
+          label: "Hide Info",
+          icon: "info",
+          onClick: () => {
+            this.$store.commit("setShowInfo", false);
+          },
+          isEnabled: () => {
+            return (
+              this.$store.state.showInfo && this.selectedEntities.length === 1
+            );
+          },
+        },
+        {
+          label: "Paste",
           icon: "clipboard",
           onClick: async () => {
             this.pasteEntities(this.selectedEntities[0].name);
@@ -330,7 +368,7 @@ export default {
           },
         },
         {
-          label: "Add to Favourites",
+          label: "Favourite",
           icon: "star",
           onClick: () => {
             this.$resources.toggleFavourite.submit();
@@ -343,8 +381,8 @@ export default {
           },
         },
         {
-          label: "Remove from Favourites",
-          icon: "x-circle",
+          label: "Unfavourite",
+          icon: "star",
           onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -356,7 +394,7 @@ export default {
           },
         },
         {
-          label: "Change Color",
+          label: "Color",
           icon: "droplet",
           isEnabled: () => {
             return (
@@ -366,8 +404,13 @@ export default {
           },
         },
         {
-          label: "Move to Trash",
+          label: "Divider",
+          isEnabled: () => true,
+        },
+        {
+          label: "Delete",
           icon: "trash-2",
+          danger: true,
           onClick: () => {
             this.showRemoveDialog = true;
           },
@@ -567,7 +610,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? entity.item_count + " items"
+              ? entity.item_count + " items  ∙ "
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);

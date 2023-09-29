@@ -116,6 +116,10 @@ import ShareDialog from "@/components/ShareDialog.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatDate, formatSize } from "@/utils/format";
+import {
+  folderDownload,
+  selectedEntitiesDownload,
+} from "@/utils/folderDownload";
 
 export default {
   name: "Favourites",
@@ -175,6 +179,43 @@ export default {
             }
           },
         },
+        /* Folder Download */
+        {
+          label: "Download",
+          icon: "download",
+          onClick: () => {
+            if (this.selectedEntities.length > 1) {
+              let selected_entities = this.selectedEntities;
+              selectedEntitiesDownload(selected_entities);
+            } else if (this.selectedEntities[0].is_group === 1) {
+              folderDownload(this.selectedEntities[0]);
+            }
+          },
+          isEnabled: () => {
+            if (
+              this.selectedEntities.length === 1 &&
+              !this.selectedEntities[0].is_group
+            ) {
+              return false;
+            }
+            if (this.selectedEntities.length) {
+              const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                (entity) => {
+                  return (
+                    entity.allow_download ||
+                    entity.write ||
+                    entity.owner === "me"
+                  );
+                }
+              );
+              return allEntitiesSatisfyCondition;
+            }
+          },
+        },
+        {
+          label: "Divider",
+          isEnabled: () => true,
+        },
         // {
         //   label: 'Share',
         //   icon: 'share-2',
@@ -224,8 +265,8 @@ export default {
           },
         },
         {
-          label: "Remove from Favourites",
-          icon: "x-circle",
+          label: "Unfavourite",
+          icon: "star",
           onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -355,7 +396,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? "-"
+              ? ""
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);

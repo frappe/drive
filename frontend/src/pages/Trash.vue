@@ -149,6 +149,7 @@ export default {
         {
           label: "Delete Forever",
           icon: "trash-2",
+          danger: true,
           onClick: () => {
             this.showDeleteDialog = true;
           },

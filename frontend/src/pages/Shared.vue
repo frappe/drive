@@ -168,21 +168,66 @@ export default {
             },
           },
           {
+            label: "Download",
+            icon: "download",
+            onClick: () => {
+              if (this.selectedEntities.length > 1) {
+                let selected_entities = this.selectedEntities;
+                selectedEntitiesDownload(selected_entities);
+              } else if (this.selectedEntities[0].is_group === 1) {
+                folderDownload(this.selectedEntities[0]);
+              }
+            },
+            isEnabled: () => {
+              if (
+                this.selectedEntities.length === 1 &&
+                !this.selectedEntities[0].is_group
+              ) {
+                return false;
+              }
+              if (this.selectedEntities.length) {
+                const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                  (entity) => {
+                    return (
+                      entity.allow_download ||
+                      entity.write ||
+                      entity.owner === "me"
+                    );
+                  }
+                );
+                return allEntitiesSatisfyCondition;
+              }
+            },
+          },
+          {
+            label: "Divider",
+            isEnabled: () =>
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities[0].allow_download === 1,
+          },
+          {
             label: "Share",
             icon: "share-2",
             onClick: () => {
               this.showShareDialog = true;
             },
             isEnabled: () => {
-              return (
-                this.selectedEntities.length === 1 &&
-                this.selectedEntities[0].write
-              );
+              if (this.selectedEntities.length === 1) {
+                if (
+                  this.selectedEntities.length === 1 &&
+                  !this.selectedEntities[0].is_group &&
+                  (this.selectedEntities[0].allow_download ||
+                    this.selectedEntities[0].write)
+                ) {
+                  console.log(this.selectedEntities[0]);
+                  return !this.selectedEntities[0].document;
+                }
+              }
             },
           },
           {
-            label: "View details",
-            icon: "eye",
+            label: "Show Info",
+            icon: "info",
             onClick: () => {
               this.$store.commit("setShowInfo", true);
             },
@@ -194,8 +239,8 @@ export default {
             },
           },
           {
-            label: "Hide details",
-            icon: "eye-off",
+            label: "Hide Info",
+            icon: "info",
             onClick: () => {
               this.$store.commit("setShowInfo", false);
             },
@@ -263,7 +308,7 @@ export default {
             },
           },
           {
-            label: "Add to Favourites",
+            label: "Favourite",
             icon: "star",
             onClick: () => {
               this.$resources.toggleFavourite.submit();
@@ -276,8 +321,8 @@ export default {
             },
           },
           {
-            label: "Remove from Favourites",
-            icon: "x-circle",
+            label: "Unfavourite",
+            icon: "star",
             onClick: () => {
               this.$resources.toggleFavourite.submit();
             },
@@ -291,6 +336,7 @@ export default {
           {
             label: "Unshare",
             icon: "trash-2",
+            danger: true,
             onClick: () => {
               this.showRemoveDialog = true;
             },
@@ -299,8 +345,41 @@ export default {
             },
           },
         ].filter((item) => item.isEnabled());
-      } else
+      } else {
         return [
+          /* Folder Download */
+          {
+            label: "Download",
+            icon: "download",
+            onClick: () => {
+              if (this.selectedEntities.length > 1) {
+                let selected_entities = this.selectedEntities;
+                selectedEntitiesDownload(selected_entities);
+              } else if (this.selectedEntities[0].is_group === 1) {
+                folderDownload(this.selectedEntities[0]);
+              }
+            },
+            isEnabled: () => {
+              if (
+                this.selectedEntities.length === 1 &&
+                !this.selectedEntities[0].is_group
+              ) {
+                return false;
+              }
+              if (this.selectedEntities.length) {
+                const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                  (entity) => {
+                    return (
+                      entity.allow_download ||
+                      entity.write ||
+                      entity.owner === "me"
+                    );
+                  }
+                );
+                return allEntitiesSatisfyCondition;
+              }
+            },
+          },
           {
             label: "Download",
             icon: "download",
@@ -480,6 +559,7 @@ export default {
             },
           },
         ].filter((item) => item.isEnabled());
+      }
     },
     columnHeaders() {
       return [
@@ -568,7 +648,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? "-"
+              ? ""
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
@@ -597,7 +677,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? "-"
+              ? ""
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
