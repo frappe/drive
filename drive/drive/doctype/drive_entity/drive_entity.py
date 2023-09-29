@@ -216,19 +216,20 @@ class DriveEntity(NestedSet):
         if new_parent == parent_user_directory.name:
             drive_entity.share(frappe.session.user, write=1, share=1)
 
-        if drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith(
-            "video"
-        ):
-            frappe.enqueue(
-                create_thumbnail,
-                queue="default",
-                timeout=None,
-                now=True,
-                # will set to false once reactivity in new UI is solved
-                entity_name=name,
-                path=path,
-                mime_type=drive_entity.mime_type,
-            )
+        if drive_entity.mime_type:
+            if drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith(
+                "video"
+            ):
+                frappe.enqueue(
+                    create_thumbnail,
+                    queue="default",
+                    timeout=None,
+                    now=True,
+                    # will set to false once reactivity in new UI is solved
+                    entity_name=name,
+                    path=path,
+                    mime_type=drive_entity.mime_type,
+                )
 
     @frappe.whitelist()
     def rename(self, new_title):
@@ -313,30 +314,28 @@ class DriveEntity(NestedSet):
                 child.set_general_access(new_access)
 
     @frappe.whitelist()
-    def toggle_allow_comments(self, value):
+    def toggle_allow_comments(self, new_value):
         """
         Toggle allow comments for entity
 
         """
 
-        self.allow_comments = value
-        self.save()
+        self.db_set("allow_comments", new_value, commit=True, update_modified=False)
         if self.is_group:
             for child in self.get_children():
-                child.toggle_allow_comments()
+                print(child)
+                child.toggle_allow_comments(new_value)
 
     @frappe.whitelist()
-    def toggle_allow_download(self, value):
+    def toggle_allow_download(self, new_value):
         """
         Toggle allow download for entity
 
         """
-
-        self.allow_comments = value
-        self.save()
+        self.db_set("allow_download", new_value, commit=True, update_modified=False)
         if self.is_group:
             for child in self.get_children():
-                child.toggle_allow_download()
+                child.toggle_allow_download(new_value)
 
     @frappe.whitelist()
     def share(self, user, write=0, share=1, notify=1, is_user_group=None):
