@@ -50,7 +50,7 @@
                 {{ folder.title }}
               </span>
               <p class="truncate text-xs text-gray-600 mt-1">
-                {{ folder.file_size }}
+                {{ folder.file_size }} {{ folder.modified }}
               </p>
             </div>
           </div>
@@ -86,7 +86,8 @@
               :file_ext="file.file_ext"
               :name="file.name"
               :title="file.title"
-              :modified="file.modified" />
+              :modified="file.modified"
+              :file_size="file.file_size" />
           </div>
         </div>
       </div>

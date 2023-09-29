@@ -56,8 +56,8 @@
 </template>
 <script>
 import { LoadingIndicator } from "frappe-ui";
-import VideoPlayer from "@/components/VideoPlayer.vue";
-import * as docx from "docx-preview";
+/* import VideoPlayer from "@/components/VideoPlayer.vue";
+ */ import * as docx from "docx-preview";
 import { read, utils } from "xlsx";
 import canvasDatagrid from "canvas-datagrid";
 import { set } from "idb-keyval";
@@ -66,7 +66,8 @@ export default {
   name: "FileRender",
   components: {
     LoadingIndicator,
-    VideoPlayer,
+    /*     VideoPlayer,
+     */
   },
   props: {
     previewEntity: {

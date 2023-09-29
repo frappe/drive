@@ -10,7 +10,7 @@
     <div class="truncate text-xs text-gray-600 flex mt-1 place-items-center">
       <!-- <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
       <p>{{ getFileSubtitle() }}</p> -->
-      <p>{{ this.modified }}</p>
+      {{ this.file_size }} ∙ {{ this.modified }}
     </div>
   </div>
 </template>
@@ -26,6 +26,7 @@ export default {
     name: String,
     title: String,
     modified: String,
+    file_size: String,
   },
   setup() {
     return { formatMimeType, getIconUrl, thumbnail_getIconUrl };

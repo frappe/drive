@@ -287,6 +287,22 @@ export default {
   watch: {
     entity: {
       handler(newVal, oldVal) {
+        if (this.showInfoSidebar) {
+          if (
+            newVal !== oldVal &&
+            typeof newVal !== "number" &&
+            typeof newVal !== "undefined"
+          ) {
+            this.thumbnailUrl();
+            this.$resources.comments.fetch();
+            this.$resources.userTags.fetch();
+            this.$resources.entityTags.fetch();
+          }
+        }
+      },
+    },
+    showInfoSidebar: {
+      handler(newVal, oldVal) {
         if (
           newVal !== oldVal &&
           typeof newVal !== "number" &&
