@@ -7,15 +7,13 @@
     <template #target="{ togglePopover, isOpen }">
       <div
         :active="isOpen"
-        class="h-6 hover:bg-gray-100 text-sm cursor-pointer rounded-[7px] flex px-1 items-center cursor-pointer"
+        class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center w-full"
         @click="togglePopover()">
-        <FeatherIcon
-          name="droplet"
-          class="stroke-1.5 w-4 h-4 text-gray-700 mr-3" />
-        <div class="text-gray-800">Change Color</div>
+        <FeatherIcon name="droplet" class="stroke h-3.5 mr-2" />
+        <div class="text-gray-800">Color</div>
         <FeatherIcon
           :name="'chevron-right'"
-          class="w-4 h-4 text-gray-700 ml-16" />
+          class="h-3.5 text-gray-900 ml-auto" />
       </div>
     </template>
     <template #body-main>
@@ -23,7 +21,7 @@
         <button
           v-for="color in colors"
           :key="color"
-          class="h-6 w-6 rounded-full justify-self-center"
+          class="h-5 w-5 rounded-full justify-self-center"
           :style="{ backgroundColor: color }"
           @click="
             $resources.updateColor.submit({

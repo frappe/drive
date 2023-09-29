@@ -2,12 +2,11 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="bg-white rounded absolute shadow-2xl px-1.5 py-2 z-20 space-y-1 border"
+    class="bg-white rounded absolute shadow-2xl py-1.5 px-1 z-20 space-y-1 border w-40"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
       :key="index"
-      class="text-sm"
       @click="
         () => {
           if (item.onClick) {
@@ -16,16 +15,28 @@
           }
         }
       ">
-      <ColorPopover
-        v-if="item.label === 'Change Color'"
-        :entity-name="entityName" />
+      <ColorPopover v-if="item.label === 'Color'" :entity-name="entityName" />
+      <div v-else-if="item.label === 'Divider'" :entity-name="entityName">
+        <hr />
+      </div>
       <div
         v-else
-        class="h-6 hover:bg-gray-100 text-sm cursor-pointer rounded-[7px] flex px-1 items-center">
+        class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center">
         <FeatherIcon
           :name="item.icon"
-          class="stroke-1.5 w-4 h-4 text-gray-700 mr-2" />
-        <div class="text-gray-800">{{ item.label }}</div>
+          class="h-3.5 mr-2"
+          :class="[
+            item.danger ? 'stroke-red-500 text-red-500' : '',
+            item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
+          ]" />
+        <div
+          class="text-gray-800 mr-4"
+          :class="[
+            item.danger ? 'stroke-red-500 text-red-500' : '',
+            item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
+          ]">
+          {{ item.label }}
+        </div>
       </div>
     </div>
   </div>
