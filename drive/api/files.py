@@ -224,7 +224,7 @@ def create_folder(title, parent=None):
             "title": title,
             "is_group": 1,
             "parent_drive_entity": parent,
-            "color": "#98A1A9",
+            "color": "#525252",
         }
     )
     drive_entity.insert()
@@ -825,3 +825,29 @@ def get_user_directory_size():
     except:
         size = "0M"
     return size
+
+
+@frappe.whitelist()
+def toggle_allow_comments(entity_name, new_value):
+    """
+    Toggle allow comments for entity
+
+    """
+
+    frappe.db.set_value(
+        "Drive Entity", entity_name, "allow_comments", new_value, update_modified=False
+    )
+    return
+
+
+@frappe.whitelist()
+def toggle_allow_download(entity_name, new_value):
+    """
+    Toggle allow download for entity
+
+    """
+
+    frappe.db.set_value(
+        "Drive Entity", entity_name, "allow_download", new_value, update_modified=False
+    )
+    return
