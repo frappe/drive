@@ -347,7 +347,7 @@ def get_user_access(entity_name):
     user_access = frappe.db.get_value(
         "DocShare",
         {"share_name": entity_name, "user": frappe.session.user},
-        ["read", "write"],
+        ["read", "write", "share", "owner"],
         as_dict=1,
     )
 
@@ -363,5 +363,5 @@ def get_user_access(entity_name):
                 frappe.PermissionError,
             )
         return user_access
-
-    return get_general_access(entity_name)
+    else:
+        return get_general_access(entity_name)
