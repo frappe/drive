@@ -250,7 +250,6 @@
                   @click="
                     $resources.share
                       .submit({
-                        method: 'set_general_access',
                         entity_name: entityName,
                         method: 'unshare',
                         user: user.user,
@@ -304,7 +303,7 @@
             <ArrowDownToLineOff v-else class="w-4" />
           </Button>
         </div>
-        <Button variant="solid" @click="submit" class="ml-auto px-8">
+        <Button variant="solid" @click="submit" class="ml-auto px-4 py-2">
           Share
         </Button>
       </div>
@@ -320,7 +319,6 @@ import {
   Button,
   Alert,
   Popover,
-  toast,
   Avatar,
 } from "frappe-ui";
 import { Switch } from "@headlessui/vue";
@@ -335,6 +333,8 @@ import { Building2 } from "lucide-vue-next";
 import { ChevronsUpDown } from "lucide-vue-next";
 import { Check } from "lucide-vue-next";
 import { Trash } from "lucide-vue-next";
+import { toast } from "@/utils/toasts.js";
+import { getLink } from "@/utils/getLink";
 
 export default {
   name: "ShareDialog",
@@ -413,11 +413,22 @@ export default {
   },
   methods: {
     submit() {
-      this.$resources.updateAccess.submit({
-        method: "set_general_access",
-        entity_name: this.entityName,
-        new_access: this.generalAccess,
-      });
+      if (this.allowComments != this.$resources.entity.data.allow_comments) {
+        this.$resources.toggleAllowComments.submit();
+      }
+      if (this.allowDownload != this.$resources.entity.data.allow_download) {
+        this.$resources.toggleAllowDownload.submit();
+      }
+      if (
+        JSON.stringify(this.generalAccess) !==
+        JSON.stringify(this.$resources.generalAccess.data)
+      ) {
+        this.$resources.updateAccess.submit({
+          method: "set_general_access",
+          entity_name: this.entityName,
+          new_access: this.generalAccess,
+        });
+      }
       this.open = false;
     },
     toggleComments() {
@@ -428,9 +439,10 @@ export default {
         text: this.allowComments
           ? "Users cannot read and write comments"
           : "Users can read and write comments",
-        icon: "message-circle",
+        /* icon: "message-circle", */
         position: "bottom-right",
         iconClasses: "text-black-500",
+        timeout: 2,
       });
       this.allowComments = !this.allowComments;
     },
@@ -442,9 +454,10 @@ export default {
         text: this.allowDownload
           ? "Users cannot download this"
           : "Users can download this",
-        icon: "download",
+        /* icon: "download", */
         position: "bottom-right",
         iconClasses: "text-black-500",
+        timeout: 1,
       });
       this.allowDownload = !this.allowDownload;
     },
@@ -459,8 +472,6 @@ export default {
         })
         .then(() => {
           this.saveLoading = false;
-          this.$resources.toggleAllowDownload.submit();
-          this.$resources.toggleAllowComments.submit();
         });
     },
     async getLink() {
@@ -470,11 +481,9 @@ export default {
         : `${window.location.origin}/drive/file/${this.entityName}`;
       await navigator.clipboard.writeText(link);
       toast({
-        title: "Done",
-        text: "Copied Link!",
-        icon: "check",
+        title: "Copied link!",
         position: "bottom-right",
-        iconClasses: "text-blue-500",
+        timeout: 2,
       });
     },
   },
@@ -553,7 +562,7 @@ export default {
         params: {
           entity_name: this.entityName,
           method: "toggle_allow_comments",
-          value: this.allowComments,
+          new_value: this.allowComments,
         },
         onSuccess() {
           this.$emit("success");
@@ -571,7 +580,7 @@ export default {
         params: {
           entity_name: this.entityName,
           method: "toggle_allow_download",
-          value: this.allowDownload,
+          new_value: this.allowDownload,
         },
         onSuccess() {
           this.$emit("success");
