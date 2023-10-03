@@ -117,6 +117,7 @@ import { entries, get, clear } from "idb-keyval";
 import RenameDialog from "@/components/RenameDialog.vue";
 import ShareDialog from "@/components/ShareDialog.vue";
 import GeneralDialog from "@/components/GeneralDialog.vue";
+import { getLink } from "@/utils/getLink";
 
 export default {
   name: "Recent",
