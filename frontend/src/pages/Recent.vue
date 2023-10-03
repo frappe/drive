@@ -316,6 +316,7 @@ export default {
         {
           label: "Remove from recent",
           icon: "trash-2",
+          danger: true,
           onClick: () => {
             this.$resources.clearRecent.submit();
           },

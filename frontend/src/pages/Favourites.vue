@@ -163,6 +163,22 @@ export default {
     actionItems() {
       return [
         {
+          label: "Preview",
+          icon: "eye",
+          onClick: () => {
+            this.openEntity(this.selectedEntities[0]);
+          },
+          isEnabled: () => {
+            if (this.selectedEntities.length === 1) {
+              return true;
+            }
+          },
+        },
+        {
+          label: "Divider",
+          isEnabled: () => this.selectedEntities.length === 1,
+        },
+        {
           label: "Download",
           icon: "download",
           onClick: () => {
@@ -171,85 +187,41 @@ export default {
           isEnabled: () => {
             if (this.selectedEntities.length === 1) {
               if (
-                this.selectedEntities.length === 1 &&
-                !this.selectedEntities[0].is_group
+                this.selectedEntities[0].allow_download ||
+                this.selectedEntities[0].owner === "me"
               ) {
                 return !this.selectedEntities[0].document;
               }
             }
           },
         },
-        /* Folder Download */
         {
-          label: "Download",
-          icon: "download",
+          label: "Share",
+          icon: "share-2",
           onClick: () => {
-            if (this.selectedEntities.length > 1) {
-              let selected_entities = this.selectedEntities;
-              selectedEntitiesDownload(selected_entities);
-            } else if (this.selectedEntities[0].is_group === 1) {
-              folderDownload(this.selectedEntities[0]);
-            }
-          },
-          isEnabled: () => {
-            if (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
-            ) {
-              return false;
-            }
-            if (this.selectedEntities.length) {
-              const allEntitiesSatisfyCondition = this.selectedEntities.every(
-                (entity) => {
-                  return (
-                    entity.allow_download ||
-                    entity.write ||
-                    entity.owner === "me"
-                  );
-                }
-              );
-              return allEntitiesSatisfyCondition;
-            }
-          },
-        },
-        {
-          label: "Divider",
-          isEnabled: () => true,
-        },
-        // {
-        //   label: 'Share',
-        //   icon: 'share-2',
-        //   handler: () => {
-        //     this.showShareDialog = true;
-        //   },
-        //   isEnabled: () => {
-        //     return (
-        //       this.selectedEntities.length === 1 &&
-        //       this.selectedEntities[0].write
-        //     );
-        //   },
-        // },
-        {
-          label: "View details",
-          icon: "eye",
-          onClick: () => {
-            this.$store.commit("setShowInfo", true);
+            this.showShareDialog = true;
           },
           isEnabled: () => {
             return (
-              !this.$store.state.showInfo && this.selectedEntities.length === 1
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities.every((x) => x.owner === "me")
             );
           },
         },
         {
-          label: "Hide details",
-          icon: "eye-off",
+          label: "Get Link",
+          icon: "link",
           onClick: () => {
-            this.$store.commit("setShowInfo", false);
+            getLink(this.selectedEntities[0]);
           },
           isEnabled: () => {
-            return this.$store.state.showInfo;
+            return this.selectedEntities.length === 1;
           },
+        },
+
+        {
+          label: "Divider",
+          isEnabled: () => this.selectedEntities.length === 1,
         },
         {
           label: "Rename",
@@ -260,7 +232,72 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].write
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === "me")
+            );
+          },
+        },
+        {
+          label: "Cut",
+          icon: "scissors",
+          onClick: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "cut",
+            });
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me" || x.write)
+            );
+          },
+        },
+        {
+          label: "Copy",
+          icon: "copy",
+          onClick: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "copy",
+            });
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
+          },
+        },
+        {
+          label: "Show Info",
+          icon: "info",
+          onClick: () => {
+            this.$store.commit("setShowInfo", true);
+          },
+          isEnabled: () => {
+            return (
+              !this.$store.state.showInfo && this.selectedEntities.length === 1
+            );
+          },
+        },
+        {
+          label: "Hide Info",
+          icon: "info",
+          onClick: () => {
+            this.$store.commit("setShowInfo", false);
+          },
+          isEnabled: () => {
+            return this.$store.state.showInfo;
+          },
+        },
+        {
+          label: "Favourite",
+          icon: "star",
+          onClick: () => {
+            this.$resources.toggleFavourite.submit();
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => !x.is_favourite)
             );
           },
         },
@@ -271,36 +308,35 @@ export default {
             this.$resources.toggleFavourite.submit();
           },
           isEnabled: () => {
-            return this.selectedEntities.length > 0;
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.is_favourite)
+            );
           },
         },
-        // {
-        //   label: 'Remove',
-        //   icon: 'trash-2',
-        //   handler: () => {
-        //     this.showUnshareDialog = true;
-        //   },
-        //   isEnabled: () => {
-        //     return (
-        //       this.selectedEntities.length > 0 &&
-        //       this.selectedEntities.every((x) => x.owner != 'me') &&
-        //       this.selectedEntities.every((x) => !x.everyone)
-        //     );
-        //   },
-        // },
-        // {
-        //   label: 'Move to Trash',
-        //   icon: 'trash-2',
-        //   handler: () => {
-        //     this.showRemoveDialog = true;
-        //   },
-        //   isEnabled: () => {
-        //     return (
-        //       this.selectedEntities.length > 0 &&
-        //       this.selectedEntities.every((x) => x.owner === 'me')
-        //     );
-        //   },
-        // },
+        {
+          label: "Divider",
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me")
+            );
+          },
+        },
+        {
+          label: "Delete",
+          icon: "trash-2",
+          danger: true,
+          onClick: () => {
+            this.showRemoveDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me")
+            );
+          },
+        },
       ].filter((item) => item.isEnabled());
     },
     columnHeaders() {

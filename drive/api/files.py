@@ -666,6 +666,7 @@ def list_favourites(order_by="modified"):
         fn.Max(DocShare.write).as_("write"),
         DocShare.share,
         DocShare.everyone,
+        DriveFavourite.entity.as_("is_favourite"),
     ]
     query = (
         frappe.qb.from_(DriveEntity)
@@ -788,6 +789,7 @@ def call_controller_method(entity_name, method):
     frappe.local.form_dict.pop("cmd")
     return drive_entity.run_method(method, **frappe.local.form_dict)
 
+
 @frappe.whitelist()
 def list_recents(order_by="modified"):
     """
@@ -847,6 +849,7 @@ def list_recents(order_by="modified"):
     )
     return query.run(as_dict=True)
 
+
 @frappe.whitelist()
 def remove_recents(entity_names):
     """
@@ -871,6 +874,7 @@ def remove_recents(entity_names):
         )
         if existing_doc:
             frappe.delete_doc("Drive Entity Log", existing_doc)
+
 
 @frappe.whitelist()
 def get_children_count(drive_entity):
