@@ -33,7 +33,7 @@
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
-      @show-entitycontext="(event) => toggleEntityContext(event)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
       @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
@@ -179,15 +179,13 @@ export default {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
-            if (
-              this.selectedEntities.length === 1 &&
-              (this.selectedEntities[0].allow_download ||
-                this.selectedEntities[0].owner === this.userId)
-            ) {
-              return (
-                !this.selectedEntities[0].is_group ||
-                !this.selectedEntities[0].document
-              );
+            if (this.selectedEntities.length === 1) {
+              if (
+                this.selectedEntities[0].allow_download ||
+                this.selectedEntities[0].owner === "me"
+              ) {
+                return !this.selectedEntities[0].document;
+              }
             }
           },
         },
@@ -198,7 +196,10 @@ export default {
             this.showShareDialog = true;
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return (
+              this.selectedEntities.length === 1 &&
+              this.selectedEntities.every((x) => x.owner === "me")
+            );
           },
         },
         {
@@ -215,6 +216,49 @@ export default {
         {
           label: "Divider",
           isEnabled: () => this.selectedEntities.length === 1,
+        },
+        {
+          label: "Rename",
+          icon: "edit",
+          onClick: () => {
+            this.showRenameDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length === 1 &&
+              (this.selectedEntities[0].write ||
+                this.selectedEntities[0].owner === "me")
+            );
+          },
+        },
+        {
+          label: "Cut",
+          icon: "scissors",
+          onClick: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "cut",
+            });
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me" || x.write)
+            );
+          },
+        },
+        {
+          label: "Copy",
+          icon: "copy",
+          onClick: () => {
+            this.$store.commit("setPasteData", {
+              entities: this.selectedEntities.map((x) => x.name),
+              action: "copy",
+            });
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
+          },
         },
         {
           label: "Show Info",
@@ -254,7 +298,7 @@ export default {
         {
           label: "Unfavourite",
           icon: "star",
-          handler: () => {
+          onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
           isEnabled: () => {
@@ -265,6 +309,10 @@ export default {
           },
         },
         {
+          label: "Divider",
+          isEnabled: () => true,
+        },
+        {
           label: "Remove from recent",
           icon: "trash-2",
           onClick: () => {
@@ -272,6 +320,20 @@ export default {
           },
           isEnabled: () => {
             return this.selectedEntities.length > 0;
+          },
+        },
+        {
+          label: "Delete",
+          icon: "trash-2",
+          danger: true,
+          onClick: () => {
+            this.showRemoveDialog = true;
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities.length > 0 &&
+              this.selectedEntities.every((x) => x.owner === "me")
+            );
           },
         },
       ].filter((item) => item.isEnabled());
@@ -323,15 +385,6 @@ export default {
         e.preventDefault();
       },
       false
-    );
-    entries().then((result) =>
-      result.forEach((entityEntries) => {
-        this.$resources.recentDriveEntity.fetch({
-          entity_name: entityEntries[0],
-          fields:
-            "name, title, is_group, owner, modified, file_size, mime_type, creation",
-        });
-      })
     );
   },
   methods: {

@@ -2,7 +2,7 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="bg-white rounded absolute shadow-2xl py-1.5 px-1 z-20 space-y-1 border w-40"
+    class="bg-white rounded absolute shadow-2xl py-1.5 px-1 z-20 space-y-1 border w-41"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
