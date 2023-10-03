@@ -216,6 +216,9 @@ export default {
     });
     this.emitter.on("uploadFile", () => {
       if (componentContext.dropzone.hiddenFileInput) {
+        componentContext.dropzone.hiddenFileInput.removeAttribute(
+          "webkitdirectory"
+        );
         componentContext.dropzone.hiddenFileInput.click();
       }
     });
