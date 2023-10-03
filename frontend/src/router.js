@@ -97,16 +97,22 @@ router.beforeEach((to, from, next) => {
       store.getters.isLoggedIn ||
       to.matched.some((record) => record.meta.isHybridRoute)
     ) {
-      if (from.path === "/" && HybridRouteArray.includes(to.name)) {
-        store.commit("setCurrentBreadcrumbs", [
-          { label: "Shared", route: "/shared" },
-        ]);
+      if (to.href !== sessionStorage.getItem("currentRoute")) {
+        if (from.fullPath === "/" && HybridRouteArray.includes(to.name)) {
+          store.commit("setCurrentBreadcrumbs", [
+            { label: "Shared", route: "/shared" },
+          ]);
+        }
       }
       next();
     } else {
       import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
     }
   }
+});
+
+router.afterEach((to, from, failure) => {
+  sessionStorage.setItem("currentRoute", to.href);
 });
 
 export default router;

@@ -75,7 +75,7 @@ export default {
         currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
         if (
           !currentBreadcrumbs[currentBreadcrumbs.length - 1].route.includes(
-            "/file"
+            "/document"
           )
         ) {
           currentBreadcrumbs.push({
