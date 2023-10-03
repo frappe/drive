@@ -5,6 +5,7 @@ from drive.api.files import get_entity
 from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
 from drive.utils.user_group import get_entity_shared_with_user_groups
+from drive.utils.users import mark_as_viewed
 
 
 @frappe.whitelist()
@@ -245,7 +246,7 @@ def get_all_my_entities(fields=None):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_with_permissions(entity_name):
+def get_entity_with_permissions(entity_name):
     """
     Return file data with permissions
 
@@ -274,8 +275,10 @@ def get_file_with_permissions(entity_name):
         "file_size",
         "mime_type",
         "allow_comments",
+        "allow_download",
+        "document",
     ]
-    entity = get_entity(entity_name, fields)
+    entity = get_entity(entity_name, fields)   
     entity_ancestors = get_ancestors_of("Drive Entity", entity)
     flag = False
     for z_entity_name in entity_ancestors:
@@ -285,12 +288,20 @@ def get_file_with_permissions(entity_name):
             break
     if flag == True:
         frappe.throw("Parent Folder has been deleted")
-    if entity.is_group:
-        frappe.throw("Specified entity is not a file", IsADirectoryError)
+
+    # Avoiding marking folders as recently viewed
+    if not entity.is_group:
+        if not frappe.db.exists({"doctype": "Drive Entity Log", "entity_name": entity_name, "user": frappe.session.user}):
+            mark_as_viewed(entity_name)
+    # Add user group permission check on request
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
 
-    return entity | user_access
+    if entity.document:
+        entity_doc_content = get_doc_content(entity.document)
+        return entity | user_access | entity_doc_content
+
+    return entity | user_access 
 
 
 @frappe.whitelist(allow_guest=True)

@@ -117,7 +117,6 @@ def upload_file(fullpath=None, parent=None):
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
 
     if current_chunk == 0 and save_path.exists():
-        print(save_path)
         frappe.throw(f"File '{title}' already exists", FileExistsError)
 
     with save_path.open("ab") as f:
@@ -235,15 +234,14 @@ def create_folder(title, parent=None):
     return drive_entity
 
 
-@frappe.whitelist()
-def get_doc_content(entity_name, trigger_download=0):
-    drive_entity = frappe.get_value(
-        "Drive Entity",
-        entity_name,
-        ["title", "document", "document.content", "mime_type", "file_size"],
+def get_doc_content(drive_document_name):
+    drive_document = frappe.db.get_value(
+        "Drive Document",
+        drive_document_name,
+        ["content"],
         as_dict=1,
     )
-    return drive_entity
+    return drive_document
 
 
 """ @frappe.whitelist()
@@ -790,6 +788,89 @@ def call_controller_method(entity_name, method):
     frappe.local.form_dict.pop("cmd")
     return drive_entity.run_method(method, **frappe.local.form_dict)
 
+@frappe.whitelist()
+def list_recents(order_by="modified"):
+    """
+    Return list of DriveEntity records present in this folder
+
+    :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
+    :return: List of DriveEntity records
+    :rtype: list
+    """
+
+    DriveFavourite = frappe.qb.DocType("Drive Favourite")
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    DocShare = frappe.qb.DocType("DocShare")
+    DriveRecent = frappe.qb.DocType("Drive Entity Log")
+    selectedFields = [
+        DriveEntity.name,
+        DriveEntity.title,
+        DriveEntity.is_group,
+        DriveEntity.owner,
+        DriveEntity.modified,
+        DriveEntity.creation,
+        DriveEntity.file_size,
+        DriveEntity.mime_type,
+        DriveEntity.color,
+        DriveEntity.parent_drive_entity,
+        DriveEntity.allow_comments,
+        DriveEntity.allow_download,
+        DocShare.read,
+        fn.Max(DocShare.write).as_("write"),
+        DocShare.share,
+        DocShare.everyone,
+    ]
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .inner_join(DriveRecent)
+        .on(
+            (DriveRecent.entity_name == DriveEntity.name)
+            & (DriveRecent.user == frappe.session.user)
+        )
+        .left_join(DriveFavourite)
+        .on(
+            (DriveFavourite.entity == DriveEntity.name)
+            & (DriveFavourite.user == frappe.session.user)
+        )
+        .left_join(DocShare)
+        .on(
+            (DocShare.share_name == DriveEntity.name)
+            & ((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
+        )
+        .select(*selectedFields)
+        .where((DriveEntity.is_active == 1) & (DocShare.read == 1))
+        .groupby(DriveEntity.name)
+        .orderby(
+            order_by.split()[0],
+            order=Order.desc if order_by.endswith("desc") else Order.asc,
+        )
+    )
+    return query.run(as_dict=True)
+
+@frappe.whitelist()
+def remove_recents(entity_names):
+    """
+    Clear recent DriveEntities for specified user
+
+    :param entity_names: List of document-names
+    :type entity_names: list[str]
+    :raises ValueError: If decoded entity_names is not a list
+    """
+
+    if isinstance(entity_names, str):
+        entity_names = json.loads(entity_names)
+    if not isinstance(entity_names, list):
+        frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
+    for entity in entity_names:
+        existing_doc = frappe.db.exists(
+            {
+                "doctype": "Drive Entity Log",
+                "entity_name": entity,
+                "user": frappe.session.user,
+            }
+        )
+        if existing_doc:
+            frappe.delete_doc("Drive Entity Log", existing_doc)
 
 @frappe.whitelist()
 def get_children_count(drive_entity):

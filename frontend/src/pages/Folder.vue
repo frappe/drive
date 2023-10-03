@@ -1046,12 +1046,28 @@ export default {
   resources: {
     folderAccess() {
       return {
-        url: "drive.api.permissions.get_user_access",
+        url: "drive.api.permissions.get_entity_with_permissions",
         params: { entity_name: this.entityName },
+        // cache: ['pathEntities', this.entityName],
         onSuccess(data) {
           this.folderAccess = data;
+          this.isSharedFolder = data.is_shared;
+          let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
+          // Duplicate folder in breadcrumb but unique entity ID
+          const index = currentBreadcrumbs.findIndex(
+            (item) => item.route === "/folder/" + this.entityName
+          );
+          if (index !== -1) {
+            const slicedBreadCrumb = currentBreadcrumbs.slice(0, index + 1);
+            this.$store.commit("setCurrentBreadcrumbs", slicedBreadCrumb);
+          } else {
+            currentBreadcrumbs.push({
+              label: data.title,
+              route: `/folder/${this.entityName}`,
+            });
+          }
         },
-        auto: true,
+        auto: Boolean(this.entityName),
       };
     },
     pasteEntity() {
@@ -1076,7 +1092,7 @@ export default {
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
-          console.log(data);
+          //console.log(data);
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -1091,37 +1107,6 @@ export default {
         auto: true,
       };
     },
-
-    pathEntities() {
-      return {
-        url: "drive.api.files.get_entity",
-        // cache: ['pathEntities', this.entityName],
-        params: {
-          entity_name: this.entityName,
-          fields: "title",
-        },
-        onSuccess(data) {
-          this.isSharedFolder = data.is_shared;
-          console.log(data);
-          let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
-          // Duplicate folder in breadcrumb but unique entity ID
-          const index = currentBreadcrumbs.findIndex(
-            (item) => item.route === "/folder/" + this.entityName
-          );
-          if (index !== -1) {
-            const slicedBreadCrumb = currentBreadcrumbs.slice(0, index + 1);
-            this.$store.commit("setCurrentBreadcrumbs", slicedBreadCrumb);
-          } else {
-            currentBreadcrumbs.push({
-              label: data.title,
-              route: `/folder/${this.entityName}`,
-            });
-          }
-        },
-        auto: Boolean(this.entityName),
-      };
-    },
-
     toggleFavourite() {
       return {
         url: "drive.api.files.add_or_remove_favourites",

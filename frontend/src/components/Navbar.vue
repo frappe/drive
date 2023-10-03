@@ -206,8 +206,7 @@ export default {
   },
   methods: {
     callClear() {
-      this.emitter.emit("clearRecents");
-      clear();
+      this.emitter.emit("clearAllRecent");
     },
     openEntity(entity) {
       if (entity.is_group) {

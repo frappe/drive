@@ -74,7 +74,7 @@ export default {
   resources: {
     file() {
       return {
-        url: "drive.api.permissions.get_file_with_permissions",
+        url: "drive.api.permissions.get_entity_with_permissions",
         params: { entity_name: this.entityName },
         onSuccess(data) {
           this.entity = data;

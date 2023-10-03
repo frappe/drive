@@ -168,3 +168,10 @@ def has_read_write_access_to_doctype(user_id, doctype_name):
         pass
 
     return False
+
+def mark_as_viewed(entity_name):
+    doc = frappe.new_doc("Drive Entity Log")
+    doc.entity_name = entity_name
+    doc.user = frappe.session.user
+    doc.insert()
+    return doc

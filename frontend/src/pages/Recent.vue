@@ -6,7 +6,7 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folder-contents="sortedEntries"
+      :folder-contents="$resources.recentDriveEntity.data"
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
@@ -15,42 +15,92 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :show-info-button="showInfoButton" />
+          :column-headers="columnHeaders"
+          :action-loading="actionLoading"
+          :show-info-button="showInfoButton"
+          :show-upload-button="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          secondary-message="You have not viewed any files recently" />
+          :primary-message="`You haven't viewed any files recently`"
+          :secondary-message="'Files will appear here for easy access when you view them'" />
       </template>
     </GridView>
 
     <ListView
       v-else
-      :folder-contents="sortedEntries"
+      :folder-contents="$resources.recentDriveEntity.data"
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
-      @show-entity-context="(event) => toggleEntityContext(event)"
+      @show-entitycontext="(event) => toggleEntityContext(event)"
       @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :show-info-button="showInfoButton" />
+          :column-headers="columnHeaders"
+          :action-loading="actionLoading"
+          :show-info-button="showInfoButton"
+          :show-upload-button="false" />
       </template>
       <template #placeholder>
         <NoFilesSection
-          secondary-message="You have not viewed any file recently" />
+          :primary-message="`You haven't viewed any files recently`"
+          :secondary-message="'Files will appear here for easy access when you view them'" />
       </template>
     </ListView>
-    <FilePreview
-      v-if="showPreview"
-      :preview-entity="previewEntity"
-      @hide="hidePreview" />
     <EntityContextMenu
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
       :action-items="actionItems"
       :entity-context="entityContext"
       :close="closeContextMenu" />
+    <FilePreview
+      v-if="showPreview"
+      :preview-entity="previewEntity"
+      @hide="hidePreview" />
+
+    <RenameDialog
+      v-if="showRenameDialog"
+      v-model="showRenameDialog"
+      :entity="selectedEntities[0]"
+      @success="
+        () => {
+          $resources.recentDriveEntity.fetch();
+          showRenameDialog = false;
+          selectedEntities = [];
+        }
+      " />
+    <GeneralDialog
+      v-if="showUnshareDialog"
+      v-model="showUnshareDialog"
+      :entities="selectedEntities"
+      :for="'unshare'"
+      @success="
+        () => {
+          $resources.recentDriveEntity.fetch();
+          showUnshareDialog = false;
+          selectedEntities = [];
+        }
+      " />
+    <GeneralDialog
+      v-if="showRemoveDialog"
+      v-model="showRemoveDialog"
+      :entities="selectedEntities"
+      :for="'remove'"
+      @success="
+        () => {
+          $resources.recentDriveEntity.fetch();
+          showRemoveDialog = false;
+          selectedEntities = [];
+        }
+      " />
+    <ShareDialog
+      v-if="showShareDialog"
+      v-model="showShareDialog"
+      :entity-name="selectedEntities[0].name"
+      @success="$resources.recentDriveEntity.fetch()" />
+    <div />
   </div>
 </template>
 
@@ -64,6 +114,9 @@ import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
 import { entries, get, clear } from "idb-keyval";
+import RenameDialog from "@/components/RenameDialog.vue";
+import ShareDialog from "@/components/ShareDialog.vue";
+import GeneralDialog from "@/components/GeneralDialog.vue";
 
 export default {
   name: "Recent",
@@ -75,6 +128,9 @@ export default {
     FilePreview,
     FolderContentsError,
     EntityContextMenu,
+    RenameDialog,
+    ShareDialog,
+    GeneralDialog,
   },
   data: () => ({
     previewEntity: null,
@@ -82,18 +138,21 @@ export default {
     showEntityContext: false,
     entityContext: {},
     entities: [],
+    actionLoading: false,
+    showRenameDialog: false,
+    showShareDialog: false,
+    showRemoveDialog: false,
+    showUnshareDialog: false,
     selectedEntities: [],
     breadcrumbs: [{ label: "Recents", route: "/recent" }],
   }),
 
   computed: {
-    sortedEntries() {
-      let currentArray = this.entities;
-      currentArray.sort((a, b) => b.accessed - a.accessed);
-      return currentArray;
-    },
     showInfoButton() {
       return !!this.selectedEntities.length && !this.$store.state.showInfo;
+    },
+    userId() {
+      return this.$store.state.auth.user_id;
     },
     actionItems() {
       return [
@@ -109,6 +168,50 @@ export default {
             }
           },
         },
+        {
+          label: "Divider",
+          isEnabled: () => this.selectedEntities.length === 1,
+        },
+        {
+          label: "Download",
+          icon: "download",
+          onClick: () => {
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+          },
+          isEnabled: () => {
+            if (
+              this.selectedEntities.length === 1 &&
+              (this.selectedEntities[0].allow_download ||
+                this.selectedEntities[0].owner === this.userId)
+            ) {
+              return (
+                !this.selectedEntities[0].is_group ||
+                !this.selectedEntities[0].document
+              );
+            }
+          },
+        },
+        {
+          label: "Share",
+          icon: "share-2",
+          onClick: () => {
+            this.showShareDialog = true;
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1;
+          },
+        },
+        {
+          label: "Get Link",
+          icon: "link",
+          onClick: () => {
+            getLink(this.selectedEntities[0]);
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length === 1;
+          },
+        },
+
         {
           label: "Divider",
           isEnabled: () => this.selectedEntities.length === 1,
@@ -161,12 +264,48 @@ export default {
             );
           },
         },
+        {
+          label: "Remove from recent",
+          icon: "trash-2",
+          onClick: () => {
+            this.$resources.clearRecent.submit();
+          },
+          isEnabled: () => {
+            return this.selectedEntities.length > 0;
+          },
+        },
       ].filter((item) => item.isEnabled());
+    },
+    columnHeaders() {
+      return [
+        {
+          label: "Name",
+          field: "title",
+          sortable: true,
+        },
+        {
+          label: "Owner",
+          field: "owner",
+          sortable: true,
+        },
+        {
+          label: "Modified",
+          field: "modified",
+          sortable: true,
+        },
+        {
+          label: "Size",
+          field: "file_size",
+          sortable: true,
+        },
+      ].filter((item) => item.sortable);
     },
   },
   mounted() {
-    this.emitter.on("clearRecents", () => {
-      this.clearEntites();
+    /* Triggered from the navbar component */
+    this.emitter.on("clearAllRecent", () => {
+      this.selectedEntities = this.$resources.recentDriveEntity.data;
+      this.$resources.clearRecent.submit();
     });
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     window.addEventListener(
@@ -196,10 +335,6 @@ export default {
     );
   },
   methods: {
-    clearEntites() {
-      this.entities = [];
-      this.sortedEntries = [];
-    },
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
@@ -236,25 +371,44 @@ export default {
   resources: {
     recentDriveEntity() {
       return {
-        method: "GET",
-        url: "drive.api.permissions.get_file_with_permissions",
+        url: "drive.api.files.list_recents",
         params: {
-          entity_name: "entity_name",
+          order_by: this.orderBy,
           fields:
             "name,title,is_group,owner,modified,file_size,mime_type,creation",
         },
-        async onSuccess(data) {
-          data.size_in_bytes = data.file_size;
-          data.file_size = data.is_group ? "-" : formatSize(data.file_size);
-          data.modified = formatDate(data.modified);
-          data.creation = formatDate(data.creation);
-          await get(data.name).then((val) => (data.accessed = val));
-          this.entities.push(data);
+        onSuccess(data) {
+          this.$resources.recentDriveEntity.error = null;
+          data.forEach((entity) => {
+            entity.size_in_bytes = entity.file_size;
+            entity.file_size = entity.is_group
+              ? ""
+              : formatSize(entity.file_size);
+            entity.modified = formatDate(entity.modified);
+            entity.creation = formatDate(entity.creation);
+            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
+          });
+        },
+        auto: true,
+      };
+    },
+    clearRecent() {
+      return {
+        url: "drive.api.files.remove_recents",
+        params: {
+          entity_names: JSON.stringify(
+            this.selectedEntities?.map((entity) => entity.name)
+          ),
+        },
+        onSuccess() {
+          this.$resources.recentDriveEntity.fetch();
+          this.selectedEntities = [];
         },
         onError(error) {
-          console.log(error);
+          if (error.messages) {
+            console.log(error.messages);
+          }
         },
-        auto: false,
       };
     },
     toggleFavourite() {
@@ -266,7 +420,7 @@ export default {
           ),
         },
         onSuccess() {
-          this.$resources.folderContents.fetch();
+          this.$resources.recentDriveEntity.fetch();
           this.selectedEntities = [];
         },
         onError(error) {

@@ -136,7 +136,7 @@ export default {
     },
     getDocument() {
       return {
-        url: "drive.api.permissions.get_doc_with_permissions",
+        url: "drive.api.permissions.get_entity_with_permissions",
         params: {
           entity_name: this.entityName,
         },
