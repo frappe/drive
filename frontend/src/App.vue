@@ -9,9 +9,7 @@
         v-if="isLoggedIn || $route.meta.isHybridRoute"
         class="flex h-full overflow-hidden">
         <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
-        <div
-          v-if="isLoggedIn"
-          class="p-2 border-r w-[280px] bg-gray-50 border-gray-300">
+        <div v-if="isLoggedIn" class="p-2 border-r w-[280px] bg-gray-50">
           <Sidebar />
         </div>
         <div class="h-full w-full overflow-hidden">
