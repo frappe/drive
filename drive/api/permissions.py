@@ -278,7 +278,7 @@ def get_entity_with_permissions(entity_name):
         "allow_download",
         "document",
     ]
-    entity = get_entity(entity_name, fields)   
+    entity = get_entity(entity_name, fields)
     entity_ancestors = get_ancestors_of("Drive Entity", entity)
     flag = False
     for z_entity_name in entity_ancestors:
@@ -290,9 +290,16 @@ def get_entity_with_permissions(entity_name):
         frappe.throw("Parent Folder has been deleted")
 
     # Avoiding marking folders as recently viewed
-    if not entity.is_group:
-        if not frappe.db.exists({"doctype": "Drive Entity Log", "entity_name": entity_name, "user": frappe.session.user}):
-            mark_as_viewed(entity_name)
+    if frappe.session.user != "Guest":
+        if not entity.is_group:
+            if not frappe.db.exists(
+                {
+                    "doctype": "Drive Entity Log",
+                    "entity_name": entity_name,
+                    "user": frappe.session.user,
+                }
+            ):
+                mark_as_viewed(entity_name)
     # Add user group permission check on request
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
@@ -301,7 +308,7 @@ def get_entity_with_permissions(entity_name):
         entity_doc_content = get_doc_content(entity.document)
         return entity | user_access | entity_doc_content
 
-    return entity | user_access 
+    return entity | user_access
 
 
 @frappe.whitelist(allow_guest=True)
