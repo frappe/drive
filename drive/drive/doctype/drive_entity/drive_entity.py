@@ -342,6 +342,7 @@ class DriveEntity(NestedSet):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
+        Share defaults to one to let the non owner user unshare a file.
 
         :param user: User with whom this is to be shared
         :param write: 1 if write permission is to be granted. Defaults to 0
