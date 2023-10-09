@@ -1,24 +1,24 @@
 <template>
   <div
     class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center">
-    <h1 class="font-semibold mb-4">User Groups</h1>
-    <span class="text-sm font-medium mb-2">Organization</span>
-    <div class="flex items-center w-full py-4">
-      <!-- <Avatar size="3xl" label="Frappe" /> -->
-      <div class="ml-0 flex flex-col items-start">
-        <Button class="font-medium text-gray-800" appearance="minimal">
-          <template #prefix>
-            <Building2 class="text-gray-800 stroke-1.5 h-4" />
-          </template>
-          Frappe
-        </Button>
+    <h1 class="font-semibold mb-10 text-xl">User Groups</h1>
+    <span class="text-lg font-medium">Organization</span>
+    <div class="flex justify-between w-full pt-4 pb-8">
+      <div class="flex flex-col items-start">
+        <span class="text-base font-medium">Name</span>
+        <span class="text-sm py-1 text-gray-600">
+          All Drive users on this instance are a part of this
+        </span>
       </div>
+      <Button class="font-medium text-gray-800" appearance="minimal">
+        <template #prefix>
+          <FeatherIcon name="edit" class="text-gray-800 stroke-1.5 h-4" />
+        </template>
+        Frappe
+      </Button>
     </div>
-    <span class="text-xs px-1 pb-4 text-gray-600 mb-4 botder">
-      All Drive users on this instance are a part of this
-    </span>
     <div class="flex items-center w-full mb-1">
-      <span class="text-sm font-medium">Roles</span>
+      <span class="text-base font-medium">Roles</span>
       <Button
         variant="solid"
         icon-left="plus"
@@ -145,7 +145,6 @@ export default {
       return {
         url: "drive.utils.user_group.get_name_of_all_user_groups",
         onSuccess(data) {
-          console.log(data);
           this.AllRoles = data;
         },
         onError(data) {
