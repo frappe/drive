@@ -239,7 +239,7 @@ export default {
     },
     actionItems() {
       /* Owner actions */
-      if (this.folderAccess.owner === this.$store.state.auth.user_id) {
+      if (this.folderAccess.owner === this.userId) {
         return [
           {
             label: "Preview",
@@ -670,7 +670,7 @@ export default {
             },
           },
           {
-            label: "Change Color",
+            label: "Color",
             icon: "droplet",
             isEnabled: () => {
               return (
@@ -896,7 +896,7 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
-  watch: {
+  /*   watch: {
     async entityName() {
       await this.$resources.folderAccess.fetch();
       this.$store.commit(
@@ -906,7 +906,7 @@ export default {
       this.selectedEntities = [];
     },
   },
-
+ */
   async mounted() {
     this.pasteListener = (e) => {
       if (
@@ -1051,7 +1051,13 @@ export default {
         // cache: ['pathEntities', this.entityName],
         onSuccess(data) {
           this.folderAccess = data;
-          this.isSharedFolder = data.is_shared;
+          this.isSharedFolder = this.folderAccess.owner !== this.userId;
+          if (
+            this.folderAccess.owner !== this.userId &&
+            this.folderAccess.read == 1
+          ) {
+            this.isSharedFolder = true;
+          }
           let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
           // Duplicate folder in breadcrumb but unique entity ID
           const index = currentBreadcrumbs.findIndex(
@@ -1066,6 +1072,7 @@ export default {
               route: `/folder/${this.entityName}`,
             });
           }
+          this.$resources.folderContents.fetch();
         },
         auto: Boolean(this.entityName),
       };
@@ -1083,7 +1090,9 @@ export default {
     },
     folderContents() {
       return {
-        url: "drive.api.files.list_folder_contents",
+        url: this.isSharedFolder
+          ? "drive.api.files.list_folder_contents"
+          : "drive.api.files.list_owned_entities",
         // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
@@ -1104,7 +1113,7 @@ export default {
             entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
         },
-        auto: true,
+        auto: false,
       };
     },
     toggleFavourite() {

@@ -508,7 +508,7 @@ export default {
     },
     entity() {
       return {
-        url: "drive.api.files.get_entity",
+        url: "drive.api.permissions.get_entity_with_permissions",
         params: {
           entity_name: this.entityName,
           fields: "title,is_group,allow_comments,allow_download,owner",

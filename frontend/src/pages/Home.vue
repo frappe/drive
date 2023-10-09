@@ -599,7 +599,7 @@ export default {
 
     folderContents() {
       return {
-        url: "drive.api.files.list_folder_contents",
+        url: "drive.api.files.list_owned_entities",
         params: {
           order_by: this.orderBy,
           fields:

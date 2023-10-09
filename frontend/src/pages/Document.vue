@@ -47,6 +47,9 @@ export default {
     comments() {
       return this.$store.state.allComments;
     },
+    userId() {
+      return this.$store.state.auth.user_id;
+    },
   },
   /*   watch:{
     comments: {
@@ -66,7 +69,9 @@ export default {
         this.oldTitle = this.$resources.getDocument.title;
         this.content = this.$resources.getDocument.data.content;
         this.document = this.$resources.getDocument.data.document;
-        this.isWriteable = !!this.$resources.getDocument.data.write;
+        this.isWriteable =
+          this.$resources.getDocument.data.owner === this.userId ||
+          !!this.$resources.getDocument.data.write;
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);

@@ -94,13 +94,13 @@ export default {
   resources: {
     getUpdatedEntityTitle() {
       return {
-        url: "drive.api.files.get_entity",
+        url: "drive.api.files.get_title",
         params: {
           entity_name: this.currentEntityName,
           fields: "title",
         },
         onSuccess(data) {
-          this.currentTitle = data.title;
+          this.currentTitle = data;
         },
         onError(error) {
           if (error.messages) {
