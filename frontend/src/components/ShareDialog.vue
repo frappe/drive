@@ -138,38 +138,53 @@
       <div class="flex mt-5 text-base text-gray-600">Users with access</div>
       <div v-if="!$resources.entity.loading" class="flex flex-col">
         <div
-          v-for="user in $resources.sharedWith.data"
-          :key="user.user"
+          v-if="$resources.sharedWith.data?.owner"
           class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
-          <Avatar :image="user.user_image" :label="user.full_name" size="xl" />
+          <Avatar
+            :image="$resources.sharedWith.data?.owner.user_image"
+            :label="$resources.sharedWith.data?.owner.full_name"
+            size="xl" />
           <div class="grow truncate">
             <div class="text-gray-900 text-[14px] font-medium">
-              {{ user.full_name }}
+              {{ $resources.sharedWith.data?.owner.full_name }}
             </div>
-            <div class="text-gray-600 text-base">{{ user.user }}</div>
+            <div class="text-gray-600 text-base">
+              {{ $resources.sharedWith.data?.owner.email }}
+            </div>
           </div>
-          <Button
-            v-if="user.user === entity.owner"
-            variant="minimal"
-            class="text-gray-600">
-            Owner
-          </Button>
-          <Popover v-else transition="default">
-            <template #target="{ togglePopover }">
-              <Button
-                :loading="user.loading"
-                class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
-                appearance="minimal"
-                @click="togglePopover()">
-                <template #prefix>
-                  <ChevronsUpDown class="w-4" />
-                </template>
-                {{ user.write ? "Can edit" : "Can view" }}
-              </Button>
-            </template>
-            <template #body-main="{ togglePopover }">
-              <div class="p-1">
-                <!-- <div
+          <Button variant="minimal" class="text-gray-600">Owner</Button>
+        </div>
+        <template v-if="$resources.sharedWith.data.users">
+          <div
+            v-for="user in $resources.sharedWith.data.users"
+            :key="user.user"
+            class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
+            <Avatar
+              :image="user.user_image"
+              :label="user.full_name"
+              size="xl" />
+            <div class="grow truncate">
+              <div class="text-gray-900 text-[14px] font-medium">
+                {{ user.full_name }}
+              </div>
+              <div class="text-gray-600 text-base">{{ user.user }}</div>
+            </div>
+            <Popover transition="default">
+              <template #target="{ togglePopover }">
+                <Button
+                  :loading="user.loading"
+                  class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
+                  appearance="minimal"
+                  @click="togglePopover()">
+                  <template #prefix>
+                    <ChevronsUpDown class="w-4" />
+                  </template>
+                  {{ user.write ? "Can edit" : "Can view" }}
+                </Button>
+              </template>
+              <template #body-main="{ togglePopover }">
+                <div class="p-1">
+                  <!-- <div
                     v-for="item in ['Viewer', 'Editor', 'Remove']"
                     :key="item">
                     <div
@@ -200,39 +215,39 @@
                       {{ item }}
                     </div>
                   </div> -->
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                  @click="
-                    $resources.share
-                      .submit({
-                        entity_name: entityName,
-                        method: 'share',
-                        user: user.user,
-                        write: 0,
-                        share: 0,
-                      })
-                      .then(togglePopover())
-                  ">
-                  Can view
-                  <Check v-if="!user.write" class="h-4 ml-2" />
-                </div>
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                  @click="
-                    $resources.share
-                      .submit({
-                        entity_name: entityName,
-                        method: 'share',
-                        user: user.user,
-                        write: 1,
-                        share: 0,
-                      })
-                      .then(togglePopover())
-                  ">
-                  Can edit
-                  <Check v-if="user.write" class="h-4 ml-2" />
-                </div>
-                <!-- <div
+                  <div
+                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                    @click="
+                      $resources.share
+                        .submit({
+                          entity_name: entityName,
+                          method: 'share',
+                          user: user.user,
+                          write: 0,
+                          share: 0,
+                        })
+                        .then(togglePopover())
+                    ">
+                    Can view
+                    <Check v-if="!user.write" class="h-4 ml-2" />
+                  </div>
+                  <div
+                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                    @click="
+                      $resources.share
+                        .submit({
+                          entity_name: entityName,
+                          method: 'share',
+                          user: user.user,
+                          write: 1,
+                          share: 0,
+                        })
+                        .then(togglePopover())
+                    ">
+                    Can edit
+                    <Check v-if="user.write" class="h-4 ml-2" />
+                  </div>
+                  <!-- <div
                       class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                       @click="$resources.share.submit({
                           entity_name: entityName,
@@ -245,23 +260,24 @@
                      Can share
                      <Check v-if="generalAccess.write" class="h-4 ml-2"/>
                     </div> -->
-                <div
-                  class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                  @click="
-                    $resources.share
-                      .submit({
-                        entity_name: entityName,
-                        method: 'unshare',
-                        user: user.user,
-                      })
-                      .then(togglePopover())
-                  ">
-                  Remove
+                  <div
+                    class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                    @click="
+                      $resources.share
+                        .submit({
+                          entity_name: entityName,
+                          method: 'unshare',
+                          user: user.user,
+                        })
+                        .then(togglePopover())
+                    ">
+                    Remove
+                  </div>
                 </div>
-              </div>
-            </template>
-          </Popover>
-        </div>
+              </template>
+            </Popover>
+          </div>
+        </template>
       </div>
 
       <div
@@ -493,6 +509,9 @@ export default {
         url: "drive.api.permissions.get_shared_with_list",
         params: {
           entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          console.log(data);
         },
         auto: true,
       };

@@ -38,43 +38,16 @@ def get_shared_with_list(entity_name):
         fields=["user", "read", "write", "share", "everyone", "modified"],
     )
 
-    # Extra read to always have the owner and current user sorted first :c
-    # Returns current user even though we currently hide share chaining option
-
-    if entity_owner == frappe.session.user:
-        current_user = frappe.db.get_all(
-            "DocShare",
-            filters={
-                "share_doctype": "Drive Entity",
-                "share_name": entity_name,
-                "everyone": 0,
-                "user": frappe.session.user,
-            },
-            fields=["user", "read", "write", "share", "everyone", "modified"],
-        )
-        users = current_user + users
-
-    else:
-        entity_owner = frappe.db.get_all(
-            "DocShare",
-            filters={
-                "share_doctype": "Drive Entity",
-                "share_name": entity_name,
-                "everyone": 0,
-                "user": ["in", [entity_owner, frappe.session.user]],
-            },
-            order_by="modified",
-            fields=["user", "read", "write", "share", "everyone", "modified"],
-        )
-        users = entity_owner + users
-
+    entity_owner_info = frappe.db.get_value(
+        "User", entity_owner, ["user_image", "full_name", "email"], as_dict=True
+    )
     for user in users:
         user_info = frappe.db.get_value(
             "User", user.user, ["user_image", "full_name"], as_dict=True
         )
         user.update(user_info)
 
-    return users
+    return {"owner": entity_owner_info, "users": users}
 
 
 @frappe.whitelist()
@@ -297,7 +270,7 @@ def get_entity_with_permissions(entity_name):
         frappe.throw("Specified file has been trashed by the owner")
 
     user_access = get_user_access(entity.name)
-    
+
     if entity.owner == frappe.session.user:
         if entity.document:
             entity_doc_content = get_doc_content(entity.document)
