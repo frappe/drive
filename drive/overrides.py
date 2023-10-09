@@ -1,12 +1,13 @@
 import frappe
 
+
 def user_has_permission(doc, ptype, user):
     if not user:
         user = frappe.session.user
 
     if doc.owner == user:
         return
-   
+
     if user != "Guest":
         user_access = frappe.db.get_value(
             "DocShare",

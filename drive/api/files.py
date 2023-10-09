@@ -246,11 +246,11 @@ def rename_doc_entity(entity_name, title):
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, content, file_size):
     if not frappe.has_permission(
-            doctype="Drive Entity",
-            doc=entity_name,
-            ptype="write",
-            user=frappe.session.user,
-            ):
+        doctype="Drive Entity",
+        doc=entity_name,
+        ptype="write",
+        user=frappe.session.user,
+    ):
         raise frappe.PermissionError("You do not have permission to view this file")
     drive_document = frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
@@ -995,6 +995,7 @@ def toggle_allow_download(entity_name, new_value):
         "Drive Entity", entity_name, "allow_download", new_value, update_modified=False
     )
     return
+
 
 @frappe.whitelist()
 def get_title(entity_name):

@@ -21,7 +21,6 @@ def get_users_in_group(group_name):
                 "User", value, ["user_image", "full_name", "email"], as_dict=True
             )
             users[index] = user_info
-        print(users)
         return users
 
     except Exception as e:

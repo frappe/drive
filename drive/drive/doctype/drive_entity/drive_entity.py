@@ -323,7 +323,6 @@ class DriveEntity(NestedSet):
         self.db_set("allow_comments", new_value, commit=True, update_modified=False)
         if self.is_group:
             for child in self.get_children():
-                print(child)
                 child.toggle_allow_comments(new_value)
 
     @frappe.whitelist()

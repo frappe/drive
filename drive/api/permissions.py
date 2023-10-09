@@ -295,9 +295,9 @@ def get_entity_with_permissions(entity_name):
     # Add user group permission check on request
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
-    
+
     user_access = get_user_access(entity.name)
-    print(user_access)
+    
     if entity.owner == frappe.session.user:
         if entity.document:
             entity_doc_content = get_doc_content(entity.document)
