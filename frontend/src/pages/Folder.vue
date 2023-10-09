@@ -1051,7 +1051,6 @@ export default {
         // cache: ['pathEntities', this.entityName],
         onSuccess(data) {
           this.folderAccess = data;
-          this.isSharedFolder = this.folderAccess.owner !== this.userId;
           if (
             this.folderAccess.owner !== this.userId &&
             this.folderAccess.read == 1
