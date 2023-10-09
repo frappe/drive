@@ -258,12 +258,6 @@ def get_entity_with_permissions(entity_name):
 
     user_access = get_user_access(entity_name)
 
-    if not user_access:
-        frappe.throw(
-            "PermissionError: Either this file does not exist, or you don't have access to it",
-            frappe.PermissionError,
-        )
-
     fields = [
         "name",
         "title",
@@ -304,32 +298,15 @@ def get_entity_with_permissions(entity_name):
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
 
+    if entity.owner == frappe.session.user:
+        if entity.document:
+            entity_doc_content = get_doc_content(entity.document)
+            return entity | entity_doc_content
+        return entity
+
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
         return entity | user_access | entity_doc_content
-
-    return entity | user_access
-
-
-@frappe.whitelist(allow_guest=True)
-def get_doc_with_permissions(entity_name):
-    """
-    Return file data with permissions
-
-    :param entity_name: Name of file document.
-    :raises IsADirectoryError: If this DriveEntity doc is not a file
-    :return: DriveEntity with permissions
-    :rtype: frappe._dict
-    """
-
-    user_access = get_user_access(entity_name)
-
-    if not user_access:
-        frappe.throw(
-            "PermissionError: Either this file does not exist, or you don't have access to it",
-            frappe.PermissionError,
-        )
-    entity = get_doc_content(entity_name)
 
     return entity | user_access
 
@@ -362,24 +339,13 @@ def get_user_access(entity_name):
     :rtype: frappe._dict or None
     """
 
-    user_access = frappe.db.get_value(
-        "DocShare",
-        {"share_name": entity_name, "user": frappe.session.user},
-        ["read", "write", "share", "owner"],
-        as_dict=1,
-    )
-
-    if user_access:
-        if not frappe.has_permission(
-            doctype="Drive Entity",
-            doc=entity_name,
-            ptype="write",
-            user=frappe.session.user,
-        ):
-            frappe.throw(
-                "PermissionError: Either this file does not exist, or you don't have access to it",
-                frappe.PermissionError,
-            )
+    if frappe.session.user != "Guest":
+        user_access = frappe.db.get_value(
+            "DocShare",
+            {"share_name": entity_name, "user": frappe.session.user},
+            ["read", "write", "share", "owner"],
+            as_dict=1,
+        )
         return user_access
     else:
         return get_general_access(entity_name)
