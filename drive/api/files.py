@@ -729,7 +729,7 @@ def list_favourites(order_by="modified"):
     ]
     query = (
         frappe.qb.from_(DriveEntity)
-        .inner_join(DriveFavourite)
+        .right_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
@@ -740,7 +740,7 @@ def list_favourites(order_by="modified"):
             & ((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
         )
         .select(*selectedFields)
-        .where((DriveEntity.is_active == 1) & (DocShare.read == 1))
+        .where((DriveEntity.is_active == 1))
         .groupby(DriveEntity.name)
         .orderby(
             order_by.split()[0],
@@ -883,7 +883,7 @@ def list_recents(order_by="modified"):
     ]
     query = (
         frappe.qb.from_(DriveEntity)
-        .inner_join(DriveRecent)
+        .right_join(DriveRecent)
         .on(
             (DriveRecent.entity_name == DriveEntity.name)
             & (DriveRecent.user == frappe.session.user)
@@ -899,7 +899,7 @@ def list_recents(order_by="modified"):
             & ((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
         )
         .select(*selectedFields)
-        .where((DriveEntity.is_active == 1) & (DocShare.read == 1))
+        .where((DriveEntity.is_active == 1))
         .groupby(DriveEntity.name)
         .orderby(
             order_by.split()[0],
