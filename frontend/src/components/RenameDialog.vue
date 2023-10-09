@@ -115,13 +115,14 @@ export default {
   resources: {
     rename() {
       return {
-        url: "drive.api.files.call_controller_method",
+        //url: "drive.api.files.call_controller_method",
+        url: "frappe.client.set_value",
+        method: "POST",
         params: {
-          method: "rename",
-          entity_name: this.entityName,
-          // https://stackoverflow.com/questions/7296594/array-join-vs-string-concat
-          // Interestingly faster than join
-          new_title: this.fullName,
+          doctype: "Drive Entity",
+          name: this.entityName,
+          fieldname: "title",
+          value: this.fullName,
         },
         onSuccess(data) {
           this.newName = "";

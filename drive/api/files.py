@@ -995,3 +995,15 @@ def toggle_allow_download(entity_name, new_value):
         "Drive Entity", entity_name, "allow_download", new_value, update_modified=False
     )
     return
+
+@frappe.whitelist()
+def get_title(entity_name):
+    """
+    Toggle allow download for entity
+
+    """
+    if not frappe.has_permission(
+        doctype="Drive Entity", doc=entity_name, ptype="write", user=frappe.session.user
+    ):
+        frappe.throw("Not permitted", frappe.PermissionError)
+    return frappe.db.get_value("Drive Entity", entity_name, "title")
