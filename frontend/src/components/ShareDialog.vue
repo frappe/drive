@@ -119,7 +119,7 @@
       </div>
 
       <UserSearch
-        :search-groups="false"
+        :search-groups="true"
         place-holder-text="Search for users or emails"
         @submit="
           (user) =>
@@ -154,7 +154,7 @@
           </div>
           <Button variant="minimal" class="text-gray-600">Owner</Button>
         </div>
-        <template v-if="$resources.sharedWith.data.users">
+        <template v-if="$resources.sharedWith.data?.users">
           <div
             v-for="user in $resources.sharedWith.data.users"
             :key="user.user"
@@ -287,17 +287,80 @@
         <div
           v-for="group in $resources.sharedWithUserGroup.data"
           :key="group"
-          class="mt-3 flex flex-row w-full gap-2 items-center space-y-2">
-          <Avatar size="xl" :label="group"></Avatar>
-          <div class="grow truncate">
-            <div class="text-gray-900 text-[14px] font-medium">
-              {{ group }}
-            </div>
-            <div class="text-gray-600 text-base">{{ group }}</div>
+          class="mt-3 flex flex-row w-full gap-2 items-center">
+          <Avatar size="xl" :label="group.user_group"></Avatar>
+          <div
+            class="text-gray-900 text-[14px] self-center font-medium grow truncate">
+            {{ group.user_group }}
           </div>
+          <Popover transition="default">
+            <template #target="{ togglePopover }">
+              <Button
+                :loading="group.loading"
+                class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
+                appearance="minimal"
+                @click="togglePopover()">
+                <template #prefix>
+                  <ChevronsUpDown class="w-4" />
+                </template>
+                {{ group.write ? "Can edit" : "Can view" }}
+              </Button>
+            </template>
+            <template #body-main="{ togglePopover }">
+              <div class="p-1">
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                  @click="
+                    $resources.share
+                      .submit({
+                        entity_name: entityName,
+                        method: 'share',
+                        user: group.user_group,
+                        is_user_group: true,
+                        write: 0,
+                        share: 0,
+                      })
+                      .then(togglePopover())
+                  ">
+                  Can view
+                  <Check v-if="!group.write" class="h-4 ml-2" />
+                </div>
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                  @click="
+                    $resources.share
+                      .submit({
+                        entity_name: entityName,
+                        method: 'share',
+                        user: group.user_group,
+                        is_user_group: true,
+                        write: 1,
+                        share: 0,
+                      })
+                      .then(togglePopover())
+                  ">
+                  Can edit
+                  <Check v-if="group.write" class="h-4 ml-2" />
+                </div>
+                <div
+                  class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                  @click="
+                    $resources.share
+                      .submit({
+                        entity_name: entityName,
+                        method: 'unshare',
+                        user: group.user_group,
+                        is_user_group: true,
+                      })
+                      .then(togglePopover())
+                  ">
+                  Remove
+                </div>
+              </div>
+            </template>
+          </Popover>
         </div>
       </div>
-
       <div class="flex justify-items-center content-center mt-6">
         <div class="flex justify-items-center content-center">
           <Button variant="ghost" @click="getLink">
@@ -510,9 +573,6 @@ export default {
         params: {
           entity_name: this.entityName,
         },
-        onSuccess(data) {
-          console.log(data);
-        },
         auto: true,
       };
     },
@@ -521,6 +581,9 @@ export default {
         url: "drive.api.permissions.get_shared_user_group_list",
         params: {
           entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          console.log(data);
         },
         auto: true,
       };

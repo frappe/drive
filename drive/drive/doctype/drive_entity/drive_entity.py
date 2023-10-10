@@ -348,11 +348,23 @@ class DriveEntity(NestedSet):
         :param share: 1 if share permission is to be granted. Defaults to 0
         :param notify: 1 if the user should be notified. Defaults to 1
         """
-
         flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
         if is_user_group:
-            if not does_exist_user_group_docshare(self.name, user):
-                return add_new_user_group_docshare(self.name, user)
+            if not frappe.db.exists("Drive DocShare", {"entity_name": self.name, "user_group": user}):
+                new_doc = frappe.new_doc("Drive DocShare")
+                new_doc.entity_name = self.name
+                new_doc.user_group = user
+                new_doc.read = True,
+                new_doc.write = write,
+                new_doc.insert()
+                return new_doc
+            else:
+                existing_doc = frappe.get_doc("Drive DocShare", {"entity_name": self.name, "user_group": user})
+                existing_doc.read = 1
+                existing_doc.write = write
+                existing_doc.save()
+                return existing_doc
+        
         if self.is_group:
             for child in self.get_children():
                 child.share(user, write, share, 0)
@@ -377,7 +389,7 @@ class DriveEntity(NestedSet):
             )
 
     @frappe.whitelist()
-    def unshare(self, user):
+    def unshare(self, user, is_user_group=False):
         """Unshare this file or folder with the specified user
 
         :param user: User with whom this is to be shared
@@ -393,6 +405,11 @@ class DriveEntity(NestedSet):
             or frappe.session.user == self.owner
         ):
             flags = {"ignore_permissions": True}
+        
+        if is_user_group:
+            if frappe.db.exists("Drive DocShare", {"entity_name": self.name, "user_group": user}):
+                doc = frappe.get_doc("Drive DocShare", {"entity_name": self.name, "user_group": user})
+                doc.delete()
         if self.is_group:
             for child in self.get_children():
                 child.unshare(user)

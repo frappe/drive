@@ -167,10 +167,9 @@ def get_entity_shared_with_user_groups(entity_name):
         user_group_list = frappe.db.get_list(
             "Drive DocShare",
             filters={"entity_name": ["like", f"%{entity_name}%"]},
-            fields=["user_group"],
+            fields=["user_group", "read", "write"],
         )
-        user_groups = [item["user_group"] for item in user_group_list]
-        return user_groups
+        return user_group_list
     except Exception as e:
         return {
             "message": ("Failed to fetch entity shared with user group."),

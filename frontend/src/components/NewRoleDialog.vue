@@ -5,7 +5,7 @@
       <Input v-model="roleName" type="text" />
       <label class="block text-xs text-gray-600 mt-2 mb-1">Add User</label>
       <UserSearch
-        search-groups="false"
+        :search-groups="false"
         class="mb-4"
         @submit="(user) => addUser(user)" />
       <label v-if="UsersInRole.length" class="block text-xs text-gray-600 mt-2">
