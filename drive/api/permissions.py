@@ -322,3 +322,61 @@ def get_user_access(entity_name):
         return user_access
     else:
         return get_general_access(entity_name)
+
+
+def list_groups_for_entity(entity_name=None, order_by="modified", is_active=1):
+    """
+    Return list of DriveEntity records present in this folder
+
+    :param entity_name: Document-name of the folder whose contents are to be listed. Defaults to the user directory
+    :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
+    :raises NotADirectoryError: If this DriveEntity doc is not a folder
+    :raises PermissionError: If the user does not have access to the specified folder
+    :return: List of DriveEntity records
+    :rtype: list
+    """
+
+    parent_is_active = frappe.db.get_value("Drive Entity", entity_name, ["is_group", "is_active"])
+    if not parent_is_active:
+        frappe.throw("Specified folder has been trashed by the owner")
+
+    entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    flag = False
+    for z_entity_name in entity_ancestors:
+        result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
+        if result:
+            flag = True
+            break
+    if flag == True:
+        frappe.throw("Parent Folder has been deleted")
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    UserGroupMember = frappe.qb.DocType("User Group Member")
+
+    selectedFields = [
+        DriveEntity.name,
+        DriveDocShare.read,
+        DriveDocShare.write,
+        DriveEntity.owner,
+        UserGroupMember.user,
+    ]
+
+    query = (
+        frappe.qb.from_(DriveDocShare)
+        .inner_join(DriveEntity)
+        .on((DriveDocShare.entity_name == DriveEntity.name))
+        .select(DriveDocShare.user_group)
+        .inner_join(UserGroupMember)
+        .on((UserGroupMember.parent == DriveDocShare.user_group))
+        .select(*selectedFields)
+        .where(
+            (DriveEntity.is_active == is_active) & (UserGroupMember.user == frappe.session.user)
+        )
+        .groupby(DriveDocShare.user_group)
+        .orderby(
+            order_by.split()[0],
+            order=Order.desc if order_by.endswith("desc") else Order.asc,
+        )
+    )
+    result = query.run(as_dict=True)
+    return result
