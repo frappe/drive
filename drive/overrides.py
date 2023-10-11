@@ -1,4 +1,5 @@
 import frappe
+from drive.api.permissions import list_groups_for_entity
 
 
 def user_has_permission(doc, ptype, user):
@@ -19,6 +20,13 @@ def user_has_permission(doc, ptype, user):
             if ptype == "write" and user_access["write"]:
                 return
             if ptype == "read" and user_access["read"]:
+                return
+        group_access = list_groups_for_entity(doc.name)
+        if list_groups_for_entity(doc.name):
+            print(list_groups_for_entity(doc.name))
+            if ptype == "write" and group_access["write"]:
+                return
+            if ptype == "read" and group_access["read"]:
                 return
         return False
 

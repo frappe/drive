@@ -243,6 +243,12 @@ def get_entity_with_permissions(entity_name):
         "allow_download",
         "document",
     ]
+    if not get_general_access(entity_name):
+        if not frappe.has_permission(
+            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+        ):
+            frappe.throw("Not permitted", frappe.PermissionError)
+
     entity = get_entity(entity_name, fields)
     entity_ancestors = get_ancestors_of("Drive Entity", entity)
     flag = False
@@ -269,14 +275,12 @@ def get_entity_with_permissions(entity_name):
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
 
-    user_access = get_user_access(entity.name)
-
     if entity.owner == frappe.session.user:
         if entity.document:
             entity_doc_content = get_doc_content(entity.document)
             return entity | entity_doc_content
         return entity
-
+    user_access = get_user_access(entity.name)
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
         return entity | user_access | entity_doc_content
@@ -316,12 +320,24 @@ def get_user_access(entity_name):
         user_access = frappe.db.get_value(
             "DocShare",
             {"share_name": entity_name, "user": frappe.session.user},
-            ["read", "write", "share", "owner"],
+            ["read", "write"],
             as_dict=1,
         )
-        return user_access
+        if user_access:
+            return user_access
+        else:
+            return list_groups_for_entity(entity_name)
     else:
         return get_general_access(entity_name)
+
+
+# Group access, avoid querying many to many
+# Querying 1 to many and then many to 1
+# Step 1: Get all groups a user belongs to
+# Step 2: Get all valid `Drive DocShare` for the current entity
+# Step 3: Compare for overlap
+# Step 4: Get the highest access group permissions
+# This might potentially be very poor in terms of performance needs further testing
 
 
 def list_groups_for_entity(entity_name=None, order_by="modified", is_active=1):
@@ -354,11 +370,9 @@ def list_groups_for_entity(entity_name=None, order_by="modified", is_active=1):
     UserGroupMember = frappe.qb.DocType("User Group Member")
 
     selectedFields = [
-        DriveEntity.name,
+        UserGroupMember.user,
         DriveDocShare.read,
         DriveDocShare.write,
-        DriveEntity.owner,
-        UserGroupMember.user,
     ]
 
     query = (
@@ -379,4 +393,6 @@ def list_groups_for_entity(entity_name=None, order_by="modified", is_active=1):
         )
     )
     result = query.run(as_dict=True)
-    return result
+    max_read = max(d["read"] for d in result)
+    max_write = max(d["write"] for d in result)
+    return {"read": max_read, "write": max_write}

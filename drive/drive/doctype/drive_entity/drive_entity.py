@@ -337,7 +337,7 @@ class DriveEntity(NestedSet):
                 child.toggle_allow_download(new_value)
 
     @frappe.whitelist()
-    def share(self, user, write=0, share=1, notify=1, is_user_group=None):
+    def share(self, user, read=1, write=0, share=1, notify=1, is_user_group=None):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -350,21 +350,25 @@ class DriveEntity(NestedSet):
         """
         flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
         if is_user_group:
-            if not frappe.db.exists("Drive DocShare", {"entity_name": self.name, "user_group": user}):
+            if not frappe.db.exists(
+                "Drive DocShare", {"entity_name": self.name, "user_group": user}
+            ):
                 new_doc = frappe.new_doc("Drive DocShare")
                 new_doc.entity_name = self.name
                 new_doc.user_group = user
-                new_doc.read = True,
-                new_doc.write = write,
+                new_doc.read = read
+                new_doc.write = write
                 new_doc.insert()
                 return new_doc
             else:
-                existing_doc = frappe.get_doc("Drive DocShare", {"entity_name": self.name, "user_group": user})
-                existing_doc.read = 1
+                existing_doc = frappe.get_doc(
+                    "Drive DocShare", {"entity_name": self.name, "user_group": user}
+                )
+                existing_doc.read = read
                 existing_doc.write = write
-                existing_doc.save()
+                existing_doc.update()
                 return existing_doc
-        
+
         if self.is_group:
             for child in self.get_children():
                 child.share(user, write, share, 0)
@@ -405,10 +409,12 @@ class DriveEntity(NestedSet):
             or frappe.session.user == self.owner
         ):
             flags = {"ignore_permissions": True}
-        
+
         if is_user_group:
             if frappe.db.exists("Drive DocShare", {"entity_name": self.name, "user_group": user}):
-                doc = frappe.get_doc("Drive DocShare", {"entity_name": self.name, "user_group": user})
+                doc = frappe.get_doc(
+                    "Drive DocShare", {"entity_name": self.name, "user_group": user}
+                )
                 doc.delete()
         if self.is_group:
             for child in self.get_children():
