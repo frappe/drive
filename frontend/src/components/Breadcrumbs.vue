@@ -20,7 +20,7 @@
           {{ "/" }}
         </span>
       </a>
-      <span v-else class="text-black" @click="showRenameDialog = true">
+      <span v-else class="text-black" @click="canShowRenameDialog">
         {{ currentTitle }}
       </span>
     </router-link>
@@ -89,6 +89,11 @@ export default {
       return this.breadcrumbLinks.length > 1
         ? index === this.breadcrumbLinks.length - 1
         : false;
+    },
+    canShowRenameDialog() {
+      if (this.$store.state.entityInfo[0].write === 1) {
+        return (this.showRenameDialog = true);
+      }
     },
   },
   resources: {
