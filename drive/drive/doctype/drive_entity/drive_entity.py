@@ -12,6 +12,7 @@ from drive.utils.files import (
     create_thumbnail,
 )
 from drive.utils.user_group import add_new_user_group_docshare, does_exist_user_group_docshare
+from frappe.utils import cint
 
 
 class DriveEntity(NestedSet):
@@ -337,7 +338,18 @@ class DriveEntity(NestedSet):
                 child.toggle_allow_download(new_value)
 
     @frappe.whitelist()
-    def share(self, user, read=1, write=0, share=1, notify=1, is_user_group=None):
+    def share(
+        self,
+        user,
+        user_type="User",
+        read=1,
+        write=0,
+        share=0,
+        everyone=0,
+        public=0,
+        notify=0,
+        is_user_group=None,
+    ):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -349,76 +361,99 @@ class DriveEntity(NestedSet):
         :param notify: 1 if the user should be notified. Defaults to 1
         """
         flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
-        if is_user_group:
-            if not frappe.db.exists(
-                "Drive DocShare", {"entity_name": self.name, "user_group": user}
-            ):
-                new_doc = frappe.new_doc("Drive DocShare")
-                new_doc.entity_name = self.name
-                new_doc.user_group = user
-                new_doc.read = read
-                new_doc.write = write
-                new_doc.insert()
-                return new_doc
-            else:
-                existing_doc = frappe.get_doc(
-                    "Drive DocShare", {"entity_name": self.name, "user_group": user}
-                )
-                existing_doc.read = read
-                existing_doc.write = write
-                existing_doc.update()
-                return existing_doc
+        if cint(everyone):
+            share_name = frappe.db.get_value(
+                "Drive DocShare",
+                {
+                    "everyone": 1,
+                    "share_name": self.name,
+                    "share_doctype": "Drive Entity",
+                },
+            )
+        if cint(public):
+            share_name = frappe.db.get_value(
+                "Drive DocShare",
+                {
+                    "public": 1,
+                    "share_name": self.name,
+                    "share_doctype": "Drive Entity",
+                },
+            )
+        else:
+            share_name = frappe.db.get_value(
+                "Drive DocShare",
+                {
+                    "user_name": user,
+                    "user_doctype": user_type,
+                    "share_name": self.name,
+                    "share_doctype": "Drive Entity",
+                },
+            )
+
+        if share_name:
+            doc = frappe.get_doc("Drive DocShare", share_name)
+        else:
+            doc = frappe.new_doc("Drive DocShare")
+            doc.update(
+                {
+                    "user_name": user,
+                    "user_doctype": user_type,
+                    "share_doctype": "Drive Entity",
+                    "share_name": self.name,
+                    "everyone": cint(everyone),
+                    "public": cint(public),
+                }
+            )
+
+        if flags:
+            doc.flags.update(flags)
+
+        doc.update(
+            {
+                # always add read, since you are adding!
+                "read": 1,
+                "write": cint(write),
+                "share": cint(share),
+            }
+        )
+        doc.save(ignore_permissions=True)
 
         if self.is_group:
             for child in self.get_children():
-                child.share(user, write, share, 0)
-            frappe.share.add_docshare(
-                "Drive Entity",
-                self.name,
-                user,
-                write=write,
-                share=share,
-                notify=notify,
-                flags=flags,
-            )
-        else:
-            frappe.share.add_docshare(
-                "Drive Entity",
-                self.name,
-                user,
-                write=write,
-                share=share,
-                notify=notify,
-                flags=flags,
-            )
+                child.share(user, user_type, write, share, everyone, public)
+
+        doc.save()
 
     @frappe.whitelist()
-    def unshare(self, user, is_user_group=False):
+    def unshare(self, user, user_type="User"):
         """Unshare this file or folder with the specified user
 
-        :param user: User with whom this is to be shared
+        :param user: User or group with whom this is to be shared
+        :param user_type:
         """
 
         if (
             frappe.has_permission(
                 doctype="Drive Entity",
                 doc=self.name,
-                ptype="share",
+                ptype="read",
                 user=frappe.session.user,
             )
             or frappe.session.user == self.owner
         ):
             flags = {"ignore_permissions": True}
 
-        if is_user_group:
-            if frappe.db.exists("Drive DocShare", {"entity_name": self.name, "user_group": user}):
-                doc = frappe.get_doc(
-                    "Drive DocShare", {"entity_name": self.name, "user_group": user}
-                )
-                doc.delete()
-        if self.is_group:
-            for child in self.get_children():
-                child.unshare(user)
-            frappe.share.remove("Drive Entity", self.name, user, flags=flags)
-        else:
-            frappe.share.remove("Drive Entity", self.name, user, flags=flags)
+        share_name = frappe.db.get_value(
+            "Drive DocShare",
+            {
+                "user_name": user,
+                "user_doctype": user_type,
+                "share_name": self.name,
+                "share_doctype": "Drive Entity",
+            },
+        )
+        if share_name:
+            if self.is_group:
+                for child in self.get_children():
+                    child.unshare(user)
+            frappe.delete_doc("Drive DocShare", share_name, flags=flags)

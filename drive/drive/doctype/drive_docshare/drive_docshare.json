@@ -1,29 +1,25 @@
 {
   "actions": [],
-  "allow_rename": 1,
   "autoname": "hash",
   "creation": "2023-08-28 12:03:29.057225",
   "default_view": "List",
+  "description": "Internal record of drive entity shares",
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["entity_name", "user_group", "read", "write", "share"],
+  "field_order": [
+    "share_doctype",
+    "share_name",
+    "user_doctype",
+    "user_name",
+    "read",
+    "write",
+    "share",
+    "everyone",
+    "public",
+    "notify"
+  ],
   "fields": [
-    {
-      "fieldname": "entity_name",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "Entity Name",
-      "options": "Drive Entity",
-      "reqd": 1
-    },
-    {
-      "fieldname": "user_group",
-      "fieldtype": "Link",
-      "label": "User Group",
-      "options": "User Group",
-      "reqd": 1
-    },
     {
       "default": "0",
       "fieldname": "read",
@@ -41,11 +37,56 @@
       "fieldname": "share",
       "fieldtype": "Check",
       "label": "Share"
+    },
+    {
+      "fieldname": "share_doctype",
+      "fieldtype": "Link",
+      "label": "Document Type",
+      "options": "DocType",
+      "reqd": 1
+    },
+    {
+      "fieldname": "share_name",
+      "fieldtype": "Dynamic Link",
+      "in_list_view": 1,
+      "label": "Document Name",
+      "options": "share_doctype",
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "everyone",
+      "fieldtype": "Check",
+      "label": "Everyone"
+    },
+    {
+      "default": "0",
+      "fieldname": "public",
+      "fieldtype": "Check",
+      "label": "Public"
+    },
+    {
+      "default": "0",
+      "fieldname": "notify",
+      "fieldtype": "Check",
+      "label": "Notify"
+    },
+    {
+      "fieldname": "user_doctype",
+      "fieldtype": "Link",
+      "label": "User Type",
+      "options": "DocType"
+    },
+    {
+      "fieldname": "user_name",
+      "fieldtype": "Dynamic Link",
+      "label": "User Name",
+      "options": "user_doctype"
     }
   ],
-  "index_web_pages_for_search": 1,
+  "in_create": 1,
   "links": [],
-  "modified": "2023-08-29 13:34:56.844913",
+  "modified": "2023-10-13 13:35:49.260077",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive DocShare",
@@ -89,7 +130,9 @@
       "write": 1
     }
   ],
+  "read_only": 1,
   "sort_field": "modified",
   "sort_order": "DESC",
-  "states": []
+  "states": [],
+  "track_changes": 1
 }
