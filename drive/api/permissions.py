@@ -1,5 +1,5 @@
 import frappe
-from pypika import Order, Query, Table, Field
+from pypika import Order, Query, Table, Field, functions as fn
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
@@ -27,15 +27,17 @@ def get_shared_with_list(entity_name):
     entity_owner = frappe.db.get_value("Drive Entity", entity_name, "owner")
 
     users = frappe.db.get_all(
-        "DocShare",
+        "Drive DocShare",
         filters={
             "share_doctype": "Drive Entity",
             "share_name": entity_name,
+            "user_doctype": "User",
+            "user_name": ["not in", [frappe.session.user, entity_owner]],
             "everyone": 0,
-            "user": ["not in", [frappe.session.user, entity_owner]],
+            "public": 0,
         },
         order_by="name",
-        fields=["user", "read", "write", "share", "everyone", "modified"],
+        fields=["user_name", "read", "write", "share"],
     )
 
     entity_owner_info = frappe.db.get_value(
@@ -43,16 +45,23 @@ def get_shared_with_list(entity_name):
     )
     for user in users:
         user_info = frappe.db.get_value(
-            "User", user.user, ["user_image", "full_name"], as_dict=True
+            "User", user.user_name, ["user_image", "full_name"], as_dict=True
         )
         user.update(user_info)
-
     return {"owner": entity_owner_info, "users": users}
 
 
 @frappe.whitelist()
 def get_shared_user_group_list(entity_name):
-    user_group_list = get_entity_shared_with_user_groups(entity_name)
+    user_group_list = frappe.db.get_list(
+        "Drive DocShare",
+        filters={
+            "share_doctype": "Drive Entity",
+            "user_doctype": "User Group",
+            "share_name": ["like", f"%{entity_name}%"],
+        },
+        fields=["user_name", "user_doctype", "read", "write"],
+    )
     return user_group_list
 
 
@@ -133,9 +142,10 @@ def get_shared_with_me(get_all=False, order_by="modified"):
     :rtype: list[frappe._dict]
     """
 
-    DocShare = frappe.qb.DocType("DocShare")
+    DocShare = frappe.qb.DocType("Drive DocShare")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
+    UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -151,7 +161,7 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         DriveEntity.document,
         DriveEntity.allow_download,
         DocShare.read,
-        DocShare.write,
+        fn.Max(DocShare.write).as_("write"),
         DocShare.everyone,
         DocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
@@ -160,14 +170,20 @@ def get_shared_with_me(get_all=False, order_by="modified"):
     query = (
         frappe.qb.from_(DriveEntity)
         .inner_join(DocShare)
-        .on((DocShare.share_name == DriveEntity.name) & (DocShare.user == frappe.session.user))
+        .on((DocShare.share_name == DriveEntity.name))
+        .right_join(UserGroupMember)
+        .on(
+            (UserGroupMember.parent == DocShare.user_name) | (DocShare.user_name == frappe.session.user))
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
+        .groupby(DriveEntity.name)
         .select(*selectedFields)
-        .where(DriveEntity.is_active == 1)
+        .where(
+            (DriveEntity.is_active == 1) & (UserGroupMember.user == frappe.session.user)
+        )
     )
     if get_all:
         return query.run(as_dict=True)
@@ -318,15 +334,20 @@ def get_user_access(entity_name):
 
     if frappe.session.user != "Guest":
         user_access = frappe.db.get_value(
-            "DocShare",
-            {"share_name": entity_name, "user": frappe.session.user},
+            "Drive DocShare",
+            {
+                "share_doctype": "Drive Entity",
+                "share_name": entity_name,
+                "user_doctype": "User",
+                "user_name": frappe.session.user,
+            },
             ["read", "write"],
             as_dict=1,
         )
         if user_access:
             return user_access
         else:
-            return list_groups_for_entity(entity_name)
+            return user_group_entity_access(entity_name)
     else:
         return get_general_access(entity_name)
 
@@ -340,9 +361,9 @@ def get_user_access(entity_name):
 # This might potentially be very poor in terms of performance needs further testing
 
 
-def list_groups_for_entity(entity_name=None, order_by="modified", is_active=1):
+def user_group_entity_access(entity_name=None, order_by="modified", is_active=1):
     """
-    Return list of DriveEntity records present in this folder
+    Get user group access level for current user and current entity
 
     :param entity_name: Document-name of the folder whose contents are to be listed. Defaults to the user directory
     :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
@@ -372,16 +393,16 @@ def list_groups_for_entity(entity_name=None, order_by="modified", is_active=1):
     selectedFields = [
         UserGroupMember.user,
         DriveDocShare.read,
-        DriveDocShare.write,
+        fn.Max(DriveDocShare.write).as_("write"),
     ]
 
     query = (
         frappe.qb.from_(DriveDocShare)
         .inner_join(DriveEntity)
-        .on((DriveDocShare.entity_name == DriveEntity.name))
-        .select(DriveDocShare.user_group)
+        .on((DriveDocShare.share_name == DriveEntity.name))
+        .select(DriveDocShare.user_name)
         .inner_join(UserGroupMember)
-        .on((UserGroupMember.parent == DriveDocShare.user_group))
+        .on((UserGroupMember.parent == DriveDocShare.user_name))
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == is_active) & (UserGroupMember.user == frappe.session.user)

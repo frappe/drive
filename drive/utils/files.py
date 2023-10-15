@@ -15,7 +15,8 @@ def create_user_directory():
     :return: Dictionary containing the document-name and path
     :rtype: frappe._dict
     """
-
+    if frappe.session.user == "Guest":
+        return
     user_directory_name = _get_user_directory_name()
     user_directory_path = Path(frappe.get_site_path("private/files"), user_directory_name)
     user_directory_path.mkdir(exist_ok=True)
@@ -37,6 +38,7 @@ def create_user_directory():
     user = frappe.get_doc("User", frappe.session.user)
     user.flags.ignore_permlevel_for_fields = ["roles"]
     user.add_roles("Drive User")
+    user.save(ignore_permissions=True)
     user_directory.insert()
     return frappe._dict({"name": user_directory.name, "path": user_directory.path})
 
@@ -56,7 +58,7 @@ def get_user_directory(user=None):
         "Drive Entity", user_directory_name, ["name", "path"], as_dict=1
     )
     if user_directory is None:
-        raise FileNotFoundError("User directory does not exist")
+        user_directory = create_user_directory()
     return user_directory
 
 

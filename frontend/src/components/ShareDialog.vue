@@ -126,7 +126,7 @@
             $resources.share.submit({
               method: 'share',
               entity_name: entityName,
-              is_user_group: user.email ? false : true,
+              user_type: user.email ? 'User' : 'User Group',
               user: user.email ? user.email : user.name,
             })
         " />
@@ -157,7 +157,7 @@
         <template v-if="$resources.sharedWith.data?.users">
           <div
             v-for="user in $resources.sharedWith.data.users"
-            :key="user.user"
+            :key="user.user_name"
             class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
             <Avatar
               :image="user.user_image"
@@ -167,7 +167,7 @@
               <div class="text-gray-900 text-[14px] font-medium">
                 {{ user.full_name }}
               </div>
-              <div class="text-gray-600 text-base">{{ user.user }}</div>
+              <div class="text-gray-600 text-base">{{ user.user_name }}</div>
             </div>
             <Popover transition="default">
               <template #target="{ togglePopover }">
@@ -222,7 +222,7 @@
                         .submit({
                           entity_name: entityName,
                           method: 'share',
-                          user: user.user,
+                          user: user.user_name,
                           write: 0,
                           share: 0,
                         })
@@ -238,7 +238,7 @@
                         .submit({
                           entity_name: entityName,
                           method: 'share',
-                          user: user.user,
+                          user: user.user_name,
                           write: 1,
                           share: 0,
                         })
@@ -267,7 +267,7 @@
                         .submit({
                           entity_name: entityName,
                           method: 'unshare',
-                          user: user.user,
+                          user: user.user_name,
                         })
                         .then(togglePopover())
                     ">
@@ -288,10 +288,10 @@
           v-for="group in $resources.sharedWithUserGroup.data"
           :key="group"
           class="mt-3 flex flex-row w-full gap-2 items-center">
-          <Avatar size="xl" :label="group.user_group"></Avatar>
+          <Avatar size="xl" :label="group.user_name"></Avatar>
           <div
             class="text-gray-900 text-[14px] self-center font-medium grow truncate">
-            {{ group.user_group }}
+            {{ group.user_name }}
           </div>
           <Popover transition="default">
             <template #target="{ togglePopover }">
@@ -315,8 +315,8 @@
                       .submit({
                         entity_name: entityName,
                         method: 'share',
-                        user: group.user_group,
-                        is_user_group: true,
+                        user: group.user_name,
+                        user_type: 'User Group',
                         write: 0,
                         share: 0,
                       })
@@ -332,8 +332,8 @@
                       .submit({
                         entity_name: entityName,
                         method: 'share',
-                        user: group.user_group,
-                        is_user_group: true,
+                        user: group.user_name,
+                        user_type: 'User Group',
                         write: 1,
                         share: 0,
                       })
@@ -349,8 +349,8 @@
                       .submit({
                         entity_name: entityName,
                         method: 'unshare',
-                        user: group.user_group,
-                        is_user_group: true,
+                        user: group.user_name,
+                        user_type: 'User Group',
                       })
                       .then(togglePopover())
                   ">

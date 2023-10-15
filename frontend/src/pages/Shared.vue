@@ -141,6 +141,9 @@ export default {
         ? this.$store.state.sortOrder.field
         : `${this.$store.state.sortOrder.field} desc`;
     },
+    currentUser() {
+      return this.$store.state.auth.user_id;
+    },
     shareView() {
       return this.$store.state.shareView;
     },
@@ -213,14 +216,8 @@ export default {
             },
             isEnabled: () => {
               if (this.selectedEntities.length === 1) {
-                if (
-                  this.selectedEntities.length === 1 &&
-                  !this.selectedEntities[0].is_group &&
-                  (this.selectedEntities[0].allow_download ||
-                    this.selectedEntities[0].write)
-                ) {
-                  console.log(this.selectedEntities[0]);
-                  return !this.selectedEntities[0].document;
+                if (this.selectedEntities.owner === this.currentUser) {
+                  return True;
                 }
               }
             },

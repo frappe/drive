@@ -45,7 +45,7 @@ def get_home_folder_id(user=None):
     """Returns user directory name from user's unique id"""
     if not user:
         user = frappe.session.user
-    return hashlib.md5(user.encode("utf-8")).hexdigest()
+        return get_user_directory(user)
 
 
 @frappe.whitelist()
