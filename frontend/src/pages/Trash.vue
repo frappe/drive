@@ -235,7 +235,7 @@ export default {
   resources: {
     folderContents() {
       return {
-        url: "drive.api.files.list_folder_contents",
+        url: "drive.api.files.list_owned_entities",
         params: {
           order_by: this.orderBy,
           fields:
@@ -247,7 +247,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? "-"
+              ? ""
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);

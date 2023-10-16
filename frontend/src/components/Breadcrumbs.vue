@@ -91,7 +91,10 @@ export default {
         : false;
     },
     canShowRenameDialog() {
-      if (this.$store.state.entityInfo[0].write === 1) {
+      if (
+        (this.$store.state.entityInfo[0].owner === "me") |
+        (this.$store.state.entityInfo[0].write === 1)
+      ) {
         return (this.showRenameDialog = true);
       }
     },
