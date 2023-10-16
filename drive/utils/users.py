@@ -4,6 +4,7 @@ from pathlib import Path
 import hashlib
 from drive.locks.distributed_lock import DistributedLock
 import json
+from frappe.utils import now
 
 
 @frappe.whitelist()
@@ -171,8 +172,17 @@ def has_read_write_access_to_doctype(user_id, doctype_name):
 
 
 def mark_as_viewed(entity_name):
+    entity_log = frappe.db.get_value(
+        "Drive Entity Log", {"entity_name": entity_name, "user": frappe.session.user}
+    )
+    if entity_log:
+        frappe.db.set_value(
+            "Drive Entity Log", entity_log, "last_interaction", now(), update_modified=False
+        )
+        return
     doc = frappe.new_doc("Drive Entity Log")
     doc.entity_name = entity_name
     doc.user = frappe.session.user
+    doc.last_interaction = now()
     doc.insert()
     return doc

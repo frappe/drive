@@ -15,7 +15,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :column-headers="columnHeaders"
           :action-loading="actionLoading"
           :show-info-button="showInfoButton"
           :show-upload-button="false" />
@@ -38,7 +37,6 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :column-headers="columnHeaders"
           :action-loading="actionLoading"
           :show-info-button="showInfoButton"
           :show-upload-button="false" />
@@ -345,22 +343,22 @@ export default {
         {
           label: "Name",
           field: "title",
-          sortable: true,
+          sortable: false,
         },
         {
           label: "Owner",
           field: "owner",
-          sortable: true,
+          sortable: false,
         },
         {
-          label: "Modified",
+          label: "Last Accessed",
           field: "modified",
-          sortable: true,
+          sortable: false,
         },
         {
           label: "Size",
           field: "file_size",
-          sortable: true,
+          sortable: false,
         },
       ].filter((item) => item.sortable);
     },

@@ -452,8 +452,17 @@ class DriveEntity(NestedSet):
                 "share_doctype": "Drive Entity",
             },
         )
+        recent_name = frappe.db.get_value(
+            "Drive Entity Log",
+            {
+                "user": user,
+                "entity_name": self.name,
+            },
+        )
         if share_name:
             if self.is_group:
                 for child in self.get_children():
                     child.unshare(user)
             frappe.delete_doc("Drive DocShare", share_name, flags=flags)
+        if recent_name:
+            frappe.delete_doc("Drive Entity Log", recent_name, flags=flags)

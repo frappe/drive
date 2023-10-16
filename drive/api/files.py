@@ -475,15 +475,15 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
             frappe.PermissionError,
         )
 
-    entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
-    flag = False
-    for z_entity_name in entity_ancestors:
-        result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
-        if result:
-            flag = True
-            break
-    if flag == True:
-        frappe.throw("Parent Folder has been deleted")
+    # entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    # flag = False
+    # for z_entity_name in entity_ancestors:
+    #    result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
+    #    if result:
+    #        flag = True
+    #        break
+    # if flag == True:
+    #    frappe.throw("Parent Folder has been deleted")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     selectedFields = [
@@ -850,7 +850,7 @@ def call_controller_method(entity_name, method):
 
 
 @frappe.whitelist()
-def list_recents(order_by="modified"):
+def list_recents(order_by="last_interaction"):
     """
     Return list of DriveEntity records present in this folder
 
@@ -861,29 +861,28 @@ def list_recents(order_by="modified"):
 
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DriveEntity = frappe.qb.DocType("Drive Entity")
-    DocShare = frappe.qb.DocType("DocShare")
+    DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveRecent = frappe.qb.DocType("Drive Entity Log")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
-        DriveEntity.is_group,
         DriveEntity.owner,
-        DriveEntity.modified,
-        DriveEntity.creation,
+        DriveEntity.is_group,
         DriveEntity.file_size,
         DriveEntity.mime_type,
-        DriveEntity.color,
-        DriveEntity.parent_drive_entity,
         DriveEntity.allow_comments,
         DriveEntity.allow_download,
-        DocShare.read,
-        fn.Max(DocShare.write).as_("write"),
-        DocShare.share,
-        DocShare.everyone,
+        DriveFavourite.entity.as_("is_favourite"),
+        DriveDocShare.user_name,
+        DriveDocShare.read,
+        fn.Max(DriveDocShare.write).as_("write"),
+        DriveDocShare.share,
+        DriveDocShare.everyone,
+        DriveRecent.last_interaction.as_("modified"),
     ]
     query = (
-        frappe.qb.from_(DriveEntity)
-        .right_join(DriveRecent)
+        frappe.qb.from_(DriveRecent)
+        .left_join(DriveEntity)
         .on(
             (DriveRecent.entity_name == DriveEntity.name)
             & (DriveRecent.user == frappe.session.user)
@@ -893,18 +892,15 @@ def list_recents(order_by="modified"):
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
-        .left_join(DocShare)
+        .left_join(DriveDocShare)
         .on(
-            (DocShare.share_name == DriveEntity.name)
-            & ((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
+            (DriveDocShare.share_name == DriveEntity.name)
+            & ((DriveDocShare.user_name == frappe.session.user) | (DriveDocShare.everyone == 1))
         )
         .select(*selectedFields)
         .where((DriveEntity.is_active == 1))
         .groupby(DriveEntity.name)
-        .orderby(
-            order_by.split()[0],
-            order=Order.desc if order_by.endswith("desc") else Order.asc,
-        )
+        .orderby(DriveRecent.last_interaction, order=Order.desc)
     )
     return query.run(as_dict=True)
 
