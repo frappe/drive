@@ -45,7 +45,7 @@ def get_home_folder_id(user=None):
     """Returns user directory name from user's unique id"""
     if not user:
         user = frappe.session.user
-        return get_user_directory(user)
+        return get_user_directory(user).name
 
 
 @frappe.whitelist()
@@ -379,18 +379,19 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
                 "Cannot access folder due to insufficient permissions",
                 frappe.PermissionError,
             )
-    entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
-    flag = False
-    for z_entity_name in entity_ancestors:
-        result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
-        if result:
-            flag = True
-            break
-    if flag == True:
-        frappe.throw("Parent Folder has been deleted")
+    #entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    #flag = False
+    #for z_entity_name in entity_ancestors:
+    #    result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
+    #    if result:
+    #        flag = True
+    #        break
+    #if flag == True:
+    #    frappe.throw("Parent Folder has been deleted")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
-    DocShare = frappe.qb.DocType("DocShare")
+    DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -405,20 +406,25 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         DriveEntity.mime_type,
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_download,
+        DriveEntity.is_active,
         DriveEntity.allow_comments,
-        DocShare.read,
-        fn.Max(DocShare.write).as_("write"),
-        DocShare.everyone,
-        DocShare.share,
+        DriveDocShare.read,
+        DriveDocShare.user_name,
+        fn.Max(DriveDocShare.write).as_("write"),
+        DriveDocShare.everyone,
+        DriveDocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
     ]
 
     query = (
         frappe.qb.from_(DriveEntity)
-        .inner_join(DocShare)
+        .inner_join(DriveDocShare)
+        .on((DriveDocShare.share_name == DriveEntity.name))
+        .right_join(UserGroupMember)
         .on(
-            (DocShare.share_name == DriveEntity.name)
-            & ((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
+            (UserGroupMember.parent == DriveDocShare.user_name)
+            | (DriveDocShare.user_name == frappe.session.user)
+            | (DriveDocShare.everyone == 1)
         )
         .left_join(DriveFavourite)
         .on(
@@ -427,7 +433,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         )
         .select(*selectedFields)
         .where(
-            (DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == is_active)
+            (DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == 1)
         )
         .groupby(DriveEntity.name)
         .orderby(
@@ -436,10 +442,6 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         )
     )
     result = query.run(as_dict=True)
-    for i in result:
-        if i.is_group:
-            child_count = get_children_count(i.name)
-            i["item_count"] = child_count
     return result
 
 
@@ -708,7 +710,7 @@ def list_favourites(order_by="modified"):
 
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DriveEntity = frappe.qb.DocType("Drive Entity")
-    DocShare = frappe.qb.DocType("DocShare")
+    DriveDocShare = frappe.qb.DocType("Drive DocShare")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -721,10 +723,10 @@ def list_favourites(order_by="modified"):
         DriveEntity.color,
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_comments,
-        DocShare.read,
-        fn.Max(DocShare.write).as_("write"),
-        DocShare.share,
-        DocShare.everyone,
+        DriveDocShare.read,
+        fn.Max(DriveDocShare.write).as_("write"),
+        DriveDocShare.share,
+        DriveDocShare.everyone,
         DriveFavourite.entity.as_("is_favourite"),
     ]
     query = (
@@ -734,10 +736,10 @@ def list_favourites(order_by="modified"):
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
-        .left_join(DocShare)
+        .left_join(DriveDocShare)
         .on(
-            (DocShare.share_name == DriveEntity.name)
-            & ((DocShare.user == frappe.session.user) | (DocShare.everyone == 1))
+            (DriveDocShare.share_name == DriveEntity.name)
+            & ((DriveDocShare.user_name == frappe.session.user) | (DriveDocShare.everyone == 1))
         )
         .select(*selectedFields)
         .where((DriveEntity.is_active == 1))

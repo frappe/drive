@@ -95,12 +95,6 @@ home_page = "drive"
 
 has_permission = {
     "Drive Entity": "drive.overrides.user_has_permission",
-    "Drive Document": "drive.overrides.user_has_permission",
-    "Drive Favourite": "drive.overrides.user_has_permission",
-    "Drive Entity Log": "drive.overrides.user_has_permission",
-    "Drive DocShare": "drive.overrides.user_has_permission",
-    "Drive Entity Tag": "drive.overrides.user_has_permission",
-    "Drive Tag": "drive.overrides.user_has_permission",
 }
 
 # DocType Class

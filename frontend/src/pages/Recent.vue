@@ -242,7 +242,7 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me" || x.write)
+              this.selectedEntities.every((x) => x.owner === "me")
             );
           },
         },

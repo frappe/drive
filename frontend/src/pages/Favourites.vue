@@ -33,7 +33,7 @@
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
-      @show-entitycontext="(event) => toggleEntityContext(event)"
+      @show-entity-context="(event) => toggleEntityContext(event)"
       @close-context-menu-event="closeContextMenu">
       <template #toolbar>
         <DriveToolBar
@@ -249,7 +249,7 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me" || x.write)
+              this.selectedEntities.every((x) => x.owner === "me")
             );
           },
         },
