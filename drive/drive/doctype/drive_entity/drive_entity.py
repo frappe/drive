@@ -416,13 +416,12 @@ class DriveEntity(NestedSet):
                 "share": cint(share),
             }
         )
-        doc.save(ignore_permissions=True)
 
         if self.is_group:
             for child in self.get_children():
                 child.share(user, user_type, write, share, everyone, public)
 
-        doc.save()
+        doc.save(ignore_permissions=True)
 
     @frappe.whitelist()
     def unshare(self, user, user_type="User"):
@@ -452,17 +451,31 @@ class DriveEntity(NestedSet):
                 "share_doctype": "Drive Entity",
             },
         )
-        recent_name = frappe.db.get_value(
-            "Drive Entity Log",
-            {
-                "user": user,
-                "entity_name": self.name,
-            },
-        )
+
         if share_name:
-            if self.is_group:
-                for child in self.get_children():
-                    child.unshare(user)
             frappe.delete_doc("Drive DocShare", share_name, flags=flags)
-        if recent_name:
-            frappe.delete_doc("Drive Entity Log", recent_name, flags=flags)
+
+        if self.is_group:
+            for child in self.get_children():
+                child.unshare(user)
+
+        if user_type == "User":
+            recent_name = frappe.db.get_value(
+                "Drive Entity Log",
+                {
+                    "user": user,
+                    "entity_name": self.name,
+                },
+            )
+            if recent_name:
+                frappe.delete_doc("Drive Entity Log", recent_name, flags=flags)
+
+            favourite_name = frappe.db.get_value(
+                "Drive Favourite",
+                {
+                    "user": user,
+                    "entity": self.name,
+                },
+            )
+            if favourite_name:
+                frappe.delete_doc("Drive Favourite", favourite_name, flags=flags)

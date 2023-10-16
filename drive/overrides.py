@@ -3,8 +3,6 @@ from drive.api.permissions import user_group_entity_access
 
 
 def user_has_permission(doc, ptype, user):
-
-
     if not user:
         user = frappe.session.user
 
@@ -30,10 +28,10 @@ def user_has_permission(doc, ptype, user):
                 return
         group_access = user_group_entity_access(doc.name)
         if group_access:
-           if ptype == "write" and group_access["write"]:
-               return
-           if ptype == "read" and group_access["read"]:
-               return
+            if ptype == "write" and group_access["write"]:
+                return
+            if ptype == "read" and group_access["read"]:
+                return
         return False
 
     public_access = frappe.db.get_value(

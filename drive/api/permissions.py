@@ -76,7 +76,7 @@ def get_shared_by_me(get_all=False, order_by="modified"):
     :rtype: list[frappe._dict]
     """
 
-    DocShare = frappe.qb.DocType("DocShare")
+    DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     selectedFields = [
@@ -93,17 +93,20 @@ def get_shared_by_me(get_all=False, order_by="modified"):
         DriveEntity.color,
         DriveEntity.document,
         DriveEntity.allow_download,
-        DocShare.read,
-        DocShare.write,
-        DocShare.everyone,
-        DocShare.share,
+        DriveDocShare.read,
+        DriveDocShare.write,
+        DriveDocShare.everyone,
+        DriveDocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
     ]
 
     query = (
         frappe.qb.from_(DriveEntity)
-        .left_join(DocShare)
-        .on((DocShare.share_name == DriveEntity.name) & (DriveEntity.owner == frappe.session.user))
+        .left_join(DriveDocShare)
+        .on(
+            (DriveDocShare.share_name == DriveEntity.name)
+            & (DriveEntity.owner == frappe.session.user)
+        )
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
@@ -112,7 +115,11 @@ def get_shared_by_me(get_all=False, order_by="modified"):
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)
-            & ((DocShare.user != frappe.session.user) | (DocShare.everyone == 1))
+            & (
+                (DriveDocShare.user_name != frappe.session.user)
+                | (DriveDocShare.everyone == 1)
+                | (DriveDocShare.public == 1)
+            )
         )
         .groupby(DriveEntity.name)
     )
@@ -173,7 +180,9 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         .on((DocShare.share_name == DriveEntity.name))
         .right_join(UserGroupMember)
         .on(
-            (UserGroupMember.parent == DocShare.user_name) | (DocShare.user_name == frappe.session.user))
+            (UserGroupMember.parent == DocShare.user_name)
+            | (DocShare.user_name == frappe.session.user)
+        )
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
@@ -181,9 +190,7 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         )
         .groupby(DriveEntity.name)
         .select(*selectedFields)
-        .where(
-            (DriveEntity.is_active == 1) & (UserGroupMember.user == frappe.session.user)
-        )
+        .where((DriveEntity.is_active == 1) & (UserGroupMember.user == frappe.session.user))
     )
     if get_all:
         return query.run(as_dict=True)
@@ -279,14 +286,7 @@ def get_entity_with_permissions(entity_name):
     # Avoiding marking folders as recently viewed
     if frappe.session.user != "Guest":
         if not entity.is_group:
-            if not frappe.db.exists(
-                {
-                    "doctype": "Drive Entity Log",
-                    "entity_name": entity_name,
-                    "user": frappe.session.user,
-                }
-            ):
-                mark_as_viewed(entity_name)
+            mark_as_viewed(entity_name)
     # Add user group permission check on request
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
@@ -354,11 +354,7 @@ def get_user_access(entity_name):
 
 # Group access, avoid querying many to many
 # Querying 1 to many and then many to 1
-# Step 1: Get all groups a user belongs to
-# Step 2: Get all valid `Drive DocShare` for the current entity
-# Step 3: Compare for overlap
-# Step 4: Get the highest access group permissions
-# This might potentially be very poor in terms of performance needs further testing
+# Can do this directly without the for loop by and return max alotted access
 
 
 def user_group_entity_access(entity_name=None, order_by="modified", is_active=1):
@@ -388,30 +384,25 @@ def user_group_entity_access(entity_name=None, order_by="modified", is_active=1)
         frappe.throw("Parent Folder has been deleted")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    UserGroup = frappe.qb.DocType("User Group")
     UserGroupMember = frappe.qb.DocType("User Group Member")
-
+    user = frappe.session.user
     selectedFields = [
-        UserGroupMember.user,
+        DriveDocShare.user_name,
         DriveDocShare.read,
-        fn.Max(DriveDocShare.write).as_("write"),
+        DriveDocShare.write,
+        # fn.Max(DriveDocShare.write).as_("write"),
     ]
 
     query = (
         frappe.qb.from_(DriveDocShare)
-        .inner_join(DriveEntity)
-        .on((DriveDocShare.share_name == DriveEntity.name))
-        .select(DriveDocShare.user_name)
-        .inner_join(UserGroupMember)
-        .on((UserGroupMember.parent == DriveDocShare.user_name))
+        .left_join(UserGroupMember)
+        .on((UserGroupMember.parent == DriveDocShare.user_name) & (UserGroupMember.user == user))
         .select(*selectedFields)
-        .where(
-            (DriveEntity.is_active == is_active) & (UserGroupMember.user == frappe.session.user)
-        )
-        .groupby(DriveDocShare.user_group)
-        .orderby(
-            order_by.split()[0],
-            order=Order.desc if order_by.endswith("desc") else Order.asc,
-        )
+        .join(DriveEntity)
+        .on(DriveDocShare.share_name == DriveEntity.name)
+        .where((DriveEntity.is_active == 1) & (UserGroupMember.user == frappe.session.user))
+        .groupby(UserGroupMember.name)
     )
     result = query.run(as_dict=True)
     max_read = max(d["read"] for d in result)

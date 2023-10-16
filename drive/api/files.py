@@ -379,14 +379,14 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
                 "Cannot access folder due to insufficient permissions",
                 frappe.PermissionError,
             )
-    #entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
-    #flag = False
-    #for z_entity_name in entity_ancestors:
+    # entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    # flag = False
+    # for z_entity_name in entity_ancestors:
     #    result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
     #    if result:
     #        flag = True
     #        break
-    #if flag == True:
+    # if flag == True:
     #    frappe.throw("Parent Folder has been deleted")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
@@ -432,9 +432,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
             & (DriveFavourite.user == frappe.session.user)
         )
         .select(*selectedFields)
-        .where(
-            (DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == 1)
-        )
+        .where((DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == 1))
         .groupby(DriveEntity.name)
         .orderby(
             order_by.split()[0],
