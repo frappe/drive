@@ -57,7 +57,7 @@
       :entity="selectedEntities[0]"
       @success="
         () => {
-          fetchUpdate(shareView);
+          fetchUpdate();
           showRenameDialog = false;
           selectedEntities = [];
         }
@@ -68,7 +68,7 @@
       :for="'unshare'"
       @success="
         () => {
-          fetchUpdate(shareView);
+          fetchUpdate();
           showRemoveDialog = false;
           selectedEntities = [];
         }
@@ -79,8 +79,8 @@
       :entity-name="selectedEntities[0].name"
       @success="
         () => {
-          fetchUpdate(shareView);
-          showRemoveDialog = false;
+          fetchUpdate();
+          showShareDialog = false;
           selectedEntities = [];
         }
       " />
@@ -217,7 +217,7 @@ export default {
             isEnabled: () => {
               if (this.selectedEntities.length === 1) {
                 if (this.selectedEntities.owner === this.currentUser) {
-                  return True;
+                  return true;
                 }
               }
             },
@@ -293,7 +293,7 @@ export default {
                 entities: [],
                 action: null,
               });
-              this.fetchUpdate(this.shareView);
+              this.fetchUpdate();
             },
             isEnabled: () => {
               return (
@@ -591,8 +591,8 @@ export default {
     },
   }, */
   methods: {
-    fetchUpdate(value) {
-      value === "with"
+    fetchUpdate() {
+      this.shareView === "with"
         ? this.$resources.sharedWithMe.fetch()
         : this.$resources.sharedByMe.fetch();
     },
@@ -713,7 +713,7 @@ export default {
           ),
         },
         onSuccess() {
-          this.fetchUpdate(this.shareView);
+          this.fetchUpdate();
           this.selectedEntities = [];
         },
         onError(error) {
