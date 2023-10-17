@@ -18,16 +18,20 @@ def user_has_permission(doc, ptype, user):
                 "user_doctype": "User",
                 "user_name": frappe.session.user,
             },
-            ["read", "write", "share"],
+            ["read", "write"],
             as_dict=1,
         )
         if user_access:
+            if ptype == "share" and user_access["read"]:
+                return
             if ptype == "write" and user_access["write"]:
                 return
             if ptype == "read" and user_access["read"]:
                 return
         group_access = user_group_entity_access(doc.name)
         if group_access:
+            if ptype == "share" and group_access["read"]:
+                return
             if ptype == "write" and group_access["write"]:
                 return
             if ptype == "read" and group_access["read"]:
