@@ -509,6 +509,7 @@ export default {
         });
       }
       this.open = false;
+      this.$emit("success");
     },
     toggleComments() {
       toast({
