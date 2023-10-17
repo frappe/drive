@@ -186,3 +186,13 @@ def mark_as_viewed(entity_name):
     doc.last_interaction = now()
     doc.insert()
     return doc
+
+
+def has_role(user: str, role: str):
+    return frappe.db.exists("Has Role", {"parent": user, "role": role})
+
+
+def is_drive_admin(user=None):
+    user = user or frappe.session.user
+    if user == "Administrator" or has_role(user, "Drive Admin"):
+        return True

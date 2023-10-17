@@ -1,4 +1,5 @@
 import frappe
+from drive.utils.users import is_drive_admin
 
 
 @frappe.whitelist()
@@ -29,6 +30,8 @@ def get_users_in_group(group_name):
 
 @frappe.whitelist()
 def create_user_group(group_name, members=[]):
+    if not is_drive_admin(frappe.session.user):
+        return []
     try:
         group_name = group_name.title()
         # Create a new User Group
