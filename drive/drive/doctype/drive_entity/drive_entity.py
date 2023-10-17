@@ -457,7 +457,7 @@ class DriveEntity(NestedSet):
 
         if self.is_group:
             for child in self.get_children():
-                child.unshare(user)
+                child.unshare(user, user_type)
 
         if user_type == "User":
             recent_name = frappe.db.get_value(
