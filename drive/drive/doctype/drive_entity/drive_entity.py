@@ -288,31 +288,38 @@ class DriveEntity(NestedSet):
             flags = (
                 {"ignore_share_permission": True} if frappe.session.user == self.owner else None
             )
-            frappe.share.add_docshare(
-                "Drive Entity",
-                self.name,
+            self.share(
+                user=None,
+                user_type=None,
+                read=new_access["read"],
                 write=new_access["write"],
                 share=0,
-                everyone=1,
-                flags=flags,
+                public=1,
             )
 
         else:
             flags = {"ignore_permissions": True} if frappe.session.user == self.owner else None
-            if frappe.db.exists(
+            share_name = frappe.db.get_value(
+                "Drive DocShare",
                 {
-                    "doctype": "DocShare",
-                    "share_doctype": "Drive Entity",
                     "share_name": self.name,
-                    "everyone": 1,
-                }
-            ):
-                frappe.share.remove("Drive Entity", self.name, user=None, flags=flags)
+                    "share_doctype": "Drive Entity",
+                    "public": 1,
+                },
+            )
+            if share_name:
+                frappe.delete_doc("Drive DocShare", share_name, flags=flags)
 
         self.save()
         if self.is_group:
             for child in self.get_children():
-                child.set_general_access(new_access)
+                child.set_general_access(
+                    user=None,
+                    user_type=None,
+                    read=new_access["read"],
+                    write=new_access["write"],
+                    share=0,
+                )
 
     @frappe.whitelist()
     def toggle_allow_comments(self, new_value):

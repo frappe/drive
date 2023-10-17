@@ -315,8 +315,8 @@ def get_general_access(entity_name):
     """
 
     return frappe.db.get_value(
-        "DocShare",
-        {"share_name": entity_name, "everyone": 1},
+        "Drive DocShare",
+        {"share_name": entity_name, "public": 1},
         ["read", "write"],
         as_dict=1,
     )
@@ -346,8 +346,18 @@ def get_user_access(entity_name):
         )
         if user_access:
             return user_access
-        else:
-            return user_group_entity_access(entity_name)
+
+        group_access = user_group_entity_access(entity_name)
+        if group_access:
+            return group_access
+        public_access = frappe.db.get_value(
+            "Drive DocShare",
+            {"share_name": entity_name, "public": 1},
+            ["read", "write"],
+            as_dict=1,
+        )
+        if public_access:
+            return public_access
     else:
         return get_general_access(entity_name)
 
@@ -405,6 +415,8 @@ def user_group_entity_access(entity_name=None, order_by="modified", is_active=1)
         .groupby(UserGroupMember.name)
     )
     result = query.run(as_dict=True)
+    if not result:
+        return False
     max_read = max(d["read"] for d in result)
     max_write = max(d["write"] for d in result)
     return {"read": max_read, "write": max_write}
