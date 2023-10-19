@@ -709,6 +709,7 @@ def list_favourites(order_by="modified"):
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -735,12 +736,23 @@ def list_favourites(order_by="modified"):
             & (DriveFavourite.user == frappe.session.user)
         )
         .left_join(DriveDocShare)
+        .on((DriveDocShare.share_name == DriveEntity.name))
+        .left_join(UserGroupMember)
         .on(
-            (DriveDocShare.share_name == DriveEntity.name)
-            & ((DriveDocShare.user_name == frappe.session.user) | (DriveDocShare.everyone == 1))
+            (
+                (UserGroupMember.parent == DriveDocShare.user_name)
+                & (UserGroupMember.user == frappe.session.user)
+            )
+            | (
+                (DriveDocShare.user_name == frappe.session.user)
+                | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
+            )
         )
         .select(*selectedFields)
-        .where((DriveEntity.is_active == 1))
+        .where(
+            (DriveEntity.is_active == 1)
+            & ((DriveEntity.owner == frappe.session.user) | (DriveDocShare.read == 1))
+        )
         .groupby(DriveEntity.name)
         .orderby(
             order_by.split()[0],
@@ -863,6 +875,7 @@ def list_recents(order_by="last_interaction"):
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveRecent = frappe.qb.DocType("Drive Entity Log")
+    UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -893,12 +906,23 @@ def list_recents(order_by="last_interaction"):
             & (DriveFavourite.user == frappe.session.user)
         )
         .left_join(DriveDocShare)
+        .on((DriveDocShare.share_name == DriveEntity.name))
+        .left_join(UserGroupMember)
         .on(
-            (DriveDocShare.share_name == DriveEntity.name)
-            & ((DriveDocShare.user_name == frappe.session.user) | (DriveDocShare.everyone == 1))
+            (
+                (UserGroupMember.parent == DriveDocShare.user_name)
+                & (UserGroupMember.user == frappe.session.user)
+            )
+            | (
+                (DriveDocShare.user_name == frappe.session.user)
+                | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
+            )
         )
         .select(*selectedFields)
-        .where((DriveEntity.is_active == 1))
+        .where(
+            (DriveEntity.is_active == 1)
+            & ((DriveEntity.owner == frappe.session.user) | (DriveDocShare.read == 1))
+        )
         .groupby(DriveEntity.name)
         .orderby(DriveRecent.last_interaction, order=Order.desc)
     )
