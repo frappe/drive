@@ -36,6 +36,17 @@ def user_has_permission(doc, ptype, user):
                 return
             if ptype == "read" and group_access["read"]:
                 return
+        general_access = frappe.db.get_value(
+            "Drive DocShare",
+            {"share_name": doc.name, "everyone": 1},
+            ["read", "write"],
+            as_dict=1,
+        )
+        if general_access:
+            if ptype == "write" and general_access["write"]:
+                return
+            if ptype == "read" and general_access["read"]:
+                return
         public_access = frappe.db.get_value(
             "Drive DocShare",
             {"share_name": doc.name, "public": 1},
