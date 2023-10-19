@@ -172,12 +172,7 @@ export default {
     entityContext: {},
     breadcrumbs: [{ label: "Folder", route: "/folder" }],
     isSharedFolder: false,
-    folderAccess: {
-      read: 0,
-      write: 0,
-      share: 0,
-      owner: "",
-    },
+    currentFolder: null,
   }),
   computed: {
     isLoggedIn() {
@@ -198,6 +193,13 @@ export default {
       return this.selectedEntities[0]
         ? this.selectedEntities[0].name
         : this.entityName;
+    },
+    resourceURL() {
+      if (this.isSharedFolder == false) {
+        return "drive.api.files.list_owned_entities";
+      } else {
+        return "drive.api.files.list_folder_contents";
+      }
     },
     emptyActionItems() {
       return [
@@ -239,7 +241,7 @@ export default {
     },
     actionItems() {
       /* Owner actions */
-      if (this.folderAccess.owner === this.userId) {
+      if (this.currentFolder.owner === this.userId) {
         return [
           {
             label: "Preview",
@@ -483,7 +485,7 @@ export default {
             },
           },
         ].filter((item) => item.isEnabled());
-      } else if (this.folderAccess.write === 1) {
+      } else if (this.currentFolder.write === 1) {
         return [
           {
             label: "Preview",
@@ -898,10 +900,10 @@ export default {
   },
   /*   watch: {
     async entityName() {
-      await this.$resources.folderAccess.fetch();
+      await this.$resources.currentFolder.fetch();
       this.$store.commit(
         "setHasWriteAccess",
-        !!this.$resources.folderAccess.data?.write
+        !!this.$resources.currentFolder.data?.write
       );
       this.selectedEntities = [];
     },
@@ -945,10 +947,10 @@ export default {
       false
     );
 
-    await this.$resources.folderAccess.fetch();
+    await this.$resources.currentFolder.fetch();
     this.$store.commit(
       "setHasWriteAccess",
-      !!this.$resources.folderAccess.data?.write
+      !!this.$resources.currentFolder.data?.write
     );
     let componentContext = this;
     this.emitter.on("fetchFolderContents", () => {
@@ -1044,17 +1046,14 @@ export default {
   },
 
   resources: {
-    folderAccess() {
+    currentFolder() {
       return {
         url: "drive.api.permissions.get_entity_with_permissions",
         params: { entity_name: this.entityName },
         // cache: ['pathEntities', this.entityName],
         onSuccess(data) {
-          this.folderAccess = data;
-          if (
-            this.folderAccess.owner !== this.userId &&
-            this.folderAccess.read == 1
-          ) {
+          this.currentFolder = data;
+          if (this.currentFolder.owner !== this.userId) {
             this.isSharedFolder = true;
           }
           let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
@@ -1073,7 +1072,7 @@ export default {
           }
           this.$resources.folderContents.fetch();
         },
-        auto: Boolean(this.entityName),
+        auto: true,
       };
     },
     pasteEntity() {
@@ -1089,9 +1088,7 @@ export default {
     },
     folderContents() {
       return {
-        url: this.isSharedFolder
-          ? "drive.api.files.list_folder_contents"
-          : "drive.api.files.list_owned_entities",
+        url: this.resourceURL,
         // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
