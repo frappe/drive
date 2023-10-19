@@ -181,7 +181,7 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         .right_join(UserGroupMember)
         .on(
             (UserGroupMember.parent == DocShare.user_name)
-            | (DocShare.user_name == frappe.session.user)
+            | ((DocShare.user_name == frappe.session.user) | (DocShare.everyone == 1))
         )
         .left_join(DriveFavourite)
         .on(
@@ -300,7 +300,7 @@ def get_entity_with_permissions(entity_name):
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
         return entity | user_access | entity_doc_content
-
+    # print(user_access)
     return entity | user_access
 
 
@@ -313,13 +313,25 @@ def get_general_access(entity_name):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
-
-    return frappe.db.get_value(
-        "Drive DocShare",
-        {"share_name": entity_name, "public": 1},
-        ["read", "write"],
-        as_dict=1,
+    DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    fields = [
+        DriveDocShare.name,
+        DriveDocShare.read,
+        DriveDocShare.write,
+        DriveDocShare.share,
+        DriveDocShare.everyone,
+        DriveDocShare.public,
+    ]
+    query = (
+        frappe.qb.from_(DriveDocShare)
+        .select(*fields)
+        .where(
+            (DriveDocShare.share_name == entity_name)
+            & ((DriveDocShare.everyone == True) | (DriveDocShare.public == True))
+        )
+        .groupby(DriveDocShare.name)
     )
+    return query.run(as_dict=True)
 
 
 @frappe.whitelist()
@@ -346,10 +358,17 @@ def get_user_access(entity_name):
         )
         if user_access:
             return user_access
-
         group_access = user_group_entity_access(entity_name)
         if group_access:
             return group_access
+        everyone_access = frappe.db.get_value(
+            "Drive DocShare",
+            {"share_name": entity_name, "everyone": 1},
+            ["read", "write"],
+            as_dict=1,
+        )
+        if everyone_access:
+            return everyone_access
         public_access = frappe.db.get_value(
             "Drive DocShare",
             {"share_name": entity_name, "public": 1},
@@ -358,8 +377,6 @@ def get_user_access(entity_name):
         )
         if public_access:
             return public_access
-    else:
-        return get_general_access(entity_name)
 
 
 # Group access, avoid querying many to many
@@ -406,14 +423,16 @@ def user_group_entity_access(entity_name=None, order_by="modified", is_active=1)
 
     query = (
         frappe.qb.from_(DriveDocShare)
-        .left_join(UserGroupMember)
-        .on((UserGroupMember.parent == DriveDocShare.user_name) & (UserGroupMember.user == user))
-        .select(*selectedFields)
-        .join(DriveEntity)
+        .inner_join(DriveEntity)
         .on(DriveDocShare.share_name == DriveEntity.name)
-        .where((DriveEntity.is_active == 1) & (UserGroupMember.user == frappe.session.user))
-        .groupby(UserGroupMember.name)
+        .join(UserGroupMember)
+        .on((UserGroupMember.parent == DriveDocShare.user_name))
+        .select(*selectedFields)
+        .where((DriveEntity.is_active == 1) & (DriveDocShare.share_name == entity_name))
+        # & (UserGroupMember.user == frappe.session.user)
     )
+    # .groupby(UserGroupMember.name)
+    # )
     result = query.run(as_dict=True)
     if not result:
         return False

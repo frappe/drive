@@ -11,7 +11,7 @@ exclude_from_linked_with = True
 
 class DriveDocShare(Document):
     def validate(self):
-        self.validate_user()
+        self.validate_general_access()
         self.cascade_permissions_downwards()
         self.get_doc().run_method("validate_share", self)
 
@@ -24,15 +24,10 @@ class DriveDocShare(Document):
         if self.share or self.write:
             self.read = 1
 
-    def validate_user(self):
-        if self.everyone:
+    def validate_general_access(self):
+        if self.everyone | self.public:
             self.user_name = None
             self.user_doctype = None
-        if self.public:
-            self.user_name = None
-            self.user_doctype = None
-        elif not self.user_name:
-            frappe.throw(_("User is mandatory for Share"), frappe.MandatoryError)
 
     def after_insert(self):
         doc = self.get_doc()

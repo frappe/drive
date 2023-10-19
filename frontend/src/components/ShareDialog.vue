@@ -9,22 +9,25 @@
       <div class="pt-2 pb-2 mb-4">
         <div class="flex flex-row pl-2">
           <FeatherIcon
-            v-if="generalAccess.read || generalAccess.write"
+            v-if="generalAccess.public"
             name="globe"
             :stroke-width="2"
             class="h-5 text-red-500 my-auto mr-2" />
 
+          <Building2
+            v-if="generalAccess.everyone"
+            name="building"
+            :stroke-width="2"
+            class="h-5 text-blue-600 my-auto mr-2" />
+
           <FeatherIcon
-            v-else
+            v-if="
+              (generalAccess.everyone == false) &
+              (generalAccess.public == false)
+            "
             name="lock"
             :stroke-width="2"
             class="h-5 text-gray-600 my-auto mr-2" />
-
-          <!-- <Building2
-                name="building"
-                :stroke-width="2"
-                class="h-5 text-green-600 my-auto"
-                />  -->
 
           <Popover transition="default">
             <template #target="{ togglePopover }">
@@ -32,7 +35,13 @@
                 <template #suffix>
                   <ChevronsUpDown class="w-4" />
                 </template>
-                {{ generalAccess.read ? "Public Access" : "Restricted Access" }}
+                {{
+                  generalAccess.public
+                    ? "Public Access"
+                    : generalAccess.everyone
+                    ? "Organization Access"
+                    : "Restricted Access"
+                }}
               </Button>
             </template>
             <template #body-main="{ togglePopover }">
@@ -41,29 +50,40 @@
                   class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
                   variant="ghost"
                   @click="
-                    (generalAccess = {
-                      read: false,
-                      write: false,
-                      share: false,
-                    }),
-                      togglePopover()
+                    generalAccess.read = false;
+                    generalAccess.everyone = false;
+                    generalAccess.public = false;
+                    generalAccess.share = false;
+                    togglePopover();
                   ">
-                  Restricted Acess
+                  Restricted Access
                   <Check v-if="!generalAccess.read" class="h-4" />
                 </div>
                 <div
                   class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
                   variant="ghost"
                   @click="
-                    (generalAccess = {
-                      read: true,
-                      write: false,
-                      share: false,
-                    }),
-                      togglePopover()
+                    generalAccess.read = true;
+                    generalAccess.everyone = true;
+                    generalAccess.public = false;
+                    generalAccess.share = false;
+                    togglePopover();
+                  ">
+                  Organization Access
+                  <Check v-if="generalAccess.everyone" class="h-4" />
+                </div>
+                <div
+                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
+                  variant="ghost"
+                  @click="
+                    generalAccess.read = true;
+                    generalAccess.everyone = false;
+                    generalAccess.public = true;
+                    generalAccess.share = false;
+                    togglePopover();
                   ">
                   Public Access
-                  <Check v-if="generalAccess.read" class="h-4" />
+                  <Check v-if="generalAccess.public" class="h-4" />
                 </div>
               </div>
             </template>
@@ -83,12 +103,9 @@
                   <div
                     class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                     @click="
-                      (generalAccess = {
-                        read: true,
-                        write: false,
-                        share: false,
-                      }),
-                        togglePopover()
+                      generalAccess.read = true;
+                      generalAccess.write = false;
+                      togglePopover();
                     ">
                     Can view
                     <Check
@@ -98,12 +115,9 @@
                   <div
                     class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                     @click="
-                      (generalAccess = {
-                        read: true,
-                        write: true,
-                        share: false,
-                      }),
-                        togglePopover()
+                      generalAccess.read = true;
+                      generalAccess.write = true;
+                      togglePopover();
                     ">
                     Can edit
                     <Check v-if="generalAccess.write" class="h-4 ml-2" />
@@ -452,7 +466,14 @@ export default {
   emits: ["update:modelValue", "success"],
   data() {
     return {
-      generalAccess: {},
+      generalAccess: {
+        name: "",
+        read: false,
+        write: false,
+        share: false,
+        everyone: false,
+        public: false,
+      },
       allowComments: false,
       allowDownload: false,
       saveLoading: false,
@@ -464,12 +485,17 @@ export default {
   },
   computed: {
     accessMessage() {
-      if (this.generalAccess.read) {
+      if (this.generalAccess.public) {
         return this.generalAccess.write
-          ? "Anyone with the link can edit"
-          : "Anyone with the link can view";
+          ? "Anyone with a link to this file can edit"
+          : "Anyone with a link to this file can view";
+      }
+      if (this.generalAccess.everyone) {
+        return this.generalAccess.write
+          ? "All users on this instance can edit "
+          : "All users on this instance can view ";
       } else {
-        return "Only users with access can view this file";
+        return "Only users and groups with access can view or edit";
       }
     },
     accessChanged() {
@@ -498,16 +524,16 @@ export default {
       if (this.allowDownload != this.$resources.entity.data.allow_download) {
         this.$resources.toggleAllowDownload.submit();
       }
-      if (
-        JSON.stringify(this.generalAccess) !==
-        JSON.stringify(this.$resources.generalAccess.data)
-      ) {
-        this.$resources.updateAccess.submit({
-          method: "set_general_access",
-          entity_name: this.entityName,
-          new_access: this.generalAccess,
-        });
-      }
+      this.$resources.updateAccess.submit({
+        method: "set_general_access",
+        entity_name: this.entityName,
+        read: this.generalAccess.read,
+        write: this.generalAccess.write,
+        share_name: this.generalAccess.name,
+        share: this.generalAccess.share,
+        public: this.generalAccess.public,
+        everyone: this.generalAccess.everyone,
+      });
       this.open = false;
       this.$emit("success");
     },
@@ -540,19 +566,6 @@ export default {
         timeout: 1,
       });
       this.allowDownload = !this.allowDownload;
-    },
-    updateAccess(updatedAccess) {
-      this.saveLoading = true;
-      const newAccess = { ...this.generalAccess, ...updatedAccess };
-      this.$resources.updateAccess
-        .submit({
-          method: "set_general_access",
-          entity_name: this.entityName,
-          new_access: newAccess,
-        })
-        .then(() => {
-          this.saveLoading = false;
-        });
     },
     async getLink() {
       this.showAlert = false;
@@ -609,11 +622,9 @@ export default {
         url: "drive.api.permissions.get_general_access",
         params: { entity_name: this.entityName },
         onSuccess(data) {
-          data = data || {};
-          data.read = !!data.read;
-          data.write = !!data.write;
-          this.$resources.generalAccess.data = data;
-          this.generalAccess = Object.assign({}, data);
+          if (data[0]) {
+            this.generalAccess = data[0];
+          }
         },
         auto: true,
       };
