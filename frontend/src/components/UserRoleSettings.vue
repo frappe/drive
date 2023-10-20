@@ -1,8 +1,11 @@
 <template>
   <div
     class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center">
-    <h1 class="font-semibold mb-10 text-xl">User Groups</h1>
-    <span class="text-lg font-medium">Organization</span>
+    <h1 class="font-semibold mb-1 text-xl">User Groups</h1>
+    <span class="text-sm py-1 mb-8 text-gray-600">
+      Create and manage user groups
+    </span>
+    <!-- <span class="text-lg font-medium">Organization Settings</span>
     <div class="flex justify-between w-full pt-4 pb-8">
       <div class="flex flex-col items-start">
         <span class="text-base font-medium">Name</span>
@@ -16,9 +19,9 @@
         </template>
         Frappe
       </Button>
-    </div>
+    </div> -->
     <div class="flex items-center w-full mb-1">
-      <span class="text-base font-medium">Roles</span>
+      <span class="text-base font-medium">Groups</span>
       <Button
         variant="solid"
         icon-left="plus"

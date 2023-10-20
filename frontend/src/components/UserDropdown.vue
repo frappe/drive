@@ -1,17 +1,5 @@
 <template>
-  <Dropdown
-    :options="[
-      /* {
-        icon: 'settings',
-        label: 'Settings',
-        onClick: () => (showSettings = true),
-      }, */
-      {
-        icon: 'log-out',
-        label: 'Log out',
-        onClick: () => logout(),
-      },
-    ]">
+  <Dropdown :options="settingsItems">
     <template v-slot="{ open }">
       <button
         class="flex w-[15rem] items-center rounded-md px-2 py-2 text-left"
@@ -64,6 +52,29 @@ export default {
     },
     imageURL() {
       return this.$store.state.user.imageURL;
+    },
+    settingsItems() {
+      if (JSON.parse(localStorage.getItem("is_drive_admin"))) {
+        return [
+          {
+            icon: "settings",
+            label: "Settings",
+            onClick: () => (this.showSettings = true),
+          },
+          {
+            icon: "log-out",
+            label: "Log out",
+            onClick: () => this.logout(),
+          },
+        ];
+      }
+      return [
+        {
+          icon: "log-out",
+          label: "Log out",
+          onClick: () => this.logout(),
+        },
+      ];
     },
   },
 };

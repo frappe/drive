@@ -45,11 +45,11 @@ import ProfileSettings from "@/components/ProfileSettings.vue";
 import UserRoleSettings from "./UserRoleSettings.vue";
 
 let tabs = [
-  {
+  /*   {
     label: "My Profile",
     icon: UserCog,
     component: markRaw(ProfileSettings),
-  },
+  }, */
   {
     label: "User Groups",
     icon: Users,

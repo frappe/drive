@@ -188,11 +188,12 @@ def mark_as_viewed(entity_name):
     return doc
 
 
-def has_role(user: str, role: str):
-    return frappe.db.exists("Has Role", {"parent": user, "role": role})
-
-
-def is_drive_admin(user=None):
-    user = user or frappe.session.user
-    if user == "Administrator" or has_role(user, "Drive Admin"):
-        return True
+@frappe.whitelist()
+def is_drive_admin():
+    user = frappe.session.user
+    if user != "Guest":
+        if user == "Administrator" or frappe.db.exists(
+            "Has Role", {"parent": user, "role": "Drive Admin"}
+        ):
+            return True
+    return False
