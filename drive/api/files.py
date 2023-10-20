@@ -940,9 +940,7 @@ def remove_recents(entity_names=None, clear_all=False):
     """
 
     if clear_all:
-        frappe.db.delete("Drive Entity Log", {
-            "user": frappe.session.user
-            })
+        frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
         return
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)

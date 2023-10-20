@@ -36,7 +36,7 @@
           v-if="$route.name === 'Recent'"
           class="bg-red-100 text-red-700"
           variant="minimal"
-          @click="callClear">
+          @click="$resources.clearRecent.submit()">
           <template #prefix>
             <FeatherIcon name="trash-2" class="w-4" />
           </template>
@@ -106,7 +106,6 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { formatDate } from "@/utils/format";
-import { clear } from "idb-keyval";
 import { FileDown } from "lucide-vue-next";
 
 export default {
@@ -129,10 +128,7 @@ export default {
       required: true,
     },
   },
-  emits: ["toggleMobileSidebar", "clearRecents", "clearRecents"],
-  setup() {
-    return { clear };
-  },
+  emits: ["toggleMobileSidebar", "fetchRecents"],
   data() {
     return {
       previewEntity: null,
@@ -205,10 +201,6 @@ export default {
     },
   },
   methods: {
-    callClear() {
-      this.emitter.emit("fetchRecents");
-      this.$resources.clearRecent.submit();
-    },
     openEntity(entity) {
       if (entity.is_group) {
         this.$router.push({
@@ -249,7 +241,7 @@ export default {
           clear_all: true,
         },
         onSuccess() {
-          this.$resources.recentDriveEntity.fetch();
+          this.emitter.emit("fetchRecents");
         },
         onError(error) {
           if (error.messages) {
