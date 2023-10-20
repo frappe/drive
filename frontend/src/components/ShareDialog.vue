@@ -492,8 +492,8 @@ export default {
       }
       if (this.generalAccess.everyone) {
         return this.generalAccess.write
-          ? "All users on this instance can edit "
-          : "All users on this instance can view ";
+          ? `All users in ${this.$resources.getOrgName.data.org_name} can edit`
+          : `All users in ${this.$resources.getOrgName.data.org_name} can view`;
       } else {
         return "Only users and groups with access can view or edit";
       }
@@ -596,9 +596,6 @@ export default {
         params: {
           entity_name: this.entityName,
         },
-        onSuccess(data) {
-          console.log(data);
-        },
         auto: true,
       };
     },
@@ -697,6 +694,26 @@ export default {
             console.log(error.messages);
           }
         },
+      };
+    },
+    getOrgName() {
+      return {
+        url: "frappe.client.get",
+        method: "GET",
+        params: {
+          doctype: "Drive Instance Settings",
+        },
+        onSuccess(data) {
+          console.log(data);
+        },
+        onError(error) {
+          if (error.messages) {
+            this.errorMessage = error.messages.join("\n");
+          } else {
+            this.errorMessage = error.message;
+          }
+        },
+        auto: true,
       };
     },
   },

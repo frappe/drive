@@ -1,0 +1,63 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2023-10-19 12:16:14.883030",
+  "default_view": "List",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": ["instance_id", "org_name", "instance_email"],
+  "fields": [
+    {
+      "default": "placeholder_name",
+      "fieldname": "org_name",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Organization Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "instance_id",
+      "fieldtype": "Data",
+      "label": "Instance ID"
+    },
+    {
+      "fieldname": "instance_email",
+      "fieldtype": "Data",
+      "label": "Instance Email"
+    }
+  ],
+  "issingle": 1,
+  "links": [],
+  "modified": "2023-10-20 15:55:55.550814",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Instance Settings",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "Drive Admin",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}
