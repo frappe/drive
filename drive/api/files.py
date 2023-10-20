@@ -930,7 +930,7 @@ def list_recents(order_by="last_interaction"):
 
 
 @frappe.whitelist()
-def remove_recents(entity_names):
+def remove_recents(entity_names=None, clear_all=False):
     """
     Clear recent DriveEntities for specified user
 
@@ -939,6 +939,11 @@ def remove_recents(entity_names):
     :raises ValueError: If decoded entity_names is not a list
     """
 
+    if clear_all:
+        frappe.db.delete("Drive Entity Log", {
+            "user": frappe.session.user
+            })
+        return
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):

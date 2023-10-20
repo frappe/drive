@@ -206,7 +206,8 @@ export default {
   },
   methods: {
     callClear() {
-      this.emitter.emit("clearAllRecent");
+      this.emitter.emit("fetchRecents");
+      this.$resources.clearRecent.submit();
     },
     openEntity(entity) {
       if (entity.is_group) {
@@ -239,6 +240,22 @@ export default {
           console.log(data);
         },
         auto: false,
+      };
+    },
+    clearRecent() {
+      return {
+        url: "drive.api.files.remove_recents",
+        params: {
+          clear_all: true,
+        },
+        onSuccess() {
+          this.$resources.recentDriveEntity.fetch();
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
       };
     },
   },

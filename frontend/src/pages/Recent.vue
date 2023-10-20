@@ -365,9 +365,9 @@ export default {
   },
   mounted() {
     /* Triggered from the navbar component */
-    this.emitter.on("clearAllRecent", () => {
-      this.selectedEntities = this.$resources.recentDriveEntity.data;
-      this.$resources.clearRecent.submit();
+    this.emitter.on("fetchRecents", () => {
+      this.selectedEntities = [];
+      this.$resources.recentDriveEntity.fetch();
     });
     this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbs);
     window.addEventListener(
