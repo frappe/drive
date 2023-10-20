@@ -454,9 +454,6 @@ class DriveEntity(NestedSet):
 
         if share_name:
             frappe.delete_doc("Drive DocShare", share_name, flags=flags)
-        print("=============================================================")
-        print(share_name)
-        print("=============================================================")
         if self.is_group:
             for child in self.get_children():
                 child.unshare(user, user_type)
