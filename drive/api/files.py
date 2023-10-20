@@ -424,7 +424,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         .on(
             (UserGroupMember.parent == DriveDocShare.user_name)
             | (DriveDocShare.user_name == frappe.session.user)
-            | (DriveDocShare.everyone == 1)
+            | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
         )
         .left_join(DriveFavourite)
         .on(
