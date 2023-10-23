@@ -529,6 +529,27 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
     return result
 
 
+@frappe.whitelist()
+def get_trashed_entities(order_by="modified", is_active=1):
+    return frappe.db.get_all(
+        "Drive Entity",
+        filters={"is_active": 0, "owner": ["like", frappe.session.user]},
+        fields=[
+            "name",
+            "title",
+            "is_group",
+            "owner",
+            "modified",
+            "creation",
+            "file_size",
+            "file_ext",
+            "color",
+            "document",
+            "mime_type",
+        ],
+    )
+
+
 def get_entity(entity_name, fields=None):
     """
     Return specific entity
@@ -805,7 +826,7 @@ def add_or_remove_favourites(entity_names):
 
 
 @frappe.whitelist()
-def remove_or_restore(entity_names):
+def remove_or_restore(entity_names, move=False):
     """
     To move entities to or restore entities from the trash
 
@@ -829,7 +850,8 @@ def remove_or_restore(entity_names):
                 doc.parent_before_trash = entity_ancestors[0]
             else:
                 doc.parent_before_trash = get_user_directory()
-            doc.move()
+            if move:
+                doc.move()
 
         else:
             parent_is_active = frappe.db.get_value(
@@ -837,6 +859,8 @@ def remove_or_restore(entity_names):
             )
             if parent_is_active:
                 doc.move(doc.parent_before_trash)
+            else:
+                doc.move()
         depth_zero_toggle_is_active(doc)
         # frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
 
@@ -960,7 +984,9 @@ def remove_recents(entity_names=None, clear_all=False):
 
 @frappe.whitelist()
 def get_children_count(drive_entity):
-    children_count = frappe.db.count("Drive Entity", {"parent_drive_entity": drive_entity})
+    children_count = frappe.db.count(
+        "Drive Entity", {"parent_drive_entity": drive_entity, "is_active": 1}
+    )
     return children_count
 
 

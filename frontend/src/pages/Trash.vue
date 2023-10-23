@@ -235,7 +235,7 @@ export default {
   resources: {
     folderContents() {
       return {
-        url: "drive.api.files.list_owned_entities",
+        url: "drive.api.files.get_trashed_entities",
         params: {
           order_by: this.orderBy,
           fields:
