@@ -184,6 +184,7 @@ export default {
     this.dropzone.on("queuecomplete", function (file) {
       this.files = [];
       componentContext.computedFullPath = "";
+      componentContext.currentPageEmitTrigger();
     });
 
     this.dropzone.on("uploadprogress", function (file, progress) {
@@ -206,7 +207,6 @@ export default {
       });
     });
     this.dropzone.on("complete", function (file) {
-      componentContext.currentPageEmitTrigger();
       componentContext.$store.commit("updateUpload", {
         uuid: file.upload.uuid,
         completed: true,
@@ -238,7 +238,7 @@ export default {
       event.preventDefault();
     },
     async currentPageEmitTrigger() {
-      await this.$refs.currentPage.triggerFetchFolderEmit();
+      this.emitter.emit("fetchFolderContents");
     },
   },
 };

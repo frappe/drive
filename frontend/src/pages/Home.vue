@@ -494,6 +494,7 @@ export default {
     this.$store.commit("setHasWriteAccess", true);
   },
   unmounted() {
+    this.emitter.off("fetchFolderContents");
     this.$store.commit("setHasWriteAccess", false);
     window.removeEventListener("keydown", this.pasteListener);
     window.removeEventListener("keydown", this.deleteListener);
@@ -563,9 +564,6 @@ export default {
       this.showEntityContext = false;
       this.showEmptyEntityContextMenu = false;
       this.entityContext = undefined;
-    },
-    triggerFetchFolderEmit() {
-      this.emitter.emit("fetchFolderContents");
     },
     async newDocument() {
       await this.$resources.createDocument.submit({

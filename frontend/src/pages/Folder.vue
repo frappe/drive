@@ -963,15 +963,15 @@ export default {
       "setHasWriteAccess",
       !!this.$resources.currentFolder.data?.write
     );
-    let componentContext = this;
     this.emitter.on("fetchFolderContents", () => {
-      componentContext.$resources.folderContents.fetch();
+      this.$resources.folderContents.fetch();
     });
   },
   async updated() {
     await this.$store.commit("setCurrentFolderID", this.entityName);
   },
   unmounted() {
+    this.emitter.off("fetchFolderContents");
     window.removeEventListener("keydown", this.pasteListener);
     window.removeEventListener("keydown", this.deleteListener);
     this.$store.commit("setHasWriteAccess", false);
@@ -1039,9 +1039,6 @@ export default {
       this.showEntityContext = false;
       this.showEmptyEntityContextMenu = false;
       this.entityContext = undefined;
-    },
-    triggerFetchFolderEmit() {
-      this.emitter.emit("fetchFolderContents");
     },
     async newDocument() {
       await this.$resources.createDocument.submit({
