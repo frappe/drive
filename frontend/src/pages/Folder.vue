@@ -241,7 +241,7 @@ export default {
     },
     actionItems() {
       /* Owner actions */
-      if (this.currentFolder.owner === this.userId) {
+      if (this.currentFolder?.owner === this.userId) {
         return [
           {
             label: "Preview",
@@ -485,7 +485,7 @@ export default {
             },
           },
         ].filter((item) => item.isEnabled());
-      } else if (this.currentFolder.write === 1) {
+      } else if (this.currentFolder?.write === 1) {
         return [
           {
             label: "Preview",

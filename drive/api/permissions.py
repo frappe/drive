@@ -389,6 +389,7 @@ def get_user_access(entity_name):
         )
         if public_access:
             return public_access
+    return {"read": 0, "write": 0}
 
 
 # Group access, avoid querying many to many

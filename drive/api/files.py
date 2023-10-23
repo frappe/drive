@@ -1,7 +1,7 @@
 import frappe
 import os
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
-from pypika import Order, functions as fn
+from pypika import Order, Field, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -357,17 +357,17 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         frappe.throw("Specified entity is not a folder", NotADirectoryError)
     if not parent_is_active:
         frappe.throw("Specified folder has been trashed by the owner")
-    share_every_perm = False
+    is_public = False
     if frappe.db.exists(
         {
-            "doctype": "DocShare",
+            "doctype": "Drive DocShare",
             "share_doctype": "Drive Entity",
             "share_name": entity_name,
-            "everyone": 1,
+            "public": 1,
         }
     ):
-        share_every_perm = True
-    if not share_every_perm:
+        is_public = True
+    if not is_public:
         if not frappe.has_permission(
             doctype="Drive Entity",
             doc=entity_name,
@@ -378,15 +378,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
                 "Cannot access folder due to insufficient permissions",
                 frappe.PermissionError,
             )
-    # entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
-    # flag = False
-    # for z_entity_name in entity_ancestors:
-    #    result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
-    #    if result:
-    #        flag = True
-    #        break
-    # if flag == True:
-    #    frappe.throw("Parent Folder has been deleted")
+    general_access_val = "public" if is_public else "everyone"
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
@@ -410,6 +402,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         DriveDocShare.read,
         DriveDocShare.user_name,
         fn.Max(DriveDocShare.write).as_("write"),
+        DriveDocShare.public,
         DriveDocShare.everyone,
         DriveDocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
@@ -434,7 +427,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
                 (UserGroupMember.user == frappe.session.user)
                 | (
                     (DriveDocShare.user_name == frappe.session.user)
-                    | (DriveDocShare.everyone == 1)
+                    | (DriveDocShare[general_access_val] == 1)
                 )
             )
         )
