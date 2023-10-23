@@ -420,19 +420,25 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         frappe.qb.from_(DriveEntity)
         .inner_join(DriveDocShare)
         .on((DriveDocShare.share_name == DriveEntity.name))
-        .right_join(UserGroupMember)
-        .on(
-            (UserGroupMember.parent == DriveDocShare.user_name)
-            | (DriveDocShare.user_name == frappe.session.user)
-            | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
-        )
+        .left_join(UserGroupMember)
+        .on((UserGroupMember.parent == DriveDocShare.user_name))
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
         .select(*selectedFields)
-        .where((DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == 1))
+        .where(
+            (DriveEntity.parent_drive_entity == entity_name)
+            & (DriveEntity.is_active == 1)
+            & (
+                (UserGroupMember.user == frappe.session.user)
+                | (
+                    (DriveDocShare.user_name == frappe.session.user)
+                    | (DriveDocShare.everyone == 1)
+                )
+            )
+        )
         .groupby(DriveEntity.name)
         .orderby(
             order_by.split()[0],

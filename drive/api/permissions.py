@@ -178,11 +178,8 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         frappe.qb.from_(DriveEntity)
         .inner_join(DocShare)
         .on((DocShare.share_name == DriveEntity.name))
-        .right_join(UserGroupMember)
-        .on(
-            (UserGroupMember.parent == DocShare.user_name)
-            | ((DocShare.user_name == frappe.session.user) | (DocShare.everyone == 1))
-        )
+        .left_join(UserGroupMember)
+        .on((UserGroupMember.parent == DocShare.user_name))
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
@@ -190,7 +187,13 @@ def get_shared_with_me(get_all=False, order_by="modified"):
         )
         .groupby(DriveEntity.name)
         .select(*selectedFields)
-        .where((DriveEntity.is_active == 1) & (UserGroupMember.user == frappe.session.user))
+        .where(
+            (DriveEntity.is_active == 1)
+            & (
+                (UserGroupMember.user == frappe.session.user)
+                | ((DocShare.user_name == frappe.session.user) | (DocShare.everyone == 1))
+            )
+        )
     )
     if get_all:
         return query.run(as_dict=True)
