@@ -60,6 +60,7 @@ def delete_user_group(group_name):
         return []
     try:
         frappe.db.delete("User Group", group_name)
+        frappe.db.delete("User Group Member", {"parent": group_name})
         return {
             "message": ("User Group deleted successfully."),
         }
