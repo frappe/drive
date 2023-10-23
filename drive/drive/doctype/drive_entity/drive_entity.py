@@ -406,7 +406,7 @@ class DriveEntity(NestedSet):
                     "share_name": self.name,
                     "share_doctype": "Drive Entity",
                     "user_name": None,
-                    "user_type": None,
+                    "user_doctype": None,
                 },
             )
         if share_name:
@@ -487,7 +487,7 @@ class DriveEntity(NestedSet):
                     "share_name": self.name,
                     "share_doctype": "Drive Entity",
                     "user_name": None,
-                    "user_type": None,
+                    "user_doctype": None,
                 },
             )
 
