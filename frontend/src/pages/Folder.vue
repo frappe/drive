@@ -454,8 +454,8 @@ export default {
             isEnabled: () => true,
           },
           /* Unshare */
-          /*           {
-            label: "Delete",
+          {
+            label: "Remove from folder",
             icon: "trash-2",
             danger: true,
             onClick: () => {
@@ -469,7 +469,7 @@ export default {
                   !this.isSharedFolder)
               );
             },
-          }, */
+          },
           {
             label: "Delete",
             icon: "trash-2",
@@ -510,19 +510,23 @@ export default {
               window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
             },
             isEnabled: () => {
-              if (
-                this.selectedEntities.length === 1 &&
-                this.selectedEntities[0].allow_download
-              ) {
-                return (
-                  !this.selectedEntities[0].is_group ||
+              if (this.selectedEntities.length === 1) {
+                if (
+                  this.selectedEntities.length === 1 &&
+                  !this.selectedEntities[0].is_group &&
                   !this.selectedEntities[0].document
-                );
+                ) {
+                  return (
+                    this.selectedEntities[0].allow_download ||
+                    this.selectedEntities[0].write ||
+                    this.selectedEntities[0].owner === "me"
+                  );
+                }
               }
             },
           },
           {
-            label: "Download as ZIP",
+            label: "Download",
             icon: "download",
             onClick: () => {
               if (this.selectedEntities.length > 1) {
@@ -553,7 +557,8 @@ export default {
               }
             },
           },
-          {
+          /* TODO: Allow sharing access */
+          /*           {
             label: "Share",
             icon: "share-2",
             onClick: () => {
@@ -562,10 +567,10 @@ export default {
             isEnabled: () => {
               return this.selectedEntities.length === 1;
             },
-          },
+          }, */
           {
-            label: "View details",
-            icon: "eye",
+            label: "Show Info",
+            icon: "info",
             onClick: () => {
               this.$store.commit("setShowInfo", true);
             },
@@ -577,8 +582,8 @@ export default {
             },
           },
           {
-            label: "Hide details",
-            icon: "eye-off",
+            label: "Hide Info",
+            icon: "info",
             onClick: () => {
               this.$store.commit("setShowInfo", false);
             },
@@ -646,7 +651,7 @@ export default {
             },
           },
           {
-            label: "Add to Favourites",
+            label: "Favourite",
             icon: "star",
             onClick: () => {
               this.$resources.toggleFavourite.submit();
@@ -659,8 +664,8 @@ export default {
             },
           },
           {
-            label: "Remove from Favourites",
-            icon: "x-circle",
+            label: "Unfavourite",
+            icon: "star",
             onClick: () => {
               this.$resources.toggleFavourite.submit();
             },
@@ -681,8 +686,25 @@ export default {
               );
             },
           },
+          /*           {
+            label: "Unshare",
+            danger: true,
+            icon: "trash-2",
+            onClick: () => {
+              this.showUnshareDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner != "me") &&
+                (this.selectedEntities.every((x) => x.write) ||
+                  !this.isSharedFolder)
+              );
+            },
+          }, */
           {
-            label: "Remove",
+            label: "Remove from folder",
+            danger: true,
             icon: "trash-2",
             onClick: () => {
               this.$resources.removeEntity.submit();
@@ -731,7 +753,7 @@ export default {
             },
           },
           {
-            label: "Download as ZIP",
+            label: "Download",
             icon: "download",
             onClick: () => {
               if (this.selectedEntities.length > 1) {
@@ -857,17 +879,6 @@ export default {
                 this.selectedEntities.length > 0 &&
                 this.selectedEntities.every((x) => x.is_favourite)
               );
-            },
-          },
-          {
-            label: "Unshare",
-            icon: "trash-2",
-            danger: true,
-            onClick: () => {
-              this.showUnshareDialog = true;
-            },
-            isEnabled: () => {
-              return this.selectedEntities.length > 0;
             },
           },
         ].filter((item) => item.isEnabled());

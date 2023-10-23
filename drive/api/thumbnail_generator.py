@@ -34,12 +34,21 @@ def create_image_thumbnail(entity_name):
     for z_entity_name in entity_ancestors:
         result = frappe.db.exists(
             {
-                "doctype": "DocShare",
+                "doctype": "Drive DocShare",
                 "share_doctype": "Drive Entity",
                 "share_name": z_entity_name,
                 "everyone": 1,
             }
         )
+        if not result:
+            result = frappe.db.exists(
+                {
+                    "doctype": "Drive DocShare",
+                    "share_doctype": "Drive Entity",
+                    "share_name": z_entity_name,
+                    "public": 1,
+                }
+            )
         if result:
             flag = True
             break
@@ -90,12 +99,21 @@ def create_video_thumbnail(entity_name):
     for z_entity_name in entity_ancestors:
         result = frappe.db.exists(
             {
-                "doctype": "DocShare",
+                "doctype": "Drive DocShare",
                 "share_doctype": "Drive Entity",
                 "share_name": z_entity_name,
                 "everyone": 1,
             }
         )
+        if not result:
+            result = frappe.db.exists(
+                {
+                    "doctype": "Drive DocShare",
+                    "share_doctype": "Drive Entity",
+                    "share_name": z_entity_name,
+                    "public": 1,
+                }
+            )
         if result:
             flag = True
             break

@@ -164,7 +164,6 @@ export default {
                   (this.selectedEntities[0].allow_download ||
                     this.selectedEntities[0].write)
                 ) {
-                  console.log(this.selectedEntities[0]);
                   return !this.selectedEntities[0].document;
                 }
               }
@@ -387,9 +386,14 @@ export default {
               if (this.selectedEntities.length === 1) {
                 if (
                   this.selectedEntities.length === 1 &&
-                  !this.selectedEntities[0].is_group
+                  !this.selectedEntities[0].is_group &&
+                  !this.selectedEntities[0].document
                 ) {
-                  return !this.selectedEntities[0].document;
+                  return (
+                    this.selectedEntities[0].allow_download ||
+                    this.selectedEntities[0].write ||
+                    this.selectedEntities[0].owner === "me"
+                  );
                 }
               }
             },
