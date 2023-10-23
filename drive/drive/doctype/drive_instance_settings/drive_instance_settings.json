@@ -29,7 +29,7 @@
   ],
   "issingle": 1,
   "links": [],
-  "modified": "2023-10-20 15:55:55.550814",
+  "modified": "2023-10-23 03:56:30.925102",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Instance Settings",
@@ -55,6 +55,13 @@
       "role": "Drive Admin",
       "share": 1,
       "write": 1
+    },
+    {
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "Drive User",
+      "share": 1
     }
   ],
   "sort_field": "modified",
