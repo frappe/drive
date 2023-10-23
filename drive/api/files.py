@@ -270,18 +270,17 @@ def get_file_content(entity_name, trigger_download=0):
     :raises FileLockedError: If the file has been writer-locked
     """
 
-    share_every_perm = False
+    is_public = False
     if frappe.db.exists(
         {
-            "doctype": "DocShare",
+            "doctype": "Drive DocShare",
             "share_doctype": "Drive Entity",
             "share_name": entity_name,
-            "everyone": 1,
+            "public": 1,
         }
     ):
-        share_every_perm = True
-
-    if not share_every_perm:
+        is_public = True
+    if not is_public:
         if not frappe.has_permission(
             doctype="Drive Entity",
             doc=entity_name,

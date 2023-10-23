@@ -380,6 +380,15 @@ def get_user_access(entity_name):
         )
         if public_access:
             return public_access
+    else:
+        public_access = frappe.db.get_value(
+            "Drive DocShare",
+            {"share_name": entity_name, "public": 1},
+            ["read", "write"],
+            as_dict=1,
+        )
+        if public_access:
+            return public_access
 
 
 # Group access, avoid querying many to many
