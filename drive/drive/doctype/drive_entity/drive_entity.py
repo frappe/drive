@@ -26,25 +26,14 @@ class DriveEntity(NestedSet):
         self.version = self.version + 1
 
     def after_insert(self):
-        """Copy parent permissions to new child entity"""
-
-        if self.parent_drive_entity is None:
-            return
-        permissions = frappe.share.get_users("Drive Entity", self.parent_drive_entity)
-        for permission in permissions:
-            frappe.share.add_docshare(
-                "Drive Entity",
-                self.name,
-                permission.user,
-                write=permission.write,
-                share=permission.share,
-                everyone=permission.everyone,
-                notify=0,
-                flags={"ignore_share_permission": True},
-            )
+        self.inherit_permissions()
 
     def on_trash(self):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
+        frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
+        frappe.db.delete("Drive DocShare", {"share_name": self.name})
+        if self.document:
+            frappe.delete_doc("Drive Document", self.document)
         if self.is_group:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
@@ -57,8 +46,6 @@ class DriveEntity(NestedSet):
             super().on_trash()
 
     def after_delete(self):
-        if self.document:
-            frappe.delete_doc("Drive Document", self.document)
         """Remove file once document is deleted"""
         if self.path:
             max_attempts = 3
@@ -84,6 +71,59 @@ class DriveEntity(NestedSet):
         if self.flags.file_created:
             shutil.rmtree(self.path) if self.is_group else self.path.unlink()
 
+    def inherit_permissions(self):
+        """Copy parent permissions to new child entity"""
+
+        if self.parent_drive_entity is None:
+            return
+
+        permissions = frappe.get_all(
+            "Drive DocShare",
+            fields=[
+                "name",
+                "user_doctype",
+                "user_name",
+                "read",
+                "write",
+                "share",
+                "everyone",
+                "public",
+                "owner",
+                "creation",
+            ],
+            filters=dict(share_doctype=self.doctype, share_name=self.parent_drive_entity),
+        )
+        parent_folder = frappe.db.get_value(
+            "Drive Entity", self.parent_drive_entity, ["name", "owner"], as_dict=1
+        )
+        if parent_folder.owner != frappe.session.user:
+            # Allow the owner of the folder to access the entity
+            # Defaults to write since its obvious that the current user has write access to the parent
+            # the subsequent for loop still creates a docShare for this uploaded entity as a side effect
+            # It just lingers around and is wiped on delete (find a way to avoid the side effect if possible)
+            self.share(
+                share_name=self.name,
+                user=parent_folder.owner,
+                user_type="User",
+                read=1,
+                write=1,
+                share=1,
+                notify=0,
+            )
+
+        for permission in permissions:
+            self.share(
+                share_name=self.name,
+                user=permission.user_name,
+                user_type=permission.user_doctype,
+                read=permission.read,
+                write=permission.write,
+                share=permission.share,
+                everyone=permission.everyone,
+                public=permission.public,
+                notify=0,
+            )
+
     @frappe.whitelist()
     def move(self, new_parent=None):
         """
@@ -95,7 +135,7 @@ class DriveEntity(NestedSet):
         :return: DriveEntity doc once file is moved
         """
 
-        new_parent = new_parent or get_user_directory().name
+        new_parent = new_parent or get_user_directory(self.owner).name
         if new_parent == self.parent_drive_entity:
             return self
 
@@ -106,6 +146,7 @@ class DriveEntity(NestedSet):
         title = get_new_title(self.title, new_parent)
         if title != self.title:
             self.rename(title)
+        self.inherit_permissions()
         self.save()
         return self
 
@@ -285,17 +326,15 @@ class DriveEntity(NestedSet):
         """
 
         if read:
-            flags = (
-                {"ignore_share_permission": True} if frappe.session.user == self.owner else None
-            )
-            self.share(
-                share_name=share_name,
-                read=read,
-                write=write,
-                share=0,
-                everyone=everyone,
-                public=public,
-            )
+            if frappe.session.user == self.owner:
+                self.share(
+                    share_name=share_name,
+                    read=read,
+                    write=write,
+                    share=0,
+                    everyone=everyone,
+                    public=public,
+                )
 
         else:
             flags = {"ignore_permissions": True} if frappe.session.user == self.owner else None
@@ -347,7 +386,8 @@ class DriveEntity(NestedSet):
         :param share: 1 if share permission is to be granted. Defaults to 0
         :param notify: 1 if the user should be notified. Defaults to 1
         """
-        flags = {"ignore_share_permission": True} if frappe.session.user == self.owner else None
+        if frappe.session.user != self.owner:
+            return
 
         if user:
             share_name = frappe.db.get_value(
@@ -385,9 +425,6 @@ class DriveEntity(NestedSet):
                 }
             )
 
-        if flags:
-            doc.flags.update(flags)
-
         doc.update(
             {
                 # always add read, since you are adding!
@@ -420,18 +457,20 @@ class DriveEntity(NestedSet):
         :param user_type:
         """
 
-        if (
-            frappe.has_permission(
-                doctype="Drive Entity",
-                doc=self.name,
-                ptype="read",
-                user=frappe.session.user,
-            )
-            or frappe.session.user == self.owner
-        ):
-            flags = {"ignore_permissions": True}
-
         if user:
+            if user != self.owner and frappe.session.user != self.owner:
+                shared_parent = frappe.db.exists(
+                    "Drive DocShare",
+                    {
+                        "user_name": user,
+                        "user_doctype": user_type,
+                        "share_name": self.parent_drive_entity,
+                        "share_doctype": "Drive Entity",
+                    },
+                )
+                if shared_parent:
+                    return
+
             share_name = frappe.db.get_value(
                 "Drive DocShare",
                 {
@@ -453,7 +492,10 @@ class DriveEntity(NestedSet):
             )
 
         if share_name:
-            frappe.delete_doc("Drive DocShare", share_name, flags=flags)
+            if frappe.session.user == user or frappe.session.user == self.owner:
+                frappe.db.delete("Drive DocShare", share_name)
+            else:
+                frappe.delete_doc("Drive DocShare", share_name, ignore_permissions=True)
         if self.is_group:
             for child in self.get_children():
                 child.unshare(user, user_type)
