@@ -30,6 +30,12 @@
 
 </details>
 
+> **Warning**
+>
+> Frappe Drive is currently in beta, and will let breaking changes through, **do not** use it as your sole backup/data storage.
+
+> **Note:** Frappe Drive is not currently accepting pull requests. File an issue to open a discussion to discuss an idea/feature request.
+
 ## Features
 
 - Upload and store files across multiple platforms.
@@ -41,10 +47,12 @@
 - Use the Search Bar to search for any file or folder in your Drive.
 
 ## Installation
+
 <!-- TOC -->
- - [Local Setup](#local)
+
+- [Local Setup](#local)
 - [Docker Setup ](#docker)
- 
+
 <!-- /TOC -->
 
 # Local
@@ -91,7 +99,7 @@ To setup the repository locally follow the steps mentioned below:
 
 # Docker
 
-This guide provides step-by-step instructions to install the project using Docker via VSCode Remote Containers extension. 
+This guide provides step-by-step instructions to install the project using Docker via VSCode Remote Containers extension.
 
 ## Prerequisites
 
@@ -100,9 +108,9 @@ Before you begin, make sure you have the following prerequisites installed on yo
 1. [Docker](https://docs.docker.com/get-docker/)
 2. [Docker Compose](https://docs.docker.com/compose/install/)
 3. User added to docker group
-    ```shell
-    sudo usermod -aG docker $USER
-    ```
+   ```shell
+   sudo usermod -aG docker $USER
+   ```
 4. [VSCode Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Step 1: Cloning frappe_docker repo
@@ -114,9 +122,9 @@ cd frappe_docker
 
 ### Step 2: Copy example devcontainer config from devcontainer-example to .devcontainer
 
-Note: 
+Note:
 
-Feel free to expore the files within devcontainer-example and make changes to the same, be that exposing DB ports or mount desired additonal volumes. 
+Feel free to expore the files within devcontainer-example and make changes to the same, be that exposing DB ports or mount desired additonal volumes.
 
 ```shell
 cp -R devcontainer-example .devcontainer
@@ -135,6 +143,7 @@ cp -R development/vscode-example development/.vscode
 ```shell
 code .
 ```
+
 Note:
 
 The development directory is ignored by git.
@@ -154,6 +163,7 @@ PYENV_VERSION=3.10.5 bench init --skip-redis-config-generation --frappe-branch v
 cd frappe-bench
 
 ```
+
 ### Step 6: Setup hosts
 
 We need to tell bench to use the right containers instead of localhost. Run the following commands inside the container:
@@ -164,6 +174,7 @@ bench set-config -g redis_cache redis://redis-cache:6379
 bench set-config -g redis_queue redis://redis-queue:6379
 bench set-config -g redis_socketio redis://redis-socketio:6379
 ```
+
 For any reason the above commands fail, set the values in `common_site_config.json` manually.
 
 ```json
@@ -175,7 +186,7 @@ For any reason the above commands fail, set the values in `common_site_config.js
 }
 ```
 
-### Step 7: Create a new site 
+### Step 7: Create a new site
 
 Note: Sitename must end with .localhost for trying deployments locally.
 
@@ -184,6 +195,7 @@ for example:
 ```shell
 bench new-site mydrive.localhost --no-mariadb-socket
 ```
+
 The same command can be run non-interactively as well:
 
 ```shell
@@ -197,19 +209,20 @@ bench --site mydrive.localhost set-config developer_mode 1
 bench --site mydrive.localhost clear-cache
 ```
 
-### Step 9: Set current site 
+### Step 9: Set current site
 
 ```shell
 bench use mydrive.localhost
 ```
 
-### Step 10: Install the Drive app onto the site created 
+### Step 10: Install the Drive app onto the site created
 
 ```shell
 bench get-app https://github.com/frappe/drive
 
 bench --site mydrive.localhost install-app drive
 ```
+
 ### Step 11: Start Bench
 
 Execute following command from the `frappe-bench` directory.
@@ -242,4 +255,5 @@ If you want to contribute code then you can fork this repo, make changes and rai
 [GNU Affero General Public License v3.0](LICENSE)
 
 ## Warning
+
 Frappe drive is currently marked as **beta** expect breaking changes between versions.
