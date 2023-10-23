@@ -54,7 +54,7 @@ export default {
       return this.$store.state.user.imageURL;
     },
     settingsItems() {
-      if (JSON.parse(localStorage.getItem("is_drive_admin"))) {
+      if (this.$resources.isAdmin?.data) {
         return [
           {
             icon: "settings",
@@ -75,6 +75,25 @@ export default {
           onClick: () => this.logout(),
         },
       ];
+    },
+  },
+  resources: {
+    isAdmin() {
+      return {
+        url: "drive.utils.users.is_drive_admin",
+        cache: "is_admin",
+        params: {
+          doctype: "Drive Instance Settings",
+        },
+        onError(error) {
+          if (error.messages) {
+            this.errorMessage = error.messages.join("\n");
+          } else {
+            this.errorMessage = error.message;
+          }
+        },
+        auto: true,
+      };
     },
   },
 };

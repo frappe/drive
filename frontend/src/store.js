@@ -136,15 +136,10 @@ const store = createStore({
             ? window.location.origin + getCookies().user_image
             : null,
         });
-        await call("drive.utils.users.is_drive_admin").then((isAdmin) => {
-          localStorage.setItem("is_drive_admin", isAdmin);
-          window.location.reload();
-        });
         return res;
       }
     },
     async logout({ commit }) {
-      localStorage.removeItem("is_drive_admin");
       commit("setAuth", { loading: true });
       await call("logout");
       clear();
