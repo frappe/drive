@@ -492,8 +492,8 @@ export default {
       }
       if (this.generalAccess.everyone) {
         return this.generalAccess.write
-          ? `All users in ${this.$resources.getOrgName?.data.org_name} can edit`
-          : `All users in ${this.$resources.getOrgName?.data.org_name} can view`;
+          ? `All users in ${this.$resources.getOrgName.data?.org_name} can edit`
+          : `All users in ${this.$resources.getOrgName.data?.org_name} can view`;
       } else {
         return "Only users and groups with access can view or edit";
       }

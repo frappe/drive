@@ -1,19 +1,19 @@
 <template>
   <div class="h-full w-full p-4" @contextmenu="toggleEmptyContext">
     <FolderContentsError
-      v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error" />
+      v-if="folderContents.error"
+      :error="folderContents.error" />
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="folderContents.data"
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()">
+      @fetch-folder-contents="() => folderContents.fetch()">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -27,14 +27,14 @@
 
     <ListView
       v-else
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="folderContents.data"
       :selected-entities="selectedEntities"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()">
+      @fetch-folder-contents="() => folderContents.fetch()">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -79,7 +79,7 @@
       :entity="selectedEntities[0]"
       @success="
         () => {
-          $resources.folderContents.fetch();
+          folderContents.fetch();
           showRenameDialog = false;
           selectedEntities = [];
         }
@@ -91,7 +91,7 @@
       :for="'remove'"
       @success="
         () => {
-          $resources.folderContents.fetch();
+          folderContents.fetch();
           showRemoveDialog = false;
           selectedEntities = [];
         }
@@ -102,7 +102,7 @@
       :for="'unshare'"
       @success="
         () => {
-          $resources.folderContents.fetch();
+          folderContents.fetch();
           showUnshareDialog = false;
           selectedEntities = [];
         }
@@ -111,7 +111,7 @@
       v-if="showShareDialog"
       v-model="showShareDialog"
       :entity-name="shareName"
-      @success="$resources.folderContents.fetch()" />
+      @success="folderContents.fetch()" />
   </div>
 </template>
 
@@ -175,6 +175,11 @@ export default {
     currentFolder: null,
   }),
   computed: {
+    folderContents() {
+      return this.$resources.currentFolder.data?.owner !== this.userId
+        ? this.$resources.sharedEntities
+        : this.$resources.ownerEntities;
+    },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },
@@ -909,18 +914,7 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
-  /*   watch: {
-    async entityName() {
-      await this.$resources.currentFolder.fetch();
-      this.$store.commit(
-        "setHasWriteAccess",
-        !!this.$resources.currentFolder.data?.write
-      );
-      this.selectedEntities = [];
-    },
-  },
- */
-  async mounted() {
+  mounted() {
     this.pasteListener = (e) => {
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -957,14 +951,8 @@ export default {
       },
       false
     );
-
-    await this.$resources.currentFolder.fetch();
-    this.$store.commit(
-      "setHasWriteAccess",
-      !!this.$resources.currentFolder.data?.write
-    );
     this.emitter.on("fetchFolderContents", () => {
-      this.$resources.folderContents.fetch();
+      this.folderContents.fetch();
     });
   },
   async updated() {
@@ -1006,7 +994,7 @@ export default {
       }
       this.selectedEntities = [];
       this.$store.commit("setPasteData", { entities: [], action: null });
-      this.$resources.folderContents.fetch();
+      this.folderContents.fetch();
     },
 
     hidePreview() {
@@ -1061,8 +1049,12 @@ export default {
         // cache: ['pathEntities', this.entityName],
         onSuccess(data) {
           this.currentFolder = data;
-          if (this.currentFolder.owner !== this.userId) {
+          if (data.owner !== this.userId) {
             this.isSharedFolder = true;
+            this.$store.commit("setHasWriteAccess", !data.write);
+          } else {
+            this.isSharedFolder = false;
+            this.$store.commit("setHasWriteAccess", true);
           }
           let currentBreadcrumbs = this.$store.state.currentBreadcrumbs;
           // Duplicate folder in breadcrumb but unique entity ID
@@ -1078,7 +1070,7 @@ export default {
               route: `/folder/${this.entityName}`,
             });
           }
-          this.$resources.folderContents.fetch();
+          this.folderContents.fetch();
         },
         auto: true,
       };
@@ -1094,9 +1086,9 @@ export default {
         },
       };
     },
-    folderContents() {
+    ownerEntities() {
       return {
-        url: this.resourceURL,
+        url: "drive.api.files.list_owned_entities",
         // cache: ['folderContents', this.entityName],
         params: {
           entity_name: this.entityName,
@@ -1105,8 +1097,31 @@ export default {
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
         onSuccess(data) {
-          //console.log(data);
-          this.$resources.folderContents.error = null;
+          this.folderContents.error = null;
+          data.forEach((entity) => {
+            entity.size_in_bytes = entity.file_size;
+            entity.file_size = entity.is_group
+              ? entity.item_count + " items"
+              : formatSize(entity.file_size);
+            entity.modified = formatDate(entity.modified);
+            entity.creation = formatDate(entity.creation);
+            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
+          });
+        },
+        auto: false,
+      };
+    },
+    sharedEntities() {
+      return {
+        url: "drive.api.files.list_folder_contents",
+        params: {
+          entity_name: this.entityName,
+          order_by: this.orderBy,
+          fields:
+            "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
+        },
+        onSuccess(data) {
+          this.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
@@ -1129,7 +1144,7 @@ export default {
           ),
         },
         onSuccess() {
-          this.$resources.folderContents.fetch();
+          this.folderContents.fetch();
           this.selectedEntities = [];
         },
         onError(error) {
@@ -1167,7 +1182,7 @@ export default {
           move: true,
         },
         onSuccess() {
-          this.$resources.folderContents.fetch();
+          this.folderContents.fetch();
         },
         onError(error) {
           if (error.messages) {
