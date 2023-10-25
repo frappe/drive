@@ -383,6 +383,10 @@ export default {
       },
       false
     );
+    this.emitter.on("fetchFavourites", () => {
+      this.selectedEntities = [];
+      this.$resources.folderContents.fetch();
+    });
   },
   methods: {
     openEntity(entity) {

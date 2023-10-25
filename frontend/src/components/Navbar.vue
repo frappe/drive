@@ -43,6 +43,16 @@
           Clear Recents
         </Button>
         <Button
+          v-if="$route.name === 'Favourites'"
+          class="bg-red-100 text-red-700"
+          variant="minimal"
+          @click="$resources.clearFavourites.submit()">
+          <template #prefix>
+            <FeatherIcon name="trash-2" class="w-4" />
+          </template>
+          Clear Favourites
+        </Button>
+        <Button
           v-else-if="$route.name === 'Trash'"
           @click="emitter.emit('clearTrashed')"
           class="bg-red-100 text-red-700"
@@ -242,6 +252,22 @@ export default {
         },
         onSuccess() {
           this.emitter.emit("fetchRecents");
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages);
+          }
+        },
+      };
+    },
+    clearFavourites() {
+      return {
+        url: "drive.api.files.add_or_remove_favourites",
+        params: {
+          clear_all: true,
+        },
+        onSuccess() {
+          this.emitter.emit("fetchFavourites");
         },
         onError(error) {
           if (error.messages) {

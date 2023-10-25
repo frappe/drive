@@ -58,6 +58,16 @@ def create_document_entity(title, content, parent=None):
 
     parent = frappe.form_dict.parent or user_directory.name
 
+    if not frappe.has_permission(
+        doctype="Drive Entity",
+        doc=parent,
+        ptype="write",
+        user=frappe.session.user,
+    ):
+        frappe.throw(
+            "Cannot access folder due to insufficient permissions",
+            frappe.PermissionError,
+        )
     drive_doc = frappe.new_doc("Drive Document")
     drive_doc.title = new_title
     drive_doc.content = content
@@ -148,6 +158,7 @@ def upload_file(fullpath=None, parent=None):
                 queue="default",
                 timeout=None,
                 now=True,
+                at_front=True,
                 # will set to false once reactivity in new UI is solved
                 entity_name=name,
                 path=path,
@@ -458,13 +469,15 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
         entity_name = entity_name or get_user_directory().name
     except FileNotFoundError:
         return []
-    parent_is_group, parent_is_active = frappe.db.get_value(
-        "Drive Entity", entity_name, ["is_group", "is_active"]
+    parent_is_group, parent_is_active, parent_owner = frappe.db.get_value(
+        "Drive Entity", entity_name, ["is_group", "is_active", "owner"]
     )
     if not parent_is_group:
         frappe.throw("Specified entity is not a folder", NotADirectoryError)
     if not parent_is_active:
         frappe.throw("Specified folder has been trashed by the owner")
+    if not frappe.session.user == parent_owner:
+        frappe.throw("Not permitted")
     if not frappe.has_permission(
         doctype="Drive Entity", doc=entity_name, ptype="write", user=frappe.session.user
     ):
@@ -782,7 +795,7 @@ def list_favourites(order_by="modified"):
 
 
 @frappe.whitelist()
-def add_or_remove_favourites(entity_names):
+def add_or_remove_favourites(entity_names=None, clear_all=False):
     """
     Favouite or unfavourite DriveEntities for specified user
 
@@ -790,6 +803,10 @@ def add_or_remove_favourites(entity_names):
     :type entity_names: list[str]
     :raises ValueError: If decoded entity_names is not a list
     """
+
+    if clear_all:
+        frappe.db.delete("Drive Favourite", {"user": frappe.session.user})
+        return
 
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
