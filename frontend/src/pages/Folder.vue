@@ -1019,7 +1019,9 @@ export default {
         this.selectedEntities = [];
         this.hidePreview();
         this.showEntityContext = false;
-        this.showEmptyEntityContextMenu = true;
+        if (this.$store.state.hasWriteAccess) {
+          this.showEmptyEntityContextMenu = true;
+        }
         this.entityContext = event;
       }
     },
@@ -1051,7 +1053,7 @@ export default {
           this.currentFolder = data;
           if (data.owner !== this.userId) {
             this.isSharedFolder = true;
-            this.$store.commit("setHasWriteAccess", !data.write);
+            this.$store.commit("setHasWriteAccess", data.write);
           } else {
             this.isSharedFolder = false;
             this.$store.commit("setHasWriteAccess", true);
