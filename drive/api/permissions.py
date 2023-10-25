@@ -392,12 +392,7 @@ def get_user_access(entity_name):
     return {"read": 0, "write": 0}
 
 
-# Group access, avoid querying many to many
-# Querying 1 to many and then many to 1
-# Can do this directly without the for loop by and return max alotted access
-
-
-def user_group_entity_access(entity_name=None, order_by="modified", is_active=1):
+def user_group_entity_access(entity_name=None):
     """
     Get user group access level for current user and current entity
 
@@ -409,43 +404,26 @@ def user_group_entity_access(entity_name=None, order_by="modified", is_active=1)
     :rtype: list
     """
 
-    parent_is_active = frappe.db.get_value("Drive Entity", entity_name, ["is_group", "is_active"])
-    if not parent_is_active:
-        frappe.throw("Specified folder has been trashed by the owner")
-
-    entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
-    flag = False
-    for z_entity_name in entity_ancestors:
-        result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
-        if result:
-            flag = True
-            break
-    if flag == True:
-        frappe.throw("Parent Folder has been deleted")
-    DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     UserGroup = frappe.qb.DocType("User Group")
     UserGroupMember = frappe.qb.DocType("User Group Member")
-    user = frappe.session.user
     selectedFields = [
         DriveDocShare.user_name,
         DriveDocShare.read,
         DriveDocShare.write,
-        # fn.Max(DriveDocShare.write).as_("write"),
     ]
 
     query = (
         frappe.qb.from_(DriveDocShare)
-        .inner_join(DriveEntity)
-        .on(DriveDocShare.share_name == DriveEntity.name)
         .join(UserGroupMember)
         .on((UserGroupMember.parent == DriveDocShare.user_name))
         .select(*selectedFields)
-        .where((DriveEntity.is_active == 1) & (DriveDocShare.share_name == entity_name))
-        # & (UserGroupMember.user == frappe.session.user)
+        .where(
+            (DriveDocShare.share_name == entity_name)
+            & (UserGroupMember.user == frappe.session.user)
+        )
+        .groupby(UserGroupMember.name)
     )
-    # .groupby(UserGroupMember.name)
-    # )
     result = query.run(as_dict=True)
     if not result:
         return False
