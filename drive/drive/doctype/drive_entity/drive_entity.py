@@ -386,8 +386,18 @@ class DriveEntity(NestedSet):
         :param share: 1 if share permission is to be granted. Defaults to 0
         :param notify: 1 if the user should be notified. Defaults to 1
         """
+
         if frappe.session.user != self.owner:
-            return
+            if not frappe.has_permission(
+                doctype="Drive Entity",
+                doc=self,
+                ptype="share",
+                user=frappe.session.user,
+            ):
+                frappe.throw(
+                    "Not permitted to share",
+                    frappe.PermissionError,
+                )
 
         if user:
             share_name = frappe.db.get_value(
@@ -441,6 +451,7 @@ class DriveEntity(NestedSet):
                 child.share(
                     user=user,
                     user_type=user_type,
+                    read=read,
                     write=write,
                     share=share,
                     everyone=everyone,
