@@ -13,15 +13,14 @@ export function formatDate(date) {
   let prefix = "";
   let options = {};
   if (getDateDiffInDays(todaysDate, date) < 1) {
-    prefix = "Today, ";
     options = { hour: "numeric", minute: "numeric" };
   } else if (getDateDiffInDays(date, todaysDate) == 1) {
     prefix = "Yesterday, ";
     options = { hour: "numeric", minute: "numeric" };
   } else if (getDateDiffInDays(date, todaysDate) < 364) {
-    options = { month: "long", day: "numeric" };
+    options = { month: "short", day: "numeric" };
   } else {
-    options = { year: "numeric", month: "long", day: "numeric" };
+    options = { year: "numeric", month: "short", day: "numeric" };
   }
   return prefix + date.toLocaleString(undefined, options);
 }

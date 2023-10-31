@@ -30,7 +30,7 @@
             :class="
               selectedEntities.includes(entity)
                 ? 'bg-green-100'
-                : 'hover:shadow-xl'
+                : 'hover:bg-gray-100'
             "
             :draggable="true"
             @dblclick="dblClickEntity(entity)"

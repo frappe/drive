@@ -7,7 +7,7 @@
     <span class="truncate text-sm text-gray-800 mb-1">
       {{ title }}
     </span>
-    <div class="truncate text-xs text-gray-600 flex mt-1 place-items-center">
+    <div class="truncate text-xs text-gray-600 flex mt-0 place-items-center">
       <!-- <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
       <p>{{ getFileSubtitle() }}</p> -->
       {{ this.file_size }} ∙ {{ this.modified }}
@@ -44,7 +44,7 @@ export default {
       if (typeof this.link === "string") {
         return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]";
       } else {
-        return "h-8 w-8";
+        return "h-6 w-6";
       }
     },
   },

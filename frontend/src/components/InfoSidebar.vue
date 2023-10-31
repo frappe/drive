@@ -123,7 +123,7 @@
               <div class="flex text-base">
                 <div class="w-1/2 text-gray-600 space-y-2">
                   <div>Type</div>
-                  <div>Size</div>
+                  <div v-if="entity.file_size">Size</div>
                   <div>Modified</div>
                   <div>Created</div>
                   <div>Owner</div>

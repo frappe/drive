@@ -16,7 +16,7 @@
             v-for="folder in folders"
             :id="folder.name"
             :key="folder.name"
-            class="cursor-pointer p-2 w-40 h-24 rounded-lg border group select-none entity"
+            class="cursor-pointer p-2 w-36 h-22 rounded-lg border group select-none entity"
             draggable="true"
             :class="
               selectedEntities.includes(folder)
@@ -37,8 +37,8 @@
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="28"
-                height="28"
+                width="24"
+                height="24"
                 viewBox="0 0 40 40"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -46,11 +46,12 @@
               </svg>
             </div>
             <div class="content-center grid">
-              <span class="truncate text-sm text-gray-800 mt-4">
+              <span class="truncate text-sm text-gray-800 mt-2">
                 {{ folder.title }}
               </span>
-              <p class="truncate text-xs text-gray-600 mt-1">
-                {{ folder.file_size }} {{ folder.modified }}
+              <p class="truncate text-xs text-gray-600 mt-0">
+                {{ folder.file_size }} {{ !!folder.file_size ? "∙" : null }}
+                {{ folder.modified }}
               </p>
             </div>
           </div>
@@ -65,7 +66,7 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer"
+            class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer"
             draggable="true"
             :class="
               selectedEntities.includes(file)
