@@ -948,9 +948,6 @@ export default {
       this.folderContents.fetch();
     });
   },
-  async updated() {
-    await this.$store.commit("setCurrentFolderID", this.entityName);
-  },
   unmounted() {
     this.emitter.off("fetchFolderContents");
     window.removeEventListener("keydown", this.pasteListener);
@@ -1046,6 +1043,7 @@ export default {
       return {
         url: "drive.api.permissions.get_entity_with_permissions",
         params: { entity_name: this.entityName },
+        order_by: this.orderBy,
         // cache: ['pathEntities', this.entityName],
         onSuccess(data) {
           this.currentFolder = data;
@@ -1070,6 +1068,7 @@ export default {
               route: `/folder/${this.entityName}`,
             });
           }
+          this.$store.commit("setCurrentFolderID", this.entityName);
           this.folderContents.fetch();
         },
         auto: true,
@@ -1125,7 +1124,7 @@ export default {
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
             entity.file_size = entity.is_group
-              ? entity.item_count + " items"
+              ? ""
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
