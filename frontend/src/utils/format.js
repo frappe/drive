@@ -46,6 +46,15 @@ export function formatMimeType(mimeType) {
       case "vnd.openxmlformats-officedocument.wordprocessingml.document":
         icon = "word";
         break;
+      case "zip":
+        icon = "zip";
+        break;
+      case "x-tar":
+        icon = "zip";
+        break;
+      case "x-7z-compressed":
+        icon = "zip";
+        break;
     }
   return icon;
 }
