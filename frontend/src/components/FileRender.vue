@@ -157,11 +157,6 @@ export default {
           this.videoOptions.sources[0].type = "video/mp4";
         }
         this.preview.loading = false;
-      } else if (this.isFrappeDoc) {
-        this.$router.push({
-          name: "Document",
-          params: { entityName: this.previewEntity.name },
-        });
       } else {
         this.fetchContent();
       }

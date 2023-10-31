@@ -57,7 +57,6 @@ import InfoSidebar from "@/components/InfoSidebar.vue";
 import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
 import { Button, FeatherIcon } from "frappe-ui";
-import DocInfoSidebar from "./components/DocInfoSidebar.vue";
 import { Toasts } from "@/utils/toasts.js";
 
 export default {
@@ -70,7 +69,6 @@ export default {
     UploadTracker,
     Button,
     FeatherIcon,
-    DocInfoSidebar,
     Toasts,
   },
   data() {

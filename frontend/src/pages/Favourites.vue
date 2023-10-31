@@ -389,6 +389,11 @@ export default {
           name: "Folder",
           params: { entityName: entity.name },
         });
+      } else if (entity.document) {
+        this.$router.push({
+          name: "Document",
+          params: { entityName: entity.name },
+        });
       } else {
         this.$router.push({
           name: "File",

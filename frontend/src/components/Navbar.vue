@@ -204,11 +204,16 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
   },
-  methods: {
+  /*   methods: {
     openEntity(entity) {
       if (entity.is_group) {
         this.$router.push({
           name: "Folder",
+          params: { entityName: entity.name },
+        });
+      } else if (entity.document) {
+        this.$router.push({
+          name: "Document",
           params: { entityName: entity.name },
         });
       } else {
@@ -220,7 +225,7 @@ export default {
       this.showPreview = false;
       this.previewEntity = null;
     },
-  },
+  }, */
   resources: {
     createDocument() {
       return {
