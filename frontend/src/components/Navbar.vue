@@ -43,7 +43,7 @@
           Clear Recents
         </Button>
         <Button
-          v-if="$route.name === 'Favourites'"
+          v-else-if="$route.name === 'Favourites'"
           class="bg-red-100 text-red-700"
           variant="minimal"
           @click="$resources.clearFavourites.submit()">
@@ -105,15 +105,10 @@
         showNewFolderDialog = false;
       }
     " />
-  <FilePreview
-    v-if="showPreview"
-    :preview-entity="previewEntity"
-    @hide="hidePreview" />
 </template>
 <script>
 import { Dropdown, FeatherIcon, Button } from "frappe-ui";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
-import FilePreview from "@/components/FilePreview.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { formatDate } from "@/utils/format";
 import { FileDown } from "lucide-vue-next";
@@ -121,7 +116,6 @@ import { FileDown } from "lucide-vue-next";
 export default {
   name: "Navbar",
   components: {
-    FilePreview,
     NewFolderDialog,
     Dropdown,
     FeatherIcon,

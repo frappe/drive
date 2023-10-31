@@ -251,7 +251,6 @@ import { FeatherIcon, Avatar, call, Input, Badge } from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
-import FileRender from "@/components/FileRender.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import File from "@/components/File.vue";
@@ -266,7 +265,6 @@ export default {
     ShareDialog,
     TagInput,
     Tag,
-    FileRender,
     Badge,
     File,
   },

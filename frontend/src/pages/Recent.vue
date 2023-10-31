@@ -53,11 +53,6 @@
       :action-items="actionItems"
       :entity-context="entityContext"
       :close="closeContextMenu" />
-    <FilePreview
-      v-if="showPreview"
-      :preview-entity="previewEntity"
-      @hide="hidePreview" />
-
     <RenameDialog
       v-if="showRenameDialog"
       v-model="showRenameDialog"
@@ -107,7 +102,6 @@ import ListView from "@/components/ListView.vue";
 import GridView from "@/components/GridView.vue";
 import DriveToolBar from "@/components/DriveToolBar.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
-import FilePreview from "@/components/FilePreview.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
@@ -124,7 +118,6 @@ export default {
     GridView,
     DriveToolBar,
     NoFilesSection,
-    FilePreview,
     FolderContentsError,
     EntityContextMenu,
     RenameDialog,

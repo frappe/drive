@@ -45,11 +45,6 @@
         <NoFilesSection />
       </template>
     </ListView>
-
-    <FilePreview
-      v-if="showPreview"
-      :preview-entity="previewEntity"
-      @hide="hidePreview" />
     <EntityContextMenu
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
@@ -109,7 +104,6 @@ import ListView from "@/components/ListView.vue";
 import GridView from "@/components/GridView.vue";
 import DriveToolBar from "@/components/DriveToolBar.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
-import FilePreview from "@/components/FilePreview.vue";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import RenameDialog from "@/components/RenameDialog.vue";
 import ShareDialog from "@/components/ShareDialog.vue";
@@ -131,7 +125,6 @@ export default {
     GridView,
     DriveToolBar,
     NoFilesSection,
-    FilePreview,
     NewFolderDialog,
     RenameDialog,
     ShareDialog,

@@ -41,11 +41,6 @@
           secondary-message="No files have been shared with you" />
       </template>
     </ListView>
-
-    <FilePreview
-      v-if="showPreview"
-      :preview-entity="previewEntity"
-      @hide="hidePreview" />
     <EntityContextMenu
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
@@ -92,7 +87,6 @@ import ListView from "@/components/ListView.vue";
 import GridView from "@/components/GridView.vue";
 import DriveToolBar from "@/components/DriveToolBar.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
-import FilePreview from "@/components/FilePreview.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import RenameDialog from "@/components/RenameDialog.vue";
 import GeneralDialog from "@/components/GeneralDialog.vue";
@@ -114,7 +108,6 @@ export default {
     GeneralDialog,
     ShareDialog,
     NoFilesSection,
-    FilePreview,
     FolderContentsError,
     EntityContextMenu,
   },
