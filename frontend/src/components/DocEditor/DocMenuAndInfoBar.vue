@@ -1039,6 +1039,10 @@ import { Code2 } from "lucide-vue-next";
 import { ImagePlus } from "lucide-vue-next";
 import { FileVideo } from "lucide-vue-next";
 import { Table2Icon } from "lucide-vue-next";
+import "@fontsource/roboto";
+import "@fontsource/poppins";
+import "@fontsource/spectral";
+import "@fontsource/newsreader";
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -1186,11 +1190,46 @@ export default {
       ],
       fontFamilyOptions: [
         {
-          label: "Sans Serif",
+          label: "Inter",
           action: (editor) =>
             editor.chain().focus().setFontFamily("Inter").run(),
           isActive: (editor) =>
             editor.isActive("textStyle", { fontFamily: "Inter" }),
+        },
+        {
+          label: "Roboto",
+          action: (editor) =>
+            editor.chain().focus().setFontFamily("Roboto").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontFamily: "Roboto" }),
+        },
+        {
+          label: "Poppins",
+          action: (editor) =>
+            editor.chain().focus().setFontFamily("Poppins").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontFamily: "Poppins" }),
+        },
+        {
+          label: "Newsreader",
+          action: (editor) =>
+            editor.chain().focus().setFontFamily("Newsreader").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontFamily: "Newsreader" }),
+        },
+        {
+          label: "Spectral",
+          action: (editor) =>
+            editor.chain().focus().setFontFamily("Spectral").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontFamily: "Spectral" }),
+        },
+        {
+          label: "Sans Serif",
+          action: (editor) =>
+            editor.chain().focus().setFontFamily("system-ui").run(),
+          isActive: (editor) =>
+            editor.isActive("textStyle", { fontFamily: "system-ui" }),
         },
         {
           label: "Serif",

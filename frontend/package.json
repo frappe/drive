@@ -13,6 +13,10 @@
     "lint": "eslint --fix --ext .js,.vue ."
   },
   "dependencies": {
+    "@fontsource/newsreader": "^5.0.15",
+    "@fontsource/poppins": "^5.0.8",
+    "@fontsource/roboto": "^5.0.8",
+    "@fontsource/spectral": "^5.0.8",
     "@headlessui/vue": "^1.7.8",
     "@hocuspocus/provider": "^2.2.0",
     "@tiptap/core": "^2.0.3",
