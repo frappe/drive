@@ -42,7 +42,6 @@
     " />
 </template>
 <script>
-import { useTitle } from "@vueuse/core";
 import RenameDialog from "@/components/RenameDialog.vue";
 
 export default {
@@ -57,9 +56,9 @@ export default {
   },
 
   watch: {
-    title: {
+    currentTitle: {
       handler(value) {
-        useTitle(value);
+        document.title = value;
       },
     },
   },
