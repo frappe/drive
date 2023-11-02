@@ -32,8 +32,6 @@ class DriveEntity(NestedSet):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
         frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
         frappe.db.delete("Drive DocShare", {"share_name": self.name})
-        if self.document:
-            frappe.delete_doc("Drive Document", self.document)
         if self.is_group:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
@@ -46,6 +44,8 @@ class DriveEntity(NestedSet):
             super().on_trash()
 
     def after_delete(self):
+        if self.document:
+            frappe.delete_doc("Drive Document", self.document)
         """Remove file once document is deleted"""
         if self.path:
             max_attempts = 3
