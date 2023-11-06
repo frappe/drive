@@ -6,7 +6,7 @@
     leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
+      class="min-w-[300px] max-w-[300px] min-h-full border-l overflow-auto">
       <div v-if="typeof entity === 'number'">
         <div class="w-full p-4 border-b overflow-visible">
           <div class="flex items-center">
@@ -64,7 +64,7 @@
           </div>
           <div class="p-4 space-y-8">
             <div v-if="entity.owner === 'me'">
-              <div class="text-lg font-medium mb-3">Manage Access</div>
+              <div class="text-base font-medium mb-2">Manage Access</div>
               <div class="flex flex-row">
                 <Button
                   icon-left="share-2"
@@ -79,7 +79,7 @@
               v-if="
                 entity.owner === 'me' || $resources.entityTags.data?.length
               ">
-              <div class="text-lg font-medium mb-3">Tags</div>
+              <div class="text-base font-medium mb-2">Tags</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
                   v-for="tag in $resources.entityTags.data"
@@ -119,7 +119,7 @@
                 @close="addTag = false" />
             </div>
             <div>
-              <div class="text-lg font-medium mb-3">Properties</div>
+              <div class="text-base font-medium mb-2">Properties</div>
               <div class="flex text-base">
                 <div class="w-1/2 text-gray-600 space-y-2">
                   <div>Type</div>
@@ -141,7 +141,7 @@
         </div>
         <div v-if="tab === 1" class="h-full pb-12">
           <div class="flex items-center pl-4 pt-4 sticky top-0 bg-white">
-            <span class="font-medium text-lg mb-3">Comments</span>
+            <span class="font-medium text-base mb-2">Comments</span>
           </div>
           <div
             v-if="entity.allow_comments"
@@ -179,7 +179,7 @@
               <Button @click="postComment" variant="solid">Add</Button>
             </div>
           </div>
-          <div v-else class="text-gray-600 text-base mt-2 p-4 border-b">
+          <div v-else class="text-gray-600 text-sm p-4 border-b">
             Comments have been disabled for this
             {{ entity.is_group ? "folder" : "file" }} by its owner.
           </div>

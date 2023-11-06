@@ -6,7 +6,7 @@
     leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
+      class="min-w-[300px] max-w-[300px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
           <svg

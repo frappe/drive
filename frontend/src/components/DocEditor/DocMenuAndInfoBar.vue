@@ -6,7 +6,7 @@
     leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="min-w-[350px] max-w-[350px] min-h-full border-l overflow-auto">
+      class="min-w-[300px] max-w-[300px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b p-4">
         <div class="flex items-center">
           <img
@@ -34,7 +34,7 @@
               class="space-y-7 h-full flex-auto flex flex-col z-0">
               <div>
                 <div class="flex items-center">
-                  <span class="font-medium text-lg mb-2">Information</span>
+                  <span class="font-medium text-base mb-2">Information</span>
                 </div>
 
                 <div class="flex text-base">
@@ -75,7 +75,7 @@
                 v-if="
                   entity.owner === 'me' || $resources.entityTags.data?.length
                 ">
-                <div class="text-lg font-medium mb-2">Tags</div>
+                <div class="text-base font-medium mb-2">Tags</div>
                 <div class="flex flex-wrap gap-2">
                   <Tag
                     v-for="tag in $resources.entityTags.data"
@@ -115,7 +115,7 @@
                   @close="addTag = false" />
               </div>
               <div>
-                <div class="text-lg font-medium mb-3">Properties</div>
+                <div class="text-base font-medium mb-3">Properties</div>
                 <div class="flex text-base">
                   <div class="w-1/2 text-gray-600 space-y-2">
                     <div>Type</div>
@@ -140,7 +140,7 @@
             class="p-4 border-b"
             :class="tab === 1 ? 'flex-auto' : 'text-gray-600 cursor-pointer'"
             @click="tab = 1">
-            <span class="font-medium text-lg">Comments</span>
+            <span class="font-medium text-base">Comments</span>
             <div v-if="tab === 1" class="h-full">
               <OuterCommentVue
                 v-if="!!allComments.length"
@@ -148,7 +148,7 @@
                 :all-comments="allComments"
                 :focus-content="focusContent"
                 @set-comment="setComment" />
-              <div v-else class="text-gray-600 text-base mt-2">
+              <div v-else class="text-gray-600 text-sm mt-2">
                 There are no comments for the current document
               </div>
             </div>
@@ -179,13 +179,13 @@
           tab === 2 ? 'flex-auto' : 'text-gray-600 cursor-pointer flex-none '
         "
         @click="tab = 2">
-        <span class="font-medium text-lg">Typography</span>
+        <span class="font-medium text-base">Typography</span>
         <div class="space-y-4">
-          <span class="font-medium text-gray-600 text-md">Presets</span>
+          <span class="font-medium text-gray-600 text-base">Presets</span>
           <div
             class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
             <Button
-              class="w-full"
+              class="w-full text-sm"
               :class="
                 editor.isActive('heading', { level: 1 })
                   ? 'bg-white shadow-sm'
@@ -195,14 +195,15 @@
                 editor
                   .chain()
                   .focus()
-                  .unsetFontSize()
-                  .toggleHeading({ level: 1 })
+                  .setBold()
+                  .setFontSize('26px')
+                  .setHeading({ level: 1 })
                   .run()
               ">
               Title
             </Button>
             <Button
-              class="w-full"
+              class="w-full text-sm"
               :class="
                 editor.isActive('heading', { level: 2 })
                   ? 'bg-white shadow-sm'
@@ -220,7 +221,7 @@
               Heading
             </Button>
             <Button
-              class="w-full"
+              class="w-full text-sm"
               :class="
                 editor.isActive('heading', { level: 3 })
                   ? 'bg-white shadow-sm'
@@ -238,7 +239,7 @@
               Subtitle
             </Button>
             <Button
-              class="w-full"
+              class="w-full text-sm"
               :class="
                 editor.isActive('paragraph')
                   ? 'bg-white shadow-sm'
@@ -258,82 +259,27 @@
           </div>
 
           <div>
-            <span class="font-medium text-gray-600 text-md">Formatting</span>
-            <Popover>
-              <template #target="{ togglePopover }">
+            <span class="font-medium text-gray-600 text-base">Formatting</span>
+            <div class="flex items-center">
+              <Dropdown class="w-full" :options="fontFamilyOptions">
                 <Button
-                  variant="minimal"
-                  class="w-full border text-lg text-gray-800 my-2 transition-colors hover:bg-gray-100"
-                  :set="
-                    (activeBtn =
-                      fontFamilyOptions.find((f) => f.isActive(editor)) ||
-                      fontFamilyOptions[0])
-                  "
-                  @click="togglePopover">
-                  <span>
-                    {{ activeBtn.label }}
-                  </span>
-                </Button>
-              </template>
-              <template #body="{ close }">
-                <ul class="rounded bg-white p-2 shadow-sm border">
-                  <li
-                    v-for="option in fontFamilyOptions"
-                    v-show="
-                      option.isDisabled ? !option.isDisabled(editor) : true
-                    "
-                    :key="option.label"
-                    class="w-full">
-                    <button
-                      class="w-full rounded h-7 px-4 text-left text-base hover:bg-gray-50"
-                      @click="
-                        () => {
-                          onButtonClick(option);
-                          close();
-                        }
-                      ">
-                      {{ option.label }}
-                    </button>
-                  </li>
-                </ul>
-              </template>
-            </Popover>
-
-            <!-- <Popover class="border rounded-l rounded-r">
-            <template #target="{ togglePopover }">
-              <button class="px-0 border-r rounded-l rounded-r-none" variant="ghost"><Plus class="text-gray-600 px-1 w-6" /></button>
-              <Button
-                variant="minimal"
-                class="w-8 rounded-none text-lg text-gray-800 transition-colors"
-                :set="(activeBtn = fontSizeOptions.find((f) => f.isActive(editor)) || fontSizeOptions[0])"
-                @click="togglePopover">
-                <span>
-                  {{ activeBtn.label }}
-                </span>
-              </Button>
-              <button class="border-l rounded-r rounded-l-none" variant="ghost"><Minus class="text-gray-600 px-1 w-6" /></button>
-            </template>
-            <template #body="{ close }">
-              <ul class="rounded border bg-white p-1 shadow-sm">
-                <li
-                  v-for="option in fontSizeOptions"
-                  v-show="option.isDisabled ? !option.isDisabled(editor) : true"
-                  :key="option.label"
-                  class="w-full">
-                  <button
-                    class="w-full rounded px-0.5 py-1 text-left text-base hover:bg-gray-50"
-                    @click="
-                      () => {
-                        onButtonClick(option);
-                        close();
-                      }
-                    ">
-                    {{ option.label }}
-                  </button>
-                </li>
-              </ul>
-            </template>
-          </Popover> -->
+                  class="text-sm w-56"
+                  :label="
+                    editor.getAttributes('textStyle').fontFamily
+                      ? editor.getAttributes('textStyle').fontFamily
+                      : 'Inter'
+                  "></Button>
+              </Dropdown>
+              <Dropdown class="w-full" :options="fontSizeOptions">
+                <Button
+                  class="text-sm ml-0.5 w-18"
+                  :label="
+                    editor.getAttributes('textStyle').fontSize
+                      ? editor.getAttributes('textStyle').fontSize
+                      : '14px'
+                  "></Button>
+              </Dropdown>
+            </div>
             <div class="p-2">
               <div class="text-sm font-medium text-gray-700">Color</div>
               <div class="mt-1 grid grid-cols-8 gap-1">
@@ -424,9 +370,9 @@
           </div>
 
           <div class="my-4">
-            <span class="font-medium text-gray-600 text-md">Lists</span>
+            <span class="font-medium text-gray-600 text-base">Lists</span>
             <div
-              class="flex flex-row my-2 w-full justify-stretch items-stretch rounded p-0.5 space-x-2 h-8">
+              class="flex flex-row my-2 w-full justify-stretch items-stretch rounded p-0.5 space-x-1 h-8">
               <Button
                 class="w-full text-gray-600"
                 @click="editor.chain().focus().toggleOrderedList().run()">
@@ -455,7 +401,7 @@
           </div>
 
           <div class="my-4">
-            <span class="font-medium text-gray-600 text-md">Alignment</span>
+            <span class="font-medium text-gray-600 text-base">Alignment</span>
             <div
               class="flex flex-row my-2 w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
               <Button
@@ -581,7 +527,7 @@
             </div>
           </div>
           <div class="my-4">
-            <span class="font-medium text-gray-600 text-md">Blocks</span>
+            <span class="font-medium text-gray-600 text-base">Blocks</span>
             <div class="flex items-stretch w-full space-x-2 justify-center">
               <Button @click="editor.chain().focus().toggleCodeBlock().run()">
                 <template #prefix><Code2 name="code" class="w-4" /></template>
@@ -604,9 +550,9 @@
           tab === 3 ? 'flex-auto' : 'text-gray-600 cursor-pointer flex-none '
         "
         @click="tab = 3">
-        <span class="font-medium text-lg mb-[0.25px]">Insert</span>
+        <span class="font-medium text-base mb-[0.25px]">Insert</span>
         <div>
-          <span class="font-medium text-gray-600 text-md">Media</span>
+          <span class="font-medium text-gray-600 text-base">Media</span>
 
           <Button class="w-full justify-start" @click="addImageDialog = true">
             <template #prefix>
@@ -626,7 +572,7 @@
           </Button>
           <InsertVideo v-model="addVideoDialog" :editor="editor" />
         </div>
-        <span class="font-medium text-gray-600 text-md">Lines</span>
+        <span class="font-medium text-gray-600 text-base">Lines</span>
         <div class="my-2">
           <Button
             class="px-2"
@@ -634,7 +580,7 @@
             ——————
           </Button>
         </div>
-        <span class="font-medium text-gray-600 text-md">Table</span>
+        <span class="font-medium text-gray-600 text-base">Table</span>
         <div class="flex space-x-2 my-2">
           <Button
             class="w-full"
@@ -697,7 +643,7 @@
         </div>
 
         <div v-if="editor.can().deleteTable()" class="space-y-2">
-          <span class="font-medium text-gray-600 text-md">Row</span>
+          <span class="font-medium text-gray-600 text-base">Row</span>
           <div class="flex items-stretch w-full space-x-2 justify-center">
             <Button
               class="px-2 w-full"
@@ -765,7 +711,7 @@
           </div>
 
           <div class="space-y-2">
-            <span class="font-medium text-gray-600 text-md my-4">Column</span>
+            <span class="font-medium text-gray-600 text-base my-4">Column</span>
             <div class="flex items-stretch w-full space-x-2 justify-center">
               <Button
                 class="px-2 w-full"
@@ -833,7 +779,7 @@
             </div>
           </div>
           <div class="space-y-2">
-            <span class="font-medium text-gray-600 text-md">Cells</span>
+            <span class="font-medium text-gray-600 text-base">Cells</span>
             <div class="flex items-stretch w-full space-x-2 justify-center">
               <Button
                 class="px-2 w-full"
@@ -897,7 +843,7 @@
           </div>
         </div>
         <!--         <div class="flex-col items-start w-full space-x-2 justify-start">
-          <span class="font-medium text-gray-600 text-md">Header</span>
+          <span class="font-medium text-gray-600 text-base">Header</span>
           <div class="flex items-stretch w-full space-x-2 justify-center">   
           </div>
           <div class="flex items-stretch w-full space-x-2 justify-center">
@@ -1013,7 +959,14 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, Popover, Badge } from "frappe-ui";
+import {
+  FeatherIcon,
+  Avatar,
+  Input,
+  Popover,
+  Badge,
+  Dropdown,
+} from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
@@ -1073,6 +1026,7 @@ export default {
     FileVideo,
     Table2Icon,
     Badge,
+    Dropdown,
   },
   emits: ["setContentEmit", "focusContentEmit"],
   setup() {
@@ -1090,64 +1044,59 @@ export default {
       addTag: false,
       fontSizeOptions: [
         {
-          label: "16",
-          action: (editor) => editor.chain().focus().setFontSize("16px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "16px" }),
-        },
-        {
-          label: "11",
-          action: (editor) => editor.chain().focus().setFontSize("11px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "11px" }),
-        },
-        {
           label: "12",
-          action: (editor) => editor.chain().focus().setFontSize("12px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "12px" }),
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("12px").run(),
         },
         {
           label: "14",
-          action: (editor) => editor.chain().focus().setFontSize("14px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "14px" }),
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("14px").run(),
+        },
+        {
+          label: "16",
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("16px").run(),
         },
         {
           label: "18",
-          action: (editor) => editor.chain().focus().setFontSize("18px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "18px" }),
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("18px").run(),
+        },
+        {
+          label: "20",
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("20px").run(),
+        },
+        {
+          label: "22",
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("22px").run(),
         },
         {
           label: "24",
-          action: (editor) => editor.chain().focus().setFontSize("24px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "24px" }),
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("24px").run(),
+        },
+        {
+          label: "28",
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("28px").run(),
         },
         {
           label: "30",
-          action: (editor) => editor.chain().focus().setFontSize("30px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "30px" }),
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("30px").run(),
         },
         {
-          label: "36",
-          action: (editor) => editor.chain().focus().setFontSize("36px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "36px" }),
+          label: "38",
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("38px").run(),
         },
         {
-          label: "48",
-          action: (editor) => editor.chain().focus().setFontSize("48px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "48px" }),
-        },
-        {
-          label: "60",
-          action: (editor) => editor.chain().focus().setFontSize("60px").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontSize: "60px" }),
+          label: "44",
+          onClick: (editor) =>
+            this.editor.chain().focus().setFontSize("44px").run(),
         },
       ],
       lineOptions: [
@@ -1191,59 +1140,43 @@ export default {
       fontFamilyOptions: [
         {
           label: "Inter",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("Inter").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "Inter" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Inter").run(),
         },
         {
           label: "Roboto",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("Roboto").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "Roboto" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Roboto").run(),
         },
         {
           label: "Poppins",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("Poppins").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "Poppins" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Poppins").run(),
         },
         {
           label: "Newsreader",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("Newsreader").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "Newsreader" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Newsreader").run(),
         },
         {
           label: "Spectral",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("Spectral").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "Spectral" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Spectral").run(),
         },
         {
           label: "Sans Serif",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("system-ui").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "system-ui" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Sans-serif").run(),
         },
         {
           label: "Serif",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("ui-serif").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "ui-serif" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Serif").run(),
         },
         {
           label: "Monospace",
-          action: (editor) =>
-            editor.chain().focus().setFontFamily("monospace").run(),
-          isActive: (editor) =>
-            editor.isActive("textStyle", { fontFamily: "monospace" }),
+          onClick: () =>
+            this.editor.chain().focus().setFontFamily("Monospace").run(),
         },
       ],
     };
@@ -1304,6 +1237,18 @@ export default {
         { name: "Purple", hex: "#f3e8ff" },
         { name: "Pink", hex: "#fce7f3" },
       ];
+    },
+    fontSizeValue: {
+      get(val) {
+        console.log(val);
+        return this.editor.getAttributes("textStyle").fontSize
+          ? this.editor.getAttributes("textStyle").fontSize
+          : 14;
+      },
+      set(value) {
+        console.log(value);
+        this.editor.chain().setFontSize(value).run();
+      },
     },
   },
   methods: {
@@ -1366,7 +1311,7 @@ export default {
     },
     setBackgroundColor(color) {
       if (color.name != "Default") {
-        this.editor.chain().focus().toggleHighlight({ color: color.hex }).run();
+        this.editor.chain().focus().toggleHighlight(color.hex).run();
       } else {
         this.editor.chain().focus().unsetHighlight().run();
       }

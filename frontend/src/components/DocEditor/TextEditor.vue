@@ -1,7 +1,13 @@
 <template>
   <div class="flex-col w-full overflow-y-scroll">
     <div class="flex w-full items-start justify-center">
-      <editor-content id="editor-capture" class="" :editor="editor" />
+      <editor-content
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        id="editor-capture"
+        :editor="editor" />
     </div>
     <BubbleMenu
       v-if="editor"
@@ -65,12 +71,14 @@ import Image from "./image-extension";
 import Video from "./video-extension";
 import Link from "@tiptap/extension-link";
 import Typography from "@tiptap/extension-typography";
-import TextStyle from "@tiptap/extension-text-style";
-import Highlight from "@tiptap/extension-highlight";
-import FontFamily from "@tiptap/extension-font-family";
+/* import TextStyle from "@tiptap/extension-text-style"; */
+/* import Highlight from "@tiptap/extension-highlight";
+ */ import FontFamily from "@tiptap/extension-font-family";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import { FontSize } from "./font-size";
+import { Highlight } from "./backgroundColor";
+import { TextStyle } from "./text-style";
 import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
@@ -84,7 +92,6 @@ import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
-import { IndexeddbPersistence } from "y-indexeddb";
 import { createEditorButton } from "./utils";
 import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue";
 import Menu from "./Menu.vue";
@@ -187,9 +194,7 @@ export default {
     editorProps() {
       return {
         attributes: {
-          class: normalizeClass([
-            "prose prose-sm font-normal prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
-          ]),
+          class: "ProseMirror",
         },
         clipboardTextParser: (text, $context) => {
           if (!detectMarkdown(text)) return;
@@ -263,18 +268,18 @@ export default {
     // Tiny test
     // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
 
-    const indexeddbProvider = new IndexeddbPersistence(
+    /* const indexeddbProvider = new IndexeddbPersistence(
       // Find a sane time to wipe IDB safely
       "fdoc" + JSON.stringify(this.entityName),
       doc
-    );
+    ); */
     const webrtcProvider = new WebrtcProvider(
       "fdoc" + JSON.stringify(this.entityName),
       doc,
       { signaling: ["wss://network.arjunchoudhary.com"] }
     );
     this.provider = webrtcProvider;
-    this.localStore = indexeddbProvider;
+    /* this.localStore = indexeddbProvider; */
     let componentContext = this;
     this.editor = new Editor({
       editable: this.editable,
@@ -297,6 +302,31 @@ export default {
       extensions: [
         StarterKit.configure({
           history: false,
+          heading: {
+            levels: [1, 2, 3],
+            HTMLAttributes: {
+              class: "not-prose",
+            },
+          },
+          listItem: {
+            HTMLAttributes: {
+              class: "prose-list-item",
+            },
+          },
+          bulletList: {
+            keepMarks: true,
+            keepAttributes: false,
+            HTMLAttributes: {
+              class: "not-prose",
+            },
+          },
+          orderedList: {
+            keepMarks: true,
+            keepAttributes: false,
+            HTMLAttributes: {
+              class: "not-prose",
+            },
+          },
         }),
         Table.configure({
           resizable: true,
@@ -351,8 +381,12 @@ export default {
         TableCell,
         Typography,
         TextStyle,
-        FontSize,
-        Color,
+        FontSize.configure({
+          types: ["textStyle"],
+        }),
+        Color.configure({
+          types: ["textStyle"],
+        }),
         Image,
         Video,
       ],
@@ -363,7 +397,7 @@ export default {
   },
   beforeUnmount() {
     this.editor.destroy();
-    this.localStore.clearData();
+    /* this.localStore.clearData(); */
     this.provider.destroy();
     this.provider = null;
     this.editor = null;
@@ -572,8 +606,7 @@ export default {
   -ms-user-select: none;
   user-select: none;
   padding: 0px;
-  /* font-family: 'Newsreader', serif; */
-  /* font-family: 'DM Serif Display', serif; */
+  font-size: 14px;
 }
 
 /* Firefox */
@@ -581,6 +614,7 @@ export default {
   outline: none;
 }
 
+/* print */
 #editor-capture {
   background: white;
   padding: 4em;
@@ -590,7 +624,44 @@ export default {
   max-height: 29.7cm;
 }
 
-/* print */
+#editor-capture h1 {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+#editor-capture h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+#editor-capture h3 {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+#editor-capture blockquote {
+  border-left: 2px solid lightgray;
+  padding-left: 10px;
+}
+/* 
+#editor-capture code {
+  font-family: monospace;
+  font-size: inherit;
+  background-color: rgb(221, 221, 221);
+  padding: 0px 3px;
+  border-radius: 5px;
+}
+ */
+#editor-capture strong {
+  font-weight: 600;
+}
+
+#editor-capture ul,
+ol {
+  list-style-type: revert;
+  padding: revert;
+}
+
 @page {
   size: a4;
   margin: 0;
@@ -601,30 +672,31 @@ span[data-comment] {
   border-bottom: 2px rgb(91, 185, 140) dashed;
   user-select: all;
   padding: 0 2px 0 2px;
-  border-radius: 5px 5px 0px 0px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 .collaboration-cursor__caret {
-  border-left: 1px solid #0d0d0d;
-  border-right: 1px solid #0d0d0d;
-  margin-left: -1px;
-  margin-right: -1px;
+  border-left: 0px solid currentColor;
+  border-right: 2px solid currentColor;
+  margin-left: 0px;
+  margin-right: -2px;
   pointer-events: none;
   position: relative;
   word-break: normal;
 }
 /* Render the username above the caret */
 .collaboration-cursor__label {
-  border-radius: 1rem;
+  border-radius: 50px;
   color: #ffffffd0;
-  font-size: 13px;
+  font-size: 0.8em;
   font-style: normal;
   font-family: "Inter";
   font-weight: 600;
-  left: -1px;
   line-height: normal;
-  padding: 0.2rem 0.5rem;
+  padding: 0.05rem 0.5rem 0.1rem 0.5rem;
   position: absolute;
-  top: -1.4em;
+  top: -1.5em;
+  left: 0.25em;
   user-select: none;
   white-space: nowrap;
 }
