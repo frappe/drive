@@ -280,50 +280,20 @@
                   "></Button>
               </Dropdown>
             </div>
-            <div class="p-2">
-              <div class="text-sm font-medium text-gray-700">Color</div>
-              <div class="mt-1 grid grid-cols-8 gap-1">
-                <div
-                  class="flex"
-                  v-for="color in foregroundColors"
-                  :key="color.name"
-                  :text="color.name">
-                  <button
-                    :aria-label="color.name"
-                    class="flex h-5 w-5 items-center justify-center rounded-sm border text-base"
-                    :style="{
-                      color: color.hex,
-                    }"
-                    @click="setForegroundColor(color)">
-                    A
-                  </button>
-                </div>
-              </div>
-              <div class="mt-2 text-sm font-medium text-gray-700">
-                Highlight
-              </div>
-              <div class="mt-1 grid grid-cols-8 gap-1 mb-2">
-                <div
-                  class="flex"
-                  v-for="color in backgroundColors"
-                  :key="color.name"
-                  :text="color.name">
-                  <button
-                    :aria-label="color.name"
-                    class="flex h-5 w-5 items-center justify-center rounded-sm border text-base text-gray-900"
-                    :class="
-                      !color.hex ? 'border-gray-200' : 'border-transparent'
-                    "
-                    :style="{
-                      backgroundColor: color.hex,
-                    }"
-                    @click="setBackgroundColor(color)">
-                    A
-                  </button>
-                </div>
-              </div>
+            <div class="text-sm font-medium text-gray-700">Text Color</div>
+            <ColorInput
+              :value="editor.getAttributes('textStyle').color"
+              @change="
+                (value) => editor.chain().focus().setColor(value).run()
+              " />
+            <div class="mt-2 text-sm font-medium text-gray-700">
+              Background Color
+              <ColorInput
+                :value="editor.getAttributes('textStyle').backgroundColor"
+                @change="
+                  (value) => editor.chain().focus().toggleHighlight(value).run()
+                " />
             </div>
-
             <div
               class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
               <Button
@@ -996,6 +966,7 @@ import "@fontsource/roboto";
 import "@fontsource/poppins";
 import "@fontsource/spectral";
 import "@fontsource/newsreader";
+import ColorInput from "./ColorInput.vue";
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -1027,6 +998,7 @@ export default {
     Table2Icon,
     Badge,
     Dropdown,
+    ColorInput,
   },
   emits: ["setContentEmit", "focusContentEmit"],
   setup() {
