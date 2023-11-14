@@ -172,345 +172,325 @@
         </p>
       </div>
 
-      <div
-        v-if="tab === 2"
-        class="p-4 border-b"
-        :class="
-          tab === 2 ? 'flex-auto' : 'text-gray-600 cursor-pointer flex-none '
-        "
-        @click="tab = 2">
+      <div v-if="tab === 2" class="p-4 border-b" @click="tab = 2">
         <span class="font-medium text-base">Typography</span>
-        <div class="space-y-4">
-          <span class="font-medium text-gray-600 text-base">Presets</span>
-          <div
-            class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
+        <br />
+        <span class="font-medium text-gray-600 text-base">Presets</span>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h- mb-2">
+          <Button
+            class="w-full text-sm"
+            :class="
+              editor.isActive('heading', { level: 1 })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .setBold()
+                .setFontSize('26px')
+                .setHeading({ level: 1 })
+                .run()
+            ">
+            Title
+          </Button>
+          <Button
+            class="w-full text-sm"
+            :class="
+              editor.isActive('heading', { level: 2 })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .unsetMark('bold')
+                .unsetFontSize()
+                .toggleHeading({ level: 2 })
+                .run()
+            ">
+            Heading
+          </Button>
+          <Button
+            class="w-full text-sm"
+            :class="
+              editor.isActive('heading', { level: 3 })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .unsetMark('bold')
+                .unsetFontSize()
+                .toggleHeading({ level: 3 })
+                .run()
+            ">
+            Subtitle
+          </Button>
+          <Button
+            class="w-full text-sm"
+            :class="
+              editor.isActive('paragraph')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .unsetMark('bold')
+                .unsetFontSize()
+                .setParagraph()
+                .run()
+            ">
+            Body
+          </Button>
+        </div>
+
+        <span class="font-medium text-gray-600 text-base">Formatting</span>
+        <div class="flex mb-1">
+          <Dropdown class="w-52" :options="fontFamilyOptions">
             <Button
-              class="w-full text-sm"
+              class="text-sm w-52"
+              :label="
+                editor.getAttributes('textStyle').fontFamily
+                  ? editor.getAttributes('textStyle').fontFamily
+                  : 'Inter'
+              "></Button>
+          </Dropdown>
+          <Dropdown class="ml-1 min-w-full" :options="fontSizeOptions">
+            <Button
+              class="text-sm w-14"
+              :label="
+                editor.getAttributes('textStyle').fontSize
+                  ? editor.getAttributes('textStyle').fontSize
+                  : '14px'
+              "></Button>
+          </Dropdown>
+        </div>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2">
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('bold') ? 'bg-white shadow-sm' : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleBold().run()">
+            <FeatherIcon name="bold" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('italic')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleItalic().run()">
+            <FeatherIcon name="italic" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('underline')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleUnderline().run()">
+            <FeatherIcon name="underline" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('strike')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleStrike().run()">
+            <Strikethrough class="w-4 stroke-2" />
+          </Button>
+        </div>
+
+        <span class="font-medium text-gray-600 text-base">Text Color</span>
+        <ColorInput
+          class="mt-0.5 mb-1"
+          :value="editor.getAttributes('textStyle').color"
+          @change="(value) => editor.chain().focus().setColor(value).run()" />
+        <span class="font-medium text-gray-600 text-base">
+          Background Color
+        </span>
+        <ColorInput
+          class="mt-0.5 mb-2"
+          :value="editor.getAttributes('textStyle').backgroundColor"
+          @change="
+            (value) => editor.chain().focus().toggleHighlight(value).run()
+          " />
+
+        <span class="font-medium text-gray-600 text-base">Alignment</span>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive({ textAlign: 'left' })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().setTextAlign('left').run()">
+            <FeatherIcon name="align-left" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive({ textAlign: 'center' })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().setTextAlign('center').run()">
+            <FeatherIcon name="align-center" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive({ textAlign: 'right' })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().setTextAlign('right').run()">
+            <FeatherIcon name="align-right" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive({ textAlign: 'justify' })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().setTextAlign('justify').run()">
+            <FeatherIcon name="align-justify" class="w-4 stroke-2" />
+          </Button>
+        </div>
+        <div class="flex my-1 space-x-1 mb-2">
+          <div class="flex justify-items-stretch w-full space-x-1">
+            <Button
+              :variant="'subtle'"
+              size="sm"
+              class="flex-auto shadow-none w-full border h-8 p-0 text-gray-800 transition-colors hover:bg-gray-100"
               :class="
                 editor.isActive('heading', { level: 1 })
                   ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
+                  : ''
               "
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .setBold()
-                  .setFontSize('26px')
-                  .setHeading({ level: 1 })
-                  .run()
-              ">
-              Title
+              @click="editor.chain().focus().indent().run()">
+              <IndentIcon class="h-4" />
             </Button>
             <Button
-              class="w-full text-sm"
-              :class="
-                editor.isActive('heading', { level: 2 })
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .unsetMark('bold')
-                  .unsetFontSize()
-                  .toggleHeading({ level: 2 })
-                  .run()
-              ">
-              Heading
-            </Button>
-            <Button
-              class="w-full text-sm"
-              :class="
-                editor.isActive('heading', { level: 3 })
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .unsetMark('bold')
-                  .unsetFontSize()
-                  .toggleHeading({ level: 3 })
-                  .run()
-              ">
-              Subtitle
-            </Button>
-            <Button
-              class="w-full text-sm"
-              :class="
-                editor.isActive('paragraph')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .unsetMark('bold')
-                  .unsetFontSize()
-                  .setParagraph()
-                  .run()
-              ">
-              Body
-            </Button>
-          </div>
-
-          <div>
-            <span class="font-medium text-gray-600 text-base">Formatting</span>
-            <div class="flex items-center">
-              <Dropdown class="w-full" :options="fontFamilyOptions">
-                <Button
-                  class="text-sm w-56"
-                  :label="
-                    editor.getAttributes('textStyle').fontFamily
-                      ? editor.getAttributes('textStyle').fontFamily
-                      : 'Inter'
-                  "></Button>
-              </Dropdown>
-              <Dropdown class="w-full" :options="fontSizeOptions">
-                <Button
-                  class="text-sm ml-0.5 w-18"
-                  :label="
-                    editor.getAttributes('textStyle').fontSize
-                      ? editor.getAttributes('textStyle').fontSize
-                      : '14px'
-                  "></Button>
-              </Dropdown>
-            </div>
-            <div class="text-sm font-medium text-gray-700">Text Color</div>
-            <ColorInput
-              :value="editor.getAttributes('textStyle').color"
-              @change="
-                (value) => editor.chain().focus().setColor(value).run()
-              " />
-            <div class="mt-2 text-sm font-medium text-gray-700">
-              Background Color
-              <ColorInput
-                :value="editor.getAttributes('textStyle').backgroundColor"
-                @change="
-                  (value) => editor.chain().focus().toggleHighlight(value).run()
-                " />
-            </div>
-            <div
-              class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive('bold')
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().toggleBold().run()">
-                <FeatherIcon name="bold" class="w-4 stroke-2" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive('italic')
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().toggleItalic().run()">
-                <FeatherIcon name="italic" class="w-4 stroke-2" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive('underline')
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().toggleUnderline().run()">
-                <FeatherIcon name="underline" class="w-4 stroke-2" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive('strike')
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().toggleStrike().run()">
-                <Strikethrough class="w-4 stroke-2" />
-              </Button>
-            </div>
-          </div>
-
-          <div class="my-4">
-            <span class="font-medium text-gray-600 text-base">Lists</span>
-            <div
-              class="flex flex-row my-2 w-full justify-stretch items-stretch rounded p-0.5 space-x-1 h-8">
-              <Button
-                class="w-full text-gray-600"
-                @click="editor.chain().focus().toggleOrderedList().run()">
-                <template #prefix>
-                  <List class="w-4 stroke-2" />
-                </template>
-                Numbered
-              </Button>
-              <Button
-                class="w-full text-gray-600"
-                @click="editor.chain().focus().toggleBulletList().run()">
-                <template #prefix>
-                  <ListOrdered class="w-4" />
-                </template>
-                Bullet
-              </Button>
-              <Button
-                class="w-full text-gray-600"
-                @click="editor.chain().focus().toggleTaskList().run()">
-                <template #prefix>
-                  <ListChecks class="w-4" />
-                </template>
-                Check
-              </Button>
-            </div>
-          </div>
-
-          <div class="my-4">
-            <span class="font-medium text-gray-600 text-base">Alignment</span>
-            <div
-              class="flex flex-row my-2 w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8">
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'left' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('left').run()">
-                <FeatherIcon name="align-left" class="w-4 stroke-2" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'center' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('center').run()">
-                <FeatherIcon name="align-center" class="w-4 stroke-2" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'right' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('right').run()">
-                <FeatherIcon name="align-right" class="w-4 stroke-2" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'justify' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('justify').run()">
-                <FeatherIcon name="align-justify" class="w-4 stroke-2" />
-              </Button>
-            </div>
-            <div
-              class="flex flex-row w-full justify-stretch mb-4 items-stretch rounded p-0.5 space-x-0.5 h-8">
-              <!-- <Button
-              class="w-full"
+              :variant="'subtle'"
+              class="flex-auto shadow-none w-full border h-8 p-0 text-gray-800 transition-colors hover:bg-gray-100"
               :class="
                 editor.isActive('heading', { level: 1 })
                   ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
+                  : ''
               "
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .unsetFontSize()
-                  .toggleHeading({ level: 1 })
-                  .run()
-              ">
-              Title
-            </Button> -->
-
-              <Button
-                class="flex-auto shadow-none w-full border h-8 p-0 text-gray-800 transition-colors hover:bg-gray-100"
-                :class="
-                  editor.isActive('heading', { level: 1 })
-                    ? 'bg-white shadow-sm'
-                    : ''
-                "
-                @click="editor.chain().focus().indent().run()">
-                <IndentIcon class="h-4" />
-              </Button>
-              <Button
-                class="flex-auto shadow-none w-full border h-8 p-0 text-gray-800 transition-colors hover:bg-gray-100"
-                :class="
-                  editor.isActive('heading', { level: 1 })
-                    ? 'bg-white shadow-sm'
-                    : ''
-                "
-                @click="editor.chain().focus().outdent().run()">
-                <OutdentIcon class="h-4" />
-              </Button>
-
-              <Popover>
-                <template #target="{ togglePopover }">
-                  <Button
-                    variant="minimal"
-                    class="flex-auto w-full h-8 p-0 border text-gray-800 transition-colors hover:bg-gray-100"
-                    :set="
-                      (activeBtn =
-                        lineOptions.find((f) => f.isActive(editor)) ||
-                        lineOptions[0])
-                    "
-                    @click="togglePopover">
-                    <template #prefix><LineHeight class="h-6" /></template>
-                    <span>{{ activeBtn.label }}</span>
-                  </Button>
-                </template>
-                <template #body="{ close }">
-                  <ul class="rounded border bg-white p-1 shadow-md">
-                    <li
-                      v-for="option in lineOptions"
-                      v-show="
-                        option.isDisabled ? !option.isDisabled(editor) : true
-                      "
-                      :key="option.label"
-                      class="w-full">
-                      <button
-                        class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
-                        @click="
-                          () => {
-                            onButtonClick(option);
-                            close();
-                          }
-                        ">
-                        {{ option.label }}
-                      </button>
-                    </li>
-                  </ul>
-                </template>
-              </Popover>
-            </div>
+              @click="editor.chain().focus().outdent().run()">
+              <OutdentIcon class="h-4" />
+            </Button>
           </div>
-          <div class="my-4">
-            <span class="font-medium text-gray-600 text-base">Blocks</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button @click="editor.chain().focus().toggleCodeBlock().run()">
-                <template #prefix><Code2 name="code" class="w-4" /></template>
-                Code
+          <Popover>
+            <template #target="{ togglePopover }">
+              <Button
+                :variant="'subtle'"
+                class="flex-auto w-full h-8 p-0 border text-gray-800 transition-colors hover:bg-gray-100"
+                :set="
+                  (activeBtn =
+                    lineOptions.find((f) => f.isActive(editor)) ||
+                    lineOptions[0])
+                "
+                @click="togglePopover">
+                <template #prefix><LineHeight class="h-6" /></template>
+                <span>{{ activeBtn.label }}</span>
               </Button>
-              <Button @click="editor.chain().focus().toggleBlockquote().run()">
-                <template #prefix>
-                  <QuoteIcon name="quote" class="w-4" />
-                </template>
-                Quote
-              </Button>
-            </div>
-          </div>
+            </template>
+            <template #body="{ close }">
+              <ul class="rounded border bg-white p-1 shadow-md">
+                <li
+                  v-for="option in lineOptions"
+                  v-show="option.isDisabled ? !option.isDisabled(editor) : true"
+                  :key="option.label"
+                  class="w-full">
+                  <button
+                    class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
+                    @click="
+                      () => {
+                        onButtonClick(option);
+                        close();
+                      }
+                    ">
+                    {{ option.label }}
+                  </button>
+                </li>
+              </ul>
+            </template>
+          </Popover>
+        </div>
+
+        <span class="font-medium text-gray-600 text-base">Lists</span>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2">
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('bulletList')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleBulletList().run()">
+            <template #prefix>
+              <List class="w-4 stroke-2" />
+            </template>
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('orderedList')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleOrderedList().run()">
+            <template #prefix>
+              <ListOrdered class="w-4" />
+            </template>
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('taskList')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleTaskList().run()">
+            <template #prefix>
+              <ListOrdered class="w-4" />
+            </template>
+          </Button>
+        </div>
+
+        <span class="font-medium text-gray-600 text-base">Blocks</span>
+        <div class="flex items-stretch w-full space-x-2 justify-start">
+          <Button @click="editor.chain().focus().toggleCodeBlock().run()">
+            <template #prefix><Code2 name="code" class="w-4" /></template>
+            Code
+          </Button>
+          <Button @click="editor.chain().focus().toggleBlockquote().run()">
+            <template #prefix>
+              <QuoteIcon name="quote" class="w-4" />
+            </template>
+            Quote
+          </Button>
         </div>
       </div>
       <div
@@ -1079,16 +1059,10 @@ export default {
           isActive: (editor) => editor.isActive({ lineHeight: "100%" }),
         },
         {
-          label: "1.15",
-          action: (editor) =>
-            editor.chain().focus().setLineHeight("115%").run(),
-          isActive: (editor) => editor.isActive({ lineHeight: "115%" }),
-        },
-        {
           label: "1.5",
           action: (editor) =>
-            editor.chain().focus().setLineHeight("150%").run(),
-          isActive: (editor) => editor.isActive({ lineHeight: "150%" }),
+            editor.chain().focus().setLineHeight("26px").run(),
+          isActive: (editor) => editor.isActive({ lineHeight: "125%" }),
         },
         {
           label: "2",

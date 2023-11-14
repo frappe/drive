@@ -7,7 +7,7 @@
         <span class="font-medium uppercase text-gray-600">
           {{ label }}
         </span>
-        <div class="relative w-[150px]">
+        <div class="relative w-full">
           <div
             class="absolute left-2 top-[6px] z-10 h-4 w-4 rounded shadow-sm cursor-pointer"
             @click="togglePopover"
