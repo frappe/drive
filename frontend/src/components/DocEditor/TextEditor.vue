@@ -194,7 +194,9 @@ export default {
     editorProps() {
       return {
         attributes: {
-          class: "ProseMirror",
+          class: normalizeClass([
+            "ProseMirror prose prose-sm font-normal prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
+          ]),
         },
         clipboardTextParser: (text, $context) => {
           if (!detectMarkdown(text)) return;
@@ -313,6 +315,11 @@ export default {
               class: "prose-list-item",
             },
           },
+          /* codeBlock: {
+            HTMLAttributes: {
+              class: "my-5 px-4 py-2 text-sm bg-gray-50 rounded border border-gray-200 leading-5 overflow-x-scroll",
+            },
+          }, */
           bulletList: {
             keepMarks: true,
             keepAttributes: false,
@@ -605,8 +612,13 @@ export default {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  padding: 0px;
+  padding: 4em;
   font-size: 14px;
+  background: white;
+  min-width: 21cm;
+  max-width: 21cm;
+  min-height: 29.7cm;
+  max-height: 29.7cm;
 }
 
 /* Firefox */
@@ -614,49 +626,40 @@ export default {
   outline: none;
 }
 
-/* print */
-#editor-capture {
-  background: white;
-  padding: 4em;
-  min-width: 21cm;
-  max-width: 21cm;
-  min-height: 29.7cm;
-  max-height: 29.7cm;
-}
-
-#editor-capture h1 {
+.ProseMirror h1 {
   font-size: 26px;
   font-weight: 600;
 }
 
-#editor-capture h2 {
+.ProseMirror h2 {
   font-size: 22px;
   font-weight: 600;
 }
 
-#editor-capture h3 {
+.ProseMirror h3 {
   font-size: 20px;
   font-weight: 400;
 }
 
-#editor-capture blockquote {
+.ProseMirror blockquote {
   border-left: 2px solid lightgray;
   padding-left: 10px;
 }
-/* 
-#editor-capture code {
-  font-family: monospace;
-  font-size: inherit;
-  background-color: rgb(221, 221, 221);
-  padding: 0px 3px;
-  border-radius: 5px;
-}
- */
-#editor-capture strong {
+
+.ProseMirror strong {
   font-weight: 600;
 }
 
-#editor-capture ul,
+.ProseMirror code,
+pre {
+  white-space: pre;
+}
+
+.ProseMirror hr {
+  margin: 10px 0px;
+}
+
+.ProseMirror ul,
 ol {
   list-style-type: revert;
   padding: revert;
