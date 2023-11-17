@@ -172,7 +172,10 @@
         </p>
       </div>
 
-      <div v-if="tab === 2" class="p-4 border-b" @click="tab = 2">
+      <div
+        v-if="tab === 2"
+        class="p-4 border-b overflow-x-hidden"
+        @click="tab = 2">
         <span class="font-medium text-base">Typography</span>
         <br />
         <span class="font-medium text-gray-600 text-base">Presets</span>
