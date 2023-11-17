@@ -41,6 +41,9 @@ const store = createStore({
     ) || [{ label: "Home", route: "/home" }],
     allComments: "",
     activeCommentsInstance: "",
+    IsSidebarExpanded: JSON.parse(
+      localStorage.getItem("IsSidebarExpanded") || true
+    ),
   },
   getters: {
     isLoggedIn: (state) => {
@@ -114,6 +117,10 @@ const store = createStore({
     setCurrentBreadcrumbs(state, payload) {
       localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload));
       state.currentBreadcrumbs = payload;
+    },
+    setIsSidebarExpanded(state, payload) {
+      localStorage.setItem("IsSidebarExpanded", JSON.stringify(payload));
+      state.IsSidebarExpanded = payload;
     },
   },
   actions: {

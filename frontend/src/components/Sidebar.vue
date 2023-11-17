@@ -1,32 +1,42 @@
-<template class="bg-gray-200">
-  <UserDropdown />
-  <div ondragstart="return false;" ondrop="return false;" class="my-2">
-    <router-link
-      v-for="item in sidebarItems"
-      :key="item.label"
-      v-slot="{ href, navigate }"
-      :to="item.route">
-      <a
-        :class="[
-          item.highlight()
-            ? 'bg-white shadow-sm border-[0.5px] border-gray-200'
-            : ' hover:bg-gray-100',
-        ]"
-        :href="href"
-        class="sidebar-animate flex items-center text-gray-800 text-sm w-full mb-0.5 h-7 px-3 py-1 gap-3 rounded focus:outline-none transition"
-        @click="navigate && $emit('toggleMobileSidebar')">
-        <FeatherIcon
-          :name="item.icon"
-          class="stroke-1.5 w-4 h-4 text-gray-800" />
-        {{ item.label }}
-      </a>
-    </router-link>
-    <!-- <span
-      class="w-[256px] h-7 px-3 py-4 gap-3 mt-auto rounded-lg focus:outline-none flex items-center">
+<template>
+  <div
+    :style="{ width: isExpanded ? '280px' : '60px' }"
+    class="border-r bg-gray-50 transition-all relative block">
+    <div
+      class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
+      :class="{ 'opacity-100': sidebarResizing }"
+      @mousedown="startResize" />
+    <div class="py-2">
+      <UserDropdown />
+      <div ondragstart="return false;" ondrop="return false;" class="p-3">
+        <router-link
+          v-for="item in sidebarItems"
+          :key="item.label"
+          v-slot="{ href, navigate }"
+          :to="item.route">
+          <a
+            class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-3 rounded focus:outline-none"
+            :class="[
+              item.highlight()
+                ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
+                : ' hover:bg-gray-100',
+            ]"
+            :href="href"
+            @click="navigate && $emit('toggleMobileSidebar')">
+            <FeatherIcon
+              :name="item.icon"
+              class="stroke-1.5 self-center w-4 h-4 text-gray-800" />
+            <span v-if="isExpanded" class="self-center">{{ item.label }}</span>
+          </a>
+        </router-link>
+        <!--  <span
+      class="mt-auto w-[256px] h-7 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center">
       <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
       Used :
       {{ $resources.getRootFolderSize.data + "B" }}
     </span> -->
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -37,10 +47,27 @@ export default {
   name: "Sidebar",
   components: { FeatherIcon, UserDropdown },
   emits: ["toggleMobileSidebar"],
+  data() {
+    return {
+      sidebarResizing: false,
+    };
+  },
   computed: {
+    isExpanded() {
+      return this.$store.state.IsSidebarExpanded;
+    },
+    /* currentSideBarWidth: {
+      get() {
+        return this.currentSideBarWidth = this.$store.state.IsSidebarExpanded ? 280 : 60
+      },
+      set(val) {
+        console.log(val)
+        return this.currentSideBarWidth = val
+      }
+    }, */
     sidebarItems() {
       return [
-        /* {
+        /*  {
           label: "Search",
           route: () => {},
           icon: "search",
@@ -89,6 +116,44 @@ export default {
           },
         },
       ];
+    },
+  },
+  methods: {
+    toggleExpanded() {
+      console.log("test");
+      return this.$store.commit(
+        "setIsSidebarExpanded",
+        this.isExpanded ? false : true
+      );
+    },
+    startResize() {
+      document.addEventListener("mousemove", this.resize);
+      document.addEventListener("mouseup", () => {
+        document.body.classList.remove("select-none");
+        document.body.classList.remove("cursor-col-resize");
+        this.sidebarResizing = false;
+        document.removeEventListener("mousemove", this.resize);
+      });
+    },
+    resize(e) {
+      this.sidebarResizing = true;
+      document.body.classList.add("select-none");
+      document.body.classList.add("cursor-col-resize");
+      let sidebarWidth = e.clientX;
+      let range = [60, 180];
+      if (sidebarWidth > range[0] && sidebarWidth < range[1]) {
+        sidebarWidth = 60;
+        this.$store.commit("setIsSidebarExpanded", false);
+      }
+      if (sidebarWidth > 180) {
+        this.$store.commit("setIsSidebarExpanded", true);
+      }
+      /* if (sidebarWidth < 100) {
+        this.$store.commit("setIsSidebarExpanded", false )
+      }
+      if (sidebarWidth > 100) {
+        this.$store.commit("setIsSidebarExpanded", true )
+      } */
     },
   },
   resources: {

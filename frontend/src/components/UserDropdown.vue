@@ -1,11 +1,14 @@
 <template>
-  <Dropdown :options="settingsItems">
+  <Dropdown :options="settingsItems" class="px-2">
     <template v-slot="{ open }">
       <button
-        class="flex w-[15rem] items-center rounded-md px-2 py-2 text-left"
-        :class="open ? 'bg-white shadow-sm' : 'hover:bg-gray-200'">
+        class="flex items-center rounded-md text-left px-1 py-2"
+        :class="open ? 'bg-white shadow-sm' : 'hover:bg-transparent'"
+        :style="{
+          width: isExpanded ? '250px' : 'auto',
+        }">
         <FrappeDriveLogo class="w-8 h-8 rounded" />
-        <div class="ml-2 flex flex-col">
+        <div v-if="isExpanded" class="ml-2 flex flex-col">
           <div class="text-base font-medium text-gray-900 leading-none">
             Frappe Drive
           </div>
@@ -14,6 +17,7 @@
           </div>
         </div>
         <FeatherIcon
+          v-if="isExpanded"
           name="chevron-down"
           class="ml-auto hidden h-4 w-4 sm:inline" />
       </button>
@@ -44,6 +48,9 @@ export default {
     },
   },
   computed: {
+    isExpanded() {
+      return this.$store.state.IsSidebarExpanded;
+    },
     firstName() {
       return this.$store.state.user.fullName.split(" ");
     },

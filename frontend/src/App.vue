@@ -8,10 +8,7 @@
       <div
         v-if="isLoggedIn || $route.meta.isHybridRoute"
         class="flex h-full overflow-hidden">
-        <MobileSidebar v-if="isLoggedIn" v-model="showMobileSidebar" />
-        <div v-if="isLoggedIn" class="p-2 border-r w-[280px] bg-gray-50">
-          <Sidebar />
-        </div>
+        <Sidebar v-if="isLoggedIn" />
         <div class="h-full w-full overflow-hidden">
           <Navbar
             :mobile-sidebar-is-open="showMobileSidebar"
@@ -79,8 +76,8 @@ export default {
     };
   },
   computed: {
-    showSidebar() {
-      return this.$route.meta.sidebar !== false;
+    isExpanded() {
+      return this.$store.state.IsSidebarExpanded;
     },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
@@ -314,6 +311,7 @@ function non_merge_mode(file) {
 /* custom scrollbar */
 ::-webkit-scrollbar {
   width: 0.5rem;
+  height: 0.5rem;
 }
 
 ::-webkit-scrollbar-track {
