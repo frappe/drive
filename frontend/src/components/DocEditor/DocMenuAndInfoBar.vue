@@ -12,7 +12,7 @@
           <img
             :src="getIconUrl(formatMimeType(entity.mime_type))"
             :draggable="false"
-            class="h-4 mr-2.5" />
+            class="h-5 mr-2.5" />
           <div class="font-medium truncate text-lg">
             {{ entity.title }}
           </div>

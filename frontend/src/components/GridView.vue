@@ -7,7 +7,7 @@
     <div
       v-else
       ref="container"
-      class="h-full px-5 md:px-0"
+      class="h-full"
       @mousedown="(event) => handleMousedown(event)">
       <div v-if="folders.length > 0" class="mt-3">
         <div class="text-gray-600 font-medium">Folders</div>
@@ -37,8 +37,8 @@
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="24"
-                height="24"
+                width="26"
+                height="26"
                 viewBox="0 0 40 40"
                 xmlns="http://www.w3.org/2000/svg">
                 <path

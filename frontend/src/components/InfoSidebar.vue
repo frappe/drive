@@ -23,7 +23,7 @@
               v-if="entity.is_group"
               :style="{ fill: entity.color }"
               :draggable="false"
-              class="h-4 mr-2.5"
+              class="h-5 mr-2.5"
               viewBox="0 0 40 40"
               xmlns="http://www.w3.org/2000/svg">
               <path
@@ -33,7 +33,7 @@
               v-else
               :src="getIconUrl(formatMimeType(entity.mime_type))"
               :draggable="false"
-              class="h-4 mr-2.5" />
+              class="h-5 mr-2.5" />
             <div class="font-medium truncate text-lg">
               {{ entity.title }}
             </div>

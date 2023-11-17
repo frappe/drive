@@ -7,7 +7,7 @@
     <div
       v-else
       ref="container"
-      class="h-full px-5 md:px-0"
+      class="h-full"
       @mousedown="(event) => handleMousedown(event)">
       <table class="max-h-full min-w-full">
         <thead

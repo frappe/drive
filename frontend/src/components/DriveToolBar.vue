@@ -2,7 +2,7 @@
   <div
     ondragstart="return false;"
     ondrop="return false;"
-    class="mb-2 min-h-8 flex gap-3 flex-wrap justify-end items-center w-full px-5 md:px-0">
+    class="mb-2 min-h-8 flex gap-3 flex-wrap justify-end items-center w-full">
     <div class="flex gap-3 w-full justify-end">
       <div
         v-if="$route.name === 'Shared'"
