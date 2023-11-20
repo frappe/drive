@@ -1,6 +1,6 @@
 <template>
   <div class="flex-col w-full overflow-y-scroll">
-    <div class="flex w-full items-start justify-center">
+    <div class="flex w-full items-start justify-start lg:justify-center">
       <editor-content
         autocomplete="off"
         autocorrect="off"
@@ -260,6 +260,9 @@ export default {
     },
   },
   mounted() {
+    if (window.matchMedia("(max-width: 1500px)").matches) {
+      this.$store.commit("setIsSidebarExpanded", false);
+    }
     this.emitter.on("exportDocToPDF", () => {
       if (this.editor) {
         this.printEditorContent();
@@ -612,7 +615,7 @@ export default {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  padding: 4em;
+  padding: 2em 1em;
   font-size: 14px;
   background: white;
   min-width: 21cm;
@@ -667,7 +670,7 @@ ol {
 
 @page {
   size: a4;
-  margin: 0;
+  margin: 4em;
 }
 
 span[data-comment] {
