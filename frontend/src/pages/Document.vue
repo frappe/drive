@@ -61,6 +61,16 @@ export default {
     },
   }, */
   mounted() {
+    this.emitter.on("saveDocument", () => {
+      this.$resources.updateDocument.submit({
+        entity_name: this.entityName,
+        doc_name: this.document,
+        title: this.titleVal,
+        content: fromUint8Array(this.content),
+        comments: this.comments,
+        file_size: fromUint8Array(this.content).length,
+      });
+    });
     //this.$store.commit("setShowInfo", true);
     this.$resources.getDocument
       .fetch()

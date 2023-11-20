@@ -96,6 +96,7 @@ import { createEditorButton } from "./utils";
 import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue";
 import Menu from "./Menu.vue";
 import InfoSidebar from "../InfoSidebar.vue";
+import { toast } from "@/utils/toasts.js";
 
 export default {
   name: "TextEditor",
@@ -105,6 +106,7 @@ export default {
     Menu,
     DocMenuAndInfoBar,
     InfoSidebar,
+    toast,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -286,6 +288,7 @@ export default {
     this.provider = webrtcProvider;
     /* this.localStore = indexeddbProvider; */
     let componentContext = this;
+    document.addEventListener("keydown", this.saveDoc);
     this.editor = new Editor({
       editable: this.editable,
       editorProps: this.editorProps,
@@ -406,6 +409,7 @@ export default {
     });
   },
   beforeUnmount() {
+    document.removeEventListener("keydown", this.saveDoc);
     this.editor.destroy();
     /* this.localStore.clearData(); */
     this.provider.destroy();
@@ -413,6 +417,19 @@ export default {
     this.editor = null;
   },
   methods: {
+    saveDoc(e) {
+      if (!(e.keyCode === 83 && (e.ctrlKey || e.metaKey))) {
+        return;
+      }
+      e.preventDefault();
+      this.emitter.emit("saveDocument");
+      toast({
+        title: "Document saved!",
+        position: "bottom-right",
+        timeout: 2,
+        icon: "save",
+      });
+    },
     printHtml(dom) {
       const style = Array.from(document.querySelectorAll("style, link")).reduce(
         (str, style) => str + style.outerHTML,
