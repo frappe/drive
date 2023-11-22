@@ -184,6 +184,70 @@
           <Button
             class="w-full text-sm"
             :class="
+              editor.isActive('bold') &&
+              editor.isActive('textStyle', { fontSize: '30px' })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setBold()
+                .setFontSize('30px')
+                .run()
+            ">
+            Title
+          </Button>
+          <Button
+            class="w-full text-sm"
+            :class="
+              editor.isActive('heading', { level: 4 }) &&
+              editor.isActive('textStyle', { fontSize: '16px' })
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setHeading({ level: 4 })
+                .setFontSize('16px')
+                .setColor('#7c7c7c')
+                .run()
+            ">
+            Subtitle
+          </Button>
+          <Button
+            class="w-full text-sm"
+            :class="
+              editor.isActive('paragraph') &&
+              !editor.isActive('textStyle', { fontSize: '30px' }) &&
+              !editor.isActive('heading')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setParagraph()
+                .run()
+            ">
+            Body
+          </Button>
+        </div>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h- mb-2">
+          <Button
+            class="w-full text-sm"
+            :class="
               editor.isActive('heading', { level: 1 })
                 ? 'bg-white shadow-sm'
                 : 'bg-transparent'
@@ -197,7 +261,7 @@
                 .setHeading({ level: 1 })
                 .run()
             ">
-            Title
+            <Heading1 class="text-gray-700 w-4" />
           </Button>
           <Button
             class="w-full text-sm"
@@ -210,12 +274,12 @@
               editor
                 .chain()
                 .focus()
-                .unsetMark('bold')
-                .unsetFontSize()
-                .toggleHeading({ level: 2 })
+                .setBold()
+                .setFontSize('22px')
+                .setHeading({ level: 2 })
                 .run()
             ">
-            Heading
+            <Heading2 class="text-gray-700 w-4" />
           </Button>
           <Button
             class="w-full text-sm"
@@ -228,33 +292,14 @@
               editor
                 .chain()
                 .focus()
-                .unsetMark('bold')
-                .unsetFontSize()
-                .toggleHeading({ level: 3 })
+                .setBold()
+                .setFontSize('20px')
+                .setHeading({ level: 3 })
                 .run()
             ">
-            Subtitle
-          </Button>
-          <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('paragraph')
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .unsetMark('bold')
-                .unsetFontSize()
-                .setParagraph()
-                .run()
-            ">
-            Body
+            <Heading3 class="text-gray-700 w-4" />
           </Button>
         </div>
-
         <span class="font-medium text-gray-600 text-base">Formatting</span>
         <div class="flex mb-1">
           <Dropdown class="w-52" :options="fontFamilyOptions">
@@ -938,6 +983,9 @@ import {
   List,
   IndentIcon,
   OutdentIcon,
+  Heading1,
+  Heading2,
+  Heading3,
 } from "lucide-vue-next";
 import { QuoteIcon } from "lucide-vue-next";
 import { Code } from "lucide-vue-next";
@@ -982,6 +1030,9 @@ export default {
     Badge,
     Dropdown,
     ColorInput,
+    Heading1,
+    Heading2,
+    Heading3,
   },
   emits: ["setContentEmit", "focusContentEmit"],
   setup() {

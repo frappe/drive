@@ -311,7 +311,7 @@ export default {
         StarterKit.configure({
           history: false,
           heading: {
-            levels: [1, 2, 3],
+            levels: [1, 2, 3, 4],
             HTMLAttributes: {
               class: "not-prose",
             },
@@ -349,6 +349,7 @@ export default {
         }),
         TextAlign.configure({
           types: ["heading", "paragraph"],
+          defaultAlignment: "left",
         }),
         ,
         Collaboration.configure({
