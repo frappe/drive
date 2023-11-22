@@ -1,12 +1,20 @@
 <div align="center" markdown="1">
 
-<img src=".github/logo.svg" alt="Frappe Drive logo" width="260"/>
+<picture>
+  <source 
+   media="(prefers-color-scheme: dark)" 
+   srcset=".github/logo_dark.svg">
+  <img
+   width="260"
+   alt="Frappe Drive logo" 
+   src=".github/logo_light.svg">
+</picture>
 
 #### **An easy to use, document sharing and management solution.**
 
 </div>
 
-<img width="1402" alt="home" src="./.github/home-modified.png">
+<img width="1402" alt="home" src="./.github/grid.png">
 
 <details>
 
@@ -14,19 +22,27 @@
 
 <p>&nbsp;</p>
 
-<img width="1402" alt="search" src="./.github/search-modified.png">
+<img width="1402" alt="search" src="./.github/list.png">
 
 <p>&nbsp;</p>
 
-<img width="1402" alt="upload" src="./.github/upload-modified.png">
+<img width="1402" alt="upload" src="./.github/grid_context.png">
 
 <p>&nbsp;</p>
 
-<img width="1402" alt="share" src="./.github/share-modified.png">
+<img width="1402" alt="share" src="./.github/share_menu.png">
 
 <p>&nbsp;</p>
 
-<img width="1402" alt="file-preview" src="./.github/file-preview-modified.png">
+<img width="1402" alt="file-preview" src="./.github/file_preview.png">
+
+<p>&nbsp;</p>
+
+<img width="1402" alt="file-preview" src="./.github/text_editor.png">
+
+<p>&nbsp;</p>
+
+<img width="1402" alt="file-preview" src="./.github/text_editor_realtime.png">
 
 </details>
 
@@ -36,7 +52,7 @@
 
 > **Note:** Frappe Drive is not currently accepting pull requests. File an issue to open a discussion to discuss an idea/feature request.
 
-## Features
+### Features
 
 - Upload and store files across multiple platforms.
 - View files and folders in List or Grid view and sort them by preference.
@@ -45,19 +61,12 @@
 - Post comments on files shared with you.
 - Add files or folders to _favourites_ to make them easily accessible.
 - Use the Search Bar to search for any file or folder in your Drive.
+- Supports sharing files and folders with individual users and user groups.
+- Ships with a robust document editor that seamlessly integrates with Frappe Drive and supports real time collaborative editing.
 
-## Installation
+### Installation
 
-<!-- TOC -->
-
-- [Local Setup](#local)
-- [Docker Setup ](#docker)
-
-<!-- /TOC -->
-
-# Local
-
-To setup the repository locally follow the steps mentioned below:
+To set up the repository locally, follow the steps mentioned below:
 
 1. Install bench and set up a `frappe-bench` directory by following the [installation steps](https://frappeframework.com/docs/user/en/installation).
 
@@ -97,9 +106,25 @@ To setup the repository locally follow the steps mentioned below:
 
 1. Finally, open the URL http://drive.site:8000/drive in your browser to see the app running.
 
-# Docker
+### Contributions and Community
 
-This guide provides step-by-step instructions to install the project using Docker via VSCode Remote Containers extension.
+There are many ways you can contribute even if you don't code:
+
+1. You can start by giving a star to this repository!
+1. If you find any issues, even if it is a typo, you can [raise an issue](https://github.com/frappe/drive/issues/new) to inform us.
+<!-- If you want to contribute code then you can fork this repo, make changes and raise a PR. ([see how to](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)) -->
+
+### License
+
+[GNU Affero General Public License v3.0](LICENSE)
+
+### Warning
+
+Frappe drive is currently marked as **beta** expect breaking changes between versions.
+
+<!-- # Docker
+
+This guide provides step-by-step instructions to install the project using Docker via VS Code Remote Containers extension.
 
 ## Prerequisites
 
@@ -111,7 +136,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
    ```shell
    sudo usermod -aG docker $USER
    ```
-4. [VSCode Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+4. [VS Code Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Step 1: Cloning frappe_docker repo
 
@@ -124,15 +149,15 @@ cd frappe_docker
 
 Note:
 
-Feel free to expore the files within devcontainer-example and make changes to the same, be that exposing DB ports or mount desired additonal volumes.
+Feel free to explore the files within devcontainer-example and make changes to the same, be that exposing DB ports or mount desired additional volumes.
 
 ```shell
 cp -R devcontainer-example .devcontainer
 ```
 
-### Step 3: Copy example vscode config for devcontainer from development/vscode-example to development/.vscode.
+### Step 3: Copy example VS Code config for devcontainer from development/vscode-example to development/.vscode.
 
-This will setup basic configuration for debugging.
+This will set up basic configuration for debugging.
 
 ```shell
 cp -R development/vscode-example development/.vscode
@@ -188,7 +213,7 @@ For any reason the above commands fail, set the values in `common_site_config.js
 
 ### Step 7: Create a new site
 
-Note: Sitename must end with .localhost for trying deployments locally.
+Note: `sitename` must end with` .localhost` for trying deployments locally.
 
 for example:
 
@@ -225,7 +250,7 @@ bench --site mydrive.localhost install-app drive
 
 ### Step 11: Start Bench
 
-Execute following command from the `frappe-bench` directory.
+Execute the following command from the `frappe-bench` directory.
 
 ```shell
 bench start
@@ -240,20 +265,4 @@ cd apps/drive && yarn dev
 ```
 
 Finally, open the URL http://mydrive.localhost:8000/drive in your browser to see the app running.
-
-## Contributions and Community
-
-There are many ways you can contribute even if you don't code:
-
-1. You can start by giving a star to this repository!
-1. If you find any issues, even if it is a typo, you can [raise an issue](https://github.com/frappe/drive/issues/new) to inform us.
-
-If you want to contribute code then you can fork this repo, make changes and raise a PR. ([see how to](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork))
-
-## License
-
-[GNU Affero General Public License v3.0](LICENSE)
-
-## Warning
-
-Frappe drive is currently marked as **beta** expect breaking changes between versions.
+ -->
