@@ -6,7 +6,7 @@
       class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
       :class="{ 'opacity-100': sidebarResizing }"
       @mousedown="startResize" />
-    <div class="py-2">
+    <div class="py-1">
       <UserDropdown />
       <div ondragstart="return false;" ondrop="return false;" class="p-3">
         <router-link
