@@ -20,7 +20,7 @@
             draggable="true"
             :class="
               selectedEntities.includes(folder)
-                ? 'bg-green-100 border-[#5BB98C]'
+                ? 'bg-gray-100 border-gray-300'
                 : 'border-gray-200 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(folder)"
@@ -44,6 +44,9 @@
                 <path
                   d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
               </svg>
+              <Checkbox
+                :modelValue="selectedEntities.includes(folder)"
+                class="relative ml-auto invisible group-hover:visible checked:visible" />
             </div>
             <div class="content-center grid">
               <span class="truncate text-sm text-gray-800 mt-2">
@@ -66,11 +69,11 @@
             v-for="file in files"
             :id="file.name"
             :key="file.name"
-            class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer"
+            class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer relative group:"
             draggable="true"
             :class="
               selectedEntities.includes(file)
-                ? 'bg-green-100 border-[#5BB98C]'
+                ? 'bg-gray-100 border-gray-300'
                 : 'border-gray-200 hover:shadow-2xl'
             "
             @dblclick="dblClickEntity(file)"
@@ -82,6 +85,9 @@
             @contextmenu="
               handleEntityContext(file, $event, displayOrderedEntities)
             ">
+            <Checkbox
+              :modelValue="selectedEntities.includes(file)"
+              class="display-none absolute right-1 top-1 invisible group-hover:visible checked:visible" />
             <File
               :mime_type="file.mime_type"
               :file_ext="file.file_ext"
@@ -95,7 +101,7 @@
     </div>
     <div
       id="selectionElement"
-      class="h-20 w-20 absolute border-2 bg-green-100 border-[#5BB98C] opacity-50 mix-blend-multiply"
+      class="h-20 w-20 absolute border-1 bg-gray-300 border-gray-400 opacity-50 mix-blend-multiply rounded"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
   </div>
@@ -104,11 +110,13 @@
 <script>
 import File from "@/components/File.vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
+import { Checkbox } from "frappe-ui";
 
 export default {
   name: "GridView",
   components: {
     File,
+    Checkbox,
   },
   props: {
     folderContents: {

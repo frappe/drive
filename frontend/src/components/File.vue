@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-2/3 flex items-center justify-center bg-gray-50 rounded-t-[calc(theme(borderRadius.lg)-1px)]">
+    class="h-2/3 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)]">
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid">
