@@ -7,92 +7,108 @@
     <div
       v-else
       ref="container"
-      class="h-full"
-      @mousedown="(event) => handleMousedown(event)">
-      <table class="max-h-full min-w-full">
-        <thead
-          class="sticky top-0 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.1)] shadow-gray-200">
-          <tr class="text-left text-base text-gray-600">
-            <th class="hidden px-2.5 py-3 font-normal md:table-cell">Name</th>
-            <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Owner</th>
-            <th class="hidden px-2.5 py-3 font-normal md:table-cell">
-              Modified
-            </th>
-            <th class="hidden px-2.5 py-3 font-normal lg:table-cell">Size</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="entity in folderContents"
-            :id="entity.name"
-            :key="entity.name"
-            class="entity select-none text-base border-b cursor-pointer"
-            :class="
-              selectedEntities.includes(entity)
-                ? 'bg-green-100'
-                : 'hover:bg-gray-100'
-            "
-            :draggable="true"
-            @dblclick="dblClickEntity(entity)"
-            @click="selectEntity(entity, $event, folderContents)"
-            @contextmenu="handleEntityContext(entity, $event, folderContents)"
-            @dragstart="dragStart(entity, $event)"
-            @dragenter.prevent
-            @dragover.prevent
-            @mousedown.stop
-            @drop="isGroupOnDrop(entity)">
-            <td class="min-w-[15rem] px-2.5 py-3 lg:w-3/6" :draggable="false">
-              <div
-                class="flex items-center text-gray-800 text-sm font-medium truncate"
-                :draggable="false">
-                <svg
-                  v-if="entity.is_group"
-                  :style="{ fill: entity.color }"
-                  :draggable="false"
-                  class="h-[20px] mr-3"
-                  viewBox="0 0 40 40"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
-                </svg>
-                <img
-                  v-else
-                  :src="getIconUrl(formatMimeType(entity.mime_type))"
-                  :draggable="false"
-                  class="h-[20px] mr-3" />
-                {{ entity.title }}
-              </div>
-            </td>
-            <td
-              class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/6 text-gray-700">
-              {{ entity.owner }}
-            </td>
-            <td
-              class="hidden w-36 truncate px-2.5 py-3 font-normal md:table-cell lg:w-1/6 text-gray-700">
-              {{ entity.modified }}
-            </td>
-            <td
-              class="hidden w-36 truncate px-2.5 py-3 font-normal lg:table-cell lg:w-1/6 text-gray-700">
-              {{ entity.file_size }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      @mousedown="(event) => handleMousedown(event)"
+      class="h-full min-h-full">
+      <div
+        class="mb-1 grid items-center rounded bg-gray-100 py-2 pl-2 pr-4 overflow-x-hidden"
+        :style="{ gridTemplateColumns: tableColumnsGridWidth }">
+        <Checkbox
+          class="cursor-pointer duration-300 z-10"
+          :modelValue="
+            selectedEntities?.length > 1 &&
+            selectedEntities?.length === folderContents?.length
+          "
+          @click.stop="toggleSelectAll" />
+        <div class="flex w-full items-center text-base text-gray-600">Name</div>
+        <div
+          class="flex w-full items-center justify-start text-base text-gray-600">
+          Owner
+        </div>
+        <div
+          class="flex w-full items-center justify-end text-base text-gray-600">
+          Last Modified
+        </div>
+        <div
+          class="flex w-full items-center justify-end text-base text-gray-600">
+          Size
+        </div>
+      </div>
+      <div
+        v-for="entity in folderContents"
+        :id="entity.name"
+        :key="entity.name"
+        class="entity grid items-center cursor-pointer mb-1 rounded pl-2 pr-4 py-2.5 hover:bg-gray-50 group"
+        :style="{
+          gridTemplateColumns: tableColumnsGridWidth,
+        }"
+        :class="
+          selectedEntities.includes(entity)
+            ? 'bg-gray-100'
+            : 'hover:bg-gray-100'
+        "
+        :draggable="true"
+        @dblclick="dblClickEntity(entity)"
+        @click="selectEntity(entity, $event, folderContents)"
+        @contextmenu="handleEntityContext(entity, $event, folderContents)"
+        @dragstart="dragStart(entity, $event)"
+        @dragenter.prevent
+        @dragover.prevent
+        @mousedown.stop
+        @drop="isGroupOnDrop(entity)">
+        <Checkbox
+          :modelValue="selectedEntities.includes(entity)"
+          class="duration-300 invisible group-hover:visible checked:visible" />
+        <div
+          class="flex items-center text-gray-800 text-sm font-medium truncate"
+          :draggable="false">
+          <svg
+            v-if="entity.is_group"
+            :style="{ fill: entity.color }"
+            :draggable="false"
+            class="h-[20px] mr-3"
+            viewBox="0 0 40 40"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
+          </svg>
+          <img
+            v-else
+            :src="getIconUrl(formatMimeType(entity.mime_type))"
+            :draggable="false"
+            class="h-[20px] mr-3" />
+          {{ entity.title }}
+        </div>
+        <div
+          class="flex items-center justify-start text-gray-800 text-sm font-medium truncate">
+          {{ entity.owner }}
+        </div>
+        <div
+          class="flex items-center justify-end text-gray-800 text-sm font-medium truncate">
+          {{ entity.modified }}
+        </div>
+        <div class="flex w-full justify-end text-base text-gray-600">
+          {{ entity.file_size }}
+        </div>
+      </div>
     </div>
     <div
       id="selectionElement"
-      class="h-20 w-20 absolute border-2 bg-green-100 border-[#5BB98C] opacity-50 mix-blend-multiply"
+      class="h-20 w-20 absolute border-1 bg-gray-300 border-gray-400 opacity-50 mix-blend-multiply rounded"
       :style="selectionElementStyle"
       :hidden="!selectionCoordinates.x1" />
   </div>
 </template>
 <script>
+import { Checkbox } from "frappe-ui";
 import { formatMimeType } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
   name: "GridView",
+  components: {
+    Checkbox,
+  },
   props: {
     folderContents: {
       type: Array,
@@ -117,6 +133,7 @@ export default {
     selectionElementStyle: {},
     selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
     containerRect: null,
+    tableColumnsGridWidth: "25px 2fr 1fr 100px 100px",
   }),
   computed: {
     isEmpty() {
@@ -170,6 +187,10 @@ export default {
     document.removeEventListener("keydown", this.cutListener);
   },
   methods: {
+    toggleSelectAll() {
+      this.$emit("entitySelected", this.folderContents);
+      this.$store.commit("setEntityInfo", this.folderContents);
+    },
     handleMousedown(event) {
       this.deselectAll();
       this.selectionCoordinates.x1 = event.clientX;
@@ -217,33 +238,42 @@ export default {
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null);
       this.$emit("showEmptyEntityContext", null);
-      let selectedEntities = this.selectedEntities;
       if (event.ctrlKey || event.metaKey) {
-        const index = selectedEntities.indexOf(entity);
-        index > -1
-          ? selectedEntities.splice(index, 1)
-          : selectedEntities.push(entity);
-        this.$emit("entitySelected", selectedEntities);
+        this.selectedEntities.indexOf(entity) > -1
+          ? this.selectedEntities.splice(
+              this.selectedEntities.indexOf(entity),
+              1
+            )
+          : this.selectedEntities.push(entity);
+        this.$emit("entitySelected", this.selectedEntities);
+        this.$store.commit("setEntityInfo", this.selectedEntities);
       } else if (event.shiftKey) {
+        if (this.selectedEntities.includes(entity)) {
+          return null;
+        }
         let shiftSelect;
-        selectedEntities.push(entity);
-        const firstIndex = entities.indexOf(selectedEntities[0]);
+        this.selectedEntities.push(entity);
+        const firstIndex = entities.indexOf(this.selectedEntities[0]);
         const lastIndex = entities.indexOf(
-          selectedEntities[selectedEntities.length - 1]
+          this.selectedEntities[this.selectedEntities.length - 1]
         );
+        shiftSelect = entities.slice(firstIndex, lastIndex);
         if (firstIndex > lastIndex) {
           shiftSelect = entities.slice(lastIndex, firstIndex);
         } else {
           shiftSelect = entities.slice(firstIndex, lastIndex);
         }
         shiftSelect.slice(1).map((file) => {
-          selectedEntities.push(file);
+          if (!this.selectedEntities.includes(file)) {
+            this.selectedEntities.push(file);
+          }
         });
+        this.$emit("entitySelected", this.selectedEntities);
+        this.$store.commit("setEntityInfo", this.selectedEntities);
       } else {
-        selectedEntities = [entity];
+        this.$emit("entitySelected", [entity]);
+        this.$store.commit("setEntityInfo", [entity]);
       }
-      this.$emit("entitySelected", selectedEntities);
-      this.$store.commit("setEntityInfo", selectedEntities);
     },
     dblClickEntity(entity) {
       this.$store.commit("setEntityInfo", [entity]);
@@ -267,7 +297,7 @@ export default {
       event.dataTransfer.dropEffect = "move";
       event.dataTransfer.effectAllowed = "move";
       // for when a user directly drags a single file
-      if (this.selectedEntities.length === 0) {
+      if (this.selectedEntities.length <= 1) {
         this.selectEntity(entity, event);
       }
     },

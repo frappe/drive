@@ -46,7 +46,7 @@
               </svg>
               <Checkbox
                 :modelValue="selectedEntities.includes(folder)"
-                class="relative ml-auto invisible group-hover:visible checked:visible" />
+                class="duration-300 relative ml-auto invisible group-hover:visible checked:visible" />
             </div>
             <div class="content-center grid">
               <span class="truncate text-sm text-gray-800 mt-2">
@@ -87,7 +87,7 @@
             ">
             <Checkbox
               :modelValue="selectedEntities.includes(file)"
-              class="display-none absolute right-1 top-1 invisible group-hover:visible checked:visible" />
+              class="duration-300 display-none absolute right-1 top-1 invisible group-hover:visible checked:visible" />
             <File
               :mime_type="file.mime_type"
               :file_ext="file.file_ext"
@@ -111,6 +111,7 @@
 import File from "@/components/File.vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 import { Checkbox } from "frappe-ui";
+import Select from "frappe-ui/src/components/Select.vue";
 
 export default {
   name: "GridView",
@@ -168,10 +169,10 @@ export default {
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
 
-    /* this.selectAllListener = (e) => {
+    this.selectAllListener = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
         this.$emit("entitySelected", this.folderContents);
-    }; */
+    };
 
     this.copyListener = (e) => {
       if (
@@ -249,33 +250,42 @@ export default {
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null);
       this.$emit("showEmptyEntityContext", null);
-      let selectedEntities = this.selectedEntities;
       if (event.ctrlKey || event.metaKey) {
-        const index = selectedEntities.indexOf(entity);
-        index > -1
-          ? selectedEntities.splice(index, 1)
-          : selectedEntities.push(entity);
-        this.$emit("entitySelected", selectedEntities);
+        this.selectedEntities.indexOf(entity) > -1
+          ? this.selectedEntities.splice(
+              this.selectedEntities.indexOf(entity),
+              1
+            )
+          : this.selectedEntities.push(entity);
+        this.$emit("entitySelected", this.selectedEntities);
+        this.$store.commit("setEntityInfo", this.selectedEntities);
       } else if (event.shiftKey) {
+        if (this.selectedEntities.includes(entity)) {
+          return null;
+        }
         let shiftSelect;
-        selectedEntities.push(entity);
-        const firstIndex = entities.indexOf(selectedEntities[0]);
+        this.selectedEntities.push(entity);
+        const firstIndex = entities.indexOf(this.selectedEntities[0]);
         const lastIndex = entities.indexOf(
-          selectedEntities[selectedEntities.length - 1]
+          this.selectedEntities[this.selectedEntities.length - 1]
         );
+        shiftSelect = entities.slice(firstIndex, lastIndex);
         if (firstIndex > lastIndex) {
           shiftSelect = entities.slice(lastIndex, firstIndex);
         } else {
           shiftSelect = entities.slice(firstIndex, lastIndex);
         }
         shiftSelect.slice(1).map((file) => {
-          selectedEntities.push(file);
+          if (!this.selectedEntities.includes(file)) {
+            this.selectedEntities.push(file);
+          }
         });
+        this.$emit("entitySelected", this.selectedEntities);
+        this.$store.commit("setEntityInfo", this.selectedEntities);
       } else {
-        selectedEntities = [entity];
+        this.$emit("entitySelected", [entity]);
+        this.$store.commit("setEntityInfo", [entity]);
       }
-      this.$emit("entitySelected", selectedEntities);
-      this.$store.commit("setEntityInfo", selectedEntities);
     },
     dblClickEntity(entity) {
       this.$store.commit("setEntityInfo", [entity]);
