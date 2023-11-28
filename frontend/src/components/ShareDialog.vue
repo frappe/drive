@@ -1,23 +1,46 @@
 <template>
-  <Dialog
-    v-model="open"
-    :options="{
-      title: `Share '${$resources.entity.data?.title}'`,
-      size: 'lg',
-    }">
+  <Dialog v-model="open" :options="{ size: 'lg' }">
+    <template #body-title>
+      <div class="flex items-center justify-between w-full">
+        <span class="font-semibold text-2xl">Sharing</span>
+        <Button @click="getLink" class="cursor-pointer bg-gray-100 ml-2">
+          <template #prefix>
+            <FrappeFolderLine
+              class="h-4"
+              v-if="$resources.entity.data?.is_group" />
+            <FrappeFileLine class="h-4" v-else />
+          </template>
+          <span>{{ $resources.entity.data?.title }}</span>
+        </Button>
+        <!-- <Button
+        class="border border-gray-200"
+        :variant="'ghost'"
+        theme="gray"
+        size="sm"
+        label="Copy Link"
+        :loading="false"
+        :loadingText="null"
+        :disabled="false"
+        :link="null"
+        iconLeft="link-2"
+        >
+        Copy Link
+      </Button> -->
+      </div>
+    </template>
     <template #body-content>
-      <div class="pt-2 pb-2 mb-4">
-        <div class="flex flex-row pl-2">
+      <div class="mb-5">
+        <div class="flex flex-row">
           <FeatherIcon
             v-if="generalAccess.public"
             name="globe"
-            :stroke-width="2"
+            :stroke-width="1.5"
             class="h-5 text-red-500 my-auto mr-2" />
 
           <Building2
             v-if="generalAccess.everyone"
             name="building"
-            :stroke-width="2"
+            :stroke-width="1.5"
             class="h-5 text-blue-600 my-auto mr-2" />
 
           <FeatherIcon
@@ -26,7 +49,7 @@
               (generalAccess.public == false)
             "
             name="lock"
-            :stroke-width="2"
+            :stroke-width="1.5"
             class="h-5 text-gray-600 my-auto mr-2" />
 
           <Popover transition="default">
@@ -131,7 +154,6 @@
           {{ accessMessage }}
         </span>
       </div>
-
       <UserSearch
         :search-groups="true"
         place-holder-text="Search for users or emails"
@@ -149,11 +171,49 @@
         class="mt-2"
         :message="errorMessage" />
 
+      <div
+        v-if="
+          generalAccess.read ||
+          $resources.sharedWith.data?.users.length ||
+          $resources.sharedWithUserGroup.data?.length
+        ">
+        <div class="flex mt-5 text-base text-gray-600">Global permissions</div>
+        <div class="flex flex-row mt-2">
+          <FeatherIcon class="w-4 text-gray-700 mr-1" name="message-square" />
+          <div class="grow text-[14px] text-gray-800">Comment</div>
+          <div class="flex my-auto">
+            <Switch
+              v-model="allowComments"
+              :class="allowComments ? 'bg-black' : 'bg-gray-200'"
+              class="relative inline-flex h-4 w-[26px] items-center rounded-full"
+              @click="toggleComments">
+              <span
+                :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
+                class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+            </Switch>
+          </div>
+        </div>
+        <div class="flex flex-row mt-2">
+          <FeatherIcon class="w-4 text-gray-700 mr-1" name="download" />
+          <div class="grow text-[14px] text-gray-800">Download</div>
+          <div class="flex my-auto">
+            <Switch
+              v-model="allowDownload"
+              :class="allowDownload ? 'bg-black' : 'bg-gray-200'"
+              class="relative inline-flex h-4 w-[26px] items-center rounded-full"
+              @click="toggleDownload">
+              <span
+                :class="allowDownload ? 'translate-x-3.5' : 'translate-x-1'"
+                class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+            </Switch>
+          </div>
+        </div>
+      </div>
       <div class="flex mt-5 text-base text-gray-600">Users with access</div>
       <div v-if="!$resources.entity.loading" class="flex flex-col">
         <div
           v-if="$resources.sharedWith.data?.owner"
-          class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
+          class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded cursor-pointer group">
           <Avatar
             :image="$resources.sharedWith.data?.owner.user_image"
             :label="$resources.sharedWith.data?.owner.full_name"
@@ -172,7 +232,7 @@
           <div
             v-for="user in $resources.sharedWith.data.users"
             :key="user.user_name"
-            class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 px-1 cursor-pointer group">
+            class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 cursor-pointer group">
             <Avatar
               :image="user.user_image"
               :label="user.full_name"
@@ -198,37 +258,6 @@
               </template>
               <template #body-main="{ togglePopover }">
                 <div class="p-1">
-                  <!-- <div
-                    v-for="item in ['Viewer', 'Editor', 'Remove']"
-                    :key="item">
-                    <div
-                      class="text-gray-900 text-[13px] hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                      @click="
-                        () => {
-                          user.loading = true;
-                          $resources.share
-                            .submit(
-                              Object.assign(
-                                {
-                                  method:
-                                    item === 'Remove' ? 'unshare' : 'share',
-                                  entity_name: entityName,
-                                  user: user.user,
-                                },
-                                item != 'Remove' && {
-                                  write: item === 'Editor' ? 1 : 0,
-                                }
-                              )
-                            )
-                            .then(() => {
-                              user.loading = false;
-                            });
-                          togglePopover();
-                        }
-                      ">
-                      {{ item }}
-                    </div>
-                  </div> -->
                   <div
                     class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                     @click="
@@ -375,31 +404,10 @@
           </Popover>
         </div>
       </div>
-      <div class="flex justify-items-center content-center mt-6">
-        <div class="flex justify-items-center content-center">
-          <Button variant="ghost" @click="getLink">
-            <Link class="w-4" />
-          </Button>
-          <div class="border h-7 mx-1"></div>
-          <Button
-            v-model="allowComments"
-            variant="ghost"
-            @click="toggleComments">
-            <MessageCircle v-if="allowComments" class="w-4" />
-            <MessageCircleOff v-else class="w-4" />
-          </Button>
-          <Button
-            v-model="allowDownload"
-            variant="ghost"
-            @click="toggleDownload">
-            <ArrowDownToLine v-if="allowDownload" class="w-4" />
-            <ArrowDownToLineOff v-else class="w-4" />
-          </Button>
-        </div>
-        <Button variant="solid" @click="submit" class="ml-auto px-4 py-2">
-          Share
-        </Button>
-      </div>
+      <div class="flex justify-items-center content-center mt-6"></div>
+      <Button variant="solid" @click="submit" class="w-full px-4 py-2">
+        Share
+      </Button>
       <Alert v-if="showAlert" :title="alertMessage" class="mt-5"></Alert>
     </template>
   </Dialog>
@@ -428,6 +436,8 @@ import { Check } from "lucide-vue-next";
 import { Trash } from "lucide-vue-next";
 import { toast } from "@/utils/toasts.js";
 import { getLink } from "@/utils/getLink";
+import FrappeFolderLine from "@/components/FrappeFolderLine.vue";
+import FrappeFileLine from "@/components/FrappeFileLine.vue";
 
 export default {
   name: "ShareDialog",
@@ -452,6 +462,8 @@ export default {
     Check,
     Avatar,
     Trash,
+    FrappeFileLine,
+    FrappeFolderLine,
   },
   props: {
     modelValue: {
@@ -558,8 +570,8 @@ export default {
           ? "Downloading turned off"
           : "Downloading turned on",
         text: this.allowDownload
-          ? "Users cannot download this"
-          : "Users can download this",
+          ? "Users cannot download file"
+          : "Users can download file",
         /* icon: "download", */
         position: "bottom-right",
         iconClasses: "text-black-500",
