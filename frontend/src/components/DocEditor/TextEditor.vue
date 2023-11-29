@@ -648,18 +648,24 @@ export default {
 }
 
 .ProseMirror h1 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0em;
 }
 
 .ProseMirror h2 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0em;
 }
 
 .ProseMirror h3 {
-  font-size: 20px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0em;
 }
 
 .ProseMirror blockquote {

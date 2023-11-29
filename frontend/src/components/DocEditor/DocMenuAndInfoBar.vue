@@ -257,7 +257,7 @@
                 .chain()
                 .focus()
                 .setBold()
-                .setFontSize('26px')
+                .setFontSize('24px')
                 .setHeading({ level: 1 })
                 .run()
             ">
@@ -275,7 +275,7 @@
                 .chain()
                 .focus()
                 .setBold()
-                .setFontSize('22px')
+                .setFontSize('20px')
                 .setHeading({ level: 2 })
                 .run()
             ">
@@ -293,7 +293,7 @@
                 .chain()
                 .focus()
                 .setBold()
-                .setFontSize('20px')
+                .setFontSize('16px')
                 .setHeading({ level: 3 })
                 .run()
             ">
