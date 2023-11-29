@@ -393,12 +393,15 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    DriveUser = frappe.qb.DocType("User")
     UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
         DriveEntity.is_group,
         DriveEntity.owner,
+        DriveUser.full_name,
+        DriveUser.user_image,
         DriveEntity.modified,
         DriveEntity.creation,
         DriveEntity.file_size,
@@ -426,6 +429,10 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         .left_join(UserGroupMember)
         .on((UserGroupMember.parent == DriveDocShare.user_name))
         .left_join(DriveFavourite)
+        .left_join(DriveUser)
+        .on(
+            (DriveEntity.owner == DriveUser.email)
+        )
         .on(
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
@@ -496,12 +503,15 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
     # if flag == True:
     #    frappe.throw("Parent Folder has been deleted")
     DriveEntity = frappe.qb.DocType("Drive Entity")
+    DriveUser = frappe.qb.DocType("User")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
         DriveEntity.is_group,
         DriveEntity.owner,
+        DriveUser.full_name,
+        DriveUser.user_image,
         DriveEntity.modified,
         DriveEntity.creation,
         DriveEntity.file_size,
@@ -521,6 +531,10 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
         .on(
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
+        )
+        .left_join(DriveUser)
+        .on(
+            (DriveEntity.owner == DriveUser.email)
         )
         .select(*selectedFields)
         .where(
@@ -741,11 +755,14 @@ def list_favourites(order_by="modified"):
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    DriveUser = frappe.qb.DocType("User")
     UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
         DriveEntity.is_group,
+        DriveEntity.owner,
+        DriveUser.full_name,
         DriveEntity.owner,
         DriveEntity.modified,
         DriveEntity.creation,
@@ -780,6 +797,10 @@ def list_favourites(order_by="modified"):
                 (DriveDocShare.user_name == frappe.session.user)
                 | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
             )
+        )
+        .left_join(DriveUser)
+        .on(
+            (DriveEntity.owner == DriveUser.email)
         )
         .select(*selectedFields)
         .where(
@@ -915,10 +936,13 @@ def list_recents(order_by="last_interaction"):
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveRecent = frappe.qb.DocType("Drive Entity Log")
+    DriveUser = frappe.qb.DocType("User")
     UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
+        DriveUser.full_name,
+        DriveUser.user_image,
         DriveEntity.owner,
         DriveEntity.is_group,
         DriveEntity.file_size,
@@ -959,6 +983,10 @@ def list_recents(order_by="last_interaction"):
                 (DriveDocShare.user_name == frappe.session.user)
                 | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
             )
+        )
+        .left_join(DriveUser)
+        .on(
+            (DriveEntity.owner == DriveUser.email)
         )
         .select(*selectedFields)
         .where(

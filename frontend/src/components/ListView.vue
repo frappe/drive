@@ -80,6 +80,10 @@
         </div>
         <div
           class="flex items-center justify-start text-gray-800 text-sm font-medium truncate">
+          <Avatar
+            :label="entity.full_name"
+            :imageURL="entity.full_name"
+            class="h-7 w-7 mr-2" />
           {{ entity.owner }}
         </div>
         <div
@@ -99,7 +103,7 @@
   </div>
 </template>
 <script>
-import { Checkbox } from "frappe-ui";
+import { Avatar, Checkbox } from "frappe-ui";
 import { formatMimeType } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
@@ -108,6 +112,7 @@ export default {
   name: "GridView",
   components: {
     Checkbox,
+    Avatar,
   },
   props: {
     folderContents: {
