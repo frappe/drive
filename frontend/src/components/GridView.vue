@@ -37,12 +37,12 @@
               <svg
                 :style="{ fill: folder.color }"
                 :draggable="false"
-                width="26"
-                height="26"
-                viewBox="0 0 40 40"
+                class="h-6 w-auto"
+                viewBox="0 0 30 30"
+                fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
-                  d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
+                  d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z" />
               </svg>
               <Checkbox
                 :modelValue="selectedEntities.includes(folder)"
@@ -168,11 +168,6 @@ export default {
     document.addEventListener("mousemove", this.handleMousemove);
     document.addEventListener("mouseup", this.handleMouseup);
     visualViewport.addEventListener("resize", this.updateContainerRect);
-
-    this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
-        this.$emit("entitySelected", this.folderContents);
-    };
 
     this.copyListener = (e) => {
       if (
@@ -300,9 +295,9 @@ export default {
     handleEntityContext(entity, event, entities) {
       event.preventDefault(event);
       if (this.selectedEntities.length <= 1) {
-        this.selectEntity(entity, event, entities);
+        this.$emit("entitySelected", [entity]);
+        this.$store.commit("setEntityInfo", [entity]);
       }
-      this.$store.commit("setEntityInfo", [entity]);
       this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
     },
     dragStart(entity, event) {
