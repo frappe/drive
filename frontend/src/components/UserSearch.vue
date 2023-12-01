@@ -9,7 +9,7 @@
         @input="handleInput($event, openUsers, closeUsers)" />
     </template>
     <template #body-main="{ togglePopover: toggleUsers }">
-      <div class="p-1">
+      <div class="p-1 max-h-44 overflow-y-auto">
         <div v-for="result in searchResults" :key="result.email">
           <div
             class="flex items-center hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
@@ -21,7 +21,7 @@
             ">
             <Avatar
               class="mr-4"
-              size="xl"
+              size="lg"
               :image="result.user_image"
               :label="result.full_name || result.name" />
             <div>
