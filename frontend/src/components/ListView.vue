@@ -81,9 +81,10 @@
         <div
           class="flex items-center justify-start text-gray-800 text-sm font-medium truncate">
           <Avatar
+            :image="entity.user_image"
             :label="entity.full_name"
-            :imageURL="entity.full_name"
-            class="h-7 w-7 mr-2" />
+            class="mr-2"
+            size="lg" />
           {{ entity.owner }}
         </div>
         <div
