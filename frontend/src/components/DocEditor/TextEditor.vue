@@ -718,7 +718,7 @@ span[data-comment] {
 .collaboration-cursor__label {
   border-radius: 50px;
   color: #ffffffd0;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   font-style: normal;
   font-family: "Inter";
   font-weight: 600;
