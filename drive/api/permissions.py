@@ -79,10 +79,13 @@ def get_shared_by_me(get_all=False, order_by="modified"):
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
+    DriveUser = frappe.qb.DocType("User")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
         DriveEntity.is_group,
+        DriveUser.full_name,
+        DriveUser.user_image,
         DriveEntity.owner,
         DriveEntity.modified,
         DriveEntity.creation,
@@ -107,6 +110,8 @@ def get_shared_by_me(get_all=False, order_by="modified"):
             (DriveDocShare.share_name == DriveEntity.name)
             & (DriveEntity.owner == frappe.session.user)
         )
+        .left_join(DriveUser)
+        .on((DriveEntity.owner == DriveUser.email))
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
