@@ -274,7 +274,7 @@ export default {
         },
         {
           label: "Get Link",
-          icon: "link",
+          icon: "link-2",
           onClick: () => {
             getLink(this.selectedEntities[0]);
           },
@@ -612,6 +612,7 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = "me";
           });
+          this.$store.commit("setCurrentViewEntites", data);
         },
         auto: true,
       };

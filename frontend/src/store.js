@@ -22,6 +22,7 @@ const store = createStore({
       imageURL: getCookies().user_image,
     },
     uploads: [],
+    connectedUsers: [],
     sortOrder: JSON.parse(localStorage.getItem("sortOrder")) || {
       label: "Modified",
       field: "modified",
@@ -30,6 +31,7 @@ const store = createStore({
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     entityInfo: JSON.parse(localStorage.getItem("selectedEntities")) || null,
+    currentViewEntites: JSON.parse(localStorage.getItem("currentViewEntites")),
     pasteData: { entities: [], action: null },
     showInfo: false,
     hasWriteAccess: false,
@@ -66,6 +68,9 @@ const store = createStore({
     setUploads(state, uploads) {
       state.uploads = uploads;
     },
+    setConnectedUsers(state, connectedUsers) {
+      state.connectedUsers = connectedUsers;
+    },
     pushToUploads(state, upload) {
       state.uploads.push(upload);
     },
@@ -89,6 +94,10 @@ const store = createStore({
     },
     setEntityInfo(state, payload) {
       localStorage.setItem("selectedEntities", JSON.stringify(payload));
+      state.entityInfo = payload;
+    },
+    setCurrentViewEntites(state, payload) {
+      localStorage.setItem("currentViewEntites", JSON.stringify(payload));
       state.entityInfo = payload;
     },
     setPasteData(state, payload) {

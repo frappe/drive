@@ -37,7 +37,7 @@
         v-for="entity in folderContents"
         :id="entity.name"
         :key="entity.name"
-        class="entity grid items-center cursor-pointer mb-1 rounded pl-2 pr-4 py-2.5 hover:bg-gray-50 group"
+        class="entity grid items-center cursor-pointer mb-1 rounded pl-2 pr-4 py-1.5 hover:bg-gray-50 group"
         :style="{
           gridTemplateColumns: tableColumnsGridWidth,
         }"

@@ -315,7 +315,7 @@ export default {
           },
           {
             label: "Get Link",
-            icon: "link",
+            icon: "link-2",
             onClick: () => {
               getLink(this.selectedEntities[0]);
             },
@@ -1106,6 +1106,7 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
+          this.$store.commit("setCurrentViewEntites", data);
         },
         auto: false,
       };
@@ -1130,6 +1131,7 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
+          this.$store.commit("setCurrentViewEntites", data);
         },
         auto: false,
       };

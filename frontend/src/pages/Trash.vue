@@ -253,6 +253,7 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? "me" : entity.owner;
           });
+          this.$store.commit("setCurrentViewEntites", data);
         },
         auto: true,
       };

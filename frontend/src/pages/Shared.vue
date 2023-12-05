@@ -653,6 +653,7 @@ export default {
             entity.creation = formatDate(entity.creation);
             this.folderContent = data;
           });
+          this.$store.commit("setCurrentViewEntites", data);
         },
         onError(error) {
           this.folderContent = [];
@@ -681,6 +682,7 @@ export default {
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
             this.folderContent = data;
+            this.$store.commit("setCurrentViewEntites", data);
           });
         },
         onError(error) {
