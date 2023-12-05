@@ -22,16 +22,22 @@
         </div>
       </div> 
        $store.state.hasWriteAccess -->
-
       <div v-if="isLoggedIn" class="flex items-center">
         <Dropdown
           :options="fileOptions"
           placement="left"
-          class="basis-5/12 lg:basis-auto mr-2">
+          class="basis-5/12 lg:basis-auto">
           <Button v-if="$route.meta.documentPage && isLoggedIn" variant="ghost">
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
         </Dropdown>
+        <div
+          v-if="
+            $route.meta.documentPage && connectedUsers.length > 1 && isLoggedIn
+          "
+          class="bg-gray-200 rounded flex justify-center items-center px-1 mx-2">
+          <UsersBar />
+        </div>
         <Button
           v-if="$route.name === 'Recent'"
           class="bg-red-100 text-red-700"
@@ -107,6 +113,7 @@
     " />
 </template>
 <script>
+import UsersBar from "./UsersBar.vue";
 import { Dropdown, FeatherIcon, Button } from "frappe-ui";
 import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
@@ -121,6 +128,7 @@ export default {
     FeatherIcon,
     Button,
     Breadcrumbs,
+    UsersBar,
   },
   props: {
     breadcrumbs: {
@@ -202,6 +210,9 @@ export default {
     },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
+    },
+    connectedUsers() {
+      return this.$store.state.connectedUsers;
     },
   },
   /*   methods: {

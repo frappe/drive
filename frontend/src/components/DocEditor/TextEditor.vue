@@ -83,7 +83,7 @@ import { Color } from "@tiptap/extension-color";
 import configureMention from "./mention";
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown";
 import { DOMParser } from "prosemirror-model";
-import { onOutsideClickDirective } from "frappe-ui";
+import { onOutsideClickDirective, Avatar } from "frappe-ui";
 import { v4 as uuidv4 } from "uuid";
 import { Comment } from "./comment";
 import { LineHeight } from "./lineHeight";
@@ -107,6 +107,7 @@ export default {
     DocMenuAndInfoBar,
     InfoSidebar,
     toast,
+    Avatar,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -165,6 +166,8 @@ export default {
       editor: null,
       buttons: ["Link", "Separator", "New Comment"],
       provider: null,
+      awareness: null,
+      connectedUsers: null,
       localStore: null,
       tempEditable: true,
       isTextSelected: false,
@@ -286,6 +289,7 @@ export default {
       { signaling: ["wss://network.arjunchoudhary.com"] }
     );
     this.provider = webrtcProvider;
+    this.awareness = this.provider.awareness.getStates();
     /* this.localStore = indexeddbProvider; */
     let componentContext = this;
     document.addEventListener("keydown", this.saveDoc);
@@ -295,13 +299,16 @@ export default {
       onCreate() {
         componentContext.findCommentsAndStoreValues();
         componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
+        componentContext.updateConnectedUsers(componentContext.editor);
       },
       onUpdate() {
+        componentContext.updateConnectedUsers(componentContext.editor);
         componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
         componentContext.findCommentsAndStoreValues();
         componentContext.setCurrentComment();
       },
       onSelectionUpdate() {
+        componentContext.updateConnectedUsers(componentContext.editor);
         componentContext.setCurrentComment();
         componentContext.isTextSelected =
           !!componentContext.editor.state.selection.content().size;
@@ -358,7 +365,7 @@ export default {
         CollaborationCursor.configure({
           provider: webrtcProvider,
           user: {
-            name: this.currentUserName.toLowerCase(),
+            name: this.currentUserName,
             avatar: this.currentUserImage,
             color: this.getRandomColor(),
           },
@@ -410,6 +417,7 @@ export default {
     });
   },
   beforeUnmount() {
+    this.updateConnectedUsers(this.editor);
     document.removeEventListener("keydown", this.saveDoc);
     this.editor.destroy();
     /* this.localStore.clearData(); */
@@ -418,6 +426,12 @@ export default {
     this.editor = null;
   },
   methods: {
+    updateConnectedUsers(editor) {
+      this.$store.commit(
+        "setConnectedUsers",
+        editor.storage.collaborationCursor.users
+      );
+    },
     saveDoc(e) {
       if (!(e.keyCode === 83 && (e.ctrlKey || e.metaKey))) {
         return;
@@ -428,7 +442,6 @@ export default {
         title: "Document saved!",
         position: "bottom-right",
         timeout: 2,
-        icon: "save",
       });
     },
     printHtml(dom) {
@@ -516,16 +529,15 @@ export default {
     },
     getRandomColor() {
       const list = [
-        "#525252",
-        "#775225",
         "#e11d48",
         "#20C1F4",
         "#2374D2",
         "#fbbf24",
-        "#E39B4C",
-        "#16a34a",
+        "#79AC78",
         "#EF7323",
-        "#9333ea",
+        "#FF90BC",
+        "#527853",
+        "#8DDFCB",
       ];
       return list[Math.floor(Math.random() * list.length)];
     },
@@ -717,7 +729,7 @@ span[data-comment] {
 /* Render the username above the caret */
 .collaboration-cursor__label {
   border-radius: 50px;
-  color: #ffffffd0;
+  color: #000000a2;
   font-size: 0.8rem;
   font-style: normal;
   font-family: "Inter";
