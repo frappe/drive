@@ -17,7 +17,7 @@
 /* Consider adding https://codemirror.net/ and add a mimetype eval list for all possible mimetypes */
 
 import { LoadingIndicator } from "frappe-ui";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps(["previewEntity"]);
 const loading = ref(true);
@@ -44,6 +44,12 @@ async function fetchContent() {
     blob.value = await resBlob.text();
   }
 }
+watch(
+  () => props.previewEntity,
+  (newValue, oldValue) => {
+    fetchContent();
+  }
+);
 onMounted(() => {
   fetchContent();
 });

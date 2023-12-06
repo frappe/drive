@@ -11,7 +11,7 @@
 
 <script setup>
 import { LoadingIndicator } from "frappe-ui";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useObjectUrl } from "@vueuse/core";
 
 const props = defineProps(["previewEntity"]);
@@ -39,6 +39,14 @@ async function fetchContent() {
     blob.value = await res.blob();
   }
 }
+
+watch(
+  () => props.previewEntity,
+  (newValue, oldValue) => {
+    fetchContent();
+  }
+);
+
 onMounted(() => {
   fetchContent();
 });

@@ -2,7 +2,7 @@
   <LoadingIndicator
     v-if="loading"
     class="w-10 h-full z-10 text-neutral-100 mx-auto" />
-  <img v-else :src="previewURL" />
+  <img class="w-full h-auto" v-else :src="previewURL" />
 </template>
 
 <script setup>
@@ -42,6 +42,13 @@ async function fetchContent() {
     imgBlob.value = await res.blob();
   }
 }
+
+watch(
+  () => props.previewEntity,
+  (newValue, oldValue) => {
+    fetchContent();
+  }
+);
 
 onMounted(() => {
   fetchContent();

@@ -48,6 +48,13 @@ onMounted(() => {
   fetchContent();
 });
 
+watch(
+  () => props.previewEntity,
+  (newValue, oldValue) => {
+    fetchContent();
+  }
+);
+
 onBeforeUnmount(() => {
   loading.value = true;
   blob.value = null;
