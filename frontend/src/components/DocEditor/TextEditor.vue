@@ -97,6 +97,7 @@ import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue";
 import Menu from "./Menu.vue";
 import InfoSidebar from "../InfoSidebar.vue";
 import { toast } from "@/utils/toasts.js";
+import { PageBreak } from "./Pagebreak";
 
 export default {
   name: "TextEditor",
@@ -359,6 +360,7 @@ export default {
           defaultAlignment: "left",
         }),
         ,
+        PageBreak,
         Collaboration.configure({
           document: doc,
         }),
@@ -707,6 +709,15 @@ ol {
 @page {
   size: a4;
   margin: 4em;
+}
+/* 
+  Omit the page break div from printing added from `PageBreak.ts`
+*/
+@media print {
+  #page-break-div {
+    border: none !important;
+    margin: none !important;
+  }
 }
 
 span[data-comment] {
