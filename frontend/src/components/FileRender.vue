@@ -7,14 +7,14 @@
     class="p-8 z-10 bg-gray-900 text-white rounded-md text-neutral-100 text-xl text-center font-medium">
     {{ error }}
   </div>
-  <div v-else>
+  <template v-else>
     <VideoPreview v-if="isVideo" :preview-entity="previewEntity" />
     <TextPreview v-if="isTxt" :preview-entity="previewEntity" />
     <SheetPreview v-if="isXlsx" :preview-entity="previewEntity" />
     <ImagePreview v-if="isImage" :preview-entity="previewEntity" />
     <DocPreview v-if="isDocx" :preview-entity="previewEntity" />
     <PDFPreview v-if="isPdf" :preview-entity="previewEntity" />
-  </div>
+  </template>
 </template>
 <script>
 import { LoadingIndicator } from "frappe-ui";
