@@ -4,13 +4,20 @@
   </div>
 </template>
 <script setup>
-import { ref, onBeforeUnmount, onMounted } from "vue";
+import { ref, onBeforeUnmount, onMounted, watch, computed } from "vue";
 import { read, utils } from "xlsx";
 import Spreadsheet from "x-data-spreadsheet";
 
 const props = defineProps(["previewEntity"]);
 const loading = ref(true);
-
+const canWrite = computed(() => {
+  return props.previewEntity.owner == "me"
+    ? true
+    : props.previewEntity.write
+    ? true
+    : false;
+});
+let grid;
 async function fetchContent() {
   loading.value = true;
   const headers = {
@@ -28,7 +35,15 @@ async function fetchContent() {
   );
   if (res.ok) {
     const ab = await res.arrayBuffer();
-    var grid = new Spreadsheet(document.getElementById("gridctr"));
+    grid = new Spreadsheet(document.getElementById("gridctr"), {
+      mode: canWrite.value ? "edit" : "read",
+      showToolbar: canWrite.value,
+      showContextmenu: canWrite.value,
+      view: {
+        height: () => document.getElementById("renderContainer").clientHeight,
+        width: () => 1100,
+      },
+    });
     grid.loadData(stox(read(ab)));
   }
   loading.value = false;
@@ -154,12 +169,21 @@ function xtos(sdata) {
   return out;
 }
 
+watch(
+  () => props.previewEntity,
+  (newValue, oldValue) => {
+    fetchContent();
+  }
+);
+
 onMounted(() => {
+  console.log(props.previewEntity);
   fetchContent();
 });
 
 onBeforeUnmount(() => {
   loading.value = true;
+  document.getElementById("gridctr").remove();
 });
 </script>
 
