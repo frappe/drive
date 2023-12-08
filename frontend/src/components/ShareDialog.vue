@@ -1,31 +1,19 @@
 <template>
   <Dialog v-model="open" :options="{ size: 'lg' }">
     <template #body-title>
-      <div class="flex items-center justify-between w-full">
+      <div class="flex items-center justify-start w-full">
         <span class="font-semibold text-2xl">Sharing</span>
-        <Button @click="getLink" class="cursor-pointer bg-gray-100 ml-2">
-          <template #prefix>
-            <FrappeFolderLine
-              class="h-4"
-              v-if="$resources.entity.data?.is_group" />
-            <FrappeFileLine class="h-4" v-else />
-          </template>
-          <span>{{ $resources.entity.data?.title }}</span>
-        </Button>
-        <!-- <Button
-        class="border border-gray-200"
-        :variant="'ghost'"
-        theme="gray"
-        size="sm"
-        label="Copy Link"
-        :loading="false"
-        :loadingText="null"
-        :disabled="false"
-        :link="null"
-        iconLeft="link-2"
-        >
-        Copy Link
-      </Button> -->
+        <div
+          class="flex items-center justify-start border pl-0.5 pr-2 py-0.5 ml-1 rounded-sm border-gray-400 max-w-[80%]">
+          <Folder
+            class="h-4 stroke-[1.5] text-gray-900"
+            v-if="$resources.entity.data?.is_group" />
+          <File class="h-4 stroke-[1.5] text-gray-900" v-else />
+          <span
+            class="font-medium text-base text-gray-800 line-clamp-1 truncate max-w-[90%]">
+            {{ $resources.entity.data?.title }}
+          </span>
+        </div>
       </div>
     </template>
     <template #body-content>
@@ -404,11 +392,18 @@
           </Popover>
         </div>
       </div>
-      <div class="flex justify-items-center content-center mt-6"></div>
-      <Button variant="solid" @click="submit" class="w-full px-4 py-2">
-        Share
-      </Button>
-      <Alert v-if="showAlert" :title="alertMessage" class="mt-5"></Alert>
+      <div class="w-full flex items-center justify-between mt-8">
+        <Button :variant="'subtle'" icon-left="link-2" @click="getLink">
+          Copy Link
+        </Button>
+        <Button variant="solid" @click="submit">
+          <template #prefix>
+            <Share2 class="w-4" />
+          </template>
+          Share
+        </Button>
+      </div>
+      <Alert v-if="showAlert" :title="alertMessage" class="mt-5" />
     </template>
   </Dialog>
 </template>
@@ -438,6 +433,9 @@ import { toast } from "@/utils/toasts.js";
 import { getLink } from "@/utils/getLink";
 import FrappeFolderLine from "@/components/FrappeFolderLine.vue";
 import FrappeFileLine from "@/components/FrappeFileLine.vue";
+import { Share2 } from "lucide-vue-next";
+import { Folder } from "lucide-vue-next";
+import { File } from "lucide-vue-next";
 
 export default {
   name: "ShareDialog",
@@ -464,6 +462,9 @@ export default {
     Trash,
     FrappeFileLine,
     FrappeFolderLine,
+    Share2,
+    Folder,
+    File,
   },
   props: {
     modelValue: {
