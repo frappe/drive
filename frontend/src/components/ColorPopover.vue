@@ -9,7 +9,7 @@
         :active="isOpen"
         class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center w-full"
         @click="togglePopover()">
-        <FeatherIcon name="droplet" class="stroke h-3.5 mr-2" />
+        <Palette class="w-3.5 mr-2 stroke-[1.5]" />
         <div class="text-gray-800">Color</div>
         <FeatherIcon
           :name="'chevron-right'"
@@ -37,10 +37,11 @@
 
 <script>
 import { Popover, FeatherIcon } from "frappe-ui";
+import { Palette } from "lucide-vue-next";
 
 export default {
   name: "ColorPopover",
-  components: { Popover, FeatherIcon },
+  components: { Popover, FeatherIcon, Palette },
   props: {
     entityName: {
       type: String,
