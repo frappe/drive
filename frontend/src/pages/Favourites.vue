@@ -349,7 +349,7 @@ export default {
           },
         },
         {
-          label: "Move to trash",
+          label: "Move to Trash",
           icon: Trash2,
           danger: true,
           onClick: () => {

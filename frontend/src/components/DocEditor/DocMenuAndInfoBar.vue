@@ -56,7 +56,7 @@
                   </div>
                 </div>
               </div>
-              <div v-if="entity.owner === 'me'">
+              <div v-if="entity.owner === 'Me'">
                 <div class="text-base font-medium mb-2">Manage Access</div>
                 <div class="flex flex-row">
                   <Button
@@ -73,7 +73,7 @@
                 :entity-name="entity.name" />
               <div
                 v-if="
-                  entity.owner === 'me' || $resources.entityTags.data?.length
+                  entity.owner === 'Me' || $resources.entityTags.data?.length
                 ">
                 <div class="text-base font-medium mb-2">Tags</div>
                 <div class="flex flex-wrap gap-2">
@@ -89,11 +89,11 @@
                       }
                     " />
                   <Badge
-                    v-if="!addTag && entity.owner === 'me'"
+                    v-if="!addTag && entity.owner === 'Me'"
                     class="flex items-center content-center cursor-pointer font-medium"
                     @click="addTag = true">
                     <FeatherIcon
-                      v-if="entity.owner === 'me'"
+                      v-if="entity.owner === 'Me'"
                       class="h-3 stroke-2"
                       name="plus" />
                     Add tag

@@ -336,7 +336,7 @@ export default {
           isEnabled: () => true,
         },
         {
-          label: "Remove from recent",
+          label: "Remove from Recent",
           icon: Trash2,
           danger: true,
           onClick: () => {
@@ -347,7 +347,7 @@ export default {
           },
         },
         {
-          label: "Move to trash",
+          label: "Move to Trash",
           icon: Trash2,
           danger: true,
           onClick: () => {

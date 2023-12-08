@@ -6,12 +6,12 @@
         variant="subtle"
         :theme="`${tag.color}`"
         :style="{
-          cursor: entity.owner === 'me' ? 'pointer' : 'default',
+          cursor: entity.owner === 'Me' ? 'pointer' : 'default',
         }"
-        @click="if (entity.owner === 'me') togglePopover();">
+        @click="if (entity.owner === 'Me') togglePopover();">
         {{ `${tag.title}` }}
         <FeatherIcon
-          v-if="entity.owner === 'me'"
+          v-if="entity.owner === 'Me'"
           @click="$resources.removeTag.submit()"
           class="my-auto h-3 stroke-2"
           name="x" />

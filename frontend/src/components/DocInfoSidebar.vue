@@ -45,7 +45,7 @@
             <div
               v-if="tab === 0"
               class="space-y-7 min-h-full flex-auto flex flex-col z-0 overflow-y-auto">
-              <div v-if="entity.owner === 'me'">
+              <div v-if="entity.owner === 'Me'">
                 <div class="text-lg font-medium my-4">Manage Access</div>
                 <div class="flex flex-row">
                   <Button class="h-7" @click="showShareDialog = true">
@@ -55,7 +55,7 @@
               </div>
               <div
                 v-if="
-                  entity.owner === 'me' || $resources.entityTags.data?.length
+                  entity.owner === 'Me' || $resources.entityTags.data?.length
                 ">
                 <div class="text-lg font-medium mb-4">Tag</div>
                 <div class="flex flex-wrap gap-2">
@@ -71,7 +71,7 @@
                       }
                     " />
                   <Button
-                    v-if="!addTag && entity.owner === 'me'"
+                    v-if="!addTag && entity.owner === 'Me'"
                     class="h-6 text-[12px] text-gray-800"
                     icon-left="plus"
                     @click="addTag = true">

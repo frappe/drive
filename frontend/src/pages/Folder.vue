@@ -484,7 +484,7 @@ export default {
           },
           /* Unshare */
           {
-            label: "Remove from folder",
+            label: "Remove from Folder",
             icon: Trash2,
             danger: true,
             onClick: () => {
@@ -500,7 +500,7 @@ export default {
             },
           },
           {
-            label: "Move to trash",
+            label: "Move to Trash",
             icon: Trash2,
             danger: true,
             onClick: () => {
@@ -731,7 +731,7 @@ export default {
             },
           }, */
           {
-            label: "Remove from folder",
+            label: "Remove from Folder",
             danger: true,
             icon: Trash2,
             onClick: () => {

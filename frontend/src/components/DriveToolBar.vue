@@ -12,14 +12,14 @@
           class="animate h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
           :class="[$store.state.shareView === 'with' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleShareView', 'with')">
-          Shared with me
+          Shared with Me
         </Button>
         <Button
           variant="ghost"
           class="animate h-7 text-gray-900 rounded-[7px] px-2 py-1.5 leading-none transition-colors focus:outline-none"
           :class="[$store.state.shareView === 'by' ? 'bg-white shadow' : '']"
           @click="$store.commit('toggleShareView', 'by')">
-          Shared by me
+          Shared by Me
         </Button>
       </div>
       <!-- <Dropdown
