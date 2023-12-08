@@ -429,14 +429,12 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         .left_join(UserGroupMember)
         .on((UserGroupMember.parent == DriveDocShare.user_name))
         .left_join(DriveFavourite)
-        .left_join(DriveUser)
-        .on(
-            (DriveEntity.owner == DriveUser.email)
-        )
         .on(
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
+        .left_join(DriveUser)
+        .on((DriveEntity.owner == DriveUser.email))
         .select(*selectedFields)
         .where(
             (DriveEntity.parent_drive_entity == entity_name)
@@ -533,9 +531,7 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
             & (DriveFavourite.user == frappe.session.user)
         )
         .left_join(DriveUser)
-        .on(
-            (DriveEntity.owner == DriveUser.email)
-        )
+        .on((DriveEntity.owner == DriveUser.email))
         .select(*selectedFields)
         .where(
             (DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == is_active)
@@ -799,9 +795,7 @@ def list_favourites(order_by="modified"):
             )
         )
         .left_join(DriveUser)
-        .on(
-            (DriveEntity.owner == DriveUser.email)
-        )
+        .on((DriveEntity.owner == DriveUser.email))
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)
@@ -985,9 +979,7 @@ def list_recents(order_by="last_interaction"):
             )
         )
         .left_join(DriveUser)
-        .on(
-            (DriveEntity.owner == DriveUser.email)
-        )
+        .on((DriveEntity.owner == DriveUser.email))
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)
@@ -1069,7 +1061,7 @@ def get_user_directory_size():
 @frappe.whitelist()
 def toggle_allow_comments(entity_name, new_value):
     """
-    Toggle allow comments for entity
+    Toggle allow comments for entity without updating modified
 
     """
 
@@ -1082,7 +1074,7 @@ def toggle_allow_comments(entity_name, new_value):
 @frappe.whitelist()
 def toggle_allow_download(entity_name, new_value):
     """
-    Toggle allow download for entity
+    Toggle allow download for entity without updating modified
 
     """
 
