@@ -97,6 +97,24 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload";
+import {
+  Scan,
+  FileDown,
+  FolderDown,
+  Share2,
+  FolderInput,
+  Copy,
+  TextCursorInput,
+  Link2,
+  Info,
+  Star,
+  Trash2,
+  FolderPlus,
+  FolderUp,
+  FileUp,
+  FileText,
+} from "lucide-vue-next";
+import { Download } from "lucide-vue-next";
 
 export default {
   name: "Shared",
@@ -110,6 +128,21 @@ export default {
     NoFilesSection,
     FolderContentsError,
     EntityContextMenu,
+    Scan,
+    Share2,
+    FolderInput,
+    FileDown,
+    FolderDown,
+    Copy,
+    TextCursorInput,
+    Link2,
+    Info,
+    Star,
+    Trash2,
+    FolderPlus,
+    FolderUp,
+    FileUp,
+    FileText,
   },
   data: () => ({
     previewEntity: null,
@@ -145,7 +178,7 @@ export default {
         return [
           {
             label: "Download",
-            icon: "download",
+            icon: FileDown,
             onClick: () => {
               window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
             },
@@ -164,7 +197,7 @@ export default {
           },
           {
             label: "Download",
-            icon: "download",
+            icon: FolderDown,
             onClick: () => {
               if (this.selectedEntities.length > 1) {
                 let selected_entities = this.selectedEntities;
@@ -186,7 +219,7 @@ export default {
                     return (
                       entity.allow_download ||
                       entity.write ||
-                      entity.owner === "me"
+                      entity.owner === "Me"
                     );
                   }
                 );
@@ -202,7 +235,7 @@ export default {
           },
           {
             label: "Share",
-            icon: "share-2",
+            icon: Share2,
             onClick: () => {
               this.showShareDialog = true;
             },
@@ -216,7 +249,7 @@ export default {
           },
           {
             label: "Show Info",
-            icon: "info",
+            icon: Info,
             onClick: () => {
               this.$store.commit("setShowInfo", true);
             },
@@ -229,7 +262,7 @@ export default {
           },
           {
             label: "Hide Info",
-            icon: "info",
+            icon: Info,
             onClick: () => {
               this.$store.commit("setShowInfo", false);
             },
@@ -239,7 +272,7 @@ export default {
           },
           {
             label: "Rename",
-            icon: "edit",
+            icon: TextCursorInput,
             onClick: () => {
               this.showRenameDialog = true;
             },
@@ -251,8 +284,8 @@ export default {
             },
           },
           {
-            label: "Copy",
-            icon: "copy",
+            label: "Duplicate",
+            icon: Copy,
             onClick: () => {
               this.$store.commit("setPasteData", {
                 entities: this.selectedEntities.map((x) => x.name),
@@ -298,7 +331,7 @@ export default {
           },
           {
             label: "Favourite",
-            icon: "star",
+            icon: Star,
             onClick: () => {
               this.$resources.toggleFavourite.submit();
             },
@@ -311,7 +344,7 @@ export default {
           },
           {
             label: "Unfavourite",
-            icon: "star",
+            icon: Star,
             onClick: () => {
               this.$resources.toggleFavourite.submit();
             },
@@ -324,7 +357,7 @@ export default {
           },
           {
             label: "Unshare",
-            icon: "trash-2",
+            icon: Trash2,
             danger: true,
             onClick: () => {
               this.showRemoveDialog = true;
@@ -335,11 +368,12 @@ export default {
           },
         ].filter((item) => item.isEnabled());
       } else {
+        /* Sane to presume the user owns all all these */
         return [
           /* Folder Download */
           {
             label: "Download",
-            icon: "download",
+            icon: FolderDown,
             onClick: () => {
               if (this.selectedEntities.length > 1) {
                 let selected_entities = this.selectedEntities;
@@ -361,7 +395,7 @@ export default {
                     return (
                       entity.allow_download ||
                       entity.write ||
-                      entity.owner === "me"
+                      entity.owner === "Me"
                     );
                   }
                 );
@@ -371,7 +405,7 @@ export default {
           },
           {
             label: "Download",
-            icon: "download",
+            icon: FileDown,
             onClick: () => {
               window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
             },
@@ -382,50 +416,14 @@ export default {
                   !this.selectedEntities[0].is_group &&
                   !this.selectedEntities[0].document
                 ) {
-                  return (
-                    this.selectedEntities[0].allow_download ||
-                    this.selectedEntities[0].write ||
-                    this.selectedEntities[0].owner === "me"
-                  );
+                  return this.selectedEntities[0].owner === "Me";
                 }
               }
             },
           },
           {
-            label: "Download as ZIP",
-            icon: "download",
-            onClick: () => {
-              if (this.selectedEntities.length > 1) {
-                let selected_entities = this.selectedEntities;
-                selectedEntitiesDownload(selected_entities);
-              } else if (this.selectedEntities[0].is_group === 1) {
-                folderDownload(this.selectedEntities[0]);
-              }
-            },
-            isEnabled: () => {
-              if (
-                this.selectedEntities.length === 1 &&
-                !this.selectedEntities[0].is_group
-              ) {
-                return false;
-              }
-              if (this.selectedEntities.length) {
-                const allEntitiesSatisfyCondition = this.selectedEntities.every(
-                  (entity) => {
-                    return (
-                      entity.allow_download ||
-                      entity.write ||
-                      entity.owner === "me"
-                    );
-                  }
-                );
-                return allEntitiesSatisfyCondition;
-              }
-            },
-          },
-          {
             label: "Share",
-            icon: "share-2",
+            icon: Share2,
             onClick: () => {
               this.showShareDialog = true;
             },
@@ -434,8 +432,8 @@ export default {
             },
           },
           {
-            label: "View details",
-            icon: "eye",
+            label: "Show Info",
+            icon: Info,
             onClick: () => {
               this.$store.commit("setShowInfo", true);
             },
@@ -447,8 +445,8 @@ export default {
             },
           },
           {
-            label: "Hide details",
-            icon: "eye-off",
+            label: "Hide Info",
+            icon: Info,
             onClick: () => {
               this.$store.commit("setShowInfo", false);
             },
@@ -458,7 +456,7 @@ export default {
           },
           {
             label: "Rename",
-            icon: "edit",
+            icon: TextCursorInput,
             onClick: () => {
               this.showRenameDialog = true;
             },
@@ -467,8 +465,8 @@ export default {
             },
           },
           {
-            label: "Cut",
-            icon: "scissors",
+            label: "Move",
+            icon: FolderInput,
             onClick: () => {
               this.$store.commit("setPasteData", {
                 entities: this.selectedEntities.map((x) => x.name),
@@ -480,35 +478,8 @@ export default {
             },
           },
           {
-            label: "Copy",
-            icon: "copy",
-            onClick: () => {
-              this.$store.commit("setPasteData", {
-                entities: this.selectedEntities.map((x) => x.name),
-                action: "copy",
-              });
-            },
-            isEnabled: () => {
-              return this.selectedEntities.length > 0;
-            },
-          },
-          {
-            label: "Paste into Folder",
-            icon: "clipboard",
-            onClick: async () => {
-              this.pasteEntities(this.selectedEntities[0].name);
-            },
-            isEnabled: () => {
-              return (
-                this.$store.state.pasteData.entities.length &&
-                this.selectedEntities.length === 1 &&
-                this.selectedEntities[0].is_group
-              );
-            },
-          },
-          {
-            label: "Add to Favourites",
-            icon: "star",
+            label: "Favourite",
+            icon: Star,
             onClick: () => {
               this.$resources.toggleFavourite.submit();
             },
@@ -520,8 +491,8 @@ export default {
             },
           },
           {
-            label: "Remove from Favourites",
-            icon: "x-circle",
+            label: "Unfavourite",
+            icon: Star,
             onClick: () => {
               this.$resources.toggleFavourite.submit();
             },
@@ -533,8 +504,7 @@ export default {
             },
           },
           {
-            label: "Change Color",
-            icon: "droplet",
+            label: "Color",
             isEnabled: () => {
               return (
                 this.selectedEntities.length === 1 &&
@@ -544,7 +514,8 @@ export default {
           },
           {
             label: "Move to Trash",
-            icon: "trash-2",
+            danger: true,
+            icon: Trash2,
             onClick: () => {
               this.showRemoveDialog = true;
             },
@@ -652,6 +623,7 @@ export default {
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
             this.folderContent = data;
+            entity.owner = "Me";
           });
           this.$store.commit("setCurrentViewEntites", data);
         },

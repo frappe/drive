@@ -119,6 +119,8 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { formatDate } from "@/utils/format";
 import { FileDown } from "lucide-vue-next";
+import { FileUp, FolderUp, FolderPlus, FileText } from "lucide-vue-next";
+import { h } from "vue";
 
 export default {
   name: "Navbar",
@@ -129,6 +131,11 @@ export default {
     Button,
     Breadcrumbs,
     UsersBar,
+    FileUp,
+    FileDown,
+    FolderUp,
+    FolderPlus,
+    FileText,
   },
   props: {
     breadcrumbs: {
@@ -152,12 +159,18 @@ export default {
           items: [
             {
               label: "Upload file",
-              icon: "upload",
+              icon: h(FileUp, {
+                id: "foo",
+                class: "text-gray-900 stroke-[1.5]",
+              }),
               onClick: () => this.emitter.emit("uploadFile"),
             },
             {
               label: "Upload Folder",
-              icon: "folder",
+              icon: h(FolderUp, {
+                id: "foo",
+                class: "text-gray-900 stroke-[1.5]",
+              }),
               onClick: () => this.emitter.emit("uploadFolder"),
               isEnabled: () => this.selectedEntities.length === 0,
             },
@@ -168,12 +181,18 @@ export default {
           items: [
             {
               label: "New folder",
-              icon: "folder-plus",
+              icon: h(FolderPlus, {
+                id: "foo",
+                class: "text-gray-900 stroke-[1.5]",
+              }),
               onClick: () => (this.showNewFolderDialog = true),
             },
             {
               label: "New Document",
-              icon: "file-text",
+              icon: h(FileText, {
+                id: "foo",
+                class: "text-gray-900 stroke-[1.5]",
+              }),
               onClick: async () => {
                 await this.$resources.createDocument.submit({
                   title: "Untitled Document",
@@ -196,6 +215,11 @@ export default {
           icon: FileDown,
           label: "Export to PDF",
           onClick: () => this.emitter.emit("exportDocToPDF"),
+        },
+        {
+          icon: FileDown,
+          label: "Import from Word",
+          onClick: () => this.emitter.emit("importDocFromWord"),
         },
       ],
       showSearchPopup: false,
@@ -246,7 +270,7 @@ export default {
           data.creation = formatDate(data.creation);
           this.$store.commit("setEntityInfo", [data]);
           this.previewEntity = data;
-          data.owner = "me";
+          data.owner = "Me";
         },
         onError(data) {
           console.log(data);

@@ -23,12 +23,21 @@
         v-else
         class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center">
         <FeatherIcon
+          v-if="typeof item.icon === 'string'"
           :name="item.icon"
           class="h-3.5 mr-2"
           :class="[
             item.danger ? 'stroke-red-500 text-red-500' : '',
             item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
           ]" />
+        <component
+          v-else
+          class="w-3.5 mr-2 stroke-[1.5]"
+          :class="[
+            item.danger ? 'stroke-red-500 text-red-500' : '',
+            item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
+          ]"
+          :is="item.icon" />
         <div
           class="text-gray-800 mr-4"
           :class="[

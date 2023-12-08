@@ -19,7 +19,7 @@
       <div
         v-else
         class="h-6 px-2 hover:bg-gray-100 text-sm whitespace-nowrap cursor-pointer rounded-[5px] flex justify-start items-center">
-        <FeatherIcon :name="item.icon" class="h-3.5 text-gray-800 mr-2" />
+        <component class="w-3.5 mr-2 stroke-[1.5]" :is="item.icon" />
         <div class="text-gray-800 mr-4">{{ item.label }}</div>
       </div>
     </div>

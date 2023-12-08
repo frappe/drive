@@ -90,6 +90,7 @@ import GeneralDialog from "@/components/GeneralDialog.vue";
 import NoFilesSection from "@/components/NoFilesSection.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatDate, formatSize } from "@/utils/format";
+import { RotateCcw, Trash2 } from "lucide-vue-next";
 
 export default {
   name: "Trash",
@@ -102,6 +103,8 @@ export default {
     NoFilesSection,
     FolderContentsError,
     EntityContextMenu,
+    RotateCcw,
+    Trash2,
   },
   data: () => ({
     selectedEntities: [],
@@ -125,7 +128,7 @@ export default {
       return [
         {
           label: "Empty Trash",
-          icon: "trash-2",
+          icon: Trash2,
           onClick: () => {
             this.showDeleteDialog = true;
           },
@@ -138,7 +141,7 @@ export default {
         },
         {
           label: "Restore",
-          icon: "refresh-ccw",
+          icon: RotateCcw,
           onClick: () => {
             this.showRestoreDialog = true;
           },
@@ -147,8 +150,8 @@ export default {
           },
         },
         {
-          label: "Delete Forever",
-          icon: "trash-2",
+          label: "Delete forever",
+          icon: Trash2,
           danger: true,
           onClick: () => {
             this.showDeleteDialog = true;
@@ -251,7 +254,7 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
+            entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
           });
           this.$store.commit("setCurrentViewEntites", data);
         },

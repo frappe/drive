@@ -105,11 +105,27 @@ import NoFilesSection from "@/components/NoFilesSection.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
-import { entries, get, clear } from "idb-keyval";
 import RenameDialog from "@/components/RenameDialog.vue";
 import ShareDialog from "@/components/ShareDialog.vue";
 import GeneralDialog from "@/components/GeneralDialog.vue";
 import { getLink } from "@/utils/getLink";
+import {
+  Scan,
+  FileDown,
+  FolderDown,
+  Share2,
+  FolderInput,
+  Copy,
+  TextCursorInput,
+  Link2,
+  Info,
+  Star,
+  Trash2,
+  FolderPlus,
+  FolderUp,
+  FileUp,
+  FileText,
+} from "lucide-vue-next";
 
 export default {
   name: "Recent",
@@ -123,6 +139,21 @@ export default {
     RenameDialog,
     ShareDialog,
     GeneralDialog,
+    Scan,
+    Share2,
+    FolderInput,
+    FileDown,
+    FolderDown,
+    Copy,
+    TextCursorInput,
+    Link2,
+    Info,
+    Star,
+    Trash2,
+    FolderPlus,
+    FolderUp,
+    FileUp,
+    FileText,
   },
   data: () => ({
     previewEntity: null,
@@ -150,7 +181,7 @@ export default {
       return [
         {
           label: "Preview",
-          icon: "eye",
+          icon: Scan,
           onClick: () => {
             this.openEntity(this.selectedEntities[0]);
           },
@@ -166,7 +197,7 @@ export default {
         },
         {
           label: "Download",
-          icon: "download",
+          icon: FileDown,
           onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
@@ -174,7 +205,7 @@ export default {
             if (this.selectedEntities.length === 1) {
               if (
                 this.selectedEntities[0].allow_download ||
-                this.selectedEntities[0].owner === "me"
+                this.selectedEntities[0].owner === "Me"
               ) {
                 return !this.selectedEntities[0].document;
               }
@@ -183,20 +214,20 @@ export default {
         },
         {
           label: "Share",
-          icon: "share-2",
+          icon: Share2,
           onClick: () => {
             this.showShareDialog = true;
           },
           isEnabled: () => {
             return (
               this.selectedEntities.length === 1 &&
-              this.selectedEntities.every((x) => x.owner === "me")
+              this.selectedEntities.every((x) => x.owner === "Me")
             );
           },
         },
         {
           label: "Get Link",
-          icon: "link-2",
+          icon: Link2,
           onClick: () => {
             getLink(this.selectedEntities[0]);
           },
@@ -211,7 +242,7 @@ export default {
         },
         {
           label: "Rename",
-          icon: "edit",
+          icon: TextCursorInput,
           onClick: () => {
             this.showRenameDialog = true;
           },
@@ -219,13 +250,13 @@ export default {
             return (
               this.selectedEntities.length === 1 &&
               (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "me")
+                this.selectedEntities[0].owner === "Me")
             );
           },
         },
         {
-          label: "Cut",
-          icon: "scissors",
+          label: "Move",
+          icon: FolderInput,
           onClick: () => {
             this.$store.commit("setPasteData", {
               entities: this.selectedEntities.map((x) => x.name),
@@ -235,13 +266,13 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me")
+              this.selectedEntities.every((x) => x.owner === "Me")
             );
           },
         },
         {
-          label: "Copy",
-          icon: "copy",
+          label: "Duplicate",
+          icon: Copy,
           onClick: () => {
             this.$store.commit("setPasteData", {
               entities: this.selectedEntities.map((x) => x.name),
@@ -254,7 +285,7 @@ export default {
         },
         {
           label: "Show Info",
-          icon: "info",
+          icon: Info,
           onClick: () => {
             this.$store.commit("setShowInfo", true);
           },
@@ -266,7 +297,7 @@ export default {
         },
         {
           label: "Hide Info",
-          icon: "info",
+          icon: Info,
           onClick: () => {
             this.$store.commit("setShowInfo", false);
           },
@@ -276,7 +307,7 @@ export default {
         },
         {
           label: "Favourite",
-          icon: "star",
+          icon: Star,
           onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -289,7 +320,7 @@ export default {
         },
         {
           label: "Unfavourite",
-          icon: "star",
+          icon: Star,
           onClick: () => {
             this.$resources.toggleFavourite.submit();
           },
@@ -306,7 +337,7 @@ export default {
         },
         {
           label: "Remove from recent",
-          icon: "trash-2",
+          icon: Trash2,
           danger: true,
           onClick: () => {
             this.$resources.clearRecent.submit();
@@ -316,8 +347,8 @@ export default {
           },
         },
         {
-          label: "Delete",
-          icon: "trash-2",
+          label: "Move to trash",
+          icon: Trash2,
           danger: true,
           onClick: () => {
             this.showRemoveDialog = true;
@@ -325,7 +356,7 @@ export default {
           isEnabled: () => {
             return (
               this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.owner === "me")
+              this.selectedEntities.every((x) => x.owner === "Me")
             );
           },
         },
@@ -437,7 +468,7 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? "me" : entity.owner;
+            entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
           });
           this.$store.commit("setCurrentViewEntites", data);
         },
