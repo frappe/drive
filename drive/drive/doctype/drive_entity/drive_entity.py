@@ -312,10 +312,9 @@ class DriveEntity(NestedSet):
         :raises InvalidColor: If the color is not a hex value string
         :return: DriveEntity doc once it's updated
         """
-
-        self.color = new_color
-        self.save()
-        return self
+        return frappe.db.set_value(
+            "Drive Entity", self.name, "color", new_color, update_modified=False
+        )
 
     @frappe.whitelist()
     def set_general_access(self, read, write, everyone, public, share, share_name=None):
