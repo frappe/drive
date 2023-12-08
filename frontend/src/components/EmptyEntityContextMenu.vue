@@ -46,12 +46,22 @@ export default {
     this.childHeight = this.$refs.emptyContextMenu.clientHeight;
     this.calculateY();
     this.calculateX();
+    this.disableScroll();
   },
   updated() {
     this.calculateY();
     this.calculateX();
   },
+  beforeUnmount() {
+    this.enableScroll();
+  },
   methods: {
+    disableScroll() {
+      document.querySelector("#currentPage").classList.add("disable-scroll");
+    },
+    enableScroll() {
+      document.querySelector("#currentPage").classList.remove("disable-scroll");
+    },
     calculateY() {
       if (this.entityContext.y >= this.parentHeight - this.childHeight) {
         return (this.$refs.emptyContextMenu.style.top =
@@ -87,3 +97,8 @@ export default {
   },
 };
 </script>
+<style>
+.disable-scroll {
+  overflow: hidden;
+}
+</style>

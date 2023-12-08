@@ -23,7 +23,8 @@
                   : 'overflow-y-scroll'
               ">
               <router-view v-slot="{ Component }">
-                <component :is="Component" ref="currentPage" />
+                <component id="currentPage" :is="Component" ref="currentPage" />
+                <!-- <FilePicker v-if="showFilePicker" v-model="showFilePicker" :suggestedTabIndex="1" /> -->
               </router-view>
             </div>
             <InfoSidebar v-if="!$route.meta.documentPage" />
@@ -55,6 +56,8 @@ import MobileSidebar from "@/components/MobileSidebar.vue";
 import UploadTracker from "@/components/UploadTracker.vue";
 import { Button, FeatherIcon } from "frappe-ui";
 import { Toasts } from "@/utils/toasts.js";
+import FilePicker from "./components/FilePicker.vue";
+import MoveDialog from "./components/MoveDialog.vue";
 
 export default {
   name: "App",
@@ -67,12 +70,16 @@ export default {
     Button,
     FeatherIcon,
     Toasts,
+    FilePicker,
+    MoveDialog,
   },
   data() {
     return {
       dropzone: null,
       showMobileSidebar: false,
       computedFullPath: "",
+      showFilePicker: false,
+      showMoveDialog: true,
     };
   },
   computed: {
