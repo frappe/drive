@@ -28,12 +28,11 @@
   <RenameDialog
     v-if="showRenameDialog"
     v-model="showRenameDialog"
-    :entity="{
-      name: currentEntityName,
-      title: currentTitle,
-      is_group: $route.name === 'Folder' ? 1 : 0,
-      document: $route.name === 'Document' ? 1 : 0,
-    }"
+    :entity="
+      $route.name === 'Folder'
+        ? $store.state?.currentFolder
+        : $store.state?.entityInfo[0]
+    "
     @success="
       () => {
         showRenameDialog = false;
@@ -90,9 +89,12 @@ export default {
         : false;
     },
     canShowRenameDialog() {
-      if (
-        (this.$store.state.entityInfo[0].owner === "Me") |
-        (this.$store.state.entityInfo[0].write === 1)
+      if (this.$route.name === "Folder") {
+        this.$store.state.currentFolder.owner === "Me";
+        return (this.showRenameDialog = true);
+      } else if (
+        (this.$store.state.entityInfo[0]?.owner === "Me") |
+        (this.$store.state.entityInfo[0]?.write === 1)
       ) {
         return (this.showRenameDialog = true);
       }

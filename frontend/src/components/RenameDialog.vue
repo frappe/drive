@@ -1,12 +1,21 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'Rename', size: 'xs' }">
     <template #body-content>
-      <Input
-        ref="input"
-        v-model="newName"
-        :placeholder="currentName"
-        type="text"
-        @keyup.enter="$resources.rename.submit" />
+      <div class="flex items-center justify-center">
+        <Input
+          ref="input"
+          class="w-full"
+          v-model="newName"
+          type="text"
+          @keyup.enter="$resources.rename.submit" />
+        <Badge
+          v-if="entity.file_ext"
+          :variant="'subtle'"
+          theme="gray"
+          size="sm"
+          class="ml-2"
+          :label="entity.file_ext"></Badge>
+      </div>
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button
@@ -23,8 +32,9 @@
 
 <script>
 import { ref } from "vue";
-import { Dialog, Input, ErrorMessage } from "frappe-ui";
+import { Dialog, Input, ErrorMessage, Badge } from "frappe-ui";
 import { useFocus } from "@vueuse/core";
+import { formatSize, formatDate } from "@/utils/format";
 
 export default {
   name: "RenameDialog",
@@ -32,6 +42,7 @@ export default {
     Dialog,
     Input,
     ErrorMessage,
+    Badge,
   },
   setup() {
     const input = ref();
@@ -58,7 +69,6 @@ export default {
       newName: "",
       errorMessage: "",
       extension: "",
-      currentName: "",
     };
   },
   computed: {
@@ -66,12 +76,10 @@ export default {
       return this.entity?.name;
     },
     fullName() {
-      if (this.entity?.is_group || this.entity?.document) {
-        return this.newName;
+      if (this.entity?.file_ext) {
+        return this.newName + this.entity.file_ext;
       } else {
-        return this.newName.slice(-1) === "."
-          ? this.newName + this.extension
-          : this.newName + "." + this.extension;
+        return this.newName;
       }
     },
     open: {
@@ -87,54 +95,32 @@ export default {
       },
     },
   },
-  watch: {
-    entity: {
-      handler(newVal) {
-        if (newVal) {
-          if (this.entity.is_group || this.entity.document) {
-            this.currentName = this.entity.title;
-          } else {
-            // Sometimes the filename wont have an extension
-            const parts = this.entity?.title.split(".");
-            if (parts.length > 1) {
-              this.extension = parts.pop();
-              this.currentName =
-                this.entity.title.substring(
-                  0,
-                  this.entity.title.lastIndexOf(".")
-                ) || this.entity.title;
-            } else {
-              this.currentName = this.entity.title;
-            }
-          }
-        }
-      },
-      immediate: true,
-    },
-  },
   resources: {
     rename() {
       return {
-        //url: "drive.api.files.call_controller_method",
-        url: "frappe.client.set_value",
+        url: "drive.api.files.call_controller_method",
         method: "POST",
         params: {
-          doctype: "Drive Entity",
-          name: this.entityName,
-          fieldname: "title",
-          value: this.fullName,
+          method: "rename",
+          entity_name: this.entityName,
+          new_title: this.fullName,
         },
         onSuccess(data) {
           this.newName = "";
-          this.currentName = "";
           this.extension = "";
           this.errorMessage = "";
+          data.size_in_bytes = data.file_size;
+          data.file_size = formatSize(data.file_size);
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          data.owner =
+            data.owner === this.$store.state.auth.user_id ? "Me" : entity.owner;
+          data.is_group
+            ? this.$store.commit("setCurrentFolder", [data])
+            : this.$store.commit("setEntityInfo", [data]);
           this.$emit("success", data);
         },
         onError(error) {
-          this.newName = "";
-          this.currentName = "";
-          this.extension = "";
           if (error.messages) {
             this.errorMessage = error.messages.join("\n");
           } else {
@@ -143,6 +129,9 @@ export default {
         },
       };
     },
+  },
+  created() {
+    this.newName = this.entity?.title.split(".").slice(0, -1).join(".");
   },
 };
 </script>

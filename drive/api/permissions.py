@@ -270,6 +270,7 @@ def get_entity_with_permissions(entity_name):
         "creation",
         "file_size",
         "mime_type",
+        "file_ext",
         "allow_comments",
         "allow_download",
         "document",
