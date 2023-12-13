@@ -18,7 +18,7 @@
             <div
               class="flex w-full h-[calc(100vh-52px)]"
               :class="
-                $route.meta.documentPage
+                $route.meta.documentPage || $route.meta.filePage
                   ? ' overflow-y-hidden'
                   : 'overflow-y-scroll'
               ">

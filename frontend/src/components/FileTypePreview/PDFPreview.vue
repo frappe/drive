@@ -1,10 +1,10 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full z-10 text-neutral-100 mx-auto" />
+    class="w-10 h-full text-neutral-100 mx-auto" />
   <div
     v-else
-    class="max-h-[95vh] max-w-[75vw] z-10 bg-[#252728] rounded-lg shadow-xl">
+    class="max-h-[95vh] max-w-[75vw] bg-[#252728] rounded-lg shadow-xl">
     <iframe class="w-full min-w-[75vw] h-[90vh]" :src="previewURL" />
   </div>
 </template>
@@ -35,8 +35,8 @@ async function fetchContent() {
     }
   );
   if (res.ok) {
-    loading.value = false;
     blob.value = await res.blob();
+    loading.value = false;
   }
 }
 

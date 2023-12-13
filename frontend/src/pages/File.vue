@@ -1,13 +1,31 @@
 <template>
   <div
-    class="flex flex-col items-center justify-start h-full w-full p-2 overflow-hidden">
-    <div id="renderContainer" class="object-contain h-[90vh]">
+    class="h-full w-full overflow-hidden flex flex-col items-center justify-center">
+    <div
+      :draggable="false"
+      id="renderContainer"
+      class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh]">
       <FileRender v-if="file.data" :preview-entity="file.data" />
     </div>
-    <!--   <div class="flex items-center justify-between mt-2 h-16 w-16">
-      <Button v-if="prevEntity?.name" :variant="'ghost'" icon="arrow-left" @click="scrollEntity(true)"></Button>
-      <Button v-if="nextEntity?.name" :variant="'ghost'" icon="arrow-right" @click="scrollEntity()"></Button>
-    </div> -->
+    <div
+      class="flex items-center justify-between mt-4 p-2 h-10 rounded-lg shadow-xl bg-white">
+      <Button
+        :disabled="!prevEntity?.name"
+        :variant="'ghost'"
+        icon="arrow-left"
+        @click="scrollEntity(true)"></Button>
+      <!-- <Button :variant="'ghost'">
+        <Scan class="w-4"/>
+      </Button>
+      <Button :variant="'ghost'">
+        <FileSignature class="w-4"/>
+      </Button> -->
+      <Button
+        :disabled="!nextEntity?.name"
+        :variant="'ghost'"
+        icon="arrow-right"
+        @click="scrollEntity()"></Button>
+    </div>
   </div>
 </template>
 
@@ -19,6 +37,7 @@ import FileRender from "@/components/FileRender.vue";
 import { createResource } from "frappe-ui";
 import { formatSize, formatDate } from "@/utils/format";
 import { useRouter } from "vue-router";
+import { Scan, FileSignature } from "lucide-vue-next";
 
 const router = useRouter();
 const store = useStore();
@@ -29,10 +48,6 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-  fetchFile(props.entityName);
-});
-
 const entity = ref(null);
 const currentEntity = ref(props.entityName);
 const userId = computed(() => {
@@ -41,7 +56,7 @@ const userId = computed(() => {
 
 const filteredEntities = computed(() => {
   return store.state.currentViewEntites.filter(
-    (item) => item.is_group === 0 || !item.document
+    (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
   );
 });
 
@@ -61,7 +76,7 @@ const nextEntity = computed(() => {
 
 function fetchFile(currentEntity) {
   file.fetch({ entity_name: currentEntity }).then(() => {
-    router.push({
+    router.replace({
       name: "File",
       params: { entityName: currentEntity },
     });
@@ -84,7 +99,6 @@ let file = createResource({
   onSuccess(data) {
     let currentBreadcrumbs = [];
     currentBreadcrumbs = store.state.currentBreadcrumbs;
-
     if (
       !currentBreadcrumbs[currentBreadcrumbs.length - 1].route.includes("/file")
     ) {
@@ -94,6 +108,16 @@ let file = createResource({
       });
       store.breadcrumbs = currentBreadcrumbs;
       store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
+    } else {
+      let scrolledFileBreadcrumb = {
+        label: data.title,
+        route: `/file/${data.name}`,
+      };
+      currentBreadcrumbs.splice(
+        currentBreadcrumbs.length - 1,
+        1,
+        scrolledFileBreadcrumb
+      );
     }
   },
   onError(error) {
@@ -105,6 +129,10 @@ function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value;
   fetchFile(currentEntity.value.name);
 }
+
+onMounted(() => {
+  fetchFile(props.entityName);
+});
 
 onBeforeUnmount(() => {
   store.commit("setEntityInfo", []);

@@ -39,9 +39,9 @@ async function fetchContent() {
     }
   );
   if (res.ok) {
-    loading.value = false;
     let resBlob = await res.blob();
     blob.value = await resBlob.text();
+    loading.value = false;
   }
 }
 watch(

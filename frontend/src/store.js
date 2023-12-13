@@ -31,7 +31,9 @@ const store = createStore({
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     entityInfo: JSON.parse(localStorage.getItem("selectedEntities")) || null,
-    currentViewEntites: JSON.parse(localStorage.getItem("currentViewEntites")),
+    currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || null,
+    currentViewEntites:
+      JSON.parse(localStorage.getItem("currentViewEntites")) || null,
     pasteData: { entities: [], action: null },
     showInfo: false,
     hasWriteAccess: false,
@@ -96,9 +98,13 @@ const store = createStore({
       localStorage.setItem("selectedEntities", JSON.stringify(payload));
       state.entityInfo = payload;
     },
+    setCurrentFolder(state, payload) {
+      localStorage.setItem("currentFolder", JSON.stringify(payload));
+      state.currentFolder = payload;
+    },
     setCurrentViewEntites(state, payload) {
+      state.currentViewEntites = payload;
       localStorage.setItem("currentViewEntites", JSON.stringify(payload));
-      state.entityInfo = payload;
     },
     setPasteData(state, payload) {
       state.pasteData = payload;

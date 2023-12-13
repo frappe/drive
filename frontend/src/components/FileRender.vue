@@ -42,36 +42,56 @@ export default {
       required: true,
     },
   },
+  computed: {
+    isPdf() {
+      return this.previewEntity.mime_type === "application/pdf";
+    },
+    isImage() {
+      return this.previewEntity.mime_type?.startsWith("image/");
+    },
+    isVideo() {
+      return (
+        this.previewEntity.mime_type === "video/mp4" ||
+        this.previewEntity.mime_type === "video/webm"
+      );
+    },
+    isFrappeDoc() {
+      return this.previewEntity.mime_type === "frappe_doc";
+    },
+    isDocx() {
+      return (
+        this.previewEntity.mime_type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      );
+    },
+    isXlsx() {
+      return (
+        this.previewEntity.mime_type ===
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+    },
+    isTxt() {
+      return (
+        this.previewEntity.mime_type?.startsWith("text/") ||
+        this.previewEntity.mime_type === "application/json" ||
+        this.previewEntity.mime_type === "application/javascript" ||
+        this.previewEntity.mime_type === "text/x-python"
+      );
+    },
+  },
   data() {
     return {
       loading: true,
       error: null,
-      isPdf: this.previewEntity.mime_type === "application/pdf",
-      isImage: this.previewEntity.mime_type?.startsWith("image/"),
-      isVideo:
-        this.previewEntity.mime_type === "video/mp4" ||
-        this.previewEntity.mime_type === "video/webm",
-      isFrappeDoc: this.previewEntity.mime_type === "frappe_doc",
-      isTxt:
-        this.previewEntity.mime_type?.startsWith("text/") ||
-        this.previewEntity.mime_type === "application/json" ||
-        this.previewEntity.mime_type === "application/javascript" ||
-        this.previewEntity.mime_type === "text/x-python",
-      isDocx:
-        this.previewEntity.mime_type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      isXlsx:
-        this.previewEntity.mime_type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     };
   },
   mounted() {
     this.renderContent();
   },
+
   watch: {
     previewEntity: {
       handler(newVal, oldVal) {
-        console.log(newVal.title);
         this.loading = true;
         this.renderContent();
       },

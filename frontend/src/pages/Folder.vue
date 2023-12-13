@@ -1102,6 +1102,7 @@ export default {
             });
           }
           this.$store.commit("setCurrentFolderID", this.entityName);
+          this.$store.commit("setCurrentFolder", data);
           this.folderContents.fetch();
         },
         auto: true,
@@ -1138,8 +1139,8 @@ export default {
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
+            this.$store.commit("setCurrentViewEntites", data);
           });
-          this.$store.commit("setCurrentViewEntites", data);
         },
         auto: false,
       };
@@ -1163,8 +1164,8 @@ export default {
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
+            this.$store.commit("setCurrentViewEntites", data);
           });
-          this.$store.commit("setCurrentViewEntites", data);
         },
         auto: false,
       };

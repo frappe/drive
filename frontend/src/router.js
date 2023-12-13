@@ -11,7 +11,7 @@ const routes = [
     path: "/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
-    meta: { sidebar: true, isHybridRoute: true },
+    meta: { sidebar: true, isHybridRoute: true, filePage: true },
     props: true,
   },
   {

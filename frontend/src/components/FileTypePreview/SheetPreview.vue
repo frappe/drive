@@ -1,9 +1,13 @@
 <template>
-  <div v-once>
+  <LoadingIndicator
+    v-if="loading"
+    class="w-10 h-full text-neutral-100 mx-auto" />
+  <div>
     <div v-once v-if="loading" id="gridctr" />
   </div>
 </template>
 <script setup>
+import { LoadingIndicator } from "frappe-ui";
 import { ref, onBeforeUnmount, onMounted, watch, computed } from "vue";
 import { read, utils } from "xlsx";
 import Spreadsheet from "x-data-spreadsheet";
@@ -36,17 +40,19 @@ async function fetchContent() {
   if (res.ok) {
     const ab = await res.arrayBuffer();
     grid = new Spreadsheet(document.getElementById("gridctr"), {
-      mode: canWrite.value ? "edit" : "read",
-      showToolbar: canWrite.value,
+      /* mode: canWrite.value ? "edit" : "read", */
+      /* showToolbar: canWrite.value, */
+      mode: "read",
+      showToolbar: false,
       showContextmenu: canWrite.value,
       view: {
         height: () => document.getElementById("renderContainer").clientHeight,
-        width: () => 1100,
+        width: () => 1200,
       },
     });
     grid.loadData(stox(read(ab)));
+    loading.value = false;
   }
-  loading.value = false;
 }
 
 function stox(wb) {
@@ -177,7 +183,6 @@ watch(
 );
 
 onMounted(() => {
-  console.log(props.previewEntity);
   fetchContent();
 });
 

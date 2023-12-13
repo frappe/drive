@@ -1,8 +1,16 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full z-10 text-neutral-100 mx-auto" />
-  <video v-else controls type="video/mp4" :src="previewURL"></video>
+    class="w-10 h-full text-neutral-100 mx-auto" />
+  <video
+    v-else
+    class="w-auto max-h-full"
+    autoplay
+    preload="none"
+    controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture"
+    controls
+    type="video/mp4"
+    :src="previewURL"></video>
 </template>
 
 <script setup>
@@ -33,8 +41,8 @@ async function fetchContent() {
     }
   );
   if (res.ok) {
-    loading.value = false;
     blob.value = await res.blob();
+    loading.value = false;
   }
 }
 watch(
@@ -47,4 +55,3 @@ onMounted(() => {
   fetchContent();
 });
 </script>
-<style scoped></style>

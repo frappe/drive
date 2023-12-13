@@ -1,8 +1,8 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full z-10 text-neutral-100 mx-auto" />
-  <img class="w-full h-auto" v-else :src="previewURL" />
+    class="w-10 h-full text-neutral-100 mx-auto" />
+  <img class="w-auto max-h-full" v-else :src="previewURL" />
 </template>
 
 <script setup>
@@ -16,9 +16,8 @@ const imgBlob = ref(null);
 const previewURL = useObjectUrl(imgBlob);
 
 watch(props.previewEntity, (newVal, oldVal) => {
-  loading.value = false;
+  loading.value = true;
   imgBlob.value = null;
-  console.log("Prop Changed!", newValue);
   fetchContent();
 });
 
@@ -38,8 +37,8 @@ async function fetchContent() {
     }
   );
   if (res.ok) {
-    loading.value = false;
     imgBlob.value = await res.blob();
+    loading.value = false;
   }
 }
 
