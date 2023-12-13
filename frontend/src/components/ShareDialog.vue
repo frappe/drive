@@ -393,7 +393,10 @@
         </div>
       </div>
       <div class="w-full flex items-center justify-between mt-8">
-        <Button :variant="'subtle'" icon-left="link-2" @click="getLink">
+        <Button
+          :variant="'subtle'"
+          icon-left="link-2"
+          @click.native="getLink(entity)">
           Copy Link
         </Button>
         <Button variant="solid" @click="submit">
@@ -580,18 +583,7 @@ export default {
       });
       this.allowDownload = !this.allowDownload;
     },
-    async getLink() {
-      this.showAlert = false;
-      const link = this.$resources.entity.data.is_group
-        ? `${window.location.origin}/drive/folder/${this.entityName}`
-        : `${window.location.origin}/drive/file/${this.entityName}`;
-      await navigator.clipboard.writeText(link);
-      toast({
-        title: "Copied link!",
-        position: "bottom-right",
-        timeout: 2,
-      });
-    },
+    getLink,
   },
   resources: {
     sharedWith() {
