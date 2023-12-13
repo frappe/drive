@@ -336,7 +336,7 @@ def get_file_content(entity_name, trigger_download=0):
         response.headers.add(
             "Content-Disposition",
             content_dispostion,
-            filename=drive_entity.title.encode("utf-8"),
+            filename=drive_entity.title,
         )
         response.headers.add("Content-Length", str(drive_entity.file_size))
         response.headers.add("Content-Type", response.mimetype)
