@@ -21,7 +21,7 @@ from drive.utils.files import (
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
 import magic
-
+import urllib.parse
 
 def if_folder_exists(folder_name, parent):
     values = {
@@ -336,7 +336,7 @@ def get_file_content(entity_name, trigger_download=0):
         response.headers.add(
             "Content-Disposition",
             content_dispostion,
-            filename=drive_entity.title,
+            filename=format(urllib.parse.quote(drive_entity.title.encode('utf8')))
         )
         response.headers.add("Content-Length", str(drive_entity.file_size))
         response.headers.add("Content-Type", response.mimetype)
