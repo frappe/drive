@@ -5,7 +5,7 @@
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
-        spellcheck="false"
+        spellcheck="true"
         id="editor-capture"
         :editor="editor" />
     </div>

@@ -2,7 +2,7 @@
   <!-- Main container no scroll -->
   <div
     class="flex w-screen h-screen antialiased overflow-hidden"
-    @contextmenu.prevent="handleDefaultContext($event)">
+    @contextmenu="handleDefaultContext($event)">
     <!-- Main container with scroll -->
     <div class="h-full w-full flex flex-col">
       <div
@@ -237,7 +237,7 @@ export default {
   },
   methods: {
     handleDefaultContext(event) {
-      event.preventDefault();
+      return this.$route.meta.documentPage ? null : event.preventDefault()
     },
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents");
