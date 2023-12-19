@@ -638,10 +638,11 @@ export default {
           method: "share",
           entity_name: this.entityName,
         },
-        onSuccess() {
+        onSuccess(data) {
           this.$resources.share.error = null;
           this.$resources.sharedWith.fetch();
           this.$resources.sharedWithUserGroup.fetch();
+          this.$store.commit("setEntityInfo", [data]);
         },
         onError(error) {
           if (error.messages) {
