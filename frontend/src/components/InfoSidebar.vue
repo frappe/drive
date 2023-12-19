@@ -11,7 +11,7 @@
         <div class="w-full p-4 border-b overflow-visible">
           <div class="flex items-center">
             <div class="font-medium truncate text-lg">
-              {{ $store.state.entityInfo.length }} items selected
+              {{ store.state.entityInfo.length }} items selected
             </div>
           </div>
         </div>
@@ -56,11 +56,12 @@
           <div
             v-if="
               (entity.mime_type?.startsWith('video') ||
-                entity.mime_type?.startsWith('image')) &&
+                (entity.mime_type?.startsWith('image') &&
+                  entity?.mime_type !== 'image/svg+xml')) &&
               showInfoSidebar
             "
-            class="relative p-4 min-h-full flex-auto flex flex-col overflow-y-auto">
-            <img :src="thumbnailLink" />
+            class="relative p-0.5 aspect-video object-contain m-auto w-full flex items-center justify-center">
+            <img class="h-auto max-h-full w-auto" :src="thumbnailLink" />
           </div>
           <div class="p-4 space-y-8">
             <div v-if="entity.owner === 'Me'">
@@ -75,21 +76,18 @@
               </div>
             </div>
 
-            <div
-              v-if="
-                entity.owner === 'Me' || $resources.entityTags.data?.length
-              ">
+            <div v-if="entity.owner === 'Me' || entityTags.data?.length">
               <div class="text-base font-medium mb-2">Tags</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
-                  v-for="tag in $resources.entityTags.data"
+                  v-for="tag in entityTags?.data"
                   :key="tag"
                   :tag="tag"
                   :entity="entity"
                   @success="
                     () => {
-                      $resources.userTags.fetch();
-                      $resources.entityTags.fetch();
+                      userTags.fetch();
+                      entityTags.fetch();
                     }
                   " />
                 <Badge
@@ -106,13 +104,13 @@
 
               <TagInput
                 v-if="addTag"
-                :class="{ 'w-full': $resources.entityTags.data.length }"
+                :class="{ 'w-full': entityTags.data?.length }"
                 :entity="entity"
                 :unadded-tags="unaddedTags"
                 @success="
                   () => {
-                    $resources.userTags.fetch();
-                    $resources.entityTags.fetch();
+                    userTags.fetch();
+                    entityTags.fetch();
                     addTag = false;
                   }
                 "
@@ -147,7 +145,7 @@
             v-if="entity.allow_comments"
             class="px-4 overflow-y-auto pb-4 space-y-6">
             <div
-              v-for="comment in $resources.comments.data"
+              v-for="comment in comments.data"
               :key="comment"
               class="flex gap-3 items-center">
               <Avatar
@@ -246,192 +244,166 @@
     :entity-name="entity.name" />
 </template>
 
-<script>
-import { FeatherIcon, Avatar, call, Input, Badge } from "frappe-ui";
+<script setup>
+import {
+  ref,
+  computed,
+  onMounted,
+  defineProps,
+  onBeforeUnmount,
+  watch,
+} from "vue";
+import { useStore } from "vuex";
+import {
+  FeatherIcon,
+  Avatar,
+  call,
+  Input,
+  Badge,
+  createResource,
+} from "frappe-ui";
 import ShareDialog from "@/components/ShareDialog.vue";
 import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
-import File from "@/components/File.vue";
 import { thumbnail_getIconUrl } from "@/utils/getIconUrl";
 
-export default {
-  name: "InfoSidebar",
-  components: {
-    Input,
-    FeatherIcon,
-    Avatar,
-    ShareDialog,
-    TagInput,
-    Tag,
-    Badge,
-    File,
-  },
+const store = useStore();
+const tab = ref(0);
+const newComment = ref("");
+const showShareDialog = ref(false);
+const addTag = ref(false);
+const thumbnailLink = ref("");
 
-  setup() {
-    return { formatMimeType, getIconUrl };
-  },
+const userId = computed(() => {
+  return store.state.auth.user_id;
+});
 
-  data() {
-    return {
-      tab: 0,
-      newComment: "",
-      showShareDialog: false,
-      addTag: false,
-      thumbnailLink: "",
-    };
-  },
-  watch: {
-    entity: {
-      handler(newVal, oldVal) {
-        if (this.showInfoSidebar) {
-          if (
-            newVal !== oldVal &&
-            typeof newVal !== "number" &&
-            typeof newVal !== "undefined"
-          ) {
-            this.thumbnailUrl();
-            this.$resources.comments.fetch();
-            this.$resources.userTags.fetch();
-            this.$resources.entityTags.fetch();
-          }
-        }
-      },
-    },
-    showInfoSidebar: {
-      handler(newVal, oldVal) {
-        if (
-          newVal !== oldVal &&
-          typeof newVal !== "number" &&
-          typeof newVal !== "undefined"
-        ) {
-          this.thumbnailUrl();
-          this.$resources.comments.fetch();
-          this.$resources.userTags.fetch();
-          this.$resources.entityTags.fetch();
-        }
-      },
-    },
-  },
-  computed: {
-    userId() {
-      return this.$store.state.auth.user_id;
-    },
-    fullName() {
-      return this.$store.state.user.fullName;
-    },
-    imageURL() {
-      return this.$store.state.user.imageURL;
-    },
-    entity() {
-      if (
-        this.$store.state.entityInfo &&
-        this.$store.state.entityInfo.length > 1
-      ) {
-        return this.$store.state.entityInfo.length;
-      } else if (this.$store.state.entityInfo) {
-        return this.$store.state.entityInfo[0];
-      } else {
-        return false;
+const fullName = computed(() => {
+  return store.state.auth.user_id;
+});
+
+const imageURL = computed(() => {
+  return store.state.user.imageURL;
+});
+
+const showInfoSidebar = computed(() => {
+  return store.state.showInfo;
+});
+
+const formattedMimeType = computed(() => {
+  if (entity.value.is_group) return "Folder";
+  const file = formatMimeType(entity.value.mime_type);
+  return file.charAt(0).toUpperCase() + file.slice(1);
+});
+
+const unaddedTags = computed(() => {
+  return userTags.data.filter(
+    ({ name: id1 }) => !entityTags.data.some(({ name: id2 }) => id2 === id1)
+  );
+});
+
+const entity = computed(() => {
+  if (store.state.entityInfo && store.state.entityInfo.length > 1) {
+    return store.state.entityInfo.length;
+  } else if (store.state.entityInfo) {
+    return store.state.entityInfo[0];
+  } else {
+    return false;
+  }
+});
+
+function switchTab(val) {
+  if (store.state.showInfo == false) {
+    store.commit("setShowInfo", !store.state.showInfo);
+    tab.value = val;
+  } else if (tab.value == val) {
+    store.commit("setShowInfo", !store.state.showInfo);
+  } else {
+    tab.value = val;
+  }
+}
+
+async function thumbnailUrl() {
+  let result = await thumbnail_getIconUrl(
+    formatMimeType(entity.value.mime_type),
+    entity.value.name,
+    entity.value.file_ext
+  );
+  thumbnailLink.value = result;
+}
+
+watch(
+  [entity, showInfoSidebar],
+  ([newEntity, newShowInfoSidebar], [oldEntity, oldShowInfoSidebar]) => {
+    if (
+      newEntity &&
+      typeof newEntity !== "number" &&
+      typeof newEntity !== "undefined"
+    ) {
+      if (newShowInfoSidebar == true) {
+        thumbnailUrl();
+        comments.fetch({ entity_name: newEntity.name });
+        entityTags.fetch({ entity: newEntity.name });
+        userTags.fetch();
       }
-    },
-    formattedMimeType() {
-      if (this.entity.is_group) return "Folder";
-      const file = formatMimeType(this.entity.mime_type);
-      return file.charAt(0).toUpperCase() + file.slice(1);
-    },
-    unaddedTags() {
-      return this.$resources.userTags.data.filter(
-        ({ name: id1 }) =>
-          !this.$resources.entityTags.data.some(({ name: id2 }) => id2 === id1)
-      );
-    },
-    showInfoSidebar() {
-      return this.$store.state.showInfo;
-    },
-  },
-  methods: {
-    switchTab(val) {
-      if (this.$store.state.showInfo == false) {
-        this.$store.commit("setShowInfo", !this.$store.state.showInfo);
-        this.tab = val;
-      } else if (this.tab == val) {
-        this.$store.commit("setShowInfo", !this.$store.state.showInfo);
-      } else {
-        this.tab = val;
-      }
-    },
+    }
+  }
+);
 
-    async thumbnailUrl() {
-      let result = await thumbnail_getIconUrl(
-        formatMimeType(this.entity.mime_type),
-        this.entity.name,
-        this.file_ext
-      );
-      this.thumbnailLink = result;
-    },
+async function postComment() {
+  if (newComment.value.length) {
+    try {
+      await call("frappe.desk.form.utils.add_comment", {
+        reference_doctype: "Drive Entity",
+        reference_name: entity.value.name,
+        content: newComment.value,
+        comment_email: userId.value,
+        comment_by: fullName.value,
+      });
+      newComment.value = "";
+      comments.fetch();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
 
-    async postComment() {
-      if (this.newComment.length) {
-        try {
-          await call("frappe.desk.form.utils.add_comment", {
-            reference_doctype: "Drive Entity",
-            reference_name: this.entity.name,
-            content: this.newComment,
-            comment_email: this.userId,
-            comment_by: this.fullName,
-          });
-          this.newComment = "";
-          this.$resources.comments.fetch();
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    },
+let comments = createResource({
+  url: "drive.api.files.list_entity_comments",
+  onSuccess(data) {
+    data.forEach((comment) => {
+      comment.creation = formatDate(comment.creation);
+    });
   },
+  onError(error) {
+    if (error.messages) {
+      console.log(error.messages);
+    }
+  },
+  auto: false,
+});
 
-  resources: {
-    comments() {
-      return {
-        url: "drive.api.files.list_entity_comments",
-        params: { entity_name: this.entity?.name },
-        onSuccess(data) {
-          data.forEach((comment) => {
-            comment.creation = formatDate(comment.creation);
-          });
-        },
-        onError(error) {
-          console.log(error);
-        },
-        auto: false,
-      };
-    },
-    userTags() {
-      return {
-        url: "drive.api.tags.get_user_tags",
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
-        auto: false,
-      };
-    },
-    entityTags() {
-      return {
-        url: "drive.api.tags.get_entity_tags",
-        params: { entity: this.entity?.name },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
-        auto: false,
-      };
-    },
+let userTags = createResource({
+  url: "drive.api.tags.get_user_tags",
+  onError(error) {
+    if (error.messages) {
+      console.log(error.messages);
+    }
   },
-};
+  auto: false,
+});
+
+let entityTags = createResource({
+  url: "drive.api.tags.get_entity_tags",
+  onError(error) {
+    if (error.messages) {
+      console.log(error.messages);
+    }
+  },
+  auto: false,
+});
 </script>
 <style scoped>
 .animate:active {
