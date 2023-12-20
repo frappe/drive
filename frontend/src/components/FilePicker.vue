@@ -2,19 +2,39 @@
   <Dialog v-model="open" :options="{ title: 'Open a file', size: '5xl' }">
     <template #body-content>
       <div class="flex" :style="{ height: 'calc(100vh - 20rem)' }">
-        <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-          <NoFilesSection v-if="isEmpty" />
+        <Tabs v-model="tabIndex" #default="{ tab }" :tabs="tabs">
+          <div class="flex py-1 justify-end">
+            <Button
+              variant="ghost"
+              icon="arrow-up"
+              class="border"
+              :class="[$store.state.view === 'list' ? 'bg-white shadow' : '']"
+              @click="closeEntity()" />
+          </div>
+          <div
+            v-if="tabIndex === 4"
+            class="flex flex-col h-full items-center justify-center">
+            <Button
+              @click="emitter.emit('uploadFile')"
+              size="md"
+              variant="solid">
+              <template #prefix><Upload class="w-4 stroke-1.5" /></template>
+              Upload
+            </Button>
+            <!-- <span class="text-gray-700 text-base mt-2" >Or drag a file here to upload</span> -->
+          </div>
+          <NoFilesSection v-else-if="isEmpty" />
           <div v-else class="h-full">
-            <div v-if="folders.length > 0" class="mt-3">
+            <div v-if="folders.length > 0" class="mt-1">
               <div class="text-gray-600 font-medium">Folders</div>
-              <div class="flex flex-row flex-wrap gap-4 mt-4">
+              <div class="flex flex-row flex-wrap gap-4 mt-0.5">
                 <div
                   v-for="folder in folders"
                   :id="folder.name"
                   :key="folder.name"
                   class="cursor-pointer p-2 w-36 h-22 rounded-lg border group select-none entity border-gray-200 hover:shadow-2xl"
                   draggable="true"
-                  @dblclick="dblClickEntity(folder)"
+                  @click="openEntity(folder)"
                   @dragenter.prevent
                   @dragover.prevent
                   @mousedown.stop>
@@ -45,16 +65,16 @@
             </div>
             <div
               v-if="files.length > 0"
-              :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
+              :class="folders.length > 0 ? 'mt-8' : 'mt-1'">
               <div class="text-gray-600 font-medium">Files</div>
-              <div class="inline-flex flex-row flex-wrap gap-4 mt-4">
+              <div class="inline-flex flex-row flex-wrap gap-4 mt-0.5">
                 <div
                   v-for="file in files"
                   :id="file.name"
                   :key="file.name"
                   class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer relative group border-gray-200 hover:shadow-2xl"
                   :draggable="false"
-                  @dblclick="dblClickEntity(file)"
+                  @click="openEntity(file)"
                   @dragenter.prevent
                   @dragover.prevent
                   @mousedown.stop>
@@ -75,17 +95,12 @@
   </Dialog>
 </template>
 
-<!-- 
-    Grid view file picker that spits out an entity 
-    Should also allow uploading a file and creating a drive entity and then spitting that out
-    Also add a search bar
--->
 <script setup>
 import NoFilesSection from "./NoFilesSection.vue";
 import File from "./File.vue";
 import { watch, defineEmits, computed, h, ref, onMounted } from "vue";
 import { createResource, Dialog, FeatherIcon, Button, Tabs } from "frappe-ui";
-import { Clock, Star, Home, Users, Plus } from "lucide-vue-next";
+import { Clock, Star, Home, Users, Plus, Upload } from "lucide-vue-next";
 import { formatSize, formatDate } from "@/utils/format";
 
 const props = defineProps({
@@ -99,11 +114,13 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["success"]);
 const tabIndex = ref(props.suggestedTabIndex);
-
 const folderContents = ref();
+const folderStack = ref([""]);
 
 watch(tabIndex, (newValue, oldValue) => {
+  folderStack.value = [""];
   switch (newValue) {
     case 0:
       recents.fetch();
@@ -112,10 +129,10 @@ watch(tabIndex, (newValue, oldValue) => {
       favourites.fetch();
       break;
     case 2:
-      myFiles.fetch();
+      ownedFolder.fetch({ entity_name: "" });
       break;
     case 3:
-      sharedWithMe.fetch();
+      sharedWithMe.fetch({ entity_name: "" });
       break;
     default:
       folderContents.value = [];
@@ -161,6 +178,7 @@ const tabs = [
   {
     label: "Home",
     icon: h(Home, { class: "w-4 h-4" }),
+    component: NoFilesSection,
   },
   {
     label: "Shared",
@@ -171,6 +189,37 @@ const tabs = [
     icon: h(Plus, { class: "w-4 h-4" }),
   },
 ];
+
+function openEntity(value) {
+  if (value.is_group) {
+    folderStack.value.push(value.name);
+    if (tabIndex === 3) {
+      sharedFolder.fetch({
+        entity_name: folderStack.value[folderStack.value.length - 1],
+      });
+    } else {
+      ownedFolder.fetch({
+        entity_name: folderStack.value[folderStack.value.length - 1],
+      });
+    }
+  } else {
+    emit("success", value);
+  }
+}
+
+function closeEntity() {
+  folderStack.value.pop();
+  folderStack.value.length ? null : folderStack.value.push("");
+  if (tabIndex === 3) {
+    sharedFolder.fetch({
+      entity_name: folderStack.value[folderStack.value.length - 1],
+    });
+  } else {
+    ownedFolder.fetch({
+      entity_name: folderStack.value[folderStack.value.length - 1],
+    });
+  }
+}
 
 let recents = createResource({
   url: "drive.api.files.list_recents",
@@ -191,6 +240,28 @@ let recents = createResource({
   onError(error) {
     console.log(error);
   },
+});
+
+let sharedFolder = createResource({
+  url: "drive.api.files.list_folder_contents",
+  /*   params: {
+    entity_name: this.entityName,
+    order_by: this.orderBy,
+    fields:
+      "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
+  }, */
+  onSuccess(data) {
+    this.folderContents.error = null;
+    data.forEach((entity) => {
+      entity.size_in_bytes = entity.file_size;
+      entity.file_size = entity.is_group ? "" : formatSize(entity.file_size);
+      entity.modified = formatDate(entity.modified);
+      entity.creation = formatDate(entity.creation);
+      entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
+      this.$store.commit("setCurrentViewEntites", data);
+    });
+  },
+  auto: false,
 });
 
 let favourites = createResource({
@@ -214,7 +285,7 @@ let favourites = createResource({
   },
 });
 
-let myFiles = createResource({
+let ownedFolder = createResource({
   url: "drive.api.files.list_owned_entities",
   method: "GET",
   auto: props.suggestedTabIndex === 2 ? true : false,
