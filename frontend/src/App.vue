@@ -24,7 +24,6 @@
               ">
               <router-view v-slot="{ Component }">
                 <component id="currentPage" :is="Component" ref="currentPage" />
-                <!-- <FilePicker v-if="showFilePicker" v-model="showFilePicker" :suggestedTabIndex="1" /> -->
               </router-view>
             </div>
             <InfoSidebar v-if="!$route.meta.documentPage" />
@@ -35,7 +34,7 @@
       <router-view v-else />
     </div>
   </div>
-  <div id="dropzoneElement" class="hidden" />
+  <FileUploader />
   <Transition
     enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
     enter-from-class="translate-y-1 opacity-0"
@@ -48,7 +47,6 @@
   <Toasts />
 </template>
 <script>
-import Dropzone from "dropzone";
 import Navbar from "@/components/Navbar.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import InfoSidebar from "@/components/InfoSidebar.vue";
@@ -58,6 +56,8 @@ import { Button, FeatherIcon } from "frappe-ui";
 import { Toasts } from "@/utils/toasts.js";
 import FilePicker from "./components/FilePicker.vue";
 import MoveDialog from "./components/MoveDialog.vue";
+import SearchPopup from "./components/SearchPopup.vue";
+import FileUploader from "./components/DocEditor/FileUploader.vue";
 
 export default {
   name: "App",
@@ -72,14 +72,12 @@ export default {
     Toasts,
     FilePicker,
     MoveDialog,
+    SearchPopup,
+    FileUploader,
   },
   data() {
     return {
-      dropzone: null,
       showMobileSidebar: false,
-      computedFullPath: "",
-      showFilePicker: false,
-      showMoveDialog: true,
     };
   },
   computed: {
@@ -96,222 +94,15 @@ export default {
       return this.isLoggedIn && this.$store.state.uploads.length > 0;
     },
   },
-  /* watch: {
-    $route() {
-      this.$store.commit("setEntityInfo", null);
-      this.$store.commit("setShowInfo", false);
-    },
-  }, */
-  async mounted() {
-    let componentContext = this;
-    this.dropzone = new Dropzone(this.$el.parentNode, {
-      paramName: "file",
-      parallelUploads: 1,
-      autoProcessQueue: false,
-      clickable: "#dropzoneElement",
-      previewsContainer: "#dropzoneElement",
-      uploadMultiple: false,
-      chunking: true,
-      retryChunks: true,
-      forceChunking: true,
-      url: "/api/method/drive.api.files.upload_file",
-      maxFilesize: 10 * 1024, // 10GB
-      timeout: 120000, // 2 minutes
-      chunkSize: 5 * 1024 * 1024, // 5MB
-      headers: {
-        "X-Frappe-CSRF-Token": window.csrf_token,
-        Accept: "application/json",
-      },
-      accept: function (file, done) {
-        if (file.size == 0) {
-          done("Empty files will not be uploaded.");
-        } else {
-          done();
-        }
-      },
-      sending: function (file, xhr, formData) {
-        if (file.parent) {
-          formData.append("parent", file.parent);
-        }
-        if (file.new_full_path) {
-          formData.append("fullpath", file.new_full_path);
-        } else if (file.webkitRelativePath) {
-          formData.append("fullpath", file.webkitRelativePath);
-        } else if (file.fullPath) {
-          formData.append("fullpath", file.fullPath);
-        }
-      },
-      params: function (files, xhr, chunk) {
-        if (chunk) {
-          return {
-            uuid: chunk.file.upload.uuid,
-            chunk_index: chunk.index,
-            total_file_size: chunk.file.size,
-            chunk_size: this.options.chunkSize,
-            total_chunk_count: chunk.file.upload.totalChunkCount,
-            chunk_byte_offset: chunk.index * this.options.chunkSize,
-          };
-        }
-      },
-    });
-
-    this.dropzone.on("addedfile", function (file) {
-      file.parent = componentContext.$store.state.currentFolderID;
-      componentContext.$store.commit("pushToUploads", {
-        uuid: file.upload.uuid,
-        name: file.name,
-        progress: 0,
-      });
-      if (this.files.length === 1) {
-        if (file.fullPath || file.webkitRelativePath) {
-          componentContext.computedFullPath = non_merge_mode(file);
-        }
-        this.options.autoProcessQueue = true;
-      }
-      if (file.fullPath || file.webkitRelativePath) {
-        let a;
-        if (file.webkitRelativePath) {
-          a = file.webkitRelativePath;
-        } else {
-          a = file.fullPath;
-        }
-        let k = root_folder_full_path(a);
-        file.new_full_path = new_full_path_name(
-          k,
-          componentContext.computedFullPath,
-          a
-        );
-      }
-    });
-    this.dropzone.on("queuecomplete", function (file) {
-      this.files = [];
-      componentContext.computedFullPath = "";
-      componentContext.currentPageEmitTrigger();
-    });
-
-    this.dropzone.on("uploadprogress", function (file, progress) {
-      componentContext.$store.commit("updateUpload", {
-        uuid: file.upload.uuid,
-        progress: progress,
-      });
-    });
-    this.dropzone.on("error", function (file, message) {
-      let error_message;
-      if (message._server_messages) {
-        error_message = JSON.parse(message._server_messages)
-          .map((element) => JSON.parse(element).message)
-          .join("\n");
-      }
-      error_message = message || error_message || "Upload failed";
-      componentContext.$store.commit("updateUpload", {
-        uuid: file.upload.uuid,
-        error: error_message,
-      });
-    });
-    this.dropzone.on("complete", function (file) {
-      componentContext.$store.commit("updateUpload", {
-        uuid: file.upload.uuid,
-        completed: true,
-      });
-    });
-    this.emitter.on("uploadFile", () => {
-      if (componentContext.dropzone.hiddenFileInput) {
-        componentContext.dropzone.hiddenFileInput.removeAttribute(
-          "webkitdirectory"
-        );
-        componentContext.dropzone.hiddenFileInput.click();
-      }
-    });
-    this.emitter.on("uploadFolder", () => {
-      if (componentContext.dropzone.hiddenFileInput) {
-        componentContext.dropzone.hiddenFileInput.setAttribute(
-          "webkitdirectory",
-          true
-        );
-        componentContext.dropzone.hiddenFileInput.click();
-      }
-    });
-  },
-  unmounted() {
-    this.dropzone.destroy();
-  },
   methods: {
     handleDefaultContext(event) {
-      return this.$route.meta.documentPage ? null : event.preventDefault()
+      return this.$route.meta.documentPage ? null : event.preventDefault();
     },
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents");
     },
   },
 };
-
-function does_root_folder_full_path_exist(k, file_parent) {
-  const url =
-    window.location.origin +
-    "/api/method/" +
-    `drive.api.files.does_entity_exist?name=${k}&parent_entity=${file_parent}`;
-
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", url, false); // Here i am seeting third parameter as false for a synchronous request
-  xhr.send();
-
-  if (xhr.status === 200) {
-    const json = JSON.parse(xhr.responseText);
-    return json.message;
-  } else {
-    throw new Error(`Request failed with status ${xhr.status}`);
-  }
-}
-
-function root_folder_full_path_new_name(k, file_parent) {
-  const url =
-    window.location.origin +
-    "/api/method/" +
-    `drive.utils.files.get_new_title?entity=${k}&parent_name=${file_parent}`;
-
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", url, false); // Here i am seeting third parameter as false for a synchronous request
-  xhr.send();
-
-  if (xhr.status === 200) {
-    const json = JSON.parse(xhr.responseText);
-    return json.message;
-  } else {
-    throw new Error(`Request failed with status ${xhr.status}`);
-  }
-}
-
-function root_folder_full_path(full_path) {
-  let s = full_path;
-  let k = s.substring(0, s.indexOf("/"));
-  return k;
-}
-
-function new_full_path_name(k, s, x) {
-  let f = x.replace(k, s);
-  return f;
-}
-
-function non_merge_mode(file) {
-  let a;
-  let s;
-  if (file.webkitRelativePath) {
-    a = file.webkitRelativePath;
-  } else {
-    a = file.fullPath;
-  }
-  let k = root_folder_full_path(a);
-  let t = does_root_folder_full_path_exist(k, file.parent);
-  if (t) {
-    s = root_folder_full_path_new_name(k, file.parent);
-    let z = new_full_path_name(k, s, a);
-    file.new_full_path = z;
-  } else {
-    file.new_full_path = a;
-    s = k;
-  }
-  return s;
-}
 </script>
 
 <style>

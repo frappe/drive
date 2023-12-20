@@ -17,6 +17,7 @@ const emitter = mitt();
 const app = createApp(App);
 app.config.unwrapInjectedRef = true;
 app.config.globalProperties.emitter = emitter;
+app.provide("emitter", emitter);
 app.use(router);
 app.use(store);
 app.use(FrappeUI);
