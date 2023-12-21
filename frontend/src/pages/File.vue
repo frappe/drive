@@ -85,7 +85,6 @@ function fetchFile(currentEntity) {
 
 let file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
-  method: "GET",
   params: { entity_name: props.entityName },
   transform(data) {
     entity.value = data;
@@ -138,4 +137,3 @@ onBeforeUnmount(() => {
   store.commit("setEntityInfo", []);
 });
 </script>
-/**/
