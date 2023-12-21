@@ -1,5 +1,5 @@
 <template>
-  <div id="dropzoneElement" class="hidden" />
+  <div class="hidden" />
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount, inject } from "vue";

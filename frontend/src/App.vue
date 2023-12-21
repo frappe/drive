@@ -9,7 +9,7 @@
         v-if="isLoggedIn || $route.meta.isHybridRoute"
         class="flex h-full overflow-hidden">
         <Sidebar v-if="isLoggedIn" />
-        <div class="h-full w-full overflow-hidden">
+        <div class="h-full w-full overflow-hidden" id="dropzoneElement">
           <Navbar
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
