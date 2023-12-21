@@ -212,17 +212,26 @@ export default {
       ],
       fileOptions: [
         {
-          icon: FileDown,
-          label: "Export to PDF",
-          onClick: () => this.emitter.emit("exportDocToPDF"),
+          group: "Export",
+          items: [
+            {
+              icon: FileDown,
+              label: "Export to PDF",
+              onClick: () => this.emitter.emit("exportDocToPDF"),
+            },
+          ],
         },
         {
-          icon: FileDown,
-          label: "Import from Word",
-          onClick: () => this.emitter.emit("importDocFromWord"),
+          group: "Import",
+          items: [
+            {
+              icon: FileDown,
+              label: "Import from DOCX",
+              onClick: () => this.emitter.emit("importDocFromWord"),
+            },
+          ],
         },
       ],
-      showSearchPopup: false,
     };
   },
   computed: {

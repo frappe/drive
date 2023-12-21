@@ -3,14 +3,6 @@
     <template #body-content>
       <div class="flex" :style="{ height: 'calc(100vh - 20rem)' }">
         <Tabs v-model="tabIndex" #default="{ tab }" :tabs="tabs">
-          <div class="flex py-1 justify-end">
-            <Button
-              variant="ghost"
-              icon="arrow-up"
-              class="border"
-              :class="[$store.state.view === 'list' ? 'bg-white shadow' : '']"
-              @click="closeEntity()" />
-          </div>
           <div
             v-if="tabIndex === 4"
             class="flex flex-col h-full items-center justify-center">
@@ -23,10 +15,29 @@
             </Button>
             <!-- <span class="text-gray-700 text-base mt-2" >Or drag a file here to upload</span> -->
           </div>
-          <NoFilesSection v-else-if="isEmpty" />
+          <NoFilesSection
+            primary-message="You don't have any files here"
+            secondary-message=" "
+            v-else-if="isEmpty" />
           <div v-else class="h-full">
-            <div v-if="folders.length > 0" class="mt-1">
-              <div class="text-gray-600 font-medium">Folders</div>
+            <div class="mt-2">
+              <div class="flex py-1 justify-between">
+                <span
+                  v-if="folders.length > 0"
+                  class="text-gray-600 font-medium">
+                  Folders
+                </span>
+                <span v-else></span>
+                <Button
+                  v-if="folderStack.length > 1"
+                  variant="ghost"
+                  icon="arrow-up"
+                  class="border"
+                  :class="[
+                    $store.state.view === 'list' ? 'bg-white shadow' : '',
+                  ]"
+                  @click="closeEntity()" />
+              </div>
               <div class="flex flex-row flex-wrap gap-4 mt-0.5">
                 <div
                   v-for="folder in folders"
@@ -65,7 +76,7 @@
             </div>
             <div
               v-if="files.length > 0"
-              :class="folders.length > 0 ? 'mt-8' : 'mt-1'">
+              :class="folders.length > 0 ? 'mt-8' : 'mt-2'">
               <div class="text-gray-600 font-medium">Files</div>
               <div class="inline-flex flex-row flex-wrap gap-4 mt-0.5">
                 <div

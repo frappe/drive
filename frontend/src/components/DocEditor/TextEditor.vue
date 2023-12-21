@@ -48,6 +48,19 @@
   </div>
   <DocMenuAndInfoBar v-if="isWritable" :editor="editor" />
   <InfoSidebar v-else />
+  <FilePicker
+    v-if="showFilePicker"
+    v-model="showFilePicker"
+    :suggestedTabIndex="1"
+    @success="
+      (val) => {
+        pickedFile = val;
+        showFilePicker = false;
+        if (editor) {
+          wordToHTML();
+        }
+      }
+    " />
 </template>
 
 <script>
@@ -98,6 +111,8 @@ import Menu from "./Menu.vue";
 import InfoSidebar from "../InfoSidebar.vue";
 import { toast } from "@/utils/toasts.js";
 import { PageBreak } from "./Pagebreak";
+import { convertToHtml } from "mammoth";
+import FilePicker from "@/components/FilePicker.vue";
 
 export default {
   name: "TextEditor",
@@ -109,6 +124,7 @@ export default {
     InfoSidebar,
     toast,
     Avatar,
+    FilePicker,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -177,6 +193,8 @@ export default {
       commentText: "",
       isCommentModeOn: false,
       isReadOnly: false,
+      showFilePicker: false,
+      pickedFile: null,
       activeCommentsInstance: {
         uuid: "",
         comments: [],
@@ -273,6 +291,9 @@ export default {
       if (this.editor) {
         this.printEditorContent();
       }
+    });
+    this.emitter.on("importDocFromWord", () => {
+      this.showFilePicker = true;
     });
     const doc = new Y.Doc();
     Y.applyUpdate(doc, this.modelValue);
@@ -433,6 +454,48 @@ export default {
         "setConnectedUsers",
         editor.storage.collaborationCursor.users
       );
+    },
+    async wordToHTML() {
+      let ctx = this;
+      if (
+        ctx.pickedFile?.mime_type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        ctx.pickedFile?.file_ext == ".docx"
+      ) {
+        const headers = {
+          Accept: "application/json",
+          "Content-Type": "application/json; charset=utf-8",
+          "X-Frappe-Site-Name": window.location.hostname,
+          Range: "bytes=0-10000000",
+        };
+        const res = await fetch(
+          `/api/method/drive.api.files.get_file_content?entity_name=${ctx.pickedFile.name}`,
+          {
+            method: "GET",
+            headers,
+          }
+        );
+        if (res.ok) {
+          let blob = await res.arrayBuffer();
+
+          convertToHtml({ arrayBuffer: blob })
+            .then(function (result) {
+              ctx.editor.commands.insertContent(result.value);
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+          //.then((x) => console.log("docx: finished"));
+        }
+      } else {
+        toast({
+          title: "Not a valid DOCX file!",
+          position: "bottom-right",
+          icon: "alert-triangle",
+          iconClasses: "text-red-500",
+          timeout: 2,
+        });
+      }
     },
     saveDoc(e) {
       if (!(e.keyCode === 83 && (e.ctrlKey || e.metaKey))) {
