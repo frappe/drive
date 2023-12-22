@@ -9,7 +9,7 @@
         class="mb-4"
         label="Name"
         type="text"
-        placeholder="John Doe"
+        placeholder="Baljit Singh"
         autocomplete="name"
         required />
       <Input
