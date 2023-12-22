@@ -181,5 +181,3 @@ scheduler_events = {
 # auth_hooks = [
 # 	"drive.auth.validate"
 # ]
-
-

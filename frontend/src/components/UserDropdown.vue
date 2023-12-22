@@ -10,7 +10,7 @@
         <FrappeDriveLogo class="w-8 h-8 rounded" />
         <div v-if="isExpanded" class="ml-2 flex flex-col">
           <div class="text-base font-medium text-gray-900 leading-none">
-            Frappe Drive
+            F-Drive
           </div>
           <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
             {{ fullName }}

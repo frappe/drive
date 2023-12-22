@@ -7,7 +7,7 @@
         v-model="email"
         class="mb-4"
         label="Email"
-        placeholder="johndoe@mail.com"
+        placeholder="baljit@mail.com"
         name="email"
         autocomplete="email"
         :type="email !== 'Administrator' ? 'email' : 'text'" />

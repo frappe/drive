@@ -7,7 +7,7 @@
         class="mb-4"
         @submit="(user) => addUser(user)" />
       <label v-if="UsersInRole.length" class="block text-xs text-gray-600 mt-2">
-        Users with this role
+        Users in this Group
       </label>
       <div
         v-for="user in uniqueUsers"
