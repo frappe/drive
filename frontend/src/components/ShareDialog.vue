@@ -4,11 +4,11 @@
       <div class="flex items-center justify-start w-full">
         <span class="font-semibold text-2xl">Sharing</span>
         <div
-          class="flex items-center justify-start border pl-0.5 pr-2 py-0.5 ml-1 rounded-sm border-gray-400 max-w-[80%]">
+          class="inline-flex items-center justify-center gap-0.5 transition-colors focus:outline-none text-gray-800 bg-white border border-gray-300 h-7 text-base ml-0.5 rounded px-1">
           <Folder
-            class="h-4 stroke-[1.5] text-gray-900"
+            class="h-4 w-4 stroke-[1.5] text-gray-900"
             v-if="$resources.entity.data?.is_group" />
-          <File class="h-4 stroke-[1.5] text-gray-900" v-else />
+          <File class="h-4 w-4 stroke-[1.5] text-gray-900" v-else />
           <span
             class="font-medium text-base text-gray-800 line-clamp-1 truncate max-w-[90%]">
             {{ $resources.entity.data?.title }}
