@@ -21,6 +21,7 @@ from drive.utils.files import (
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
 import magic
+from datetime import datetime
 import urllib.parse
 
 def if_folder_exists(folder_name, parent):
@@ -86,7 +87,7 @@ def create_document_entity(title, content, parent=None):
 
 
 @frappe.whitelist()
-def upload_file(fullpath=None, parent=None):
+def upload_file(fullpath=None, parent=None, last_modified=None):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -149,7 +150,7 @@ def upload_file(fullpath=None, parent=None):
         save_path.rename(path)
 
         drive_entity = create_drive_entity(
-            name, title, parent, path, file_size, file_ext, mime_type
+            name, title, parent, path, file_size, file_ext, mime_type, last_modified
         )
 
         if mime_type.startswith(("image", "video")):
@@ -167,7 +168,7 @@ def upload_file(fullpath=None, parent=None):
         return drive_entity
 
 
-def create_drive_entity(name, title, parent, path, file_size, file_ext, mime_type):
+def create_drive_entity(name, title, parent, path, file_size, file_ext, mime_type, last_modified):
     drive_entity = frappe.get_doc(
         {
             "doctype": "Drive Entity",
@@ -182,6 +183,10 @@ def create_drive_entity(name, title, parent, path, file_size, file_ext, mime_typ
     )
     drive_entity.flags.file_created = True
     drive_entity.insert()
+    if last_modified:
+        dt_object = datetime.fromtimestamp(int(last_modified) / 1000.0)
+        formatted_datetime = dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")
+        drive_entity.db_set("modified", formatted_datetime, update_modified=False)
     return drive_entity
 
 
@@ -336,7 +341,7 @@ def get_file_content(entity_name, trigger_download=0):
         response.headers.add(
             "Content-Disposition",
             content_dispostion,
-            filename=format(urllib.parse.quote(drive_entity.title.encode('utf8')))
+            filename=format(urllib.parse.quote(drive_entity.title.encode("utf8"))),
         )
         response.headers.add("Content-Length", str(drive_entity.file_size))
         response.headers.add("Content-Type", response.mimetype)

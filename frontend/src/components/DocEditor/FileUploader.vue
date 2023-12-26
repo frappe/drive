@@ -108,6 +108,9 @@ onMounted(() => {
       }
     },
     sending: function (file, xhr, formData) {
+      if (file.lastModified) {
+        formData.append("last_modified", file.lastModified);
+      }
       if (file.parent) {
         formData.append("parent", file.parent);
       }
