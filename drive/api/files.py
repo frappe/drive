@@ -24,6 +24,7 @@ import magic
 from datetime import datetime
 import urllib.parse
 
+
 def if_folder_exists(folder_name, parent):
     values = {
         "title": folder_name,
@@ -586,66 +587,6 @@ def get_entity(entity_name, fields=None):
     """
     fields = fields or ["name", "title", "owner"]
     return frappe.db.get_value("Drive Entity", entity_name, fields, as_dict=1)
-
-
-@frappe.whitelist()
-def get_entities_in_path(entity_name, fields=None, shared=False):
-    """
-    Return list of all DriveEntities present in the path.
-
-    :param entity_name: Document-name of the file or folder
-    :param fields: List of doc-fields that should be returned. Defaults to ['name', 'title', 'owner']
-    :param shared: True if entity in question has been shared with the user
-    :raises PermissionError: If the user does not have access to the specified entity
-    :return: List of parents followed by the specified DriveEntity
-    :rtype: list[frappe._dict]
-    """
-
-    fields = fields or ["name", "title", "owner"]
-    rebuild_tree("Drive Entity", "parent_drive_entity")
-    if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-    ):
-        frappe.throw("Cannot access path due to insufficient permissions", frappe.PermissionError)
-    path = get_ancestors_of("Drive Entity", entity_name, "lft asc")
-    path.append(entity_name)
-    entities = [
-        frappe.db.get_value("Drive Entity", entity, fields, as_dict=True) for entity in path
-    ]
-
-    if entities[0].owner != frappe.session.user:
-        return get_shared_entities_in_path(entities)
-
-    result = {"is_shared": False, "entities": []}
-    result["entities"] += entities
-    return result
-
-
-@frappe.whitelist()
-def get_shared_entities_in_path(entities):
-    """
-    Return list of all DriveEntities present in the path for a shared folder.
-
-    :param entities: All entities in path
-    :return: List of parents followed by the specified DriveEntity
-    :rtype: list[frappe._dict]
-    """
-
-    shared_entities = [entities[-1]]
-    highest_level_reached = False
-    i = -2
-    while not highest_level_reached:
-        if frappe.db.exists(
-            "DocShare", {"user": frappe.session.user, "share_name": entities[i].name}
-        ) or frappe.db.exists("DocShare", {"everyone": 1, "share_name": entities[i].name}):
-            shared_entities.insert(0, entities[i])
-            i -= 1
-        else:
-            highest_level_reached = True
-
-    result = {"is_shared": True, "entities": []}
-    result["entities"] += shared_entities
-    return result
 
 
 @frappe.whitelist(allow_guest=True)

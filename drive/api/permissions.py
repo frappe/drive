@@ -343,7 +343,6 @@ def get_general_access(entity_name):
     return query.run(as_dict=True)
 
 
-@frappe.whitelist()
 def get_user_access(entity_name):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
