@@ -1105,6 +1105,11 @@ export default {
           this.$store.commit("setCurrentFolder", data);
           this.folderContents.fetch();
         },
+        onError(error) {
+          if (error.exc_type === "PermissionError") {
+            window.location.replace("/drive/home");
+          }
+        },
         auto: true,
       };
     },

@@ -120,7 +120,9 @@ let file = createResource({
     }
   },
   onError(error) {
-    console.log(error);
+    if (error.exc_type === "PermissionError") {
+      window.location.replace("/drive/home");
+    }
   },
 });
 

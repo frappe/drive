@@ -152,13 +152,14 @@ export default {
     getDocument() {
       return {
         url: "drive.api.permissions.get_entity_with_permissions",
+        method: "GET",
         params: {
           entity_name: this.entityName,
         },
         onError(error) {
-          console.log(error);
-          if (error?.messages.some((x) => x.startsWith("PermissionError")))
-            window.location.href = "/";
+          if (error.exc_type === "PermissionError") {
+            window.location.replace("/drive/home");
+          }
         },
         auto: false,
       };
