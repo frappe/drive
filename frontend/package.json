@@ -51,6 +51,7 @@
     "vue": "^3.2",
     "vue-inline-svg": "^2.1.3",
     "vue-router": "^4.1.6",
+    "vue-tippy": "^6.4.1",
     "vuex": "^4.1.0",
     "x-data-spreadsheet": "^1.1.9",
     "xlsx": "^0.18.5",

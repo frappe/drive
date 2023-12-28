@@ -34,7 +34,7 @@
       <router-view v-else />
     </div>
   </div>
-  <FileUploader />
+  <FileUploader v-if="!$route.meta.documentPage && isLoggedIn" />
   <Transition
     enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
     enter-from-class="translate-y-1 opacity-0"
