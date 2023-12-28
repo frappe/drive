@@ -586,10 +586,10 @@ export default {
       // So we check also for an empty text size.
       const isEmptyTextBlock =
         !doc.textBetween(from, to).length && isTextSelection(state.selection);
-
       const isMediaSelected =
-        this.editor.isActive("image") || this.editor.isActive("video");
-
+        this.editor.isActive("image") ||
+        this.editor.isActive("video") ||
+        this.editor.isActive("resizableMedia");
       if (isMediaSelected) {
         return false;
       } else {
