@@ -36,7 +36,7 @@
     <template #actions>
       <Button
         class="mr-2"
-        appearance="primary"
+        variant="solid"
         @click="addImage(addImageDialog.url)">
         Insert Image
       </Button>
@@ -91,7 +91,12 @@ export default {
       this.editor
         .chain()
         .focus()
-        .insertContent(`<img src="${src}"></img>`)
+        .setMedia({
+          src: src,
+          "media-type": "img",
+          width: "800",
+          height: "400",
+        })
         .run();
       this.reset();
     },

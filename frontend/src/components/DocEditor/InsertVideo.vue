@@ -35,7 +35,10 @@
         type="video/mp4" />
     </template>
     <template #actions>
-      <Button appearance="primary" @click="addVideo(addVideoDialog.url)">
+      <Button
+        variant="solid"
+        class="mr-2"
+        @click="addVideo(addVideoDialog.url)">
         Insert Video
       </Button>
       <Button @click="reset">Cancel</Button>
@@ -84,12 +87,16 @@ export default {
       }
       this.addVideoDialog.file = file;
     },
-
     addVideo(src) {
       this.editor
         .chain()
         .focus()
-        .insertContent(`<video src="${src}"></video>`)
+        .setMedia({
+          src: src,
+          "media-type": "video",
+          width: "800",
+          height: "400",
+        })
         .run();
       this.reset();
     },

@@ -113,6 +113,7 @@ import { toast } from "@/utils/toasts.js";
 import { PageBreak } from "./Pagebreak";
 import { convertToHtml } from "mammoth";
 import FilePicker from "@/components/FilePicker.vue";
+import { ResizableMedia } from "./resizeableMedia";
 
 export default {
   name: "TextEditor",
@@ -125,6 +126,7 @@ export default {
     toast,
     Avatar,
     FilePicker,
+    ResizableMedia,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -431,8 +433,14 @@ export default {
         Color.configure({
           types: ["textStyle"],
         }),
-        Image,
-        Video,
+        ResizableMedia.configure({
+          uploadFn: async (file) => {
+            const fd = new FormData();
+            fd.append("file", file);
+            console.log(file);
+            return "https://source.unsplash.com/8xznAGy4HcY/800x400";
+          },
+        }),
       ],
     });
     this.emitter.on("emitToggleCommentMenu", () => {
@@ -440,6 +448,7 @@ export default {
     });
   },
   beforeUnmount() {
+    console.log(this.editor.getHTML());
     this.updateConnectedUsers(this.editor);
     document.removeEventListener("keydown", this.saveDoc);
     this.editor.destroy();
