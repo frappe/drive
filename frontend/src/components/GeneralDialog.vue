@@ -55,8 +55,9 @@ export default {
       switch (this.for) {
         case "unshare":
           return {
-            title: "Remove?",
-            message: "Selected items will not be shared with you anymore.",
+            title: "Unshare?",
+            message:
+              "Selected items will not be shared with you anymore and you will lose access to them.",
             buttonMessage: "Remove",
             theme: "red",
             buttonIcon: "trash-2",
@@ -77,7 +78,7 @@ export default {
             title: "Move to Trash?",
             message:
               items +
-              " will be moved to Trash. Items in Trash are deleted forever after 30 days.",
+              " will be moved to Trash. Items in trash are deleted forever after 30 days. Other users will lose access to this.",
             buttonMessage: "Move to Trash",
             theme: "red",
             buttonIcon: "trash-2",

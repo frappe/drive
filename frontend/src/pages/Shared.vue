@@ -60,7 +60,7 @@
     <GeneralDialog
       v-model="showRemoveDialog"
       :entities="selectedEntities"
-      :for="'unshare'"
+      :for="this.shareView === 'with' ? 'unshare' : 'remove'"
       @success="
         () => {
           fetchUpdate();
