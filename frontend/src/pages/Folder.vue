@@ -1106,8 +1106,12 @@ export default {
           this.folderContents.fetch();
         },
         onError(error) {
-          if (error.exc_type === "PermissionError") {
-            window.location.replace("/drive/home");
+          if (error && error.exc_type === "PermissionError") {
+            this.$store.commit("setError", {
+              primaryMessage: "Forbidden",
+              secondaryMessage: "Insufficient permissions for this resource",
+            });
+            this.$router.replace({ name: "Error" });
           }
         },
         auto: true,
@@ -1171,6 +1175,15 @@ export default {
             entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
             this.$store.commit("setCurrentViewEntites", data);
           });
+        },
+        onError(error) {
+          if (error && error.exc_type === "PermissionError") {
+            this.$store.commit("setError", {
+              primaryMessage: "Forbidden",
+              secondaryMessage: "Insufficient permissions for this resource",
+            });
+            this.$router.replace({ name: "Error" });
+          }
         },
         auto: false,
       };

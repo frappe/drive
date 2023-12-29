@@ -35,5 +35,15 @@ app.directive("focus", {
   mounted: (el) => el.focus(),
 });
 
+setConfig("resourceFetcher", (options) => {
+  return frappeRequest({
+    ...options,
+    onError(err) {
+      if (err.messages && err.messages[0]) {
+        return;
+      }
+    },
+  });
+});
 app.component("Button", Button);
 app.mount("#app");

@@ -21,6 +21,10 @@ const store = createStore({
       fullName: getCookies().full_name,
       imageURL: getCookies().user_image,
     },
+    error: {
+      primaryMessage: "404 Not Found",
+      secondaryMessage: "The resource you're looking for does not exist",
+    },
     uploads: [],
     connectedUsers: [],
     sortOrder: JSON.parse(localStorage.getItem("sortOrder")) || {
@@ -63,6 +67,9 @@ const store = createStore({
   mutations: {
     setAuth(state, auth) {
       Object.assign(state.auth, auth);
+    },
+    setError(state, error) {
+      Object.assign(state.error, error);
     },
     setUser(state, user) {
       Object.assign(state.user, user);

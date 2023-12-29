@@ -8,6 +8,12 @@ const routes = [
     component: () => import("@/pages/Home.vue"),
   },
   {
+    path: "/:pathMatch(.*)*/",
+    name: "Error",
+    component: () => import("@/pages/Error.vue"),
+    props: true,
+  },
+  {
     path: "/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
@@ -86,6 +92,7 @@ let router = createRouter({
 const HybridRouteArray = ["File", "Folder", "Document"];
 
 router.beforeEach((to, from, next) => {
+  // If they hit a public page log them in
   if (to.matched.some((record) => record.meta.isPublicRoute)) {
     if (store.getters.isLoggedIn) {
       next({ name: "Home" });
@@ -93,6 +100,7 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
+    // Prepend "Shared/" to the breadcrumbs if an authenticated user navigated to a file by pasting a link
     if (
       store.getters.isLoggedIn ||
       to.matched.some((record) => record.meta.isHybridRoute)
@@ -106,7 +114,12 @@ router.beforeEach((to, from, next) => {
       }
       next();
     } else {
-      import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
+      if (to.name === "Error") {
+        next();
+      } else {
+        next("/login");
+      }
+      //import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
     }
   }
 });

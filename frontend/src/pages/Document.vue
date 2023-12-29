@@ -12,6 +12,7 @@
 <script>
 import TextEditor from "@/components/DocEditor/TextEditor.vue";
 import { fromUint8Array, toUint8Array } from "js-base64";
+import { toast } from "../utils/toasts";
 
 export default {
   components: {
@@ -115,14 +116,14 @@ export default {
   beforeUnmount() {
     /* this.$store.commit("setShowInfo", false); */
     clearInterval(this.timer);
-    this.$resources.updateDocument.submit({
+    /* this.$resources.updateDocument.submit({
       entity_name: this.entityName,
       doc_name: this.document,
       title: this.titleVal,
       content: fromUint8Array(this.content),
       comments: this.comments,
       file_size: fromUint8Array(this.content).length,
-    });
+    }); */
   },
   resources: {
     updateDocumentTitle() {
@@ -132,9 +133,6 @@ export default {
         params: {
           entity_name: this.entityName,
           title: this.titleVal,
-        },
-        onError(data) {
-          console.log(data);
         },
         auto: false,
       };
@@ -157,8 +155,12 @@ export default {
           entity_name: this.entityName,
         },
         onError(error) {
-          if (error.exc_type === "PermissionError") {
-            window.location.replace("/drive/home");
+          if (error && error.exc_type === "PermissionError") {
+            this.$store.commit("setError", {
+              primaryMessage: "Forbidden",
+              secondaryMessage: "Insufficient permissions for this resource",
+            });
+            this.$router.replace({ name: "Error" });
           }
         },
         auto: false,

@@ -38,6 +38,7 @@ import { createResource } from "frappe-ui";
 import { formatSize, formatDate } from "@/utils/format";
 import { useRouter } from "vue-router";
 import { Scan, FileSignature } from "lucide-vue-next";
+import { toast } from "../utils/toasts";
 
 const router = useRouter();
 const store = useStore();
@@ -55,31 +56,35 @@ const userId = computed(() => {
 });
 
 const filteredEntities = computed(() => {
-  return store.state.currentViewEntites.filter(
+  return store.state.currentViewEntites?.filter(
     (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
   );
 });
 
 const currentEntityIndex = computed(() => {
-  return filteredEntities.value.findIndex(
+  return filteredEntities.value?.findIndex(
     (item) => item.name === props.entityName
   );
 });
 
 const prevEntity = computed(() => {
-  return filteredEntities.value[currentEntityIndex.value - 1];
+  if (filteredEntities.value) {
+    return filteredEntities.value[currentEntityIndex.value - 1];
+  }
 });
 
 const nextEntity = computed(() => {
-  return filteredEntities.value[currentEntityIndex.value + 1];
+  if (filteredEntities.value) {
+    return filteredEntities.value[currentEntityIndex.value + 1];
+  }
 });
 
 function fetchFile(currentEntity) {
   file.fetch({ entity_name: currentEntity }).then(() => {
-    router.replace({
+    /* router.replace({
       name: "File",
       params: { entityName: currentEntity },
-    });
+    }); */
   });
 }
 
@@ -120,8 +125,12 @@ let file = createResource({
     }
   },
   onError(error) {
-    if (error.exc_type === "PermissionError") {
-      window.location.replace("/drive/home");
+    if (error && error.exc_type === "PermissionError") {
+      store.commit("setError", {
+        primaryMessage: "Forbidden",
+        secondaryMessage: "Insufficient permissions for this resource",
+      });
+      router.replace({ name: "Error" });
     }
   },
 });
