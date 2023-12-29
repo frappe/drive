@@ -130,7 +130,11 @@ export default {
     },
   },
   created() {
-    this.newName = this.entity?.title.split(".").slice(0, -1).join(".");
+    if (this.entity?.is_group || this.entity?.document) {
+      this.newName = this.entity.title;
+    } else {
+      this.newName = this.entity?.title.split(".").slice(0, -1).join(".");
+    }
   },
 };
 </script>
