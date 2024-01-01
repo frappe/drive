@@ -157,11 +157,13 @@ export default {
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
             this.$store.commit("setError", {
+              iconName: "alert-triangle",
+              iconClass: "fill-amber-500 stroke-white",
               primaryMessage: "Forbidden",
               secondaryMessage: "Insufficient permissions for this resource",
             });
-            this.$router.replace({ name: "Error" });
           }
+          this.$router.replace({ name: "Error" });
         },
         auto: false,
       };

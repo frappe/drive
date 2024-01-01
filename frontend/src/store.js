@@ -22,6 +22,8 @@ const store = createStore({
       imageURL: getCookies().user_image,
     },
     error: {
+      iconName: "x-circle",
+      iconClass: "fill-red-500 stroke-white",
       primaryMessage: "404 Not Found",
       secondaryMessage: "The resource you're looking for does not exist",
     },
