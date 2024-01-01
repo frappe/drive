@@ -1,7 +1,7 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New User Role', size: 'xs' }">
+  <Dialog v-model="open" :options="{ title: 'New Group Name', size: 'xs' }">
     <template #body-content>
-      <label class="block text-xs text-gray-600 mt-2 mb-1">Role Name</label>
+      <label class="block text-xs text-gray-600 mt-2 mb-1">Group Name</label>
       <Input v-model="roleName" type="text" />
       <label class="block text-xs text-gray-600 mt-2 mb-1">Add User</label>
       <UserSearch
@@ -9,7 +9,7 @@
         class="mb-4"
         @submit="(user) => addUser(user)" />
       <label v-if="UsersInRole.length" class="block text-xs text-gray-600 mt-2">
-        Users with this role
+        Users in this Group
       </label>
       <div
         v-for="user in uniqueUsers"
