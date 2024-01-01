@@ -1,31 +1,33 @@
 <template>
   <div
-    class="h-full w-full overflow-hidden flex flex-col items-center justify-center">
+    class="h-full w-full overflow-hidden flex flex-col items-center justify-start">
     <div
       :draggable="false"
       id="renderContainer"
-      class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh]">
+      @click="goFullScreen('renderContainer')"
+      class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh] mt-3">
       <FileRender v-if="file.data" :preview-entity="file.data" />
     </div>
-    <div
-      class="flex items-center justify-between mt-4 p-2 h-10 rounded-lg shadow-xl bg-white">
-      <Button
-        :disabled="!prevEntity?.name"
-        :variant="'ghost'"
-        icon="arrow-left"
-        @click="scrollEntity(true)"></Button>
-      <!-- <Button :variant="'ghost'">
-        <Scan class="w-4"/>
-      </Button>
-      <Button :variant="'ghost'">
-        <FileSignature class="w-4"/>
-      </Button> -->
-      <Button
-        :disabled="!nextEntity?.name"
-        :variant="'ghost'"
-        icon="arrow-right"
-        @click="scrollEntity()"></Button>
-    </div>
+  </div>
+  <div
+    v-show="filteredEntities.length > 1"
+    class="absolute bottom-[-1%] left-[50%] center-transform flex items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-white">
+    <Button
+      :disabled="!prevEntity?.name"
+      :variant="'ghost'"
+      icon="arrow-left"
+      @click="scrollEntity(true)"></Button>
+    <Button @click="enterFullScreen" :variant="'ghost'">
+      <Scan class="w-4" />
+    </Button>
+    <!--  <Button :variant="'ghost'">
+      <FileSignature class="w-4"/>
+    </Button> -->
+    <Button
+      :disabled="!nextEntity?.name"
+      :variant="'ghost'"
+      icon="arrow-right"
+      @click="scrollEntity()"></Button>
   </div>
 </template>
 
@@ -38,7 +40,7 @@ import { createResource } from "frappe-ui";
 import { formatSize, formatDate } from "@/utils/format";
 import { useRouter } from "vue-router";
 import { Scan, FileSignature } from "lucide-vue-next";
-import { toast } from "../utils/toasts";
+import { onKeyStroke } from "@vueuse/core";
 
 const router = useRouter();
 const store = useStore();
@@ -56,37 +58,60 @@ const userId = computed(() => {
 });
 
 const filteredEntities = computed(() => {
-  return store.state.currentViewEntites?.filter(
+  return store.state.currentViewEntites.filter(
     (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
   );
 });
 
 const currentEntityIndex = computed(() => {
-  return filteredEntities.value?.findIndex(
+  return filteredEntities.value.findIndex(
     (item) => item.name === props.entityName
   );
 });
 
 const prevEntity = computed(() => {
-  if (filteredEntities.value) {
-    return filteredEntities.value[currentEntityIndex.value - 1];
-  }
+  return filteredEntities.value[currentEntityIndex.value - 1];
 });
 
 const nextEntity = computed(() => {
-  if (filteredEntities.value) {
-    return filteredEntities.value[currentEntityIndex.value + 1];
-  }
+  return filteredEntities.value[currentEntityIndex.value + 1];
 });
 
 function fetchFile(currentEntity) {
   file.fetch({ entity_name: currentEntity }).then(() => {
-    /* router.replace({
+    router.replace({
       name: "File",
       params: { entityName: currentEntity },
-    }); */
+    });
   });
 }
+
+function enterFullScreen(id) {
+  let elem = document.getElementById("renderContainer");
+  console.log(elem);
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) {
+    /* Firefox */
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) {
+    /* Chrome, Safari & Opera */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    /* IE/Edge */
+    elem.msRequestFullscreen();
+  }
+}
+
+onKeyStroke("ArrowLeft", (e) => {
+  e.preventDefault();
+  scrollEntity(true);
+});
+
+onKeyStroke("ArrowRight", (e) => {
+  e.preventDefault();
+  scrollEntity();
+});
 
 let file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
@@ -148,3 +173,9 @@ onBeforeUnmount(() => {
   store.commit("setEntityInfo", []);
 });
 </script>
+
+<style scoped>
+.center-transform {
+  transform: translate(-50%, -50%);
+}
+</style>
