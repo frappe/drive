@@ -1,5 +1,6 @@
 import frappe
 import os
+import re
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pypika import Order, Field, functions as fn
 from pathlib import Path
@@ -316,19 +317,6 @@ def get_file_content(entity_name, trigger_download=0):
         raise ValueError
 
     with DistributedLock(drive_entity.path, exclusive=False):
-        range_header = frappe.request.headers.get("Range")
-        # if range_header is not None:
-        # h = range_header.replace("bytes=", "").split("-")
-        # print (h)
-        # start = int(h[0]) if h[0] != "" else 0
-        # end = int(h[1]) if h[1] != "" else file_size - 1
-        # start, end = get_range_header(range_header, file_size)
-        # size = end - start + 1
-        # print (size)
-        # response.headers.add("Content-Range", f"bytes {start}-{end}/{drive_entity.file_size}")
-        # status_code = status.HTTP_206_PARTIAL_CONTENT
-        # Figure out a sane way to handle blob range streaming requests
-
         try:
             file = open(drive_entity.path, "rb")
         except TypeError:
@@ -347,7 +335,48 @@ def get_file_content(entity_name, trigger_download=0):
         response.headers.add("Content-Length", str(drive_entity.file_size))
         response.headers.add("Content-Type", response.mimetype)
         response.headers.add("Accept-Range", "bytes")
+
+        range_header = frappe.request.headers.get("Range", None)
+        if range_header:
+            return stream_file_content(drive_entity, range_header)
+
         return response
+
+
+def stream_file_content(drive_entity, range_header):
+    """
+    Stream file content and optionally trigger download
+
+    :param entity_name: Document-name of the file whose content is to be streamed
+    :param drive_entity: Drive Entity record object
+    """
+
+    # range_header = frappe.request.headers.get("Range", None)
+    size = os.path.getsize(drive_entity.path)
+    byte1, byte2 = 0, None
+
+    m = re.search("(\d+)-(\d*)", range_header)
+    g = m.groups()
+
+    if g[0]:
+        byte1 = int(g[0])
+    if g[1]:
+        byte2 = int(g[1])
+
+    length = size - byte1
+    if byte2 is not None:
+        length = byte2 - byte1
+
+    data = None
+    with open(drive_entity.path, "rb") as f:
+        f.seek(byte1)
+        data = f.read(length)
+
+    res = Response(
+        data, 206, mimetype=mimetypes.guess_type(drive_entity.path)[0], direct_passthrough=True
+    )
+    res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
+    return res
 
 
 @frappe.whitelist(allow_guest=True)

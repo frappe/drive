@@ -1,57 +1,44 @@
 <template>
   <LoadingIndicator
-    v-if="loading"
+    v-show="loading"
     class="w-10 h-full text-neutral-100 mx-auto" />
   <video
-    v-else
+    v-show="!loading"
     class="w-auto max-h-full"
     autoplay
     preload="none"
     controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture"
     controls
-    type="video/mp4"
-    :src="previewURL"></video>
+    ref="videoElement"
+    :key="src"
+    @loadedmetadata="handleMediaReady">
+    <source :src="src" :type="type" />
+  </video>
 </template>
 
 <script setup>
-/* Add codec evaluation currently assumes its a valid H265/4 (MP4/Webm)*/
+/* 
+  Add codec evaluation currently assumes its a valid H264/5 (MP4/Webm)
+  Look into the feasibility of client side mp4 moov fragmentation pre processing using
+  https://github.com/gpac/gpac/wiki/MP4Box
+  Server side byte is good enough for now 
+*/
 
 import { LoadingIndicator } from "frappe-ui";
-import { onMounted, ref, watch } from "vue";
-import { useObjectUrl } from "@vueuse/core";
+import { ref } from "vue";
 
 const props = defineProps(["previewEntity"]);
 const loading = ref(true);
-const blob = ref(null);
-const previewURL = useObjectUrl(blob);
+const src = ref(
+  `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
+);
+const type = ref("video/mp4");
+const mediaRef = ref("");
 
-async function fetchContent() {
-  loading.value = true;
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json; charset=utf-8",
-    "X-Frappe-Site-Name": window.location.hostname,
-    Range: "bytes=0-10000000",
-  };
-  const res = await fetch(
-    `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
-    {
-      method: "GET",
-      headers,
-    }
-  );
-  if (res.ok) {
-    blob.value = await res.blob();
+const handleMediaReady = (event) => {
+  mediaRef.value = event.target;
+  if (mediaRef.value.readyState === 1) {
     loading.value = false;
   }
-}
-watch(
-  () => props.previewEntity,
-  (newValue, oldValue) => {
-    fetchContent();
-  }
-);
-onMounted(() => {
-  fetchContent();
-});
+};
 </script>
