@@ -1,6 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "./store";
 
+function redir404(to) {
+  if (store.getters.isLoggedIn && to.fullPath === "/") {
+    return { name: "Home" };
+  } else if (to.fullPath === "/") {
+    return { name: "Login" };
+  }
+}
+
 const routes = [
   {
     path: "/home",
@@ -11,6 +19,7 @@ const routes = [
     path: "/:pathMatch(.*)*/",
     name: "Error",
     component: () => import("@/pages/Error.vue"),
+    beforeEnter: [redir404],
     props: true,
   },
   {
