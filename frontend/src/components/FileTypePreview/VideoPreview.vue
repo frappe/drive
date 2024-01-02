@@ -4,13 +4,14 @@
     class="w-10 h-full text-neutral-100 mx-auto" />
   <video
     v-show="!loading"
-    class="w-auto max-h-full"
+    class="w-auto min-h-full"
     autoplay
+    muted
     preload="none"
     controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture"
     controls
-    ref="videoElement"
     :key="src"
+    ref="mediaRef"
     @loadedmetadata="handleMediaReady">
     <source :src="src" :type="type" />
   </video>
@@ -25,7 +26,7 @@
 */
 
 import { LoadingIndicator } from "frappe-ui";
-import { ref } from "vue";
+import { ref, onBeforeUnmount, watch } from "vue";
 
 const props = defineProps(["previewEntity"]);
 const loading = ref(true);
@@ -41,4 +42,19 @@ const handleMediaReady = (event) => {
     loading.value = false;
   }
 };
+
+watch(
+  () => props.previewEntity,
+  (newValue, oldValue) => {
+    loading.value = true;
+    src.value = `/api/method/drive.api.files.get_file_content?entity_name=${newValue.name}`;
+    type.value = newValue.mime_type;
+  }
+);
+
+onBeforeUnmount(() => {
+  loading.value = true;
+  src.value = "";
+  type.value = "";
+});
 </script>
