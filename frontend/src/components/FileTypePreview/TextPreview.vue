@@ -2,7 +2,7 @@
   <LoadingIndicator
     v-if="loading"
     class="w-10 h-full z-10 text-neutral-100 mx-auto" />
-  <div v-else id="container" class="w-full h-full overflow-auto px-4 text-base">
+  <div v-else id="container" class="w-full h-full overflow-auto text-base">
     <pre
       class="p-3 font-mono f-full h-full bg-white overflow-x-scroll overflow-y-scroll"
       >{{ blob }}</pre
