@@ -130,11 +130,13 @@ export default {
     },
   },
   created() {
+    let parsedName = "";
     if (this.entity?.is_group || this.entity?.document) {
       this.newName = this.entity.title;
     } else {
-      this.newName = this.entity?.title.split(".").slice(0, -1).join(".");
+      parsedName = this.entity?.title.split(".").slice(0, -1).join(".");
     }
+    this.newName = parsedName?.length > 1 ? parsedName : this.entity?.title;
   },
 };
 </script>
