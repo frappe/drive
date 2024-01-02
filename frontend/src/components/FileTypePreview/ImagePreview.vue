@@ -58,3 +58,14 @@ onBeforeUnmount(() => {
   imgBlob.value = null;
 });
 </script>
+
+<style scoped>
+img {
+  background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(135deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(135deg, white 75%, #ccc 75%);
+  background-size: 30px 30px; /* Must be a square */
+  background-position: 0 0, 15px 0, 15px -15px, 0px 15px; /* Must be half of one side of the square */
+}
+</style>
