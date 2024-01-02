@@ -5,7 +5,7 @@
     class="bg-white top-0 border-b w-full">
     <div
       class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between">
-      <Breadcrumbs v-if="isLoggedIn" />
+      <Breadcrumbs />
       <!--       
   <div class="flex items-center">
         <router-link to="/" class="hidden md:block"></router-link>
