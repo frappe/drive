@@ -1,5 +1,6 @@
 <template>
-  <div class="m-auto flex flex-col items-center justify-center">
+  <div
+    class="m-auto max-w-[450px] px-16 py-8 z-10 bg-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center">
     <FeatherIcon
       class="h-12 mb-4"
       :class="store.state.error.iconClass"
