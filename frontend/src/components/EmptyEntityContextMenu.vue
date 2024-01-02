@@ -46,7 +46,6 @@ export default {
     this.childHeight = this.$refs.emptyContextMenu.clientHeight;
     this.calculateY();
     this.calculateX();
-    this.disableScroll();
   },
   updated() {
     this.calculateY();
