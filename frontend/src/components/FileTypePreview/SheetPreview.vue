@@ -178,6 +178,7 @@ function xtos(sdata) {
 watch(
   () => props.previewEntity,
   (newValue, oldValue) => {
+    document.getElementById("gridctr").innerHTML = "";
     fetchContent();
   }
 );
