@@ -4,11 +4,28 @@
     class="w-10 h-full z-10 text-neutral-100 mx-auto" />
   <div
     v-else-if="error"
-    class="p-8 z-10 bg-gray-900 text-white rounded-md text-neutral-100 text-xl text-center font-medium">
-    {{ error }}
+    class="max-w-[450px] px-16 py-8 z-10 bg-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center">
+    <FeatherIcon
+      class="h-12 mb-4 fill-blue-500 stroke-white"
+      name="alert-circle" />
+    <span class="mb-4">Cannot open file</span>
+    <span class="text-base text-center text-gray-700">
+      {{ error }}
+    </span>
+    <Button
+      v-if="
+        $store.state.entityInfo[0].allow_download ||
+        $store.state.entityInfo[0].owner === 'Me'
+      "
+      class="mt-4 w-full"
+      variant="solid"
+      @click="download">
+      Download
+    </Button>
   </div>
   <template v-else>
     <VideoPreview v-if="isVideo" :preview-entity="previewEntity" />
+    <AudioPreview v-if="isAudio" :preview-entity="previewEntity" />
     <TextPreview v-if="isTxt" :preview-entity="previewEntity" />
     <SheetPreview v-if="isXlsx" :preview-entity="previewEntity" />
     <ImagePreview v-if="isImage" :preview-entity="previewEntity" />
@@ -17,13 +34,14 @@
   </template>
 </template>
 <script>
-import { LoadingIndicator } from "frappe-ui";
+import { LoadingIndicator, Dialog, FeatherIcon } from "frappe-ui";
 import SheetPreview from "@/components/FileTypePreview/SheetPreview.vue";
 import ImagePreview from "@/components/FileTypePreview/ImagePreview.vue";
 import DocPreview from "@/components/FileTypePreview/DocPreview.vue";
 import PDFPreview from "./FileTypePreview/PDFPreview.vue";
 import VideoPreview from "./FileTypePreview/VideoPreview.vue";
 import TextPreview from "./FileTypePreview/TextPreview.vue";
+import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue";
 
 export default {
   name: "FileRender",
@@ -35,11 +53,19 @@ export default {
     PDFPreview,
     VideoPreview,
     TextPreview,
+    Dialog,
+    AudioPreview,
+    FeatherIcon,
   },
   props: {
     previewEntity: {
       type: Object,
       required: true,
+    },
+    modelValue: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   computed: {
@@ -48,6 +74,9 @@ export default {
     },
     isImage() {
       return this.previewEntity.mime_type?.startsWith("image/");
+    },
+    isAudio() {
+      return this.previewEntity.mime_type?.startsWith("audio/");
     },
     isVideo() {
       return (
@@ -77,6 +106,18 @@ export default {
         this.previewEntity.mime_type === "application/javascript" ||
         this.previewEntity.mime_type === "text/x-python"
       );
+    },
+    open: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+        if (!value) {
+          this.folderName = "";
+          this.errorMessage = "";
+        }
+      },
     },
   },
   data() {
@@ -108,6 +149,7 @@ export default {
         [
           "image",
           "video",
+          "audio",
           "text",
           "text/x-python",
           "application/json",
@@ -120,6 +162,13 @@ export default {
 
       if (!isSupportedType) {
         this.error = "Previews are not supported for this file type";
+        if (
+          this.$store.state.entityInfo[0].allow_download ||
+          this.$store.state.entityInfo[0].owner === "Me"
+        ) {
+          this.error =
+            "Previews are not supported for this file type. Would you like to download it instead?";
+        }
         this.loading = false;
       } else if (this.previewEntity.size_in_bytes > 1000 * 2048 * 2048) {
         // Size limit = 400
@@ -130,6 +179,7 @@ export default {
         this.error = null;
       }
     },
+    download() {},
   },
 };
 </script>
