@@ -179,7 +179,9 @@ export default {
         this.error = null;
       }
     },
-    download() {},
+    download() {
+      window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.previewEntity.name}&trigger_download=1`;
+    },
   },
 };
 </script>
