@@ -4,7 +4,7 @@
     class="w-10 h-full text-neutral-100 mx-auto" />
   <video
     v-show="!loading"
-    class="w-auto min-h-full"
+    class="w-auto max-h-full"
     autoplay
     muted
     preload="none"
