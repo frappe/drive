@@ -468,6 +468,11 @@ export default {
           field: "file_size",
           sortable: true,
         },
+        {
+          label: "Type",
+          field: "mime_type",
+          sortable: true,
+        },
       ].filter((item) => item.sortable);
     },
   },
