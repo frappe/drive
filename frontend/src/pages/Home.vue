@@ -96,6 +96,17 @@
       v-model="showShareDialog"
       :entity-name="selectedEntities[0].name"
       @success="$resources.folderContents.fetch()" />
+    <MoveDialog
+      v-if="showMoveDialog"
+      v-model="showMoveDialog"
+      :entity-name="selectedEntities[0].name"
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showMoveDialog = false;
+          selectedEntities = [];
+        }
+      " />
   </div>
 </template>
 
@@ -166,6 +177,7 @@ export default {
     FolderUp,
     FileUp,
     FileText,
+    MoveDialog,
   },
   data: () => ({
     selectedEntities: [],
@@ -175,6 +187,7 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
+    showMoveDialog: false,
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
     entityContext: {},
@@ -334,10 +347,7 @@ export default {
           label: "Move",
           icon: FolderInput,
           onClick: () => {
-            this.$store.commit("setPasteData", {
-              entities: this.selectedEntities.map((x) => x.name),
-              action: "cut",
-            });
+            this.showMoveDialog = true;
           },
           isEnabled: () => {
             return this.selectedEntities.length > 0;
