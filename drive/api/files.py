@@ -1070,3 +1070,35 @@ def get_title(entity_name):
     ):
         frappe.throw("Not permitted", frappe.PermissionError)
     return frappe.db.get_value("Drive Entity", entity_name, "title")
+
+
+@frappe.whitelist()
+def move(entity_names, new_parent=None):
+    """
+    Move file or folder to the new parent folder
+
+    :param new_parent: Document-name of the new parent folder. Defaults to the user directory
+    :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
+    :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
+    :return: DriveEntity doc once file is moved
+    """
+
+    if isinstance(entity_names, str):
+        entity_names = json.loads(entity_names)
+    if not isinstance(entity_names, list):
+        frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
+    for entity in entity_names:
+        doc = frappe.get_doc("Drive Entity", entity)
+        new_parent = new_parent or get_user_directory(doc.owner).name
+        if new_parent == doc.parent_drive_entity:
+            return doc
+        is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
+        if not is_group:
+            raise NotADirectoryError()
+        doc.parent_drive_entity = new_parent
+        title = get_new_title(doc.title, new_parent)
+        if title != doc.title:
+            doc.rename(title)
+        doc.inherit_permissions()
+        doc.save()
+    return
