@@ -13,6 +13,7 @@
 import TextEditor from "@/components/DocEditor/TextEditor.vue";
 import { fromUint8Array, toUint8Array } from "js-base64";
 import { toast } from "../utils/toasts";
+import { formatSize, formatDate } from "@/utils/format";
 
 export default {
   components: {
@@ -83,6 +84,7 @@ export default {
         this.isWriteable =
           this.$resources.getDocument.data.owner === this.userId ||
           !!this.$resources.getDocument.data.write;
+        this.$store.commit("setEntityInfo", [this.$resources.getDocument.data]);
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);
@@ -153,6 +155,13 @@ export default {
         method: "GET",
         params: {
           entity_name: this.entityName,
+        },
+        onSuccess(data) {
+          data.size_in_bytes = data.file_size;
+          data.file_size = formatSize(data.file_size);
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          data.owner = data.owner === this.userId.value ? "Me" : data.owner;
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
