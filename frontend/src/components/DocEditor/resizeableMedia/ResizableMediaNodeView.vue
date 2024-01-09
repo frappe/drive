@@ -247,7 +247,10 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
       `${(isFloat && `f-${props.node.attrs.dataFloat}`) || ''}`,
       `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
     ]">
-    <tippy placement="bottom" :interactive="true">
+    <tippy
+      v-if="props.editor.options.editable"
+      placement="bottom"
+      :interactive="true">
       <div class="w-fit flex relative">
         <img
           v-if="mediaType === 'img'"
@@ -277,6 +280,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
         </video>
 
         <div
+          v-if="props.editor.options.editable"
           class="horizontal-resize-handle"
           :class="{ 'horizontal-resize-active': isHorizontalResizeActive }"
           title="Resize"
@@ -284,6 +288,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
           @mouseup="stopHorizontalResize" />
 
         <div
+          v-if="props.editor.options.editable"
           class="vertical-resize-handle"
           :class="{ 'vertical-resize-active': isVerticalResizeActive }"
           title="Resize"
@@ -308,6 +313,32 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
         </section>
       </template>
     </tippy>
+    <div v-else class="w-fit flex relative">
+      <img
+        v-if="mediaType === 'img'"
+        v-bind="node.attrs"
+        ref="resizableImg"
+        class="border mt-2 mb-0 mx-4"
+        :class="[
+          `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
+          `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
+        ]"
+        draggable="false" />
+
+      <video
+        v-else-if="mediaType === 'video'"
+        v-bind="node.attrs"
+        ref="resizableImg"
+        class="border mt-2 mb-0 mx-4"
+        :class="[
+          `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
+          `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
+        ]"
+        draggable="false"
+        controls="true">
+        <source :src="node.attrs.src" />
+      </video>
+    </div>
   </node-view-wrapper>
 </template>
 
