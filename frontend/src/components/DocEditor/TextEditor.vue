@@ -57,7 +57,9 @@
         pickedFile = val;
         showFilePicker = false;
         if (editor) {
-          wordToHTML();
+          if (this.editable) {
+            wordToHTML();
+          }
         }
       }
     " />
