@@ -2,10 +2,18 @@ import { createRouter, createWebHistory } from "vue-router";
 import store from "./store";
 
 function redir404(to) {
-  if (store.getters.isLoggedIn && to.fullPath === "/") {
+  console.log(to.name);
+  /* if (store.getters.isLoggedIn && to.fullPath === "/") {
     return { name: "Home" };
   } else if (!store.getters.isLoggedIn && to.fullPath === "/") {
     return { name: "Login" };
+  } */
+}
+
+function setRootBreadCrumb(to) {
+  if (store.getters.isLoggedIn) {
+    document.title = to.name;
+    store.commit("setCurrentBreadcrumbs", [{ label: to.name, route: to.path }]);
   }
 }
 
@@ -14,6 +22,7 @@ const routes = [
     path: "/home",
     name: "Home",
     component: () => import("@/pages/Home.vue"),
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/:pathMatch(.*)*/",
@@ -47,21 +56,25 @@ const routes = [
     path: "/recent",
     name: "Recent",
     component: () => import("@/pages/Recent.vue"),
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/shared",
     name: "Shared",
     component: () => import("@/pages/Shared.vue"),
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/login",

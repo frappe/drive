@@ -53,22 +53,15 @@ export default {
       showRenameDialog: false,
     };
   },
-
-  watch: {
-    currentTitle: {
-      handler(value) {
-        document.title = value;
-      },
-    },
-  },
-
   computed: {
     breadcrumbLinks() {
       return this.$store.state.currentBreadcrumbs;
     },
     currentTitle: {
       get() {
-        return this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
+        let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
+        document.title = value;
+        return value;
       },
       set(newValue) {
         return (this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label =
