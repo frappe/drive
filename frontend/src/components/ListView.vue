@@ -25,6 +25,13 @@
           Owner
         </div>
         <div
+          v-if="$route.name === 'Recent'"
+          class="flex w-full items-center justify-end text-base text-gray-600">
+          Last Accessed
+        </div>
+        <!-- Use the listview api if this needs to be switched in more views -->
+        <div
+          v-else
           class="flex w-full items-center justify-end text-base text-gray-600">
           Last Modified
         </div>
