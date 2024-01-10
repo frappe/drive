@@ -24,7 +24,9 @@
        $store.state.hasWriteAccess -->
       <div v-if="isLoggedIn" class="flex items-center">
         <Dropdown
-          :options="fileOptions"
+          :options="
+            $store.state.hasWriteAccess ? fileOptions : readOnlyfileOptions
+          "
           placement="left"
           class="basis-5/12 lg:basis-auto">
           <Button v-if="$route.meta.documentPage && isLoggedIn" variant="ghost">
@@ -67,6 +69,17 @@
             <FeatherIcon name="trash-2" class="w-4" />
           </template>
           Empty Trash
+        </Button>
+        <Button
+          v-else-if="$route.name === 'Document'"
+          :disabled="!$store.state.hasWriteAccess"
+          @click="emitter.emit('saveDocument')"
+          class="bg-gray-200 rounded flex justify-center items-center px-1 mx-2"
+          variant="solid">
+          <template #prefix>
+            <FeatherIcon name="save" class="w-4" />
+          </template>
+          Save
         </Button>
         <Dropdown
           v-else
@@ -206,6 +219,18 @@ export default {
               },
 
               isEnabled: () => this.selectedEntities.length === 0,
+            },
+          ],
+        },
+      ],
+      readOnlyfileOptions: [
+        {
+          group: "Export",
+          items: [
+            {
+              icon: FileDown,
+              label: "Export to PDF",
+              onClick: () => this.emitter.emit("exportDocToPDF"),
             },
           ],
         },

@@ -514,11 +514,6 @@ export default {
       }
       e.preventDefault();
       this.emitter.emit("saveDocument");
-      toast({
-        title: "Document saved!",
-        position: "bottom-right",
-        timeout: 2,
-      });
     },
     printHtml(dom) {
       const style = Array.from(document.querySelectorAll("style, link")).reduce(

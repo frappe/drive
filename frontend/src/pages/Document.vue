@@ -72,6 +72,11 @@ export default {
         comments: this.comments,
         file_size: fromUint8Array(this.content).length,
       });
+      toast({
+        title: "Document saved",
+        position: "bottom-right",
+        timeout: 2,
+      });
     });
     //this.$store.commit("setShowInfo", true);
     this.$resources.getDocument
@@ -84,6 +89,7 @@ export default {
         this.isWriteable =
           this.$resources.getDocument.data.owner === this.userId ||
           !!this.$resources.getDocument.data.write;
+        this.$store.commit("setHasWriteAccess", this.isWriteable);
         this.$store.commit("setEntityInfo", [this.$resources.getDocument.data]);
       })
       .then(() => {
