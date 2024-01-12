@@ -91,6 +91,10 @@ export default {
           !!this.$resources.getDocument.data.write;
         this.$store.commit("setHasWriteAccess", this.isWriteable);
         this.$store.commit("setEntityInfo", [this.$resources.getDocument.data]);
+        this.$resources.getDocument.data.owner =
+          this.$resources.getDocument.data.owner === this.userId
+            ? "Me"
+            : data.owner;
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);
@@ -167,7 +171,6 @@ export default {
           data.file_size = formatSize(data.file_size);
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
-          data.owner = data.owner === this.userId ? "Me" : data.owner;
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
