@@ -167,7 +167,7 @@ export default {
           data.file_size = formatSize(data.file_size);
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
-          data.owner = data.owner === this.userId.value ? "Me" : data.owner;
+          data.owner = data.owner === this.userId ? "Me" : data.owner;
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
