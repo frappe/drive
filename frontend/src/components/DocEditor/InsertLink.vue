@@ -1,18 +1,23 @@
 <template>
   <slot v-bind="{ onClick: openDialog }"></slot>
   <Dialog
-    :options="{ title: 'Set Link' }"
+    :options="{ title: 'Set Link', size: 'sm' }"
     v-model="setLinkDialog.show"
     @after-leave="reset">
     <template #body-content>
+      <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
+      <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-gray-700">URL</span> -->
       <Input
+        ref="input"
         type="text"
-        label="URL"
+        class="mt-1"
+        placeholder="Link"
         v-model="setLinkDialog.url"
         @keydown.enter="(e) => setLink(e.target.value)" />
-    </template>
-    <template #actions>
-      <Button appearance="primary" @click="setLink(setLinkDialog.url)">
+      <Button
+        variant="solid"
+        class="w-full mt-6"
+        @click="setLink(setLinkDialog.url)">
         Save
       </Button>
     </template>
@@ -20,15 +25,32 @@
 </template>
 <script>
 import { Dialog, Button, Input } from "frappe-ui";
+import { ref } from "vue";
+import { useFocus } from "@vueuse/core";
 
 export default {
   name: "InsertLink",
   props: ["editor"],
   components: { Button, Input, Dialog },
+  setup() {
+    const input = ref();
+    const { focused } = useFocus(input, { initialValue: true });
+    return {
+      input,
+      focused,
+    };
+  },
   data() {
     return {
       setLinkDialog: { url: "", show: false },
     };
+  },
+  computed: {
+    commentRootContent() {
+      const { view, state } = this.editor;
+      const { from, to } = view.state.selection;
+      return state.doc.textBetween(from, to, "");
+    },
   },
   methods: {
     openDialog() {
