@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-col w-full overflow-y-scroll">
+  <div class="flex-col w-full overflow-y-scroll" v-if="editor">
     <div class="flex w-full items-start justify-start lg:justify-center">
       <editor-content
         autocomplete="off"
@@ -10,43 +10,21 @@
         :editor="editor" />
     </div>
     <BubbleMenu
-      v-if="editor"
+      v-show="!forceHideBubbleMenu"
       v-on-outside-click="toggleCommentMenu"
-      :tippy-options="{ duration: 50, animation: 'shift-away' }"
+      :updateDelay="250"
+      :tippy-options="{ animation: 'shift-away' }"
       :should-show="shouldShow"
       :editor="editor">
-      <div
-        v-if="
-          showCommentMenu &&
-          !editor.state.selection.empty &&
-          !activeCommentsInstance.uuid
-        "
-        id="comment-box"
-        :editor="editor">
-        <div
-          class="absolute top-10 left-0 w-96 p-4 rounded-md border bg-white border-gray-100 shadow-2xl">
-          <textarea
-            v-model="commentText"
-            cols="50"
-            rows="4"
-            placeholder="Type your comment"
-            style="resize: none"
-            class="placeholder-gray-500 form-input block w-full mb-2"
-            @keypress.enter.stop.prevent="() => setComment()" />
-          <section class="flex justify-end gap-2">
-            <Button @click="() => discardComment()">Discard</Button>
-            <Button appearance="primary" @click="() => setComment()">
-              Done
-            </Button>
-          </section>
-        </div>
-      </div>
       <Menu
         class="rounded-md border border-gray-100 shadow-lg"
         :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
-  <DocMenuAndInfoBar v-if="isWritable" :editor="editor" />
+  <DocMenuAndInfoBar
+    v-if="isWritable"
+    :editor="editor"
+    :suggestedTabIndex="overrideDocMenutab" />
   <InfoSidebar v-else />
   <FilePicker
     v-if="showFilePicker"
@@ -63,9 +41,15 @@
         }
       }
     " />
+  <NewComment
+    v-if="showCommentMenu"
+    :editor="editor"
+    v-model="showCommentMenu"
+    @success="() => (showCommentMenu = false)" />
 </template>
 
 <script>
+import "tippy.js/animations/shift-away.css";
 import { normalizeClass, computed } from "vue";
 import {
   Editor,
@@ -116,6 +100,7 @@ import { PageBreak } from "./Pagebreak";
 import { convertToHtml } from "mammoth";
 import FilePicker from "@/components/FilePicker.vue";
 import { ResizableMedia } from "./resizeableMedia";
+import NewComment from "./NewComment.vue";
 
 export default {
   name: "TextEditor",
@@ -129,6 +114,7 @@ export default {
     Avatar,
     FilePicker,
     ResizableMedia,
+    NewComment,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -186,6 +172,7 @@ export default {
     return {
       editor: null,
       buttons: ["Link", "Separator", "New Comment"],
+      forceHideBubbleMenu: false,
       provider: null,
       awareness: null,
       connectedUsers: null,
@@ -204,6 +191,7 @@ export default {
         comments: [],
       },
       allComments: [],
+      overrideDocMenutab: 0,
     };
   },
   computed: {
@@ -296,6 +284,11 @@ export default {
         this.printEditorContent();
       }
     });
+    this.emitter.on("forceHideBubbleMenu", (val) => {
+      if (this.editor) {
+        this.forceHideBubbleMenu = val;
+      }
+    });
     this.emitter.on("importDocFromWord", () => {
       this.showFilePicker = true;
     });
@@ -356,7 +349,7 @@ export default {
           },
           /* codeBlock: {
             HTMLAttributes: {
-              class: "my-5 px-4 py-2 text-sm bg-gray-50 rounded border border-gray-200 leading-5 overflow-x-scroll",
+              class: "my-5 px-4 py-2 text-sm text-black bg-gray-50 rounded border border-gray-200 leading-5 overflow-x-scroll",
             },
           }, */
           bulletList: {
@@ -446,11 +439,18 @@ export default {
       ],
     });
     this.emitter.on("emitToggleCommentMenu", () => {
-      this.showCommentMenu = !this.showCommentMenu;
+      if (this.editor?.isActive("comment") !== true) {
+        this.showCommentMenu = !this.showCommentMenu;
+      } else {
+        this.$store.state.showInfo = true;
+        setTimeout(() => {
+          this.overrideDocMenutab = 1;
+        }, 250);
+      }
     });
   },
   beforeUnmount() {
-    console.log(this.editor.getHTML());
+    //console.log(this.editor.getHTML());
     this.updateConnectedUsers(this.editor);
     document.removeEventListener("keydown", this.saveDoc);
     this.editor.destroy();
@@ -652,11 +652,14 @@ export default {
     setCurrentComment() {
       let newVal = this.editor.isActive("comment");
       if (newVal) {
-        this.showAddCommentSection = !this.editor.state.selection.empty;
+        this.$store.state.showInfo = true;
+        setTimeout(() => {
+          this.overrideDocMenutab = 1;
+        }, 150);
         const parsedComment = JSON.parse(
           this.editor.getAttributes("comment").comment
         );
-        parsedComment.comment =
+        parsedComment.comments =
           typeof parsedComment.comments === "string"
             ? JSON.parse(parsedComment.comments)
             : parsedComment.comments;
@@ -791,7 +794,6 @@ ol {
 
 span[data-comment] {
   background: rgb(228, 245, 233);
-  border-bottom: 2px rgb(91, 185, 140) dashed;
   user-select: all;
   padding: 0 2px 0 2px;
   border-radius: 5px;

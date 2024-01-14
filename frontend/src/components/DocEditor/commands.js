@@ -3,11 +3,12 @@ import { defineAsyncComponent } from "vue";
 /* Icons */
 import {
   Link,
-  MessageSquare,
   Strikethrough,
   Bold,
   Underline,
   Italic,
+  Link2,
+  MessageCirclePlus,
 } from "lucide-vue-next";
 
 export default {
@@ -37,7 +38,7 @@ export default {
   },
   Link: {
     label: "Link",
-    icon: Link,
+    icon: Link2,
     isActive: (editor) => editor.isActive("link"),
     component: defineAsyncComponent(() => import("./InsertLink.vue")),
   },
@@ -46,7 +47,7 @@ export default {
   },
   "New Comment": {
     label: "New Comment",
-    icon: MessageSquare,
+    icon: MessageCirclePlus,
     action: "emitToggleCommentMenu",
     isActive: (editor) => editor.isActive("comment"),
   },
