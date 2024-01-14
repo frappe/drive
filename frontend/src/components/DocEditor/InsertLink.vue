@@ -54,6 +54,7 @@ export default {
   },
   methods: {
     openDialog() {
+      this.emitter.emit("forceHideBubbleMenu", true);
       let existingURL = this.editor.getAttributes("link").href;
       if (existingURL) {
         this.setLinkDialog.url = existingURL;
@@ -78,6 +79,7 @@ export default {
       this.setLinkDialog.url = "";
     },
     reset() {
+      this.emitter.emit("forceHideBubbleMenu", false);
       this.setLinkDialog = this.$options.data().setLinkDialog;
     },
   },
