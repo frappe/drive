@@ -14,7 +14,7 @@
             :style="{
               background: value
                 ? value
-                : `url(/assets/builder/images/color-circle.png) center / contain`,
+                : `url(/color-circle.png) center / contain`,
             }"></div>
           <Input
             type="text"
