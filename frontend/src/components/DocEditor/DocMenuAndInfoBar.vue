@@ -1015,7 +1015,7 @@ import Tag from "@/components/Tag.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import { v4 as uuidv4 } from "uuid";
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, ref } from "vue";
 import OuterCommentVue from "@/components/DocEditor/OuterComment.vue";
 import LineHeight from "./icons/line-height.vue";
 import {
@@ -1078,15 +1078,27 @@ export default {
     Heading2,
     Heading3,
   },
-  emits: ["setContentEmit", "focusContentEmit"],
+  inheritAttrs: false,
+  inject: ["editor"],
+  props: {
+    suggestedTabIndex: {
+      type: Number,
+      default: 0,
+    },
+  },
   setup() {
     return { formatMimeType, getIconUrl };
   },
-  inheritAttrs: false,
-  inject: ["editor"],
+  watch: {
+    suggestedTabIndex(newValue, oldValue) {
+      if (newValue) {
+        return (this.tab = newValue);
+      }
+    },
+  },
   data() {
     return {
-      tab: 0,
+      tab: this.suggestedTabIndex,
       newComment: "",
       showShareDialog: false,
       addImageDialog: false,
@@ -1284,13 +1296,11 @@ export default {
     },
     fontSizeValue: {
       get(val) {
-        console.log(val);
         return this.editor.getAttributes("textStyle").fontSize
           ? this.editor.getAttributes("textStyle").fontSize
           : 14;
       },
       set(value) {
-        console.log(value);
         this.editor.chain().setFontSize(value).run();
       },
     },
