@@ -1,15 +1,13 @@
 <template>
-  <div class="inline-flex border bg-white px-2 py-1 w-full shadow-lg">
+  <div class="inline-flex bg-white px-1 py-0.5 w-full shadow-lg">
     <div class="inline-flex items-center gap-1">
       <template v-for="button in buttons" :key="button.label">
-        <div
-          v-if="button.type === 'separator'"
-          class="h-4 w-[2px] border-l"></div>
+        <div v-if="button.type === 'separator'" class="h-5 border-l"></div>
         <div v-else-if="button.map" class="shrink-0">
           <Popover>
             <template #target="{ togglePopover }">
               <button
-                class="rounded px-2 py-1 text-base font-medium text-gray-800 transition-colors hover:bg-gray-100"
+                class="rounded text-base font-medium text-gray-800 transition-colors hover:bg-gray-100"
                 :set="
                   (activeBtn =
                     button.find((b) => b.isActive(editor)) || button[0])
@@ -51,7 +49,7 @@
               class="flex rounded p-1 text-gray-800 transition-colors"
               :class="
                 button.isActive(editor) || componentSlotProps?.isActive
-                  ? 'bg-gray-100'
+                  ? 'bg-gray-200 text-gray-400'
                   : 'hover:bg-gray-100'
               "
               :title="button.label"
@@ -60,7 +58,10 @@
                   ? componentSlotProps.onClick(button)
                   : onButtonClick(button)
               ">
-              <component v-if="button.icon" :is="button.icon" class="h-4 w-4" />
+              <component
+                v-if="button.icon"
+                :is="button.icon"
+                class="h-4 w-4 stroke-1.5" />
               <span
                 v-else
                 class="inline-block h-4 min-w-[1rem] text-sm leading-4">
