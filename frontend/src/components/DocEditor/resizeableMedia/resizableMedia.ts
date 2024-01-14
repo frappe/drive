@@ -2,6 +2,7 @@ import { mergeAttributes, Node, nodeInputRule } from "@tiptap/core";
 import { VueNodeViewRenderer } from "@tiptap/vue-3";
 
 import ResizableMediaNodeView from "./ResizableMediaNodeView.vue";
+import { getMediaPasteDropPlugin, UploadFnType } from "./dropMedia.ts";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -195,5 +196,8 @@ export const ResizableMedia = Node.create<MediaOptions>({
         },
       }),
     ];
+  },
+  addProseMirrorPlugins() {
+    return [getMediaPasteDropPlugin(this.options.uploadFn)];
   },
 });
