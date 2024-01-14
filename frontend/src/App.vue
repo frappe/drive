@@ -57,7 +57,7 @@ import { Toasts } from "@/utils/toasts.js";
 import FilePicker from "./components/FilePicker.vue";
 import MoveDialog from "./components/MoveDialog.vue";
 import SearchPopup from "./components/SearchPopup.vue";
-import FileUploader from "./components/DocEditor/FileUploader.vue";
+import FileUploader from "./components/FileUploader.vue";
 
 export default {
   name: "App",
