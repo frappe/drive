@@ -42,7 +42,7 @@
     "fuzzysort": "^2.0.4",
     "js-base64": "^3.7.5",
     "jszip": "^3.10.1",
-    "lucide-vue-next": "^0.206.0",
+    "lucide-vue-next": "^0.309.0",
     "mammoth": "^1.6.0",
     "mitt": "^3.0.0",
     "sass": "^1.62.0",
