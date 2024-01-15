@@ -1080,25 +1080,12 @@ export default {
   },
   inheritAttrs: false,
   inject: ["editor"],
-  props: {
-    suggestedTabIndex: {
-      type: Number,
-      default: 0,
-    },
-  },
   setup() {
     return { formatMimeType, getIconUrl };
   },
-  watch: {
-    suggestedTabIndex(newValue, oldValue) {
-      if (newValue) {
-        return (this.tab = newValue);
-      }
-    },
-  },
   data() {
     return {
-      tab: this.suggestedTabIndex,
+      tab: 0,
       newComment: "",
       showShareDialog: false,
       addImageDialog: false,

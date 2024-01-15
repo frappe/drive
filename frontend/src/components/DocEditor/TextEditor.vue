@@ -21,10 +21,7 @@
         :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
-  <DocMenuAndInfoBar
-    v-if="isWritable"
-    :editor="editor"
-    :suggestedTabIndex="overrideDocMenutab" />
+  <DocMenuAndInfoBar v-if="isWritable" :editor="editor" ref="MenuBar" />
   <InfoSidebar v-else />
   <FilePicker
     v-if="showFilePicker"
@@ -191,7 +188,6 @@ export default {
         comments: [],
       },
       allComments: [],
-      overrideDocMenutab: 0,
     };
   },
   computed: {
@@ -443,9 +439,7 @@ export default {
         this.showCommentMenu = !this.showCommentMenu;
       } else {
         this.$store.state.showInfo = true;
-        setTimeout(() => {
-          this.overrideDocMenutab = 1;
-        }, 250);
+        this.$refs.MenuBar.tab = 1;
       }
     });
   },
@@ -653,9 +647,7 @@ export default {
       let newVal = this.editor.isActive("comment");
       if (newVal) {
         this.$store.state.showInfo = true;
-        setTimeout(() => {
-          this.overrideDocMenutab = 1;
-        }, 150);
+        this.$refs.MenuBar.tab = 1;
         const parsedComment = JSON.parse(
           this.editor.getAttributes("comment").comment
         );

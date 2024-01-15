@@ -147,7 +147,6 @@ function resize(e) {
   transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
 
   &.active {
-    padding-top: 30px;
     padding-bottom: 50px;
   }
 }
