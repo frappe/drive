@@ -558,7 +558,6 @@ export default {
                 ) {
                   return (
                     this.selectedEntities[0].allow_download ||
-                    this.selectedEntities[0].write ||
                     this.selectedEntities[0].owner === "Me"
                   );
                 }
@@ -586,11 +585,7 @@ export default {
               if (this.selectedEntities.length) {
                 const allEntitiesSatisfyCondition = this.selectedEntities.every(
                   (entity) => {
-                    return (
-                      entity.allow_download ||
-                      entity.write ||
-                      entity.owner === "Me"
-                    );
+                    return entity.allow_download || entity.owner === "Me";
                   }
                 );
                 return allEntitiesSatisfyCondition;
@@ -608,6 +603,16 @@ export default {
               return this.selectedEntities.length === 1;
             },
           }, */
+          {
+            label: "Get Link",
+            icon: Link2,
+            onClick: () => {
+              getLink(this.selectedEntities[0]);
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length === 1;
+            },
+          },
           {
             label: "Show Info",
             icon: Info,
