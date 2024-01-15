@@ -2,12 +2,11 @@ import { createRouter, createWebHistory } from "vue-router";
 import store from "./store";
 
 function redir404(to) {
-  console.log(to.name);
-  /* if (store.getters.isLoggedIn && to.fullPath === "/") {
+  if (store.getters.isLoggedIn && to.fullPath === "/") {
     return { name: "Home" };
   } else if (!store.getters.isLoggedIn && to.fullPath === "/") {
-    return { name: "Login" };
-  } */
+    return;
+  }
 }
 
 function setRootBreadCrumb(to) {
