@@ -94,7 +94,7 @@ export default {
         this.$resources.getDocument.data.owner =
           this.$resources.getDocument.data.owner === this.userId
             ? "Me"
-            : data.owner;
+            : this.$resources.getDocument.data.owner;
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);
