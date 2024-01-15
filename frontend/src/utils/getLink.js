@@ -8,7 +8,7 @@ export async function getLink(entity) {
     : `${window.location.origin}/drive/file/${entity.name}`;
   await navigator.clipboard.writeText(link);
   toast({
-    title: "Copied link!",
+    title: "Copied link",
     position: "bottom-right",
     timeout: 2,
   });
