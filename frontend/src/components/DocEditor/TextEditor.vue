@@ -98,6 +98,7 @@ import { convertToHtml } from "mammoth";
 import FilePicker from "@/components/FilePicker.vue";
 import { ResizableMedia } from "./resizeableMedia";
 import NewComment from "./NewComment.vue";
+import { uploadDriveEntity } from "../../utils/chunkFileUpload";
 
 export default {
   name: "TextEditor",
@@ -431,12 +432,7 @@ export default {
           types: ["textStyle"],
         }),
         ResizableMedia.configure({
-          uploadFn: async (file) => {
-            const fd = new FormData();
-            fd.append("file", file);
-            console.log(file);
-            return "https://source.unsplash.com/8xznAGy4HcY/800x400";
-          },
+          uploadFn: uploadDriveEntity,
         }),
       ],
     });

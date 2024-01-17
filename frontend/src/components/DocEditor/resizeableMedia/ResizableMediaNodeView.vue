@@ -256,7 +256,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
           v-if="mediaType === 'img'"
           v-bind="node.attrs"
           ref="resizableImg"
-          class="border mt-2 mb-0 mx-4"
+          class="rounded"
           :class="[
             `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
             `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
@@ -268,13 +268,14 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
           v-else-if="mediaType === 'video'"
           v-bind="node.attrs"
           ref="resizableImg"
-          class="border mt-2 mb-0 mx-4"
+          class="rounded"
           :class="[
             `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
             `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
           ]"
           draggable="true"
           controls="true"
+          controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture"
           data-drag-handle>
           <source :src="node.attrs.src" />
         </video>

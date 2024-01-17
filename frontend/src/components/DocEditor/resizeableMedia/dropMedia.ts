@@ -26,6 +26,8 @@ export const getMediaPasteDropPlugin = (upload: UploadFnType) => {
                   src,
                   "media-type":
                     file.type.indexOf("image") === 0 ? "img" : "video",
+                  width: "800",
+                  height: "400",
                 });
 
                 const transaction = view.state.tr.replaceSelectionWith(node);
@@ -39,6 +41,8 @@ export const getMediaPasteDropPlugin = (upload: UploadFnType) => {
               const node = schema.nodes.resizableMedia.create({
                 src: readerEvent.target?.result,
                 "media-type": "",
+                width: "800",
+                height: "400",
               });
 
               const transaction = view.state.tr.replaceSelectionWith(node);
