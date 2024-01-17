@@ -133,6 +133,11 @@ export default {
       type: String,
       required: false,
     },
+    entity: {
+      default: null,
+      type: Object,
+      required: false,
+    },
     documentName: {
       default: "",
       type: String,
@@ -164,7 +169,7 @@ export default {
       default: () => [],
     },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "updateTitle", "saveDocument"],
   data() {
     return {
       editor: null,
@@ -188,6 +193,7 @@ export default {
         comments: [],
       },
       allComments: [],
+      contentStart: "",
     };
   },
   computed: {
@@ -442,6 +448,18 @@ export default {
         this.$refs.MenuBar.tab = 1;
       }
     });
+    setTimeout(() => {
+      this.$emit("saveDocument");
+    }, 10000);
+  },
+  updated() {
+    let content = this.editor.state.doc.firstChild.textContent.slice(0, 35);
+    if (this.entity.title.includes("Untitled Document")) {
+      this.$store.state.entityInfo[0]["title"] = content;
+    }
+    if (!content.length) {
+      this.$store.state.entityInfo[0]["title"] = this.entity.title;
+    }
   },
   beforeUnmount() {
     //console.log(this.editor.getHTML());
@@ -507,7 +525,7 @@ export default {
         return;
       }
       e.preventDefault();
-      this.emitter.emit("saveDocument");
+      this.$emit("saveDocument");
     },
     printHtml(dom) {
       const style = Array.from(document.querySelectorAll("style, link")).reduce(

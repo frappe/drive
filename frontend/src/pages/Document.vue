@@ -6,7 +6,9 @@
     :bubble-menu="true"
     placeholder="Start typing ..."
     :isWritable="isWriteable"
-    :entityName="entityName" />
+    :entityName="entityName"
+    :entity="entity"
+    @saveDocument="saveDocument" />
 </template>
 
 <script>
@@ -34,8 +36,11 @@ export default {
       contentLoaded: false,
       document: null,
       isWriteable: false,
+      entity: null,
+      beforeUnmountSaveDone: false,
     };
   },
+
   computed: {
     titleVal() {
       return this.title ? this.title : this.oldTitle;
@@ -53,17 +58,8 @@ export default {
       return this.$store.state.auth.user_id;
     },
   },
-  /*   watch:{
-    comments: {
-      handler(){
-        console.log(this.$store.state.allComments)
-      },
-      // check if userid is available
-      immediate: true,
-    },
-  }, */
-  mounted() {
-    this.emitter.on("saveDocument", () => {
+  methods: {
+    saveDocument() {
       this.$resources.updateDocument.submit({
         entity_name: this.entityName,
         doc_name: this.document,
@@ -72,13 +68,58 @@ export default {
         comments: this.comments,
         file_size: fromUint8Array(this.content).length,
       });
+      if (
+        this.entity.title.includes("Untitled Document") &&
+        this.entity.title != this.$store.state.entityInfo[0].title
+      ) {
+        this.$resources.rename.submit({
+          method: "rename",
+          entity_name: this.entityName,
+          new_title: this.$store.state.entityInfo[0].title,
+        });
+      }
       toast({
         title: "Document saved",
         position: "bottom-right",
         timeout: 2,
       });
-    });
-    //this.$store.commit("setShowInfo", true);
+    },
+    async saveAndRenameDocument() {
+      if (
+        this.entity.title.includes("Untitled Document") &&
+        this.entity.title != this.$store.state.entityInfo[0].title
+      ) {
+        await this.$resources.rename
+          .submit({
+            method: "rename",
+            entity_name: this.entityName,
+            new_title: this.$store.state.entityInfo[0].title,
+          })
+          .then(() => {
+            this.$resources.updateDocument.submit({
+              entity_name: this.entityName,
+              doc_name: this.document,
+              title: this.$store.state.entityInfo[0].title,
+              content: fromUint8Array(this.content),
+              comments: this.comments,
+              file_size: fromUint8Array(this.content).length,
+            });
+            this.beforeUnmountSaveDone = true;
+          });
+      } else {
+        await this.$resources.updateDocument.submit({
+          entity_name: this.entityName,
+          doc_name: this.document,
+          title: this.$store.state.entityInfo[0].title,
+          content: fromUint8Array(this.content),
+          comments: this.comments,
+          file_size: fromUint8Array(this.content).length,
+        });
+        this.beforeUnmountSaveDone = true;
+      }
+    },
+  },
+  mounted() {
     this.$resources.getDocument
       .fetch()
       .then(() => {
@@ -90,11 +131,11 @@ export default {
           this.$resources.getDocument.data.owner === this.userId ||
           !!this.$resources.getDocument.data.write;
         this.$store.commit("setHasWriteAccess", this.isWriteable);
-        this.$store.commit("setEntityInfo", [this.$resources.getDocument.data]);
         this.$resources.getDocument.data.owner =
           this.$resources.getDocument.data.owner === this.userId
             ? "Me"
             : this.$resources.getDocument.data.owner;
+        this.entity = this.$resources.getDocument.data;
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);
@@ -126,16 +167,12 @@ export default {
       });
   },
   beforeUnmount() {
-    /* this.$store.commit("setShowInfo", false); */
     clearInterval(this.timer);
-    /* this.$resources.updateDocument.submit({
-      entity_name: this.entityName,
-      doc_name: this.document,
-      title: this.titleVal,
-      content: fromUint8Array(this.content),
-      comments: this.comments,
-      file_size: fromUint8Array(this.content).length,
-    }); */
+    if (!this.beforeUnmountSaveDone) {
+      this.saveAndRenameDocument();
+    } else {
+      return;
+    }
   },
   resources: {
     updateDocumentTitle() {
@@ -152,11 +189,44 @@ export default {
     updateDocument() {
       return {
         url: "drive.api.files.save_doc",
-        debounce: 500,
+        debounce: 0,
         onError(data) {
           console.log(data);
         },
         auto: false,
+      };
+    },
+    rename() {
+      return {
+        url: "drive.api.files.call_controller_method",
+        method: "POST",
+        onSuccess(data) {
+          data.size_in_bytes = data.file_size;
+          data.file_size = formatSize(data.file_size);
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          data.owner =
+            data.owner === this.$store.state.auth.user_id ? "Me" : entity.owner;
+          this.$store.commit("setEntityInfo", [data]);
+          this.entity = data;
+        },
+        onError(error) {
+          if (error && error.exc_type === "FileExistsError") {
+            let getNewTitle = fetch(
+              window.location.origin +
+                `/api/method/drive.utils.files.get_new_title?entity=${this.$store.state.entityInfo[0].title}&parent_name=${this.entity.parent_drive_entity}`
+            );
+            getNewTitle
+              .then((res) => res.json())
+              .then((data) => {
+                this.$resources.rename.submit({
+                  method: "rename",
+                  entity_name: this.entityName,
+                  new_title: data.message,
+                });
+              });
+          }
+        },
       };
     },
     getDocument() {

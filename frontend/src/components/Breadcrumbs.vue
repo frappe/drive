@@ -28,15 +28,11 @@
   <RenameDialog
     v-if="showRenameDialog"
     v-model="showRenameDialog"
-    :entity="
-      $route.name === 'Folder'
-        ? $store.state?.currentFolder
-        : $store.state?.entityInfo[0]
-    "
+    :entity="entity"
     @success="
-      () => {
+      (data) => {
         showRenameDialog = false;
-        $resources.getUpdatedEntityTitle.fetch();
+        currentTitle = data.title;
       }
     " />
 </template>
@@ -54,18 +50,33 @@ export default {
     };
   },
   computed: {
+    entity() {
+      return this.$route.name === "Folder"
+        ? this.$store.state.currentFolder[0]
+        : this.$store.state.entityInfo[0];
+    },
     breadcrumbLinks() {
       return this.$store.state.currentBreadcrumbs;
     },
     currentTitle: {
       get() {
         let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
+        if (this.$route.name === "Document") {
+          value =
+            value != this.$store.state.entityInfo[0].title
+              ? this.$store.state.entityInfo[0]?.title
+              : value;
+        }
         document.title = value;
         return value;
       },
       set(newValue) {
-        return (this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label =
-          newValue);
+        let currentBreadcrumbs = this.breadcrumbLinks;
+        let updatedBreadcrumb = (currentBreadcrumbs[
+          currentBreadcrumbs.length - 1
+        ].label = newValue);
+        this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
+        return newValue;
       },
     },
     currentRoute() {
@@ -83,35 +94,18 @@ export default {
     },
     canShowRenameDialog() {
       if (this.$route.name === "Folder") {
-        this.$store.state.currentFolder.owner === "Me";
-        return (this.showRenameDialog = true);
+        if (
+          (this.$store.state.currentFolder[0]?.owner === "Me") |
+          this.$store.state.currentFolder[0]?.write
+        ) {
+          return (this.showRenameDialog = true);
+        }
       } else if (
         (this.$store.state.entityInfo[0]?.owner === "Me") |
         (this.$store.state.entityInfo[0]?.write === 1)
       ) {
         return (this.showRenameDialog = true);
       }
-    },
-  },
-  resources: {
-    getUpdatedEntityTitle() {
-      return {
-        url: "drive.api.files.get_title",
-        params: {
-          entity_name: this.currentEntityName,
-          fields: "title",
-        },
-        onSuccess(data) {
-          this.currentTitle = data;
-        },
-        onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
-          } else {
-            this.errorMessage = error.message;
-          }
-        },
-      };
     },
   },
 };
