@@ -6,6 +6,7 @@ import { Decoration } from "prosemirror-view";
 import InlineSvg from "vue-inline-svg";
 import { resizableMediaActions } from "./resizableMediaMenuUtil";
 import { Button } from "frappe-ui";
+import "tippy.js/animations/shift-away.css";
 
 interface Props {
   editor: Editor;
@@ -31,6 +32,8 @@ const aspectRatio = ref(0);
 const proseMirrorContainerWidth = ref(0);
 
 const mediaActionActiveState = ref<Record<string, boolean>>({});
+
+const showActionMenu = ref(true);
 
 const setMediaActionActiveStates = () => {
   const activeStates: Record<string, boolean> = {};
@@ -97,6 +100,7 @@ const limitWidthOrHeightToFiftyPixels = ({ width, height }: WidthAndHeight) =>
   width < 100 || height < 100;
 
 const startHorizontalResize = (e: MouseEvent) => {
+  showActionMenu.value = false;
   isHorizontalResizeActive.value = true;
   lastCursorX.value = e.clientX;
 
@@ -107,6 +111,7 @@ const startHorizontalResize = (e: MouseEvent) => {
 const stopHorizontalResize = () => {
   isHorizontalResizeActive.value = false;
   lastCursorX.value = -1;
+  showActionMenu.value = false;
 
   document.removeEventListener("mousemove", onHorizontalMouseMove);
   document.removeEventListener("mouseup", stopHorizontalResize);
@@ -170,6 +175,7 @@ const isVerticalResizeActive = ref(false);
 const lastCursorY = ref(-1);
 
 const startVerticalResize = (e: MouseEvent) => {
+  showActionMenu.value = false;
   isVerticalResizeActive.value = true;
   lastCursorY.value = e.clientY;
 
@@ -180,6 +186,7 @@ const startVerticalResize = (e: MouseEvent) => {
 const stopVerticalResize = () => {
   isVerticalResizeActive.value = false;
   lastCursorY.value = -1;
+  showActionMenu.value = true;
 
   document.removeEventListener("mousemove", onVerticalMouseMove);
   document.removeEventListener("mouseup", stopVerticalResize);
@@ -250,7 +257,10 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
     <tippy
       v-if="props.editor.options.editable"
       placement="bottom"
-      :interactive="true">
+      :animation="'shift-away'"
+      :inertia="true"
+      :show="false"
+      :delay="150">
       <div class="w-fit flex relative">
         <img
           v-if="mediaType === 'img'"
@@ -299,7 +309,8 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
 
       <template #content>
         <section
-          class="image-actions-container bg-white rounded shadow-sm py-1 px-4">
+          v-show="showActionMenu"
+          class="flex image-actions-container bg-white rounded shadow-sm py-0.5 px-1 border">
           <Button
             variant="ghost"
             v-for="(mediaAction, i) in resizableMediaActions"
@@ -309,7 +320,9 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
                 ? mediaAction.delete?.(deleteNode)
                 : mediaAction.action?.(updateAttributes)
             ">
-            <component class="w-3.5 mr-2 stroke-2" :is="mediaAction.icon" />
+            <component
+              class="self-center w-3 mx-1 stroke-1.5"
+              :is="mediaAction.icon" />
           </Button>
         </section>
       </template>
