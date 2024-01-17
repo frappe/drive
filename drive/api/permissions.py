@@ -6,6 +6,7 @@ from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
 from drive.utils.user_group import get_entity_shared_with_user_groups
 from drive.utils.users import mark_as_viewed
+from drive.api.files import get_children_count
 
 
 @frappe.whitelist()
@@ -274,6 +275,8 @@ def get_entity_with_permissions(entity_name):
         "allow_comments",
         "allow_download",
         "document",
+        "color",
+        "parent_drive_entity",
     ]
     if not get_general_access(entity_name):
         if not frappe.has_permission(
@@ -303,6 +306,9 @@ def get_entity_with_permissions(entity_name):
         if entity.document:
             entity_doc_content = get_doc_content(entity.document)
             return entity | entity_doc_content
+        if entity.is_group:
+            child_count = get_children_count(entity.name)
+            entity["item_count"] = child_count
         return entity
     user_access = get_user_access(entity.name)
     if entity.document:

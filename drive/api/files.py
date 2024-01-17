@@ -871,7 +871,7 @@ def remove_or_restore(entity_names, move=False):
         # frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def call_controller_method(entity_name, method):
     """
     Call a whitelisted Drive Entity controller method

@@ -41,7 +41,7 @@ const store = createStore({
     currentViewEntites:
       JSON.parse(localStorage.getItem("currentViewEntites")) || [],
     pasteData: { entities: [], action: null },
-    showInfo: false,
+    showInfo: JSON.parse(localStorage.getItem("showInfo")) || false,
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",

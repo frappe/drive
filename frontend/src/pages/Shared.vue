@@ -44,6 +44,7 @@
     <EntityContextMenu
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
+      :entity-name="selectedEntities[0].name"
       :action-items="actionItems"
       :entity-context="entityContext"
       :close="closeContextMenu" />

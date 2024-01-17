@@ -285,7 +285,7 @@ export default {
     },
     actionItems() {
       /* Owner actions */
-      if (this.currentFolder?.owner === this.userId) {
+      if (this.currentFolder?.owner === "Me") {
         return [
           {
             label: "Preview",
@@ -1122,9 +1122,15 @@ export default {
               route: `/folder/${this.entityName}`,
             });
           }
-          this.$store.commit("setCurrentFolderID", this.entityName);
-          this.$store.commit("setCurrentFolder", data);
           this.folderContents.fetch();
+          data.item_count
+            ? (data.file_size = data.item_count + " items")
+            : delete data.file_size;
+          data.modified = formatDate(data.modified);
+          data.creation = formatDate(data.creation);
+          data.owner = data.owner === this.userId ? "Me" : data.owner;
+          this.$store.commit("setCurrentFolder", [data]);
+          this.$store.commit("setCurrentFolderID", this.entityName);
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {

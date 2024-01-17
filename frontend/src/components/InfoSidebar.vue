@@ -307,8 +307,10 @@ const unaddedTags = computed(() => {
 const entity = computed(() => {
   if (store.state.entityInfo && store.state.entityInfo.length > 1) {
     return store.state.entityInfo.length;
-  } else if (store.state.entityInfo) {
+  } else if (store.state.entityInfo?.length) {
     return store.state.entityInfo[0];
+  } else if (store.state.currentFolder?.length) {
+    return store.state.currentFolder[0];
   } else {
     return false;
   }

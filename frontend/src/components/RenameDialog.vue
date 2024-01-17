@@ -115,8 +115,9 @@ export default {
           data.creation = formatDate(data.creation);
           data.owner =
             data.owner === this.$store.state.auth.user_id ? "Me" : entity.owner;
-          data.is_group ? this.$store.commit("setCurrentFolder", [data]) : null;
-          this.$store.commit("setEntityInfo", [data]);
+          data.is_group
+            ? this.$store.commit("setCurrentFolder", [data])
+            : this.$store.commit("setEntityInfo", [data]);
           this.$emit("success", data);
         },
         onError(error) {
