@@ -228,6 +228,7 @@
           : ' hover:bg-gray-50',
       ]"
       variant="minimal"
+      v-if="showComments"
       @click="switchTab(1)">
       <FeatherIcon
         name="message-circle"
@@ -311,6 +312,18 @@ const entity = computed(() => {
     return store.state.entityInfo[0];
   } else if (store.state.currentFolder?.length) {
     return store.state.currentFolder[0];
+  } else {
+    return false;
+  }
+});
+
+const showComments = computed(() => {
+  if (entity.value.owner === "Me") {
+    return true;
+  } else if (entity.value.write) {
+    return true;
+  } else if (entity.value.allow_comments) {
+    return true;
   } else {
     return false;
   }

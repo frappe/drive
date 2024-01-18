@@ -10,6 +10,7 @@
         :editor="editor" />
     </div>
     <BubbleMenu
+      v-if="editor"
       v-show="!forceHideBubbleMenu"
       v-on-outside-click="toggleCommentMenu"
       :updateDelay="250"
@@ -21,8 +22,7 @@
         :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
-  <DocMenuAndInfoBar v-if="isWritable" :editor="editor" ref="MenuBar" />
-  <InfoSidebar v-else />
+  <DocMenuAndInfoBar :editor="editor" ref="MenuBar" />
   <FilePicker
     v-if="showFilePicker"
     v-model="showFilePicker"
@@ -174,7 +174,7 @@ export default {
   data() {
     return {
       editor: null,
-      buttons: ["Link", "Separator", "New Comment"],
+      buttons: [],
       forceHideBubbleMenu: false,
       provider: null,
       awareness: null,
@@ -185,7 +185,7 @@ export default {
       currentMode: "",
       showCommentMenu: false,
       commentText: "",
-      isCommentModeOn: false,
+      isCommentModeOn: true,
       isReadOnly: false,
       showFilePicker: false,
       pickedFile: null,
@@ -202,7 +202,13 @@ export default {
       return this.isWritable && this.tempEditable;
     },
     bubbleMenuButtons() {
-      return this.buttons.map(createEditorButton);
+      if (this.entity.owner === "Me" || this.entity.write) {
+        this.buttons = ["Link", "Separator", "New Comment"];
+        return this.buttons.map(createEditorButton);
+      } else if (this.entity.allow_comments) {
+        this.buttons = ["New Comment"];
+        return this.buttons.map(createEditorButton);
+      }
     },
     currentUserName() {
       return this.$store.state.user.fullName;
@@ -432,7 +438,7 @@ export default {
           types: ["textStyle"],
         }),
         ResizableMedia.configure({
-          uploadFn: uploadDriveEntity,
+          uploadFn: (file) => uploadDriveEntity(file, this.entity.name),
         }),
       ],
     });
@@ -597,6 +603,8 @@ export default {
         this.editor.isActive("resizableMedia");
       if (isMediaSelected) {
         return false;
+      } else if (this.buttons.length === 1) {
+        return !(empty || isEmptyTextBlock);
       } else {
         return !(!view.hasFocus() || empty || isEmptyTextBlock);
       }
@@ -724,7 +732,7 @@ export default {
   word-break: break-word;
   -webkit-user-select: none;
   -ms-user-select: none;
-  user-select: none;
+  user-select: text;
   padding: 2em 1em;
   font-size: 14px;
   background: white;

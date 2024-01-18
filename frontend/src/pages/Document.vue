@@ -60,29 +60,31 @@ export default {
   },
   methods: {
     saveDocument() {
-      this.$resources.updateDocument.submit({
-        entity_name: this.entityName,
-        doc_name: this.document,
-        title: this.titleVal,
-        content: fromUint8Array(this.content),
-        comments: this.comments,
-        file_size: fromUint8Array(this.content).length,
-      });
-      if (
-        this.entity.title.includes("Untitled Document") &&
-        this.entity.title != this.$store.state.entityInfo[0].title
-      ) {
-        this.$resources.rename.submit({
-          method: "rename",
+      if (this.isWritable) {
+        this.$resources.updateDocument.submit({
           entity_name: this.entityName,
-          new_title: this.$store.state.entityInfo[0].title,
+          doc_name: this.document,
+          title: this.titleVal,
+          content: fromUint8Array(this.content),
+          comments: this.comments,
+          file_size: fromUint8Array(this.content).length,
+        });
+        if (
+          this.entity.title.includes("Untitled Document") &&
+          this.entity.title != this.$store.state.entityInfo[0].title
+        ) {
+          this.$resources.rename.submit({
+            method: "rename",
+            entity_name: this.entityName,
+            new_title: this.$store.state.entityInfo[0].title,
+          });
+        }
+        toast({
+          title: "Document saved",
+          position: "bottom-right",
+          timeout: 2,
         });
       }
-      toast({
-        title: "Document saved",
-        position: "bottom-right",
-        timeout: 2,
-      });
     },
     async saveAndRenameDocument() {
       if (
@@ -154,16 +156,18 @@ export default {
           this.breadcrumbs = currentBreadcrumbs;
           this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
         }
-        this.timer = setInterval(() => {
-          this.$resources.updateDocument.submit({
-            entity_name: this.entityName,
-            doc_name: this.document,
-            title: this.titleVal,
-            content: fromUint8Array(this.content),
-            comments: this.comments,
-            file_size: fromUint8Array(this.content).length,
-          });
-        }, 30000);
+        if (this.isWritable) {
+          this.timer = setInterval(() => {
+            this.$resources.updateDocument.submit({
+              entity_name: this.entityName,
+              doc_name: this.document,
+              title: this.titleVal,
+              content: fromUint8Array(this.content),
+              comments: this.comments,
+              file_size: fromUint8Array(this.content).length,
+            });
+          }, 30000);
+        }
       });
   },
   beforeUnmount() {

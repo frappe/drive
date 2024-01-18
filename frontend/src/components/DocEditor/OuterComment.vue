@@ -97,6 +97,7 @@ interface Props {
     uuid: "";
     comments: [];
   };
+  isCommentModeOn: boolean;
   focusContent: ({ from, to }: { from: number; to: number }) => void;
 }
 
@@ -121,12 +122,12 @@ const setComment = () => {
 
 watch(activeCommentInstanceUuid, (val) => {
   setTimeout(() => {
-    if (!val /* || !props.isCommentModeOn */) return;
+    if (!val || !props.isCommentModeOn) return;
     commentText.value = "";
 
     const activeTextArea: HTMLTextAreaElement = textarea.value[val];
 
-    /* if (activeTextArea) activeTextArea.focus() */
+    if (activeTextArea) activeTextArea.focus();
   }, 100);
 });
 

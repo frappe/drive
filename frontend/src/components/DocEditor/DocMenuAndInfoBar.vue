@@ -147,6 +147,7 @@
                 :active-comments-instance="activeCommentsInstance"
                 :all-comments="allComments"
                 :focus-content="focusContent"
+                :isCommentModeOn="showComments"
                 @set-comment="setComment" />
               <div v-else class="text-gray-600 text-sm mt-2">
                 There are no comments for the current document
@@ -947,7 +948,7 @@
         class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
-      v-if="$route.meta.documentPage"
+      v-if="$route.meta.documentPage && showComments"
       @click="switchTab(1)"
       class="animate mb-2 text-gray-600 py-4"
       :class="[
@@ -964,7 +965,7 @@
         class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
-      v-if="$route.meta.documentPage"
+      v-if="$route.meta.documentPage && entity.write"
       class="animate mb-2 text-gray-600 py-4"
       :class="[
         tab === 2 && showInfoSidebar
@@ -981,7 +982,7 @@
         class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
-      v-if="$route.meta.documentPage"
+      v-if="$route.meta.documentPage && entity.write"
       class="animate mb-2 text-gray-600 py-4"
       :class="[
         tab === 3 && showInfoSidebar
@@ -1290,6 +1291,17 @@ export default {
       set(value) {
         this.editor.chain().setFontSize(value).run();
       },
+    },
+    showComments() {
+      if (this.entity?.owner === "Me") {
+        return true;
+      } else if (this.entity.write) {
+        return true;
+      } else if (this.entity.allow_comments) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
   methods: {
