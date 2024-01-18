@@ -5,7 +5,7 @@
     :fixed-menu="true"
     :bubble-menu="true"
     placeholder="Start typing ..."
-    :isWritable="isWriteable"
+    :isWritable="isWritable"
     :entityName="entityName"
     :entity="entity"
     @saveDocument="saveDocument" />
@@ -35,7 +35,7 @@ export default {
       content: null,
       contentLoaded: false,
       document: null,
-      isWriteable: false,
+      isWritable: false,
       entity: null,
       beforeUnmountSaveDone: false,
     };
@@ -79,11 +79,6 @@ export default {
             new_title: this.$store.state.entityInfo[0].title,
           });
         }
-        toast({
-          title: "Document saved",
-          position: "bottom-right",
-          timeout: 2,
-        });
       }
     },
     async saveAndRenameDocument() {
@@ -129,15 +124,16 @@ export default {
         this.oldTitle = this.$resources.getDocument.title;
         this.content = this.$resources.getDocument.data.content;
         this.document = this.$resources.getDocument.data.document;
-        this.isWriteable =
+        this.isWritable =
           this.$resources.getDocument.data.owner === this.userId ||
           !!this.$resources.getDocument.data.write;
-        this.$store.commit("setHasWriteAccess", this.isWriteable);
+        this.$store.commit("setHasWriteAccess", this.isWritable);
         this.$resources.getDocument.data.owner =
           this.$resources.getDocument.data.owner === this.userId
             ? "Me"
             : this.$resources.getDocument.data.owner;
         this.entity = this.$resources.getDocument.data;
+        this.$store.commit("setEntityInfo", [this.$resources.getDocument.data]);
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);
