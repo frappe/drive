@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
    Currently only used in documents
 */
 
-export async function uploadDriveEntity(file) {
+export async function uploadDriveEntity(file, parent_entity_name) {
   const fileUuid = uuidv4();
   const chunkSize = 5 * 1024 * 1024; // size of each chunk (5MB)
   let chunkByteOffset = 0;
@@ -30,8 +30,7 @@ export async function uploadDriveEntity(file) {
         throw new Error(`Upload failed: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log(data.message);
-      return `/api/method/drive.api.embed.get_file_content?embed_name=${data.message}&parent_entity_name=792171794ac2460386740259affa6987`;
+      return `/api/method/drive.api.embed.get_file_content?embed_name=${data.message}&parent_entity_name=${parent_entity_name}`;
     }
 
     chunkByteOffset += chunkSize;

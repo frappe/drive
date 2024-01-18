@@ -9,13 +9,11 @@ from werkzeug.wsgi import wrap_file
 from drive.locks.distributed_lock import DistributedLock
 from pathlib import Path
 from io import BytesIO
-from drive.utils.files import (
-    get_user_directory
-)
+from drive.utils.files import get_user_directory
 
 
-def create_user_embeds_directory():
-    user_directory_name = get_user_directory().name
+def create_user_embeds_directory(user=None):
+    user_directory_name = get_user_directory(user).name
     user_directory_embeds_path = Path(
         frappe.get_site_path("private/files"), user_directory_name, "embeds"
     )
@@ -24,7 +22,7 @@ def create_user_embeds_directory():
 
 
 def get_user_embeds_directory(user=None):
-    user_directory_name = get_user_directory().name
+    user_directory_name = get_user_directory(user).name
     user_directory_embeds_path = Path(
         frappe.get_site_path("private/files"), user_directory_name, "embeds"
     )
@@ -49,21 +47,30 @@ def upload_chunked_file(fullpath=None, parent=None, last_modified=None):
     :raises ValueError: If the size of the stored file does not match the specified filesize
     :return: DriveEntity doc once the entire file has been uploaded
     """
-    try:
-        embed_directory = get_user_embeds_directory(user=frappe.session.user)
-    except FileNotFoundError:
-        embed_directory = create_user_embeds_directory()
-    embed_directory = Path(frappe.get_site_path("private/files"), get_user_directory().name, "embeds")
-    
-    parent = frappe.form_dict.parent 
 
+    parent = frappe.form_dict.parent
+    drive_entity = frappe.get_value(
+        "Drive Entity",
+        parent,
+        ["document", "title", "mime_type", "file_size", "owner"],
+        as_dict=1,
+    )
+    try:
+        embed_directory = get_user_embeds_directory(user=drive_entity.owner)
+    except FileNotFoundError:
+        embed_directory = create_user_embeds_directory(user=drive_entity.owner)
+    embed_directory = Path(
+        frappe.get_site_path("private/files"),
+        get_user_directory(user=drive_entity.owner).name,
+        "embeds",
+    )
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
     file = frappe.request.files["file"]
-    
+
     name = frappe.form_dict.uuid
     title, file_ext = os.path.splitext(frappe.form_dict.file_name)
     mime_type = frappe.form_dict.mime_type
@@ -87,12 +94,11 @@ def upload_chunked_file(fullpath=None, parent=None, last_modified=None):
     if file_size != int(frappe.form_dict.total_file_size):
         save_path.unlink()
         frappe.throw("Size on disk does not match specified filesize", ValueError)
-    return str(name+file_ext)
+    return str(name + file_ext)
 
-  
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(embed_name, parent_entity_name,trigger_download=0):
+def get_file_content(embed_name, parent_entity_name, trigger_download=0):
     """
     Stream file content and optionally trigger download
 
@@ -103,6 +109,14 @@ def get_file_content(embed_name, parent_entity_name,trigger_download=0):
     :raises PermissionError: If the current user does not have permission to read the file
     :raises FileLockedError: If the file has been writer-locked
     """
+    drive_entity = frappe.get_value(
+        "Drive Entity",
+        parent_entity_name,
+        ["document", "title", "mime_type", "file_size", "owner"],
+        as_dict=1,
+    )
+    if not drive_entity.document:
+        raise ValueError
 
     is_public = False
     if frappe.db.exists(
@@ -122,18 +136,9 @@ def get_file_content(embed_name, parent_entity_name,trigger_download=0):
             user=frappe.session.user,
         ):
             raise frappe.PermissionError("You do not have permission to view this file")
-    trigger_download = int(trigger_download)
-    drive_entity = frappe.get_value(
-        "Drive Entity",
-        parent_entity_name,
-        ["document", "title", "mime_type", "file_size"],
-        as_dict=1,
-    )
-    if not drive_entity.document:
-        raise ValueError
 
     with DistributedLock(drive_entity.path, exclusive=False):
-        user_embeds_directory = get_user_embeds_directory()
+        user_embeds_directory = get_user_embeds_directory(user=drive_entity.owner)
         embed_path = Path(user_embeds_directory, embed_name)
         with open(str(embed_path), "rb") as file:
             range_header = frappe.request.headers.get("Range", None)
@@ -146,6 +151,7 @@ def get_file_content(embed_name, parent_entity_name,trigger_download=0):
             )
             response.headers.set("Content-Disposition", "inline", filename=embed_name)
     return response
+
 
 def stream_file_content(embed_path, range_header):
     """
