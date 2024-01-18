@@ -133,7 +133,6 @@ export default {
             ? "Me"
             : this.$resources.getDocument.data.owner;
         this.entity = this.$resources.getDocument.data;
-        this.$store.commit("setEntityInfo", [this.$resources.getDocument.data]);
       })
       .then(() => {
         this.content = toUint8Array(this.$resources.getDocument.data.content);
@@ -150,6 +149,9 @@ export default {
             route: `/document/${this.entityName}`,
           });
           this.breadcrumbs = currentBreadcrumbs;
+          this.$store.commit("setEntityInfo", [
+            this.$resources.getDocument.data,
+          ]);
           this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
         }
         if (this.isWritable) {
