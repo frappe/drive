@@ -642,7 +642,6 @@ export default {
           this.$resources.share.error = null;
           this.$resources.sharedWith.fetch();
           this.$resources.sharedWithUserGroup.fetch();
-          this.$store.commit("setEntityInfo", [data]);
         },
         onError(error) {
           if (error.messages) {
