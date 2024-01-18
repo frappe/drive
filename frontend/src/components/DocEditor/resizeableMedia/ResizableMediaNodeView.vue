@@ -258,6 +258,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
       v-if="props.editor.options.editable"
       placement="bottom"
       :animation="'shift-away'"
+      :interactive="true"
       :inertia="true"
       :show="false"
       :delay="150">
@@ -332,7 +333,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
         v-if="mediaType === 'img'"
         v-bind="node.attrs"
         ref="resizableImg"
-        class="border mt-2 mb-0 mx-4"
+        class="rounded"
         :class="[
           `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
           `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
@@ -343,13 +344,14 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
         v-else-if="mediaType === 'video'"
         v-bind="node.attrs"
         ref="resizableImg"
-        class="border mt-2 mb-0 mx-4"
+        class="rounded"
         :class="[
           `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
           `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
         ]"
         draggable="false"
-        controls="true">
+        controls="true"
+        controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture">
         <source :src="node.attrs.src" />
       </video>
     </div>
