@@ -48,28 +48,26 @@
               : 'max-h-0'
           }`,
         ]">
-        <div class="items-center gap-3 mt-2 mb-4">
-          <Avatar
-            :label="fullName"
-            :image="imageURL"
-            class="h-7 w-7 mr-2 mb-2" />
+        <div class="flex items-center gap-1 mt-2 mb-4">
+          <Avatar :label="fullName" :image="imageURL" class="h-7 w-7 mr-1" />
           <span class="text-sm font-medium">
             {{ fullName }}
           </span>
-          <br />
-          <textarea
-            :ref="
-              (el) => {
-                textarea[comment.jsonComments.uuid] = el;
-              }
-            "
-            class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto form-textarea block w-full resize-none"
-            v-model="commentText"
-            placeholder="Reply"
-            @input="resize($event)"
-            @focus="comment.jsonComments.uuid === activeCommentsInstance.uuid"
-            @keypress.enter.stop.prevent="setComment" />
+          <span class="text-gray-500 text-sm">{{ "∙" }}</span>
+          <span class="text-gray-700 text-sm">Now</span>
         </div>
+        <textarea
+          :ref="
+            (el) => {
+              textarea[comment.jsonComments.uuid] = el;
+            }
+          "
+          class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto form-textarea block w-full resize-none mb-2"
+          v-model="commentText"
+          placeholder="Reply"
+          @input="resize($event)"
+          @focus="comment.jsonComments.uuid === activeCommentsInstance.uuid"
+          @keypress.enter.stop.prevent="setComment" />
         <Button
           variant="solid"
           :disabled="!commentText.length"

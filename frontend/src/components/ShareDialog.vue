@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model="open" :options="{ size: 'lg' }">
     <template #body-title>
-      <div class="flex items-center justify-start w-full">
+      <div class="flex items-center gap-1 justify-start w-full">
         <span class="font-semibold text-2xl">Sharing</span>
         <div
           class="inline-flex items-center justify-center gap-0.5 transition-colors focus:outline-none text-gray-800 bg-white border border-gray-300 h-7 text-base ml-0.5 rounded px-1">

@@ -965,7 +965,7 @@
         class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
-      v-if="$route.meta.documentPage && entity.write"
+      v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
       class="animate mb-2 text-gray-600 py-4"
       :class="[
         tab === 2 && showInfoSidebar
@@ -982,7 +982,7 @@
         class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
     <Button
-      v-if="$route.meta.documentPage && entity.write"
+      v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
       class="animate mb-2 text-gray-600 py-4"
       :class="[
         tab === 3 && showInfoSidebar
