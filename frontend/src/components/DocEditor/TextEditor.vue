@@ -194,7 +194,7 @@ export default {
         comments: [],
       },
       allComments: [],
-      contentStart: "",
+      originalTitle: this.entity.title,
     };
   },
   computed: {
@@ -456,11 +456,12 @@ export default {
   },
   updated() {
     let content = this.editor.state.doc.firstChild.textContent.slice(0, 35);
-    if (this.entity.title.includes("Untitled Document")) {
-      this.$store.state.entityInfo[0]["title"] = content;
-    }
-    if (!content.length) {
-      this.$store.state.entityInfo[0]["title"] = this.entity.title;
+    if (this.originalTitle.includes("Untitled Document")) {
+      if (content.length) {
+        this.$store.state.entityInfo[0].title = content;
+      } else {
+        this.$store.state.entityInfo[0].title = this.originalTitle;
+      }
     }
   },
   beforeUnmount() {
@@ -474,6 +475,15 @@ export default {
     this.editor = null;
   },
   methods: {
+    evalTitle() {
+      let content = this.editor.state.doc.firstChild.textContent.slice(0, 35);
+      if (this.entity.title.includes("Untitled Document")) {
+        this.$store.state.entityInfo[0]["title"] = content;
+      }
+      if (!content.length) {
+        this.$store.state.entityInfo[0]["title"] = this.entity.title;
+      }
+    },
     updateConnectedUsers(editor) {
       this.$store.commit(
         "setConnectedUsers",

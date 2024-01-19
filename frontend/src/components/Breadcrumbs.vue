@@ -62,7 +62,10 @@ export default {
       get() {
         let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
         if (this.$route.name === "Document") {
-          value = this.$store.state.entityInfo[0].title;
+          value =
+            value != this.$store.state.entityInfo[0]?.title
+              ? this.$store.state.entityInfo[0]?.title
+              : value;
         }
         document.title = value;
         return value;
