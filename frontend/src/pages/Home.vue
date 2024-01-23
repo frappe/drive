@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full p-4" @contextmenu="toggleEmptyContext">
+  <div class="h-full w-full" @contextmenu="toggleEmptyContext">
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error" />

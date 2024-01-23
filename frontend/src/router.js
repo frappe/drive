@@ -9,6 +9,11 @@ function redir404(to) {
   }
 }
 
+function clearStore() {
+  store.commit("setEntityInfo", []);
+  store.commit("setCurrentFolder", []);
+}
+
 function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = to.name;
@@ -21,13 +26,13 @@ const routes = [
     path: "/home",
     name: "Home",
     component: () => import("@/pages/Home.vue"),
-    beforeEnter: [setRootBreadCrumb],
+    beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
     path: "/:pathMatch(.*)*/",
     name: "Error",
     component: () => import("@/pages/Error.vue"),
-    beforeEnter: [redir404],
+    beforeEnter: [redir404, clearStore],
     props: true,
   },
   {
@@ -55,13 +60,13 @@ const routes = [
     path: "/recent",
     name: "Recent",
     component: () => import("@/pages/Recent.vue"),
-    beforeEnter: [setRootBreadCrumb],
+    beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
     path: "/shared",
     name: "Shared",
     component: () => import("@/pages/Shared.vue"),
-    beforeEnter: [setRootBreadCrumb],
+    beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
     path: "/favourites",
@@ -73,7 +78,7 @@ const routes = [
     path: "/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
-    beforeEnter: [setRootBreadCrumb],
+    beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
     path: "/login",

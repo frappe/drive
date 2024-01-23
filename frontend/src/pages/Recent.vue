@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full p-4">
+  <div class="h-full w-full">
     <FolderContentsError
       v-if="$resources.recentDriveEntity.error"
       :error="$resources.recentDriveEntity.error" />

@@ -1,106 +1,102 @@
 <template>
-  <div class="h-full flex flex-col">
+  <div v-if="isEmpty" class="m-auto h-full">
+    <slot name="placeholder"></slot>
+  </div>
+
+  <div
+    v-else
+    ref="container"
+    class="h-full overflow-y-auto px-4 mt-4 pb-5"
+    @mousedown.lazy="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-    <div v-if="isEmpty" class="flex-1">
-      <slot name="placeholder"></slot>
-    </div>
     <div
-      v-else
-      ref="container"
-      @mousedown="(event) => handleMousedown(event)"
-      class="h-full">
+      class="sticky top-0 z-10 grid items-center rounded bg-gray-100 min-h-7 py-1 px-2 overflow-hidden mb-1"
+      :style="{ gridTemplateColumns: tableColumnsGridWidth }">
+      <Checkbox
+        class="cursor-pointer duration-300 z-10"
+        :modelValue="
+          selectedEntities?.length > 1 &&
+          selectedEntities?.length === folderContents?.length
+        "
+        @click.stop="toggleSelectAll" />
+      <div class="flex w-full items-center text-base text-gray-600">Name</div>
       <div
-        class="mb-1 grid items-center rounded bg-gray-100 py-2 pl-2 pr-4 overflow-x-hidden"
-        :style="{ gridTemplateColumns: tableColumnsGridWidth }">
-        <Checkbox
-          class="cursor-pointer duration-300 z-10"
-          :modelValue="
-            selectedEntities?.length > 1 &&
-            selectedEntities?.length === folderContents?.length
-          "
-          @click.stop="toggleSelectAll" />
-        <div class="flex w-full items-center text-base text-gray-600">Name</div>
-        <div
-          class="flex w-full items-center justify-start text-base text-gray-600">
-          Owner
-        </div>
-        <div
-          v-if="$route.name === 'Recent'"
-          class="flex w-full items-center justify-end text-base text-gray-600">
-          Last Accessed
-        </div>
-        <!-- Use the listview api if this needs to be switched in more views -->
-        <div
-          v-else
-          class="flex w-full items-center justify-end text-base text-gray-600">
-          Last Modified
-        </div>
-        <div
-          class="flex w-full items-center justify-end text-base text-gray-600">
-          Size
-        </div>
+        class="flex w-full items-center justify-start text-base text-gray-600">
+        Owner
       </div>
       <div
-        v-for="entity in folderContents"
-        :id="entity.name"
-        :key="entity.name"
-        class="entity grid items-center cursor-pointer mb-1 rounded pl-2 pr-4 py-1.5 hover:bg-gray-50 group"
-        :style="{
-          gridTemplateColumns: tableColumnsGridWidth,
-        }"
-        :class="
-          selectedEntities.includes(entity)
-            ? 'bg-gray-100'
-            : 'hover:bg-gray-100'
-        "
-        :draggable="true"
-        @dblclick="dblClickEntity(entity)"
-        @click="selectEntity(entity, $event, folderContents)"
-        @contextmenu="handleEntityContext(entity, $event, folderContents)"
-        @dragstart="dragStart(entity, $event)"
-        @dragenter.prevent
-        @dragover.prevent
-        @mousedown.stop
-        @drop="isGroupOnDrop(entity)">
-        <Checkbox
-          :modelValue="selectedEntities.includes(entity)"
-          class="duration-300 invisible group-hover:visible checked:visible" />
-        <div
-          class="flex items-center text-gray-800 text-sm font-medium truncate"
-          :draggable="false">
-          <svg
-            v-if="entity.is_group"
-            :style="{ fill: entity.color }"
-            :draggable="false"
-            class="h-[20px] mr-3"
-            viewBox="0 0 30 30"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z" />
-          </svg>
-          <img
-            v-else
-            :src="getIconUrl(formatMimeType(entity.mime_type))"
-            :draggable="false"
-            class="h-[20px] mr-3" />
-          {{ entity.title }}
-        </div>
-        <div
-          class="flex items-center justify-start text-gray-800 text-sm font-medium truncate">
-          <Avatar
-            :image="entity.user_image"
-            :label="entity.full_name"
-            class="mr-2"
-            size="lg" />
-          {{ entity.owner }}
-        </div>
-        <div
-          class="flex items-center justify-end text-gray-800 text-sm font-medium truncate">
-          {{ entity.modified }}
-        </div>
-        <div class="flex w-full justify-end text-base text-gray-600">
-          {{ entity.file_size }}
-        </div>
+        v-if="$route.name === 'Recent'"
+        class="flex w-full items-center justify-end text-base text-gray-600">
+        Last Accessed
+      </div>
+      <!-- Use the listview api if this needs to be switched in more views -->
+      <div
+        v-else
+        class="flex w-full items-center justify-end text-base text-gray-600">
+        Last Modified
+      </div>
+      <div class="flex w-full items-center justify-end text-base text-gray-600">
+        Size
+      </div>
+    </div>
+    <div
+      v-for="entity in folderContents"
+      :id="entity.name"
+      :key="entity.name"
+      class="entity grid items-center cursor-pointer mb-1 rounded pl-2 pr-4 py-1.5 hover:bg-gray-50 group"
+      :style="{
+        gridTemplateColumns: tableColumnsGridWidth,
+      }"
+      :class="
+        selectedEntities.includes(entity) ? 'bg-gray-100' : 'hover:bg-gray-100'
+      "
+      :draggable="true"
+      @dblclick="dblClickEntity(entity)"
+      @click="selectEntity(entity, $event, folderContents)"
+      @contextmenu="handleEntityContext(entity, $event, folderContents)"
+      @dragstart="dragStart(entity, $event)"
+      @dragenter.prevent
+      @dragover.prevent
+      @mousedown.stop
+      @drop="isGroupOnDrop(entity)">
+      <Checkbox
+        :modelValue="selectedEntities.includes(entity)"
+        class="duration-300 invisible group-hover:visible checked:visible" />
+      <div
+        class="flex items-center text-gray-800 text-sm font-medium truncate"
+        :draggable="false">
+        <svg
+          v-if="entity.is_group"
+          :style="{ fill: entity.color }"
+          :draggable="false"
+          class="h-[20px] mr-3"
+          viewBox="0 0 30 30"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z" />
+        </svg>
+        <img
+          v-else
+          :src="getIconUrl(formatMimeType(entity.mime_type))"
+          :draggable="false"
+          class="h-[20px] mr-3" />
+        {{ entity.title }}
+      </div>
+      <div
+        class="flex items-center justify-start text-gray-800 text-sm font-medium truncate">
+        <Avatar
+          :image="entity.user_image"
+          :label="entity.full_name"
+          class="-relative mr-2"
+          size="lg" />
+        {{ entity.owner }}
+      </div>
+      <div
+        class="flex items-center justify-end text-gray-800 text-sm font-medium truncate">
+        {{ entity.modified }}
+      </div>
+      <div class="flex w-full justify-end text-base text-gray-600">
+        {{ entity.file_size }}
       </div>
     </div>
     <div

@@ -1,101 +1,98 @@
 <template>
-  <div class="h-full flex flex-col">
+  <div v-if="isEmpty" class="flex-1">
+    <slot name="placeholder"></slot>
+  </div>
+  <div
+    v-else
+    ref="container"
+    class="h-full flex flex-col overflow-y-auto px-4 mt-4 pb-8"
+    @mousedown="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-    <div v-if="isEmpty" class="flex-1">
-      <slot name="placeholder"></slot>
-    </div>
-    <div
-      v-else
-      ref="container"
-      class="h-full"
-      @mousedown="(event) => handleMousedown(event)">
-      <div v-if="folders.length > 0" class="mt-3">
-        <div class="text-gray-600 font-medium">Folders</div>
-        <div class="flex flex-row flex-wrap gap-4 mt-4">
-          <div
-            v-for="folder in folders"
-            :id="folder.name"
-            :key="folder.name"
-            class="cursor-pointer p-2 w-36 h-22 rounded-lg border group select-none entity"
-            draggable="true"
-            :class="
-              selectedEntities.includes(folder)
-                ? 'bg-gray-100 border-gray-300'
-                : 'border-gray-200 hover:shadow-2xl'
-            "
-            @dblclick="dblClickEntity(folder)"
-            @click="selectEntity(folder, $event, displayOrderedEntities)"
-            @contextmenu="
-              handleEntityContext(folder, $event, displayOrderedEntities)
-            "
-            @dragstart="dragStart(folder, $event)"
-            @drop="onDrop(folder)"
-            @dragenter.prevent
-            @dragover.prevent
-            @mousedown.stop>
-            <div class="flex items-start">
-              <svg
-                :style="{ fill: folder.color }"
-                :draggable="false"
-                class="h-6 w-auto"
-                viewBox="0 0 30 30"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z" />
-              </svg>
-              <Checkbox
-                :modelValue="selectedEntities.includes(folder)"
-                class="duration-300 relative ml-auto invisible group-hover:visible checked:visible" />
-            </div>
-            <div class="content-center grid">
-              <span class="truncate text-sm text-gray-800 mt-2">
-                {{ folder.title }}
-              </span>
-              <p class="truncate text-xs text-gray-600 mt-0">
-                {{ folder.file_size }} {{ !!folder.file_size ? "∙" : null }}
-                {{ folder.modified }}
-              </p>
-            </div>
+
+    <div v-if="folders.length > 0" class="mt-3">
+      <div class="text-gray-600 font-medium">Folders</div>
+      <div class="flex flex-row flex-wrap gap-4 mt-4">
+        <div
+          v-for="folder in folders"
+          :id="folder.name"
+          :key="folder.name"
+          class="cursor-pointer p-2 w-36 h-22 rounded-lg border group select-none entity"
+          draggable="true"
+          :class="
+            selectedEntities.includes(folder)
+              ? 'bg-gray-100 border-gray-300'
+              : 'border-gray-200 hover:shadow-2xl'
+          "
+          @dblclick="dblClickEntity(folder)"
+          @click="selectEntity(folder, $event, displayOrderedEntities)"
+          @contextmenu="
+            handleEntityContext(folder, $event, displayOrderedEntities)
+          "
+          @dragstart="dragStart(folder, $event)"
+          @drop="onDrop(folder)"
+          @dragenter.prevent
+          @dragover.prevent
+          @mousedown.stop>
+          <div class="flex items-start">
+            <svg
+              :style="{ fill: folder.color }"
+              :draggable="false"
+              class="h-6 w-auto"
+              viewBox="0 0 30 30"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z" />
+            </svg>
+            <Checkbox
+              :modelValue="selectedEntities.includes(folder)"
+              class="duration-300 relative ml-auto invisible group-hover:visible checked:visible" />
+          </div>
+          <div class="content-center grid">
+            <span class="truncate text-sm text-gray-800 mt-2">
+              {{ folder.title }}
+            </span>
+            <p class="truncate text-xs text-gray-600 mt-0">
+              {{ folder.file_size }} {{ !!folder.file_size ? "∙" : null }}
+              {{ folder.modified }}
+            </p>
           </div>
         </div>
       </div>
-      <div
-        v-if="files.length > 0"
-        :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
-        <div class="text-gray-600 font-medium">Files</div>
-        <div class="inline-flex flex-row flex-wrap gap-4 mt-4">
-          <div
-            v-for="file in files"
-            :id="file.name"
-            :key="file.name"
-            class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer relative group:"
-            draggable="true"
-            :class="
-              selectedEntities.includes(file)
-                ? 'bg-gray-100 border-gray-300'
-                : 'border-gray-200 hover:shadow-2xl'
-            "
-            @dblclick="dblClickEntity(file)"
-            @click="selectEntity(file, $event, displayOrderedEntities)"
-            @dragstart="dragStart(file, $event)"
-            @dragenter.prevent
-            @dragover.prevent
-            @mousedown.stop
-            @contextmenu="
-              handleEntityContext(file, $event, displayOrderedEntities)
-            ">
-            <Checkbox
-              :modelValue="selectedEntities.includes(file)"
-              class="duration-300 display-none absolute right-1 top-1 invisible group-hover:visible checked:visible" />
-            <File
-              :mime_type="file.mime_type"
-              :file_ext="file.file_ext"
-              :name="file.name"
-              :title="file.title"
-              :modified="file.modified"
-              :file_size="file.file_size" />
-          </div>
+    </div>
+    <div v-if="files.length > 0" :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
+      <div class="text-gray-600 font-medium">Files</div>
+      <div class="inline-flex flex-row flex-wrap gap-4 mt-4">
+        <div
+          v-for="file in files"
+          :id="file.name"
+          :key="file.name"
+          class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer relative group:"
+          draggable="true"
+          :class="
+            selectedEntities.includes(file)
+              ? 'bg-gray-100 border-gray-300'
+              : 'border-gray-200 hover:shadow-2xl'
+          "
+          @dblclick="dblClickEntity(file)"
+          @click="selectEntity(file, $event, displayOrderedEntities)"
+          @dragstart="dragStart(file, $event)"
+          @dragenter.prevent
+          @dragover.prevent
+          @mousedown.stop
+          @contextmenu="
+            handleEntityContext(file, $event, displayOrderedEntities)
+          ">
+          <Checkbox
+            :modelValue="selectedEntities.includes(file)"
+            class="duration-300 display-none absolute right-1 top-1 invisible group-hover:visible checked:visible" />
+          <File
+            :mime_type="file.mime_type"
+            :file_ext="file.file_ext"
+            :name="file.name"
+            :title="file.title"
+            :modified="file.modified"
+            :file_size="file.file_size" />
         </div>
       </div>
     </div>

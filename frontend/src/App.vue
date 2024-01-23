@@ -15,13 +15,7 @@
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
           <div class="flex w-full h-full overflow-hidden">
             <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
-            <div
-              class="flex w-full h-[calc(100vh-52px)]"
-              :class="
-                $route.meta.documentPage || $route.meta.filePage
-                  ? ' overflow-y-hidden'
-                  : 'overflow-y-scroll'
-              ">
+            <div class="flex w-full h-[calc(100vh-52px)] overflow-hidden">
               <router-view v-slot="{ Component }">
                 <component id="currentPage" :is="Component" ref="currentPage" />
               </router-view>

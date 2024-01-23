@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-2/3 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)]">
+    class="h-2/3 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden group">
     <img :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid border-t border-gray-100">
@@ -42,7 +42,7 @@ export default {
   computed: {
     parsedStyled() {
       if (typeof this.link === "string") {
-        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]";
+        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] group-hover:scale-125 transition duration-250";
       } else {
         return "h-7 w-7";
       }
