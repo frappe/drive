@@ -21,7 +21,8 @@ export async function uploadDriveEntity(file, parent_entity_name) {
       chunkIndex,
       chunkSize,
       totalChunks,
-      chunkByteOffset
+      chunkByteOffset,
+      parent_entity_name
     );
 
     if (chunkIndex === totalChunks - 1) {
@@ -47,7 +48,8 @@ async function uploadChunk(
   chunkIndex,
   chunkSize,
   totalChunks,
-  chunkByteOffset
+  chunkByteOffset,
+  parent_entity_name
 ) {
   const formData = new FormData();
   formData.append("file_name", fileName);
@@ -58,7 +60,7 @@ async function uploadChunk(
   formData.append("chunk_index", chunkIndex);
   formData.append("chunk_size", chunkSize);
   formData.append("file", CurrentChunk);
-  formData.append("parent", "792171794ac2460386740259affa6987");
+  formData.append("parent", parent_entity_name);
   formData.append("uuid", fileUuid);
   const response = await fetch(
     window.location.origin + "/api/method/drive.api.embed.upload_chunked_file",
