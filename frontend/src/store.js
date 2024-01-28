@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { call } from "frappe-ui";
 import { clear } from "idb-keyval";
+import { get, set } from "idb-keyval";
 
 let getCookies = () => {
   return Object.fromEntries(
@@ -38,8 +39,7 @@ const store = createStore({
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     entityInfo: JSON.parse(localStorage.getItem("selectedEntities")) || null,
     currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || null,
-    currentViewEntites:
-      JSON.parse(localStorage.getItem("currentViewEntites")) || [],
+    currentViewEntites: get("currentViewEntites") || [],
     pasteData: { entities: [], action: null },
     showInfo: JSON.parse(localStorage.getItem("showInfo")) || false,
     hasWriteAccess: false,
@@ -113,7 +113,7 @@ const store = createStore({
     },
     setCurrentViewEntites(state, payload) {
       state.currentViewEntites = payload;
-      localStorage.setItem("currentViewEntites", JSON.stringify(payload));
+      set("currentViewEntites", JSON.stringify(payload));
     },
     setPasteData(state, payload) {
       state.pasteData = payload;
