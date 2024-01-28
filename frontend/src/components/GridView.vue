@@ -1,14 +1,14 @@
 <template>
-  <div v-if="isEmpty" class="flex-1">
+  <div v-if="isEmpty" class="h-full flex flex-col items-center overflow-hidden">
+    <slot name="toolbar"></slot>
     <slot name="placeholder"></slot>
   </div>
   <div
     v-else
     ref="container"
-    class="h-full flex flex-col overflow-y-auto px-4 mt-4 pb-8"
+    class="h-full flex flex-col overflow-y-auto px-4 pb-8"
     @mousedown="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-
     <div v-if="folders.length > 0" class="mt-3">
       <div class="text-gray-600 font-medium">Folders</div>
       <div class="flex flex-row flex-wrap gap-4 mt-4">
@@ -108,7 +108,8 @@
 import File from "@/components/File.vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 import { Checkbox } from "frappe-ui";
-import Select from "frappe-ui/src/components/Select.vue";
+import { useInfiniteScroll } from "@vueuse/core";
+import { ref } from "vue";
 
 export default {
   name: "GridView",
@@ -125,6 +126,10 @@ export default {
       type: Array,
       default: null,
     },
+    overrideCanLoadMore: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     "entitySelected",
@@ -132,9 +137,24 @@ export default {
     "showEntityContext",
     "showEmptyEntityContext",
     "fetchFolderContents",
+    "updateOffset",
   ],
-  setup() {
-    return;
+  setup(props, { emit }) {
+    const container = ref(null);
+    useInfiniteScroll(
+      container,
+      () => {
+        emit("updateOffset");
+      },
+      {
+        direction: "bottom",
+        distance: 150,
+        interval: 2000,
+        canLoadMore: () => props.overrideCanLoadMore,
+      }
+    );
+
+    return { container, useInfiniteScroll };
   },
   data: () => ({
     selectionElementStyle: {},

@@ -1,12 +1,13 @@
 <template>
-  <div v-if="isEmpty" class="m-auto h-full">
+  <div v-if="isEmpty" class="h-full flex flex-col items-center overflow-hidden">
+    <slot name="toolbar"></slot>
     <slot name="placeholder"></slot>
   </div>
 
   <div
     v-else
     ref="container"
-    class="h-full overflow-y-auto px-4 mt-4 pb-5"
+    class="h-full overflow-y-auto px-4 pb-5"
     @mousedown.lazy="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
     <div
@@ -110,6 +111,8 @@
 import { Avatar, Checkbox } from "frappe-ui";
 import { formatMimeType } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
+import { useInfiniteScroll } from "@vueuse/core";
+import { ref } from "vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
 
 export default {
@@ -127,6 +130,10 @@ export default {
       type: Array,
       default: null,
     },
+    overrideCanLoadMore: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     "entitySelected",
@@ -134,9 +141,24 @@ export default {
     "showEntityContext",
     "showEmptyEntityContext",
     "fetchFolderContents",
+    "updateOffset",
   ],
-  setup() {
-    return { formatMimeType, getIconUrl };
+  setup(props, { emit }) {
+    const container = ref(null);
+    useInfiniteScroll(
+      container,
+      () => {
+        emit("updateOffset");
+      },
+      {
+        direction: "bottom",
+        distance: 150,
+        interval: 2000,
+        canLoadMore: () => props.overrideCanLoadMore,
+      }
+    );
+
+    return { container, useInfiniteScroll, formatMimeType, getIconUrl };
   },
   data: () => ({
     selectionElementStyle: {},
