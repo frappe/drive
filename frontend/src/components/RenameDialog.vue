@@ -103,22 +103,14 @@ export default {
         params: {
           method: "rename",
           entity_name: this.entityName,
-          new_title: this.fullName,
+          new_title: this.fullName.trim(),
         },
         onSuccess(data) {
+          this.$store.state.entityInfo[0].title = data.title;
+          this.$emit("success", data);
           this.newName = "";
           this.extension = "";
           this.errorMessage = "";
-          data.size_in_bytes = data.file_size;
-          data.file_size = formatSize(data.file_size);
-          data.modified = formatDate(data.modified);
-          data.creation = formatDate(data.creation);
-          data.owner =
-            data.owner === this.$store.state.auth.user_id ? "Me" : entity.owner;
-          data.is_group
-            ? this.$store.commit("setCurrentFolder", [data])
-            : this.$store.commit("setEntityInfo", [data]);
-          this.$emit("success", data);
         },
         onError(error) {
           if (error.messages) {

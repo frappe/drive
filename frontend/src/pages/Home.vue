@@ -15,11 +15,7 @@
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
-      @update-offset="
-        () => {
-          pageOffset = pageOffset + pageLength;
-        }
-      ">
+      @update-offset="fetchNextPage">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -42,7 +38,7 @@
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
-      @update-offset="() => (pageOffset = pageOffset + pageLength)">
+      @update-offset="fetchNextPage">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -83,10 +79,8 @@
       v-model="showRenameDialog"
       :entity="selectedEntities[0]"
       @success="
-        () => {
-          offset = 0;
-          folderItems = null;
-          $resources.folderContents.fetch();
+        (data) => {
+          handleListMutation(data.name);
           showRenameDialog = false;
           selectedEntities = [];
         }
@@ -161,6 +155,7 @@ import {
   FileUp,
   FileText,
 } from "lucide-vue-next";
+import { useThrottledRefHistory } from "@vueuse/core";
 
 export default {
   name: "Home",
@@ -519,7 +514,8 @@ export default {
     },
   },
   async mounted() {
-    await this.$resources.getHomeID.fetch();
+    this.fetchNextPage();
+    this.$resources.getHomeID.fetch();
     this.$store.commit("setCurrentBreadcrumbs", [
       { label: "Home", route: "/home" },
     ]);
@@ -572,6 +568,36 @@ export default {
     window.removeEventListener("keydown", this.deleteListener);
   },
   methods: {
+    fetchNextPage() {
+      this.pageOffset = this.pageOffset + this.pageLength;
+      this.$resources.folderContents.fetch().then((data) => {
+        this.overrideCanLoadMore = data.length < 60 ? false : true;
+        this.folderItems = this.folderItems
+          ? this.folderItems.concat(data)
+          : data;
+      });
+    },
+    handleListMutation(entityID) {
+      let index = this.folderItems.findIndex((obj) => obj.name === entityID);
+      let entityPage = Math.ceil(index / this.pageLength);
+      let entityOriginalOffset = Math.max(
+        0,
+        entityPage * this.pageLength - this.pageLength
+      );
+      this.$resources.folderContents
+        .fetch({
+          order_by: this.orderBy,
+          offset: entityOriginalOffset,
+          limit: this.pageLength,
+        })
+        .then((data) => {
+          this.folderItems.splice(
+            entityOriginalOffset,
+            entityOriginalOffset + this.pageLength,
+            ...data
+          );
+        });
+    },
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
@@ -695,14 +721,6 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = "Me";
           });
-        },
-        onSuccess(data) {
-          this.overrideCanLoadMore = data.length < 60 ? false : true;
-          if (this.folderItems) {
-            this.folderItems = this.folderItems.concat(data);
-          } else {
-            this.folderItems = data;
-          }
         },
       };
     },
