@@ -2,7 +2,7 @@ import frappe
 import os
 import re
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
-from pypika import Order, Field, functions as fn
+from pypika import Order, Table, Case, Field, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -380,7 +380,7 @@ def stream_file_content(drive_entity, range_header):
 
 
 @frappe.whitelist(allow_guest=True)
-def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
+def list_folder_contents(entity_name=None, order_by="modified", is_active=1, limit=100, offset=0):
     """
     Return list of DriveEntity records present in this folder
 
@@ -470,6 +470,8 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         )
         .left_join(DriveUser)
         .on((DriveEntity.owner == DriveUser.email))
+        .offset(offset)
+        .limit(limit)
         .select(*selectedFields)
         .where(
             (DriveEntity.parent_drive_entity == entity_name)
@@ -484,6 +486,10 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
         )
         .groupby(DriveEntity.name)
         .orderby(
+            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Order.desc,
+        )
+        .orderby(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
@@ -493,7 +499,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1):
 
 
 @frappe.whitelist()
-def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
+def list_owned_entities(entity_name=None, order_by="modified", is_active=1, limit=100, offset=0):
     """
     Return list of DriveEntity records present in this folder
 
@@ -567,11 +573,17 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1):
         )
         .left_join(DriveUser)
         .on((DriveEntity.owner == DriveUser.email))
+        .offset(offset)
+        .limit(limit)
         .select(*selectedFields)
         .where(
             (DriveEntity.parent_drive_entity == entity_name) & (DriveEntity.is_active == is_active)
         )
         .groupby(DriveEntity.name)
+        .orderby(
+            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Order.desc,
+        )
         .orderby(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
@@ -714,7 +726,7 @@ def delete_entities(entity_names):
 
 
 @frappe.whitelist()
-def list_favourites(order_by="modified"):
+def list_favourites(order_by="modified", limit=100, offset=0):
     """
     Return list of DriveEntity records present in this folder
 
@@ -771,12 +783,18 @@ def list_favourites(order_by="modified"):
         )
         .left_join(DriveUser)
         .on((DriveEntity.owner == DriveUser.email))
+        .offset(offset)
+        .limit(limit)
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)
             & ((DriveEntity.owner == frappe.session.user) | (DriveDocShare.read == 1))
         )
         .groupby(DriveEntity.name)
+        .orderby(
+            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Order.desc,
+        )
         .orderby(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
@@ -892,7 +910,7 @@ def call_controller_method(entity_name, method):
 
 
 @frappe.whitelist()
-def list_recents(order_by="last_interaction"):
+def list_recents(order_by="last_interaction", limit=100, offset=0):
     """
     Return list of DriveEntity records present in this folder
 
@@ -955,6 +973,8 @@ def list_recents(order_by="last_interaction"):
         )
         .left_join(DriveUser)
         .on((DriveEntity.owner == DriveUser.email))
+        .offset(offset)
+        .limit(limit)
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)

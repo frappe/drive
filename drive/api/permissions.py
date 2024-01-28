@@ -1,5 +1,5 @@
 import frappe
-from pypika import Order, Query, Table, Field, functions as fn
+from pypika import Order, Case, functions as fn
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
@@ -67,7 +67,7 @@ def get_shared_user_group_list(entity_name):
 
 
 @frappe.whitelist()
-def get_shared_by_me(get_all=False, order_by="modified"):
+def get_shared_by_me(get_all=False, order_by="modified", is_active=1, limit=100, offset=0):
     """
     Return the list of files and folders shared with the current user
 
@@ -118,6 +118,8 @@ def get_shared_by_me(get_all=False, order_by="modified"):
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
+        .offset(offset)
+        .limit(limit)
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)
@@ -128,14 +130,19 @@ def get_shared_by_me(get_all=False, order_by="modified"):
             )
         )
         .groupby(DriveEntity.name)
+        .orderby(
+            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Order.desc,
+        )
+        .orderby(
+            order_by.split()[0],
+            order=Order.desc if order_by.endswith("desc") else Order.asc,
+        )
     )
     if get_all:
         return query.run(as_dict=True)
 
-    result = query.orderby(
-        order_by.split()[0],
-        order=Order.desc if order_by.endswith("desc") else Order.asc,
-    ).run(as_dict=True)
+    result = query.run(as_dict=True)
     names = [x.name for x in result]
     # Return highest level entity
     return filter(
@@ -145,7 +152,7 @@ def get_shared_by_me(get_all=False, order_by="modified"):
 
 
 @frappe.whitelist()
-def get_shared_with_me(get_all=False, order_by="modified"):
+def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=100, offset=0):
     """
     Return the list of files and folders shared with the current user
 
@@ -191,7 +198,8 @@ def get_shared_with_me(get_all=False, order_by="modified"):
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
-        .groupby(DriveEntity.name)
+        .offset(offset)
+        .limit(limit)
         .select(*selectedFields)
         .where(
             (DriveEntity.is_active == 1)
@@ -200,14 +208,20 @@ def get_shared_with_me(get_all=False, order_by="modified"):
                 | ((DocShare.user_name == frappe.session.user) | (DocShare.everyone == 1))
             )
         )
+        .groupby(DriveEntity.name)
+        .orderby(
+            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Order.desc,
+        )
+        .orderby(
+            order_by.split()[0],
+            order=Order.desc if order_by.endswith("desc") else Order.asc,
+        )
     )
     if get_all:
         return query.run(as_dict=True)
 
-    result = query.orderby(
-        order_by.split()[0],
-        order=Order.desc if order_by.endswith("desc") else Order.asc,
-    ).run(as_dict=True)
+    result = query.run(as_dict=True)
     names = [x.name for x in result]
     # Return highest level entity
     return filter(
