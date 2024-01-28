@@ -438,7 +438,7 @@ export default {
           types: ["textStyle"],
         }),
         ResizableMedia.configure({
-          uploadFn: (file) => uploadDriveEntity(file, this.entity.name),
+          uploadFn: (file) => uploadDriveEntity(file, this.entityName),
         }),
       ],
     });
