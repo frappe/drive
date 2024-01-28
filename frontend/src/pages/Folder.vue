@@ -6,14 +6,16 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folder-contents="folderContents.data"
+      :folder-contents="folderItems"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => folderContents.fetch()">
+      @fetch-folder-contents="() => folderContents.fetch()"
+      @update-offset="fetchNextPage">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -27,14 +29,16 @@
 
     <ListView
       v-else
-      :folder-contents="folderContents.data"
+      :folder-contents="folderItems"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => folderContents.fetch()">
+      @fetch-folder-contents="() => folderContents.fetch()"
+      @update-offset="fetchNextPage">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -197,6 +201,7 @@ export default {
     },
   },
   data: () => ({
+    folderItems: null,
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
@@ -212,10 +217,26 @@ export default {
     breadcrumbs: [{ label: "Folder", route: "/folder" }],
     isSharedFolder: false,
     currentFolder: null,
+    pageLength: 60,
+    pageOffset: 0,
+    overrideCanLoadMore: false,
   }),
+  watch: {
+    folderItems: {
+      handler(newVal, oldVal) {
+        this.$store.commit("setCurrentViewEntites", newVal);
+      },
+    },
+    orderBy: {
+      handler(newVal, oldVal) {
+        this.pageOffset = 0;
+        this.folderItems = [];
+      },
+    },
+  },
   computed: {
     folderContents() {
-      return this.$resources.currentFolder.data?.owner !== this.userId
+      return this.$resources.currentFolder.data?.owner !== "Me"
         ? this.$resources.sharedEntities
         : this.$resources.ownerEntities;
     },
@@ -1009,9 +1030,20 @@ export default {
     this.$store.commit("setHasWriteAccess", false);
   },
   methods: {
+    fetchNextPage() {
+      this.pageOffset = this.pageOffset + this.pageLength;
+      this.folderContents.fetch().then((data) => {
+        this.overrideCanLoadMore = data.length < 60 ? false : true;
+        this.folderItems = this.folderItems
+          ? this.folderItems.concat(data)
+          : data;
+      });
+    },
     openEntity(entity) {
       if (entity.is_group) {
         this.selectedEntities = [];
+        this.folderItems = [];
+        this.pageOffset = 0;
         this.$router.push({
           name: "Folder",
           params: { entityName: entity.name },
@@ -1099,7 +1131,7 @@ export default {
         params: { entity_name: this.entityName },
         order_by: this.orderBy,
         // cache: ['pathEntities', this.entityName],
-        onSuccess(data) {
+        transform(data) {
           this.currentFolder = data;
           if (data.owner !== this.userId) {
             this.isSharedFolder = true;
@@ -1122,15 +1154,17 @@ export default {
               route: `/folder/${this.entityName}`,
             });
           }
-          this.folderContents.fetch();
           data.item_count
             ? (data.file_size = data.item_count + " items")
             : delete data.file_size;
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
           data.owner = data.owner === this.userId ? "Me" : data.owner;
+        },
+        onSuccess(data) {
           this.$store.commit("setCurrentFolder", [data]);
           this.$store.commit("setCurrentFolderID", this.entityName);
+          this.fetchNextPage();
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
@@ -1164,6 +1198,8 @@ export default {
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
+          offset: this.pageOffset,
+          limit: this.pageLength,
           fields:
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
@@ -1189,6 +1225,8 @@ export default {
         params: {
           entity_name: this.entityName,
           order_by: this.orderBy,
+          offset: this.pageOffset,
+          limit: this.pageLength,
           fields:
             "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
         },
@@ -1247,8 +1285,8 @@ export default {
           this.previewEntity = data;
           data.owner = "Me";
         },
-        onError(data) {
-          console.log(data);
+        onError(error) {
+          console.log(error.messages);
         },
         auto: false,
       };

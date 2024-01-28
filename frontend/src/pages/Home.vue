@@ -6,14 +6,20 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="folderItems"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()">
+      @fetch-folder-contents="() => $resources.folderContents.fetch()"
+      @update-offset="
+        () => {
+          pageOffset = pageOffset + pageLength;
+        }
+      ">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -27,14 +33,16 @@
 
     <ListView
       v-else
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="folderItems"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
       @show-empty-entity-context="(event) => toggleEmptyContext(event)"
       @close-context-menu-event="closeContextMenu"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()">
+      @fetch-folder-contents="() => $resources.folderContents.fetch()"
+      @update-offset="() => (pageOffset = pageOffset + pageLength)">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -64,6 +72,8 @@
       :parent="$route.params.entityName"
       @success="
         () => {
+          offset = 0;
+          folderItems = [];
           emitter.emit('fetchFolderContents');
           showNewFolderDialog = false;
         }
@@ -74,6 +84,8 @@
       :entity="selectedEntities[0]"
       @success="
         () => {
+          offset = 0;
+          folderItems = null;
           $resources.folderContents.fetch();
           showRenameDialog = false;
           selectedEntities = [];
@@ -86,6 +98,8 @@
       :for="'remove'"
       @success="
         () => {
+          offset = 0;
+          folderItems = [];
           $resources.folderContents.fetch();
           showRemoveDialog = false;
           selectedEntities = [];
@@ -94,14 +108,15 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entity-name="selectedEntities[0].name"
-      @success="$resources.folderContents.fetch()" />
+      :entity-name="selectedEntities[0].name" />
     <MoveDialog
       v-if="showMoveDialog"
       v-model="showMoveDialog"
       :entity-name="selectedEntities[0].name"
       @success="
         () => {
+          offset = 0;
+          folderItems = null;
           $resources.folderContents.fetch();
           showMoveDialog = false;
           selectedEntities = [];
@@ -180,6 +195,7 @@ export default {
     MoveDialog,
   },
   data: () => ({
+    folderItems: null,
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
@@ -191,6 +207,9 @@ export default {
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
     entityContext: {},
+    pageLength: 60,
+    pageOffset: 0,
+    overrideCanLoadMore: false,
   }),
   computed: {
     showInfoButton() {
@@ -486,7 +505,19 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
-
+  watch: {
+    folderItems: {
+      handler(newVal, oldVal) {
+        this.$store.commit("setCurrentViewEntites", newVal);
+      },
+    },
+    orderBy: {
+      handler(newVal, oldVal) {
+        this.pageOffset = 0;
+        this.folderItems = [];
+      },
+    },
+  },
   async mounted() {
     await this.$resources.getHomeID.fetch();
     this.$store.commit("setCurrentBreadcrumbs", [
@@ -643,13 +674,17 @@ export default {
 
     folderContents() {
       return {
+        method: "GET",
         url: "drive.api.files.list_owned_entities",
         params: {
           order_by: this.orderBy,
+          offset: this.pageOffset,
+          limit: this.pageLength,
           fields:
             "name,title,is_group,owner,modified,file_size,mime_type,creation",
         },
-        onSuccess(data) {
+        auto: true,
+        transform(data) {
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -660,9 +695,15 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = "Me";
           });
-          this.$store.commit("setCurrentViewEntites", data);
         },
-        auto: true,
+        onSuccess(data) {
+          this.overrideCanLoadMore = data.length < 60 ? false : true;
+          if (this.folderItems) {
+            this.folderItems = this.folderItems.concat(data);
+          } else {
+            this.folderItems = data;
+          }
+        },
       };
     },
 
@@ -696,8 +737,8 @@ export default {
           this.previewEntity = data;
           data.owner = "Me";
         },
-        onError(data) {
-          console.log(data);
+        onError(error) {
+          console.log(error.messages);
         },
         auto: false,
       };

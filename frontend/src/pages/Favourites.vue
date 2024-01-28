@@ -6,12 +6,18 @@
 
     <GridView
       v-else-if="$store.state.view === 'grid'"
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="folderItems"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
-      @close-context-menu-event="closeContextMenu">
+      @close-context-menu-event="closeContextMenu"
+      @update-offset="
+        () => {
+          pageOffset = pageOffset + pageLength;
+        }
+      ">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -29,12 +35,18 @@
 
     <ListView
       v-else
-      :folder-contents="$resources.folderContents.data"
+      :folder-contents="folderItems"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
-      @close-context-menu-event="closeContextMenu">
+      @close-context-menu-event="closeContextMenu"
+      @update-offset="
+        () => {
+          pageOffset = pageOffset + pageLength;
+        }
+      ">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -161,6 +173,7 @@ export default {
     FileText,
   },
   data: () => ({
+    folderItems: null,
     selectedEntities: [],
     previewEntity: null,
     showPreview: false,
@@ -172,6 +185,9 @@ export default {
     showRemoveDialog: false,
     showEntityContext: false,
     entityContext: {},
+    pageLength: 60,
+    pageOffset: 0,
+    overrideCanLoadMore: false,
   }),
   computed: {
     userId() {
@@ -418,6 +434,19 @@ export default {
       this.$resources.folderContents.fetch();
     });
   },
+  watch: {
+    folderItems: {
+      handler(newVal, oldVal) {
+        this.$store.commit("setCurrentViewEntites", newVal);
+      },
+    },
+    orderBy: {
+      handler(newVal, oldVal) {
+        this.pageOffset = 0;
+        this.folderItems = [];
+      },
+    },
+  },
   methods: {
     openEntity(entity) {
       if (entity.is_group) {
@@ -460,13 +489,16 @@ export default {
   resources: {
     folderContents() {
       return {
+        method: "GET",
         url: "drive.api.files.list_favourites",
         params: {
           order_by: this.orderBy,
+          offset: this.pageOffset,
+          limit: this.pageLength,
           fields:
             "name,title,is_group,owner,modified,file_size,mime_type,creation",
         },
-        onSuccess(data) {
+        transform(data) {
           this.$resources.folderContents.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -477,7 +509,14 @@ export default {
             entity.creation = formatDate(entity.creation);
             entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
           });
-          this.$store.commit("setCurrentViewEntites", data);
+        },
+        onSuccess(data) {
+          this.overrideCanLoadMore = data.length < 60 ? false : true;
+          if (this.folderItems) {
+            this.folderItems = this.folderItems.concat(data);
+          } else {
+            this.folderItems = data;
+          }
         },
         auto: true,
       };

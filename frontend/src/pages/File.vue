@@ -8,7 +8,6 @@
       <FileRender v-if="file.data" :preview-entity="file.data" />
     </div>
     <div
-      v-show="filteredEntities.length > 1"
       class="absolute bottom-[-1%] left-[50%] center-transform flex items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-white">
       <Button
         :disabled="!prevEntity?.name"
@@ -57,9 +56,13 @@ const userId = computed(() => {
 });
 
 const filteredEntities = computed(() => {
-  return store.state.currentViewEntites.filter(
-    (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
-  );
+  if (store.state.currentViewEntites.length) {
+    return store.state.currentViewEntites.filter(
+      (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
+    );
+  } else {
+    return [];
+  }
 });
 
 const currentEntityIndex = computed(() => {

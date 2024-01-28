@@ -6,10 +6,17 @@
       v-else-if="$store.state.view === 'grid'"
       :folder-contents="folderContent"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
-      @close-context-menu-event="closeContextMenu">
+      @close-context-menu-event="closeContextMenu"
+      @fetch-folder-contents="() => $resources.folderContents.fetch()"
+      @update-offset="
+        () => {
+          pageOffset = pageOffset + pageLength;
+        }
+      ">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -26,10 +33,17 @@
       v-else
       :folder-contents="folderContent"
       :selected-entities="selectedEntities"
+      :overrideCanLoadMore="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
       @show-entity-context="(event) => toggleEntityContext(event)"
-      @close-context-menu-event="closeContextMenu">
+      @close-context-menu-event="closeContextMenu"
+      @fetch-folder-contents="() => $resources.folderContents.fetch()"
+      @update-offset="
+        () => {
+          pageOffset = pageOffset + pageLength;
+        }
+      ">
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -154,9 +168,12 @@ export default {
     showEntityContext: false,
     entityContext: {},
     selectedEntities: [],
-    folderContent: [],
+    folderContent: null,
     errorMessage: null,
     breadcrumbs: [{ label: "Shared", route: "/shared" }],
+    pageLength: 60,
+    pageOffset: 0,
+    overrideCanLoadMore: false,
   }),
 
   computed: {
@@ -557,13 +574,25 @@ export default {
       ].filter((item) => item.sortable);
     },
   },
-  /*   watch: {
+  watch: {
     shareView: {
       handler(value) {
-        this.fetchUpdate(value)
+        this.pageOffset = 0;
+        this.folderContent = [];
       },
     },
-  }, */
+    folderContent: {
+      handler(newVal, oldVal) {
+        this.$store.commit("setCurrentViewEntites", newVal);
+      },
+    },
+    orderBy: {
+      handler(newVal, oldVal) {
+        this.pageOffset = 0;
+        this.folderContent = [];
+      },
+    },
+  },
   methods: {
     fetchUpdate() {
       this.shareView === "with"
@@ -614,12 +643,14 @@ export default {
   resources: {
     sharedByMe() {
       return {
+        method: "GET",
         url: "drive.api.permissions.get_shared_by_me",
         params: {
           order_by: this.orderBy,
+          offset: this.pageOffset,
+          limit: this.pageLength,
         },
-        onSuccess(data) {
-          this.folderContent = [];
+        transform(data) {
           this.$resources.sharedWithMe.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -628,10 +659,16 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            this.folderContent = data;
             entity.owner = "Me";
           });
-          this.$store.commit("setCurrentViewEntites", data);
+        },
+        onSuccess(data) {
+          this.overrideCanLoadMore = data.length < 60 ? false : true;
+          if (this.folderContent) {
+            this.folderContent = this.folderContent.concat(data);
+          } else {
+            this.folderContent = data;
+          }
         },
         onError(error) {
           this.folderContent = [];
@@ -645,12 +682,14 @@ export default {
     },
     sharedWithMe() {
       return {
+        method: "GET",
         url: "drive.api.permissions.get_shared_with_me",
         params: {
           order_by: this.orderBy,
+          offset: this.pageOffset,
+          limit: this.pageLength,
         },
-        onSuccess(data) {
-          this.folderContent = [];
+        transform(data) {
           this.$resources.sharedWithMe.error = null;
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size;
@@ -659,9 +698,17 @@ export default {
               : formatSize(entity.file_size);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            this.folderContent = data;
-            this.$store.commit("setCurrentViewEntites", data);
           });
+        },
+        onSuccess(data) {
+          if (data.length < 60) {
+            this.overrideCanLoadMore = false;
+          }
+          if (this.folderContent) {
+            this.folderContent = this.folderContent.concat(data);
+          } else {
+            this.folderContent = data;
+          }
         },
         onError(error) {
           this.folderContent = [];
