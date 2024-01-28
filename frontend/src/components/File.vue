@@ -1,7 +1,7 @@
 <template>
   <div
     class="h-2/3 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden group">
-    <img :class="parsedStyled" :src="link" :draggable="false" />
+    <img loading="lazy" :class="parsedStyled" :src="link" :draggable="false" />
   </div>
   <div class="px-2 pb-1 h-1/3 content-center grid border-t border-gray-100">
     <span class="truncate text-sm text-gray-800 mb-1">
