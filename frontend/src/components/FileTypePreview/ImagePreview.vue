@@ -2,7 +2,7 @@
   <LoadingIndicator
     v-if="loading"
     class="w-10 h-full text-neutral-100 mx-auto" />
-  <img class="w-auto max-h-full" v-else :src="previewURL" />
+  <img draggable="false" class="w-auto max-h-full" v-else :src="previewURL" />
 </template>
 
 <script setup>
