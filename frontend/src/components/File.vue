@@ -44,7 +44,7 @@ export default {
       if (typeof this.link === "string") {
         return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] group-hover:scale-125 transition duration-250";
       } else {
-        return "h-7 w-7";
+        return "h-8 w-auto";
       }
     },
   },

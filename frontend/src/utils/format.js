@@ -46,6 +46,9 @@ export function formatMimeType(mimeType) {
       case "vnd.openxmlformats-officedocument.wordprocessingml.document":
         icon = "word";
         break;
+      case "msword":
+        icon = "word";
+        break;
       case "zip":
         icon = "zip";
         break;
