@@ -254,6 +254,7 @@
                           entity_name: entityName,
                           method: 'share',
                           user: user.user_name,
+                          user_type: 'User',
                           write: 0,
                           share: 0,
                         })
@@ -270,6 +271,7 @@
                           entity_name: entityName,
                           method: 'share',
                           user: user.user_name,
+                          user_type: 'User',
                           write: 1,
                           share: 0,
                         })
@@ -299,6 +301,7 @@
                           entity_name: entityName,
                           method: 'unshare',
                           user: user.user_name,
+                          user_type: 'User',
                         })
                         .then(togglePopover())
                     ">
