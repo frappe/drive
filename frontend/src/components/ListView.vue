@@ -1,5 +1,7 @@
 <template>
-  <div v-if="isEmpty" class="h-full flex flex-col items-center overflow-hidden">
+  <div
+    v-if="isEmpty"
+    class="h-full flex flex-col overflow-y-hidden mt-2 px-4 pb-8">
     <slot name="toolbar"></slot>
     <slot name="placeholder"></slot>
   </div>
@@ -7,7 +9,7 @@
   <div
     v-else
     ref="container"
-    class="h-full overflow-y-auto px-4 pb-5"
+    class="h-full overflow-y-auto mt-2 px-4 pb-5"
     @mousedown.lazy="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
     <div
@@ -44,7 +46,7 @@
       v-for="entity in folderContents"
       :id="entity.name"
       :key="entity.name"
-      class="entity grid items-center cursor-pointer mb-1 rounded pl-2 pr-4 py-1.5 hover:bg-gray-50 group"
+      class="entity grid items-center cursor-pointer mb-1 rounded px-2 py-1.5 hover:bg-gray-50 group"
       :style="{
         gridTemplateColumns: tableColumnsGridWidth,
       }"

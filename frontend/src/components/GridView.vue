@@ -1,15 +1,17 @@
 <template>
-  <div v-if="isEmpty" class="h-full flex flex-col items-center overflow-hidden">
+  <div
+    v-if="isEmpty"
+    class="h-full flex flex-col overflow-y-hidden mt-2 px-4 pb-8">
     <slot name="toolbar"></slot>
     <slot name="placeholder"></slot>
   </div>
   <div
     v-else
     ref="container"
-    class="h-full flex flex-col overflow-y-auto px-4 pb-8"
+    class="h-full flex flex-col overflow-y-auto mt-2 px-4 pb-8"
     @mousedown="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-    <div v-if="folders.length > 0" class="mt-3">
+    <div v-if="folders.length > 0">
       <div class="text-gray-600 font-medium">Folders</div>
       <div class="flex flex-row flex-wrap gap-4 mt-4">
         <div
