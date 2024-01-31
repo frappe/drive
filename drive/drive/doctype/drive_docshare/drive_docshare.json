@@ -17,7 +17,9 @@
     "share",
     "everyone",
     "public",
-    "notify"
+    "notify",
+    "owner_parent",
+    "share_parent"
   ],
   "fields": [
     {
@@ -82,11 +84,21 @@
       "fieldtype": "Dynamic Link",
       "label": "User Name",
       "options": "user_doctype"
+    },
+    {
+      "fieldname": "owner_parent",
+      "fieldtype": "Data",
+      "label": "Owner Parent"
+    },
+    {
+      "fieldname": "share_parent",
+      "fieldtype": "Data",
+      "label": "Share Parent"
     }
   ],
   "in_create": 1,
   "links": [],
-  "modified": "2023-10-13 13:35:49.260077",
+  "modified": "2024-01-30 12:16:06.031376",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive DocShare",

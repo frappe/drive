@@ -101,6 +101,7 @@ def get_shared_by_me(get_all=False, order_by="modified", is_active=1, limit=100,
         DriveDocShare.write,
         DriveDocShare.everyone,
         DriveDocShare.share,
+        DriveDocShare.owner_parent,
         DriveFavourite.entity.as_("is_favourite"),
     ]
 
@@ -128,6 +129,7 @@ def get_shared_by_me(get_all=False, order_by="modified", is_active=1, limit=100,
                 | (DriveDocShare.everyone == 1)
                 | (DriveDocShare.public == 1)
             )
+            & (DriveDocShare.owner_parent.isnull())
         )
         .groupby(DriveEntity.name)
         .orderby(
@@ -142,13 +144,7 @@ def get_shared_by_me(get_all=False, order_by="modified", is_active=1, limit=100,
     if get_all:
         return query.run(as_dict=True)
 
-    result = query.run(as_dict=True)
-    names = [x.name for x in result]
-    # Return highest level entity
-    return filter(
-        lambda x: x.parent_drive_entity not in names,
-        result,
-    )
+    return query.run(as_dict=True)
 
 
 @frappe.whitelist()
@@ -184,6 +180,7 @@ def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=10
         fn.Max(DocShare.write).as_("write"),
         DocShare.everyone,
         DocShare.share,
+        DocShare.share_parent,
         DriveFavourite.entity.as_("is_favourite"),
     ]
 
@@ -207,6 +204,8 @@ def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=10
                 (UserGroupMember.user == frappe.session.user)
                 | ((DocShare.user_name == frappe.session.user) | (DocShare.everyone == 1))
             )
+            & (DocShare.share_parent.isnull())
+            & (DriveEntity.owner != frappe.session.user)
         )
         .groupby(DriveEntity.name)
         .orderby(
@@ -221,13 +220,7 @@ def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=10
     if get_all:
         return query.run(as_dict=True)
 
-    result = query.run(as_dict=True)
-    names = [x.name for x in result]
-    # Return highest level entity
-    return filter(
-        lambda x: x.parent_drive_entity not in names and x.owner != frappe.session.user,
-        result,
-    )
+    return query.run(as_dict=True)
 
 
 @frappe.whitelist()

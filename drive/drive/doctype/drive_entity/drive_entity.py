@@ -367,7 +367,7 @@ class DriveEntity(NestedSet):
         self,
         share_name=None,
         user=None,
-        user_type="User",
+        user_type=None,
         read=1,
         write=0,
         share=0,
@@ -445,6 +445,31 @@ class DriveEntity(NestedSet):
             }
         )
 
+        if frappe.db.exists(
+            {
+                "doctype": "Drive DocShare",
+                "share_doctype": "Drive Entity",
+                "share_name": self.parent_drive_entity,
+                "everyone": cint(everyone),
+                "public": cint(public),
+                "user_name": user,
+                "user_doctype": user_type,
+            }
+        ):
+            parent_docshare = frappe.db.get_value(
+                "Drive DocShare",
+                {
+                    "share_doctype": "Drive Entity",
+                    "share_name": self.parent_drive_entity,
+                    "everyone": cint(everyone),
+                    "public": cint(public),
+                    "user_name": user,
+                    "user_doctype": user_type,
+                },
+                "name",
+            )
+            doc.update({"owner_parent": parent_docshare, "share_parent": parent_docshare})
+        doc.save(ignore_permissions=True)
         if self.is_group:
             for child in self.get_children():
                 child.share(
@@ -456,8 +481,6 @@ class DriveEntity(NestedSet):
                     everyone=everyone,
                     public=public,
                 )
-
-        doc.save(ignore_permissions=True)
 
     @frappe.whitelist()
     def unshare(self, user, user_type="User"):
