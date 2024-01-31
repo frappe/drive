@@ -1,6 +1,7 @@
 import frappe
 import os
 import re
+import json
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pypika import Order, Table, Case, Field, functions as fn
 from pathlib import Path
@@ -24,6 +25,7 @@ from datetime import date, timedelta
 import magic
 from datetime import datetime
 import urllib.parse
+from frappe.utils import cint
 
 
 def if_folder_exists(folder_name, parent):
@@ -499,7 +501,9 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
 
 
 @frappe.whitelist()
-def list_owned_entities(entity_name=None, order_by="modified", is_active=1, limit=100, offset=0):
+def list_owned_entities(
+    entity_name=None, order_by="modified", is_active=True, limit=100, offset=0
+):
     """
     Return list of DriveEntity records present in this folder
 
@@ -510,7 +514,7 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1, limi
     :return: List of DriveEntity records
     :rtype: list
     """
-
+    is_active = json.loads(is_active)
     try:
         entity_name = entity_name or get_user_directory().name
     except FileNotFoundError:
@@ -561,6 +565,7 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1, limi
         DriveEntity.parent_drive_entity,
         DriveEntity.allow_download,
         DriveEntity.allow_comments,
+        DriveEntity.is_active,
         DriveFavourite.entity.as_("is_favourite"),
     ]
 
@@ -595,27 +600,6 @@ def list_owned_entities(entity_name=None, order_by="modified", is_active=1, limi
             child_count = get_children_count(i.name)
             i["item_count"] = child_count
     return result
-
-
-@frappe.whitelist()
-def get_trashed_entities(order_by="modified", is_active=1):
-    return frappe.db.get_all(
-        "Drive Entity",
-        filters={"is_active": 0, "owner": ["like", frappe.session.user]},
-        fields=[
-            "name",
-            "title",
-            "is_group",
-            "owner",
-            "modified",
-            "creation",
-            "file_size",
-            "file_ext",
-            "color",
-            "document",
-            "mime_type",
-        ],
-    )
 
 
 def get_entity(entity_name, fields=None):
@@ -868,6 +852,8 @@ def remove_or_restore(entity_names, move=False):
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
+        if doc.owner != frappe.session.user:
+            raise frappe.PermissionError("You do not have permission to remove this file")
         if doc.is_active:
             entity_ancestors = get_ancestors_of("Drive Entity", entity)
             if entity_ancestors:
