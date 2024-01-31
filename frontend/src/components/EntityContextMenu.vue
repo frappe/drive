@@ -2,11 +2,12 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="bg-white rounded absolute shadow-2xl py-1.5 px-1 z-20 space-y-1 border min-w-40"
+    class="bg-white rounded absolute shadow-xl py-0.5 px-1 z-20 border min-w-40 divide-y"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
       :key="index"
+      class="py-0.5"
       @click="
         () => {
           if (item.onClick) {
@@ -16,9 +17,6 @@
         }
       ">
       <ColorPopover v-if="item.label === 'Color'" :entity-name="entityName" />
-      <div v-else-if="item.label === 'Divider'" :entity-name="entityName">
-        <hr />
-      </div>
       <div
         v-else
         class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center">

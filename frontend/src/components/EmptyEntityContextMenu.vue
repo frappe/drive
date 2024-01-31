@@ -2,11 +2,12 @@
   <div
     v-if="actionItems.length > 0"
     ref="emptyContextMenu"
-    class="bg-white rounded absolute shadow-2xl py-1.5 px-1 z-20 space-y-1 border min-w-40"
+    class="bg-white rounded absolute shadow-xl py-0.5 px-1 z-20 border min-w-40 divide-y"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
       :key="index"
+      class="py-0.5"
       @click="
         () => {
           item.handler();
