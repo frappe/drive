@@ -4,6 +4,7 @@
     :url="computedURL"
     :allowEmptyContextMenu="allowEmptyContextMenu"
     :showSort="false"
+    :isSharedFolder="isSharedFolder"
     :entityName="entityName" />
 </template>
 

@@ -92,10 +92,30 @@
       :for="'remove'"
       @success="
         () => {
-          offset = 0;
-          folderItems = [];
-          $resources.folderContents.fetch();
+          handleListMutation();
           showRemoveDialog = false;
+          selectedEntities = [];
+        }
+      " />
+    <GeneralDialog
+      v-model="showUnshareDialog"
+      :entities="selectedEntities"
+      :for="'unshare'"
+      @success="
+        () => {
+          handleListMutation();
+          showUnshareDialog = false;
+          selectedEntities = [];
+        }
+      " />
+    <GeneralDialog
+      v-model="showRestoreDialog"
+      :entities="selectedEntities"
+      :for="'restore'"
+      @success="
+        () => {
+          handleListMutation();
+          showRestoreDialog = false;
           selectedEntities = [];
         }
       " />
@@ -111,8 +131,22 @@
         () => {
           offset = 0;
           folderItems = null;
-          $resources.folderContents.fetch();
+          handleListMutation();
           showMoveDialog = false;
+          selectedEntities = [];
+        }
+      " />
+    <DeleteDialog
+      v-model="showDeleteDialog"
+      :entities="
+        selectedEntities.length > 0
+          ? selectedEntities
+          : $resources.folderContents.data
+      "
+      @success="
+        () => {
+          $resources.folderContents.fetch();
+          showDeleteDialog = false;
           selectedEntities = [];
         }
       " />
@@ -128,6 +162,7 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue";
 import RenameDialog from "@/components/RenameDialog.vue";
 import ShareDialog from "@/components/ShareDialog.vue";
 import GeneralDialog from "@/components/GeneralDialog.vue";
+import DeleteDialog from "@/components/DeleteDialog.vue";
 import MoveDialog from "../components/MoveDialog.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
@@ -154,7 +189,9 @@ import {
   FolderUp,
   FileUp,
   FileText,
+  RotateCcw,
 } from "lucide-vue-next";
+import { routeLocationKey } from "vue-router";
 
 export default {
   name: "PageGeneric",
@@ -166,6 +203,7 @@ export default {
     NewFolderDialog,
     RenameDialog,
     MoveDialog,
+    DeleteDialog,
     ShareDialog,
     GeneralDialog,
     FolderContentsError,
@@ -186,6 +224,7 @@ export default {
     FolderUp,
     FileUp,
     FileText,
+    RotateCcw,
   },
   data: () => ({
     folderItems: null,
@@ -196,6 +235,9 @@ export default {
     showRenameDialog: false,
     showShareDialog: false,
     showRemoveDialog: false,
+    showDeleteDialog: false,
+    showUnshareDialog: false,
+    showRestoreDialog: false,
     showMoveDialog: false,
     showEntityContext: false,
     showEmptyEntityContextMenu: false,
@@ -218,6 +260,16 @@ export default {
     allowEmptyContextMenu: {
       type: Boolean,
       default: false,
+      required: false,
+    },
+    isSharedFolder: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
       required: false,
     },
     showSort: {
@@ -295,10 +347,6 @@ export default {
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
-          label: "Divider",
-          isEnabled: () => true,
-        },
-        {
           label: "New Folder",
           icon: FolderPlus,
           handler: () => (this.showNewFolderDialog = true),
@@ -321,247 +369,285 @@ export default {
       ].filter((item) => item.isEnabled());
     },
     actionItems() {
-      return [
-        {
-          label: "Preview",
-          icon: Scan,
-          onClick: () => {
-            this.openEntity(this.selectedEntities[0]);
+      if (this.$route.name === "Trash") {
+        return [
+          {
+            label: "Restore",
+            icon: RotateCcw,
+            onClick: () => {
+              this.showRestoreDialog = true;
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length > 0;
+            },
           },
-          isEnabled: () => {
-            if (this.selectedEntities.length === 1) {
-              return true;
-            }
+          {
+            label: "Delete forever",
+            icon: Trash2,
+            danger: true,
+            onClick: () => {
+              this.showDeleteDialog = true;
+            },
+            isEnabled: () => {
+              if (this.$route.name === "Trash") {
+                return this.selectedEntities.length > 0;
+              }
+            },
           },
-        },
-        {
-          label: "Divider",
-          isEnabled: () => this.selectedEntities.length === 1,
-        },
-        {
-          label: "Download",
-          icon: FileDown,
-          onClick: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+        ].filter((item) => item.isEnabled());
+      } else {
+        return [
+          {
+            label: "Preview",
+            icon: Scan,
+            onClick: () => {
+              this.openEntity(this.selectedEntities[0]);
+            },
+            isEnabled: () => {
+              if (this.selectedEntities.length === 1) {
+                return true;
+              }
+            },
           },
-          isEnabled: () => {
-            if (this.selectedEntities.length === 1) {
+          {
+            label: "Download",
+            icon: FileDown,
+            onClick: () => {
+              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            },
+            isEnabled: () => {
+              if (this.selectedEntities.length === 1) {
+                if (
+                  this.selectedEntities.length === 1 &&
+                  !this.selectedEntities[0].is_group &&
+                  !this.selectedEntities[0].document
+                ) {
+                  return (
+                    this.selectedEntities[0].allow_download ||
+                    this.selectedEntities[0].owner === "Me"
+                  );
+                }
+              }
+            },
+          },
+          /* Folder Download */
+          {
+            label: "Download",
+            icon: FolderDown,
+            onClick: () => {
+              if (this.selectedEntities.length > 1) {
+                let selected_entities = this.selectedEntities;
+                selectedEntitiesDownload(selected_entities);
+              } else if (this.selectedEntities[0].is_group === 1) {
+                folderDownload(this.selectedEntities[0]);
+              }
+            },
+            isEnabled: () => {
               if (
                 this.selectedEntities.length === 1 &&
-                !this.selectedEntities[0].is_group &&
-                !this.selectedEntities[0].document
+                !this.selectedEntities[0].is_group
               ) {
-                return (
-                  this.selectedEntities[0].allow_download ||
-                  this.selectedEntities[0].owner === "Me"
-                );
+                return false;
               }
-            }
+              if (this.selectedEntities.length) {
+                const allEntitiesSatisfyCondition = this.selectedEntities.every(
+                  (entity) => {
+                    return entity.allow_download || entity.owner === "Me";
+                  }
+                );
+                return allEntitiesSatisfyCondition;
+              }
+            },
           },
-        },
-        /* Folder Download */
-        {
-          label: "Download",
-          icon: FolderDown,
-          onClick: () => {
-            if (this.selectedEntities.length > 1) {
-              let selected_entities = this.selectedEntities;
-              selectedEntitiesDownload(selected_entities);
-            } else if (this.selectedEntities[0].is_group === 1) {
-              folderDownload(this.selectedEntities[0]);
-            }
-          },
-          isEnabled: () => {
-            if (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
-            ) {
-              return false;
-            }
-            if (this.selectedEntities.length) {
-              const allEntitiesSatisfyCondition = this.selectedEntities.every(
-                (entity) => {
-                  return entity.allow_download || entity.owner === "Me";
-                }
-              );
-              return allEntitiesSatisfyCondition;
-            }
-          },
-        },
 
-        {
-          label: "Share",
-          icon: Share2,
-          onClick: () => {
-            this.showShareDialog = true;
+          {
+            label: "Share",
+            icon: Share2,
+            onClick: () => {
+              this.showShareDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].owner === "Me"
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].owner === "Me"
-            );
+          {
+            label: "Get Link",
+            icon: Link2,
+            onClick: () => {
+              getLink(this.selectedEntities[0]);
+            },
+            isEnabled: () => {
+              return this.selectedEntities.length === 1;
+            },
           },
-        },
-        {
-          label: "Get Link",
-          icon: Link2,
-          onClick: () => {
-            getLink(this.selectedEntities[0]);
+          {
+            label: "Rename",
+            icon: TextCursorInput,
+            onClick: () => {
+              this.showRenameDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                (this.selectedEntities[0].write ||
+                  this.selectedEntities[0].owner === "Me")
+              );
+            },
           },
-          isEnabled: () => {
-            return this.selectedEntities.length === 1;
+          {
+            label: "Move",
+            icon: FolderInput,
+            onClick: () => {
+              this.showMoveDialog = true;
+            },
+            isEnabled: () => {
+              const allOwned = this.selectedEntities.every((entity) => {
+                return entity.owner === "Me";
+              });
+              return this.selectedEntities.length > 0 && allOwned;
+            },
           },
-        },
-        {
-          label: "Divider",
-          isEnabled: () => true,
-        },
-        {
-          label: "Rename",
-          icon: TextCursorInput,
-          onClick: () => {
-            this.showRenameDialog = true;
+          {
+            label: "Duplicate",
+            icon: Copy,
+            onClick: () => {
+              this.$store.commit("setPasteData", {
+                entities: this.selectedEntities.map((x) => x.name),
+                action: "copy",
+              });
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                (this.selectedEntities[0].write ||
+                  this.selectedEntities[0].owner === "Me")
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "Me")
-            );
+          {
+            label: "Show Info",
+            icon: Info,
+            onClick: () => {
+              this.$store.commit("setShowInfo", true);
+            },
+            isEnabled: () => {
+              return (
+                !this.$store.state.showInfo &&
+                this.selectedEntities.length === 1
+              );
+            },
           },
-        },
-        {
-          label: "Move",
-          icon: FolderInput,
-          onClick: () => {
-            this.showMoveDialog = true;
+          {
+            label: "Hide Info",
+            icon: Info,
+            onClick: () => {
+              this.$store.commit("setShowInfo", false);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.showInfo && this.selectedEntities.length === 1
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities[0].owner === "Me"
-            );
+          {
+            label: "Paste",
+            icon: "clipboard",
+            onClick: async () => {
+              this.pasteEntities(this.selectedEntities[0].name);
+            },
+            isEnabled: () => {
+              return (
+                this.$store.state.pasteData.entities.length &&
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group
+              );
+            },
           },
-        },
-        {
-          label: "Duplicate",
-          icon: Copy,
-          onClick: () => {
-            this.$store.commit("setPasteData", {
-              entities: this.selectedEntities.map((x) => x.name),
-              action: "copy",
-            });
+          {
+            label: "Favourite",
+            icon: Star,
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => !x.is_favourite)
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "Me")
-            );
+          {
+            label: "Unfavourite",
+            icon: Star,
+            onClick: () => {
+              this.$resources.toggleFavourite.submit();
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.is_favourite)
+              );
+            },
           },
-        },
-        {
-          label: "Show Info",
-          icon: Info,
-          onClick: () => {
-            this.$store.commit("setShowInfo", true);
+          {
+            label: "Color",
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length === 1 &&
+                this.selectedEntities[0].is_group &&
+                (this.selectedEntities[0].write === 1 ||
+                  this.selectedEntities[0].owner === "Me")
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              !this.$store.state.showInfo && this.selectedEntities.length === 1
-            );
+          {
+            label: "Remove from Recent",
+            icon: Trash2,
+            danger: true,
+            onClick: () => {
+              this.$resources.clearRecent.submit();
+            },
+            isEnabled: () => {
+              if (this.$route.name === "Recent") {
+                return this.selectedEntities.length > 0;
+              }
+            },
           },
-        },
-        {
-          label: "Hide Info",
-          icon: Info,
-          onClick: () => {
-            this.$store.commit("setShowInfo", false);
+          {
+            label: "Unshare",
+            danger: true,
+            icon: "trash-2",
+            onClick: () => {
+              this.showUnshareDialog = true;
+            },
+            isEnabled: () => {
+              return (
+                this.selectedEntities.length > 0 &&
+                this.selectedEntities.every((x) => x.owner != "Me") &&
+                (this.selectedEntities.every((x) => x.write) ||
+                  !this.isSharedFolder)
+              );
+            },
           },
-          isEnabled: () => {
-            return (
-              this.$store.state.showInfo && this.selectedEntities.length === 1
-            );
+          {
+            label: "Move to Trash",
+            icon: Trash2,
+            danger: true,
+            onClick: () => {
+              this.showRemoveDialog = true;
+            },
+            isEnabled: () => {
+              const allOwned = this.selectedEntities.every((entity) => {
+                return entity.owner === "Me";
+              });
+              return this.selectedEntities.length > 0 && allOwned;
+            },
           },
-        },
-        {
-          label: "Paste",
-          icon: "clipboard",
-          onClick: async () => {
-            this.pasteEntities(this.selectedEntities[0].name);
-          },
-          isEnabled: () => {
-            return (
-              this.$store.state.pasteData.entities.length &&
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group
-            );
-          },
-        },
-        {
-          label: "Favourite",
-          icon: Star,
-          onClick: () => {
-            this.$resources.toggleFavourite.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => !x.is_favourite)
-            );
-          },
-        },
-        {
-          label: "Unfavourite",
-          icon: Star,
-          onClick: () => {
-            this.$resources.toggleFavourite.submit();
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.is_favourite)
-            );
-          },
-        },
-        {
-          label: "Color",
-          isEnabled: () => {
-            return (
-              this.selectedEntities.length === 1 &&
-              this.selectedEntities[0].is_group
-            );
-          },
-        },
-        {
-          label: "Divider",
-          isEnabled: () => true,
-        },
-        {
-          label: "Remove from Recent",
-          icon: Trash2,
-          danger: true,
-          onClick: () => {
-            this.$resources.clearRecent.submit();
-          },
-          isEnabled: () => {
-            if (this.$route.name === "Recent") {
-              return this.selectedEntities.length > 0;
-            }
-          },
-        },
-        {
-          label: "Move to Trash",
-          icon: Trash2,
-          danger: true,
-          onClick: () => {
-            this.showRemoveDialog = true;
-          },
-          isEnabled: () => {
-            return this.selectedEntities.length > 0;
-          },
-        },
-      ].filter((item) => item.isEnabled());
+        ].filter((item) => item.isEnabled());
+      }
     },
   },
   watch: {
@@ -573,6 +659,7 @@ export default {
     orderBy: {
       handler(newVal, oldVal) {
         this.pageOffset = 0;
+        this.handleListMutation();
       },
     },
   },
@@ -651,6 +738,7 @@ export default {
           order_by: this.orderBy,
           offset: entityOriginalOffset,
           limit: this.pageLength,
+          is_active: this.isActive,
         })
         .then((data) => {
           this.folderItems.splice(
@@ -661,6 +749,9 @@ export default {
         });
     },
     openEntity(entity) {
+      if (this.$route.name === "Trash") {
+        return;
+      }
       if (entity.is_group) {
         this.selectedEntities = [];
         this.$router.push({
@@ -753,8 +844,7 @@ export default {
           order_by: this.orderBy,
           offset: this.pageOffset,
           limit: this.pageLength,
-          fields:
-            "name,title,is_group,owner,modified,file_size,mime_type,creation",
+          is_active: this.isActive,
         },
         transform(data) {
           this.$resources.folderContents.error = null;
@@ -771,7 +861,7 @@ export default {
             }
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? "Me" : data.owner;
+            entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
           });
         },
         onError(error) {
