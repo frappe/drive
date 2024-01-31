@@ -57,9 +57,9 @@ const routes = [
     props: true,
   },
   {
-    path: "/recent",
-    name: "Recent",
-    component: () => import("@/pages/Recent.vue"),
+    path: "/recents",
+    name: "Recents",
+    component: () => import("@/pages/Recents.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {

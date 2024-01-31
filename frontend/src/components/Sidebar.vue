@@ -15,7 +15,7 @@
           v-slot="{ href, navigate }"
           :to="item.route">
           <a
-            class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-3 rounded focus:outline-none"
+            class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-2 rounded focus:outline-none"
             :class="[
               item.highlight()
                 ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -83,7 +83,7 @@ export default {
         },
         {
           label: "Recents",
-          route: "/recent",
+          route: "/recents",
           icon: "clock",
           highlight: () => {
             return this.$store.state.currentBreadcrumbs[0].label === "Recents";
