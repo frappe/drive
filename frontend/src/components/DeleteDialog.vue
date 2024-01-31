@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Delete Forever?' }">
+  <Dialog v-model="open" :options="{ title: 'Delete Forever?', size: 'sm' }">
     <template #body-content>
       <p class="text-gray-600">
         {{
@@ -10,11 +10,11 @@
         will be deleted forever. This is an irreversible process.
       </p>
       <div class="flex mt-5">
-        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
+          variant="solid"
           theme="red"
           icon-left="trash-2"
-          class="ml-4"
+          class="w-full"
           :loading="$resources.delete.loading"
           @click="$resources.delete.submit()">
           Delete Forever

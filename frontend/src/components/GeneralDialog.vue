@@ -1,15 +1,16 @@
 <template>
-  <i class="fa fa-qq" aria-hidden="true"></i>
-  <Dialog v-model="open" :options="{ title: dialogData.title }">
+  <Dialog v-model="open" :options="{ title: dialogData.title, size: 'sm' }">
     <template #body-content>
-      <p class="text-gray-600">{{ dialogData.message }}</p>
+      <div class="flex items-center justify-start">
+        <p class="text-base text-gray-600">{{ dialogData.message }}</p>
+      </div>
+      <ErrorMessage class="my-1" :message="errorMessage" />
       <div class="flex mt-5">
-        <Button class="ml-auto" @click="open = false">Cancel</Button>
         <Button
           :variant="dialogData.variant"
           :icon-left="dialogData.buttonIcon"
           :theme="dialogData.theme"
-          class="ml-4"
+          class="w-full"
           :loading="$resources.method.loading"
           @click="$resources.method.submit()">
           {{ dialogData.buttonMessage }}
@@ -81,6 +82,7 @@ export default {
               " will be moved to Trash. Items in trash are deleted forever after 30 days. Other users will lose access to this.",
             buttonMessage: "Move to Trash",
             theme: "red",
+            variant: "subtle",
             buttonIcon: "trash-2",
             methodName: "drive.api.files.remove_or_restore",
           };
