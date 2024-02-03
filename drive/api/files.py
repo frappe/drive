@@ -671,7 +671,7 @@ def delete_background_job(entity, ignore_permissions):
 
 
 @frappe.whitelist()
-def delete_entities(entity_names):
+def delete_entities(entity_names=None, clear_all=None):
     """
     Delete DriveEntities
 
@@ -679,6 +679,10 @@ def delete_entities(entity_names):
     :type entity_names: list[str]
     :raises ValueError: If decoded entity_names is not a list
     """
+    if clear_all:
+        entity_names = frappe.db.get_list(
+            "Drive Entity", {"is_active": ["<", "1"], "owner": frappe.session.user}, pluck="name"
+        )
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
