@@ -179,7 +179,7 @@ const open = computed({
 
 const tabs = [
   {
-    label: "Recent",
+    label: "Recents",
     icon: h(Clock, { class: "w-4 h-4" }),
   },
   {
