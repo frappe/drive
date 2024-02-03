@@ -30,7 +30,7 @@ def create_image_thumbnail(entity_name):
     if not drive_entity or drive_entity.is_group:
         raise ValueError
     if not frappe.has_permission(
-        doctype="Drive Entity", doc=drive_entity, ptype="write", user=frappe.session.user
+        doctype="Drive Entity", doc=drive_entity.name, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
     with DistributedLock(drive_entity.path, exclusive=False):
@@ -43,7 +43,7 @@ def create_image_thumbnail(entity_name):
             response.headers.set("Content-Type", "image/jpeg")
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
-            user_thumbnails_directory = get_user_thumbnails_directory()
+            user_thumbnails_directory = get_user_thumbnails_directory(drive_entity.owner)
             thumbnail_getpath = Path(user_thumbnails_directory, entity_name)
             with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
                 thumbnail_data = BytesIO(file.read())
@@ -68,7 +68,7 @@ def create_video_thumbnail(entity_name):
     if not drive_entity or drive_entity.is_group:
         raise ValueError
     if not frappe.has_permission(
-        doctype="Drive Entity", doc=drive_entity, ptype="write", user=frappe.session.user
+        doctype="Drive Entity", doc=drive_entity.name, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
     with DistributedLock(drive_entity.path, exclusive=False):
@@ -81,7 +81,7 @@ def create_video_thumbnail(entity_name):
             response.headers.set("Content-Type", "image/jpeg")
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
-            user_thumbnails_directory = get_user_thumbnails_directory()
+            user_thumbnails_directory = get_user_thumbnails_directory(drive_entity.owner)
             thumbnail_getpath = Path(user_thumbnails_directory, entity_name)
             with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
                 thumbnail_data = BytesIO(file.read())

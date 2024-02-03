@@ -11,7 +11,7 @@
     class="h-full flex flex-col overflow-y-auto mt-2 px-4 pb-8"
     @mousedown="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-    <div v-if="folders.length > 0">
+    <div v-if="files.length > 0" :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
       <div class="text-gray-600 font-medium">Folders</div>
       <div class="flex flex-row flex-wrap gap-4 mt-4">
         <div
