@@ -99,7 +99,7 @@ import { createResource, Dialog, FeatherIcon, Button, Tabs } from "frappe-ui";
 import { formatSize, formatDate, formatMimeType } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import { useStore } from "vuex";
-import { FolderInput, Folder, File } from "lucide-vue-next";
+import { FolderInput, Folder, File, Turtle } from "lucide-vue-next";
 import { Clock, Star, Home, Users, Plus, Upload } from "lucide-vue-next";
 import { MoveIcon } from "lucide-vue-next";
 import { createListResource } from "frappe-ui";
@@ -175,6 +175,7 @@ function openEntity(value) {
     } else {
       ownedFolder.fetch({
         entity_name: currentFolder.value,
+        is_active: true,
       });
     }
   }
@@ -190,6 +191,7 @@ function closeEntity() {
   } else {
     ownedFolder.fetch({
       entity_name: currentFolder.value,
+      is_active: true,
     });
   }
 }
@@ -273,6 +275,9 @@ let favourites = createResource({
 let ownedFolder = createResource({
   url: "drive.api.files.list_owned_entities",
   method: "GET",
+  params: {
+    is_active: true,
+  },
   auto: props.suggestedTabIndex === 0 ? true : false,
   onSuccess(data) {
     data.forEach((entity) => {
