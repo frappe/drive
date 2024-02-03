@@ -30,4 +30,5 @@ def execute():
                 "name",
             )
             docshare.update({"owner_parent": parent_docshare, "share_parent": parent_docshare})
+            docshare.save(ignore_permissions=True)
     pass
