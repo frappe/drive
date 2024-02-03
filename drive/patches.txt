@@ -1,0 +1,4 @@
+[post_model_sync]
+drive.drive.doctype.drive_docshare.patches.update_root_tracking
+
+[pre_model_sync]
