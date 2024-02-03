@@ -20,7 +20,7 @@
   </Dialog>
 </template>
 <script>
-import { Dialog } from "frappe-ui";
+import { Dialog, ErrorMessage } from "frappe-ui";
 import { del } from "idb-keyval";
 
 export default {
@@ -28,6 +28,7 @@ export default {
 
   components: {
     Dialog,
+    ErrorMessage,
   },
 
   props: {
@@ -44,7 +45,11 @@ export default {
       default: null,
     },
   },
-
+  data() {
+    return {
+      errorMessage: "",
+    };
+  },
   emits: ["update:modelValue", "success"],
 
   computed: {
@@ -117,7 +122,9 @@ export default {
         },
         onError(error) {
           if (error.messages) {
-            console.log(error.messages);
+            this.errorMessage = error.messages.join("\n");
+          } else {
+            this.errorMessage = error.message;
           }
         },
       };
