@@ -162,11 +162,14 @@ def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=10
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
     UserGroupMember = frappe.qb.DocType("User Group Member")
+    DriveUser = frappe.qb.DocType("User")
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
         DriveEntity.is_group,
         DriveEntity.owner,
+        DriveUser.full_name,
+        DriveUser.user_image,
         DriveEntity.modified,
         DriveEntity.creation,
         DriveEntity.file_size,
@@ -195,6 +198,8 @@ def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=10
             (DriveFavourite.entity == DriveEntity.name)
             & (DriveFavourite.user == frappe.session.user)
         )
+        .left_join(DriveUser)
+        .on((DriveEntity.owner == DriveUser.email))
         .offset(offset)
         .limit(limit)
         .select(*selectedFields)
