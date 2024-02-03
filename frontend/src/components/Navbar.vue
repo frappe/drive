@@ -41,10 +41,11 @@
           <UsersBar />
         </div>
         <Button
-          v-if="$route.name === 'Recent'"
-          class="bg-red-100 text-red-700"
-          variant="minimal"
-          @click="$resources.clearRecent.submit()">
+          v-if="$route.name === 'Recents'"
+          :disabled="!currentViewEntites?.length"
+          theme="red"
+          :variant="'subtle'"
+          @click="this.emitter.emit('showCTADelete')">
           <template #prefix>
             <FeatherIcon name="trash-2" class="w-4" />
           </template>
@@ -52,9 +53,10 @@
         </Button>
         <Button
           v-else-if="$route.name === 'Favourites'"
-          class="bg-red-100 text-red-700"
-          variant="minimal"
-          @click="$resources.clearFavourites.submit()">
+          :disabled="!currentViewEntites?.length"
+          theme="red"
+          :variant="'subtle'"
+          @click="this.emitter.emit('showCTADelete')">
           <template #prefix>
             <FeatherIcon name="trash-2" class="w-4" />
           </template>
@@ -62,9 +64,10 @@
         </Button>
         <Button
           v-else-if="$route.name === 'Trash'"
-          @click="emitter.emit('clearTrashed')"
-          class="bg-red-100 text-red-700"
-          variant="minimal">
+          @click="this.emitter.emit('showCTADelete')"
+          :disabled="!currentViewEntites?.length"
+          theme="red"
+          :variant="'subtle'">
           <template #prefix>
             <FeatherIcon name="trash-2" class="w-4" />
           </template>
@@ -272,6 +275,9 @@ export default {
     connectedUsers() {
       return this.$store.state.connectedUsers;
     },
+    currentViewEntites() {
+      return this.$store.state.currentViewEntites;
+    },
   },
   /*   methods: {
     openEntity(entity) {
@@ -310,38 +316,6 @@ export default {
           console.log(data);
         },
         auto: false,
-      };
-    },
-    clearRecent() {
-      return {
-        url: "drive.api.files.remove_recents",
-        params: {
-          clear_all: true,
-        },
-        onSuccess() {
-          this.emitter.emit("fetchRecents");
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
-      };
-    },
-    clearFavourites() {
-      return {
-        url: "drive.api.files.add_or_remove_favourites",
-        params: {
-          clear_all: true,
-        },
-        onSuccess() {
-          this.emitter.emit("fetchFavourites");
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages);
-          }
-        },
       };
     },
   },

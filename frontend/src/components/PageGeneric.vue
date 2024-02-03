@@ -145,9 +145,23 @@
       "
       @success="
         () => {
-          $resources.folderContents.fetch();
-          showDeleteDialog = false;
+          offset = 0;
+          folderItems = null;
           selectedEntities = [];
+          fetchNextPage();
+          showDeleteDialog = false;
+        }
+      " />
+    <CTADeleteDialog
+      v-model="showCTADelete"
+      :clearAll="clearAll"
+      @success="
+        () => {
+          offset = 0;
+          folderItems = null;
+          selectedEntities = [];
+          fetchNextPage();
+          showCTADelete = false;
         }
       " />
   </div>
@@ -163,6 +177,7 @@ import RenameDialog from "@/components/RenameDialog.vue";
 import ShareDialog from "@/components/ShareDialog.vue";
 import GeneralDialog from "@/components/GeneralDialog.vue";
 import DeleteDialog from "@/components/DeleteDialog.vue";
+import CTADeleteDialog from "@/components/CTADeleteDialog.vue";
 import MoveDialog from "../components/MoveDialog.vue";
 import FolderContentsError from "@/components/FolderContentsError.vue";
 import EntityContextMenu from "@/components/EntityContextMenu.vue";
@@ -191,7 +206,6 @@ import {
   FileText,
   RotateCcw,
 } from "lucide-vue-next";
-import { routeLocationKey } from "vue-router";
 
 export default {
   name: "PageGeneric",
@@ -225,6 +239,7 @@ export default {
     FileUp,
     FileText,
     RotateCcw,
+    CTADeleteDialog,
   },
   data: () => ({
     folderItems: null,
@@ -245,6 +260,8 @@ export default {
     pageLength: 60,
     pageOffset: 0,
     overrideCanLoadMore: false,
+    clearAll: false,
+    showCTADelete: false,
   }),
   props: {
     url: {
@@ -604,14 +621,14 @@ export default {
             },
           },
           {
-            label: "Remove from Recent",
+            label: "Remove from Recents",
             icon: Trash2,
             danger: true,
             onClick: () => {
               this.$resources.clearRecent.submit();
             },
             isEnabled: () => {
-              if (this.$route.name === "Recent") {
+              if (this.$route.name === "Recents") {
                 return this.selectedEntities.length > 0;
               }
             },
@@ -668,7 +685,13 @@ export default {
     this.emitter.on("fetchFolderContents", () => {
       this.$resources.folderContents.fetch();
     });
-
+    this.emitter.on("showCTADelete", () => {
+      this.clearAll = true;
+      this.showCTADelete = true;
+    });
+    this.emitter.on("selectAll", () => {
+      this.clearAll();
+    });
     this.emitter.on("createNewDocument", () => {
       this.newDocument();
     });
