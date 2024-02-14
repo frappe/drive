@@ -28,6 +28,7 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui";
+import disableScroll from "../utils/disable-scroll";
 
 export default {
   name: "EmptyEntityContext",
@@ -47,13 +48,14 @@ export default {
     this.childHeight = this.$refs.emptyContextMenu.clientHeight;
     this.calculateY();
     this.calculateX();
+    disableScroll.on();
   },
   updated() {
     this.calculateY();
     this.calculateX();
   },
   beforeUnmount() {
-    this.enableScroll();
+    disableScroll.off();
   },
   methods: {
     disableScroll() {

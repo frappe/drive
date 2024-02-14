@@ -50,6 +50,7 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui";
+import disableScroll from "../utils/disable-scroll";
 import ColorPopover from "@/components/ColorPopover.vue";
 
 export default {
@@ -70,13 +71,14 @@ export default {
     this.childHeight = this.$refs.contextMenu.clientHeight;
     this.calculateY();
     this.calculateX();
+    disableScroll.on();
   },
   updated() {
     this.calculateY();
     this.calculateX();
   },
   beforeUnmount() {
-    this.enableScroll();
+    disableScroll.off();
   },
   methods: {
     disableScroll() {
@@ -123,8 +125,3 @@ export default {
   },
 };
 </script>
-<style>
-.disable-scroll {
-  overflow: hidden;
-}
-</style>
