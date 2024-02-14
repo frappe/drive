@@ -7,15 +7,16 @@
     <div class="h-full w-full flex flex-col">
       <div
         v-if="isLoggedIn || $route.meta.isHybridRoute"
-        class="flex h-full overflow-hidden">
-        <Sidebar v-if="isLoggedIn" />
+        class="flex flex-col h-full overflow-hidden sm:flex-row">
+        <Sidebar class="hidden sm:block" v-if="isLoggedIn" />
         <div class="h-full w-full overflow-hidden" id="dropzoneElement">
           <Navbar
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar" />
           <div class="flex w-full h-full overflow-hidden">
             <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
-            <div class="flex w-full h-[calc(100vh-52px)] overflow-hidden">
+            <div
+              class="flex w-full h-[calc(100vh-88px)] sm:h-[calc(100vh-52px)] overflow-hidden">
               <router-view :key="$route.fullPath" v-slot="{ Component }">
                 <component id="currentPage" :is="Component" ref="currentPage" />
               </router-view>
@@ -23,6 +24,7 @@
             <InfoSidebar v-if="!$route.meta.documentPage" />
           </div>
         </div>
+        <BottomBar class="block sm:hidden" v-if="isLoggedIn" />
       </div>
       <!-- Auth -->
       <router-view v-else />
@@ -52,6 +54,7 @@ import FilePicker from "./components/FilePicker.vue";
 import MoveDialog from "./components/MoveDialog.vue";
 import SearchPopup from "./components/SearchPopup.vue";
 import FileUploader from "./components/FileUploader.vue";
+import BottomBar from "./components/BottomBar.vue";
 
 export default {
   name: "App",
@@ -68,9 +71,11 @@ export default {
     MoveDialog,
     SearchPopup,
     FileUploader,
+    BottomBar,
   },
   data() {
     return {
+      isOpen: false,
       showMobileSidebar: false,
     };
   },

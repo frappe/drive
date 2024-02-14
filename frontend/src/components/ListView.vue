@@ -13,15 +13,15 @@
     @mousedown.lazy="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
     <div
-      class="sticky top-0 z-10 grid items-center rounded bg-gray-100 min-h-7 py-1 px-2 overflow-hidden mb-1"
+      class="sticky hidden sm:grid top-0 z-10 items-center rounded bg-gray-100 min-h-7 py-1 px-2 overflow-hidden mb-1"
       :style="{ gridTemplateColumns: tableColumnsGridWidth }">
-      <Checkbox
+      <!-- <Checkbox
         class="cursor-pointer duration-300 z-10"
         :modelValue="
           selectedEntities?.length > 1 &&
           selectedEntities?.length === folderContents?.length
         "
-        @click.stop="toggleSelectAll" />
+        @click.stop="toggleSelectAll" /> -->
       <div class="flex w-full items-center text-base text-gray-600">Name</div>
       <div
         class="flex w-full items-center justify-start text-base text-gray-600">
@@ -41,6 +41,7 @@
       <div class="flex w-full items-center justify-end text-base text-gray-600">
         Size
       </div>
+      <div />
     </div>
     <div
       v-for="entity in folderContents"
@@ -54,6 +55,7 @@
         selectedEntities.includes(entity) ? 'bg-gray-100' : 'hover:bg-gray-100'
       "
       :draggable="true"
+      @touchstart="dblClickEntity(entity)"
       @dblclick="dblClickEntity(entity)"
       @click="selectEntity(entity, $event, folderContents)"
       @contextmenu="handleEntityContext(entity, $event, folderContents)"
@@ -62,15 +64,12 @@
       @dragover.prevent
       @mousedown.stop
       @drop="isGroupOnDrop(entity)">
-      <Checkbox
-        :modelValue="selectedEntities.includes(entity)"
-        class="duration-300 invisible group-hover:visible checked:visible" />
       <div
         class="flex items-center text-gray-800 text-sm font-medium truncate"
         :draggable="false">
         <svg
           v-if="entity.is_group"
-          class="h-5 w-auto mr-3"
+          class="h-auto w-5 mr-3"
           :draggable="false"
           :style="{ fill: entity.color }"
           width="16"
@@ -96,7 +95,7 @@
         {{ entity.title }}
       </div>
       <div
-        class="flex items-center justify-start text-gray-800 text-sm font-medium truncate">
+        class="hidden sm:flex items-center justify-start text-gray-800 text-sm font-medium truncate">
         <Avatar
           :image="entity.user_image"
           :label="entity.full_name"
@@ -111,6 +110,25 @@
       <div class="flex w-full justify-end text-base text-gray-600">
         {{ entity.file_size }}
       </div>
+      <div class="flex w-full justify-end">
+        <Button
+          :variant="'ghost'"
+          @touchstart.stop="
+            handleEntityContext(entity, $event, displayOrderedEntities)
+          "
+          @click.stop="
+            handleEntityContext(entity, $event, displayOrderedEntities)
+          "
+          :modelValue="selectedEntities.includes(entity)"
+          :class="
+            selectedEntities.includes(entity)
+              ? 'visible bg-gray-300'
+              : 'bg-inherit visible'
+          "
+          class="border-1 duration-300 relative ml-auto visible group-hover:visible">
+          <FeatherIcon class="h-4" name="more-horizontal" />
+        </Button>
+      </div>
     </div>
     <div
       id="selectionElement"
@@ -120,18 +138,21 @@
   </div>
 </template>
 <script>
-import { Avatar, Checkbox } from "frappe-ui";
+import { Avatar, Checkbox, Button, FeatherIcon } from "frappe-ui";
 import { formatMimeType } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
 import { useInfiniteScroll } from "@vueuse/core";
 import { ref } from "vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
+import { folder } from "jszip";
 
 export default {
   name: "GridView",
   components: {
     Checkbox,
     Avatar,
+    Button,
+    FeatherIcon,
   },
   props: {
     folderContents: {
@@ -169,16 +190,19 @@ export default {
         canLoadMore: () => props.overrideCanLoadMore,
       }
     );
-
     return { container, useInfiniteScroll, formatMimeType, getIconUrl };
   },
   data: () => ({
     selectionElementStyle: {},
     selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
     containerRect: null,
-    tableColumnsGridWidth: "25px 2fr 1fr 100px 100px",
   }),
   computed: {
+    tableColumnsGridWidth() {
+      return window.innerWidth < 640
+        ? "2fr 1fr 100px 40px"
+        : "2fr 1fr 100px 100px 40px";
+    },
     isEmpty() {
       return this.folderContents && this.folderContents.length === 0;
     },
@@ -335,12 +359,18 @@ export default {
       this.$emit("showEmptyEntityContext", null);
     },
     handleEntityContext(entity, event, entities) {
+      let clientX = event.clientX;
+      let clientY = event.clientY;
+      if (event.changedTouches) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+      }
       event.preventDefault(event);
       if (this.selectedEntities.length <= 1) {
         this.$emit("entitySelected", [entity]);
         this.$store.commit("setEntityInfo", [entity]);
       }
-      this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
+      this.$emit("showEntityContext", { x: clientX, y: clientY });
     },
     dragStart(entity, event) {
       event.dataTransfer.dropEffect = "move";

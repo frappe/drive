@@ -11,7 +11,9 @@
     class="h-full flex flex-col overflow-y-auto mt-2 px-4 pb-8"
     @mousedown="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-    <div v-if="files.length > 0" :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
+    <div
+      v-if="folders.length > 0"
+      :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
       <div class="text-gray-600 font-medium">Folders</div>
       <div class="flex flex-row flex-wrap gap-4 mt-4">
         <div
@@ -25,6 +27,7 @@
               ? 'bg-gray-100 border-gray-300'
               : 'border-gray-200 hover:shadow-2xl'
           "
+          @touchstart="dblClickEntity(folder)"
           @dblclick="dblClickEntity(folder)"
           @click="selectEntity(folder, $event, displayOrderedEntities)"
           @contextmenu="
@@ -55,9 +58,23 @@
                 </clipPath>
               </defs>
             </svg>
-            <Checkbox
+            <Button
+              :variant="'subtle'"
+              @touchstart.stop="
+                handleEntityContext(folder, $event, displayOrderedEntities)
+              "
+              @click.stop="
+                handleEntityContext(folder, $event, displayOrderedEntities)
+              "
               :modelValue="selectedEntities.includes(folder)"
-              class="duration-300 relative ml-auto invisible group-hover:visible checked:visible" />
+              :class="
+                selectedEntities.includes(folder)
+                  ? 'visible bg-gray-300'
+                  : 'bg-inherit sm:bg-gray-100 visible sm:invisible'
+              "
+              class="border-1 duration-300 relative ml-auto visible group-hover:visible sm:invisible">
+              <FeatherIcon class="h-4" name="more-horizontal" />
+            </Button>
           </div>
           <div class="content-center grid">
             <span class="truncate text-sm text-gray-800 mt-2">
@@ -85,6 +102,7 @@
               ? 'bg-gray-100 border-gray-300'
               : 'border-gray-200 hover:shadow-2xl'
           "
+          @touchstart="dblClickEntity(file)"
           @dblclick="dblClickEntity(file)"
           @click="selectEntity(file, $event, displayOrderedEntities)"
           @dragstart="dragStart(file, $event)"
@@ -94,9 +112,23 @@
           @contextmenu="
             handleEntityContext(file, $event, displayOrderedEntities)
           ">
-          <Checkbox
+          <Button
+            :variant="'subtle'"
+            @touchstart.stop="
+              handleEntityContext(file, $event, displayOrderedEntities)
+            "
+            @click.stop="
+              handleEntityContext(file, $event, displayOrderedEntities)
+            "
             :modelValue="selectedEntities.includes(file)"
-            class="duration-300 display-none absolute right-1 top-1 invisible group-hover:visible checked:visible" />
+            :class="
+              selectedEntities.includes(file)
+                ? 'visible bg-gray-300'
+                : 'bg-inherit sm:bg-gray-100 visible sm:invisible'
+            "
+            class="border-1 duration-300 absolute right-0 mr-1.5 mt-1.5 visible group-hover:visible sm:invisible">
+            <FeatherIcon class="h-4" name="more-horizontal" />
+          </Button>
           <File
             :mime_type="file.mime_type"
             :file_ext="file.file_ext"
@@ -118,7 +150,7 @@
 <script>
 import File from "@/components/File.vue";
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect";
-import { Checkbox } from "frappe-ui";
+import { Dropdown, FeatherIcon, Button, Checkbox } from "frappe-ui";
 import { useInfiniteScroll } from "@vueuse/core";
 import { ref } from "vue";
 
@@ -127,6 +159,8 @@ export default {
   components: {
     File,
     Checkbox,
+    Button,
+    FeatherIcon,
   },
   props: {
     folderContents: {
@@ -321,12 +355,18 @@ export default {
       this.$emit("showEmptyEntityContext", null);
     },
     handleEntityContext(entity, event, entities) {
+      let clientX = event.clientX;
+      let clientY = event.clientY;
+      if (event.changedTouches) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+      }
       event.preventDefault(event);
       if (this.selectedEntities.length <= 1) {
         this.$emit("entitySelected", [entity]);
         this.$store.commit("setEntityInfo", [entity]);
       }
-      this.$emit("showEntityContext", { x: event.clientX, y: event.clientY });
+      this.$emit("showEntityContext", { x: clientX, y: clientY });
     },
     dragStart(entity, event) {
       event.dataTransfer.dropEffect = "move";

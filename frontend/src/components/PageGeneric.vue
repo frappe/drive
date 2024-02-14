@@ -889,11 +889,11 @@ export default {
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
-            store.commit("setError", {
+            this.$store.commit("setError", {
               primaryMessage: "Forbidden",
               secondaryMessage: "Insufficient permissions for this resource",
             });
-            router.replace({ name: "Error" });
+            this.$router.replace({ name: "Error" });
           }
         },
       };

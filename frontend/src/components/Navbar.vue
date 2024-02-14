@@ -6,22 +6,6 @@
     <div
       class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between">
       <Breadcrumbs />
-      <!--       
-  <div class="flex items-center">
-        <router-link to="/" class="hidden md:block"></router-link>
-        <div class="flex items-center md:hidden">
-          <button
-            class="mr-5 inline-flex items-center justify-center text-gray-700 rounded-md focus:outline-none focus:shadow-outline-gray"
-            @click="$emit('toggleMobileSidebar')">
-            <FeatherIcon
-              v-if="!mobileSidebarIsOpen"
-              name="menu"
-              class="w-6 h-6" />
-            <FeatherIcon v-else name="x" class="w-6 h-6" />
-          </button>
-        </div>
-      </div> 
-       $store.state.hasWriteAccess -->
       <div v-if="isLoggedIn" class="flex items-center">
         <Dropdown
           :options="
@@ -42,6 +26,7 @@
         </div>
         <Button
           v-if="$route.name === 'Recents'"
+          class="line-clamp-1 truncate"
           :disabled="!currentViewEntites?.length"
           theme="red"
           :variant="'subtle'"
@@ -53,6 +38,7 @@
         </Button>
         <Button
           v-else-if="$route.name === 'Favourites'"
+          class="line-clamp-1 truncate"
           :disabled="!currentViewEntites?.length"
           theme="red"
           :variant="'subtle'"
@@ -63,6 +49,7 @@
           Clear Favourites
         </Button>
         <Button
+          class="line-clamp-1 truncate"
           v-else-if="$route.name === 'Trash'"
           @click="this.emitter.emit('showCTADelete')"
           :disabled="!currentViewEntites?.length"

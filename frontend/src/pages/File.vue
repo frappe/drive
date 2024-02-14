@@ -170,6 +170,9 @@ function scrollEntity(negative = false) {
 
 onMounted(() => {
   fetchFile(props.entityName);
+  if (window.matchMedia("(max-width: 1500px)").matches) {
+    store.commit("setIsSidebarExpanded", false);
+  }
 });
 
 onBeforeUnmount(() => {
