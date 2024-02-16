@@ -3,14 +3,14 @@
     <div
       ondragstart="return false;"
       ondrop="return false;"
-      class="grid grid-cols-5 h-10 border-t border-gray-300 standalone:pb-4">
+      class="grid grid-cols-5 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1">
       <router-link
         v-for="item in sidebarItems"
         :key="item.label"
         v-slot="{ href, navigate }"
         :to="item.route">
         <a
-          class="sidebar-animate flex flex-col items-center justify-center py-3 transition active:scale-95 text-gray-800 text-sm w-full mb-1 h-9 px-2 gap-2 rounded focus:outline-none"
+          class="flex flex-col items-center justify-center py-3 transition active:scale-95 rounded"
           :class="[
             item.highlight()
               ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -20,7 +20,7 @@
           @click="navigate && $emit('toggleMobileSidebar')">
           <FeatherIcon
             :name="item.icon"
-            class="stroke-1.5 self-center w-auto h-5 text-gray-800" />
+            class="stroke-1.5 self-center w-auto h-5.5 text-gray-800" />
         </a>
       </router-link>
       <!--  <span
