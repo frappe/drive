@@ -6,7 +6,7 @@
     <div
       class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between">
       <Breadcrumbs />
-      <div v-if="isLoggedIn" class="flex items-center">
+      <div v-if="isLoggedIn">
         <Dropdown
           :options="
             $store.state.hasWriteAccess ? fileOptions : readOnlyfileOptions
@@ -26,7 +26,7 @@
         </div>
         <Button
           v-if="$route.name === 'Recents'"
-          class="line-clamp-1 truncate"
+          class="line-clamp-1 truncate w-full"
           :disabled="!currentViewEntites?.length"
           theme="red"
           :variant="'subtle'"
@@ -65,7 +65,7 @@
           :disabled="!$store.state.hasWriteAccess"
           @click="emitter.emit('saveDocument')"
           class="bg-gray-200 rounded flex justify-center items-center px-1 mx-2"
-          variant="solid">
+          variant="subtle">
           <template #prefix>
             <FeatherIcon name="save" class="w-4" />
           </template>
