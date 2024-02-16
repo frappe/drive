@@ -1,7 +1,7 @@
 <template>
   <div
     :style="{ width: isExpanded ? '280px' : '60px' }"
-    class="border-r bg-gray-50 transition-all hidden md:block">
+    class="border-r bg-gray-50 transition-all relative md:block">
     <div
       class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
       :class="{ 'opacity-100': sidebarResizing }"
