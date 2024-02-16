@@ -1,10 +1,36 @@
 <template>
   <div class="flex justify-items-center items-center text-base">
+    <template v-if="dropDownItems.length">
+      <Dropdown class="h-7" :options="dropDownItems">
+        <Button variant="ghost">
+          <template #icon>
+            <svg
+              class="w-4 text-gray-600"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="19" cy="12" r="1" />
+              <circle cx="5" cy="12" r="1" />
+            </svg>
+          </template>
+        </Button>
+      </Dropdown>
+      <span class="ml-1 mr-0.5 text-base text-gray-500" aria-hidden="true">
+        /
+      </span>
+    </template>
     <router-link
-      v-for="(item, index) in breadcrumbLinks"
+      v-for="(item, index) in crumbs"
       :key="item.label"
       v-slot="{ href, navigate }"
-      class="text-lg font-medium text-gray-600"
+      class="text-md line-clamp-1 sm:text-lg font-medium text-gray-600"
       :to="item.route">
       <a
         v-if="!isLastItem(index)"
@@ -16,7 +42,7 @@
         :href="href"
         @click="navigate">
         {{ item.label }}
-        <span v-if="breadcrumbLinks.length > 1" class="text-gray-600 pr-1">
+        <span v-if="crumbs.length > 1" class="text-gray-600 pr-1">
           {{ "/" }}
         </span>
       </a>
@@ -38,10 +64,11 @@
 </template>
 <script>
 import RenameDialog from "@/components/RenameDialog.vue";
+import { Dropdown } from "frappe-ui";
 
 export default {
   name: "Breadcrumbs",
-  components: { RenameDialog },
+  components: { RenameDialog, Dropdown },
   data() {
     return {
       title: "",
@@ -84,6 +111,27 @@ export default {
     },
     currentEntityName() {
       return this.currentRoute.split("/")[2];
+    },
+    dropDownItems() {
+      if (window.innerWidth > 640) return [];
+      let allExceptLastTwo = this.breadcrumbLinks.slice(0, -1);
+      return allExceptLastTwo.map((item) => {
+        let onClick = item.onClick
+          ? item.onClick
+          : () => this.$router.push(item.route);
+        return {
+          ...item,
+          icon: null,
+          label: item.label,
+          onClick,
+        };
+      });
+    },
+    crumbs() {
+      if (window.innerWidth > 640) return this.breadcrumbLinks;
+
+      let lastTwo = this.breadcrumbLinks.slice(-1);
+      return lastTwo;
     },
   },
   methods: {
