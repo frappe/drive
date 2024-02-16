@@ -27,8 +27,7 @@
               ? 'bg-gray-100 border-gray-300'
               : 'border-gray-200 hover:shadow-2xl'
           "
-          @touchstart="dblClickEntity(folder)"
-          @dblclick="dblClickEntity(folder)"
+          @[action]="dblClickEntity(folder)"
           @click="selectEntity(folder, $event, displayOrderedEntities)"
           @contextmenu="
             handleEntityContext(folder, $event, displayOrderedEntities)
@@ -60,9 +59,6 @@
             </svg>
             <Button
               :variant="'subtle'"
-              @touchstart.stop="
-                handleEntityContext(folder, $event, displayOrderedEntities)
-              "
               @click.stop="
                 handleEntityContext(folder, $event, displayOrderedEntities)
               "
@@ -102,8 +98,7 @@
               ? 'bg-gray-100 border-gray-300'
               : 'border-gray-200 hover:shadow-2xl'
           "
-          @touchstart="dblClickEntity(file)"
-          @dblclick="dblClickEntity(file)"
+          @[action]="dblClickEntity(file)"
           @click="selectEntity(file, $event, displayOrderedEntities)"
           @dragstart="dragStart(file, $event)"
           @dragenter.prevent
@@ -114,9 +109,6 @@
           ">
           <Button
             :variant="'subtle'"
-            @touchstart.stop="
-              handleEntityContext(file, $event, displayOrderedEntities)
-            "
             @click.stop="
               handleEntityContext(file, $event, displayOrderedEntities)
             "
@@ -207,6 +199,9 @@ export default {
     containerRect: null,
   }),
   computed: {
+    action() {
+      return window.innerWidth < 640 ? "click" : "dblclick";
+    },
     isEmpty() {
       return this.folderContents && this.folderContents.length === 0;
     },

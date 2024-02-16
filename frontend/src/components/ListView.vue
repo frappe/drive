@@ -55,8 +55,7 @@
         selectedEntities.includes(entity) ? 'bg-gray-100' : 'hover:bg-gray-100'
       "
       :draggable="true"
-      @touchstart="dblClickEntity(entity)"
-      @dblclick="dblClickEntity(entity)"
+      @[action]="dblClickEntity(entity)"
       @click="selectEntity(entity, $event, folderContents)"
       @contextmenu="handleEntityContext(entity, $event, folderContents)"
       @dragstart="dragStart(entity, $event)"
@@ -104,7 +103,7 @@
         {{ entity.owner }}
       </div>
       <div
-        class="flex items-center justify-end text-gray-800 text-sm font-medium truncate">
+        class="hidden sm:flex items-center justify-end text-gray-800 text-sm font-medium truncate">
         {{ entity.modified }}
       </div>
       <div class="flex w-full justify-end text-base text-gray-600">
@@ -113,9 +112,6 @@
       <div class="flex w-full justify-end">
         <Button
           :variant="'ghost'"
-          @touchstart.stop="
-            handleEntityContext(entity, $event, displayOrderedEntities)
-          "
           @click.stop="
             handleEntityContext(entity, $event, displayOrderedEntities)
           "
@@ -198,9 +194,12 @@ export default {
     containerRect: null,
   }),
   computed: {
+    action() {
+      return window.innerWidth < 640 ? "click" : "dblclick";
+    },
     tableColumnsGridWidth() {
       return window.innerWidth < 640
-        ? "2fr 1fr 100px 40px"
+        ? "2fr 1fr 40px"
         : "2fr 1fr 100px 100px 40px";
     },
     isEmpty() {
