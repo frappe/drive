@@ -115,10 +115,10 @@
             :modelValue="selectedEntities.includes(file)"
             :class="
               selectedEntities.includes(file)
-                ? 'visible bg-gray-300'
-                : 'bg-inherit sm:bg-gray-100 visible sm:invisible'
+                ? 'visible '
+                : 'sm:bg-gray-100 visible sm:invisible'
             "
-            class="border-1 duration-300 absolute right-0 mr-1.5 mt-1.5 visible group-hover:visible sm:invisible">
+            class="z-10 duration-300 absolute right-0 mr-1.5 mt-1.5 visible group-hover:visible sm:invisible">
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
           <File

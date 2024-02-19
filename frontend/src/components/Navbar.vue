@@ -4,9 +4,9 @@
     ondrop="return false;"
     class="bg-white top-0 border-b w-full">
     <div
-      class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between">
+      class="mx-auto pl-4 py-2.5 pr-1 h-12 z-10 flex items-center justify-between">
       <Breadcrumbs />
-      <div v-if="isLoggedIn">
+      <div v-if="isLoggedIn" class="block sm:flex">
         <Dropdown
           :options="
             $store.state.hasWriteAccess ? fileOptions : readOnlyfileOptions
@@ -21,7 +21,7 @@
           v-if="
             $route.meta.documentPage && connectedUsers.length > 1 && isLoggedIn
           "
-          class="bg-gray-200 rounded flex justify-center items-center px-1 mx-2">
+          class="hidden sm:flex bg-gray-200 rounded justify-center items-center px-1 mx-2">
           <UsersBar />
         </div>
         <Button
