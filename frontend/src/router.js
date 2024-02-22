@@ -9,7 +9,9 @@ function redir404(to) {
   }
 }
 
-function clearStore() {
+function clearStore(to, from) {
+  // Save on on unmount
+  if (from.name == "Document") return;
   store.commit("setEntityInfo", []);
   store.commit("setCurrentFolder", []);
 }
