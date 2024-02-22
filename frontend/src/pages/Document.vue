@@ -43,7 +43,6 @@ export default {
   watch: {
     globalStoreTitle: {
       handler(newVal) {
-        console.log(newVal);
         this.$resources.rename.submit({
           entity_name: this.entityName,
           new_title: newVal,
@@ -141,14 +140,10 @@ export default {
     clearInterval(this.timer);
   },
   resources: {
-    updateDocumentTitle() {
+    rename() {
       return {
         url: "drive.api.files.passive_rename",
         debounce: 250,
-        params: {
-          entity_name: this.entityName,
-          title: this.titleVal,
-        },
       };
     },
     updateDocument() {
