@@ -255,12 +255,15 @@ def get_doc_content(drive_document_name):
     return drive_document
 
 
-""" @frappe.whitelist()
-def rename_doc_entity(entity_name, title):
-    doc_name = frappe.db.get_value("Drive Entity", entity_name, "document")
-    frappe.db.set_value("Drive Document", doc_name, "title", title)
-    frappe.db.set_value("Drive Entity", entity_name, "title", title)
-    return """
+@frappe.whitelist()
+def passive_rename(entity_name, new_title):
+    doc = frappe.get_doc('Drive Entity', entity_name)
+    if frappe.db.exists("Drive Entity", {"name": doc.name, "parent_drive_entity": doc.parent_drive_entity, "title": new_title}):
+        new_title = get_new_title(new_title, doc.parent_drive_entity)
+        doc.db_set('title', new_title, update_modified=False)
+    else:
+        doc.db_set('title', new_title, update_modified=False)
+    return doc
 
 
 @frappe.whitelist()

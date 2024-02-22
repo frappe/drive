@@ -40,8 +40,21 @@ export default {
       beforeUnmountSaveDone: false,
     };
   },
-
+  watch: {
+    globalStoreTitle: {
+      handler(newVal) {
+        console.log(newVal);
+        this.$resources.rename.submit({
+          entity_name: this.entityName,
+          new_title: newVal,
+        });
+      },
+    },
+  },
   computed: {
+    globalStoreTitle() {
+      return this.$store.state.entityInfo[0].title;
+    },
     titleVal() {
       return this.title ? this.title : this.oldTitle;
     },
@@ -69,50 +82,6 @@ export default {
           comments: this.comments,
           file_size: fromUint8Array(this.content).length,
         });
-        if (
-          this.entity.title.includes("Untitled Document") &&
-          this.entity.title != this.$store.state.entityInfo[0].title
-        ) {
-          this.$resources.rename.submit({
-            method: "rename",
-            entity_name: this.entityName,
-            new_title: this.$store.state.entityInfo[0].title,
-          });
-        }
-      }
-    },
-    async saveAndRenameDocument() {
-      if (
-        this.entity.title.includes("Untitled Document") &&
-        this.entity.title != this.$store.state.entityInfo[0].title
-      ) {
-        await this.$resources.rename
-          .submit({
-            method: "rename",
-            entity_name: this.entityName,
-            new_title: this.$store.state.entityInfo[0].title,
-          })
-          .then(() => {
-            this.$resources.updateDocument.submit({
-              entity_name: this.entityName,
-              doc_name: this.document,
-              title: this.$store.state.entityInfo[0].title,
-              content: fromUint8Array(this.content),
-              comments: this.comments,
-              file_size: fromUint8Array(this.content).length,
-            });
-            this.beforeUnmountSaveDone = true;
-          });
-      } else {
-        await this.$resources.updateDocument.submit({
-          entity_name: this.entityName,
-          doc_name: this.document,
-          title: this.$store.state.entityInfo[0].title,
-          content: fromUint8Array(this.content),
-          comments: this.comments,
-          file_size: fromUint8Array(this.content).length,
-        });
-        this.beforeUnmountSaveDone = true;
       }
     },
   },
@@ -170,22 +139,16 @@ export default {
   },
   beforeUnmount() {
     clearInterval(this.timer);
-    if (!this.beforeUnmountSaveDone) {
-      this.saveAndRenameDocument();
-    } else {
-      return;
-    }
   },
   resources: {
     updateDocumentTitle() {
       return {
-        url: "drive.api.files.rename_doc_entity",
+        url: "drive.api.files.passive_rename",
         debounce: 250,
         params: {
           entity_name: this.entityName,
           title: this.titleVal,
         },
-        auto: false,
       };
     },
     updateDocument() {
@@ -196,39 +159,6 @@ export default {
           console.log(data);
         },
         auto: false,
-      };
-    },
-    rename() {
-      return {
-        url: "drive.api.files.call_controller_method",
-        method: "POST",
-        onSuccess(data) {
-          data.size_in_bytes = data.file_size;
-          data.file_size = formatSize(data.file_size);
-          data.modified = formatDate(data.modified);
-          data.creation = formatDate(data.creation);
-          data.owner =
-            data.owner === this.$store.state.auth.user_id ? "Me" : entity.owner;
-          this.$store.commit("setEntityInfo", [data]);
-          this.entity = data;
-        },
-        onError(error) {
-          if (error && error.exc_type === "FileExistsError") {
-            let getNewTitle = fetch(
-              window.location.origin +
-                `/api/method/drive.utils.files.get_new_title?entity=${this.$store.state.entityInfo[0].title}&parent_name=${this.entity.parent_drive_entity}`
-            );
-            getNewTitle
-              .then((res) => res.json())
-              .then((data) => {
-                this.$resources.rename.submit({
-                  method: "rename",
-                  entity_name: this.entityName,
-                  new_title: data.message,
-                });
-              });
-          }
-        },
       };
     },
     getDocument() {
@@ -258,20 +188,6 @@ export default {
         auto: false,
       };
     },
-    /*     Document() {
-      return {
-        type: "document",
-        doctype: "Drive Document",
-        name: this.document,
-        auto: false,
-        realtime: true,
-        whitelistedMethods: {
-          submitVote: "submit_vote",
-          stopPoll: "stop_poll",
-          retractVote: "retract_vote",
-        },
-      };
-    }, */
   },
 };
 </script>
