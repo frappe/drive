@@ -1146,3 +1146,32 @@ def search(query):
     GROUP  BY `tabDrive Entity`.`name` 
     """, as_dict=1)
     return result
+
+
+@frappe.whitelist()
+def generate_upward_path(entity_name):
+    """ 
+    Given an ID traverse upwards till the root node 
+    Stops when parent_drive_entity IS NULL 
+    """
+    # CONCAT_WS('/', t.title, gp.path),
+    entity_name = frappe.db.escape(entity_name)
+    return frappe.db.sql(f"""
+        WITH RECURSIVE generated_path as ( 
+        SELECT 
+            `tabDrive Entity`.title as path,
+            `tabDrive Entity`.name,
+            `tabDrive Entity`.parent_drive_entity
+        FROM `tabDrive Entity` 
+        WHERE `tabDrive Entity`.name = {entity_name}
+
+        UNION ALL
+
+        SELECT 
+            t.title,
+            t.name,
+            t.parent_drive_entity
+        FROM generated_path as gp
+        JOIN `tabDrive Entity` as t ON t.name = gp.parent_drive_entity) 
+        SELECT * FROM generated_path;
+    """, as_dict=1)
