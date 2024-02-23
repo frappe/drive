@@ -3,7 +3,7 @@ import os
 import re
 import json
 from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
-from pypika import Order, Table, Case, Field, functions as fn
+from pypika import Order, Case, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -1115,3 +1115,34 @@ def move(entity_names, new_parent=None):
         doc.inherit_permissions()
         doc.save()
     return
+
+@frappe.whitelist()
+def search(query):
+    """ 
+    Placeholder search implementation 
+    """
+    text = frappe.db.escape(query + '*')
+    user = frappe.db.escape(frappe.session.user())
+    result = frappe.db.sql(f"""
+    SELECT  `tabDrive Entity`.name,
+            `tabDrive Entity`.title, 
+            `tabDrive Entity`.owner,
+            `tabDrive Entity`.mime_type,
+            `tabDrive Entity`.is_group,
+            `tabDrive Entity`.document,
+            `tabDrive Entity`.color
+    FROM `tabDrive Entity`
+    LEFT JOIN `tabDrive DocShare`
+    ON `tabDrive DocShare`.`share_name` = `tabDrive Entity`.`name`
+    LEFT JOIN `tabUser Group Member`
+    ON `tabUser Group Member`.`parent` = `tabDrive DocShare`.`user_name`
+    LEFT JOIN `tabUser` ON `tabDrive Entity`.`owner` = `tabUser`.`email`
+    WHERE (`tabUser Group Member`.`user` = {user} 
+            OR `tabDrive DocShare`.`user_name` = {user} 
+            OR `tabDrive DocShare`.`everyone` = 1 
+            OR `tabDrive Entity`.`owner` = {user})
+        AND `tabDrive Entity`.`is_active` = 1
+        AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
+    GROUP  BY `tabDrive Entity`.`name` 
+    """, as_dict=1)
+    return result
