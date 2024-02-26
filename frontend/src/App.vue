@@ -5,6 +5,9 @@
     @contextmenu="handleDefaultContext($event)">
     <!-- Main container with scroll -->
     <div class="h-full w-full flex flex-col">
+      <SearchPopup
+        v-if="isLoggedIn && showSearchPopup"
+        v-model="showSearchPopup" />
       <div
         v-if="isLoggedIn || $route.meta.isHybridRoute"
         class="flex flex-col h-full overflow-hidden sm:flex-row">
@@ -77,6 +80,7 @@ export default {
     return {
       isOpen: false,
       showMobileSidebar: false,
+      showSearchPopup: false,
     };
   },
   computed: {
@@ -93,12 +97,30 @@ export default {
       return this.isLoggedIn && this.$store.state.uploads.length > 0;
     },
   },
+  mounted() {
+    this.addKeyboardShortcut();
+    this.emitter.on("showSearchPopup", (data) => {
+      this.showSearchPopup = data;
+    });
+  },
   methods: {
     handleDefaultContext(event) {
       return this.$route.meta.documentPage ? null : event.preventDefault();
     },
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents");
+    },
+    addKeyboardShortcut() {
+      window.addEventListener("keydown", (e) => {
+        if (
+          e.key === "k" &&
+          (e.ctrlKey || e.metaKey) &&
+          !e.target.classList.contains("ProseMirror")
+        ) {
+          this.showSearchPopup = true;
+          e.preventDefault();
+        }
+      });
     },
   },
 };
