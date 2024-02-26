@@ -40,20 +40,7 @@ export default {
       beforeUnmountSaveDone: false,
     };
   },
-  watch: {
-    globalStoreTitle: {
-      handler(newVal) {
-        this.$resources.rename.submit({
-          entity_name: this.entityName,
-          new_title: newVal,
-        });
-      },
-    },
-  },
   computed: {
-    globalStoreTitle() {
-      return this.$store.state.entityInfo[0].title;
-    },
     titleVal() {
       return this.title ? this.title : this.oldTitle;
     },
@@ -140,12 +127,6 @@ export default {
     clearInterval(this.timer);
   },
   resources: {
-    rename() {
-      return {
-        url: "drive.api.files.passive_rename",
-        debounce: 250,
-      };
-    },
     updateDocument() {
       return {
         url: "drive.api.files.save_doc",

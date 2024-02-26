@@ -459,6 +459,10 @@ export default {
     if (this.originalTitle.includes("Untitled Document")) {
       if (content.length) {
         this.$store.state.entityInfo[0].title = content;
+        this.$resources.rename.submit({
+          entity_name: this.entityName,
+          new_title: content,
+        });
       } else {
         this.$store.state.entityInfo[0].title = this.originalTitle;
       }
@@ -735,6 +739,14 @@ export default {
         this.editor.chain().setComment(commentWithUuid).run();
         this.commentText = "";
       }
+    },
+  },
+  resources: {
+    rename() {
+      return {
+        url: "drive.api.files.passive_rename",
+        debounce: 250,
+      };
     },
   },
 };
