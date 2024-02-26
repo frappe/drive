@@ -1126,7 +1126,7 @@ def search(query):
     Placeholder search implementation 
     """
     text = frappe.db.escape(query + '*')
-    user = frappe.db.escape(frappe.session.user())
+    user = frappe.db.escape(frappe.session.user)
     result = frappe.db.sql(f"""
     SELECT  `tabDrive Entity`.name,
             `tabDrive Entity`.title, 
