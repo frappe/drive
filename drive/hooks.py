@@ -70,7 +70,7 @@ home_page = "drive"
 # ------------
 
 # before_install = "drive.install.before_install"
-# after_install = "drive.install.after_install"
+after_install = "drive.install.after_install"
 
 # Uninstallation
 # ------------
