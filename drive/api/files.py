@@ -608,6 +608,107 @@ def list_owned_entities(
             i["item_count"] = child_count
     return result
 
+@frappe.whitelist()
+def list_trashed_entities(
+    entity_name=None, order_by="modified", is_active=True, limit=100, offset=0
+):
+    """
+    Return list of DriveEntity records present in this folder
+
+    :param entity_name: Document-name of the folder whose contents are to be listed. Defaults to the user directory
+    :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
+    :raises NotADirectoryError: If this DriveEntity doc is not a folder
+    :raises PermissionError: If the user does not have access to the specified folder
+    :return: List of DriveEntity records
+    :rtype: list
+    """
+    is_active = json.loads(is_active)
+    try:
+        entity_name = entity_name or get_user_directory().name
+    except FileNotFoundError:
+        return []
+    parent_is_group, parent_is_active, parent_owner = frappe.db.get_value(
+        "Drive Entity", entity_name, ["is_group", "is_active", "owner"]
+    )
+    if not parent_is_group:
+        frappe.throw("Specified entity is not a folder", NotADirectoryError)
+    if not parent_is_active:
+        frappe.throw("Specified folder has been trashed by the owner")
+    if not frappe.session.user == parent_owner:
+        frappe.throw("Not permitted")
+    if not frappe.has_permission(
+        doctype="Drive Entity", doc=entity_name, ptype="write", user=frappe.session.user
+    ):
+        frappe.throw(
+            "Not permitted to read",
+            frappe.PermissionError,
+        )
+
+    # entity_ancestors = get_ancestors_of("Drive Entity", entity_name)
+    # flag = False
+    # for z_entity_name in entity_ancestors:
+    #    result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})
+    #    if result:
+    #        flag = True
+    #        break
+    # if flag == True:
+    #    frappe.throw("Parent Folder has been deleted")
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    DriveUser = frappe.qb.DocType("User")
+    DriveFavourite = frappe.qb.DocType("Drive Favourite")
+    selectedFields = [
+        DriveEntity.name,
+        DriveEntity.title,
+        DriveEntity.is_group,
+        DriveEntity.owner,
+        DriveUser.full_name,
+        DriveUser.user_image,
+        DriveEntity.modified,
+        DriveEntity.creation,
+        DriveEntity.file_size,
+        DriveEntity.file_ext,
+        DriveEntity.color,
+        DriveEntity.document,
+        DriveEntity.mime_type,
+        DriveEntity.parent_drive_entity,
+        DriveEntity.allow_download,
+        DriveEntity.allow_comments,
+        DriveEntity.is_active,
+        DriveFavourite.entity.as_("is_favourite"),
+    ]
+
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .left_join(DriveFavourite)
+        .on(
+            (DriveFavourite.entity == DriveEntity.name)
+            & (DriveFavourite.user == frappe.session.user)
+        )
+        .left_join(DriveUser)
+        .on((DriveEntity.owner == DriveUser.email))
+        .offset(offset)
+        .limit(limit)
+        .select(*selectedFields)
+        .where(
+            (DriveEntity.is_active == is_active)
+        )
+        .groupby(DriveEntity.name)
+        .orderby(
+            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Order.desc,
+        )
+        .orderby(
+            order_by.split()[0],
+            order=Order.desc if order_by.endswith("desc") else Order.asc,
+        )
+    )
+    result = query.run(as_dict=True)
+    for i in result:
+        if i.is_group:
+            child_count = get_children_count(i.name)
+            i["item_count"] = child_count
+    return result
+
 
 def get_entity(entity_name, fields=None):
     """

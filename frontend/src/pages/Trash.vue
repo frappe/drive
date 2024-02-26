@@ -1,6 +1,6 @@
 <template>
   <PageGeneric
-    url="drive.api.files.list_owned_entities"
+    url="drive.api.files.list_trashed_entities"
     :allowEmptyContextMenu="false"
     :isActive="false"
     :showSort="true"
