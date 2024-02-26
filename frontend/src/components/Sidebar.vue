@@ -9,26 +9,53 @@
     <div class="py-1">
       <UserDropdown />
       <div ondragstart="return false;" ondrop="return false;" class="p-3">
-        <router-link
-          v-for="item in sidebarItems"
-          :key="item.label"
-          v-slot="{ href, navigate }"
-          :to="item.route">
-          <a
-            class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-2 rounded focus:outline-none"
-            :class="[
-              item.highlight()
-                ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
-                : ' hover:bg-gray-100',
-            ]"
-            :href="href"
-            @click="navigate && $emit('toggleMobileSidebar')">
-            <FeatherIcon
-              :name="item.icon"
-              class="stroke-1.5 self-center w-4 h-4 text-gray-800" />
-            <span v-if="isExpanded" class="self-center">{{ item.label }}</span>
-          </a>
-        </router-link>
+        <div v-for="item in sidebarItems">
+          <router-link
+            v-if="item.route"
+            :key="item.label"
+            v-slot="{ href, navigate }"
+            :to="item.route">
+            <a
+              class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-2 rounded focus:outline-none"
+              :class="[
+                item.highlight()
+                  ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
+                  : ' hover:bg-gray-100',
+              ]"
+              :href="href"
+              @click="navigate && $emit('toggleMobileSidebar')">
+              <FeatherIcon
+                :name="item.icon"
+                class="stroke-1.5 self-center w-4 h-4 text-gray-800" />
+              <span v-if="isExpanded" class="self-center">
+                {{ item.label }}
+              </span>
+            </a>
+          </router-link>
+          <div v-else>
+            <button
+              @click="item.action"
+              class="sidebar-animate flex justify-start items-center text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-2 rounded focus:outline-none"
+              :class="[
+                item.highlight()
+                  ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
+                  : ' hover:bg-gray-100',
+              ]">
+              <FeatherIcon
+                :name="item.icon"
+                class="stroke-1.5 self-center w-4 h-4 text-gray-800" />
+              <template v-if="isExpanded">
+                <span class="self-center">{{ item.label }}</span>
+                <span
+                  class="ml-auto text-sm text-gray-500"
+                  v-if="getPlatform === 'mac'">
+                  ⌘K
+                </span>
+                <span class="ml-auto text-sm text-gray-500" v-else>Ctrl+K</span>
+              </template>
+            </button>
+          </div>
+        </div>
         <!--  <span
       class="mt-auto w-[256px] h-7 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center">
       <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
@@ -46,7 +73,7 @@ import { FeatherIcon } from "frappe-ui";
 export default {
   name: "Sidebar",
   components: { FeatherIcon, UserDropdown },
-  emits: ["toggleMobileSidebar"],
+  emits: ["toggleMobileSidebar", "showSearchPopUp"],
   data() {
     return {
       sidebarResizing: false,
@@ -65,14 +92,24 @@ export default {
         return this.currentSideBarWidth = val
       }
     }, */
+    getPlatform() {
+      let ua = navigator.userAgent.toLowerCase();
+      if (ua.indexOf("win") > -1) {
+        return "win";
+      } else if (ua.indexOf("mac") > -1) {
+        return "mac";
+      } else if (ua.indexOf("x11") > -1 || ua.indexOf("linux") > -1) {
+        return "linux";
+      }
+    },
     sidebarItems() {
       return [
-        /*  {
+        {
           label: "Search",
-          route: () => {},
+          action: () => this.emitter.emit("showSearchPopup", true),
           icon: "search",
           highlight: () => {},
-        }, */
+        },
         {
           label: "Home",
           route: "/home",
@@ -120,7 +157,6 @@ export default {
   },
   methods: {
     toggleExpanded() {
-      console.log("test");
       return this.$store.commit(
         "setIsSidebarExpanded",
         this.isExpanded ? false : true
