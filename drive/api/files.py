@@ -134,6 +134,10 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
     with save_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
         f.write(file.stream.read())
+        if not f.tell() >= int(frappe.form_dict.total_file_size):
+            return
+        else:
+            pass
 
     if current_chunk + 1 == total_chunks:
         file_size = save_path.stat().st_size
