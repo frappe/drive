@@ -683,7 +683,7 @@ export default {
   mounted() {
     this.fetchNextPage();
     this.emitter.on("fetchFolderContents", () => {
-      this.$resources.folderContents.fetch();
+      this.handleListMutation();
     });
     this.emitter.on("showCTADelete", () => {
       this.clearAll = true;

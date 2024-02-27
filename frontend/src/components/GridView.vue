@@ -11,11 +11,9 @@
     class="h-full flex flex-col overflow-y-auto mt-2 px-4 pb-8"
     @mousedown="(event) => handleMousedown(event)">
     <slot name="toolbar"></slot>
-    <div
-      v-if="folders.length > 0"
-      :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
-      <div class="text-gray-600 font-medium">Folders</div>
-      <div class="flex flex-row flex-wrap gap-4 mt-4">
+    <div v-if="folders.length > 0">
+      <div class="text-gray-600 font-medium mt-3">Folders</div>
+      <div class="flex flex-row flex-wrap gap-4 mt-2">
         <div
           v-for="folder in folders"
           :id="folder.name"
@@ -373,18 +371,19 @@ export default {
     },
 
     async onDrop(newParent) {
+      console.log(newParent);
       for (let i = 0; i < this.selectedEntities.length; i++) {
         if (this.selectedEntities[i].name === newParent.name) {
           continue;
         }
+        console.log(this.selectedEntities[i].title);
         await this.$resources.moveEntity.submit({
           method: "move",
           entity_name: this.selectedEntities[i].name,
           new_parent: newParent.name,
         });
       }
-      this.deselectAll();
-      this.$emit("fetchFolderContents");
+      this.emitter.emit("fetchFolderContents");
     },
   },
   resources: {
@@ -394,8 +393,6 @@ export default {
         method: "POST",
         params: {
           method: "move",
-          entity_name: "entity name",
-          new_parent: "new entity parent",
         },
         validate(params) {
           if (!params?.new_parent) {

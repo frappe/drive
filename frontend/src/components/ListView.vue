@@ -391,7 +391,7 @@ export default {
         });
       }
       this.deselectAll();
-      this.$emit("fetchFolderContents");
+      this.emitter.emit("fetchFolderContents");
     },
     isGroupOnDrop(entity) {
       return entity.is_group ? this.onDrop(entity) : null;
