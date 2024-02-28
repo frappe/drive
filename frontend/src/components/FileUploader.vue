@@ -96,7 +96,7 @@ onMounted(() => {
     url: "/api/method/drive.api.files.upload_file",
     maxFilesize: 10 * 1024, // 10GB
     timeout: 120000, // 2 minutes
-    chunkSize: 5 * 1024 * 1024, // 5MB
+    chunkSize: 20 * 1024 * 1024, // 20MB
     headers: {
       "X-Frappe-CSRF-Token": window.csrf_token,
       Accept: "application/json",
@@ -122,7 +122,6 @@ onMounted(() => {
       } else if (file.fullPath) {
         formData.append("fullpath", file.fullPath);
       }
-      console.log(formData);
     },
     params: function (files, xhr, chunk) {
       if (chunk) {
@@ -164,6 +163,7 @@ onMounted(() => {
   dropzone.value.on("queuecomplete", function (file) {
     dropzone.value.files = [];
     computedFullPath.value = "";
+    console.log("FIRE");
     emitter.emit("fetchFolderContents");
   });
 
