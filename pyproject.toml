@@ -1,7 +1,7 @@
 [project]
 name = "drive"
 authors = [
-    { name = "Frappe Technologies Pvt Ltd", email = "developers@frappe.io"}
+    { name = "Frappe Technologies Pvt Ltd", email = "developers@frappe.io" },
 ]
 description = "An easy to use, document sharing and management solution."
 requires-python = ">=3.10"
@@ -28,3 +28,12 @@ force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
 indent = "\t"
+
+# press reads this on install
+[deploy.dependencies.apt]
+packages = [
+    # ffmpeg and essential deps
+    "ffmpeg",
+    "libsm6",
+    "libxext6",
+]
