@@ -4,13 +4,13 @@
       <div class="flex items-center gap-1 justify-start w-full">
         <span class="font-semibold text-2xl">Sharing</span>
         <div
-          class="inline-flex items-center justify-center gap-0.5 transition-colors focus:outline-none text-gray-800 bg-white border border-gray-300 h-7 text-base ml-0.5 rounded px-1">
+          class="grid grid-flow-col items-center justify-start gap-0.5 transition-colors text-gray-800 bg-white border truncate border-gray-300 h-7 text-base ml-0.5 rounded px-1 max-w-[80%] overflow-hidden">
           <Folder
             class="h-4 w-4 stroke-[1.5] text-gray-900"
             v-if="$resources.entity.data?.is_group" />
           <File class="h-4 w-4 stroke-[1.5] text-gray-900" v-else />
           <span
-            class="font-medium text-base text-gray-800 line-clamp-1 truncate max-w-[90%]">
+            class="font-medium text-base text-gray-800 line-clamp-1 truncate">
             {{ $resources.entity.data?.title }}
           </span>
         </div>
