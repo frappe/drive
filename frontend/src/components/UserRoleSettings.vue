@@ -1,29 +1,16 @@
 <template>
   <div
     class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center">
-    <h1 class="font-semibold mb-1 text-xl">User Groups</h1>
-    <span class="text-sm py-1 mb-8 text-gray-600">
-      Create and manage user groups
-    </span>
-    <!-- <span class="text-lg font-medium">Organization Settings</span>
-    <div class="flex justify-between w-full pt-4 pb-8">
+    <div class="flex items-center w-full mb-1">
       <div class="flex flex-col items-start">
-        <span class="text-base font-medium">Name</span>
-        <span class="text-sm py-1 text-gray-600">
-          All Drive users on this instance are a part of this
+        <h1 class="font-semibold">User Groups</h1>
+        <span class="text-sm py-1 mb-4 text-gray-600">
+          Create and manage user groups
         </span>
       </div>
-      <Button class="font-medium text-gray-800" appearance="minimal">
-        <template #prefix>
-          <FeatherIcon name="edit" class="text-gray-800 stroke-1.5 h-4" />
-        </template>
-        Frappe
-      </Button>
-    </div> -->
-    <div class="flex items-center w-full mb-1">
-      <span class="text-base font-medium">Groups</span>
       <Button
-        variant="solid"
+        size="sm"
+        variant="subtle"
         icon-left="plus"
         class="ml-auto"
         @click="CreateRoleDialog = !CreateRoleDialog">
@@ -31,13 +18,16 @@
       </Button>
     </div>
 
+    <div class="flex items-center w-full mb-1"></div>
+
     <div
+      v-if="AllRoles?.length"
       class="flex flex-col h-full w-full overflow-x-hidden overflow-y-scroll">
       <div
         @click="viewGroupDetails(group.name)"
         v-for="group in AllRoles"
         :key="group.name"
-        class="flex flex-col items-start content-center items-start w-full hover:bg-gray-50 rounded cursor-pointer group">
+        class="flex flex-col content-center items-start w-full hover:bg-gray-50 rounded cursor-pointer group">
         <div class="flex items-center w-full py-4 px-1">
           <Avatar size="xl" :label="group.name" />
           <span class="ml-2 text-base text-gray-900">{{ group.name }}</span>
@@ -56,12 +46,26 @@
         <div class="mx-3 h-px border-t border-gray-200 w-full"></div>
       </div>
     </div>
-    <!-- <div v-else class="h-full w-full flex flex-col items-center justify-center">
+    <div v-else class="h-1/2 w-full flex flex-col items-center justify-center">
       <FeatherIcon class="h-10 stroke-1 text-gray-600" name="users" />
-      <span class="text-gray-800 text-sm">You dont have any roles</span>
-      <span class="text-gray-700 text-xs">Create a new role</span>
+      <span class="text-gray-800 text-sm">You dont have any groups</span>
+    </div>
+    <!--     <span class="text-lg font-medium">Organization Settings</span>
+    <div class="flex justify-between w-full pt-4 pb-8">
+      <div class="flex flex-col items-start">
+        <span class="text-base font-medium">Name</span>
+        <span class="text-sm py-1 text-gray-600">
+          All Drive users on this instance are a part of this
+        </span>
+      </div>
+      <Button class="font-medium text-gray-800" appearance="minimal">
+        <template #prefix>
+          <FeatherIcon name="edit" class="text-gray-800 stroke-1.5 h-4" />
+        </template>
+        Frappe
+      </Button>
     </div> -->
-    <span class="text-xs pb-4 text-gray-600 mt-auto">
+    <span class="text-sm pb-4 text-gray-600 mt-auto">
       This page is only available to Administrators
     </span>
   </div>

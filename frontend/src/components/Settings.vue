@@ -1,7 +1,7 @@
 <template>
-  <Dialog v-model="show" :options="{ title: 'Settings', size: '5xl' }">
+  <Dialog v-model="show" :options="{ title: 'Settings', size: '3xl' }">
     <template #body>
-      <div class="flex" :style="{ height: 'calc(100vh - 8rem)' }">
+      <div class="flex" :style="{ height: 'calc(100vh - 12rem)' }">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
           <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
             Settings
@@ -24,7 +24,7 @@
             </button>
           </div>
         </div>
-        <div class="flex flex-1 flex-col px-16 pt-12">
+        <div class="flex flex-1 flex-col pl-8 pr-4 pt-12">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
         <Button
@@ -40,21 +40,27 @@
 <script>
 import { ref, defineProps, defineEmits, markRaw } from "vue";
 import { Dialog, FeatherIcon, Button } from "frappe-ui";
-import { UserCog, Users } from "lucide-vue-next";
+import { Info, UserCog, Users } from "lucide-vue-next";
 import ProfileSettings from "@/components/ProfileSettings.vue";
 import UserRoleSettings from "./UserRoleSettings.vue";
+import AboutSettings from "./AboutSettings.vue";
 
 let tabs = [
-  /*   {
+  /* {
     label: "My Profile",
     icon: UserCog,
     component: markRaw(ProfileSettings),
-  }, */
+  },  */
   {
     label: "User Groups",
     icon: Users,
     component: markRaw(UserRoleSettings),
   },
+  /*  {
+    label: "About",
+    icon: Info,
+    component: markRaw(AboutSettings),
+  },  */
 ];
 
 const emit = defineEmits(["update:modelValue"]);
