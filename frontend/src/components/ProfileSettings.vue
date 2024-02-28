@@ -7,7 +7,7 @@
     </span>
     <span class="text-base font-medium text-gray-700 mb-2">Profile</span>
     <div class="flex justify-start w-full items-center gap-2">
-      <Avatar size="5xl" :image="imageURL" :label="fullName" class="mr-8" />
+      <Avatar size="3xl" :image="imageURL" :label="fullName" class="mr-8" />
       <Input v-model="fullName" iconLeft="edit-2" />
     </div>
     <hr class="w-full mt-6 mb-4 border-1" />
@@ -44,8 +44,7 @@
   </div>
 </template>
 <script>
-import Avatar from "./CustomAvatar.vue";
-import { Button, Checkbox, Input, Switch, Dropdown } from "frappe-ui";
+import { Button, Checkbox, Input, Switch, Dropdown, Avatar } from "frappe-ui";
 
 export default {
   name: "NoFilesSection",
