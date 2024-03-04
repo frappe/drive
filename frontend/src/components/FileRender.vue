@@ -170,8 +170,12 @@ export default {
             "Previews are not supported for this file type. Would you like to download it instead?";
         }
         this.loading = false;
-      } else if (this.previewEntity.size_in_bytes > 1000 * 2048 * 2048) {
-        // Size limit = 400
+      } else if (
+        this.previewEntity.mime_type.startsWith("video") &&
+        this.previewEntity.size_in_bytes < 2000 * 1024 * 1024
+      ) {
+        this.loading = false;
+      } else if (this.previewEntity.size_in_bytes > 400 * 1024 * 1024) {
         this.error = "File is too large to preview";
         this.loading = false;
       } else {
