@@ -689,9 +689,7 @@ def list_trashed_entities(
         .offset(offset)
         .limit(limit)
         .select(*selectedFields)
-        .where(
-            (DriveEntity.is_active == is_active)
-        )
+        .where((DriveEntity.is_active == 0) & (DriveEntity.owner == frappe.session.user))
         .groupby(DriveEntity.name)
         .orderby(
             Case().when(DriveEntity.is_group == True, 1).else_(2),
@@ -1221,14 +1219,16 @@ def move(entity_names, new_parent=None):
         doc.save()
     return
 
+
 @frappe.whitelist()
 def search(query):
-    """ 
-    Placeholder search implementation 
     """
-    text = frappe.db.escape(query + '*')
+    Placeholder search implementation
+    """
+    text = frappe.db.escape(query + "*")
     user = frappe.db.escape(frappe.session.user)
-    result = frappe.db.sql(f"""
+    result = frappe.db.sql(
+        f"""
     SELECT  `tabDrive Entity`.name,
             `tabDrive Entity`.title, 
             `tabDrive Entity`.owner,
@@ -1249,19 +1249,22 @@ def search(query):
         AND `tabDrive Entity`.`is_active` = 1
         AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
     GROUP  BY `tabDrive Entity`.`name` 
-    """, as_dict=1)
+    """,
+        as_dict=1,
+    )
     return result
 
 
 @frappe.whitelist()
 def generate_upward_path(entity_name):
-    """ 
-    Given an ID traverse upwards till the root node 
-    Stops when parent_drive_entity IS NULL 
+    """
+    Given an ID traverse upwards till the root node
+    Stops when parent_drive_entity IS NULL
     """
     # CONCAT_WS('/', t.title, gp.path),
     entity_name = frappe.db.escape(entity_name)
-    return frappe.db.sql(f"""
+    return frappe.db.sql(
+        f"""
         WITH RECURSIVE generated_path as ( 
         SELECT 
             `tabDrive Entity`.title as path,
@@ -1279,4 +1282,6 @@ def generate_upward_path(entity_name):
         FROM generated_path as gp
         JOIN `tabDrive Entity` as t ON t.name = gp.parent_drive_entity) 
         SELECT * FROM generated_path;
-    """, as_dict=1)
+    """,
+        as_dict=1,
+    )
