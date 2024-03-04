@@ -308,8 +308,9 @@ let ownedFolder = createResource({
 let move = createResource({
   url: "drive.api.files.move",
   method: "POST",
+  auto: false,
   onSuccess(data) {
-    emit("success", data);
+    emit("success", store.state.entityInfo[0].name);
   },
 });
 </script>

@@ -129,9 +129,7 @@
       :entity-name="selectedEntities[0].name"
       @success="
         () => {
-          offset = 0;
-          folderItems = null;
-          handleListMutation();
+          handleListMutation(selectedEntities[0].name);
           showMoveDialog = false;
           selectedEntities = [];
         }
