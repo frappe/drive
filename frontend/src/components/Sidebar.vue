@@ -6,9 +6,9 @@
       class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
       :class="{ 'opacity-100': sidebarResizing }"
       @mousedown="startResize" />
-    <div class="py-1">
+    <div class="py-1 flex flex-col justify-items-center h-full">
       <UserDropdown />
-      <div ondragstart="return false;" ondrop="return false;" class="p-3">
+      <div ondragstart="return false;" ondrop="return false;" class="p-2.5">
         <div v-for="item in sidebarItems">
           <router-link
             v-if="item.route"
@@ -16,7 +16,7 @@
             v-slot="{ href, navigate }"
             :to="item.route">
             <a
-              class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-2 rounded focus:outline-none"
+              class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
               :class="[
                 item.highlight()
                   ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -35,7 +35,7 @@
           <div v-else>
             <button
               @click="item.action"
-              class="sidebar-animate flex justify-start items-center text-gray-800 text-sm w-full mb-1 h-7 px-2 gap-2 rounded focus:outline-none"
+              class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
               :class="[
                 item.highlight()
                   ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -56,12 +56,9 @@
             </button>
           </div>
         </div>
-        <!--  <span
-      class="mt-auto w-[256px] h-7 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center">
-      <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
-      Used :
-      {{ $resources.getRootFolderSize.data + "B" }}
-    </span> -->
+      </div>
+      <div class="mt-auto">
+        <PrimaryDropDown />
       </div>
     </div>
   </div>
@@ -69,10 +66,11 @@
 <script>
 import UserDropdown from "@/components/UserDropdown.vue";
 import { FeatherIcon } from "frappe-ui";
+import PrimaryDropDown from "./PrimaryDropdown.vue";
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon, UserDropdown },
+  components: { FeatherIcon, UserDropdown, PrimaryDropDown },
   emits: ["toggleMobileSidebar", "showSearchPopUp"],
   data() {
     return {
@@ -104,12 +102,6 @@ export default {
     },
     sidebarItems() {
       return [
-        {
-          label: "Search",
-          action: () => this.emitter.emit("showSearchPopup", true),
-          icon: "search",
-          highlight: () => {},
-        },
         {
           label: "Home",
           route: "/home",
@@ -151,6 +143,12 @@ export default {
           highlight: () => {
             return this.$store.state.currentBreadcrumbs[0].label === "Trash";
           },
+        },
+        {
+          label: "Search",
+          action: () => this.emitter.emit("showSearchPopup", true),
+          icon: "search",
+          highlight: () => {},
         },
       ];
     },

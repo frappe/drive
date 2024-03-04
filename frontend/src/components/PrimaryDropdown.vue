@@ -1,16 +1,27 @@
 <template>
-  <button
-    class="flex items-center rounded-md text-left px-3 mt-2"
-    :style="{
-      width: isExpanded ? '250px' : 'auto',
-    }">
-    <FrappeDriveLogo class="w-8.5 h-8.5 rounded" />
-    <div v-if="isExpanded" class="ml-2 flex flex-col">
-      <div class="text-base font-medium text-gray-900 leading-none">
-        Frappe Drive
-      </div>
-    </div>
-  </button>
+  <Dropdown :options="settingsItems">
+    <template v-slot="{ open }">
+      <button
+        class="flex items-center rounded-md text-left ml-[1px] px-3 py-1.5 hover:bg-gray-200"
+        :style="{
+          width: isExpanded ? '250px' : 'auto',
+        }">
+        <Avatar :image="imageURL" size="xl" :label="fullName" />
+        <div v-if="isExpanded" class="ml-2 flex flex-col">
+          <div class="text-base font-medium text-gray-900 leading-none">
+            {{ fullName }}
+          </div>
+          <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
+            {{ isAdmin ? "Drive Admin" : "Drive User" }}
+          </div>
+        </div>
+        <FeatherIcon
+          v-if="isExpanded"
+          name="chevron-up"
+          class="ml-auto hidden h-4 w-4 sm:inline" />
+      </button>
+    </template>
+  </Dropdown>
   <Settings v-if="showSettings" v-model="showSettings" />
 </template>
 <script>
@@ -19,13 +30,14 @@ import Settings from "@/components/Settings.vue";
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 
 export default {
-  name: "UserDropdown",
+  name: "PrimaryDropdown",
   components: {
     Dropdown,
     FeatherIcon,
     Avatar,
     Settings,
     FrappeDriveLogo,
+    Avatar,
   },
   data: () => ({
     showSettings: false,
@@ -51,6 +63,14 @@ export default {
     settingsItems() {
       if (this.$resources.isAdmin?.data) {
         return [
+          {
+            icon: "grid",
+            label: "Switch to Desk",
+            route: "/workspace",
+            highlight: () => {
+              return this.$route.fullPath.endsWith("/workspace");
+            },
+          },
           {
             icon: "settings",
             label: "Settings",
