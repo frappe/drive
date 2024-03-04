@@ -396,7 +396,7 @@ export default {
           user: {
             name: this.currentUserName,
             avatar: this.currentUserImage,
-            color: this.getRandomColor(),
+            color: this.RndColor(),
           },
         }),
         LineHeight,
@@ -633,19 +633,18 @@ export default {
         this.showCommentMenu = false;
       }
     },
-    getRandomColor() {
-      const list = [
-        "#e11d48",
-        "#20C1F4",
-        "#2374D2",
-        "#fbbf24",
-        "#79AC78",
-        "#EF7323",
-        "#FF90BC",
-        "#527853",
-        "#8DDFCB",
-      ];
-      return list[Math.floor(Math.random() * list.length)];
+    RndColor() {
+      const max = 255;
+      const min = 100;
+      const range = max - min;
+      const red = Math.floor(Math.random() * range) + min;
+      const green = Math.floor(Math.random() * range) + min;
+      const blue = Math.floor(Math.random() * range) + min;
+      const redToHex = red.toString(16);
+      const greenToHex = green.toString(16);
+      const blueToHex = blue.toString(16);
+      const rgbValue = "rgb(" + red + "," + green + "," + blue + ")";
+      return "#" + redToHex + greenToHex + blueToHex;
     },
     discardComment() {
       this.commentText = "";
@@ -851,14 +850,15 @@ span[data-comment] {
 }
 /* Render the username above the caret */
 .collaboration-cursor__label {
-  border-radius: 50px;
-  color: #000000a2;
-  font-size: 0.8rem;
+  border-radius: 60px;
+  border: 2px solid #0000001a;
+  color: #ffffffdf;
+  font-size: 0.65rem;
   font-style: normal;
   font-family: "Inter";
-  font-weight: 600;
+  font-weight: 500;
   line-height: normal;
-  padding: 0.05rem 0.5rem 0.1rem 0.5rem;
+  padding: 0.1rem 0.25rem;
   position: absolute;
   top: -1.5em;
   left: 0.25em;
