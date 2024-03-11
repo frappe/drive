@@ -89,6 +89,25 @@ def create_document_entity(title, content, parent=None):
     drive_entity.save()
     return drive_entity
 
+def create_uploads_directory(user=None):
+    user_directory_name = get_user_directory(user).name
+    user_directory_uploads_path = Path(
+        frappe.get_site_path("private/files"), user_directory_name, "uploads"
+    )
+    user_directory_uploads_path.mkdir(exist_ok=True)
+    return user_directory_uploads_path
+
+def get_user_uploads_directory (user=None):
+    user_directory_name = get_user_directory(user).name
+    user_directory_uploads_path = Path(
+        frappe.get_site_path("private/files"), user_directory_name, "uploads"
+    )
+    if not os.path.exists(user_directory_uploads_path):
+        try:
+            user_directory_uploads_path = create_uploads_directory()
+        except FileNotFoundError:
+            user_directory_uploads_path = create_uploads_directory()
+    return user_directory_uploads_path
 
 @frappe.whitelist()
 def upload_file(fullpath=None, parent=None, last_modified=None):
@@ -121,17 +140,16 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
     file = frappe.request.files["file"]
+    upload_session = frappe.form_dict.uuid
     title = get_new_title(file.filename, parent)
 
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
+    temp_path = Path(get_user_uploads_directory(user=frappe.session.user)) / f"{upload_session}_{secure_filename(title)}"  
 
-    if current_chunk == 0 and save_path.exists():
-        frappe.throw(f"File '{title}' already exists", FileExistsError)
-
-    with save_path.open("ab") as f:
+    with temp_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
         f.write(file.stream.read())
         if not f.tell() >= int(frappe.form_dict.total_file_size):
@@ -140,12 +158,13 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
             pass
 
     if current_chunk + 1 == total_chunks:
-        file_size = save_path.stat().st_size
+        file_size = temp_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
-            save_path.unlink()
+            temp_path.unlink()
             frappe.throw("Size on disk does not match specified filesize", ValueError)
-
-        mime_type, _ = mimetypes.guess_type(save_path)
+        else:
+            os.rename(temp_path, save_path)
+        mime_type, _ = mimetypes.guess_type(temp_path)
 
         if mime_type is None:
             # Read the first 2KB of the binary stream to determine the file type if string checking failed
