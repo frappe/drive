@@ -34,7 +34,11 @@ const loading = ref(true);
 const src = ref(
   `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
 );
-const type = ref("video/mp4");
+const type = ref(
+  props.previewEntity.mime_type === "video/quicktime"
+    ? "video/mp4"
+    : props.previewEntity.mime_type
+);
 const mediaRef = ref("");
 
 const handleMediaReady = (event) => {

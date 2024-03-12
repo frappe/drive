@@ -81,7 +81,9 @@ export default {
     isVideo() {
       return (
         this.previewEntity.mime_type === "video/mp4" ||
-        this.previewEntity.mime_type === "video/webm"
+        // Gamble that its a valid h264/h265 for now
+        this.previewEntity.mime_type === "video/webm" ||
+        this.previewEntity.mime_type === "video/quicktime"
       );
     },
     isFrappeDoc() {
