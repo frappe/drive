@@ -56,6 +56,7 @@ let currentFolder = createResource({
         label: data.title,
         route: `/folder/${props.entityName}`,
       });
+      store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
     }
     data.item_count
       ? (data.file_size = data.item_count + " items")
