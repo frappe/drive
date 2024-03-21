@@ -2,7 +2,9 @@
   <Dialog v-model="open" :options="{ title: dialogData.title, size: 'sm' }">
     <template #body-content>
       <div class="flex items-center justify-start">
-        <p class="text-base text-gray-600">{{ dialogData.message }}</p>
+        <p class="text-base text-gray-600 leading-5">
+          {{ dialogData.message }}
+        </p>
       </div>
       <ErrorMessage class="my-1" :message="errorMessage" />
       <div class="flex mt-5">
