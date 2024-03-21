@@ -125,7 +125,14 @@
                     <div>{{ entity.file_size }}</div>
                     <div>{{ entity.modified }}</div>
                     <div>{{ entity.creation }}</div>
-                    <div>{{ entity.owner }}</div>
+                    <div class="flex items-center">
+                      <Avatar
+                        :image="entity.user_image"
+                        :label="entity.full_name"
+                        class="relative mr-2"
+                        size="sm" />
+                      <span>{{ entity.full_name }}</span>
+                    </div>
                   </div>
                 </div>
               </div>

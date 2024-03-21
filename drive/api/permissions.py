@@ -297,6 +297,7 @@ def get_entity_with_permissions(entity_name):
             frappe.throw("Not permitted", frappe.PermissionError)
 
     entity = get_entity(entity_name, fields)
+    owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True)
     if frappe.session.user != "Guest":
         if not entity.is_group:
             mark_as_viewed(entity_name)
@@ -317,18 +318,17 @@ def get_entity_with_permissions(entity_name):
     if entity.owner == frappe.session.user:
         if entity.document:
             entity_doc_content = get_doc_content(entity.document)
-            return entity | entity_doc_content
+            return entity | entity_doc_content | owner_info
         if entity.is_group:
             child_count = get_children_count(entity.name)
             entity["item_count"] = child_count
-        return entity
+        return entity | owner_info
     user_access = get_user_access(entity.name)
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
-        return entity | user_access | entity_doc_content
-    # print(user_access)
+        return entity | user_access | entity_doc_content | owner_info
     # Avoiding marking folders as recently viewed
-    return entity | user_access
+    return entity | user_access | owner_info
 
 
 @frappe.whitelist()
