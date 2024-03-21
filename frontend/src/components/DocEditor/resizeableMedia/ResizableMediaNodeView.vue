@@ -262,18 +262,20 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
       :inertia="true"
       :show="false"
       :delay="150">
-      <div class="w-fit flex relative">
+      <div
+        class="w-fit flex relative hover:shadow-xl cursor-pointer rounded-sm"
+        draggable="true"
+        data-drag-handle>
         <img
           v-if="mediaType === 'img'"
           v-bind="node.attrs"
           ref="resizableImg"
           class="rounded-sm"
+          draggable="false"
           :class="[
             `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
             `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
-          ]"
-          draggable="true"
-          data-drag-handle />
+          ]" />
 
         <video
           v-else-if="mediaType === 'video'"
@@ -284,10 +286,9 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
             `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
             `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
           ]"
-          draggable="true"
           controls="true"
-          controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture"
-          data-drag-handle>
+          draggable="false"
+          controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture">
           <source :src="node.attrs.src" />
         </video>
 

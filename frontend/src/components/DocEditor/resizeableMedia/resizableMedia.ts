@@ -26,6 +26,7 @@ export interface MediaOptions {
   // inline: boolean, // we have floating support, so block is good enough
   // allowBase64: boolean, // we're not going to allow this
   HTMLAttributes: Record<string, any>;
+  uploadFn: UploadFnType;
 }
 
 export const IMAGE_INPUT_REGEX =

@@ -2,16 +2,26 @@
   <div class="hidden" />
 </template>
 <script setup>
-import { ref, onMounted, onBeforeUnmount, inject } from "vue";
+import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue";
 import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 import Dropzone from "dropzone";
 
 const store = useStore();
+const route = useRoute();
+
 const dropzone = ref();
 const computedFullPath = ref("");
-//const emitter = getCurrentInstance().appContext.config.globalProperties.emitter
 const emitter = inject("emitter");
 const uploadResponse = ref("");
+
+watch(route, (to, from) => {
+  if (to.name === "Document") {
+    dropzone.value.removeEventListeners();
+  } else {
+    dropzone.value.setupEventListeners();
+  }
+});
 
 function doesRootFolderFullPathExist(k, file_parent) {
   const url =
@@ -87,7 +97,7 @@ onMounted(() => {
     paramName: "file",
     parallelUploads: 1,
     autoProcessQueue: false,
-    clickable: "#dropzoneElement",
+    clickable: true,
     previewsContainer: "#dropzoneElement",
     uploadMultiple: false,
     chunking: true,
@@ -163,7 +173,6 @@ onMounted(() => {
   dropzone.value.on("queuecomplete", function (file) {
     dropzone.value.files = [];
     computedFullPath.value = "";
-    console.log("FIRE");
     emitter.emit("fetchFolderContents");
   });
 
