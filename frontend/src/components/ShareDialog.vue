@@ -1,286 +1,305 @@
 <template>
   <Dialog v-model="open" :options="{ size: 'md' }">
-    <template #body-title>
-      <div class="flex items-center gap-1 justify-start w-full">
-        <span class="font-semibold text-2xl">Sharing</span>
+    <template #body>
+      <div class="px-4 pb-6 pt-5 sm:px-6">
         <div
-          class="grid grid-flow-col items-center justify-start gap-0.5 transition-colors text-gray-800 bg-white border truncate border-gray-300 h-7 text-base ml-0.5 rounded px-1 max-w-[80%] overflow-hidden">
-          <Folder
-            class="h-4 w-4 stroke-[1.5] text-gray-900"
-            v-if="$resources.entity.data?.is_group" />
-          <File class="h-4 w-4 stroke-[1.5] text-gray-900" v-else />
-          <span
-            class="font-medium text-base text-gray-800 line-clamp-1 truncate">
-            {{ $resources.entity.data?.title }}
-          </span>
-        </div>
-      </div>
-    </template>
-    <template #body-content>
-      <div class="mb-5">
-        <div class="flex flex-row">
-          <FeatherIcon
-            v-if="generalAccess.public"
-            name="globe"
-            :stroke-width="1.5"
-            class="h-5 text-red-500 my-auto mr-2" />
-
-          <Building2
-            v-if="generalAccess.everyone"
-            name="building"
-            :stroke-width="1.5"
-            class="h-5 text-blue-600 my-auto mr-2" />
-
-          <FeatherIcon
-            v-if="
-              (generalAccess.everyone == false) &
-              (generalAccess.public == false)
-            "
-            name="lock"
-            :stroke-width="1.5"
-            class="h-5 text-gray-600 my-auto mr-2" />
-
-          <Popover transition="default">
-            <template #target="{ togglePopover }">
-              <Button appearance="minimal" @click="togglePopover()">
-                <template #suffix>
-                  <ChevronsUpDown class="w-4" />
-                </template>
-                {{
-                  generalAccess.public
-                    ? "Public Access"
-                    : generalAccess.everyone
-                    ? "Organization Access"
-                    : "Restricted Access"
-                }}
+          class="flex items-center gap-1 items-center justify-between w-full mb-6">
+          <div class="flex items-center">
+            <span class="font-semibold text-2xl">Sharing</span>
+            <div
+              class="grid grid-flow-col items-center justify-start gap-0.5 transition-colors text-gray-800 bg-white border truncate border-gray-300 h-7 text-base ml-0.5 rounded px-1 max-w-[80%] overflow-hidden">
+              <Folder
+                class="h-4 w-4 stroke-[1.5] text-gray-900"
+                v-if="$resources.entity.data?.is_group" />
+              <File class="h-4 w-4 stroke-[1.5] text-gray-900" v-else />
+              <span
+                class="font-medium text-base text-gray-800 line-clamp-1 truncate">
+                {{ $resources.entity.data?.title }}
+              </span>
+            </div>
+          </div>
+          <div class="flex">
+            <Tooltip
+              :text="showAdvanced ? 'Go back' : 'Advanced sharing settings'">
+              <Button variant="minimal" @click="showAdvanced = !showAdvanced">
+                <FeatherIcon
+                  :name="showAdvanced ? 'arrow-left' : 'settings'"
+                  class="stroke-2 h-3.5" />
               </Button>
-            </template>
-            <template #body-main="{ togglePopover }">
-              <div class="flex flex-col p-1">
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
-                  variant="ghost"
-                  @click="
-                    generalAccess.read = false;
-                    generalAccess.everyone = false;
-                    generalAccess.public = false;
-                    generalAccess.share = false;
-                    togglePopover();
-                  ">
-                  Restricted Access
-                  <Check v-if="!generalAccess.read" class="h-4" />
-                </div>
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
-                  variant="ghost"
-                  @click="
-                    generalAccess.read = true;
-                    generalAccess.everyone = true;
-                    generalAccess.public = false;
-                    generalAccess.share = false;
-                    togglePopover();
-                  ">
-                  Organization Access
-                  <Check v-if="generalAccess.everyone" class="h-4" />
-                </div>
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
-                  variant="ghost"
-                  @click="
-                    generalAccess.read = true;
-                    generalAccess.everyone = false;
-                    generalAccess.public = true;
-                    generalAccess.share = false;
-                    togglePopover();
-                  ">
-                  Public Access
-                  <Check v-if="generalAccess.public" class="h-4" />
-                </div>
-              </div>
-            </template>
-          </Popover>
-          <div v-if="generalAccess.read" class="flex ml-auto my-auto">
-            <Popover transition="default">
-              <template #target="{ togglePopover }">
-                <Button appearance="minimal" @click="togglePopover()">
-                  <template #suffix>
-                    <ChevronsUpDown class="w-4" />
-                  </template>
-                  {{ generalAccess.write ? "Can edit" : "Can view" }}
-                </Button>
-              </template>
-              <template #body-main="{ togglePopover }">
-                <div class="flex flex-col p-1">
-                  <div
-                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                    @click="
-                      generalAccess.read = true;
-                      generalAccess.write = false;
-                      togglePopover();
-                    ">
-                    Can view
-                    <Check
-                      v-if="generalAccess.read && !generalAccess.write"
-                      class="h-4 ml-2" />
-                  </div>
-                  <div
-                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                    @click="
-                      generalAccess.read = true;
-                      generalAccess.write = true;
-                      togglePopover();
-                    ">
-                    Can edit
-                    <Check v-if="generalAccess.write" class="h-4 ml-2" />
-                  </div>
-                </div>
-              </template>
-            </Popover>
+            </Tooltip>
+            <Button
+              variant="minimal"
+              @click="$emit('update:modelValue', false)">
+              <FeatherIcon name="x" class="stroke-2 h-4" />
+            </Button>
           </div>
         </div>
-        <span class="pl-9.5 py-2 text-base text-gray-700">
-          {{ accessMessage }}
-        </span>
-      </div>
-      <UserSearch
-        :search-groups="true"
-        place-holder-text="Search for users or emails"
-        @submit="
-          (user) =>
-            $resources.share.submit({
-              method: 'share',
-              entity_name: entityName,
-              user_type: user.email ? 'User' : 'User Group',
-              user: user.email ? user.email : user.name,
-            })
-        " />
-      <ErrorMessage
-        v-if="$resources.share.error"
-        class="mt-2"
-        :message="errorMessage" />
+        <div v-if="showAdvanced">
+          <div class="flex mb-3 text-base text-gray-600">
+            Advanced permissions
+          </div>
+          <div class="flex flex-row">
+            <div class="grow text-base text-gray-800">
+              Viewers with access can comment
+            </div>
+            <div class="flex my-auto">
+              <Switch
+                v-model="allowComments"
+                :class="allowComments ? 'bg-black' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
+                @click="toggleComments">
+                <span
+                  :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+              </Switch>
+            </div>
+          </div>
+          <div class="flex flex-row mt-3">
+            <div class="grow text-base text-gray-800">
+              Viewers with access can download
+            </div>
+            <div class="flex my-auto">
+              <Switch
+                v-model="allowDownload"
+                :class="allowDownload ? 'bg-black' : 'bg-gray-200'"
+                class="relative inline-flex h-4 w-[26px] items-center rounded-full"
+                @click="toggleDownload">
+                <span
+                  :class="allowDownload ? 'translate-x-3.5' : 'translate-x-1'"
+                  class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
+              </Switch>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="mb-5">
+            <div class="flex flex-row">
+              <FeatherIcon
+                v-if="generalAccess.public"
+                name="globe"
+                :stroke-width="1.5"
+                class="h-5 text-red-500 my-auto mr-2" />
 
-      <div
-        v-if="
-          generalAccess.read ||
-          $resources.sharedWith.data?.users.length ||
-          $resources.sharedWithUserGroup.data?.length
-        ">
-        <div class="flex mt-5 text-base text-gray-600">Global permissions</div>
-        <div class="flex flex-row mt-2">
-          <FeatherIcon class="w-4 text-gray-700 mr-1" name="message-square" />
-          <div class="grow text-[14px] text-gray-800">Comment</div>
-          <div class="flex my-auto">
-            <Switch
-              v-model="allowComments"
-              :class="allowComments ? 'bg-black' : 'bg-gray-200'"
-              class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-              @click="toggleComments">
-              <span
-                :class="allowComments ? 'translate-x-3.5' : 'translate-x-1'"
-                class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-            </Switch>
-          </div>
-        </div>
-        <div class="flex flex-row mt-2">
-          <FeatherIcon class="w-4 text-gray-700 mr-1" name="download" />
-          <div class="grow text-[14px] text-gray-800">Download</div>
-          <div class="flex my-auto">
-            <Switch
-              v-model="allowDownload"
-              :class="allowDownload ? 'bg-black' : 'bg-gray-200'"
-              class="relative inline-flex h-4 w-[26px] items-center rounded-full"
-              @click="toggleDownload">
-              <span
-                :class="allowDownload ? 'translate-x-3.5' : 'translate-x-1'"
-                class="inline-block h-2 w-2 transform rounded-full bg-white transition" />
-            </Switch>
-          </div>
-        </div>
-      </div>
-      <div class="flex mt-5 text-base text-gray-600">Users with access</div>
-      <div v-if="!$resources.entity.loading" class="flex flex-col">
-        <div
-          v-if="$resources.sharedWith.data?.owner"
-          class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded cursor-pointer group">
-          <Avatar
-            :image="$resources.sharedWith.data?.owner.user_image"
-            :label="$resources.sharedWith.data?.owner.full_name"
-            size="xl" />
-          <div class="grow truncate">
-            <div class="text-gray-900 text-[14px] font-medium">
-              {{ $resources.sharedWith.data?.owner.full_name }}
-            </div>
-            <div class="text-gray-600 text-base">
-              {{ $resources.sharedWith.data?.owner.email }}
-            </div>
-          </div>
-          <Button variant="minimal" class="text-gray-600">Owner</Button>
-        </div>
-        <template v-if="$resources.sharedWith.data?.users">
-          <div
-            v-for="user in $resources.sharedWith.data.users"
-            :key="user.user_name"
-            class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-2 cursor-pointer group">
-            <Avatar
-              :image="user.user_image"
-              :label="user.full_name"
-              size="xl" />
-            <div class="grow truncate">
-              <div class="text-gray-900 text-[14px] font-medium">
-                {{ user.full_name }}
-              </div>
-              <div class="text-gray-600 text-base">{{ user.user_name }}</div>
-            </div>
-            <Popover transition="default">
-              <template #target="{ togglePopover }">
-                <Button
-                  :loading="user.loading"
-                  class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
-                  appearance="minimal"
-                  @click="togglePopover()">
-                  <template #prefix>
-                    <ChevronsUpDown class="w-4" />
+              <Building2
+                v-if="generalAccess.everyone"
+                name="building"
+                :stroke-width="1.5"
+                class="h-5 text-blue-600 my-auto mr-2" />
+
+              <FeatherIcon
+                v-if="
+                  (generalAccess.everyone == false) &
+                  (generalAccess.public == false)
+                "
+                name="lock"
+                :stroke-width="1.5"
+                class="h-5 text-gray-600 my-auto mr-2" />
+
+              <Popover transition="default">
+                <template #target="{ togglePopover }">
+                  <Button appearance="minimal" @click="togglePopover()">
+                    <template #suffix>
+                      <ChevronsUpDown class="w-4" />
+                    </template>
+                    {{
+                      generalAccess.public
+                        ? "Public Access"
+                        : generalAccess.everyone
+                        ? "Organization Access"
+                        : "Restricted Access"
+                    }}
+                  </Button>
+                </template>
+                <template #body-main="{ togglePopover }">
+                  <div class="flex flex-col p-1">
+                    <div
+                      class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
+                      variant="ghost"
+                      @click="
+                        generalAccess.read = false;
+                        generalAccess.everyone = false;
+                        generalAccess.public = false;
+                        generalAccess.share = false;
+                        togglePopover();
+                      ">
+                      Restricted Access
+                      <Check v-if="!generalAccess.read" class="h-4" />
+                    </div>
+                    <div
+                      class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
+                      variant="ghost"
+                      @click="
+                        generalAccess.read = true;
+                        generalAccess.everyone = true;
+                        generalAccess.public = false;
+                        generalAccess.share = false;
+                        togglePopover();
+                      ">
+                      Organization Access
+                      <Check v-if="generalAccess.everyone" class="h-4" />
+                    </div>
+                    <div
+                      class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded p-1"
+                      variant="ghost"
+                      @click="
+                        generalAccess.read = true;
+                        generalAccess.everyone = false;
+                        generalAccess.public = true;
+                        generalAccess.share = false;
+                        togglePopover();
+                      ">
+                      Public Access
+                      <Check v-if="generalAccess.public" class="h-4" />
+                    </div>
+                  </div>
+                </template>
+              </Popover>
+              <div v-if="generalAccess.read" class="flex ml-auto my-auto">
+                <Popover transition="default">
+                  <template #target="{ togglePopover }">
+                    <Button appearance="minimal" @click="togglePopover()">
+                      <template #suffix>
+                        <ChevronsUpDown class="w-4" />
+                      </template>
+                      {{ generalAccess.write ? "Can edit" : "Can view" }}
+                    </Button>
                   </template>
-                  {{ user.write ? "Can edit" : "Can view" }}
-                </Button>
-              </template>
-              <template #body-main="{ togglePopover }">
-                <div class="p-1">
-                  <div
-                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                    @click="
-                      $resources.share
-                        .submit({
-                          entity_name: entityName,
-                          method: 'share',
-                          user: user.user_name,
-                          user_type: 'User',
-                          write: 0,
-                          share: 0,
-                        })
-                        .then(togglePopover())
-                    ">
-                    Can view
-                    <Check v-if="!user.write" class="h-4 ml-2" />
+                  <template #body-main="{ togglePopover }">
+                    <div class="flex flex-col p-1">
+                      <div
+                        class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                        @click="
+                          generalAccess.read = true;
+                          generalAccess.write = false;
+                          togglePopover();
+                        ">
+                        Can view
+                        <Check
+                          v-if="generalAccess.read && !generalAccess.write"
+                          class="h-4 ml-2" />
+                      </div>
+                      <div
+                        class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                        @click="
+                          generalAccess.read = true;
+                          generalAccess.write = true;
+                          togglePopover();
+                        ">
+                        Can edit
+                        <Check v-if="generalAccess.write" class="h-4 ml-2" />
+                      </div>
+                    </div>
+                  </template>
+                </Popover>
+              </div>
+            </div>
+            <span class="pl-9.5 py-2 text-base text-gray-700">
+              {{ accessMessage }}
+            </span>
+          </div>
+          <UserSearch
+            :search-groups="true"
+            place-holder-text="Search for users or groups"
+            @submit="
+              (user) =>
+                $resources.share.submit({
+                  method: 'share',
+                  entity_name: entityName,
+                  user_type: user.email ? 'User' : 'User Group',
+                  user: user.email ? user.email : user.name,
+                })
+            " />
+          <ErrorMessage
+            v-if="$resources.share.error"
+            class="mt-2"
+            :message="errorMessage" />
+
+          <div class="flex mt-5 text-base text-gray-600">Users with access</div>
+          <div v-if="!$resources.entity.loading" class="flex flex-col">
+            <div
+              v-if="$resources.sharedWith.data?.owner"
+              class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 py-1 px-0.5 rounded cursor-pointer group">
+              <Avatar
+                :image="$resources.sharedWith.data?.owner.user_image"
+                :label="$resources.sharedWith.data?.owner.full_name"
+                size="xl" />
+              <div class="grow truncate">
+                <div class="text-gray-900 text-[14px] font-medium">
+                  {{ $resources.sharedWith.data?.owner.full_name }}
+                </div>
+                <div class="text-gray-600 text-base">
+                  {{ $resources.sharedWith.data?.owner.email }}
+                </div>
+              </div>
+              <Button variant="minimal" class="text-gray-600">Owner</Button>
+            </div>
+            <template v-if="$resources.sharedWith.data?.users">
+              <div
+                v-for="user in $resources.sharedWith.data.users"
+                :key="user.user_name"
+                class="mt-1 flex flex-row w-full gap-2 items-center hover:bg-gray-50 rounded py-1 px-0.5 cursor-pointer group">
+                <Avatar
+                  :image="user.user_image"
+                  :label="user.full_name"
+                  size="xl" />
+                <div class="grow truncate">
+                  <div class="text-gray-900 text-[14px] font-medium">
+                    {{ user.full_name }}
                   </div>
-                  <div
-                    class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                    @click="
-                      $resources.share
-                        .submit({
-                          entity_name: entityName,
-                          method: 'share',
-                          user: user.user_name,
-                          user_type: 'User',
-                          write: 1,
-                          share: 0,
-                        })
-                        .then(togglePopover())
-                    ">
-                    Can edit
-                    <Check v-if="user.write" class="h-4 ml-2" />
+                  <div class="text-gray-600 text-base">
+                    {{ user.user_name }}
                   </div>
-                  <!-- <div
+                </div>
+                <Popover transition="default">
+                  <template #target="{ togglePopover }">
+                    <Button
+                      :loading="user.loading"
+                      class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
+                      appearance="minimal"
+                      @click="togglePopover()">
+                      <template #prefix>
+                        <ChevronsUpDown class="w-4" />
+                      </template>
+                      {{ user.write ? "Can edit" : "Can view" }}
+                    </Button>
+                  </template>
+                  <template #body-main="{ togglePopover }">
+                    <div class="p-1">
+                      <div
+                        class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                        @click="
+                          $resources.share
+                            .submit({
+                              entity_name: entityName,
+                              method: 'share',
+                              user: user.user_name,
+                              user_type: 'User',
+                              write: 0,
+                              share: 0,
+                            })
+                            .then(togglePopover())
+                        ">
+                        Can view
+                        <Check v-if="!user.write" class="h-4 ml-2" />
+                      </div>
+                      <div
+                        class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                        @click="
+                          $resources.share
+                            .submit({
+                              entity_name: entityName,
+                              method: 'share',
+                              user: user.user_name,
+                              user_type: 'User',
+                              write: 1,
+                              share: 0,
+                            })
+                            .then(togglePopover())
+                        ">
+                        Can edit
+                        <Check v-if="user.write" class="h-4 ml-2" />
+                      </div>
+                      <!-- <div
                       class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
                       @click="$resources.share.submit({
                           entity_name: entityName,
@@ -293,123 +312,127 @@
                      Can share
                      <Check v-if="generalAccess.write" class="h-4 ml-2"/>
                     </div> -->
-                  <div
-                    class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                    @click="
-                      $resources.share
-                        .submit({
-                          entity_name: entityName,
-                          method: 'unshare',
-                          user: user.user_name,
-                          user_type: 'User',
-                        })
-                        .then(togglePopover())
-                    ">
-                    Remove
-                  </div>
-                </div>
-              </template>
-            </Popover>
-          </div>
-        </template>
-      </div>
-
-      <div
-        v-if="$resources.sharedWithUserGroup.data?.length"
-        class="flex flex-col">
-        <div class="flex mt-5 text-base text-gray-600">Groups with access</div>
-        <div
-          v-for="group in $resources.sharedWithUserGroup.data"
-          :key="group"
-          class="mt-3 flex flex-row w-full gap-2 items-center">
-          <Avatar size="xl" :label="group.user_name"></Avatar>
-          <div
-            class="text-gray-900 text-[14px] self-center font-medium grow truncate">
-            {{ group.user_name }}
-          </div>
-          <Popover transition="default">
-            <template #target="{ togglePopover }">
-              <Button
-                :loading="group.loading"
-                class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
-                appearance="minimal"
-                @click="togglePopover()">
-                <template #prefix>
-                  <ChevronsUpDown class="w-4" />
-                </template>
-                {{ group.write ? "Can edit" : "Can view" }}
-              </Button>
-            </template>
-            <template #body-main="{ togglePopover }">
-              <div class="p-1">
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                  @click="
-                    $resources.share
-                      .submit({
-                        entity_name: entityName,
-                        method: 'share',
-                        user: group.user_name,
-                        user_type: 'User Group',
-                        write: 0,
-                        share: 0,
-                      })
-                      .then(togglePopover())
-                  ">
-                  Can view
-                  <Check v-if="!group.write" class="h-4 ml-2" />
-                </div>
-                <div
-                  class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                  @click="
-                    $resources.share
-                      .submit({
-                        entity_name: entityName,
-                        method: 'share',
-                        user: group.user_name,
-                        user_type: 'User Group',
-                        write: 1,
-                        share: 0,
-                      })
-                      .then(togglePopover())
-                  ">
-                  Can edit
-                  <Check v-if="group.write" class="h-4 ml-2" />
-                </div>
-                <div
-                  class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
-                  @click="
-                    $resources.share
-                      .submit({
-                        entity_name: entityName,
-                        method: 'unshare',
-                        user: group.user_name,
-                        user_type: 'User Group',
-                      })
-                      .then(togglePopover())
-                  ">
-                  Remove
-                </div>
+                      <div
+                        class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                        @click="
+                          $resources.share
+                            .submit({
+                              entity_name: entityName,
+                              method: 'unshare',
+                              user: user.user_name,
+                              user_type: 'User',
+                            })
+                            .then(togglePopover())
+                        ">
+                        Remove
+                      </div>
+                    </div>
+                  </template>
+                </Popover>
               </div>
             </template>
-          </Popover>
+          </div>
+
+          <div
+            v-if="$resources.sharedWithUserGroup.data?.length"
+            class="flex flex-col">
+            <div class="flex mt-5 text-base text-gray-600">
+              Groups with access
+            </div>
+            <div
+              v-for="group in $resources.sharedWithUserGroup.data"
+              :key="group"
+              class="mt-3 flex flex-row w-full gap-2 items-center">
+              <Avatar size="xl" :label="group.user_name"></Avatar>
+              <div
+                class="text-gray-900 text-[14px] self-center font-medium grow truncate">
+                {{ group.user_name }}
+              </div>
+              <Popover transition="default">
+                <template #target="{ togglePopover }">
+                  <Button
+                    :loading="group.loading"
+                    class="text-sm focus:ring-0 focus:ring-offset-0 text-gray-700"
+                    appearance="minimal"
+                    @click="togglePopover()">
+                    <template #prefix>
+                      <ChevronsUpDown class="w-4" />
+                    </template>
+                    {{ group.write ? "Can edit" : "Can view" }}
+                  </Button>
+                </template>
+                <template #body-main="{ togglePopover }">
+                  <div class="p-1">
+                    <div
+                      class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                      @click="
+                        $resources.share
+                          .submit({
+                            entity_name: entityName,
+                            method: 'share',
+                            user: group.user_name,
+                            user_type: 'User Group',
+                            write: 0,
+                            share: 0,
+                          })
+                          .then(togglePopover())
+                      ">
+                      Can view
+                      <Check v-if="!group.write" class="h-4 ml-2" />
+                    </div>
+                    <div
+                      class="flex w-full justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                      @click="
+                        $resources.share
+                          .submit({
+                            entity_name: entityName,
+                            method: 'share',
+                            user: group.user_name,
+                            user_type: 'User Group',
+                            write: 1,
+                            share: 0,
+                          })
+                          .then(togglePopover())
+                      ">
+                      Can edit
+                      <Check v-if="group.write" class="h-4 ml-2" />
+                    </div>
+                    <div
+                      class="flex w-full items-center justify-between text-gray-900 text-base hover:bg-gray-100 cursor-pointer rounded py-1.5 px-2"
+                      @click="
+                        $resources.share
+                          .submit({
+                            entity_name: entityName,
+                            method: 'unshare',
+                            user: group.user_name,
+                            user_type: 'User Group',
+                          })
+                          .then(togglePopover())
+                      ">
+                      Remove
+                    </div>
+                  </div>
+                </template>
+              </Popover>
+            </div>
+          </div>
+          <div class="w-full flex items-center justify-between mt-8">
+            <Button
+              :variant="'subtle'"
+              icon-left="link-2"
+              @click.native="getLink(entity)">
+              Copy Link
+            </Button>
+            <Button variant="solid" @click="submit">
+              <template #prefix>
+                <Share2 class="w-4" />
+              </template>
+              Share
+            </Button>
+          </div>
+          <Alert v-if="showAlert" :title="alertMessage" class="mt-5" />
         </div>
       </div>
-      <div class="w-full flex items-center justify-between mt-8">
-        <Button
-          :variant="'subtle'"
-          icon-left="link-2"
-          @click.native="getLink(entity)">
-          Copy Link
-        </Button>
-        <Button variant="solid" @click="submit">
-          <template #prefix>
-            <Share2 class="w-4" />
-          </template>
-          Share
-        </Button>
-      </div>
-      <Alert v-if="showAlert" :title="alertMessage" class="mt-5" />
     </template>
   </Dialog>
 </template>
@@ -422,6 +445,7 @@ import {
   Alert,
   Popover,
   Avatar,
+  Tooltip,
 } from "frappe-ui";
 import { Switch } from "@headlessui/vue";
 import UserSearch from "@/components/UserSearch.vue";
@@ -471,6 +495,7 @@ export default {
     Share2,
     Folder,
     File,
+    Tooltip,
   },
   props: {
     modelValue: {
@@ -493,13 +518,14 @@ export default {
         everyone: false,
         public: false,
       },
-      allowComments: false,
-      allowDownload: false,
+      allowComments: true,
+      allowDownload: true,
       saveLoading: false,
       errorMessage: "",
       showAlert: false,
       alertMessage: "",
       entity: null,
+      showAdvanced: false,
     };
   },
   computed: {
@@ -616,8 +642,6 @@ export default {
         },
         onSuccess(data) {
           this.entity = data;
-          this.allowComments = !!data.allow_comments;
-          this.allowDownload = !!data.allow_download;
         },
         auto: true,
       };
