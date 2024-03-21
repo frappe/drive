@@ -3,7 +3,7 @@
     v-if="currentFolder.fetched"
     :url="computedURL"
     :allowEmptyContextMenu="allowEmptyContextMenu"
-    :showSort="false"
+    :showSort="true"
     :isSharedFolder="isSharedFolder"
     :entityName="entityName" />
 </template>

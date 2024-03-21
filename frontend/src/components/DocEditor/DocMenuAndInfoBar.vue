@@ -7,12 +7,8 @@
     <div
       v-if="showInfoSidebar"
       class="min-w-[300px] max-w-[300px] min-h-full border-l overflow-auto">
-      <div v-if="entity" class="w-full border-b p-4">
+      <div v-if="entity" class="w-full border-b pl-3 py-4">
         <div class="flex items-center">
-          <img
-            :src="getIconUrl(formatMimeType(entity.mime_type))"
-            :draggable="false"
-            class="h-5 mr-2.5" />
           <div class="font-medium truncate text-lg">
             {{ entity.title }}
           </div>
@@ -31,19 +27,19 @@
             @click="tab = 0">
             <div
               v-if="tab === 0"
-              class="space-y-7 h-full flex-auto flex flex-col z-0">
+              class="space-y-6 h-full flex-auto flex flex-col z-0">
               <div>
                 <div class="flex items-center">
                   <span class="font-medium text-base mb-2">Information</span>
                 </div>
 
-                <div class="flex text-base">
-                  <div class="w-1/2 text-gray-600 space-y-2">
+                <div class="flex text-sm justify-between">
+                  <div class="text-gray-600 space-y-1.5">
                     <div>Words</div>
                     <div>Characters</div>
                     <div>Reading Time</div>
                   </div>
-                  <div class="w-1/2 space-y-2">
+                  <div class="text-right space-y-1.5">
                     <div>{{ editor.storage.characterCount.words() }}</div>
                     <div>{{ editor.storage.characterCount.characters() }}</div>
                     <div>
@@ -115,16 +111,16 @@
                   @close="addTag = false" />
               </div>
               <div>
-                <div class="text-base font-medium mb-3">Properties</div>
-                <div class="flex text-base">
-                  <div class="w-1/2 text-gray-600 space-y-2">
+                <div class="text-base font-medium mb-2">Properties</div>
+                <div class="flex text-sm justify-between">
+                  <div class="text-gray-600 space-y-1.5">
                     <div>Type</div>
                     <div>Size</div>
                     <div>Modified</div>
                     <div>Created</div>
                     <div>Owner</div>
                   </div>
-                  <div class="w-1/2 space-y-2">
+                  <div class="text-right space-y-1.5">
                     <div>Frappe Doc</div>
                     <div>{{ entity.file_size }}</div>
                     <div>{{ entity.modified }}</div>

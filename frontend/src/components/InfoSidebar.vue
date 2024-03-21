@@ -17,23 +17,8 @@
         </div>
       </div>
       <div v-else-if="entity">
-        <div class="w-full p-4 border-b overflow-visible">
+        <div class="w-full pl-3 py-4 border-b overflow-visible">
           <div class="flex items-center">
-            <svg
-              v-if="entity.is_group"
-              :style="{ fill: entity.color }"
-              :draggable="false"
-              class="h-5 mr-2.5"
-              viewBox="0 0 40 40"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M19.8341 7.71154H3C2.72386 7.71154 2.5 7.9354 2.5 8.21154V34.75C2.5 35.8546 3.39543 36.75 4.5 36.75H35.5C36.6046 36.75 37.5 35.8546 37.5 34.75V4.75C37.5 4.47386 37.2761 4.25 37 4.25H24.7258C24.6719 4.25 24.6195 4.26739 24.5764 4.29957L20.133 7.61239C20.0466 7.67676 19.9418 7.71154 19.8341 7.71154Z" />
-            </svg>
-            <img
-              v-else
-              :src="getIconUrl(formatMimeType(entity.mime_type))"
-              :draggable="false"
-              class="h-5 mr-2.5" />
             <div class="font-medium truncate text-lg">
               {{ entity.title }}
             </div>
@@ -63,7 +48,7 @@
             class="relative p-0.5 aspect-video object-contain m-auto w-full flex items-center justify-center">
             <img class="h-auto max-h-full w-auto" :src="thumbnailLink" />
           </div>
-          <div class="p-4 space-y-8">
+          <div class="p-4 space-y-6">
             <div v-if="entity.owner === 'Me'">
               <div class="text-base font-medium mb-2">Manage Access</div>
               <div class="flex flex-row">
@@ -118,15 +103,15 @@
             </div>
             <div>
               <div class="text-base font-medium mb-2">Properties</div>
-              <div class="flex text-base">
-                <div class="w-1/2 text-gray-600 space-y-2">
+              <div class="flex text-sm justify-between">
+                <div class="text-gray-600 space-y-1.5">
                   <div>Type</div>
                   <div v-if="entity.file_size">Size</div>
                   <div>Modified</div>
                   <div>Created</div>
                   <div>Owner</div>
                 </div>
-                <div class="w-1/2 space-y-2">
+                <div class="text-right space-y-1.5">
                   <div>{{ formattedMimeType }}</div>
                   <div>{{ entity.file_size }}</div>
                   <div>{{ entity.modified }}</div>

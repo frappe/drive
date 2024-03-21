@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="open" :options="{ size: 'lg' }">
+  <Dialog v-model="open" :options="{ size: 'md' }">
     <template #body-title>
       <div class="flex items-center gap-1 justify-start w-full">
         <span class="font-semibold text-2xl">Sharing</span>
