@@ -220,7 +220,7 @@ export default {
       return {
         attributes: {
           class: normalizeClass([
-            "ProseMirror prose prose-sm font-normal prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
+            "ProseMirror prose prose-sm leading-[21px] font-normal prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
           ]),
         },
         clipboardTextParser: (text, $context) => {
@@ -348,7 +348,7 @@ export default {
           heading: {
             levels: [1, 2, 3, 4],
             HTMLAttributes: {
-              class: "not-prose",
+              class: "not-prose leading-7",
             },
           },
           listItem: {

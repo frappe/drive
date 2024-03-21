@@ -882,7 +882,8 @@ export default {
             }
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
-            entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
+            entity.owner =
+              entity.owner === this.userId ? "Me" : entity.full_name;
           });
         },
         onError(error) {
