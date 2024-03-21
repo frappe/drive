@@ -1,15 +1,3 @@
-<template>
-  <div>
-    <input
-      class="hidden"
-      @change="fileInputPayload"
-      ref="fileInput"
-      type="file"
-      multiple="true"
-      id="my-file-input" />
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted, onBeforeUnmount, inject } from "vue";
 import { v4 as uuidv4 } from "uuid";
@@ -60,13 +48,16 @@ const uppy = new Uppy({
 });
 uppy.use(Tus, {
   // read site config and use that size if its bigger
-  chunkSize: 50 * 1024 * 1024, //50 MB
+  chunkSize: 20 * 1024 * 1024, //20 MB
+  addRequestId: true,
   endpoint: "/api/method/drive.api.upload.handle_tus_request",
   withCredentials: true,
+  limit: 1,
   parallelUploads: 1,
   removeFingerprintOnSuccess: true,
-  onProgress: (progress) => {
-    console.log("tus-js-client:", progress);
+  onBeforeRequest: function (req) {
+    if (req._method === "HEAD") {
+    }
   },
   headers: {
     "X-Frappe-CSRF-Token": window.csrf_token,
@@ -79,14 +70,22 @@ uppy.use(DropTarget, {
   target: document.body,
 });
 uppy.on("file-added", (file) => {
+  console.log(uppy.getFile(file.id));
+  console.log(uuidv4());
   uppy.setFileMeta(file.id, {
     fileId: file.id,
+    fileParent: store.state.currentFolderID,
+    lastModified: file.data.lastModified,
   });
   store.commit("pushToUploads", {
     uuid: file.id,
     name: file.name,
     progress: 0,
   });
+});
+
+uppy.on("restriction-failed", (file, error) => {
+  // do some customized logic like showing system notice to users
 });
 
 uppy.on("upload-error", (file, error, response) => {
@@ -97,16 +96,11 @@ uppy.on("upload-retry", (fileID) => {
   console.log("upload retried:", fileID);
 });
 
-uppy.on("upload", (data) => {
-  console.log(data);
-  //store.commit("updateUpload", {
-  //  uuid: file.id,
-  //  progress: file.progress.percentage,
-  //});
+uppy.on("retry-all", (fileID) => {
+  console.log("upload retried:", fileID);
 });
 
 uppy.on("upload-progress", (file, progress) => {
-  console.log(file.progress.percentage);
   store.commit("updateUpload", {
     uuid: file.id,
     progress: file.progress.percentage,
@@ -131,8 +125,8 @@ uppy.on("error", (error) => {
 });
 
 uppy.on("complete", (result) => {
-  console.log("successful files:", result.successful);
-  console.log("failed files:", result.failed);
+  emitter.emit("fetchFolderContents");
+  uppy.cancelAll();
 });
 
 onBeforeUnmount(() => {

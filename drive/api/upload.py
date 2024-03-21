@@ -8,11 +8,14 @@ import base64
 import magic
 from pathlib import Path
 from frappe.utils import get_site_path
+from frappe.utils import cint
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename
-from drive.api.files import get_user_directory
-from drive.api.files import upload_file
-from drive.api.files import get_user_uploads_directory
+from drive.api.files import (
+    get_user_directory,
+    create_drive_entity,
+)
+from drive.utils.files import create_thumbnail
 
 
 @frappe.whitelist(allow_guest=True, methods=["PATCH", "HEAD", "POST", "GET" "OPTIONS", "GET"])
@@ -52,6 +55,7 @@ def handle_tus_request(fileID=None):
     if frappe.request.method == "POST":
         """
         pre-init/preflight checks(perms, server availability)
+        check if file/folder exists in the specified parent already
         create parent folders if webkitRelativePath/fullPath
         init an upload session, process the metadata
         """
@@ -60,7 +64,7 @@ def handle_tus_request(fileID=None):
         upload_length = frappe.request.headers.get("Upload-Length")
         temp_path = Path(
             frappe.get_site_path(
-                "private/files/", get_user_directory().name, "uploads", init_file_id
+                "private/files/", get_user_directory(user=frappe.session.user).name, "uploads", init_file_id
             )
         )
 
@@ -104,7 +108,7 @@ def handle_tus_request(fileID=None):
         offset_counter = frappe.cache.hget(f"drive_{fileID}", "upload_offset")
         temp_path = frappe.cache.hget(f"drive_{fileID}", "upload_temp_path")
 
-        # potentially add concat here
+        # potentially add concat here for multithreading
         # create a file for each chunk
         # recreate the file from unordered but complete chunks that are split up into different temp files
         # will most likely need chunksumming on the client (web crypto api)
@@ -117,7 +121,36 @@ def handle_tus_request(fileID=None):
                 frappe.cache.hset(f"drive_{fileID}", "upload_offset", offset_counter)
             f.close()
 
-        if offset_counter == frappe.cache.hget(f"drive_{fileID}", "upload_offset"):
+        if str(offset_counter) == frappe.cache.hget(f"drive_{fileID}", "size"):
+            name = str(uuid.uuid4().hex)
+            title = frappe.cache.hget(f"drive_{fileID}", "name")
+            mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
+            _, file_ext = os.path.splitext(title)
+            if not file_ext:
+                file_ext = mimetypes.guess_extension(mime_type)
+            file_name = name + file_ext
+            file_size = frappe.cache.hget(f"drive_{fileID}", "size")
+            last_modified = frappe.cache.hget(f"drive_{fileID}", "lastModified")
+            parent = frappe.cache.hget(f"drive_{fileID}", "fileParent")
+            if not parent:
+                parent = get_user_directory().name
+            save_path = Path(get_user_directory().path) / f"{secure_filename(file_name)}"
+            os.rename(temp_path, save_path)
+            create_drive_entity(
+                name, title, parent, save_path, file_size, file_ext, mime_type, last_modified
+            )
+            if mime_type.startswith(("image", "video")):
+                frappe.enqueue(
+                    create_thumbnail,
+                    queue="default",
+                    timeout=None,
+                    now=True,
+                    at_front=True,
+                    # will set to false once reactivity in new UI is solved
+                    entity_name=name,
+                    path=save_path,
+                    mime_type=mime_type,
+                )
             frappe.cache.delete(f"drive_{fileID}")
 
         response.headers.add("Upload-Offset", offset_counter)
