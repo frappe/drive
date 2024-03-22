@@ -105,7 +105,17 @@ export default {
   },
   methods: {
     handleDefaultContext(event) {
-      return this.$route.meta.documentPage ? null : event.preventDefault();
+      if (this.$route.meta.documentPage) {
+        return;
+      } else if (
+        this.$store.state.entityInfo[0]?.mime_type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+        this.$route.name === "File"
+      ) {
+        return;
+      } else {
+        return event.preventDefault();
+      }
     },
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents");
