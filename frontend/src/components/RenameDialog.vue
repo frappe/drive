@@ -126,6 +126,9 @@ export default {
     let parsedName = "";
     if (this.entity?.is_group || this.entity?.document) {
       this.newName = this.entity.title;
+      if (this.$route.meta.documentPage) {
+        this.$store.state.entityInfo[0].title = this.newName;
+      }
     } else {
       parsedName = this.entity?.title.split(".").slice(0, -1).join(".");
     }

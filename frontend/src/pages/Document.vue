@@ -149,6 +149,7 @@ export default {
           data.file_size = formatSize(data.file_size);
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
+          this.$store.commit("setEntityInfo", [data]);
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
