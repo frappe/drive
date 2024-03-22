@@ -1,6 +1,6 @@
 <template>
   <div
-    id="container"
+    id="DocxContainer"
     class="object-contain max-h-[90vh] max-w-[75vw] z-10 overflow-y-scroll"></div>
 </template>
 <script setup>
@@ -32,8 +32,8 @@ async function fetchContent() {
     blob.value = await res.blob();
     docx.renderAsync(
       blob.value,
-      document.getElementById("container"),
-      document.getElementById("container"),
+      document.getElementById("DocxContainer"),
+      document.getElementById("DocxContainer"),
       {
         ignoreLastRenderedPageBreak: false,
         experimental: true,
@@ -60,3 +60,9 @@ onBeforeUnmount(() => {
   blob.value = null;
 });
 </script>
+
+<style>
+#DocxContainer {
+  user-select: text;
+}
+</style>
