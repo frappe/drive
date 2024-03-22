@@ -873,7 +873,10 @@ export default {
             entity.size_in_bytes = entity.file_size;
             if (entity.is_group) {
               if (entity.item_count === 0 || entity.item_count > 0) {
-                entity.file_size = entity.item_count + " items";
+                entity.file_size = entity.item_count + " item";
+                if (entity.item_count > 1) {
+                  entity.item_count + " items";
+                }
               } else {
                 entity.file_size = "";
               }
