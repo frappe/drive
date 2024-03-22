@@ -35,11 +35,11 @@
           </div>
         </div>
         <div v-if="showAdvanced">
-          <div class="flex mb-3 text-base text-gray-600">
+          <div class="flex mb-3 text-base text-gray-900">
             Advanced permissions
           </div>
           <div class="flex flex-row">
-            <div class="grow text-base text-gray-800">
+            <div class="grow text-base text-gray-700">
               Viewers with access can comment
             </div>
             <div class="flex my-auto">
@@ -55,7 +55,7 @@
             </div>
           </div>
           <div class="flex flex-row mt-3">
-            <div class="grow text-base text-gray-800">
+            <div class="grow text-base text-gray-700">
               Viewers with access can download
             </div>
             <div class="flex my-auto">
