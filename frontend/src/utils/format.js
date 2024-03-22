@@ -37,7 +37,7 @@ export function formatMimeType(mimeType) {
   const generic = mimeType.split("/")[0];
   const specific = mimeType.split("/")[1];
   if (["image", "video", "audio"].includes(generic)) icon = generic;
-  else if (generic === "frappe_doc") icon = "doc";
+  else if (generic === "frappe_doc") icon = "Frappe Doc";
   else
     switch (specific) {
       case "pdf":
