@@ -392,6 +392,11 @@ def stream_file_content(drive_entity, range_header):
         byte2 = int(g[1])
 
     length = size - byte1
+    
+    max_length = 20 * 1024 * 1024  # 20 MB in bytes
+    if length > max_length:
+        length = max_length
+
     if byte2 is not None:
         length = byte2 - byte1
 
