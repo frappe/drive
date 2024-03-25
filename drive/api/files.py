@@ -7,7 +7,7 @@ from pypika import Order, Case, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from werkzeug.utils import secure_filename
+from werkzeug.utils import (secure_filename, send_file)
 import uuid
 import mimetypes
 import hashlib
@@ -353,17 +353,29 @@ def get_file_content(entity_name, trigger_download=0):
             return response
 
         response = Response(wrap_file(frappe.request.environ, file), direct_passthrough=True)
-        response.mimetype = drive_entity.mime_type or "application/octet-stream"
-        content_dispostion = "attachment" if trigger_download else "inline"
-        response.headers.add(
-            "Content-Disposition",
-            content_dispostion,
-            filename=format(urllib.parse.quote(drive_entity.title.encode("utf8"))),
-        )
         response.headers.add("Content-Length", str(drive_entity.file_size))
         response.headers.add("Content-Type", response.mimetype)
         response.headers.add("Accept-Range", "bytes")
 
+        if trigger_download:
+            response.headers.add(
+                "Content-Disposition",
+                "attachment",
+                filename=format(urllib.parse.quote(drive_entity.title.encode("utf8"))),
+            )
+            return send_file(
+                drive_entity.path,
+                mimetype=drive_entity.mime_type,
+                as_attachment=True,
+                download_name=drive_entity.title,
+                environ=frappe.request.environ,
+            )
+
+        response.headers.add(
+            "Content-Disposition",
+            "inline",
+            filename=format(urllib.parse.quote(drive_entity.title.encode("utf8"))),
+        )
         range_header = frappe.request.headers.get("Range", None)
         if range_header:
             return stream_file_content(drive_entity, range_header)
