@@ -119,8 +119,14 @@ function get_children(entity_name) {
   const url =
     "/api/method/" +
     `drive.api.files.list_folder_contents?entity_name=${entity_name}`;
-
-  return fetch(url)
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "X-Frappe-CSRF-Token": window.csrf_token,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  })
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
