@@ -930,6 +930,46 @@
           </div>
         </div> -->
       </div>
+      <div
+        v-if="tab === 4"
+        class="p-4 border-b"
+        :class="
+          tab === 4 ? 'flex-auto' : 'text-gray-600 cursor-pointer flex-none '
+        "
+        @click="tab = 4">
+        <span class="font-medium text-base mb-[0.25px]">Transform</span>
+        <div>
+          <span
+            v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
+            class="font-medium text-gray-600 text-base">
+            Import
+          </span>
+          <Button
+            v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
+            class="w-full justify-start mb-2"
+            @click="() => emitter.emit('importDocFromWord')">
+            <template #prefix>
+              <FileUp class="text-gray-700 w-4" />
+              Import from DOCX
+            </template>
+          </Button>
+          <span class="font-medium text-gray-600 text-base">Export</span>
+          <Button
+            class="w-full justify-start"
+            @click="() => emitter.emit('exportDocToPDF')">
+            <template #prefix>
+              <FileDown class="text-gray-900 w-4" />
+              Export to PDF
+            </template>
+          </Button>
+          <Button class="w-full justify-start">
+            <template #prefix>
+              <FileDown class="text-gray-700 w-4" />
+              Export to DOCX
+            </template>
+          </Button>
+        </div>
+      </div>
     </div>
   </Transition>
   <div
@@ -1001,6 +1041,22 @@
         ]"
         class="stroke-1.5 text-gray-600 w-full h-full" />
     </Button>
+    <Button
+      v-if="$route.meta.documentPage"
+      class="animate mb-2 text-gray-600 py-4"
+      :class="[
+        tab === 4 && showInfoSidebar
+          ? 'text-black bg-gray-200'
+          : ' hover:bg-gray-50',
+      ]"
+      variant="minimal"
+      @click="switchTab(4)">
+      <ArrowDownUp
+        class="stroke-[1.25px] text-gray-600 w-full h-full"
+        :class="[
+          tab === 4 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
+        ]" />
+    </Button>
   </div>
 </template>
 
@@ -1034,6 +1090,9 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  FileUp,
+  FileDown,
+  ArrowDownUp,
 } from "lucide-vue-next";
 import { QuoteIcon } from "lucide-vue-next";
 import { Code } from "lucide-vue-next";
@@ -1081,6 +1140,9 @@ export default {
     Heading1,
     Heading2,
     Heading3,
+    FileUp,
+    FileDown,
+    ArrowDownUp,
   },
   inheritAttrs: false,
   inject: ["editor"],
