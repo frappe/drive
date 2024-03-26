@@ -178,133 +178,20 @@
 
       <div
         v-if="tab === 2"
-        class="p-4 border-b overflow-x-hidden"
+        class="flex flex-col p-4 border-b gap-0.5 overflow-x-hidden"
         @click="tab = 2">
         <span class="font-medium text-base">Typography</span>
-        <br />
-        <span class="font-medium text-gray-600 text-base">Presets</span>
-        <div
-          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h- mb-2">
+        <span class="font-medium text-gray-600 text-base mt-2 mb-0.5">
+          Presets
+        </span>
+        <Dropdown :options="typographyOptions">
           <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('bold') &&
-              editor.isActive('textStyle', { fontSize: '30px' })
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .clearNodes()
-                .unsetAllMarks()
-                .setBold()
-                .setFontSize('30px')
-                .run()
-            ">
-            Title
-          </Button>
-          <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('heading', { level: 4 }) &&
-              editor.isActive('textStyle', { fontSize: '16px' })
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .clearNodes()
-                .unsetAllMarks()
-                .setHeading({ level: 4 })
-                .setFontSize('16px')
-                .setColor('#7c7c7c')
-                .run()
-            ">
-            Subtitle
-          </Button>
-          <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('paragraph') &&
-              !editor.isActive('textStyle', { fontSize: '30px' }) &&
-              !editor.isActive('heading')
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .clearNodes()
-                .unsetAllMarks()
-                .setParagraph()
-                .run()
-            ">
-            Body
-          </Button>
-        </div>
-        <div
-          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h- mb-2">
-          <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('heading', { level: 1 })
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .setBold()
-                .setFontSize('24px')
-                .setHeading({ level: 1 })
-                .run()
-            ">
-            <Heading1 class="text-gray-700 w-4" />
-          </Button>
-          <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('heading', { level: 2 })
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .setBold()
-                .setFontSize('20px')
-                .setHeading({ level: 2 })
-                .run()
-            ">
-            <Heading2 class="text-gray-700 w-4" />
-          </Button>
-          <Button
-            class="w-full text-sm"
-            :class="
-              editor.isActive('heading', { level: 3 })
-                ? 'bg-white shadow-sm'
-                : 'bg-transparent'
-            "
-            @click="
-              editor
-                .chain()
-                .focus()
-                .setBold()
-                .setFontSize('16px')
-                .setHeading({ level: 3 })
-                .run()
-            ">
-            <Heading3 class="text-gray-700 w-4" />
-          </Button>
-        </div>
-        <span class="font-medium text-gray-600 text-base">Formatting</span>
+            class="min-w-[270px]"
+            :label="evalTypographyButtonLabel"></Button>
+        </Dropdown>
+        <span class="font-medium text-gray-600 text-base mt-2 mb-0.5">
+          Formatting
+        </span>
         <div class="flex mb-1">
           <Dropdown class="w-52" :options="fontFamilyOptions">
             <Button
@@ -957,17 +844,17 @@
           <Button
             class="w-full justify-start"
             @click="() => emitter.emit('exportDocToPDF')">
-            <template #prefix>
+            <template>
               <FileDown class="text-gray-900 w-4" />
               Export to PDF
             </template>
           </Button>
-          <Button class="w-full justify-start">
+          <!-- <Button class="w-full justify-start">
             <template #prefix>
               <FileDown class="text-gray-700 w-4" />
               Export to DOCX
             </template>
-          </Button>
+          </Button> -->
         </div>
       </div>
     </div>
@@ -1093,6 +980,7 @@ import {
   FileUp,
   FileDown,
   ArrowDownUp,
+  HeadingIcon,
 } from "lucide-vue-next";
 import { QuoteIcon } from "lucide-vue-next";
 import { Code } from "lucide-vue-next";
@@ -1288,11 +1176,98 @@ export default {
             this.editor.chain().focus().setFontFamily("Monospace").run(),
         },
       ],
+      typographyOptions: [
+        {
+          label: "Title",
+          onClick: () =>
+            this.editor
+              .chain()
+              .focus()
+              .setBold()
+              .setFontSize("30px")
+              .setHeading({ level: 1 })
+              .run(),
+        },
+        {
+          label: "Heading 1",
+          onClick: () =>
+            this.editor
+              .chain()
+              .focus()
+              .setBold()
+              .setFontSize("24px")
+              .setHeading({ level: 1 })
+              .run(),
+        },
+        {
+          label: "Heading 2",
+          onClick: () =>
+            this.editor
+              .chain()
+              .focus()
+              .setBold()
+              .setFontSize("20px")
+              .setHeading({ level: 2 })
+              .run(),
+        },
+        {
+          label: "Heading 3",
+          onClick: () =>
+            this.editor
+              .chain()
+              .focus()
+              .setBold()
+              .setFontSize("16px")
+              .setHeading({ level: 3 })
+              .run(),
+        },
+        {
+          label: "Subtitle",
+          onClick: () =>
+            this.editor
+              .chain()
+              .focus()
+              .clearNodes()
+              .unsetAllMarks()
+              .setHeading({ level: 4 })
+              .setFontSize("16px")
+              .setColor("#7c7c7c")
+              .run(),
+        },
+        {
+          label: "Body",
+          onClick: () =>
+            this.editor
+              .chain()
+              .focus()
+              .clearNodes()
+              .unsetAllMarks()
+              .setParagraph()
+              .run(),
+        },
+      ],
     };
   },
   computed: {
     userId() {
       return this.$store.state.auth.user_id;
+    },
+    evalTypographyButtonLabel() {
+      if (this.editor.isActive("heading", { level: 1 })) {
+        if (this.editor.isActive("textStyle", { fontSize: "30px" })) {
+          return "Title";
+        } else {
+          return "Heading 1";
+        }
+      } else if (this.editor.isActive("heading", { level: 2 })) {
+        return "Heading 2";
+      } else if (this.editor.isActive("heading", { level: 3 })) {
+        return "Heading 3";
+      } else if (this.editor.isActive("heading", { level: 4 })) {
+        return "Subtitle";
+      } else {
+        return "Body";
+      }
     },
     fullName() {
       return this.$store.state.user.fullName;
