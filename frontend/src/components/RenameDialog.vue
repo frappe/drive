@@ -34,7 +34,8 @@
 import { ref } from "vue";
 import { Dialog, Input, ErrorMessage, Badge } from "frappe-ui";
 import { useFocus } from "@vueuse/core";
-import { formatSize, formatDate } from "@/utils/format";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "RenameDialog",
@@ -44,12 +45,27 @@ export default {
     ErrorMessage,
     Badge,
   },
-  setup() {
+  setup(props) {
+    const newName = ref("");
+    const route = useRoute()
+    const store = useStore()
+    let parsedName = "";
+    if (props.entity?.is_group || props.entity?.document) {
+      newName.value = props.entity.title;
+      if (route.meta.documentPage) {
+        store.state.entityInfo[0].title = newName.value;
+      }
+    } else {
+      parsedName = props.entity?.title.split(".").slice(0, -1).join(".");
+      console.log(parsedName)
+    }
+    newName.value = parsedName?.length > 1 ? parsedName : props.entity?.title;
     const input = ref();
     const { focused } = useFocus(input, { initialValue: true });
     return {
       input,
       focused,
+      newName,
     };
   },
   props: {
@@ -66,7 +82,6 @@ export default {
   emits: ["update:modelValue", "success"],
   data() {
     return {
-      newName: "",
       errorMessage: "",
       extension: "",
     };
@@ -121,18 +136,6 @@ export default {
         },
       };
     },
-  },
-  created() {
-    let parsedName = "";
-    if (this.entity?.is_group || this.entity?.document) {
-      this.newName = this.entity.title;
-      if (this.$route.meta.documentPage) {
-        this.$store.state.entityInfo[0].title = this.newName;
-      }
-    } else {
-      parsedName = this.entity?.title.split(".").slice(0, -1).join(".");
-    }
-    this.newName = parsedName?.length > 1 ? parsedName : this.entity?.title;
   },
 };
 </script>

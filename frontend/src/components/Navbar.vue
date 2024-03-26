@@ -116,6 +116,7 @@
       }
     " />
   <RenameDialog
+    v-if="showRenameDialog"
     v-model="showRenameDialog"
     :parent="$route.params.entityName"
     :entity="selectedEntities[0]"

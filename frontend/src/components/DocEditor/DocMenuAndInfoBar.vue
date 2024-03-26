@@ -844,8 +844,8 @@
           <Button
             class="w-full justify-start"
             @click="() => emitter.emit('exportDocToPDF')">
-            <template>
-              <FileDown class="text-gray-900 w-4" />
+            <template #prefix>
+              <FileDown class="text-gray-700 w-4" />
               Export to PDF
             </template>
           </Button>
