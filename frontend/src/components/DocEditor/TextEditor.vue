@@ -744,7 +744,7 @@ export default {
     rename() {
       return {
         url: "drive.api.files.passive_rename",
-        debounce: 250,
+        debounce: 500,
       };
     },
   },
