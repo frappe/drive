@@ -84,7 +84,7 @@ def create_document_entity(title, content, parent=None):
     drive_entity.parent_drive_entity = parent
     drive_entity.mime_type = "frappe_doc"
     drive_entity.document = drive_doc
-
+    drive_entity.file_size = 0
     drive_entity.flags.file_created = True
     drive_entity.save()
     return drive_entity
