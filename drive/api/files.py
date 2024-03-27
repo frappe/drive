@@ -1004,8 +1004,10 @@ def remove_or_restore(entity_names, move=False):
             entity_ancestors = get_ancestors_of("Drive Entity", entity)
             if entity_ancestors:
                 doc.parent_before_trash = entity_ancestors[0]
+                doc.save()
             else:
                 doc.parent_before_trash = get_user_directory()
+                doc.save()
             if move:
                 doc.move()
 
