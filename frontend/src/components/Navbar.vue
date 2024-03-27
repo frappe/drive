@@ -236,7 +236,7 @@ export default {
                 });
               },
 
-              isEnabled: () => this.selectedEntities.length === 0,
+              isEnabled: () => this.selectedEntities?.length === 0,
             },
           ],
         },
@@ -256,15 +256,15 @@ export default {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
           },
           isEnabled: () => {
-            if (this.selectedEntities.length === 1) {
+            if (this.selectedEntities?.length === 1) {
               if (
-                this.selectedEntities.length === 1 &&
-                !this.selectedEntities[0].is_group &&
-                !this.selectedEntities[0].document
+                this.selectedEntities?.length === 1 &&
+                !this.selectedEntities[0]?.is_group &&
+                !this.selectedEntities[0]?.document
               ) {
                 return (
-                  this.selectedEntities[0].allow_download ||
-                  this.selectedEntities[0].owner === "Me"
+                  this.selectedEntities[0]?.allow_download ||
+                  this.selectedEntities[0]?.owner === "Me"
                 );
               }
             }
@@ -283,13 +283,13 @@ export default {
           },
           isEnabled: () => {
             if (
-              this.selectedEntities.length === 1 &&
-              !this.selectedEntities[0].is_group
+              this.selectedEntities?.length === 1 &&
+              !this.selectedEntities[0]?.is_group
             ) {
               return false;
             }
-            if (this.selectedEntities.length) {
-              const allEntitiesSatisfyCondition = this.selectedEntities.every(
+            if (this.selectedEntities?.length) {
+              const allEntitiesSatisfyCondition = this.selectedEntities?.every(
                 (entity) => {
                   return entity.allow_download || entity.owner === "Me";
                 }
@@ -305,7 +305,7 @@ export default {
             getLink(this.selectedEntities[0]);
           },
           isEnabled: () => {
-            return this.selectedEntities.length === 1;
+            return this.selectedEntities?.length === 1;
           },
         },
         {
@@ -316,9 +316,9 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length === 1 &&
-              (this.selectedEntities[0].write ||
-                this.selectedEntities[0].owner === "Me")
+              this.selectedEntities?.length === 1 &&
+              (this.selectedEntities[0]?.write ||
+                this.selectedEntities[0]?.owner === "Me")
             );
           },
         },
@@ -330,9 +330,9 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length > 0 &&
+              this.selectedEntities?.length > 0 &&
               this.isLoggedIn &&
-              this.selectedEntities.every((x) => !x.is_favourite)
+              this.selectedEntities?.every((x) => !x.is_favourite)
             );
           },
         },
@@ -344,8 +344,8 @@ export default {
           },
           isEnabled: () => {
             return (
-              this.selectedEntities.length > 0 &&
-              this.selectedEntities.every((x) => x.is_favourite)
+              this.selectedEntities?.length > 0 &&
+              this.selectedEntities?.every((x) => x.is_favourite)
             );
           },
         },
