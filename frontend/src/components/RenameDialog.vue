@@ -47,8 +47,8 @@ export default {
   },
   setup(props) {
     const newName = ref("");
-    const route = useRoute()
-    const store = useStore()
+    const route = useRoute();
+    const store = useStore();
     let parsedName = "";
     if (props.entity?.is_group || props.entity?.document) {
       newName.value = props.entity.title;
@@ -57,7 +57,6 @@ export default {
       }
     } else {
       parsedName = props.entity?.title.split(".").slice(0, -1).join(".");
-      console.log(parsedName)
     }
     newName.value = parsedName?.length > 1 ? parsedName : props.entity?.title;
     const input = ref();
