@@ -83,6 +83,7 @@ def get_new_title(entity, parent_name):
     sibling_entity_titles = frappe.db.get_list(
         "Drive Entity",
         filters={
+            "is_active": 1,
             "parent_drive_entity": parent_name,
             "title": ["like", f"{entity_title}%{entity_ext}"],
         },
