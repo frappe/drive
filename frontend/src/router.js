@@ -1,10 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "./store";
 
-function redir404(to) {
+function redir404(to, from) {
+  if (to.name === "Error" && from.name) {
+    return;
+  }
   if (store.getters.isLoggedIn && to.fullPath === "/") {
     return { name: "Home" };
   } else if (!store.getters.isLoggedIn && to.fullPath === "/") {
+    return { name: "Login" };
+  } else {
     return { name: "Login" };
   }
 }
@@ -29,13 +34,6 @@ const routes = [
     name: "Home",
     component: () => import("@/pages/Home.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
-  },
-  {
-    path: "/:pathMatch(.*)*/",
-    name: "Error",
-    component: () => import("@/pages/Error.vue"),
-    beforeEnter: [redir404, clearStore],
-    props: true,
   },
   {
     path: "/file/:entityName",
@@ -109,6 +107,13 @@ const routes = [
     redirect: () => {
       window.location.href = "/app";
     },
+  },
+  {
+    path: "/:pathMatch(.*)*/",
+    name: "Error",
+    component: () => import("@/pages/Error.vue"),
+    beforeEnter: [redir404, clearStore],
+    props: true,
   },
 ];
 

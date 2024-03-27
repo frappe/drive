@@ -324,6 +324,9 @@ def get_entity_with_permissions(entity_name):
             entity["item_count"] = child_count
         return entity | owner_info
     user_access = get_user_access(entity.name)
+    if user_access.get("read") == 0:
+        frappe.throw("Unauthorized", frappe.PermissionError)
+
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
         return entity | user_access | entity_doc_content | owner_info
