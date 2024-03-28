@@ -26,21 +26,23 @@
             @click.stop="toggleCollapsed">
             <FeatherIcon name="minus" class="h-4 w-4 text-gray-800" />
           </button>
-          <button
-            v-if="uploads.length === uploadsCompleted.length"
-            class="focus:outline-none"
-            @click="close">
+          <button class="focus:outline-none" @click="close">
             <FeatherIcon name="x" class="h-4 w-4 text-gray-800" />
           </button>
         </div>
       </div>
       <div
         v-if="!collapsed"
-        class="max-h-64 overflow-y-auto bg-white rounded-b pl-4 pr-3 py-2">
-        <div v-for="upload in uploads" :key="upload.uuid" class="truncate">
+        class="max-h-64 overflow-y-auto bg-white rounded-b py-2">
+        <div
+          v-for="(upload, index) in uploads"
+          :key="upload.uuid"
+          class="cursor-pointer truncate hover:bg-gray-50 rounded px-2 mx-2"
+          @mouseover="hoverIndex = index"
+          @mouseout="hoverIndex = null">
           <div class="flex items-center gap-3 py-2 pr-[3px]">
             <div class="flex items-center justify-between w-full">
-              <div>
+              <div class="w-full max-w-[80%]">
                 <p class="truncate text-sm font-medium leading-6">
                   {{ upload.name }}
                 </p>
@@ -59,33 +61,65 @@
                   class="h-4 w-4"
                   :stroke-width="3" />
               </div>
-              <div v-else class="h-6 w-6">
-                <ProgressRing
-                  v-show="true"
-                  :radius="14"
-                  :progress="upload.progress" />
+              <button
+                v-if="hoverIndex === index && upload.progress > 0"
+                v-show="!upload.completed && hoverIndex === index"
+                class="rounded-full hover:bg-red-300"
+                variant="'ghost'"
+                @click="emitter.emit('cancelUpload', upload.uuid)">
+                <FeatherIcon name="x" class="h-6 w-6 p-1" />
+              </button>
+              <div
+                v-if="hoverIndex !== index && upload.progress > 0"
+                v-show="!upload.completed && !upload.error"
+                class="h-6 w-6">
+                <ProgressRing :radius="14" :progress="upload.progress" />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <Dialog
+      v-if="showCancelDialog"
+      v-model="showCancelDialog"
+      :options="{
+        title: 'Cancel uploads',
+        message: 'Are you sure you want to cancel all ongoing uploads?',
+        size: 'sm',
+        actions: [
+          {
+            label: 'Confirm',
+            variant: 'subtle',
+            theme: 'red',
+            onClick: () => {
+              emitter.emit('cancelAllUploads');
+              showCancelDialog = false;
+              $store.dispatch('clearUploads');
+            },
+          },
+        ],
+      }" />
   </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
 import { FeatherIcon } from "frappe-ui";
 import ProgressRing from "@/components/ProgressRing.vue";
+import Dialog from "frappe-ui/src/components/Dialog.vue";
 
 export default {
   name: "UploadTracker",
   components: {
     FeatherIcon,
     ProgressRing,
+    Dialog,
   },
   data() {
     return {
       collapsed: false,
+      hoverIndex: null,
+      showCancelDialog: false,
     };
   },
   computed: {
@@ -99,7 +133,11 @@ export default {
       this.collapsed = !this.collapsed;
     },
     close() {
-      this.$store.dispatch("clearUploads");
+      if (this.uploads.length === this.uploadsCompleted.length) {
+        this.$store.dispatch("clearUploads");
+      } else {
+        this.showCancelDialog = true;
+      }
     },
   },
 };

@@ -214,6 +214,17 @@ onMounted(() => {
       dropzone.value.hiddenFileInput.click();
     }
   });
+  emitter.on("cancelUpload", (uuid) => {
+    var files = dropzone.value.files;
+    for (var i = 0; i < files.length; i++) {
+      if (files[i].upload.uuid === uuid) {
+        dropzone.value.removeFile(files[i]);
+      }
+    }
+  });
+  emitter.on("cancelAllUploads", () => {
+    dropzone.value.removeAllFiles(true);
+  });
   emitter.on("uploadFolder", () => {
     if (dropzone.value.hiddenFileInput) {
       dropzone.value.hiddenFileInput.setAttribute("webkitdirectory", true);
