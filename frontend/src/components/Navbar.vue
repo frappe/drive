@@ -189,7 +189,7 @@ export default {
           group: "Upload",
           items: [
             {
-              label: "Upload file",
+              label: "Upload File",
               icon: h(FileUp, {
                 id: "foo",
                 class: "text-gray-900 stroke-[1.5]",
@@ -211,7 +211,7 @@ export default {
           group: "New",
           items: [
             {
-              label: "New folder",
+              label: "New Folder",
               icon: h(FolderPlus, {
                 id: "foo",
                 class: "text-gray-900 stroke-[1.5]",
