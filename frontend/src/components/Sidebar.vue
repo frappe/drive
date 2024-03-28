@@ -103,6 +103,12 @@ export default {
     sidebarItems() {
       return [
         {
+          label: "Search",
+          action: () => this.emitter.emit("showSearchPopup", true),
+          icon: "search",
+          highlight: () => {},
+        },
+        {
           label: "Home",
           route: "/home",
           icon: "home",
@@ -143,12 +149,6 @@ export default {
           highlight: () => {
             return this.$store.state.currentBreadcrumbs[0].label === "Trash";
           },
-        },
-        {
-          label: "Search",
-          action: () => this.emitter.emit("showSearchPopup", true),
-          icon: "search",
-          highlight: () => {},
         },
       ];
     },

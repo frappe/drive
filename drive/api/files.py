@@ -1259,12 +1259,13 @@ def move(entity_names, new_parent=None):
 
 
 @frappe.whitelist()
-def search(query):
+def search(query, home_dir):
     """
     Placeholder search implementation
     """
     text = frappe.db.escape(query + "*")
     user = frappe.db.escape(frappe.session.user)
+    omit = frappe.db.escape(home_dir)
     result = frappe.db.sql(
         f"""
     SELECT  `tabDrive Entity`.name,
@@ -1273,7 +1274,9 @@ def search(query):
             `tabDrive Entity`.mime_type,
             `tabDrive Entity`.is_group,
             `tabDrive Entity`.document,
-            `tabDrive Entity`.color
+            `tabDrive Entity`.color,
+            `tabUser`.user_image,
+            `tabUser`.full_name
     FROM `tabDrive Entity`
     LEFT JOIN `tabDrive DocShare`
     ON `tabDrive DocShare`.`share_name` = `tabDrive Entity`.`name`
@@ -1286,6 +1289,7 @@ def search(query):
             OR `tabDrive Entity`.`owner` = {user})
         AND `tabDrive Entity`.`is_active` = 1
         AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
+        AND NOT `tabDrive Entity`.`name` LIKE {omit}
     GROUP  BY `tabDrive Entity`.`name` 
     """,
         as_dict=1,
