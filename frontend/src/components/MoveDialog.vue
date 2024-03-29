@@ -32,12 +32,6 @@
           class="mb-2"></Tabs>
         <div
           class="flex flex-col justify-items-start pl-3 min-h-[40vh] justify-start max-h-[40vh] overflow-y-scroll">
-          <Button
-            v-if="folderStack.length > 1"
-            variant="ghost"
-            icon="arrow-up"
-            class="border"
-            @click="closeEntity()" />
           <NoFilesSection
             v-if="!folderContents?.length"
             class="my-auto"
@@ -75,10 +69,30 @@
             </div>
           </div>
         </div>
+        <div v-if="breadcrumbs.length > 1" class="pl-5 flex mt-5">
+          <div v-for="(crumb, index) in breadcrumbs">
+            <span
+              v-if="breadcrumbs.length > 1 && index > 0"
+              class="text-gray-600 mx-1">
+              {{ "/" }}
+            </span>
+            <button
+              class="text-base cursor-pointer"
+              :class="
+                breadcrumbs.length - 1 === index
+                  ? 'text-gray-900'
+                  : 'text-gray-600'
+              "
+              @click="closeEntity(index)">
+              {{ crumb.title }}
+            </button>
+          </div>
+        </div>
         <div class="w-full flex items-center justify-between">
           <Button
+            :disabled="disableNewFolder"
             :variant="'subtle'"
-            class="ml-5 mt-8"
+            class="ml-5 mt-2"
             :loading="folderContents?.loading"
             icon-left="folder-plus">
             New Folder
@@ -91,7 +105,7 @@
                 new_parent: currentFolder,
               })
             "
-            class="mt-8"
+            class="mt-2"
             :loading="move.loading">
             <template #prefix>
               <FolderInput class="w-4" />
@@ -125,10 +139,11 @@ const props = defineProps({
     default: 0,
   },
 });
-
+const store = useStore();
 const tabIndex = ref(props.suggestedTabIndex);
 const folderContents = ref();
-const folderStack = ref([""]);
+const folderName = ref("");
+const breadcrumbs = ref([{ name: store.state.homeFolderID, title: "Home" }]);
 
 const tabs = [
   {
@@ -150,12 +165,19 @@ const isEmpty = computed(() => {
   return folderContents.value && folderContents.value.length === 0;
 });
 
+const disableNewFolder = computed(() => {
+  if (tabIndex.value !== 0) {
+    return true;
+  } else {
+    console.log(currentFolder.value);
+  }
+});
+
 const currentFolder = computed(() => {
-  return folderStack.value[folderStack.value.length - 1];
+  return breadcrumbs.value[breadcrumbs.value.length - 1].name;
 });
 
 const emit = defineEmits(["update:modelValue", "success"]);
-const store = useStore();
 const DialogTitle = computed(() => {
   if (store.state.entityInfo.length > 1) {
     return store.state.entityInfo.length + " items";
@@ -176,8 +198,10 @@ const open = computed({
 });
 
 function openEntity(value) {
+  folderPermissions.fetch();
+  console.log(folderPermissions.data);
   if (value.is_group) {
-    folderStack.value.push(value.name);
+    breadcrumbs.value.push({ name: value.name, title: value.title });
     if (tabIndex === 2) {
       sharedFolder.fetch({
         entity_name: currentFolder.value,
@@ -191,34 +215,41 @@ function openEntity(value) {
   }
 }
 
-function closeEntity() {
-  folderStack.value.pop();
-  folderStack.value.length ? null : folderStack.value.push("");
-  if (tabIndex === 3) {
-    sharedFolder.fetch({
-      entity_name: currentFolder.value,
-    });
-  } else {
-    ownedFolder.fetch({
-      entity_name: currentFolder.value,
-      is_active: true,
-    });
+function closeEntity(index) {
+  if (breadcrumbs.value.length > 1 && index !== breadcrumbs.value.length - 1) {
+    breadcrumbs.value = breadcrumbs.value.slice(0, index + 1);
+    if (tabIndex === 3) {
+      sharedFolder.fetch({
+        entity_name: currentFolder.value,
+      });
+    } else {
+      ownedFolder.fetch({
+        entity_name: currentFolder.value,
+        is_active: true,
+      });
+    }
   }
 }
 
 watch(tabIndex, (newValue, oldValue) => {
-  folderStack.value = [""];
   switch (newValue) {
     case 0:
-      ownedFolder.fetch();
+      breadcrumbs.value = [{ name: store.state.homeFolderID, title: "Home" }];
+      ownedFolder.fetch({
+        entity_name: store.state.homeFolderID,
+        is_active: true,
+      });
       break;
     case 1:
+      breadcrumbs.value = [{ name: "", title: "Favourites" }];
       favourites.fetch();
       break;
     case 2:
+      breadcrumbs.value = [{ name: "", title: "Shared" }];
       sharedWithMe.fetch({ entity_name: "" });
       break;
     default:
+      breadcrumbs.value = [];
       folderContents.value = [];
       break;
   }
@@ -311,6 +342,32 @@ let move = createResource({
   auto: false,
   onSuccess(data) {
     emit("success", store.state.entityInfo[0].name);
+  },
+});
+
+let folderPermissions = createResource({
+  url: "drive.api.permissions.get_entity_with_permissions",
+  params: {
+    entity_name: currentFolder.value.name,
+    fields: "title,is_group,allow_comments,allow_download,owner",
+  },
+  onSuccess(data) {
+    this.entity = data;
+  },
+  auto: false,
+});
+
+let NewFolder = createResource({
+  url: "drive.api.files.create_folder",
+  params: {
+    title: folderName.value,
+    parent: currentFolder.value,
+  },
+  onSuccess(data) {
+    console.log(data);
+  },
+  onError(error) {
+    console.log(error);
   },
 });
 </script>
