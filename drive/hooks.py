@@ -187,3 +187,5 @@ website_redirects = [
     {"source": "/me", "target": "/drive/home"},
     {"source": "/login", "target": "/drive/login"},
 ]
+
+has_realtime_event_handlers=True
