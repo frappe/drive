@@ -99,6 +99,7 @@ import FilePicker from "@/components/FilePicker.vue";
 import { ResizableMedia } from "./resizeableMedia";
 import NewComment from "./NewComment.vue";
 import { uploadDriveEntity } from "../../utils/chunkFileUpload";
+import { FrappeSocketProvider } from "./FrappeSocketProvider";
 
 export default {
   name: "TextEditor",
@@ -177,7 +178,7 @@ export default {
       buttons: [],
       forceHideBubbleMenu: false,
       provider: null,
-      awareness: null,
+      //awareness: null,
       connectedUsers: null,
       localStore: null,
       tempEditable: true,
@@ -311,13 +312,18 @@ export default {
       "fdoc" + JSON.stringify(this.entityName),
       doc
     ); */
-    const webrtcProvider = new WebrtcProvider(
+    /* const webrtcProvider = new WebrtcProvider(
       "fdoc" + JSON.stringify(this.entityName),
       doc,
       { signaling: ["wss://network.arjunchoudhary.com"] }
+    ); */
+    const webrtcProvider = new FrappeSocketProvider(
+      this.socket,
+      this.entityName,
+      doc
     );
     this.provider = webrtcProvider;
-    this.awareness = this.provider.awareness.getStates();
+    //this.awareness = this.provider.awareness.getStates();
     /* this.localStore = indexeddbProvider; */
     let componentContext = this;
     document.addEventListener("keydown", this.saveDoc);
@@ -327,16 +333,13 @@ export default {
       onCreate() {
         componentContext.findCommentsAndStoreValues();
         componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
-        componentContext.updateConnectedUsers(componentContext.editor);
       },
       onUpdate() {
-        componentContext.updateConnectedUsers(componentContext.editor);
         componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc));
         componentContext.findCommentsAndStoreValues();
         componentContext.setCurrentComment();
       },
       onSelectionUpdate() {
-        componentContext.updateConnectedUsers(componentContext.editor);
         componentContext.setCurrentComment();
         componentContext.isTextSelected =
           !!componentContext.editor.state.selection.content().size;
@@ -391,14 +394,14 @@ export default {
         Collaboration.configure({
           document: doc,
         }),
-        CollaborationCursor.configure({
+        /* CollaborationCursor.configure({
           provider: webrtcProvider,
           user: {
             name: this.currentUserName,
             avatar: this.currentUserImage,
             color: this.RndColor(),
           },
-        }),
+        }), */
         LineHeight,
         Indent,
         Link.configure({
@@ -488,12 +491,12 @@ export default {
         this.$store.state.entityInfo[0]["title"] = this.entity.title;
       }
     },
-    updateConnectedUsers(editor) {
+    /*  updateConnectedUsers(editor) {
       this.$store.commit(
         "setConnectedUsers",
         editor.storage.collaborationCursor.users
       );
-    },
+    }, */
     async wordToHTML() {
       let ctx = this;
       if (
