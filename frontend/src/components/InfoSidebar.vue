@@ -130,44 +130,60 @@
           </div>
         </div>
         <div v-if="tab === 1" class="h-full pb-12">
-          <div class="flex items-center pl-4 pt-4 sticky top-0 bg-white">
+          <div class="flex items-center px-4 pt-4 bg-white">
             <span class="font-medium text-base mb-2">Comments</span>
           </div>
-          <div
-            v-if="entity.allow_comments"
-            class="px-4 overflow-y-auto pb-4 space-y-6">
+          <div v-if="entity.allow_comments" class="px-4 overflow-y-auto pb-4">
             <div
               v-for="comment in comments.data"
               :key="comment"
-              class="flex gap-3 items-center">
-              <Avatar
-                :label="comment.comment_by"
-                :image="comment.user_image"
-                class="h-7 w-7" />
-              <div>
-                <span class="text-sm font-medium">
-                  {{ comment.comment_by }}
-                </span>
-                <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
-                <span class="text-gray-700 text-sm">
-                  {{ comment.creation }}
-                </span>
-                <div class="text-base text-gray-700">
-                  {{ comment.content }}
+              class="flex flex-col">
+              <div class="flex items-center gap-1 mt-2">
+                <Avatar
+                  :label="comment.comment_by"
+                  :image="comment.user_image"
+                  class="h-7 w-7" />
+                <div>
+                  <span class="text-sm font-medium">
+                    {{ comment.comment_by }}
+                  </span>
+                  <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
+                  <span class="text-gray-700 text-sm">
+                    {{ comment.creation }}
+                  </span>
                 </div>
               </div>
-            </div>
-            <div v-if="userId != 'Guest'" class="flex items-center gap-3 my-4">
-              <Avatar :label="fullName" :image="imageURL" class="h-7 w-7" />
-              <div class="flex">
-                <Input
-                  v-model="newComment"
-                  type="text"
-                  placeholder="Add comment"
-                  @keydown.enter="postComment" />
+              <div
+                class="ml-2.5 my-2 text-sm text-gray-700 max-w-full break-word leading-snug">
+                {{ comment.content }}
               </div>
-              <Button @click="postComment" variant="solid">Add</Button>
             </div>
+            <div
+              v-if="userId != 'Guest'"
+              class="flex items-center gap-1 mt-2 mb-4">
+              <Avatar
+                :label="fullName"
+                :image="imageURL"
+                class="h-7 w-7 mr-1" />
+              <span class="text-sm font-medium">
+                {{ fullName }}
+              </span>
+              <span class="text-gray-500 text-sm">{{ "∙" }}</span>
+              <span class="text-gray-700 text-sm">Now</span>
+            </div>
+            <textarea
+              class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto w-full mx-1 form-textarea block mx-0.5 resize-none mb-2"
+              v-model="newComment"
+              placeholder="Leave a comment"
+              @input="resize($event)"
+              @keypress.enter.stop.prevent="postComment" />
+            <Button
+              class="w-full mx-1"
+              variant="solid"
+              :disabled="!newComment.length"
+              @click="postComment">
+              Comment
+            </Button>
           </div>
           <div v-else class="text-gray-600 text-sm p-4 border-b">
             Comments have been disabled for this
@@ -411,6 +427,10 @@ let entityTags = createResource({
   },
   auto: false,
 });
+
+function resize(e) {
+  e.target.style.height = `${e.target.scrollHeight}px`;
+}
 </script>
 <style scoped>
 .animate:active {

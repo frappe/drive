@@ -33,7 +33,8 @@
             </span>
           </div>
         </div>
-        <div class="ml-2.5 mt-2 text-sm text-gray-700 max-w-full break-word">
+        <div
+          class="ml-2.5 mt-2 text-sm text-gray-700 max-w-full break-word leading-snug">
           <p class="">{{ jsonComment.content }}</p>
         </div>
       </div>
@@ -62,13 +63,14 @@
               textarea[comment.jsonComments.uuid] = el;
             }
           "
-          class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto form-textarea block w-full resize-none mb-2"
+          class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto form-textarea block mx-0.5 resize-none mb-2"
           v-model="commentText"
           placeholder="Reply"
           @input="resize($event)"
           @focus="comment.jsonComments.uuid === activeCommentsInstance.uuid"
           @keypress.enter.stop.prevent="setComment" />
         <Button
+          class="w-full"
           variant="solid"
           :disabled="!commentText.length"
           @click="setComment">
