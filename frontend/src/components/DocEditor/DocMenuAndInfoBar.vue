@@ -860,7 +860,7 @@
     </div>
   </Transition>
   <div
-    class="flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
+    class="hidden sm:flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
       @click="switchTab(0)"
       class="animate mb-2 py-4 text-gray-600"

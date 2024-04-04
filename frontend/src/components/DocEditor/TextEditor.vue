@@ -768,6 +768,14 @@ export default {
   max-height: 29.7cm;
 }
 
+/* 640 is sm from espresso design */
+@media only screen and (max-width: 640px) {
+  .ProseMirror {
+    max-width: 100%;
+    min-width: 100%;
+  }
+}
+
 .ProseMirror a {
   text-decoration: underline;
 }
