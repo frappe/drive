@@ -1228,7 +1228,6 @@ export default {
               .chain()
               .focus()
               .clearNodes()
-              .unsetAllMarks()
               .setHeading({ level: 4 })
               .setFontSize("16px")
               .setColor("#7c7c7c")
@@ -1241,7 +1240,7 @@ export default {
               .chain()
               .focus()
               .clearNodes()
-              .unsetAllMarks()
+              .setFontSize("14px")
               .setParagraph()
               .run(),
         },

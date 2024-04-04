@@ -768,6 +768,10 @@ export default {
   max-height: 29.7cm;
 }
 
+.ProseMirror a {
+  text-decoration: underline;
+}
+
 /* Firefox */
 .ProseMirror-focused:focus-visible {
   outline: none;
