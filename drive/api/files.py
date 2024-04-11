@@ -109,6 +109,7 @@ def get_user_uploads_directory (user=None):
             user_directory_uploads_path = create_uploads_directory()
     return user_directory_uploads_path
 
+
 @frappe.whitelist()
 def upload_file(fullpath=None, parent=None, last_modified=None):
     """
@@ -272,7 +273,7 @@ def get_doc_content(drive_document_name):
     drive_document = frappe.db.get_value(
         "Drive Document",
         drive_document_name,
-        ["content"],
+        ["content", "settings"],
         as_dict=1,
     )
     return drive_document
@@ -290,7 +291,7 @@ def passive_rename(entity_name, new_title):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, content, file_size):
+def save_doc(entity_name, doc_name, content, file_size, settings=None):
     if not frappe.has_permission(
         doctype="Drive Entity",
         doc=entity_name,
@@ -299,6 +300,8 @@ def save_doc(entity_name, doc_name, content, file_size):
     ):
         raise frappe.PermissionError("You do not have permission to view this file")
     drive_document = frappe.db.set_value("Drive Document", doc_name, "content", content)
+    if settings:
+        frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
     frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
     return
 

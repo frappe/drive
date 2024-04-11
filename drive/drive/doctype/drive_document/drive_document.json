@@ -7,7 +7,7 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["title", "content"],
+  "field_order": ["title", "content", "settings"],
   "fields": [
     {
       "fieldname": "title",
@@ -21,10 +21,16 @@
       "fieldname": "content",
       "fieldtype": "Long Text",
       "label": "Content"
+    },
+    {
+      "default": "{\n   \"docWidth\": false,\n   \"docSize\": false,\n   \"docFont\": \"font-fd-sans\",\n   \"docHeader\": false\n}",
+      "fieldname": "settings",
+      "fieldtype": "JSON",
+      "label": "Settings"
     }
   ],
   "links": [],
-  "modified": "2023-08-23 17:36:52.650920",
+  "modified": "2024-04-11 14:34:54.183190",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",

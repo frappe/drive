@@ -1,10 +1,19 @@
 <template>
   <div class="flex-col w-full overflow-y-scroll" v-if="editor">
-    <div class="flex w-full items-start justify-start lg:justify-center">
+    <div
+      :class="[
+        settings.docFont,
+        settings.docSize ? 'text-[15px]' : 'text-[17px]',
+        settings.docWidth
+          ? 'sm:min-w-[75vw] sm:max-w-[75vw]'
+          : 'sm:min-w-[21cm] sm:max-w-[21cm]',
+      ]"
+      class="flex sm:w-full items-start justify-start lg:justify-center mx-auto">
       <editor-content
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
+        class="min-w-full"
+        autocomplete="true"
+        autocorrect="true"
+        autocapitalize="true"
         spellcheck="true"
         id="editor-capture"
         :editor="editor" />
@@ -22,7 +31,7 @@
         :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
-  <DocMenuAndInfoBar :editor="editor" ref="MenuBar" />
+  <DocMenuAndInfoBar :editor="editor" ref="MenuBar" :settings="settings" />
   <FilePicker
     v-if="showFilePicker"
     v-model="showFilePicker"
@@ -99,6 +108,9 @@ import FilePicker from "@/components/FilePicker.vue";
 import { ResizableMedia } from "./resizeableMedia";
 import NewComment from "./NewComment.vue";
 import { uploadDriveEntity } from "../../utils/chunkFileUpload";
+import { Details } from "./DetailsExtension";
+import { DetailsSummary } from "./DetailsExtension";
+import { DetailsContent } from "./DetailsExtension";
 
 export default {
   name: "TextEditor",
@@ -129,6 +141,10 @@ export default {
       type: [Boolean, Array],
       default: false,
     },
+    settings: {
+      type: Object,
+      default: false,
+    },
     entityName: {
       default: "",
       type: String,
@@ -148,6 +164,10 @@ export default {
       type: Uint8Array,
       required: true,
       default: null,
+    },
+    modelValue: {
+      type: Uint8Array,
+      required: true,
     },
     placeholder: {
       type: String,
@@ -173,7 +193,11 @@ export default {
   emits: ["update:modelValue", "updateTitle", "saveDocument"],
   data() {
     return {
+      docWidth: this.settings.docWidth,
+      docSize: this.settings.docSize,
+      docFont: this.settings.docFont,
       editor: null,
+      defaultFont: "font-sans",
       buttons: [],
       forceHideBubbleMenu: false,
       provider: null,
@@ -220,7 +244,7 @@ export default {
       return {
         attributes: {
           class: normalizeClass([
-            "ProseMirror prose prose-sm leading-[21px] font-normal prose-h1:font-bold prose-p:my-1 prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 border-gray-400 placeholder-gray-500 ",
+            `ProseMirror prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
           ]),
         },
         clipboardTextParser: (text, $context) => {
@@ -247,6 +271,25 @@ export default {
     },
   },
   watch: {
+    settings(newVal, oldVal) {
+      consol.log("FIRE");
+      switch (newVal.toLowerCase()) {
+        case "sans":
+          this.defaultFont = "font-['Nunito']";
+          break;
+        case "serif":
+          this.defaultFont = "font-['Lora']";
+          break;
+        case "round":
+          this.defaultFont = "font-['Nunito']";
+          break;
+        case "mono":
+          this.defaultFont = "font-['Geist-Mono']";
+          break;
+        default:
+          this.defaultFont = "font-['InterVar']";
+      }
+    },
     activeCommentsInstance: {
       handler(newVal) {
         if (newVal) {
@@ -346,36 +389,55 @@ export default {
         StarterKit.configure({
           history: false,
           heading: {
-            levels: [1, 2, 3, 4],
-            HTMLAttributes: {
-              class: "not-prose leading-7",
-            },
+            levels: [1, 2, 3, 4, 5],
           },
           listItem: {
             HTMLAttributes: {
               class: "prose-list-item",
             },
           },
-          /* codeBlock: {
+          codeBlock: {
             HTMLAttributes: {
-              class: "my-5 px-4 py-2 text-sm text-black bg-gray-50 rounded border border-gray-200 leading-5 overflow-x-scroll",
+              class:
+                "not-prose my-5 px-4 pt-4 pb-2 text-[0.9em] font-mono text-black bg-gray-50 rounded border border-gray-300 overflow-x-scroll",
             },
-          }, */
+          },
+          blockquote: {
+            HTMLAttributes: {
+              class:
+                "prose-quoteless text-black border-l-2 pl-2 border-gray-400 text-[0.9em]",
+            },
+          },
+          code: {
+            HTMLAttributes: {
+              class:
+                "not-prose px-px font-mono bg-gray-50 text-[0.85em] rounded-sm border border-gray-300",
+            },
+          },
           bulletList: {
             keepMarks: true,
             keepAttributes: false,
             HTMLAttributes: {
-              class: "not-prose",
+              class: "",
             },
           },
           orderedList: {
             keepMarks: true,
             keepAttributes: false,
             HTMLAttributes: {
-              class: "not-prose",
+              class: "",
             },
           },
         }),
+        Details.configure({
+          persist: true,
+          HTMLAttributes: {
+            class: "details",
+            openClassName: "details-is-open",
+          },
+        }),
+        DetailsSummary,
+        DetailsContent,
         Table.configure({
           resizable: true,
         }),
@@ -416,7 +478,7 @@ export default {
         configureMention(this.mentions),
         TaskList.configure({
           HTMLAttributes: {
-            class: "not-prose",
+            class: "",
           },
         }),
         TaskItem.configure({
@@ -759,18 +821,14 @@ export default {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: text;
-  padding: 2em 1em;
-  font-size: 14px;
+  padding: 4em 1em;
   background: white;
-  min-width: 21cm;
-  max-width: 21cm;
-  min-height: 29.7cm;
-  max-height: 29.7cm;
 }
 
 /* 640 is sm from espresso design */
 @media only screen and (max-width: 640px) {
   .ProseMirror {
+    display: block;
     max-width: 100%;
     min-width: 100%;
   }
@@ -783,51 +841,6 @@ export default {
 /* Firefox */
 .ProseMirror-focused:focus-visible {
   outline: none;
-}
-
-.ProseMirror h1 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0em;
-}
-
-.ProseMirror h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0em;
-}
-
-.ProseMirror h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0em;
-}
-
-.ProseMirror blockquote {
-  border-left: 2px solid lightgray;
-  padding-left: 10px;
-}
-
-.ProseMirror strong {
-  font-weight: 600;
-}
-
-.ProseMirror code,
-pre {
-  white-space: pre;
-}
-
-.ProseMirror hr {
-  margin: 10px 0px;
-}
-
-.ProseMirror ul,
-ol {
-  list-style-type: revert;
-  padding: revert;
 }
 
 @page {
@@ -904,5 +917,83 @@ span[data-comment] {
 .my-task-item input[type="checkbox"]:checked {
   outline: none;
   background-color: #0d0d0d;
+}
+
+summary {
+  display: flex;
+  width: 100%;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  pointer-events: none;
+  outline: none;
+}
+
+summary p {
+  margin-top: 0.15rem !important;
+  margin-bottom: 0.15rem !important;
+}
+
+/*transition: 0.3s;*/
+.details-arrow {
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  height: 2rem;
+  width: 2rem;
+  transition: transform 0.5s ease-in-out;
+  appearance: none;
+  box-sizing: border-box;
+  padding: 4px;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+.details-arrow::before {
+  content: "▶";
+  color: var(--tw-prose-bullets);
+}
+
+div[data-type="details-content"] {
+  padding: 0rem 1.25rem;
+}
+
+.details-wrapper {
+  position: relative;
+}
+details {
+  min-height: 100%;
+  width: 100%;
+}
+
+details {
+  display: inline-block;
+  width: 100%; /* Adjust width as needed */
+}
+
+.details-wrapper_rendered .details-arrow {
+  pointer-events: none;
+}
+
+.details-wrapper_rendered summary {
+  transition: transform 0.3s;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.details-wrapper_rendered summary:hover {
+  background: #0d0d0d;
+}
+
+details[open] > summary {
+  border-bottom: 1px solid lightgray;
+}
+details[open] {
+  border-bottom: 1px solid lightgray;
+}
+
+details[open] + .details-arrow::before {
+  content: "▼";
+  color: var(--tw-prose-bullets);
+  transform: rotate(45deg);
 }
 </style>
