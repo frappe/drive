@@ -2,18 +2,18 @@
   <Dropdown :options="settingsItems">
     <template v-slot="{ open }">
       <button
-        class="flex items-center rounded-md text-left ml-[1px] px-3 py-1.5 hover:bg-gray-200"
+        class="flex items-center justify-center rounded-md text-left mx-1 p-1 mb-1 hover:bg-gray-200"
         :style="{
-          width: isExpanded ? '250px' : 'auto',
+          width: isExpanded ? '260px' : 'auto',
         }">
         <Avatar :image="imageURL" size="xl" :label="fullName" />
         <div v-if="isExpanded" class="ml-2 flex flex-col">
           <div class="text-base font-medium text-gray-900 leading-none">
             {{ fullName }}
           </div>
-          <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
+          <!--           <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
             {{ isAdmin ? "Drive Admin" : "Drive User" }}
-          </div>
+          </div> -->
         </div>
         <FeatherIcon
           v-if="isExpanded"

@@ -1,7 +1,7 @@
 <template>
   <button
     @click="() => $router.push({ name: 'Home' })"
-    class="flex items-center rounded-md text-left px-3 mt-2"
+    class="flex items-center rounded-md text-left mx-2 mt-2"
     :style="{
       width: isExpanded ? '250px' : 'auto',
     }">

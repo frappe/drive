@@ -1,14 +1,17 @@
 <template>
   <div
     :style="{ width: isExpanded ? '280px' : '60px' }"
-    class="border-r bg-gray-50 transition-all relative md:block">
+    class="border-r bg-gray-50 transition-all relative md:block px-1">
     <div
       class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
       :class="{ 'opacity-100': sidebarResizing }"
       @mousedown="startResize" />
     <div class="py-1 flex flex-col justify-items-center h-full">
       <UserDropdown />
-      <div ondragstart="return false;" ondrop="return false;" class="p-2.5">
+      <div
+        ondragstart="return false;"
+        ondrop="return false;"
+        class="px-1.5 py-2.5">
         <div v-for="item in sidebarItems">
           <router-link
             v-if="item.route"
@@ -16,7 +19,7 @@
             v-slot="{ href, navigate }"
             :to="item.route">
             <a
-              class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
+              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
               :class="[
                 item.highlight()
                   ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -35,7 +38,7 @@
           <div v-else>
             <button
               @click="item.action"
-              class="sidebar-animate flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
+              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
               :class="[
                 item.highlight()
                   ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -203,9 +206,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.sidebar-animate:active {
-  transform: scaleX(0.985) scaleY(0.985) translateY(0.5px);
-}
-</style>
