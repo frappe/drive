@@ -10,7 +10,8 @@
           borderRadius: '100%',
           borderColor: user.color,
         }"
-        :label="user.name" />
+        :label="user.name"
+        :title="user.name" />
     </div>
   </button>
 </template>
