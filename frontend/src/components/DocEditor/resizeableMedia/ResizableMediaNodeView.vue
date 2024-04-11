@@ -270,7 +270,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
           v-if="mediaType === 'img'"
           v-bind="node.attrs"
           ref="resizableImg"
-          class="rounded-sm"
+          class="rounded-sm m-3"
           draggable="false"
           :class="[
             `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
@@ -281,7 +281,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
           v-else-if="mediaType === 'video'"
           v-bind="node.attrs"
           ref="resizableImg"
-          class="rounded-sm"
+          class="rounded-sm m-3"
           :class="[
             `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
             `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
@@ -334,7 +334,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
         v-if="mediaType === 'img'"
         v-bind="node.attrs"
         ref="resizableImg"
-        class="rounded-sm"
+        class="rounded-sm m-3"
         :class="[
           `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
           `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
@@ -345,7 +345,7 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
         v-else-if="mediaType === 'video'"
         v-bind="node.attrs"
         ref="resizableImg"
-        class="rounded-sm"
+        class="rounded-sm m-3"
         :class="[
           `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
           `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
