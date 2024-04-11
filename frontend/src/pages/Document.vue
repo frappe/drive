@@ -2,6 +2,7 @@
   <TextEditor
     v-if="contentLoaded"
     v-model="content"
+    v-model:settings="settings"
     :fixed-menu="true"
     :bubble-menu="true"
     placeholder="Start typing ..."
@@ -33,6 +34,7 @@ export default {
       oldTitle: null,
       title: null,
       content: null,
+      settings: null,
       contentLoaded: false,
       document: null,
       isWritable: false,
@@ -65,6 +67,7 @@ export default {
           doc_name: this.document,
           title: this.titleVal,
           content: fromUint8Array(this.content),
+          settings: this.settings,
           comments: this.comments,
           file_size: fromUint8Array(this.content).length,
         });
@@ -116,6 +119,7 @@ export default {
               doc_name: this.document,
               title: this.titleVal,
               content: fromUint8Array(this.content),
+              settings: this.settings,
               comments: this.comments,
               file_size: fromUint8Array(this.content).length,
             });
@@ -150,6 +154,11 @@ export default {
           data.modified = formatDate(data.modified);
           data.creation = formatDate(data.creation);
           this.$store.commit("setEntityInfo", [data]);
+          if (!data.settings) {
+            data.settings =
+              '{ "docWidth": false, "docSize": false, "docFont": "font-fd-sans", "docHeader": false}';
+          }
+          this.settings = JSON.parse(data.settings);
         },
         onError(error) {
           if (error && error.exc_type === "PermissionError") {
