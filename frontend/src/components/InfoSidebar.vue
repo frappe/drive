@@ -213,7 +213,7 @@
   <div
     class="hidden sm:flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
     <Button
-      class="animate mb-2 py-4 text-gray-600"
+      class="mb-2 py-4 text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
           ? 'text-black bg-gray-200'
@@ -229,7 +229,7 @@
         class="text-gray-600 w-full h-full stroke-1.5" />
     </Button>
     <Button
-      class="animate mb-2 text-gray-600 py-4"
+      class="mb-2 text-gray-600 py-4"
       :class="[
         tab === 1 && showInfoSidebar
           ? 'text-black bg-gray-200'
@@ -432,8 +432,3 @@ function resize(e) {
   e.target.style.height = `${e.target.scrollHeight}px`;
 }
 </script>
-<style scoped>
-.animate:active {
-  transform: scaleX(0.985) scaleY(0.985) translateY(0.5px);
-}
-</style>

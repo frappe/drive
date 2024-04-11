@@ -162,9 +162,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.sidebar-animate:active {
-  transform: scaleX(0.985) scaleY(0.985) translateY(0.5px);
-}
-</style>
