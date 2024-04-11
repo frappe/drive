@@ -12,16 +12,19 @@ import App from "./App.vue";
 import mitt from "mitt";
 import "./index.css";
 import VueTippy from "vue-tippy";
+import { initSocket } from "./socket";
 
 setConfig("resourceFetcher", frappeRequest);
 const emitter = mitt();
 const app = createApp(App);
 app.config.unwrapInjectedRef = true;
 app.config.globalProperties.emitter = emitter;
+const socket = initSocket();
+app.config.globalProperties.socket = socket;
 app.provide("emitter", emitter);
 app.use(router);
 app.use(store);
-app.use(FrappeUI);
+app.use(FrappeUI, { socketio: false });
 app.directive("on-outside-click", onOutsideClickDirective);
 app.use(
   VueTippy,
