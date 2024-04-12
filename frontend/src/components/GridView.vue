@@ -77,7 +77,7 @@
             <p
               :title="folder.modified"
               class="truncate text-xs text-gray-600 mt-0">
-              {{ folder.file_size ? folder.file_size : "" }} ∙
+              {{ folder.file_size ? folder.file_size + " ∙ " : "" }}
               {{ folder.relativeModified }}
             </p>
           </div>
