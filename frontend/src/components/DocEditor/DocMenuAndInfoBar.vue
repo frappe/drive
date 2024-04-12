@@ -1114,7 +1114,7 @@ export default {
   },
   data() {
     return {
-      tab: 0,
+      tab: this.entity?.write ? 0 : 4,
       tabs: [
         {
           name: "Typography",
