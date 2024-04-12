@@ -264,7 +264,7 @@ export default {
               ) {
                 return (
                   this.selectedEntities[0]?.allow_download ||
-                  this.selectedEntities[0]?.owner === "Me"
+                  this.selectedEntities[0]?.owner === "You"
                 );
               }
             }
@@ -291,7 +291,7 @@ export default {
             if (this.selectedEntities?.length) {
               const allEntitiesSatisfyCondition = this.selectedEntities?.every(
                 (entity) => {
-                  return entity.allow_download || entity.owner === "Me";
+                  return entity.allow_download || entity.owner === "You";
                 }
               );
               return allEntitiesSatisfyCondition;
@@ -318,7 +318,7 @@ export default {
             return (
               this.selectedEntities?.length === 1 &&
               (this.selectedEntities[0]?.write ||
-                this.selectedEntities[0]?.owner === "Me")
+                this.selectedEntities[0]?.owner === "You")
             );
           },
         },
@@ -398,7 +398,7 @@ export default {
           data.creation = formatDate(data.creation);
           this.$store.commit("setEntityInfo", [data]);
           this.previewEntity = data;
-          data.owner = "Me";
+          data.owner = "You";
         },
         onError(data) {
           console.log(data);

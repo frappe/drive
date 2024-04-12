@@ -49,7 +49,7 @@
             <img class="h-auto max-h-full w-auto" :src="thumbnailLink" />
           </div>
           <div class="p-4 space-y-6">
-            <div v-if="entity.owner === 'Me'">
+            <div v-if="entity.owner === 'You'">
               <div class="text-base font-medium mb-2">Manage Access</div>
               <div class="flex flex-row">
                 <Button
@@ -61,7 +61,7 @@
               </div>
             </div>
 
-            <div v-if="entity.owner === 'Me' || entityTags.data?.length">
+            <div v-if="entity.owner === 'You' || entityTags.data?.length">
               <div class="text-base font-medium mb-2">Tags</div>
               <div class="flex flex-wrap gap-2">
                 <Tag
@@ -76,11 +76,11 @@
                     }
                   " />
                 <Badge
-                  v-if="!addTag && entity.owner === 'Me'"
+                  v-if="!addTag && entity.owner === 'You'"
                   class="flex items-center content-center cursor-pointer font-medium"
                   @click="addTag = true">
                   <FeatherIcon
-                    v-if="entity.owner === 'Me'"
+                    v-if="entity.owner === 'You'"
                     class="h-3 stroke-2"
                     name="plus" />
                   Add tag
@@ -326,7 +326,7 @@ const entity = computed(() => {
 });
 
 const showComments = computed(() => {
-  if (entity.value.owner === "Me") {
+  if (entity.value.owner === "You") {
     return true;
   } else if (entity.value.write) {
     return true;

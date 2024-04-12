@@ -244,7 +244,7 @@ let recents = createResource({
         : formatSize(entity.file_size);
       entity.modified = formatDate(entity.modified);
       entity.creation = formatDate(entity.creation);
-      entity.owner = "Me";
+      entity.owner = "You";
     });
     folderContents.value = data;
   },
@@ -268,7 +268,7 @@ let sharedFolder = createResource({
       entity.file_size = entity.is_group ? "" : formatSize(entity.file_size);
       entity.modified = formatDate(entity.modified);
       entity.creation = formatDate(entity.creation);
-      entity.owner = entity.owner === this.userId ? "Me" : entity.owner;
+      entity.owner = entity.owner === this.userId ? "You" : entity.owner;
       this.$store.commit("setCurrentViewEntites", data);
     });
   },
@@ -287,7 +287,7 @@ let favourites = createResource({
         : formatSize(entity.file_size);
       entity.modified = formatDate(entity.modified);
       entity.creation = formatDate(entity.creation);
-      entity.owner = "Me";
+      entity.owner = "You";
     });
     folderContents.value = data;
   },
@@ -308,7 +308,7 @@ let ownedFolder = createResource({
         : formatSize(entity.file_size);
       entity.modified = formatDate(entity.modified);
       entity.creation = formatDate(entity.creation);
-      entity.owner = "Me";
+      entity.owner = "You";
     });
     folderContents.value = data;
   },
@@ -329,7 +329,7 @@ let sharedWithMe = createResource({
         : formatSize(entity.file_size);
       entity.modified = formatDate(entity.modified);
       entity.creation = formatDate(entity.creation);
-      entity.owner = "Me";
+      entity.owner = "You";
     });
     folderContents.value = data;
   },

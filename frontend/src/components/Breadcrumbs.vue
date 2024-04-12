@@ -143,13 +143,13 @@ export default {
     canShowRenameDialog() {
       if (this.$route.name === "Folder") {
         if (
-          (this.$store.state.currentFolder[0]?.owner === "Me") |
+          (this.$store.state.currentFolder[0]?.owner === "You") |
           this.$store.state.currentFolder[0]?.write
         ) {
           return (this.showRenameDialog = true);
         }
       } else if (
-        (this.$store.state.entityInfo[0]?.owner === "Me") |
+        (this.$store.state.entityInfo[0]?.owner === "You") |
         (this.$store.state.entityInfo[0]?.write === 1)
       ) {
         return (this.showRenameDialog = true);

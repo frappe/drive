@@ -65,7 +65,7 @@ let currentFolder = createResource({
     data.creation = formatDate(data.creation);
     if (data.owner === store.state.auth.user_id) {
       allowEmptyContextMenu.value = true;
-      data.owner = "Me";
+      data.owner = "You";
     }
     data.write ? (allowEmptyContextMenu.value = true) : null;
   },

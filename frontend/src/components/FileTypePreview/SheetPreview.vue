@@ -15,7 +15,7 @@ import Spreadsheet from "x-data-spreadsheet";
 const props = defineProps(["previewEntity"]);
 const loading = ref(true);
 const canWrite = computed(() => {
-  return props.previewEntity.owner == "Me"
+  return props.previewEntity.owner == "You"
     ? true
     : props.previewEntity.write
     ? true

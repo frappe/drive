@@ -226,7 +226,7 @@ export default {
       return this.isWritable && this.tempEditable;
     },
     bubbleMenuButtons() {
-      if (this.entity.owner === "Me" || this.entity.write) {
+      if (this.entity.owner === "You" || this.entity.write) {
         this.buttons = ["Link", "Separator", "New Comment"];
         return this.buttons.map(createEditorButton);
       } else if (this.entity.allow_comments) {

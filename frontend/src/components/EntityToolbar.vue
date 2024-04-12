@@ -90,7 +90,7 @@ function IsDownloadEnabled() {
     return false;
   }
   const allEntitiesSatisfyCondition = selectedEntities.value.every((entity) => {
-    return entity.allow_download || entity.write || entity.owner === "Me";
+    return entity.allow_download || entity.write || entity.owner === "You";
   });
   return allEntitiesSatisfyCondition;
 }
@@ -121,7 +121,7 @@ function IsDownloadEnabled() {
         return (
           entity.allow_download ||
           entity.write ||
-          entity.owner === "Me"
+          entity.owner === "You"
         );
       }
     );

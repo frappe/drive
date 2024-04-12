@@ -123,7 +123,7 @@ let file = createResource({
     data.file_size = formatSize(data.file_size);
     data.modified = formatDate(data.modified);
     data.creation = formatDate(data.creation);
-    data.owner = data.owner === userId.value ? "Me" : data.owner;
+    data.owner = data.owner === userId.value ? "You" : data.owner;
     store.commit("setEntityInfo", [data]);
   },
   onSuccess(data) {

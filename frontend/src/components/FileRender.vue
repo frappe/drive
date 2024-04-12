@@ -15,7 +15,7 @@
     <Button
       v-if="
         $store.state.entityInfo[0].allow_download ||
-        $store.state.entityInfo[0].owner === 'Me'
+        $store.state.entityInfo[0].owner === 'You'
       "
       class="mt-4 w-full"
       variant="solid"
@@ -166,7 +166,7 @@ export default {
         this.error = "Previews are not supported for this file type";
         if (
           this.$store.state.entityInfo[0].allow_download ||
-          this.$store.state.entityInfo[0].owner === "Me"
+          this.$store.state.entityInfo[0].owner === "You"
         ) {
           this.error =
             "Previews are not supported for this file type. Would you like to download it instead?";

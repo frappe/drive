@@ -88,7 +88,7 @@ export default {
         this.$store.commit("setHasWriteAccess", this.isWritable);
         this.$resources.getDocument.data.owner =
           this.$resources.getDocument.data.owner === this.userId
-            ? "Me"
+            ? "You"
             : this.$resources.getDocument.data.owner;
         this.entity = this.$resources.getDocument.data;
       })

@@ -442,7 +442,7 @@ export default {
                 ) {
                   return (
                     this.selectedEntities[0].allow_download ||
-                    this.selectedEntities[0].owner === "Me"
+                    this.selectedEntities[0].owner === "You"
                   );
                 }
               }
@@ -470,7 +470,7 @@ export default {
               if (this.selectedEntities.length) {
                 const allEntitiesSatisfyCondition = this.selectedEntities.every(
                   (entity) => {
-                    return entity.allow_download || entity.owner === "Me";
+                    return entity.allow_download || entity.owner === "You";
                   }
                 );
                 return allEntitiesSatisfyCondition;
@@ -487,7 +487,7 @@ export default {
             isEnabled: () => {
               return (
                 this.selectedEntities.length === 1 &&
-                this.selectedEntities[0].owner === "Me"
+                this.selectedEntities[0].owner === "You"
               );
             },
           },
@@ -511,7 +511,7 @@ export default {
               return (
                 this.selectedEntities.length === 1 &&
                 (this.selectedEntities[0].write ||
-                  this.selectedEntities[0].owner === "Me")
+                  this.selectedEntities[0].owner === "You")
               );
             },
           },
@@ -523,7 +523,7 @@ export default {
             },
             isEnabled: () => {
               const allOwned = this.selectedEntities.every((entity) => {
-                return entity.owner === "Me";
+                return entity.owner === "You";
               });
               return this.selectedEntities.length > 0 && allOwned;
             },
@@ -541,7 +541,7 @@ export default {
               return (
                 this.selectedEntities.length > 0 &&
                 (this.selectedEntities[0].write ||
-                  this.selectedEntities[0].owner === "Me")
+                  this.selectedEntities[0].owner === "You")
               );
             },
           },
@@ -617,7 +617,7 @@ export default {
                 this.selectedEntities.length === 1 &&
                 this.selectedEntities[0].is_group &&
                 (this.selectedEntities[0].write === 1 ||
-                  this.selectedEntities[0].owner === "Me")
+                  this.selectedEntities[0].owner === "You")
               );
             },
           },
@@ -644,7 +644,7 @@ export default {
             isEnabled: () => {
               return (
                 this.selectedEntities.length > 0 &&
-                this.selectedEntities.every((x) => x.owner != "Me") &&
+                this.selectedEntities.every((x) => x.owner != "You") &&
                 (this.selectedEntities.every((x) => x.write) ||
                   !this.isSharedFolder)
               );
@@ -659,7 +659,7 @@ export default {
             },
             isEnabled: () => {
               const allOwned = this.selectedEntities.every((entity) => {
-                return entity.owner === "Me";
+                return entity.owner === "You";
               });
               return this.selectedEntities.length > 0 && allOwned;
             },
@@ -890,7 +890,7 @@ export default {
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
             entity.owner =
-              entity.owner === this.userId ? "Me" : entity.full_name;
+              entity.owner === this.userId ? "You" : entity.full_name;
           });
         },
         onError(error) {
@@ -950,7 +950,7 @@ export default {
           data.creation = formatDate(data.creation);
           this.$store.commit("setEntityInfo", [data]);
           this.previewEntity = data;
-          data.owner = "Me";
+          data.owner = "You";
         },
         onError(error) {
           console.log(error.messages);

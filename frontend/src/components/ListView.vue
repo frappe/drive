@@ -236,7 +236,7 @@ export default {
         (e.ctrlKey || e.metaKey) &&
         (e.key === "x" || e.key === "X") &&
         this.selectedEntities.length &&
-        this.selectedEntities.every((x) => x.owner === "Me")
+        this.selectedEntities.every((x) => x.owner === "You")
       )
         this.$store.commit("setPasteData", {
           entities: this.selectedEntities.map((x) => x.name),
