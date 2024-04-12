@@ -182,6 +182,7 @@ import EntityContextMenu from "@/components/EntityContextMenu.vue";
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue";
 import { formatSize, formatDate } from "@/utils/format";
 import { getLink } from "@/utils/getLink";
+import { useTimeAgo } from "@vueuse/core";
 import {
   folderDownload,
   selectedEntitiesDownload,
@@ -203,6 +204,8 @@ import {
   FileUp,
   FileText,
   RotateCcw,
+  Palette,
+  ChevronRight,
 } from "lucide-vue-next";
 
 export default {
@@ -883,6 +886,7 @@ export default {
             } else {
               entity.file_size = formatSize(entity.file_size);
             }
+            entity.relativeModified = useTimeAgo(entity.modified);
             entity.modified = formatDate(entity.modified);
             entity.creation = formatDate(entity.creation);
             entity.owner =

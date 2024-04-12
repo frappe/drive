@@ -18,12 +18,12 @@
           v-for="folder in folders"
           :id="folder.name"
           :key="folder.name"
-          class="cursor-pointer p-2 w-36 h-22 rounded-lg border group select-none entity"
+          class="cursor-pointer p-2 w-40 h-22 rounded-lg border group select-none entity"
           draggable="true"
           :class="
             selectedEntities.includes(folder)
               ? 'bg-gray-100 border-gray-300'
-              : 'border-gray-200 hover:shadow-2xl'
+              : 'border-gray-200 hover:shadow-xl'
           "
           @[action]="dblClickEntity(folder)"
           @click="selectEntity(folder, $event, displayOrderedEntities)"
@@ -37,7 +37,7 @@
           @mousedown.stop>
           <div class="flex items-start">
             <svg
-              class="h-6 w-auto"
+              class="h-7 w-auto"
               :draggable="false"
               :style="{ fill: folder.color }"
               width="16"
@@ -74,9 +74,11 @@
             <span class="truncate text-sm text-gray-800 mt-2">
               {{ folder.title }}
             </span>
-            <p class="truncate text-xs text-gray-600 mt-0">
+            <p
+              :title="folder.modified"
+              class="truncate text-xs text-gray-600 mt-0">
               {{ folder.file_size }} {{ !!folder.file_size ? "∙" : null }}
-              {{ folder.modified }}
+              {{ folder.relativeModified }}
             </p>
           </div>
         </div>
@@ -89,12 +91,12 @@
           v-for="file in files"
           :id="file.name"
           :key="file.name"
-          class="w-36 h-36 rounded-lg border group select-none entity cursor-pointer relative group:"
+          class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer relative group:"
           draggable="true"
           :class="
             selectedEntities.includes(file)
               ? 'bg-gray-100 border-gray-300'
-              : 'border-gray-200 hover:shadow-2xl'
+              : 'border-gray-200 hover:shadow-xl'
           "
           @[action]="dblClickEntity(file)"
           @click="selectEntity(file, $event, displayOrderedEntities)"
@@ -125,6 +127,7 @@
             :name="file.name"
             :title="file.title"
             :modified="file.modified"
+            :relativeModified="file.relativeModified"
             :file_size="file.file_size" />
         </div>
       </div>

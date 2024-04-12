@@ -15,20 +15,12 @@ export function formatSize(size, nDigits = 1) {
 
 export function formatDate(date) {
   date = new Date(date);
-  let todaysDate = new Date();
-  let prefix = "";
-  let options = {};
-  if (getDateDiffInDays(todaysDate, date) < 1) {
-    options = { hour: "numeric", minute: "numeric" };
-  } else if (getDateDiffInDays(date, todaysDate) == 1) {
-    prefix = "Yesterday, ";
-    options = { hour: "numeric", minute: "numeric" };
-  } else if (getDateDiffInDays(date, todaysDate) < 364) {
-    options = { month: "short", day: "numeric" };
-  } else {
-    options = { year: "numeric", month: "short", day: "numeric" };
-  }
-  return prefix + date.toLocaleString(undefined, options);
+  let options = { year: "2-digit", month: "2-digit", day: "2-digit" };
+  let formattedDate = date.toLocaleDateString("en-GB", options);
+  // Extract the last two digits of the year
+  let year = formattedDate.split("/")[2];
+  // Reconstruct the date string with the two-digit year
+  return formattedDate.replace(year, year.slice(-2));
 }
 
 export function formatMimeType(mimeType) {

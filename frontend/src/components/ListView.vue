@@ -94,7 +94,7 @@
         {{ entity.title }}
       </div>
       <div
-        class="hidden sm:flex items-center justify-start text-gray-600 text-sm font-medium truncate">
+        class="hidden sm:flex items-center justify-start text-gray-700 text-sm truncate">
         <Avatar
           :image="entity.user_image"
           :label="entity.full_name"
@@ -103,10 +103,11 @@
         {{ entity.owner }}
       </div>
       <div
-        class="hidden sm:flex items-center justify-end text-gray-600 text-sm font-medium truncate">
-        {{ entity.modified }}
+        :title="entity.modified"
+        class="hidden sm:flex items-center justify-end text-gray-700 text-sm truncate">
+        {{ entity.relativeModified }}
       </div>
-      <div class="flex w-full justify-end text-base text-gray-600">
+      <div class="flex w-full justify-end text-base text-gray-700">
         {{ entity.file_size }}
       </div>
       <div class="flex w-full justify-end">
