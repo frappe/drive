@@ -7,13 +7,9 @@
     <span class="truncate text-sm text-gray-800 mb-1">
       {{ title }}
     </span>
-    <div
-      :title="modified"
-      class="truncate text-xs text-gray-600 flex mt-0 place-items-center">
-      <!-- <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
-      <p>{{ getFileSubtitle() }}</p> -->
-      {{ this.file_size }} ∙ {{ this.relativeModified }}
-    </div>
+    <p :title="modified" class="truncate text-xs text-gray-600 mt-0">
+      {{ file_size }} ∙ {{ relativeModified }}
+    </p>
   </div>
 </template>
 <script>
