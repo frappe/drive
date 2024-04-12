@@ -15,10 +15,13 @@ function redir404(to, from) {
 }
 
 function clearStore(to, from) {
-  // Save on on unmount
-  if (from.name == "Document") return;
-  store.commit("setEntityInfo", []);
-  store.commit("setCurrentFolder", []);
+  if (from.name === "Document" || to.name === "Document") {
+    store.commit("setShowInfo", false);
+    return;
+  } else {
+    store.commit("setEntityInfo", []);
+    store.commit("setCurrentFolder", []);
+  }
 }
 
 function setRootBreadCrumb(to) {
@@ -55,6 +58,7 @@ const routes = [
     meta: { sidebar: false, documentPage: true, isHybridRoute: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
+    beforeEnter: [clearStore],
   },
   {
     path: "/recents",
