@@ -44,7 +44,7 @@
               :src="getIconUrl(formatMimeType(entity.mime_type))" />
             <span class="truncate">{{ entity.title }}</span>
           </div>
-          <div>
+          <div class="flex items-center">
             <Avatar
               :image="entity.user_image"
               :label="entity.full_name"
