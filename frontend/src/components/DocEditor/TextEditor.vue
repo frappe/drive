@@ -509,7 +509,7 @@ export default {
         this.showCommentMenu = !this.showCommentMenu;
       } else {
         this.$store.state.showInfo = true;
-        this.$refs.MenuBar.tab = 1;
+        this.$refs.MenuBar.tab = 5;
       }
     });
     setTimeout(() => {
@@ -749,7 +749,7 @@ export default {
       let newVal = this.editor.isActive("comment");
       if (newVal) {
         this.$store.state.showInfo = true;
-        this.$refs.MenuBar.tab = 1;
+        this.$refs.MenuBar.tab = 5;
         const parsedComment = JSON.parse(
           this.editor.getAttributes("comment").comment
         );
