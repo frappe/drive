@@ -23,7 +23,7 @@
       "label": "Content"
     },
     {
-      "default": "{\n   \"docWidth\": false,\n   \"docSize\": false,\n   \"docFont\": \"font-fd-sans\",\n   \"docHeader\": false\n}",
+      "default": "{\n   \"docWidth\": false,\n   \"docSize\": true,\n   \"docFont\": \"font-fd-sans\",\n   \"docHeader\": false\n}",
       "fieldname": "settings",
       "fieldtype": "JSON",
       "label": "Settings"

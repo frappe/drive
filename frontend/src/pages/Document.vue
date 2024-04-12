@@ -156,7 +156,7 @@ export default {
           this.$store.commit("setEntityInfo", [data]);
           if (!data.settings) {
             data.settings =
-              '{ "docWidth": false, "docSize": false, "docFont": "font-fd-sans", "docHeader": false}';
+              '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false}';
           }
           this.settings = JSON.parse(data.settings);
         },
