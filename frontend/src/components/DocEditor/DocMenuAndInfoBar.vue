@@ -148,7 +148,7 @@
           <span class="font-medium text-gray-600 text-xs my-2">TITLES</span>
           <div class="w-full flex justify-between gap-1 mb-2.5">
             <Button
-              class="w-1/3 font-bold"
+              class="w-1/3 font-semibold"
               @click="
                 editor
                   .chain()
@@ -188,7 +188,7 @@
             </Button>
           </div>
 
-          <span class="font-medium text-gray-600 text-xs my-2">CONTENT</span>
+          <span class="font-semibold text-gray-600 text-xs my-2">CONTENT</span>
           <div class="w-full flex justify-between gap-1 mb-2.5">
             <Button
               class="w-1/3 font-bold"
@@ -205,7 +205,7 @@
               Strong
             </Button>
             <Button
-              class="w-1/3 font-medium"
+              class="w-1/3"
               @click="
                 editor
                   .chain()
