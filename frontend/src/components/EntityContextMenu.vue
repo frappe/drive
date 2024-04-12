@@ -2,7 +2,7 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="bg-white rounded absolute shadow-xl py-0.5 px-1 z-20 border min-w-40 divide-y"
+    class="bg-white rounded-lg absolute shadow-xl py-0.5 px-1 z-20 border min-w-40"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
@@ -23,14 +23,14 @@
         <FeatherIcon
           v-if="typeof item.icon === 'string'"
           :name="item.icon"
-          class="h-3.5 mr-2"
+          class="h-4 w-auto mr-2"
           :class="[
             item.danger ? 'stroke-red-500 text-red-500' : '',
             item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
           ]" />
         <component
           v-else
-          class="w-3.5 mr-2 stroke-[1.5]"
+          class="h-4 w-auto mr-2 stroke-[1.5]"
           :class="[
             item.danger ? 'stroke-red-500 text-red-500' : '',
             item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',

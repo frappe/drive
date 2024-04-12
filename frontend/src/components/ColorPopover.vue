@@ -2,7 +2,8 @@
   <Popover
     trigger="hover"
     placement="right-start"
-    :hover-delay="0.5"
+    popoverClass="border-x-[8px] border-transparent"
+    :hover-delay="0.25"
     :leave-delay="0.5">
     <template #target="{ togglePopover, isOpen }">
       <div

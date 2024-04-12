@@ -7,10 +7,12 @@
     <span class="truncate text-sm text-gray-800 mb-1">
       {{ title }}
     </span>
-    <div class="truncate text-xs text-gray-600 flex mt-0 place-items-center">
+    <div
+      :title="modified"
+      class="truncate text-xs text-gray-600 flex mt-0 place-items-center">
       <!-- <img :src="getIconUrl(formatMimeType(mime_type))" class="h-3.5 mr-1.5" />
       <p>{{ getFileSubtitle() }}</p> -->
-      {{ this.file_size }} ∙ {{ this.modified }}
+      {{ this.file_size }} ∙ {{ this.relativeModified }}
     </div>
   </div>
 </template>
@@ -25,6 +27,7 @@ export default {
     file_ext: String,
     name: String,
     title: String,
+    relativeModified: String,
     modified: String,
     file_size: String,
   },
@@ -44,7 +47,7 @@ export default {
       if (typeof this.link === "string") {
         return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] group-hover:scale-125 transition duration-250";
       } else {
-        return "h-8 w-auto";
+        return "h-9 w-auto";
       }
     },
   },
