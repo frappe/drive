@@ -2,7 +2,7 @@
   <div
     v-if="actionItems.length > 0"
     ref="emptyContextMenu"
-    class="bg-white rounded-lg absolute shadow-xl py-0.5 px-1 z-20 border min-w-40"
+    class="bg-white rounded-lg absolute shadow-xl px-1.5 py-1 z-20 border min-w-40"
     :style="{ left: `${calculateX}px`, top: `${calculateY}px` }">
     <div
       v-for="(item, index) in actionItems"
@@ -19,8 +19,10 @@
       </div>
       <div
         v-else
-        class="h-6 px-2 hover:bg-gray-100 text-sm whitespace-nowrap cursor-pointer rounded-[5px] flex justify-start items-center">
-        <component class="h-4 w-auto mr-2 stroke-[1.5]" :is="item.icon" />
+        class="h-6 px-2 hover:bg-gray-100 text-sm whitespace-nowrap cursor-pointer rounded flex justify-start items-center">
+        <component
+          class="h-4 w-auto mr-2 stroke-[1.75] text-gray-800"
+          :is="item.icon" />
         <div class="text-gray-800 mr-4">{{ item.label }}</div>
       </div>
     </div>

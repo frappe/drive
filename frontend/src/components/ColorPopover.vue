@@ -10,7 +10,7 @@
         :active="isOpen"
         class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center w-full"
         @click="togglePopover()">
-        <Palette class="w-3.5 mr-2 stroke-[1.5]" />
+        <Palette class="h-4 w-auto mr-2 stroke-[1.75] text-gray-800" />
         <div class="text-gray-800">Color</div>
         <FeatherIcon
           :name="'chevron-right'"
