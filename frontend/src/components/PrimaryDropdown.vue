@@ -11,9 +11,9 @@
           <div class="text-base font-medium text-gray-900 leading-none">
             {{ fullName }}
           </div>
-          <!--           <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
-            {{ isAdmin ? "Drive Admin" : "Drive User" }}
-          </div> -->
+          <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
+            {{ CurrentUserEmail }}
+          </div>
         </div>
         <FeatherIcon
           v-if="isExpanded"
@@ -59,6 +59,9 @@ export default {
     },
     imageURL() {
       return this.$store.state.user.imageURL;
+    },
+    CurrentUserEmail() {
+      return this.$store.state.auth.user_id;
     },
     settingsItems() {
       if (this.$resources.isAdmin?.data) {
