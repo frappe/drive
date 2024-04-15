@@ -59,7 +59,7 @@ def create_document_entity(title, content, parent=None):
         user_directory = get_user_directory()
     except FileNotFoundError:
         user_directory = create_user_directory()
-    new_title = get_new_title(title, parent)
+    new_title = get_new_title(title, parent, document=True)
 
     parent = frappe.form_dict.parent or user_directory.name
 
@@ -248,7 +248,7 @@ def create_folder(title, parent=None):
         {"doctype": "Drive Entity", "parent_drive_entity": parent, "title": title}
     )
     if entity_exists:
-        suggested_name = get_new_title(title, parent)
+        suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(
             f"Folder '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
@@ -278,16 +278,10 @@ def get_doc_content(drive_document_name):
     )
     return drive_document
 
-
 @frappe.whitelist()
 def passive_rename(entity_name, new_title):
-    doc = frappe.get_doc('Drive Entity', entity_name)
-    if frappe.db.exists("Drive Entity", {"name": doc.name, "parent_drive_entity": doc.parent_drive_entity, "title": new_title}):
-        new_title = get_new_title(new_title, doc.parent_drive_entity)
-        doc.db_set('title', new_title, update_modified=False)
-    else:
-        doc.db_set('title', new_title, update_modified=False)
-    return doc
+    frappe.db.set_value("Drive Entity", entity_name, "title", new_title)
+    return
 
 
 @frappe.whitelist()
@@ -299,9 +293,9 @@ def save_doc(entity_name, doc_name, content, file_size, settings=None):
         user=frappe.session.user,
     ):
         raise frappe.PermissionError("You do not have permission to view this file")
-    drive_document = frappe.db.set_value("Drive Document", doc_name, "content", content)
     if settings:
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
+    frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
     return
 

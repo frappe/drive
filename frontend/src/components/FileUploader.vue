@@ -46,7 +46,7 @@ function rootFolderFullPathNewName(k, file_parent) {
   const url =
     window.location.origin +
     "/api/method/" +
-    `drive.utils.files.get_new_title?entity=${k}&parent_name=${file_parent}`;
+    `drive.utils.files.get_new_title?title=${k}&parent_name=${file_parent}&folder=${true}}`;
 
   const xhr = new XMLHttpRequest();
   xhr.open("GET", url, false); // Here i am seeting third parameter as false for a synchronous request

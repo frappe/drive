@@ -291,13 +291,17 @@ class DriveEntity(NestedSet):
                 "doctype": "Drive Entity",
                 "parent_drive_entity": self.parent_drive_entity,
                 "title": new_title,
+                "mime_type": self.mime_type,
+                "is_group": self.is_group,
             }
         )
         if entity_exists:
+            suggested_name = get_new_title(new_title, self.parent_drive_entity, document=self.document, folder=self.is_group)
             frappe.throw(
-                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists",
+                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{suggested_name}' ",
                 FileExistsError,
             )
+            return suggested_name
 
         self.title = new_title
         self.save()
