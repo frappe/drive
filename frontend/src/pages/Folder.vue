@@ -39,7 +39,7 @@ let currentFolder = createResource({
       isSharedFolder.value = true;
       store.commit("setHasWriteAccess", data.write);
     } else {
-      computedURL.value = "drive.api.files.list_owned_entities";
+      computedURL.value = "drive.api.files.list_folder_contents";
       isSharedFolder.value = false;
       store.commit("setHasWriteAccess", true);
     }

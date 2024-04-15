@@ -438,13 +438,15 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
         entity_name = entity_name or get_user_directory().name
     except FileNotFoundError:
         return []
-    parent_is_group, parent_is_active = frappe.db.get_value(
-        "Drive Entity", entity_name, ["is_group", "is_active"]
+    parent, parent_is_group, parent_is_active = frappe.db.get_value(
+        "Drive Entity", entity_name, ["name", "is_group", "is_active"]
     )
-    if not parent_is_group:
-        frappe.throw("Specified entity is not a folder", NotADirectoryError)
-    if not parent_is_active:
-        frappe.throw("Specified folder has been trashed by the owner")
+    # Parent can be null for $HOME_DIR
+    if parent:
+        if not parent_is_group:
+            frappe.throw("Specified entity is not a folder", NotADirectoryError)
+        if not parent_is_active:
+            frappe.throw("Specified folder has been trashed by the owner")
     is_public = False
     if frappe.db.exists(
         {
@@ -501,7 +503,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
 
     query = (
         frappe.qb.from_(DriveEntity)
-        .inner_join(DriveDocShare)
+        .left_join(DriveDocShare)
         .on((DriveDocShare.share_name == DriveEntity.name))
         .left_join(UserGroupMember)
         .on((UserGroupMember.parent == DriveDocShare.user_name))
@@ -523,6 +525,7 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
                 | (
                     (DriveDocShare.user_name == frappe.session.user)
                     | (DriveDocShare[general_access_val] == 1)
+                    | (DriveEntity.owner == frappe.session.user)
                 )
             )
         )

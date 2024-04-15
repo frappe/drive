@@ -72,7 +72,7 @@ class DriveEntity(NestedSet):
             shutil.rmtree(self.path) if self.is_group else self.path.unlink()
 
     def inherit_permissions(self):
-        """Copy parent permissions to new child entity"""
+        """Cascade parent permissions to new child entity"""
 
         if self.parent_drive_entity is None:
             return
@@ -93,9 +93,11 @@ class DriveEntity(NestedSet):
             ],
             filters=dict(share_doctype=self.doctype, share_name=self.parent_drive_entity),
         )
+        
         parent_folder = frappe.db.get_value(
-            "Drive Entity", self.parent_drive_entity, ["name", "owner"], as_dict=1
+            "Drive Entity", self.parent_drive_entity, ["name", "owner", "allow_comments", "allow_download"], as_dict=1
         )
+        
         if parent_folder.owner != frappe.session.user:
             # Allow the owner of the folder to access the entity
             # Defaults to write since its obvious that the current user has write access to the parent
@@ -110,7 +112,7 @@ class DriveEntity(NestedSet):
                 share=1,
                 notify=0,
             )
-
+            
         for permission in permissions:
             self.share(
                 share_name=self.name,
@@ -123,6 +125,9 @@ class DriveEntity(NestedSet):
                 public=permission.public,
                 notify=0,
             )
+        self.allow_comments = parent_folder.allow_comments
+        self.allow_download = parent_folder.allow_download
+        self.save()
 
     @frappe.whitelist()
     def move(self, new_parent=None):
