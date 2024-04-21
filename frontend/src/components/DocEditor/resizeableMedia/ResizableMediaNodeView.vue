@@ -3,10 +3,14 @@ import { Editor, Node, NodeViewWrapper } from "@tiptap/vue-3";
 import { ref, onMounted, computed, watch } from "vue";
 import { Node as ProseMirrorNode } from "prosemirror-model";
 import { Decoration } from "prosemirror-view";
-import InlineSvg from "vue-inline-svg";
 import { resizableMediaActions } from "./resizableMediaMenuUtil";
 import { Button } from "frappe-ui";
 import "tippy.js/animations/shift-away.css";
+import AlignItemLeft from "../icons/align-item-left.vue";
+import AlignItemRight from "../icons/align-item-right.vue";
+import AlignItemCenter from "../icons/align-item-center.vue";
+import FloatItemLeft from "../icons/float-item-left.vue";
+import FloatItemRight from "../icons/float-item-right.vue";
 
 interface Props {
   editor: Editor;
@@ -59,36 +63,15 @@ const mediaSetupOnLoad = () => {
 
   // When the media has loaded
   if (!resizableImg.value) return;
-
-  if (mediaType.value === "video") {
-    // Aspect Ratio from its original size
-    setTimeout(() => {
-      aspectRatio.value =
-        (resizableImg.value as HTMLVideoElement).videoWidth /
-        (resizableImg.value as HTMLVideoElement).videoHeight;
-
-      // for the first time when video is added with custom width and height
-      // and we have to adjust the video height according to it's width
-      onHorizontalResize("left", 0);
-    }, 200);
-  } else {
-    resizableImg.value.onload = () => {
-      // Aspect Ratio from its original size
-      aspectRatio.value =
-        (resizableImg.value as HTMLImageElement).naturalWidth /
-        (resizableImg.value as HTMLImageElement).naturalHeight;
-
-      onHorizontalResize("left", 0);
-    };
-  }
-
-  setTimeout(() => setMediaActionActiveStates(), 200);
+  aspectRatio.value =
+    (resizableImg.value as HTMLVideoElement).videoWidth /
+    (resizableImg.value as HTMLVideoElement).videoHeight;
 };
 
 onMounted(() => mediaSetupOnLoad());
 
 const isHorizontalResizeActive = ref(false);
-
+const activeDragHandle = ref("left");
 const lastCursorX = ref(-1);
 
 interface WidthAndHeight {
@@ -97,10 +80,10 @@ interface WidthAndHeight {
 }
 
 const limitWidthOrHeightToFiftyPixels = ({ width, height }: WidthAndHeight) =>
-  width < 100 || height < 100;
+  width < 250 || height < 250;
 
-const startHorizontalResize = (e: MouseEvent) => {
-  showActionMenu.value = false;
+const startHorizontalResize = (e: MouseEvent, dragHandle: string) => {
+  activeDragHandle.value = dragHandle;
   isHorizontalResizeActive.value = true;
   lastCursorX.value = e.clientX;
 
@@ -144,13 +127,13 @@ const onHorizontalResize = (
     newMediaDimensions.width = currentMediaDimensions.width + Math.abs(diff);
   }
 
-  if (newMediaDimensions.width > proseMirrorContainerWidth.value)
-    newMediaDimensions.width = proseMirrorContainerWidth.value;
+  //if (newMediaDimensions.width > proseMirrorContainerWidth.value)
+  //  newMediaDimensions.width = proseMirrorContainerWidth.value;
 
   newMediaDimensions.height = newMediaDimensions.width / aspectRatio.value;
 
   if (limitWidthOrHeightToFiftyPixels(newMediaDimensions)) return;
-
+  console.log(newMediaDimensions);
   props.updateAttributes(newMediaDimensions);
 };
 
@@ -165,191 +148,165 @@ const onHorizontalMouseMove = (e: MouseEvent) => {
 
   if (diff === 0) return;
 
-  const directionOfMouseMove: "left" | "right" = diff > 0 ? "left" : "right";
+  let directionOfMouseMove: "left" | "right";
+  console.log(diff);
+  console.log(activeDragHandle.value);
+  if (activeDragHandle.value === "left") {
+    directionOfMouseMove = diff > 0 ? "right" : "left";
+  } else if (activeDragHandle.value === "right") {
+    directionOfMouseMove = diff > 0 ? "left" : "right";
+  }
 
   onHorizontalResize(directionOfMouseMove, Math.abs(diff));
 };
 
-const isVerticalResizeActive = ref(false);
-
 const lastCursorY = ref(-1);
 
-const startVerticalResize = (e: MouseEvent) => {
-  showActionMenu.value = false;
-  isVerticalResizeActive.value = true;
-  lastCursorY.value = e.clientY;
-
-  document.addEventListener("mousemove", onVerticalMouseMove);
-  document.addEventListener("mouseup", stopVerticalResize);
-};
-
-const stopVerticalResize = () => {
-  isVerticalResizeActive.value = false;
-  lastCursorY.value = -1;
-  showActionMenu.value = true;
-
-  document.removeEventListener("mousemove", onVerticalMouseMove);
-  document.removeEventListener("mouseup", stopVerticalResize);
-};
-
-const onVerticalMouseMove = (e: MouseEvent) => {
-  if (!isVerticalResizeActive.value) return;
-
-  const { clientY } = e;
-
-  const diff = lastCursorY.value - clientY;
-
-  lastCursorY.value = clientY;
-
-  if (diff === 0) return;
-
-  const directionOfMouseMove: "up" | "down" = diff > 0 ? "up" : "down";
-
-  if (!resizableImg.value) {
-    console.error("Media ref is undefined|null", {
-      resizableImg: resizableImg.value,
-    });
-    return;
+const floatClass = computed(() => {
+  switch (props.node.attrs.dataFloat) {
+    case "left":
+      return "float-left mr-4";
+    case "right":
+      return "float-right ml-4";
+    default:
+      return "";
   }
+});
 
-  const currentMediaDimensions = {
-    width: resizableImg.value?.width,
-    height: resizableImg.value?.height,
-  };
-
-  const newMediaDimensions = {
-    width: -1,
-    height: -1,
-  };
-
-  if (directionOfMouseMove === "up") {
-    newMediaDimensions.height = currentMediaDimensions.height - Math.abs(diff);
-  } else {
-    newMediaDimensions.height = currentMediaDimensions.height + Math.abs(diff);
+const alignClass = computed(() => {
+  switch (props.node.attrs.dataAlign) {
+    case "left":
+      return "justify-start";
+    case "center":
+      return "justify-center";
+    case "right":
+      return "justify-end";
+    default:
+      return "justify-end";
   }
-
-  newMediaDimensions.width = newMediaDimensions.height * aspectRatio.value;
-
-  if (newMediaDimensions.width > proseMirrorContainerWidth.value) {
-    newMediaDimensions.width = proseMirrorContainerWidth.value;
-
-    newMediaDimensions.height = newMediaDimensions.width / aspectRatio.value;
-  }
-
-  if (limitWidthOrHeightToFiftyPixels(newMediaDimensions)) return;
-
-  props.updateAttributes(newMediaDimensions);
-};
-
-const isFloat = computed<boolean>(() => !!props.node.attrs.dataFloat);
-
-const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
+});
 </script>
 
 <template>
   <node-view-wrapper
-    as="article"
-    class="media-node-view flex pos-relative not-prose"
-    :class="[
-      `${(isFloat && `f-${props.node.attrs.dataFloat}`) || ''}`,
-      `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
-    ]">
-    <tippy
+    as="div"
+    class="group relative flex not-prose"
+    :class="props.node.attrs.dataAlign ? alignClass : floatClass">
+    <div
+      class="relative flex items-center group"
       v-if="props.editor.options.editable"
-      placement="bottom"
-      :animation="'shift-away'"
-      :interactive="true"
-      :inertia="true"
-      :show="false"
-      :delay="150">
+      draggable="true"
+      data-drag-handle>
       <div
-        class="w-fit flex relative hover:shadow-xl cursor-pointer rounded-sm"
-        draggable="true"
-        data-drag-handle>
-        <img
-          v-if="mediaType === 'img'"
-          v-bind="node.attrs"
-          ref="resizableImg"
-          class="rounded-sm m-3"
-          draggable="false"
-          :class="[
-            `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
-            `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
-          ]" />
-
-        <video
-          v-else-if="mediaType === 'video'"
-          v-bind="node.attrs"
-          ref="resizableImg"
-          class="rounded-sm m-3"
-          :class="[
-            `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
-            `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
-          ]"
-          controls="true"
-          draggable="false"
-          controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture">
-          <source :src="node.attrs.src" />
-        </video>
-
-        <div
-          v-if="props.editor.options.editable"
-          class="horizontal-resize-handle"
-          :class="{ 'horizontal-resize-active': isHorizontalResizeActive }"
-          title="Resize"
-          @mousedown="startHorizontalResize"
-          @mouseup="stopHorizontalResize" />
-
-        <div
-          v-if="props.editor.options.editable"
-          class="vertical-resize-handle"
-          :class="{ 'vertical-resize-active': isVerticalResizeActive }"
-          title="Resize"
-          @mousedown="startVerticalResize"
-          @mouseup="stopVerticalResize" />
+        class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 z-10 absolute top-2 right-2 bg-white border backdrop-blur-sm bg-opacity-80 rounded">
+        <Button
+          :class="props.node.attrs.dataAlign === 'left' ? 'bg-white' : ''"
+          :variant="'ghost'"
+          @click="
+            props.updateAttributes({
+              dataAlign: 'left',
+              dataFloat: null,
+            })
+          ">
+          <AlignItemLeft class="rounded-none w-4 h-auto" />
+        </Button>
+        <Button
+          :class="props.node.attrs.dataAlign === 'center' ? 'bg-white' : ''"
+          :variant="'ghost'"
+          @click="
+            props.updateAttributes({
+              dataAlign: 'center',
+              dataFloat: null,
+            })
+          ">
+          <AlignItemCenter class="rounded-none w-4 h-auto" />
+        </Button>
+        <Button
+          :class="props.node.attrs.dataAlign === 'right' ? 'bg-white' : ''"
+          :variant="'ghost'"
+          @click="
+            props.updateAttributes({
+              dataAlign: 'right',
+              dataFloat: null,
+            })
+          ">
+          <AlignItemRight class="w-4 h-auto" />
+        </Button>
+        <Button
+          :class="props.node.attrs.dataFloat === 'left' ? 'bg-white' : ''"
+          :variant="'ghost'"
+          @click="
+            props.updateAttributes({
+              dataAlign: null,
+              dataFloat: 'left',
+            })
+          ">
+          <FloatItemLeft class="w-4 h-auto" />
+        </Button>
+        <Button
+          :class="props.node.attrs.dataFloat === 'right' ? 'bg-white' : ''"
+          :variant="'ghost'"
+          @click="
+            props.updateAttributes({
+              dataAlign: null,
+              dataFloat: 'right',
+            })
+          ">
+          <FloatItemRight class="w-4 h-auto" />
+        </Button>
       </div>
-
-      <template #content>
-        <section
-          v-show="showActionMenu"
-          class="flex image-actions-container bg-white rounded shadow-sm py-0.5 px-1 border">
-          <Button
-            variant="ghost"
-            v-for="(mediaAction, i) in resizableMediaActions"
-            :key="i"
-            @click="
-              mediaAction.tooltip === 'Delete'
-                ? mediaAction.delete?.(deleteNode)
-                : mediaAction.action?.(updateAttributes)
-            ">
-            <component
-              class="self-center w-3 mx-1 stroke-1.5"
-              :is="mediaAction.icon" />
-          </Button>
-        </section>
-      </template>
-    </tippy>
-    <div v-else class="w-fit flex relative">
+      <!-- Left Handle -->
+      <div
+        class="z-10 absolute left-0 flex items-center justify-center w-5 h-full bg-transparent cursor-ew-resize"
+        @mousedown.lazy.prevent="startHorizontalResize($event, 'left')"
+        @mouseup.lazy.prevent="stopHorizontalResize">
+        <div
+          class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute w-2 bg-white bg-opacity-80 rounded h-[55px]" />
+      </div>
       <img
         v-if="mediaType === 'img'"
         v-bind="node.attrs"
+        loading="lazy"
         ref="resizableImg"
-        class="rounded-sm m-3"
-        :class="[
-          `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
-          `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
-        ]"
+        class="rounded"
         draggable="false" />
 
       <video
         v-else-if="mediaType === 'video'"
         v-bind="node.attrs"
+        loading="lazy"
         ref="resizableImg"
-        class="rounded-sm m-3"
-        :class="[
-          `${(isFloat && `float-${props.node.attrs.dataFloat}`) || ''}`,
-          `${(isAlign && `align-${props.node.attrs.dataAlign}`) || ''}`,
-        ]"
+        class="rounded"
+        controls="true"
+        draggable="false"
+        controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture">
+        <source :src="node.attrs.src" />
+      </video>
+      <!-- Right Handle -->
+      <div
+        class="absolute z-10 right-0 flex items-center justify-center w-5 h-full bg-transparent cursor-ew-resize"
+        @mousedown.lazy.prevent="startHorizontalResize($event, 'right')"
+        @mouseup.lazy.prevent="stopHorizontalResize">
+        <div
+          class="absolute w-2 bg-white bg-opacity-80 rounded h-[55px] transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100" />
+      </div>
+    </div>
+
+    <div v-else class="w-fit flex relative">
+      <img
+        v-if="mediaType === 'img'"
+        loading="lazy"
+        v-bind="node.attrs"
+        ref="resizableImg"
+        class="rounded"
+        draggable="false" />
+
+      <video
+        v-else-if="mediaType === 'video'"
+        loading="lazy"
+        v-bind="node.attrs"
+        ref="resizableImg"
+        class="rounded"
         draggable="false"
         controls="true"
         controlslist="nodownload noremoteplayback noplaybackrate disablepictureinpicture">
@@ -358,55 +315,3 @@ const isAlign = computed<boolean>(() => !!props.node.attrs.dataAlign);
     </div>
   </node-view-wrapper>
 </template>
-
-<style lang="scss">
-.media-node-view {
-  position: relative;
-
-  &.f-left {
-    @apply float-left;
-  }
-
-  &.f-right {
-    @apply float-right;
-  }
-
-  &.align-left {
-    @apply justify-start;
-  }
-
-  &.align-center {
-    @apply justify-center;
-  }
-
-  &.align-right {
-    @apply justify-end;
-  }
-
-  .horizontal-resize-handle,
-  .vertical-resize-handle {
-    @apply absolute hover:bg-blue-200 z-50 opacity-50;
-  }
-
-  .horizontal-resize-handle {
-    @apply h-full w-2 top-0 right-0 cursor-col-resize;
-  }
-
-  .vertical-resize-handle {
-    @apply w-full h-2 bottom-0 left-0 cursor-row-resize;
-  }
-}
-
-.image-actions-container {
-  @apply flex gap-1;
-}
-
-.media-actions-container {
-  padding: 4px !important;
-  width: fit-content !important;
-
-  .ep-button + .ep-button {
-    margin-left: 0px;
-  }
-}
-</style>

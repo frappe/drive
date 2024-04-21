@@ -94,8 +94,8 @@ export default {
         .setMedia({
           src: src,
           "media-type": "video",
-          width: "800",
-          height: "400",
+          width: "100%",
+          height: "auto",
         })
         .run();
       this.reset();
