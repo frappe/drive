@@ -4,7 +4,7 @@
       <button
         class="flex items-center justify-center rounded-md text-left mx-1 p-1 mb-1 hover:bg-gray-200"
         :style="{
-          width: isExpanded ? '260px' : 'auto',
+          width: isExpanded ? '200px' : 'auto',
         }">
         <Avatar :image="imageURL" size="xl" :label="fullName" />
         <div v-if="isExpanded" class="ml-2 flex flex-col">

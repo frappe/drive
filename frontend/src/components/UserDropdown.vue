@@ -1,11 +1,11 @@
 <template>
   <button
     @click="() => $router.push({ name: 'Home' })"
-    class="flex items-center rounded-md text-left mx-2 mt-2"
+    class="flex items-center rounded-md text-left m-2"
     :style="{
-      width: isExpanded ? '250px' : 'auto',
+      width: isExpanded ? '200px' : 'auto',
     }">
-    <FrappeDriveLogo class="w-8.5 h-8.5 rounded" />
+    <FrappeDriveLogo class="w-8 h-8 rounded" />
     <div v-if="isExpanded" class="ml-2 flex flex-col">
       <div class="text-base font-medium text-gray-900 leading-none">
         Frappe Drive

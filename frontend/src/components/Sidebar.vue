@@ -1,6 +1,6 @@
 <template>
   <div
-    :style="{ width: isExpanded ? '280px' : '60px' }"
+    :style="{ width: isExpanded ? '220px' : '60px' }"
     class="border-r bg-gray-50 transition-all relative md:block px-1">
     <div
       class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
@@ -8,10 +8,7 @@
       @mousedown="startResize" />
     <div class="py-1 flex flex-col justify-items-center h-full">
       <UserDropdown />
-      <div
-        ondragstart="return false;"
-        ondrop="return false;"
-        class="px-1.5 py-2.5">
+      <div ondragstart="return false;" ondrop="return false;" class="px-2 mt-1">
         <div v-for="item in sidebarItems">
           <router-link
             v-if="item.route"
@@ -19,17 +16,18 @@
             v-slot="{ href, navigate }"
             :to="item.route">
             <a
-              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
+              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 py-1 gap-2.5 rounded focus:outline-none"
               :class="[
-                item.highlight()
-                  ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
-                  : ' hover:bg-gray-100',
+                item.highlight() ? 'bg-white shadow-sm' : ' hover:bg-gray-100',
               ]"
               :href="href"
               @click="navigate && $emit('toggleMobileSidebar')">
               <FeatherIcon
                 :name="item.icon"
-                class="stroke-1.5 self-center w-4 h-4 text-gray-800" />
+                class="stroke-2 self-center w-4 h-4"
+                :class="
+                  isExpanded ? 'text-gray-500' : 'text-gray-700 stroke-[1.5]'
+                " />
               <span v-if="isExpanded" class="self-center">
                 {{ item.label }}
               </span>
@@ -38,7 +36,7 @@
           <div v-else>
             <button
               @click="item.action"
-              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 gap-2 rounded focus:outline-none"
+              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 py-1 gap-2.5 rounded focus:outline-none"
               :class="[
                 item.highlight()
                   ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
@@ -46,7 +44,10 @@
               ]">
               <FeatherIcon
                 :name="item.icon"
-                class="stroke-1.5 self-center w-4 h-4 text-gray-800" />
+                :class="
+                  isExpanded ? 'text-gray-500' : 'text-gray-700 stroke-[1.5]'
+                "
+                class="stroke-2 self-center w-4 h-4" />
               <template v-if="isExpanded">
                 <span class="self-center">{{ item.label }}</span>
                 <span
@@ -68,12 +69,12 @@
 </template>
 <script>
 import UserDropdown from "@/components/UserDropdown.vue";
-import { FeatherIcon } from "frappe-ui";
+import { FeatherIcon, Tooltip } from "frappe-ui";
 import PrimaryDropDown from "./PrimaryDropdown.vue";
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon, UserDropdown, PrimaryDropDown },
+  components: { FeatherIcon, UserDropdown, PrimaryDropDown, Tooltip },
   emits: ["toggleMobileSidebar", "showSearchPopUp"],
   data() {
     return {
