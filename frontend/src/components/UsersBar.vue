@@ -1,6 +1,5 @@
 <template>
   <Popover
-    trigger="hover"
     transition="default"
     placement="bottom-end"
     popoverClass="border-t-8 border-transparent">
