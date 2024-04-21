@@ -1,8 +1,9 @@
 <template>
+  <slot v-bind="{ onClick: openDialog }"></slot>
   <Dialog
-    :options="{ title: 'New Comment', size: 'md' }"
+    :options="{ title: 'New Comment', size: 'sm' }"
     v-model="showNewCommentDialog"
-    @after-leave="showNewCommentDialog">
+    @after-leave="reset">
     <template #body-content>
       <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
       <!-- <span class="text-sm prose prose-xs overflow-auto" v-html="commentRootContent"></span> -->
@@ -32,10 +33,9 @@ import { v4 as uuidv4 } from "uuid";
 import { DOMSerializer } from "prosemirror-model";
 
 export default {
-  name: "InsertLink",
+  name: "NewComment",
   props: ["editor"],
   components: { Button, Input, Dialog },
-  emits: ["success"],
   setup() {
     const input = ref(null);
     const { focused } = useFocus(input, { initialValue: true });
@@ -75,12 +75,10 @@ export default {
         this.$refs.input.style.height = this.$refs.input.scrollHeight + "px";
       });
     },
-    showNewCommentDialog: function () {
-      this.emitter.emit("forceHideBubbleMenu", this.showNewCommentDialog);
-    },
   },
   methods: {
     openDialog() {
+      this.emitter.emit("forceHideBubbleMenu", true);
       this.showNewCommentDialog = true;
     },
     getHTMLContentBetween(editor, from, to) {
@@ -120,6 +118,10 @@ export default {
     discardComment() {
       this.activeCommentsInstance = {};
       this.commentText = "";
+    },
+    reset() {
+      this.emitter.emit("forceHideBubbleMenu", false);
+      this.showNewCommentDialog = this.$options.data().showNewCommentDialog;
     },
   },
 };
