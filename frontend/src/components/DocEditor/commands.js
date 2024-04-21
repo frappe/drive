@@ -1,15 +1,11 @@
 import { defineAsyncComponent } from "vue";
-
-/* Icons */
-import {
-  Link,
-  Strikethrough,
-  Bold,
-  Underline,
-  Italic,
-  Link2,
-  MessageCirclePlus,
-} from "lucide-vue-next";
+import { Code } from "lucide-vue-next";
+import Bold from "./icons/Bold.vue";
+import Italic from "./icons/Italic.vue";
+import Strikethrough from "./icons/StrikeThrough.vue";
+import Underline from "./icons/Underline.vue";
+import NewAnnotation from "./icons/NewAnnotation.vue";
+import NewLink from "./icons/NewLink.vue";
 
 export default {
   Bold: {
@@ -36,19 +32,25 @@ export default {
     action: (editor) => editor.chain().focus().toggleStrike().run(),
     isActive: (editor) => editor.isActive("strike"),
   },
+  Code: {
+    label: "Code",
+    icon: Code,
+    action: (editor) => editor.chain().focus().toggleCode().run(),
+    isActive: (editor) => editor.isActive("code"),
+  },
   Link: {
-    label: "Link",
-    icon: Link2,
+    label: "New Link",
+    icon: NewLink,
     isActive: (editor) => editor.isActive("link"),
     component: defineAsyncComponent(() => import("./InsertLink.vue")),
   },
   Separator: {
     type: "separator",
   },
-  "New Comment": {
-    label: "New Comment",
-    icon: MessageCirclePlus,
-    action: "emitToggleCommentMenu",
+  Comment: {
+    label: "New Annotation",
+    icon: NewAnnotation,
     isActive: (editor) => editor.isActive("comment"),
+    component: defineAsyncComponent(() => import("./NewComment.vue")),
   },
 };

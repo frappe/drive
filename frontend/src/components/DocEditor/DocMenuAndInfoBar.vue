@@ -55,7 +55,7 @@
               v-if="showShareDialog"
               v-model="showShareDialog"
               :entity-name="entity.name" />
-            <div
+            <!-- <div
               v-if="
                 entity.owner === 'You' || $resources.entityTags.data?.length
               ">
@@ -97,7 +97,7 @@
                   }
                 "
                 @close="addTag = false" />
-            </div>
+            </div> -->
             <div>
               <div class="text-base font-medium mb-2">Properties</div>
               <div class="flex text-sm justify-between">
@@ -242,7 +242,7 @@
                 editor.isActive('bold') ? 'bg-white border' : 'bg-transparent'
               "
               @click="editor.chain().focus().toggleBold().run()">
-              <FeatherIcon name="bold" class="w-4 stroke-2" />
+              <Bold class="w-4 stroke-2" />
             </Button>
             <Button
               class="w-full"
@@ -262,7 +262,7 @@
                   : 'bg-transparent'
               "
               @click="editor.chain().focus().toggleUnderline().run()">
-              <FeatherIcon name="underline" class="w-4 stroke-2" />
+              <Underline class="w-4 stroke-2" />
             </Button>
             <Button
               class="w-full"
@@ -1028,7 +1028,6 @@ import LineHeight from "./icons/line-height.vue";
 import {
   Plus,
   Minus,
-  Strikethrough,
   ListOrdered,
   ListChecks,
   List,
@@ -1057,6 +1056,12 @@ import "@fontsource/lora";
 import "@fontsource/geist-mono";
 import "@fontsource/nunito";
 import ColorInput from "./ColorInput.vue";
+import Bold from "./icons/Bold.vue";
+import Italic from "./icons/Italic.vue";
+import Strikethrough from "./icons/StrikeThrough.vue";
+import Underline from "./icons/Underline.vue";
+import NewAnnotation from "./icons/NewAnnotation.vue";
+import NewLink from "./icons/NewLink.vue";
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -1074,7 +1079,9 @@ export default {
     LineHeight,
     Plus,
     Minus,
+    Bold,
     Strikethrough,
+    Underline,
     ListOrdered,
     ListChecks,
     List,

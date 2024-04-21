@@ -26,9 +26,7 @@
       :tippy-options="{ animation: 'shift-away' }"
       :should-show="shouldShow"
       :editor="editor">
-      <Menu
-        class="rounded-md border border-gray-100 shadow-lg"
-        :buttons="bubbleMenuButtons" />
+      <Menu :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
   <DocMenuAndInfoBar :editor="editor" ref="MenuBar" :settings="settings" />
@@ -47,11 +45,6 @@
         }
       }
     " />
-  <NewComment
-    v-if="showCommentMenu"
-    :editor="editor"
-    v-model="showCommentMenu"
-    @success="() => (showCommentMenu = false)" />
 </template>
 
 <script>
@@ -227,10 +220,20 @@ export default {
     },
     bubbleMenuButtons() {
       if (this.entity.owner === "You" || this.entity.write) {
-        this.buttons = ["Link", "Separator", "New Comment"];
+        this.buttons = [
+          "Bold",
+          "Italic",
+          "Underline",
+          "Strikethrough",
+          "Code",
+          "Separator",
+          "Link",
+          "Separator",
+          "Comment",
+        ];
         return this.buttons.map(createEditorButton);
       } else if (this.entity.allow_comments) {
-        this.buttons = ["New Comment"];
+        this.buttons = ["Comment"];
         return this.buttons.map(createEditorButton);
       }
     },
@@ -272,7 +275,6 @@ export default {
   },
   watch: {
     settings(newVal, oldVal) {
-      consol.log("FIRE");
       switch (newVal.toLowerCase()) {
         case "sans":
           this.defaultFont = "font-['Nunito']";
