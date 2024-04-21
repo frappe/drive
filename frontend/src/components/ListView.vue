@@ -101,7 +101,7 @@
             :image="entity.user_image"
             :label="entity.full_name"
             class="-relative mr-2"
-            size="lg" />
+            size="md" />
           {{ entity.owner }}
         </div>
         <div
