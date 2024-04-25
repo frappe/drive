@@ -1,31 +1,35 @@
 <template>
   <Dropdown :options="settingsItems">
-    <template v-slot="{ open }">
+    <template #default="{ open }">
       <button
-        class="flex items-center justify-center rounded-md text-left mx-1 p-1 mb-1 hover:bg-gray-200"
+        class="flex items-center justify-center rounded-md text-left"
+        :class="[
+          isExpanded ? 'p-2' : '',
+          open ? 'bg-white shadow-sm' : 'hover:bg-gray-200',
+        ]"
         :style="{
-          width: isExpanded ? '200px' : 'auto',
+          width: isExpanded ? '204px' : 'auto',
         }">
-        <Avatar :image="imageURL" size="xl" :label="fullName" />
+        <FrappeDriveLogo class="w-8 h-8 rounded" />
         <div v-if="isExpanded" class="ml-2 flex flex-col">
           <div class="text-base font-medium text-gray-900 leading-none">
-            {{ fullName }}
+            Frappe Drive
           </div>
           <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
-            {{ CurrentUserEmail }}
+            {{ userEmail }}
           </div>
         </div>
         <FeatherIcon
           v-if="isExpanded"
-          name="chevron-up"
-          class="ml-auto hidden h-4 w-4 sm:inline" />
+          :name="open ? 'chevron-up' : 'chevron-down'"
+          class="ml-auto hidden h-5 w-5 sm:inline text-gray-700" />
       </button>
     </template>
   </Dropdown>
   <Settings v-if="showSettings" v-model="showSettings" />
 </template>
 <script>
-import { Dropdown, FeatherIcon, Avatar } from "frappe-ui";
+import { Dropdown, FeatherIcon } from "frappe-ui";
 import Settings from "@/components/Settings.vue";
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue";
 
@@ -34,59 +38,40 @@ export default {
   components: {
     Dropdown,
     FeatherIcon,
-    Avatar,
     Settings,
     FrappeDriveLogo,
-    Avatar,
+  },
+  props: {
+    isExpanded: Boolean,
   },
   data: () => ({
     showSettings: false,
   }),
-  methods: {
-    logout() {
-      this.$store.dispatch("logout");
-    },
-  },
   computed: {
-    isExpanded() {
-      return this.$store.state.IsSidebarExpanded;
-    },
     firstName() {
       return this.$store.state.user.fullName.split(" ");
     },
     fullName() {
       return this.$store.state.user.fullName;
     },
-    imageURL() {
-      return this.$store.state.user.imageURL;
-    },
-    CurrentUserEmail() {
+    userEmail() {
       return this.$store.state.auth.user_id;
     },
     settingsItems() {
-      if (this.$resources.isAdmin?.data) {
-        return [
-          {
-            icon: "grid",
-            label: "Switch to Desk",
-            route: "/workspace",
-            highlight: () => {
-              return this.$route.fullPath.endsWith("/workspace");
-            },
-          },
-          {
-            icon: "settings",
-            label: "Settings",
-            onClick: () => (this.showSettings = true),
-          },
-          {
-            icon: "log-out",
-            label: "Log out",
-            onClick: () => this.logout(),
-          },
-        ];
-      }
       return [
+        {
+          icon: "grid",
+          label: "Switch to Desk",
+          condition: () => this.$store.state.user.isSystemUser,
+          onClick() {
+            window.location.href = "/app";
+          },
+        },
+        {
+          icon: "settings",
+          label: "Settings",
+          onClick: () => (this.showSettings = true),
+        },
         {
           icon: "log-out",
           label: "Log out",
@@ -95,23 +80,9 @@ export default {
       ];
     },
   },
-  resources: {
-    isAdmin() {
-      return {
-        url: "drive.utils.users.is_drive_admin",
-        cache: "is_admin",
-        params: {
-          doctype: "Drive Instance Settings",
-        },
-        onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
-          } else {
-            this.errorMessage = error.message;
-          }
-        },
-        auto: true,
-      };
+  methods: {
+    logout() {
+      this.$store.dispatch("logout");
     },
   },
 };

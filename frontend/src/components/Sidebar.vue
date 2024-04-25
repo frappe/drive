@@ -1,68 +1,60 @@
 <template>
-  <div
-    :style="{ width: isExpanded ? '220px' : '60px' }"
-    class="border-r bg-gray-50 transition-all relative md:block px-1">
+  <div class="border-r bg-gray-50 relative md:block">
     <div
       class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
       :class="{ 'opacity-100': sidebarResizing }"
       @mousedown="startResize" />
-    <div class="py-1 flex flex-col justify-items-center h-full">
-      <UserDropdown />
-      <div ondragstart="return false;" ondrop="return false;" class="px-2 mt-1">
-        <div v-for="item in sidebarItems">
-          <router-link
-            v-if="item.route"
-            :key="item.label"
-            v-slot="{ href, navigate }"
-            :to="item.route">
-            <a
-              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2.5 py-1 gap-2.5 rounded focus:outline-none"
+    <div
+      class="flex flex-col h-full p-2 transition-[width]"
+      :class="!isExpanded ? 'items-center' : ''"
+      :style="{ width: isExpanded ? '220px' : '50px' }">
+      <PrimaryDropDown :is-expanded="isExpanded" />
+      <div
+        class="mt-2"
+        :class="!isExpanded ? 'flex flex-col items-center' : ''"
+        ondragstart="return false;"
+        ondrop="return false;">
+        <button
+          class="flex items-center justify-start mb-0.5 hover:bg-gray-100 text-gray-800 text-sm w-full h-7 px-2.5 py-1 gap-2 rounded"
+          @click="emitter.emit('showSearchPopup', true)">
+          <FeatherIcon name="search" class="w-4.5 h-4.5" />
+          <template v-if="isExpanded">
+            <span>Search</span>
+            <span
+              v-if="currentPlatform === 'mac'"
+              class="ml-auto text-sm text-gray-500">
+              ⌘K
+            </span>
+            <span v-else class="ml-auto text-sm text-gray-500">Ctrl+K</span>
+          </template>
+        </button>
+        <div v-for="item in sidebarItems" :key="item.label">
+          <component
+            :is="isExpanded ? 'div' : 'Tooltip'"
+            :text="!isExpanded ? item.label : ''"
+            placement="right">
+            <router-link
+              :to="item.route"
+              class="flex items-center transition-all text-gray-800 text-sm mb-0.5 h-7 py-1 gap-2 rounded"
               :class="[
-                item.highlight() ? 'bg-white shadow-sm' : ' hover:bg-gray-100',
-              ]"
-              :href="href"
-              @click="navigate && $emit('toggleMobileSidebar')">
-              <FeatherIcon
-                :name="item.icon"
-                class="stroke-2 self-center w-4 h-4"
-                :class="
-                  isExpanded ? 'text-gray-500' : 'text-gray-700 stroke-[1.5]'
-                " />
-              <span v-if="isExpanded" class="self-center">
-                {{ item.label }}
-              </span>
-            </a>
-          </router-link>
-          <div v-else>
-            <button
-              @click="item.action"
-              class="flex justify-start text-gray-800 text-sm w-full mb-1 h-7 px-2 py-1 gap-2.5 rounded focus:outline-none"
-              :class="[
-                item.highlight()
-                  ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
-                  : ' hover:bg-gray-100',
+                item.highlight ? 'bg-white shadow-sm' : ' hover:bg-gray-100',
+                isExpanded
+                  ? 'w-full px-2.5 justify-start'
+                  : 'w-7 px-1 justify-center',
               ]">
               <FeatherIcon
                 :name="item.icon"
-                :class="
-                  isExpanded ? 'text-gray-500' : 'text-gray-700 stroke-[1.5]'
-                "
-                class="stroke-2 self-center w-4 h-4" />
-              <template v-if="isExpanded">
-                <span class="self-center">{{ item.label }}</span>
-                <span
-                  class="ml-auto text-sm text-gray-500"
-                  v-if="getPlatform === 'mac'">
-                  ⌘K
-                </span>
-                <span class="ml-auto text-sm text-gray-500" v-else>Ctrl+K</span>
-              </template>
-            </button>
-          </div>
+                class="w-4.5 h-4.5 text-gray-700"
+                :stroke-width="1.5" />
+              <span v-if="isExpanded">
+                {{ item.label }}
+              </span>
+            </router-link>
+          </component>
         </div>
       </div>
       <div class="mt-auto">
-        <PrimaryDropDown />
+        <!-- <PrimaryDropDown /> -->
       </div>
     </div>
   </div>
@@ -94,7 +86,7 @@ export default {
         return this.currentSideBarWidth = val
       }
     }, */
-    getPlatform() {
+    currentPlatform() {
       let ua = navigator.userAgent.toLowerCase();
       if (ua.indexOf("win") > -1) {
         return "win";
@@ -103,56 +95,41 @@ export default {
       } else if (ua.indexOf("x11") > -1 || ua.indexOf("linux") > -1) {
         return "linux";
       }
+      return "";
     },
     sidebarItems() {
       return [
         {
-          label: "Search",
-          action: () => this.emitter.emit("showSearchPopup", true),
-          icon: "search",
-          highlight: () => {},
-        },
-        {
           label: "Home",
           route: "/home",
           icon: "home",
-          highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Home";
-          },
+          highlight: this.$store.state.currentBreadcrumbs[0].label === "Home",
         },
         {
           label: "Recents",
           route: "/recents",
           icon: "clock",
-          highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Recents";
-          },
+          highlight:
+            this.$store.state.currentBreadcrumbs[0].label === "Recents",
         },
         {
           label: "Favourites",
           route: "/favourites",
           icon: "star",
-          highlight: () => {
-            return (
-              this.$store.state.currentBreadcrumbs[0].label === "Favourites"
-            );
-          },
+          highlight:
+            this.$store.state.currentBreadcrumbs[0].label === "Favourites",
         },
         {
           label: "Shared",
           route: "/shared",
           icon: "users",
-          highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Shared";
-          },
+          highlight: this.$store.state.currentBreadcrumbs[0].label === "Shared",
         },
         {
           label: "Trash",
           route: "/trash",
           icon: "trash-2",
-          highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Trash";
-          },
+          highlight: this.$store.state.currentBreadcrumbs[0].label === "Trash",
         },
       ];
     },

@@ -1,10 +1,10 @@
 <template>
   <button
-    @click="() => $router.push({ name: 'Home' })"
     class="flex items-center rounded-md text-left m-2"
     :style="{
       width: isExpanded ? '200px' : 'auto',
-    }">
+    }"
+    @click="() => $router.push({ name: 'Home' })">
     <FrappeDriveLogo class="w-8 h-8 rounded" />
     <div v-if="isExpanded" class="ml-2 flex flex-col">
       <div class="text-base font-medium text-gray-900 leading-none">
@@ -31,11 +31,6 @@ export default {
   data: () => ({
     showSettings: false,
   }),
-  methods: {
-    logout() {
-      this.$store.dispatch("logout");
-    },
-  },
   computed: {
     isExpanded() {
       return this.$store.state.IsSidebarExpanded;
@@ -71,6 +66,11 @@ export default {
           onClick: () => this.logout(),
         },
       ];
+    },
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch("logout");
     },
   },
   resources: {
