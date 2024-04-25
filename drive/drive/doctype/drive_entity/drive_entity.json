@@ -158,6 +158,15 @@
   "owner": "Administrator",
   "permissions": [
     {
+      "create": 0,
+      "delete": 0,
+      "export": 0,
+      "read": 1,
+      "role": "Guest",
+      "share": 0,
+      "write": 1
+    },
+    {
       "create": 1,
       "delete": 1,
       "export": 1,

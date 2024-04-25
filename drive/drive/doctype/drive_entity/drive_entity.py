@@ -278,7 +278,7 @@ class DriveEntity(NestedSet):
                     mime_type=drive_entity.mime_type,
                 )
 
-    @frappe.whitelist()
+    @frappe.whitelist(allow_guest=True)
     def rename(self, new_title):
         """
         Rename file or folder
