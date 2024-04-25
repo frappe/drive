@@ -21,6 +21,7 @@ const store = createStore({
     user: {
       fullName: getCookies().full_name,
       imageURL: getCookies().user_image,
+      isSystemUser: getCookies().system_user === "yes",
     },
     error: {
       iconName: "x-circle",
