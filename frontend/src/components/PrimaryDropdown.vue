@@ -2,27 +2,39 @@
   <Dropdown :options="settingsItems">
     <template #default="{ open }">
       <button
-        class="flex items-center justify-center rounded-md text-left"
+        class="flex items-center justify-start rounded-md text-left transition-all duration-300 ease-in-out"
         :class="[
-          isExpanded ? 'p-2' : '',
+          isExpanded ? 'p-2' : 'py-2',
           open ? 'bg-white shadow-sm' : 'hover:bg-gray-200',
         ]"
         :style="{
           width: isExpanded ? '204px' : 'auto',
         }">
         <FrappeDriveLogo class="w-8 h-8 rounded" />
-        <div v-if="isExpanded" class="ml-2 flex flex-col">
-          <div class="text-base font-medium text-gray-900 leading-none">
-            Frappe Drive
+        <div
+          class="flex flex-1 flex-col text-left duration-300 ease-in-out"
+          :class="
+            isExpanded ? 'ml-2 w-auto opacity-100' : 'ml-0 w-0 opacity-0'
+          ">
+          <div class="text-base font-medium leading-none text-gray-900">
+            Drive
           </div>
-          <div class="mt-1 hidden text-sm text-gray-700 sm:inline leading-none">
-            {{ userEmail }}
+          <div
+            class="line-clamp-1 overflow-hidden mt-1 text-sm leading-none text-gray-700">
+            {{ fullName }}
           </div>
         </div>
-        <FeatherIcon
-          v-if="isExpanded"
-          :name="open ? 'chevron-up' : 'chevron-down'"
-          class="ml-auto hidden h-5 w-5 sm:inline text-gray-700" />
+        <div
+          class="duration-300 ease-in-out"
+          :class="
+            isExpanded
+              ? 'mr-auto w-auto opacity-100'
+              : 'ml-0 w-0 overflow-hidden opacity-0'
+          ">
+          <FeatherIcon
+            :name="open ? 'chevron-up' : 'chevron-down'"
+            class="h-5 w-5 sm:inline text-gray-700" />
+        </div>
       </button>
     </template>
   </Dropdown>

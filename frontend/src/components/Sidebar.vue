@@ -1,72 +1,75 @@
 <template>
-  <div class="border-r bg-gray-50 relative md:block">
+  <div
+    :class="isExpanded ? 'w-[220px]' : 'w-[50px]'"
+    class="border-r bg-gray-50 relative hidden sm:flex h-full flex-col justify-start duration-300 ease-in-out p-2">
+    <PrimaryDropDown :is-expanded="isExpanded" />
+
     <div
-      class="absolute right-0 z-10 h-full w-1 cursor-col-resize bg-gray-400 opacity-0 transition-opacity hover:opacity-100"
-      :class="{ 'opacity-100': sidebarResizing }"
-      @mousedown="startResize" />
-    <div
-      class="flex flex-col h-full p-2 transition-[width]"
-      :class="!isExpanded ? 'items-center' : ''"
-      :style="{ width: isExpanded ? '220px' : '50px' }">
-      <PrimaryDropDown :is-expanded="isExpanded" />
-      <div
-        class="mt-2"
-        :class="!isExpanded ? 'flex flex-col items-center' : ''"
-        ondragstart="return false;"
-        ondrop="return false;">
-        <button
-          class="flex items-center justify-start mb-0.5 hover:bg-gray-100 text-gray-800 text-sm w-full h-7 px-2.5 py-1 gap-2 rounded"
-          @click="emitter.emit('showSearchPopup', true)">
-          <FeatherIcon name="search" class="w-4.5 h-4.5" />
-          <template v-if="isExpanded">
-            <span>Search</span>
+      class="mt-2"
+      :class="!isExpanded ? 'flex flex-col items-start' : ''"
+      ondragstart="return false;"
+      ondrop="return false;">
+      <SidebarItem
+        :label="'Search'"
+        :icon="'search'"
+        :isCollapsed="!isExpanded"
+        @click="() => emitter.emit('showSearchPopup', true)">
+        <template #right>
+          <div
+            class="flex items-center justify-start w-full duration-300 ease-in-out"
+            :class="
+              isExpanded ? 'ml-2 opacity-100' : 'ml-0 overflow-hidden opacity-0'
+            ">
             <span
-              v-if="currentPlatform === 'mac'"
-              class="ml-auto text-sm text-gray-500">
-              ⌘K
-            </span>
-            <span v-else class="ml-auto text-sm text-gray-500">Ctrl+K</span>
-          </template>
-        </button>
-        <div v-for="item in sidebarItems" :key="item.label">
-          <component
-            :is="isExpanded ? 'div' : 'Tooltip'"
-            :text="!isExpanded ? item.label : ''"
-            placement="right">
-            <router-link
-              :to="item.route"
-              class="flex items-center transition-all text-gray-800 text-sm mb-0.5 h-7 py-1 gap-2 rounded"
-              :class="[
-                item.highlight ? 'bg-white shadow-sm' : ' hover:bg-gray-100',
+              class="text-sm text-gray-500 ease-in"
+              :class="
                 isExpanded
-                  ? 'w-full px-2.5 justify-start'
-                  : 'w-7 px-1 justify-center',
-              ]">
-              <FeatherIcon
-                :name="item.icon"
-                class="w-4.5 h-4.5 text-gray-700"
-                :stroke-width="1.5" />
-              <span v-if="isExpanded">
-                {{ item.label }}
-              </span>
-            </router-link>
-          </component>
-        </div>
-      </div>
-      <div class="mt-auto">
-        <!-- <PrimaryDropDown /> -->
-      </div>
+                  ? 'opacity-100 ml-auto'
+                  : 'ml-0 overflow-hidden opacity-0'
+              ">
+              {{ currentPlatform === "mac" ? "⌘K" : " Ctrl+K" }}
+            </span>
+          </div>
+        </template>
+      </SidebarItem>
+
+      <SidebarItem
+        v-for="item in sidebarItems"
+        :key="item.label"
+        :icon="item.icon"
+        :label="item.label"
+        :to="item.route"
+        :isCollapsed="!isExpanded"
+        class="mb-0.5" />
     </div>
+    <SidebarItem
+      :label="!isExpanded ? 'Expand' : 'Collapse'"
+      :isCollapsed="!isExpanded"
+      @click="toggleExpanded"
+      class="mt-auto">
+      <template #icon>
+        <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
+          <ArrowLeftFromLine
+            class="stroke-[1.5] h-4 w-4 text-gray-700 duration-300 ease-in-out"
+            :class="{ '[transform:rotateY(180deg)]': !isExpanded }" />
+        </span>
+      </template>
+    </SidebarItem>
   </div>
 </template>
 <script>
-import UserDropdown from "@/components/UserDropdown.vue";
-import { FeatherIcon, Tooltip } from "frappe-ui";
 import PrimaryDropDown from "./PrimaryDropdown.vue";
+import { ArrowLeftFromLine } from "lucide-vue-next";
+import Search from "./EspressoIcons/Search.vue";
+import Recent from "./EspressoIcons/Recent.vue";
+import Star from "./EspressoIcons/Star.vue";
+import Users from "./EspressoIcons/Users.vue";
+import Trash from "./EspressoIcons/Trash.vue";
+import SidebarItem from "@/components/SidebarItem.vue";
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon, UserDropdown, PrimaryDropDown, Tooltip },
+  components: { PrimaryDropDown, ArrowLeftFromLine, SidebarItem },
   emits: ["toggleMobileSidebar", "showSearchPopUp"],
   data() {
     return {
@@ -77,15 +80,6 @@ export default {
     isExpanded() {
       return this.$store.state.IsSidebarExpanded;
     },
-    /* currentSideBarWidth: {
-      get() {
-        return this.currentSideBarWidth = this.$store.state.IsSidebarExpanded ? 280 : 60
-      },
-      set(val) {
-        console.log(val)
-        return this.currentSideBarWidth = val
-      }
-    }, */
     currentPlatform() {
       let ua = navigator.userAgent.toLowerCase();
       if (ua.indexOf("win") > -1) {
@@ -108,27 +102,27 @@ export default {
         {
           label: "Recents",
           route: "/recents",
-          icon: "clock",
+          icon: Recent,
           highlight:
             this.$store.state.currentBreadcrumbs[0].label === "Recents",
         },
         {
           label: "Favourites",
           route: "/favourites",
-          icon: "star",
+          icon: Star,
           highlight:
             this.$store.state.currentBreadcrumbs[0].label === "Favourites",
         },
         {
           label: "Shared",
           route: "/shared",
-          icon: "users",
+          icon: Users,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Shared",
         },
         {
           label: "Trash",
           route: "/trash",
-          icon: "trash-2",
+          icon: Trash,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Trash",
         },
       ];
@@ -140,35 +134,6 @@ export default {
         "setIsSidebarExpanded",
         this.isExpanded ? false : true
       );
-    },
-    startResize() {
-      document.addEventListener("mousemove", this.resize);
-      document.addEventListener("mouseup", () => {
-        document.body.classList.remove("select-none");
-        document.body.classList.remove("cursor-col-resize");
-        this.sidebarResizing = false;
-        document.removeEventListener("mousemove", this.resize);
-      });
-    },
-    resize(e) {
-      this.sidebarResizing = true;
-      document.body.classList.add("select-none");
-      document.body.classList.add("cursor-col-resize");
-      let sidebarWidth = e.clientX;
-      let range = [60, 180];
-      if (sidebarWidth > range[0] && sidebarWidth < range[1]) {
-        sidebarWidth = 60;
-        this.$store.commit("setIsSidebarExpanded", false);
-      }
-      if (sidebarWidth > 180) {
-        this.$store.commit("setIsSidebarExpanded", true);
-      }
-      /* if (sidebarWidth < 100) {
-        this.$store.commit("setIsSidebarExpanded", false )
-      }
-      if (sidebarWidth > 100) {
-        this.$store.commit("setIsSidebarExpanded", true )
-      } */
     },
   },
   resources: {
