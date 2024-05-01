@@ -1,14 +1,14 @@
 <template>
   <Transition
-    enter-from-class="translate-x-[150%] opacity-0"
-    leave-to-class="translate-x-[150%] opacity-0"
-    enter-active-class="transition duration-125"
-    leave-active-class="transition duration-125">
+    enter-from-class="translate-x-[150%]"
+    leave-to-class="translate-x-[150%]"
+    enter-active-class="transition duration-150"
+    leave-active-class="transition duration-150">
     <div
       v-if="showInfoSidebar"
-      class="min-w-[300px] max-w-[300px] min-h-full border-l overflow-auto">
+      class="min-w-[352px] max-w-[352px] min-h-full max-h-full border-l">
       <div v-if="typeof entity === 'number'">
-        <div class="w-full p-4 border-b overflow-visible">
+        <div class="w-full px-5 py-4 border-b overflow-visible">
           <div class="flex items-center">
             <div class="font-medium truncate text-lg">
               {{ store.state.entityInfo.length }} items selected
@@ -17,27 +17,20 @@
         </div>
       </div>
       <div v-else-if="entity">
-        <div class="w-full pl-3 py-4 border-b overflow-visible">
+        <div class="w-full px-5 py-4 border-b">
           <div class="flex items-center">
             <div class="font-medium truncate text-lg">
               {{ entity.title }}
             </div>
           </div>
         </div>
-        <div v-if="tab === 0" class="h-full border-b">
-          <!--           <div
-            class="p-4 z-10 sticky top-0 bg-white"
-            :class="
-              tab === 0
-                ? 'flex-auto'
-                : 'text-gray-600 cursor-pointer flex-none '
-            "
-            @click="tab = 0">
-            <div class="flex items-center">
-              <FeatherIcon name="alert-circle" class="h-4 mr-2 stroke-2" />
-              <span class="font-medium text-lg">Information</span>
-            </div>
-          </div> -->
+        <!-- Information -->
+        <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <FeatherIcon class="h-4 w-4" name="info" />
+            Information
+          </span>
           <div
             v-if="
               (entity.mime_type?.startsWith('video') ||
@@ -45,147 +38,165 @@
                   entity?.mime_type !== 'image/svg+xml')) &&
               showInfoSidebar
             "
-            class="relative p-0.5 aspect-video object-contain m-auto w-full flex items-center justify-center">
-            <img class="h-auto max-h-full w-auto" :src="thumbnailLink" />
+            class="h-[210px] w-full mb-4">
+            <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
           </div>
-          <div class="p-4 space-y-6">
+          <div class="space-y-6.5">
             <div v-if="entity.owner === 'You'">
-              <div class="text-base font-medium mb-2">Manage Access</div>
-              <div class="flex flex-row">
-                <Button
-                  icon-left="share-2"
-                  class="h-7"
-                  @click="showShareDialog = true">
-                  Share
+              <div class="text-base font-medium mb-4">Access</div>
+              <div class="flex items-center justify-end">
+                <Avatar
+                  size="lg"
+                  :label="entity.owner"
+                  :image="entity.user_image"></Avatar>
+                <div class="border-l h-6 mx-1.5"></div>
+                <GeneralAccess
+                  size="lg"
+                  class="-mr-[3px] outline outline-white"
+                  :general-access="generalAccess?.data?.[0]" />
+                <div
+                  v-if="sharedWithList?.length"
+                  class="flex items-center justify-start">
+                  <Avatar
+                    v-for="user in sharedWithList.slice(0, 3)"
+                    size="lg"
+                    :key="user.user_name"
+                    :label="user.full_name ? user.full_name : user.user_name"
+                    :image="user.user_image"
+                    class="-mr-[3px] outline outline-white" />
+
+                  <Avatar
+                    size="lg"
+                    v-if="sharedWithList.slice(3).length"
+                    :label="sharedWithList.slice(3).length.toString()"
+                    class="-mr-[3px] outline outline-white" />
+                </div>
+
+                <Button class="ml-auto" @click="showShareDialog = true">
+                  Manage access
                 </Button>
               </div>
             </div>
-
-            <div v-if="entity.owner === 'You' || entityTags.data?.length">
-              <div class="text-base font-medium mb-2">Tags</div>
-              <div class="flex flex-wrap gap-2">
-                <Tag
-                  v-for="tag in entityTags?.data"
-                  :key="tag"
-                  :tag="tag"
+            <div v-if="entityTags.data?.length || entity.owner === 'You'">
+              <div class="text-base font-medium mb-4">Tags</div>
+              <div class="flex items-center justify-start flex-wrap gap-y-4">
+                <div
+                  v-if="entityTags.data?.length"
+                  class="flex flex-wrap gap-2 max-w-full">
+                  <Tag
+                    v-for="tag in entityTags?.data"
+                    :key="tag"
+                    :tag="tag"
+                    :entity="entity"
+                    @success="
+                      () => {
+                        userTags.fetch();
+                        entityTags.fetch();
+                      }
+                    " />
+                </div>
+                <span v-else-if="!addTag" class="text-gray-700 text-base">
+                  This file has no tags
+                </span>
+                <Button
+                  v-if="!addTag && entity.owner === 'You'"
+                  class="ml-auto"
+                  @click="addTag = true">
+                  Add tag
+                </Button>
+                <TagInput
+                  v-if="addTag"
                   :entity="entity"
+                  :unadded-tags="unaddedTags"
                   @success="
                     () => {
                       userTags.fetch();
                       entityTags.fetch();
+                      addTag = false;
                     }
-                  " />
-                <Badge
-                  v-if="!addTag && entity.owner === 'You'"
-                  class="flex items-center content-center cursor-pointer font-medium"
-                  @click="addTag = true">
-                  <FeatherIcon
-                    v-if="entity.owner === 'You'"
-                    class="h-3 stroke-2"
-                    name="plus" />
-                  Add tag
-                </Badge>
+                  "
+                  @close="addTag = false" />
               </div>
-
-              <TagInput
-                v-if="addTag"
-                :class="{ 'w-full': entityTags.data?.length }"
-                :entity="entity"
-                :unadded-tags="unaddedTags"
-                @success="
-                  () => {
-                    userTags.fetch();
-                    entityTags.fetch();
-                    addTag = false;
-                  }
-                "
-                @close="addTag = false" />
             </div>
             <div>
-              <div class="text-base font-medium mb-2">Properties</div>
-              <div class="flex text-sm justify-between">
-                <div class="text-gray-600 space-y-1.5">
-                  <div>Type</div>
-                  <div v-if="entity.file_size">Size</div>
-                  <div>Modified</div>
-                  <div>Created</div>
-                  <div>Owner</div>
-                </div>
-                <div class="text-right space-y-1.5">
-                  <div>{{ formattedMimeType }}</div>
-                  <div>{{ entity.file_size }}</div>
-                  <div>{{ entity.modified }}</div>
-                  <div>{{ entity.creation }}</div>
-                  <div class="flex items-center">
-                    <Avatar
-                      :image="entity.user_image"
-                      :label="entity.full_name"
-                      class="relative mr-2"
-                      size="sm" />
-                    <span>{{ entity.full_name }}</span>
-                  </div>
-                </div>
+              <div class="text-base font-medium mb-4">Properties</div>
+              <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
+                <span class="col-span-1 text-gray-600">Type</span>
+                <span class="col-span-1">{{ formattedMimeType }}</span>
+                <span v-if="entity.file_size" class="col-span-1 text-gray-600">
+                  Size
+                </span>
+                <span v-if="entity.file_size" class="col-span-1">
+                  {{ entity.file_size }}
+                </span>
+                <span class="col-span-1 text-gray-600">Modified</span>
+                <span class="col-span-1">{{ entity.modified }}</span>
+                <span class="col-span-1 text-gray-600">Created</span>
+                <span class="col-span-1">{{ entity.creation }}</span>
+                <span class="col-span-1 text-gray-600">Owner</span>
+                <span class="col-span-1">{{ entity.full_name }}</span>
               </div>
             </div>
           </div>
         </div>
-        <div v-if="tab === 1" class="h-full pb-12">
-          <div class="flex items-center px-4 pt-4 bg-white">
-            <span class="font-medium text-base mb-2">Comments</span>
-          </div>
-          <div v-if="entity.allow_comments" class="px-4 overflow-y-auto pb-4">
+        <!-- Comments -->
+        <div
+          v-if="tab === 1"
+          class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden">
+          <span
+            class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <FeatherIcon class="h-4 w-4" name="message-circle" />
+            Comments
+          </span>
+          <div v-if="entity.allow_comments" class="pb-2 px-5">
             <div
               v-for="comment in comments.data"
               :key="comment"
-              class="flex flex-col">
-              <div class="flex items-center gap-1 mt-2">
+              class="flex flex-col mb-5">
+              <div class="flex items-start justify-start">
                 <Avatar
                   :label="comment.comment_by"
                   :image="comment.user_image"
                   class="h-7 w-7" />
-                <div>
-                  <span class="text-sm font-medium">
-                    {{ comment.comment_by }}
-                  </span>
-                  <span class="text-gray-500 text-sm">{{ " ∙ " }}</span>
-                  <span class="text-gray-700 text-sm">
-                    {{ comment.creation }}
+                <div class="ml-3">
+                  <div
+                    class="flex items-center justify-start text-base gap-x-1">
+                    <span class="font-medium">{{ comment.comment_by }}</span>
+                    <span>{{ "∙" }}</span>
+                    <span class="text-gray-600">{{ comment.creation }}</span>
+                  </div>
+                  <span
+                    class="my-2 text-base text-gray-700 break-word leading-snug">
+                    {{ comment.content }}
                   </span>
                 </div>
-              </div>
-              <div
-                class="ml-2.5 my-2 text-sm text-gray-700 max-w-full break-word leading-snug">
-                {{ comment.content }}
               </div>
             </div>
             <div
               v-if="userId != 'Guest'"
-              class="flex items-center gap-1 mt-2 mb-4">
+              class="flex items-center justify-start py-2">
               <Avatar
                 :label="fullName"
                 :image="imageURL"
-                class="h-7 w-7 mr-1" />
-              <span class="text-sm font-medium">
-                {{ fullName }}
-              </span>
-              <span class="text-gray-500 text-sm">{{ "∙" }}</span>
-              <span class="text-gray-700 text-sm">Now</span>
+                class="h-7 w-7 mr-3" />
+              <div
+                class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group">
+                <textarea
+                  class="w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
+                  v-model="newComment"
+                  placeholder="Add a comment"
+                  @input="resize($event)"
+                  @keypress.enter.stop.prevent="postComment" />
+                <Button
+                  class="hover:bg-transparent"
+                  variant="ghost"
+                  icon="arrow-up-circle"
+                  :disabled="!newComment.length"
+                  @click="postComment"></Button>
+              </div>
             </div>
-            <textarea
-              class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto w-full mx-1 form-textarea block mx-0.5 resize-none mb-2"
-              v-model="newComment"
-              placeholder="Leave a comment"
-              @input="resize($event)"
-              @keypress.enter.stop.prevent="postComment" />
-            <Button
-              class="w-full mx-1"
-              variant="solid"
-              :disabled="!newComment.length"
-              @click="postComment">
-              Comment
-            </Button>
           </div>
-          <div v-else class="text-gray-600 text-sm p-4 border-b">
+          <div v-else class="text-gray-600 text-sm px-5">
             Comments have been disabled for this
             {{ entity.is_group ? "folder" : "file" }} by its owner.
           </div>
@@ -211,40 +222,28 @@
   </Transition>
 
   <div
-    class="hidden sm:flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
+    class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white">
     <Button
-      class="mb-2 py-4 text-gray-600"
+      class="text-gray-600"
       :class="[
         tab === 0 && showInfoSidebar
           ? 'text-black bg-gray-200'
           : ' hover:bg-gray-50',
       ]"
+      icon="info"
       variant="minimal"
-      @click="switchTab(0)">
-      <FeatherIcon
-        name="info"
-        :class="[
-          tab === 0 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
-        ]"
-        class="text-gray-600 w-full h-full stroke-1.5" />
-    </Button>
+      @click="switchTab(0)"></Button>
     <Button
-      class="mb-2 text-gray-600 py-4"
+      class="text-gray-600"
       :class="[
         tab === 1 && showInfoSidebar
           ? 'text-black bg-gray-200'
           : ' hover:bg-gray-50',
       ]"
+      icon="message-circle"
       variant="minimal"
       v-if="showComments"
-      @click="switchTab(1)">
-      <FeatherIcon
-        name="message-circle"
-        :class="[
-          tab === 1 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
-        ]"
-        class="text-gray-600 w-full h-full stroke-1.5" />
-    </Button>
+      @click="switchTab(1)"></Button>
   </div>
 
   <ShareDialog
@@ -276,7 +275,9 @@ import TagInput from "@/components/TagInput.vue";
 import Tag from "@/components/Tag.vue";
 import { formatMimeType, formatDate } from "@/utils/format";
 import { getIconUrl } from "@/utils/getIconUrl";
+import GeneralAccess from "@/components/GeneralAccess.vue";
 import { thumbnail_getIconUrl } from "@/utils/getIconUrl";
+import { useLink } from "vue-router";
 
 const store = useStore();
 const tab = ref(0);
@@ -290,7 +291,7 @@ const userId = computed(() => {
 });
 
 const fullName = computed(() => {
-  return store.state.auth.user_id;
+  return store.state.user.fullName;
 });
 
 const imageURL = computed(() => {
@@ -323,6 +324,10 @@ const entity = computed(() => {
   } else {
     return false;
   }
+});
+
+const sharedWithList = computed(() => {
+  return userList.data?.users.concat(groupList.data);
 });
 
 const showComments = computed(() => {
@@ -369,6 +374,9 @@ watch(
         thumbnailUrl();
         comments.fetch({ entity_name: newEntity.name });
         entityTags.fetch({ entity: newEntity.name });
+        generalAccess.fetch({ entity_name: newEntity.name });
+        userList.fetch({ entity_name: newEntity.name });
+        groupList.fetch({ entity_name: newEntity.name });
         userTags.fetch();
       }
     }
@@ -405,6 +413,21 @@ let comments = createResource({
       console.log(error.messages);
     }
   },
+  auto: false,
+});
+
+const generalAccess = createResource({
+  url: "drive.api.permissions.get_general_access",
+  auto: false,
+});
+
+const userList = createResource({
+  url: "drive.api.permissions.get_shared_with_list",
+  auto: false,
+});
+
+const groupList = createResource({
+  url: "drive.api.permissions.get_shared_user_group_list",
   auto: false,
 });
 

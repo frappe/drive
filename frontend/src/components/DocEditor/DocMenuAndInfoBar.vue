@@ -6,7 +6,7 @@
     leave-active-class="transition duration-125">
     <div
       v-if="showInfoSidebar"
-      class="min-w-[300px] max-w-[300px] min-h-full border-l overflow-auto">
+      class="min-w-[352px] max-w-[352px] min-h-full border-l overflow-auto">
       <div v-if="entity" class="w-full border-b pl-3 py-4">
         <div class="flex items-center">
           <div class="font-medium truncate text-lg">
@@ -17,111 +17,132 @@
       <div v-if="entity && editor">
         <!-- Info -->
         <div v-if="tab === 4" class="p-4 border-b">
-          <div class="space-y-6 h-full flex-auto flex flex-col z-0">
-            <div>
-              <div class="flex items-center">
-                <span class="font-medium text-base mb-2">Information</span>
-              </div>
-
-              <div class="flex text-sm justify-between">
-                <div class="text-gray-600 space-y-1.5">
-                  <div>Words</div>
-                  <div>Characters</div>
-                  <div>Reading Time</div>
-                </div>
-                <div class="text-right space-y-1.5">
-                  <div>{{ editor.storage.characterCount.words() }}</div>
-                  <div>{{ editor.storage.characterCount.characters() }}</div>
-                  <div>
-                    ~
-                    {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
-                    min
-                  </div>
-                </div>
-              </div>
-            </div>
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <FeatherIcon class="h-4 w-4" name="info" />
+            Information
+          </span>
+          <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
             <div v-if="entity.owner === 'You'">
-              <div class="text-base font-medium mb-2">Manage Access</div>
-              <div class="flex flex-row">
-                <Button
-                  icon-left="share-2"
-                  class="h-7"
-                  @click="showShareDialog = true">
-                  Share
+              <div class="text-base font-medium mb-4">Access</div>
+              <div class="flex items-center justify-end">
+                <Avatar
+                  size="lg"
+                  :label="entity.owner"
+                  :image="entity.user_image"></Avatar>
+                <div class="border-l h-6 mx-1.5"></div>
+                <GeneralAccess
+                  size="lg"
+                  class="-mr-[3px] outline outline-white"
+                  :general-access="$resources.generalAccess?.data?.[0]" />
+                <div
+                  v-if="sharedWithList?.length"
+                  class="flex items-center justify-start">
+                  <Avatar
+                    v-for="user in sharedWithList.slice(0, 3)"
+                    size="lg"
+                    :key="user.user_name"
+                    :label="user.full_name ? user.full_name : user.user_name"
+                    :image="user.user_image"
+                    class="-mr-[3px] outline outline-white" />
+
+                  <Avatar
+                    size="lg"
+                    v-if="sharedWithList.slice(3).length"
+                    :label="sharedWithList.slice(3).length.toString()"
+                    class="-mr-[3px] outline outline-white" />
+                </div>
+
+                <Button class="ml-auto" @click="showShareDialog = true">
+                  Manage access
                 </Button>
               </div>
             </div>
+
             <ShareDialog
               v-if="showShareDialog"
               v-model="showShareDialog"
               :entity-name="entity.name" />
-            <!-- <div
+            <div
               v-if="
-                entity.owner === 'You' || $resources.entityTags.data?.length
+                $resources.entityTags.data?.length || entity.owner === 'You'
               ">
-              <div class="text-base font-medium mb-2">Tags</div>
-              <div class="flex flex-wrap gap-2">
-                <Tag
-                  v-for="tag in $resources.entityTags.data"
-                  :key="tag"
-                  :tag="tag"
+              <div class="text-base font-medium mb-4">Tags</div>
+              <div class="flex items-center justify-start flex-wrap gap-y-4">
+                <div
+                  v-if="$resources.entityTags.data?.length"
+                  class="flex flex-wrap gap-2 max-w-full">
+                  <Tag
+                    v-for="tag in $resources.entityTags?.data"
+                    :key="tag"
+                    :tag="tag"
+                    :entity="entity"
+                    @success="
+                      () => {
+                        userTags.fetch();
+                        $resources.entityTags.fetch();
+                      }
+                    " />
+                </div>
+                <span v-else class="text-gray-700 text-sm">
+                  This file has no tags
+                </span>
+                <Button
+                  v-if="!addTag && entity.owner === 'You'"
+                  class="ml-auto"
+                  @click="addTag = true">
+                  Add tag
+                </Button>
+                <TagInput
+                  v-if="addTag"
+                  :class="{ 'w-full': $resources.entityTags.data?.length }"
                   :entity="entity"
+                  :unadded-tags="unaddedTags"
                   @success="
                     () => {
-                      $resources.userTags.fetch();
+                      userTags.fetch();
                       $resources.entityTags.fetch();
+                      addTag = false;
                     }
-                  " />
-                <Badge
-                  v-if="!addTag && entity.owner === 'You'"
-                  class="flex items-center content-center cursor-pointer font-medium"
-                  @click="addTag = true">
-                  <FeatherIcon
-                    v-if="entity.owner === 'You'"
-                    class="h-3 stroke-2"
-                    name="plus" />
-                  Add tag
-                </Badge>
+                  "
+                  @close="addTag = false" />
               </div>
-
-              <TagInput
-                v-if="addTag"
-                :class="{ 'w-full': $resources.entityTags.data.length }"
-                :entity="entity"
-                :unadded-tags="unaddedTags"
-                @success="
-                  () => {
-                    $resources.userTags.fetch();
-                    $resources.entityTags.fetch();
-                    addTag = false;
-                  }
-                "
-                @close="addTag = false" />
-            </div> -->
+            </div>
             <div>
-              <div class="text-base font-medium mb-2">Properties</div>
-              <div class="flex text-sm justify-between">
-                <div class="text-gray-600 space-y-1.5">
-                  <div>Type</div>
-                  <div>Size</div>
-                  <div>Modified</div>
-                  <div>Created</div>
-                  <div>Owner</div>
-                </div>
-                <div class="text-right space-y-1.5">
-                  <div>Frappe Doc</div>
-                  <div>{{ entity.file_size }}</div>
-                  <div>{{ entity.modified }}</div>
-                  <div>{{ entity.creation }}</div>
-                  <div class="flex items-center">
-                    <Avatar
-                      :image="entity.user_image"
-                      :label="entity.full_name"
-                      class="relative mr-2"
-                      size="sm" />
-                    <span>{{ entity.full_name }}</span>
-                  </div>
-                </div>
+              <div class="text-base font-medium mb-4">Properties</div>
+              <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
+                <span class="col-span-1 text-gray-600">Type</span>
+                <span class="col-span-1">{{ formattedMimeType }}</span>
+                <span class="col-span-1 text-gray-600">Size</span>
+                <span class="col-span-1">{{ entity.file_size }}</span>
+                <span class="col-span-1 text-gray-600">Modified</span>
+                <span class="col-span-1">{{ entity.modified }}</span>
+                <span class="col-span-1 text-gray-600">Created</span>
+                <span class="col-span-1">{{ entity.creation }}</span>
+                <span class="col-span-1 text-gray-600">Owner</span>
+                <span class="col-span-1">{{ entity.full_name }}</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-base font-medium mb-4">Stats</div>
+              <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
+                <span class="col-span-1 text-gray-600">Words</span>
+                <span class="col-span-1">
+                  {{ editor.storage.characterCount.words() }}
+                </span>
+                <span class="col-span-1 text-gray-600">Characters</span>
+                <span class="col-span-1">
+                  {{ editor.storage.characterCount.characters() }}
+                </span>
+                <span class="col-span-1 text-gray-600">Reading Time</span>
+                <span class="col-span-1">
+                  {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
+                  {{
+                    Math.ceil(editor.storage.characterCount.words() / 200) > 1
+                      ? "mins"
+                      : "min"
+                  }}
+                </span>
               </div>
             </div>
           </div>
@@ -129,7 +150,11 @@
 
         <!-- Comments -->
         <div v-if="tab === 5" class="p-4 border-b">
-          <span class="font-medium text-base">Comments</span>
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <FeatherIcon class="h-4 w-4 stroke-[1.5]" name="message-circle" />
+            Comments
+          </span>
           <OuterCommentVue
             v-if="!!allComments.length"
             :active-comments-instance="activeCommentsInstance"
@@ -144,7 +169,11 @@
 
         <!-- Typography -->
         <div v-if="tab === 0" class="flex flex-col p-4 border-b">
-          <span class="font-medium text-base mb-2">Style</span>
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <Type class="h-4 w-4 stroke-[1.5]" />
+            Style
+          </span>
           <span class="font-medium text-gray-600 text-xs my-2">TITLES</span>
           <div class="w-full flex justify-between gap-1 mb-2.5">
             <Button
@@ -485,7 +514,11 @@
 
         <!-- Insert -->
         <div v-if="tab === 1" class="flex flex-col p-4 border-b">
-          <span class="font-medium text-base mb-[0.25px]">Insert</span>
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <Plus class="h-4 w-4 stroke-[1.5]" />
+            Style
+          </span>
           <div>
             <span class="font-medium text-gray-600 text-base">Media</span>
 
@@ -868,7 +901,11 @@
 
         <!-- Document Settings -->
         <div v-if="tab === 2" class="flex flex-col p-4 border-b">
-          <span class="font-medium text-gray-600 text-xs my-2">SETTINGS</span>
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <FileText class="h-4 w-4 stroke-[1.5]" />
+            Settings
+          </span>
           <div class="flex items-center">
             <span class="font-medium text-gray-700 text-base my-2">
               Small Text
@@ -947,7 +984,11 @@
 
         <!-- Transform -->
         <div v-if="tab === 3" class="p-4 border-b">
-          <span class="font-medium text-base mb-[0.25px]">Transform</span>
+          <span
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full">
+            <ArrowDownUp class="h-4 w-4 stroke-[1.5]" />
+            Transform
+          </span>
           <div>
             <span
               v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
@@ -984,9 +1025,9 @@
     </div>
   </Transition>
   <div
-    class="hidden sm:flex flex-col items-center h-full overflow-y-hidden border-l z-0 max-w-[50px] min-w-[50px] p-2 bg-white">
+    class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white">
     <template v-for="(item, index) in tabs">
-      <Button
+      <button
         v-if="item.write === this.$store.state.hasWriteAccess || !item.write"
         variant="'ghost'"
         @click="switchTab(index)"
@@ -995,14 +1036,14 @@
             ? 'text-black bg-gray-200'
             : ' hover:bg-gray-50',
         ]"
-        class="mb-2 py-4 text-gray-600">
+        class="h-7 w-7 text-gray-600 rounded">
         <component
           :class="[
             tab === 1 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
           ]"
-          class="stroke-[1.5] text-gray-600 w-4.5"
+          class="mx-auto stroke-[1.5] text-gray-600 w-4 h-4"
           :is="item.icon" />
-      </Button>
+      </button>
     </template>
   </div>
 </template>
@@ -1062,6 +1103,7 @@ import Strikethrough from "./icons/StrikeThrough.vue";
 import Underline from "./icons/Underline.vue";
 import NewAnnotation from "./icons/NewAnnotation.vue";
 import NewLink from "./icons/NewLink.vue";
+import GeneralAccess from "@/components/GeneralAccess.vue";
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -1107,6 +1149,7 @@ export default {
     MessageCircle,
     FileText,
     ListCollapse,
+    GeneralAccess,
   },
   inheritAttrs: false,
   inject: ["editor"],
@@ -1229,6 +1272,11 @@ export default {
         return false;
       }
     },
+    sharedWithList() {
+      return this.$resources.userList.data?.users.concat(
+        this.$resources.groupList.data
+      );
+    },
   },
   methods: {
     switchTab(val) {
@@ -1311,6 +1359,27 @@ export default {
     },
   },
   resources: {
+    userList() {
+      return {
+        url: "drive.api.permissions.get_shared_with_list",
+        params: { entity_name: this.entity.name },
+        auto: true,
+      };
+    },
+    groupList() {
+      return {
+        url: "drive.api.permissions.get_shared_user_group_list",
+        params: { entity_name: this.entity.name },
+        auto: true,
+      };
+    },
+    generalAccess() {
+      return {
+        url: "drive.api.permissions.get_general_access",
+        params: { entity_name: this.entity.name },
+        auto: true,
+      };
+    },
     userTags() {
       return {
         url: "drive.api.tags.get_user_tags",
