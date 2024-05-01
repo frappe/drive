@@ -97,4 +97,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+}

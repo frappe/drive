@@ -1,18 +1,18 @@
-import { deleteNode } from "../utils/deleteNodes";
-import { getSelectedContent } from "../utils/getSelectedContent";
+import { deleteNode } from "../utils/deleteNodes"
+import { getSelectedContent } from "../utils/getSelectedContent"
 
-import { mergeAttributes, Node, RawCommands } from "@tiptap/core";
+import { mergeAttributes, Node, RawCommands } from "@tiptap/core"
 
 export interface DetailsOptions {
-  readonly HTMLAttributes: Record<string, unknown>;
+  readonly HTMLAttributes: Record<string, unknown>
 }
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     details: {
-      setDetails: () => ReturnType;
-      removeDetails: () => ReturnType;
-    };
+      setDetails: () => ReturnType
+      removeDetails: () => ReturnType
+    }
   }
 }
 
@@ -22,7 +22,7 @@ export const Details = Node.create<DetailsOptions>({
   addOptions() {
     return {
       HTMLAttributes: {},
-    };
+    }
   },
 
   addAttributes() {
@@ -35,7 +35,7 @@ export const Details = Node.create<DetailsOptions>({
           "data-opened": attributes.opened,
         }),
       },
-    };
+    }
   },
 
   content: `summary detailsContent`,
@@ -50,7 +50,7 @@ export const Details = Node.create<DetailsOptions>({
       {
         tag: `details`,
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -63,33 +63,33 @@ export const Details = Node.create<DetailsOptions>({
         0,
       ],
       [`button`, { class: `details-arrow` }],
-    ];
+    ]
   },
 
   addNodeView() {
     return ({ node }) => {
-      const wrapper = document.createElement(`div`);
-      const details = document.createElement(`details`);
-      const button = document.createElement(`button`);
+      const wrapper = document.createElement(`div`)
+      const details = document.createElement(`details`)
+      const button = document.createElement(`button`)
 
-      wrapper.className = `details-wrapper`;
-      button.className = `details-arrow`;
+      wrapper.className = `details-wrapper`
+      button.className = `details-arrow`
 
-      details.open = node.attrs.opened;
+      details.open = node.attrs.opened
 
       button.addEventListener(`click`, () => {
-        details.open = !details.open;
-        (node.attrs as unknown as Record<string, unknown>).opened =
-          details.open;
-      });
+        details.open = !details.open
+        ;(node.attrs as unknown as Record<string, unknown>).opened =
+          details.open
+      })
 
-      wrapper.append(details, button);
+      wrapper.append(details, button)
 
       return {
         dom: wrapper,
         contentDOM: details,
-      };
-    };
+      }
+    }
   },
 
   addCommands(): Partial<RawCommands> {
@@ -97,16 +97,16 @@ export const Details = Node.create<DetailsOptions>({
       setDetails:
         () =>
         ({ commands, state }) => {
-          const content = getSelectedContent(state);
+          const content = getSelectedContent(state)
 
           return commands.insertContent(
             `<details data-opened="true"><summary><p></p></summary><div data-type="details-content"><p>${content}</p></div></details><p></p>`
-          );
+          )
         },
       removeDetails:
         () =>
         ({ state, dispatch }) =>
           deleteNode(state, dispatch, this.name),
-    };
+    }
   },
-});
+})

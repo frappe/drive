@@ -1,7 +1,7 @@
-import { createStore } from "vuex";
-import { call } from "frappe-ui";
-import { clear } from "idb-keyval";
-import { get, set } from "idb-keyval";
+import { createStore } from "vuex"
+import { call } from "frappe-ui"
+import { clear } from "idb-keyval"
+import { get, set } from "idb-keyval"
 
 let getCookies = () => {
   return Object.fromEntries(
@@ -9,8 +9,8 @@ let getCookies = () => {
       .split("; ")
       .map((cookie) => cookie.split("="))
       .map((entry) => [entry[0], decodeURIComponent(entry[1])])
-  );
-};
+  )
+}
 
 const store = createStore({
   state: {
@@ -58,129 +58,129 @@ const store = createStore({
   },
   getters: {
     isLoggedIn: (state) => {
-      return state.auth.user_id && state.auth.user_id !== "Guest";
+      return state.auth.user_id && state.auth.user_id !== "Guest"
     },
     uploadsInProgress: (state) => {
-      return state.uploads.filter((upload) => !upload.completed);
+      return state.uploads.filter((upload) => !upload.completed)
     },
     uploadsCompleted: (state) => {
-      return state.uploads.filter((upload) => upload.completed);
+      return state.uploads.filter((upload) => upload.completed)
     },
   },
   mutations: {
     setAuth(state, auth) {
-      Object.assign(state.auth, auth);
+      Object.assign(state.auth, auth)
     },
     setError(state, error) {
-      Object.assign(state.error, error);
+      Object.assign(state.error, error)
     },
     setUser(state, user) {
-      Object.assign(state.user, user);
+      Object.assign(state.user, user)
     },
     setUploads(state, uploads) {
-      state.uploads = uploads;
+      state.uploads = uploads
     },
     setConnectedUsers(state, connectedUsers) {
-      state.connectedUsers = connectedUsers;
+      state.connectedUsers = connectedUsers
     },
     pushToUploads(state, upload) {
-      state.uploads.push(upload);
+      state.uploads.push(upload)
     },
     updateUpload(state, payload) {
       let index = state.uploads.findIndex(
         (upload) => upload.uuid == payload.uuid
-      );
-      Object.assign(state.uploads[index], payload);
+      )
+      Object.assign(state.uploads[index], payload)
     },
     setSortOrder(state, payload) {
-      localStorage.setItem("sortOrder", JSON.stringify(payload));
-      state.sortOrder = payload;
+      localStorage.setItem("sortOrder", JSON.stringify(payload))
+      state.sortOrder = payload
     },
     toggleView(state, payload) {
-      localStorage.setItem("view", JSON.stringify(payload));
-      state.view = payload;
+      localStorage.setItem("view", JSON.stringify(payload))
+      state.view = payload
     },
     toggleShareView(state, payload) {
-      localStorage.setItem("shareView", JSON.stringify(payload));
-      state.shareView = payload;
+      localStorage.setItem("shareView", JSON.stringify(payload))
+      state.shareView = payload
     },
     setEntityInfo(state, payload) {
-      localStorage.setItem("selectedEntities", JSON.stringify(payload));
-      state.entityInfo = payload;
+      localStorage.setItem("selectedEntities", JSON.stringify(payload))
+      state.entityInfo = payload
     },
     setCurrentFolder(state, payload) {
-      localStorage.setItem("currentFolder", JSON.stringify(payload));
-      state.currentFolder = payload;
+      localStorage.setItem("currentFolder", JSON.stringify(payload))
+      state.currentFolder = payload
     },
     setCurrentViewEntites(state, payload) {
-      state.currentViewEntites = payload;
-      set("currentViewEntites", JSON.stringify(payload));
+      state.currentViewEntites = payload
+      set("currentViewEntites", JSON.stringify(payload))
     },
     setPasteData(state, payload) {
-      state.pasteData = payload;
+      state.pasteData = payload
     },
     setShowInfo(state, payload) {
-      localStorage.setItem("showInfo", payload);
-      state.showInfo = payload;
+      localStorage.setItem("showInfo", payload)
+      state.showInfo = payload
     },
     setAllComments(state, payload) {
       /* localStorage.setItem("allDocComments",payload); */
-      state.allComments = payload;
+      state.allComments = payload
     },
     setActiveCommentsInstance(state, payload) {
-      state.activeCommentsInstance = payload;
+      state.activeCommentsInstance = payload
     },
     setHasWriteAccess(state, payload) {
-      state.hasWriteAccess = payload;
+      state.hasWriteAccess = payload
     },
     setCurrentFolderID(state, payload) {
-      state.currentFolderID = payload;
+      state.currentFolderID = payload
     },
     setHomeFolderID(state, payload) {
-      state.homeFolderID = payload;
+      state.homeFolderID = payload
     },
     setCurrentBreadcrumbs(state, payload) {
-      localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload));
-      state.currentBreadcrumbs = payload;
+      localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload))
+      state.currentBreadcrumbs = payload
     },
     setIsSidebarExpanded(state, payload) {
-      localStorage.setItem("IsSidebarExpanded", JSON.stringify(payload));
-      state.IsSidebarExpanded = payload;
+      localStorage.setItem("IsSidebarExpanded", JSON.stringify(payload))
+      state.IsSidebarExpanded = payload
     },
   },
   actions: {
     async login({ commit }, payload) {
-      localStorage.removeItem("is_drive_admin");
-      commit("setAuth", { loading: true });
-      clear();
+      localStorage.removeItem("is_drive_admin")
+      commit("setAuth", { loading: true })
+      clear()
       let res = await call("login", {
         usr: payload.email,
         pwd: payload.password,
-      });
+      })
       if (res) {
         commit("setAuth", {
           loading: false,
           user_id: getCookies().user_id,
-        });
+        })
         commit("setUser", {
           fullName: getCookies().full_name,
           imageURL: getCookies().user_image
             ? window.location.origin + getCookies().user_image
             : null,
-        });
-        return res;
+        })
+        return res
       }
     },
     async logout({ commit }) {
-      commit("setAuth", { loading: true });
-      await call("logout");
-      clear();
-      window.location.reload();
+      commit("setAuth", { loading: true })
+      await call("logout")
+      clear()
+      window.location.reload()
     },
     clearUploads({ commit }) {
-      commit("setUploads", []);
+      commit("setUploads", [])
     },
   },
-});
+})
 
-export default store;
+export default store

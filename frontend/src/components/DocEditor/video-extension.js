@@ -1,4 +1,4 @@
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node, mergeAttributes } from "@tiptap/core"
 // Inspired by this blog: https://www.codemzy.com/blog/tiptap-video-embed-extension
 
 const Video = Node.create({
@@ -13,7 +13,7 @@ const Video = Node.create({
       src: {
         default: null,
       },
-    };
+    }
   },
 
   parseHTML() {
@@ -21,26 +21,26 @@ const Video = Node.create({
       {
         tag: "video",
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["video", mergeAttributes(HTMLAttributes)];
+    return ["video", mergeAttributes(HTMLAttributes)]
   },
 
   addNodeView() {
     return ({ editor, node }) => {
-      const div = document.createElement("div");
+      const div = document.createElement("div")
       div.className =
         "relative aspect-w-16 aspect-h-9" +
-        (editor.isEditable ? " cursor-pointer" : "");
+        (editor.isEditable ? " cursor-pointer" : "")
 
-      const video = document.createElement("video");
+      const video = document.createElement("video")
       /* if (editor.isEditable) {
         video.className = "pointer-events-none";
       } */
-      video.setAttribute("controls", "");
-      video.src = node.attrs.src;
+      video.setAttribute("controls", "")
+      video.src = node.attrs.src
       /* if (!editor.isEditable) {
         video.setAttribute("controls", "");
       } else {
@@ -50,12 +50,12 @@ const Video = Node.create({
         videoPill.innerHTML = "Video";
         div.append(videoPill);
       } */
-      div.append(video);
+      div.append(video)
       return {
         dom: div,
-      };
-    };
+      }
+    }
   },
-});
+})
 
-export default Video;
+export default Video

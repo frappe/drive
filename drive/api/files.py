@@ -7,7 +7,7 @@ from pypika import Order, Case, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from werkzeug.utils import (secure_filename, send_file)
+from werkzeug.utils import secure_filename, send_file
 import uuid
 import mimetypes
 import hashlib
@@ -89,6 +89,7 @@ def create_document_entity(title, content, parent=None):
     drive_entity.save()
     return drive_entity
 
+
 def create_uploads_directory(user=None):
     user_directory_name = get_user_directory(user).name
     user_directory_uploads_path = Path(
@@ -97,7 +98,8 @@ def create_uploads_directory(user=None):
     user_directory_uploads_path.mkdir(exist_ok=True)
     return user_directory_uploads_path
 
-def get_user_uploads_directory (user=None):
+
+def get_user_uploads_directory(user=None):
     user_directory_name = get_user_directory(user).name
     user_directory_uploads_path = Path(
         frappe.get_site_path("private/files"), user_directory_name, "uploads"
@@ -148,7 +150,10 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
     save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
-    temp_path = Path(get_user_uploads_directory(user=frappe.session.user)) / f"{upload_session}_{secure_filename(title)}"  
+    temp_path = (
+        Path(get_user_uploads_directory(user=frappe.session.user))
+        / f"{upload_session}_{secure_filename(title)}"
+    )
 
     with temp_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
@@ -278,6 +283,7 @@ def get_doc_content(drive_document_name):
     )
     return drive_document
 
+
 @frappe.whitelist()
 def passive_rename(entity_name, new_title):
     frappe.db.set_value("Drive Entity", entity_name, "title", new_title)
@@ -401,7 +407,7 @@ def stream_file_content(drive_entity, range_header):
         byte2 = int(g[1])
 
     length = size - byte1
-    
+
     max_length = 20 * 1024 * 1024  # 20 MB in bytes
     if length > max_length:
         length = max_length
@@ -643,6 +649,7 @@ def list_owned_entities(
             child_count = get_children_count(i.name)
             i["item_count"] = child_count
     return result
+
 
 @frappe.whitelist()
 def list_trashed_entities(

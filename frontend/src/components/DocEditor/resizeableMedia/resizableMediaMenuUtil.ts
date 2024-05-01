@@ -5,15 +5,15 @@ import {
   AlignHorizontalJustifyStart,
   AlignHorizontalJustifyEnd,
   Trash,
-} from "lucide-vue-next";
-import { Component } from "vue";
+} from "lucide-vue-next"
+import { Component } from "vue"
 interface ResizableMediaAction {
-  tooltip: string;
-  icon: Component;
+  tooltip: string
+  icon: Component
 
-  action?: (updateAttributes: (o: Record<string, any>) => any) => void;
-  isActive?: (attrs: Record<string, any>) => boolean;
-  delete?: (d: () => void) => void;
+  action?: (updateAttributes: (o: Record<string, any>) => any) => void
+  isActive?: (attrs: Record<string, any>) => boolean
+  delete?: (d: () => void) => void
 }
 
 export const resizableMediaActions: ResizableMediaAction[] = [
@@ -72,4 +72,4 @@ export const resizableMediaActions: ResizableMediaAction[] = [
     icon: Trash,
     delete: (deleteNode) => deleteNode(),
   },
-];
+]

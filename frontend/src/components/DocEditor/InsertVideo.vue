@@ -1,10 +1,11 @@
 <template>
-  <Dialog :options="{ title: 'Add Video' }" v-model="open" @after-leave="reset">
+  <Dialog v-model="open" :options="{ title: 'Add Video' }" @after-leave="reset">
     <template #body-content>
       <FileUploader
         file-types="video/*"
-        @success="(file) => (addVideoDialog.url = file.file_url)">
-        <template v-slot="{ file, progress, uploading, openFileSelector }">
+        @success="(file) => (addVideoDialog.url = file.file_url)"
+      >
+        <template #default="{ file, progress, uploading, openFileSelector }">
           <div class="flex items-center space-x-2">
             <Button @click="openFileSelector">
               {{
@@ -19,10 +20,11 @@
               v-if="addVideoDialog.url"
               @click="
                 () => {
-                  addVideoDialog.url = null;
-                  addVideoDialog.file = null;
+                  addVideoDialog.url = null
+                  addVideoDialog.file = null
                 }
-              ">
+              "
+            >
               Remove
             </Button>
           </div>
@@ -32,13 +34,15 @@
         v-if="addVideoDialog.url"
         :src="addVideoDialog.url"
         class="mt-2 w-full rounded-lg"
-        type="video/mp4" />
+        type="video/mp4"
+      />
     </template>
     <template #actions>
       <Button
         variant="solid"
         class="mr-2"
-        @click="addVideo(addVideoDialog.url)">
+        @click="addVideo(addVideoDialog.url)"
+      >
         Insert Video
       </Button>
       <Button @click="reset">Cancel</Button>
@@ -46,10 +50,11 @@
   </Dialog>
 </template>
 <script>
-import { Button, Dialog, FileUploader } from "frappe-ui";
+import { Button, Dialog, FileUploader } from "frappe-ui"
 
 export default {
   name: "InsertImage",
+  components: { Button, Dialog, FileUploader },
   props: {
     modelValue: {
       type: Boolean,
@@ -63,29 +68,28 @@ export default {
   data() {
     return {
       addVideoDialog: { url: "", file: null },
-    };
+    }
   },
-  components: { Button, Dialog, FileUploader },
   computed: {
     open: {
       get() {
-        return this.modelValue;
+        return this.modelValue
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.$emit("update:modelValue", value)
         if (!value) {
-          this.errorMessage = "";
+          this.errorMessage = ""
         }
       },
     },
   },
   methods: {
     onVideoSelect(e) {
-      let file = e.target.files[0];
+      let file = e.target.files[0]
       if (!file) {
-        return;
+        return
       }
-      this.addVideoDialog.file = file;
+      this.addVideoDialog.file = file
     },
     addVideo(src) {
       this.editor
@@ -97,12 +101,12 @@ export default {
           width: "100%",
           height: "auto",
         })
-        .run();
-      this.reset();
+        .run()
+      this.reset()
     },
     reset() {
-      this.open = false;
+      this.open = false
     },
   },
-};
+}
 </script>

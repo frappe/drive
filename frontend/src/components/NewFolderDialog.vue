@@ -12,14 +12,16 @@
               title: e.target.value.trim(),
               parent,
             })
-        " />
+        "
+      />
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button
           variant="solid"
           class="w-full"
           :loading="$resources.createFolder.loading"
-          @click="$resources.createFolder.submit()">
+          @click="$resources.createFolder.submit()"
+        >
           Create
         </Button>
       </div>
@@ -28,9 +30,9 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import { useFocus } from "@vueuse/core";
-import { Dialog, Input, ErrorMessage } from "frappe-ui";
+import { ref } from "vue"
+import { useFocus } from "@vueuse/core"
+import { Dialog, Input, ErrorMessage } from "frappe-ui"
 
 export default {
   name: "NewFolderDialog",
@@ -38,14 +40,6 @@ export default {
     Dialog,
     Input,
     ErrorMessage,
-  },
-  setup() {
-    const input = ref();
-    const { focused } = useFocus(input, { initialValue: true });
-    return {
-      input,
-      focused,
-    };
   },
   props: {
     modelValue: {
@@ -58,22 +52,30 @@ export default {
     },
   },
   emits: ["update:modelValue", "success"],
+  setup() {
+    const input = ref()
+    const { focused } = useFocus(input, { initialValue: true })
+    return {
+      input,
+      focused,
+    }
+  },
   data() {
     return {
       folderName: "",
       errorMessage: "",
-    };
+    }
   },
   computed: {
     open: {
       get() {
-        return this.modelValue;
+        return this.modelValue
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.$emit("update:modelValue", value)
         if (!value) {
-          this.folderName = "";
-          this.errorMessage = "";
+          this.folderName = ""
+          this.errorMessage = ""
         }
       },
     },
@@ -92,18 +94,18 @@ export default {
           }
         }, */
         onSuccess(data) {
-          this.folderName = "";
-          this.$emit("success", data);
+          this.folderName = ""
+          this.$emit("success", data)
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
+            this.errorMessage = error.messages.join("\n")
           } else {
-            this.errorMessage = error.message;
+            this.errorMessage = error.message
           }
         },
-      };
+      }
     },
   },
-};
+}
 </script>

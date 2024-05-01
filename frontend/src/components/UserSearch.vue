@@ -6,7 +6,8 @@
         type="text"
         class="w-full"
         :placeholder="placeHolderText"
-        @input="handleInput($event, openUsers, closeUsers)" />
+        @input="handleInput($event, openUsers, closeUsers)"
+      />
     </template>
     <template #body-main="{ togglePopover: toggleUsers }">
       <div class="p-1 max-h-44 overflow-y-auto">
@@ -15,15 +16,17 @@
             class="flex items-center hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2"
             @click="
               () => {
-                selectResult(result);
-                toggleUsers();
+                selectResult(result)
+                toggleUsers()
               }
-            ">
+            "
+          >
             <Avatar
               class="mr-4"
               size="lg"
               :image="result.user_image"
-              :label="result.full_name || result.name" />
+              :label="result.full_name || result.name"
+            />
             <div>
               <div class="text-gray-900 text-[13px]">
                 {{ result.full_name || result.name }}
@@ -40,13 +43,12 @@
 </template>
 
 <script>
-import { Popover, Button, Input, Avatar } from "frappe-ui";
+import { Popover, Input, Avatar } from "frappe-ui"
 
 export default {
   name: "UserSearch",
   components: {
     Popover,
-    Button,
     Input,
     Avatar,
   },
@@ -69,26 +71,26 @@ export default {
       newUserAccess: "Can view",
       searchResults: [],
       showDropdown: false,
-    };
+    }
   },
   computed: {
     userId() {
-      return this.$store.state.auth.user_id;
+      return this.$store.state.auth.user_id
     },
   },
   methods: {
     async handleInput(event, open, close) {
-      this.searchQuery = event;
-      if (event.length > 0) await this.search(this.searchQuery);
-      else this.searchResults = [];
-      this.searchResults.length > 0 ? open() : close();
+      this.searchQuery = event
+      if (event.length > 0) await this.search(this.searchQuery)
+      else this.searchResults = []
+      this.searchResults.length > 0 ? open() : close()
     },
     selectResult(value) {
-      this.$emit("submit", value);
-      this.searchQuery = "";
+      this.$emit("submit", value)
+      this.searchQuery = ""
     },
     async search(txt) {
-      await this.$resources.search.fetch({ txt: txt });
+      await this.$resources.search.fetch({ txt: txt })
     },
   },
   resources: {
@@ -99,10 +101,10 @@ export default {
           : "drive.utils.users.get_users_with_drive_user_role",
         auto: false,
         onSuccess(data) {
-          this.searchResults = data.filter((x) => x.email !== this.userId);
+          this.searchResults = data.filter((x) => x.email !== this.userId)
         },
-      };
+      }
     },
   },
-};
+}
 </script>

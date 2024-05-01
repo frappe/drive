@@ -2,43 +2,43 @@
   <div class="hidden" />
 </template>
 <script setup>
-import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import Dropzone from "dropzone";
+import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue"
+import { useStore } from "vuex"
+import { useRoute } from "vue-router"
+import Dropzone from "dropzone"
 
-const store = useStore();
-const route = useRoute();
+const store = useStore()
+const route = useRoute()
 
-const dropzone = ref();
-const computedFullPath = ref("");
-const emitter = inject("emitter");
-const uploadResponse = ref("");
+const dropzone = ref()
+const computedFullPath = ref("")
+const emitter = inject("emitter")
+const uploadResponse = ref("")
 
-watch(route, (to, from) => {
+watch(route, (to) => {
   if (to.name === "Document") {
-    dropzone.value.removeEventListeners();
+    dropzone.value.removeEventListeners()
   } else {
-    dropzone.value.setupEventListeners();
+    dropzone.value.setupEventListeners()
   }
-});
+})
 
 function doesRootFolderFullPathExist(k, file_parent) {
   const url =
     window.location.origin +
     "/api/method/" +
-    `drive.api.files.does_entity_exist?name=${k}&parent_entity=${file_parent}`;
+    `drive.api.files.does_entity_exist?name=${k}&parent_entity=${file_parent}`
 
-  const xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest()
   // third parameter false for a synchronous request
-  xhr.open("GET", url, false);
-  xhr.send();
+  xhr.open("GET", url, false)
+  xhr.send()
 
   if (xhr.status === 200) {
-    const json = JSON.parse(xhr.responseText);
-    return json.message;
+    const json = JSON.parse(xhr.responseText)
+    return json.message
   } else {
-    throw new Error(`Request failed with status ${xhr.status}`);
+    throw new Error(`Request failed with status ${xhr.status}`)
   }
 }
 
@@ -46,50 +46,50 @@ function rootFolderFullPathNewName(k, file_parent) {
   const url =
     window.location.origin +
     "/api/method/" +
-    `drive.utils.files.get_new_title?title=${k}&parent_name=${file_parent}&folder=${true}}`;
+    `drive.utils.files.get_new_title?title=${k}&parent_name=${file_parent}&folder=${true}}`
 
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", url, false); // Here i am seeting third parameter as false for a synchronous request
-  xhr.send();
+  const xhr = new XMLHttpRequest()
+  xhr.open("GET", url, false) // Here i am seeting third parameter as false for a synchronous request
+  xhr.send()
 
   if (xhr.status === 200) {
-    const json = JSON.parse(xhr.responseText);
-    return json.message;
+    const json = JSON.parse(xhr.responseText)
+    return json.message
   } else {
-    throw new Error(`Request failed with status ${xhr.status}`);
+    throw new Error(`Request failed with status ${xhr.status}`)
   }
 }
 
 function rootFolderFullPath(full_path) {
-  let s = full_path;
-  let k = s.substring(0, s.indexOf("/"));
-  return k;
+  let s = full_path
+  let k = s.substring(0, s.indexOf("/"))
+  return k
 }
 
 function newFullPathName(k, s, x) {
-  let f = x.replace(k, s);
-  return f;
+  let f = x.replace(k, s)
+  return f
 }
 
 function NonMergeMode(file) {
-  let a;
-  let s;
+  let a
+  let s
   if (file.webkitRelativePath) {
-    a = file.webkitRelativePath;
+    a = file.webkitRelativePath
   } else {
-    a = file.fullPath;
+    a = file.fullPath
   }
-  let k = rootFolderFullPath(a);
-  let t = doesRootFolderFullPathExist(k, file.parent);
+  let k = rootFolderFullPath(a)
+  let t = doesRootFolderFullPathExist(k, file.parent)
   if (t) {
-    s = rootFolderFullPathNewName(k, file.parent);
-    let z = newFullPathName(k, s, a);
-    file.newFullPath = z;
+    s = rootFolderFullPathNewName(k, file.parent)
+    let z = newFullPathName(k, s, a)
+    file.newFullPath = z
   } else {
-    file.newFullPath = a;
-    s = k;
+    file.newFullPath = a
+    s = k
   }
-  return s;
+  return s
 }
 
 onMounted(() => {
@@ -113,24 +113,24 @@ onMounted(() => {
     },
     accept: function (file, done) {
       if (file.size == 0) {
-        done("Empty files will not be uploaded.");
+        done("Empty files will not be uploaded.")
       } else {
-        done();
+        done()
       }
     },
     sending: function (file, xhr, formData) {
       if (file.lastModified) {
-        formData.append("last_modified", file.lastModified);
+        formData.append("last_modified", file.lastModified)
       }
       if (file.parent) {
-        formData.append("parent", file.parent);
+        formData.append("parent", file.parent)
       }
       if (file.newFullPath) {
-        formData.append("fullpath", file.newFullPath);
+        formData.append("fullpath", file.newFullPath)
       } else if (file.webkitRelativePath) {
-        formData.append("fullpath", file.webkitRelativePath);
+        formData.append("fullpath", file.webkitRelativePath)
       } else if (file.fullPath) {
-        formData.append("fullpath", file.fullPath);
+        formData.append("fullpath", file.fullPath)
       }
     },
     params: function (files, xhr, chunk) {
@@ -142,103 +142,98 @@ onMounted(() => {
           chunk_size: dropzone.value.options.chunkSize,
           total_chunk_count: chunk.file.upload.totalChunkCount,
           chunk_byte_offset: chunk.index * dropzone.value.options.chunkSize,
-        };
+        }
       }
     },
-  });
+  })
   dropzone.value.on("addedfile", function (file) {
-    file.parent = store.state.currentFolderID;
+    file.parent = store.state.currentFolderID
     store.commit("pushToUploads", {
       uuid: file.upload.uuid,
       name: file.name,
       progress: 0,
-    });
+    })
     if (dropzone.value.files.length === 1) {
       if (file.fullPath || file.webkitRelativePath) {
-        computedFullPath.value = NonMergeMode(file);
+        computedFullPath.value = NonMergeMode(file)
       }
-      dropzone.value.options.autoProcessQueue = true;
+      dropzone.value.options.autoProcessQueue = true
     }
     if (file.fullPath || file.webkitRelativePath) {
-      let a;
+      let a
       if (file.webkitRelativePath) {
-        a = file.webkitRelativePath;
+        a = file.webkitRelativePath
       } else {
-        a = file.fullPath;
+        a = file.fullPath
       }
-      let k = rootFolderFullPath(a);
-      file.newFullPath = newFullPathName(k, computedFullPath.value, a);
+      let k = rootFolderFullPath(a)
+      file.newFullPath = newFullPathName(k, computedFullPath.value, a)
     }
-  });
-  dropzone.value.on("queuecomplete", function (file) {
-    dropzone.value.files = [];
-    computedFullPath.value = "";
-    emitter.emit("fetchFolderContents");
-  });
+  })
+  dropzone.value.on("queuecomplete", function () {
+    dropzone.value.files = []
+    computedFullPath.value = ""
+    emitter.emit("fetchFolderContents")
+  })
 
   dropzone.value.on("uploadprogress", function (file, progress) {
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       progress: progress,
-    });
-  });
+    })
+  })
   dropzone.value.on("error", function (file, message) {
-    let error_message;
+    let error_message
     if (message._server_messages) {
       error_message = JSON.parse(message._server_messages)
         .map((element) => JSON.parse(element).message)
-        .join("\n");
+        .join("\n")
     }
-    error_message = message || error_message || "Upload failed";
+    error_message = message || error_message || "Upload failed"
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       error: error_message,
-    });
-  });
+    })
+  })
   dropzone.value.on("success", function (file, response) {
-    uploadResponse.value = response.message;
-  });
+    uploadResponse.value = response.message
+  })
   dropzone.value.on("complete", function (file) {
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       completed: true,
-    });
-  });
+    })
+  })
   /*   emitter.on("directUpload", (file) => {
     dropzone.value.addFile(file)
     return directUplodEntityName.value
   }); */
   emitter.on("uploadFile", () => {
     if (dropzone.value.hiddenFileInput) {
-      dropzone.value.hiddenFileInput.removeAttribute("webkitdirectory");
-      dropzone.value.hiddenFileInput.click();
+      dropzone.value.hiddenFileInput.removeAttribute("webkitdirectory")
+      dropzone.value.hiddenFileInput.click()
     }
-  });
+  })
   emitter.on("cancelUpload", (uuid) => {
-    var files = dropzone.value.files;
+    var files = dropzone.value.files
     for (var i = 0; i < files.length; i++) {
       if (files[i].upload.uuid === uuid) {
-        dropzone.value.removeFile(files[i]);
+        dropzone.value.removeFile(files[i])
       }
     }
-  });
+  })
   emitter.on("cancelAllUploads", () => {
-    dropzone.value.removeAllFiles(true);
-  });
+    dropzone.value.removeAllFiles(true)
+  })
   emitter.on("uploadFolder", () => {
     if (dropzone.value.hiddenFileInput) {
-      dropzone.value.hiddenFileInput.setAttribute("webkitdirectory", true);
-      dropzone.value.hiddenFileInput.click();
+      dropzone.value.hiddenFileInput.setAttribute("webkitdirectory", true)
+      dropzone.value.hiddenFileInput.click()
     }
-  });
-});
-
-function directUpload(file) {
-  dropzone.value.addFile(file);
-  return directUplodEntityName.value;
-}
+  })
+})
 
 onBeforeUnmount(() => {
-  dropzone.value.destroy();
-});
+  dropzone.value.destroy()
+})
 </script>

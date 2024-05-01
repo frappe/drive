@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex items-center justify-center bg-white w-full shadow-lg rounded-[0.45rem] gap-1 px-0.5 py-0.5">
+    class="flex items-center justify-center bg-white w-full shadow-lg rounded-[0.45rem] gap-1 px-0.5 py-0.5"
+  >
     <template v-for="button in buttons" :key="button.label">
       <div v-if="button.type === 'separator'" class="h-5 border-l"></div>
       <div v-else-if="button.map" class="shrink-0">
@@ -12,11 +13,13 @@
                 (activeBtn =
                   button.find((b) => b.isActive(editor)) || button[0])
               "
-              @click="togglePopover">
+              @click="togglePopover"
+            >
               <component
                 :is="activeBtn.icon"
                 v-if="activeBtn.icon"
-                class="h-4 w-4" />
+                class="h-4 w-4"
+              />
               <span v-else>
                 {{ activeBtn.label }}
               </span>
@@ -25,17 +28,19 @@
           <template #body="{ close }">
             <ul class="rounded border bg-white p-1 shadow-md">
               <li
+                v-for="option in button"
                 v-show="option.isDisabled ? !option.isDisabled(editor) : true"
                 class="w-full"
-                v-for="option in button">
+              >
                 <button
                   class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
                   @click="
                     () => {
-                      onButtonClick(option);
-                      close();
+                      onButtonClick(option)
+                      close()
                     }
-                  ">
+                  "
+                >
                   {{ option.label }}
                 </button>
               </li>
@@ -43,8 +48,8 @@
           </template>
         </Popover>
       </div>
-      <component v-else :is="button.component || 'div'" v-bind="{ editor }">
-        <template v-slot="componentSlotProps">
+      <component :is="button.component || 'div'" v-else v-bind="{ editor }">
+        <template #default="componentSlotProps">
           <button
             class="flex items-center rounded-[0.35rem] p-1 text-gray-800 transition-colors gap-1"
             :class="
@@ -57,14 +62,17 @@
               componentSlotProps?.onClick
                 ? componentSlotProps.onClick(button)
                 : onButtonClick(button)
-            ">
+            "
+          >
             <component
-              v-if="button.icon"
               :is="button.icon"
-              class="h-4 w-auto stroke-[1.5]" />
+              v-if="button.icon"
+              class="h-4 w-auto stroke-[1.5]"
+            />
             <span
               v-else
-              class="inline-block h-4 min-w-[1rem] text-sm leading-4">
+              class="inline-block h-4 min-w-[1rem] text-sm leading-4"
+            >
               {{ button.text }}
             </span>
           </button>
@@ -74,26 +82,26 @@
   </div>
 </template>
 <script>
-import { Popover, FeatherIcon } from "frappe-ui";
+import { Popover, FeatherIcon } from "frappe-ui"
 
 export default {
   name: "TipTapMenu",
-  props: ["buttons"],
-  inject: ["editor"],
-  emits: ["toggleCommentMode"],
   components: {
     Popover,
     FeatherIcon,
   },
+  inject: ["editor"],
+  props: ["buttons"],
+  emits: ["toggleCommentMode"],
 
   methods: {
     onButtonClick(button) {
       if (typeof button.action === "string") {
-        this.emitter.emit(button.action);
+        this.emitter.emit(button.action)
       } else {
-        button.action(this.editor);
+        button.action(this.editor)
       }
     },
   },
-};
+}
 </script>

@@ -2,29 +2,33 @@
   <Dialog v-model="open" :options="{ title: 'Open a file', size: '5xl' }">
     <template #body-content>
       <div class="flex" :style="{ height: 'calc(100vh - 20rem)' }">
-        <Tabs v-model="tabIndex" #default="{ tab }" :tabs="tabs">
+        <Tabs v-model="tabIndex" :tabs="tabs">
           <div
             v-if="tabIndex === 4"
-            class="flex flex-col h-full items-center justify-center">
+            class="flex flex-col h-full items-center justify-center"
+          >
             <Button
-              @click="emitter.emit('uploadFile')"
               size="md"
-              variant="solid">
+              variant="solid"
+              @click="emitter.emit('uploadFile')"
+            >
               <template #prefix><Upload class="w-4 stroke-1.5" /></template>
               Upload
             </Button>
             <!-- <span class="text-gray-700 text-base mt-2" >Or drag a file here to upload</span> -->
           </div>
           <NoFilesSection
+            v-else-if="isEmpty"
             primary-message="You don't have any files here"
             secondary-message=" "
-            v-else-if="isEmpty" />
+          />
           <div v-else class="h-full">
             <div class="mt-2">
               <div class="flex py-1 justify-between">
                 <span
                   v-if="folders.length > 0"
-                  class="text-gray-600 font-medium">
+                  class="text-gray-600 font-medium"
+                >
                   Folders
                 </span>
                 <span v-else></span>
@@ -36,7 +40,8 @@
                   :class="[
                     $store.state.view === 'list' ? 'bg-white shadow' : '',
                   ]"
-                  @click="closeEntity()" />
+                  @click="closeEntity()"
+                />
               </div>
               <div class="flex flex-row flex-wrap gap-4 mt-0.5">
                 <div
@@ -48,7 +53,8 @@
                   @click="openEntity(folder)"
                   @dragenter.prevent
                   @dragover.prevent
-                  @mousedown.stop>
+                  @mousedown.stop
+                >
                   <div class="flex items-start">
                     <svg
                       :style="{ fill: folder.color }"
@@ -56,9 +62,11 @@
                       class="h-6 w-auto"
                       viewBox="0 0 30 30"
                       fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
-                        d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z" />
+                        d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
+                      />
                     </svg>
                   </div>
                   <div class="content-center grid">
@@ -76,7 +84,8 @@
             </div>
             <div
               v-if="files.length > 0"
-              :class="folders.length > 0 ? 'mt-8' : 'mt-2'">
+              :class="folders.length > 0 ? 'mt-8' : 'mt-2'"
+            >
               <div class="text-gray-600 font-medium">Files</div>
               <div class="inline-flex flex-row flex-wrap gap-4 mt-0.5">
                 <div
@@ -88,14 +97,16 @@
                   @click="openEntity(file)"
                   @dragenter.prevent
                   @dragover.prevent
-                  @mousedown.stop>
+                  @mousedown.stop
+                >
                   <File
                     :mime_type="file.mime_type"
                     :file_ext="file.file_ext"
                     :name="file.name"
                     :title="file.title"
                     :modified="file.modified"
-                    :file_size="file.file_size" />
+                    :file_size="file.file_size"
+                  />
                 </div>
               </div>
             </div>
@@ -107,12 +118,12 @@
 </template>
 
 <script setup>
-import NoFilesSection from "./NoFilesSection.vue";
-import File from "./File.vue";
-import { watch, defineEmits, computed, h, ref, onMounted } from "vue";
-import { createResource, Dialog, FeatherIcon, Button, Tabs } from "frappe-ui";
-import { Clock, Star, Home, Users, Plus, Upload } from "lucide-vue-next";
-import { formatSize, formatDate } from "@/utils/format";
+import NoFilesSection from "./NoFilesSection.vue"
+import File from "./File.vue"
+import { watch, defineEmits, computed, h, ref } from "vue"
+import { createResource, Dialog, Button, Tabs } from "frappe-ui"
+import { Clock, Star, Home, Users, Plus, Upload } from "lucide-vue-next"
+import { formatSize, formatDate } from "@/utils/format"
 
 const props = defineProps({
   title: {
@@ -123,59 +134,59 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-});
+})
 
-const emit = defineEmits(["success"]);
-const tabIndex = ref(props.suggestedTabIndex);
-const folderContents = ref();
-const folderStack = ref([""]);
+const emit = defineEmits(["update:modelValue", "success"])
+const tabIndex = ref(props.suggestedTabIndex)
+const folderContents = ref()
+const folderStack = ref([""])
 
-watch(tabIndex, (newValue, oldValue) => {
-  folderStack.value = [""];
+watch(tabIndex, (newValue) => {
+  folderStack.value = [""]
   switch (newValue) {
     case 0:
-      recents.fetch();
-      break;
+      recents.fetch()
+      break
     case 1:
-      favourites.fetch();
-      break;
+      favourites.fetch()
+      break
     case 2:
-      ownedFolder.fetch({ entity_name: "" });
-      break;
+      ownedFolder.fetch({ entity_name: "" })
+      break
     case 3:
-      sharedWithMe.fetch({ entity_name: "" });
-      break;
+      sharedWithMe.fetch({ entity_name: "" })
+      break
     default:
-      folderContents.value = [];
-      break;
+      folderContents.value = []
+      break
   }
-});
+})
 
 const isEmpty = computed(() => {
-  return folderContents.value && folderContents.value.length === 0;
-});
+  return folderContents.value && folderContents.value.length === 0
+})
 const folders = computed(() => {
   return folderContents.value
     ? folderContents.value.filter((x) => x.is_group === 1)
-    : [];
-});
+    : []
+})
 
 const files = computed(() => {
   return folderContents.value
     ? folderContents.value.filter((x) => x.is_group === 0)
-    : [];
-});
+    : []
+})
 
 const open = computed({
   // getter
   get() {
-    return this.modelValue;
+    return this.modelValue
   },
   // setter
   set(newValue) {
-    emit("update:modelValue", newValue);
+    emit("update:modelValue", newValue)
   },
-});
+})
 
 const tabs = [
   {
@@ -199,36 +210,36 @@ const tabs = [
     label: "Upload",
     icon: h(Plus, { class: "w-4 h-4" }),
   },
-];
+]
 
 function openEntity(value) {
   if (value.is_group) {
-    folderStack.value.push(value.name);
-    if (tabIndex === 3) {
+    folderStack.value.push(value.name)
+    if (tabIndex.value === 3) {
       sharedFolder.fetch({
         entity_name: folderStack.value[folderStack.value.length - 1],
-      });
+      })
     } else {
       ownedFolder.fetch({
         entity_name: folderStack.value[folderStack.value.length - 1],
-      });
+      })
     }
   } else {
-    emit("success", value);
+    emit("success", value)
   }
 }
 
 function closeEntity() {
-  folderStack.value.pop();
-  folderStack.value.length ? null : folderStack.value.push("");
-  if (tabIndex === 3) {
+  folderStack.value.pop()
+  folderStack.value.length ? null : folderStack.value.push("")
+  if (tabIndex.value === 3) {
     sharedFolder.fetch({
       entity_name: folderStack.value[folderStack.value.length - 1],
-    });
+    })
   } else {
     ownedFolder.fetch({
       entity_name: folderStack.value[folderStack.value.length - 1],
-    });
+    })
   }
 }
 
@@ -238,20 +249,20 @@ let recents = createResource({
   auto: props.suggestedTabIndex === 0 ? true : false,
   onSuccess(data) {
     data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size;
+      entity.size_in_bytes = entity.file_size
       entity.file_size = entity.is_group
         ? entity.item_count + " items"
-        : formatSize(entity.file_size);
-      entity.modified = formatDate(entity.modified);
-      entity.creation = formatDate(entity.creation);
-      entity.owner = "You";
-    });
-    folderContents.value = data;
+        : formatSize(entity.file_size)
+      entity.modified = formatDate(entity.modified)
+      entity.creation = formatDate(entity.creation)
+      entity.owner = "You"
+    })
+    folderContents.value = data
   },
   onError(error) {
-    console.log(error);
+    console.log(error)
   },
-});
+})
 
 let sharedFolder = createResource({
   url: "drive.api.files.list_folder_contents",
@@ -262,18 +273,18 @@ let sharedFolder = createResource({
       "name,title,is_group,owner,modified,file_size,mime_type,creation,allow_download",
   }, */
   onSuccess(data) {
-    this.folderContents.error = null;
+    this.folderContents.error = null
     data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size;
-      entity.file_size = entity.is_group ? "" : formatSize(entity.file_size);
-      entity.modified = formatDate(entity.modified);
-      entity.creation = formatDate(entity.creation);
-      entity.owner = entity.owner === this.userId ? "You" : entity.owner;
-      this.$store.commit("setCurrentViewEntites", data);
-    });
+      entity.size_in_bytes = entity.file_size
+      entity.file_size = entity.is_group ? "" : formatSize(entity.file_size)
+      entity.modified = formatDate(entity.modified)
+      entity.creation = formatDate(entity.creation)
+      entity.owner = entity.owner === this.userId ? "You" : entity.owner
+      this.$store.commit("setCurrentViewEntites", data)
+    })
   },
   auto: false,
-});
+})
 
 let favourites = createResource({
   url: "drive.api.files.list_favourites",
@@ -281,20 +292,20 @@ let favourites = createResource({
   auto: props.suggestedTabIndex === 1 ? true : false,
   onSuccess(data) {
     data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size;
+      entity.size_in_bytes = entity.file_size
       entity.file_size = entity.is_group
         ? entity.item_count + " items"
-        : formatSize(entity.file_size);
-      entity.modified = formatDate(entity.modified);
-      entity.creation = formatDate(entity.creation);
-      entity.owner = "You";
-    });
-    folderContents.value = data;
+        : formatSize(entity.file_size)
+      entity.modified = formatDate(entity.modified)
+      entity.creation = formatDate(entity.creation)
+      entity.owner = "You"
+    })
+    folderContents.value = data
   },
   onError(error) {
-    console.log(error);
+    console.log(error)
   },
-});
+})
 
 let ownedFolder = createResource({
   url: "drive.api.files.list_owned_entities",
@@ -302,20 +313,20 @@ let ownedFolder = createResource({
   auto: props.suggestedTabIndex === 2 ? true : false,
   onSuccess(data) {
     data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size;
+      entity.size_in_bytes = entity.file_size
       entity.file_size = entity.is_group
         ? entity.item_count + " items"
-        : formatSize(entity.file_size);
-      entity.modified = formatDate(entity.modified);
-      entity.creation = formatDate(entity.creation);
-      entity.owner = "You";
-    });
-    folderContents.value = data;
+        : formatSize(entity.file_size)
+      entity.modified = formatDate(entity.modified)
+      entity.creation = formatDate(entity.creation)
+      entity.owner = "You"
+    })
+    folderContents.value = data
   },
   onError(error) {
-    console.log(error);
+    console.log(error)
   },
-});
+})
 
 let sharedWithMe = createResource({
   url: "drive.api.permissions.get_shared_with_me",
@@ -323,18 +334,18 @@ let sharedWithMe = createResource({
   auto: props.suggestedTabIndex === 3 ? true : false,
   onSuccess(data) {
     data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size;
+      entity.size_in_bytes = entity.file_size
       entity.file_size = entity.is_group
         ? entity.item_count + " items"
-        : formatSize(entity.file_size);
-      entity.modified = formatDate(entity.modified);
-      entity.creation = formatDate(entity.creation);
-      entity.owner = "You";
-    });
-    folderContents.value = data;
+        : formatSize(entity.file_size)
+      entity.modified = formatDate(entity.modified)
+      entity.creation = formatDate(entity.creation)
+      entity.owner = "You"
+    })
+    folderContents.value = data
   },
   onError(error) {
-    console.log(error);
+    console.log(error)
   },
-});
+})
 </script>

@@ -10,13 +10,15 @@
       <div class="flex flex-col items-center w-full">
         <img
           class="h-20 -ml-3"
-          src="https://raw.githubusercontent.com/frappe/drive/main/.github/logo_light.svg" />
+          src="https://raw.githubusercontent.com/frappe/drive/main/.github/logo_light.svg"
+        />
       </div>
       <span class="text-base text-gray-600">
         100% open source on
         <a
           class="text-base text-black underline"
-          href="https://github.com/frappe/drive">
+          href="https://github.com/frappe/drive"
+        >
           Github
         </a>
       </span>
@@ -24,7 +26,8 @@
         Built using
         <a
           class="text-base text-black underline"
-          href="https://frappeframework.com">
+          href="https://frappeframework.com"
+        >
           Frappe Framework
         </a>
       </span>
@@ -35,30 +38,26 @@
   </div>
 </template>
 <script>
-import { Avatar, Button, Checkbox, Input, Switch } from "frappe-ui";
-import FrappeDriveLogo from "./FrappeDriveLogo.vue";
-
 export default {
   name: "AboutSettings",
-  components: { Avatar, Button, Input, Checkbox, Switch, FrappeDriveLogo },
   data() {
     return {
       fullName: this.$store.state.user.fullName,
-    };
+    }
   },
   computed: {
     isExpanded() {
-      return this.$store.state.IsSidebarExpanded;
+      return this.$store.state.IsSidebarExpanded
     },
     firstName() {
-      return this.$store.state.user.fullName.split(" ");
+      return this.$store.state.user.fullName.split(" ")
     },
     /* fullName() {
       return this.$store.state.user.fullName;
     }, */
     imageURL() {
-      return this.$store.state.user.imageURL;
+      return this.$store.state.user.imageURL
     },
   },
-};
+}
 </script>

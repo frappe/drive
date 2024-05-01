@@ -1,4 +1,4 @@
-import fuzzysort from "fuzzysort";
+import fuzzysort from "fuzzysort"
 
 export default function getFilteredEntities(search, entities) {
   return fuzzysort
@@ -8,5 +8,5 @@ export default function getFilteredEntities(search, entities) {
       key: "title",
       all: true,
     })
-    .map((result) => result.obj);
+    .map((result) => result.obj)
 }

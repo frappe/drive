@@ -14,7 +14,8 @@
               $resources.createTag.submit({
                 title: e.target.value.trim(),
               })
-          " />
+          "
+        />
       </template>
 
       <template #body-main="{}">
@@ -27,7 +28,8 @@
                   entity: entity.name,
                   tag: tag.name,
                 })
-              ">
+              "
+            >
               {{ tag.title }}
             </div>
           </div>
@@ -38,14 +40,13 @@
 </template>
 
 <script>
-import { Autocomplete, Input, Popover } from "frappe-ui";
+import { Input, Popover } from "frappe-ui"
 
 export default {
   name: "TagInput",
   components: {
     Input,
     Popover,
-    Autocomplete,
   },
 
   props: {
@@ -67,21 +68,21 @@ export default {
     return {
       tagInputText: "",
       hackyFlag: false, // temporary hacky flag to circumvent v-on-outside-click from running on mounting
-    };
+    }
   },
 
   computed: {
     filteredTags() {
       return this.unaddedTags.filter((x) =>
         x.title.toLowerCase().startsWith(this.tagInputText.toLowerCase())
-      );
+      )
     },
   },
 
   methods: {
     closeInput() {
-      if (this.hackyFlag) this.$emit("close");
-      this.hackyFlag = !this.hackyFlag;
+      if (this.hackyFlag) this.$emit("close")
+      this.hackyFlag = !this.hackyFlag
     },
   },
 
@@ -93,28 +94,28 @@ export default {
           this.$resources.addTag.submit({
             entity: this.entity.name,
             tag: data,
-          });
+          })
         },
         onError(error) {
           if (error.messages) {
-            console.log(error.messages);
+            console.log(error.messages)
           }
         },
-      };
+      }
     },
     addTag() {
       return {
         url: "drive.api.tags.add_tag",
         onSuccess() {
-          this.$emit("success");
+          this.$emit("success")
         },
         onError(error) {
           if (error.messages) {
-            console.log(error.messages);
+            console.log(error.messages)
           }
         },
-      };
+      }
     },
   },
-};
+}
 </script>

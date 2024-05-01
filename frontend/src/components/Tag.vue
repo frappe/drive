@@ -8,13 +8,18 @@
         :style="{
           cursor: entity.owner === 'You' ? 'pointer' : 'default',
         }"
-        @click="if (entity.owner === 'You') togglePopover();">
+        @click="
+          if (entity.owner === 'You');
+          togglePopover()
+        "
+      >
         {{ `${tag.title}` }}
         <FeatherIcon
           v-if="entity.owner === 'You'"
-          @click="$resources.removeTag.submit()"
           class="my-auto h-3 stroke-2"
-          name="x" />
+          name="x"
+          @click="$resources.removeTag.submit()"
+        />
       </Badge>
     </template>
     <template #body-main="{ togglePopover }">
@@ -23,15 +28,18 @@
           placement="right"
           trigger="hover"
           :hover-delay="0.5"
-          :leave-delay="0.6">
+          :leave-delay="0.6"
+        >
           <template #target>
             <div
-              class="hover:bg-gray-100 cursor-pointer rounded flex items-center px-1.5 py-1 w-24">
+              class="hover:bg-gray-100 cursor-pointer rounded flex items-center px-1.5 py-1 w-24"
+            >
               <FeatherIcon name="droplet" class="w-4 h-4 text-gray-700 mr-1" />
               <div class="text-gray-800 text-base">Color</div>
               <FeatherIcon
                 name="chevron-right"
-                class="w-4 h-4 text-gray-700 ml-auto" />
+                class="w-4 h-4 text-gray-700 ml-auto"
+              />
             </div>
           </template>
           <template #body-main="{ togglePopover: toggleColors }">
@@ -46,9 +54,10 @@
                   $resources.updateColor.submit({
                     tag: tag.name,
                     color: color,
-                  });
-                  toggleColors();
-                " />
+                  }),
+                    toggleColors()
+                "
+              />
             </div>
           </template>
         </Popover>
@@ -56,10 +65,8 @@
           v-for="item in tagActions"
           :key="item"
           class="hover:bg-gray-100 cursor-pointer rounded flex items-center px-1.5 py-1 w-24"
-          @click="
-            item.handler();
-            togglePopover();
-          ">
+          @click="item.handler(), togglePopover()"
+        >
           <FeatherIcon :name="item.icon" class="w-4 h-4 text-gray-700 mr-1" />
           <div class="text-gray-800 text-base">{{ item.label }}</div>
         </div>
@@ -69,7 +76,7 @@
 </template>
 
 <script>
-import { Badge, Popover, FeatherIcon } from "frappe-ui";
+import { Badge, Popover, FeatherIcon } from "frappe-ui"
 
 export default {
   name: "Tag",
@@ -103,11 +110,11 @@ export default {
           label: "Delete",
           icon: "trash-2",
           handler: () => {
-            this.$resources.deleteTag.submit();
+            this.$resources.deleteTag.submit()
           },
         },
       ],
-    };
+    }
   },
 
   resources: {
@@ -115,9 +122,9 @@ export default {
       return {
         url: "drive.api.tags.update_tag_color",
         onSuccess() {
-          this.$emit("success");
+          this.$emit("success")
         },
-      };
+      }
     },
 
     removeTag() {
@@ -128,9 +135,9 @@ export default {
           tag: this.tag.name,
         },
         onSuccess() {
-          this.$emit("success");
+          this.$emit("success")
         },
-      };
+      }
     },
 
     deleteTag() {
@@ -140,10 +147,10 @@ export default {
           tag: this.tag.name,
         },
         onSuccess() {
-          this.$emit("success");
+          this.$emit("success")
         },
-      };
+      }
     },
   },
-};
+}
 </script>

@@ -1,7 +1,7 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import path from "path";
-import { webserver_port } from "../../../sites/common_site_config.json";
+import { defineConfig } from "vite"
+import vue from "@vitejs/plugin-vue"
+import path from "path"
+import { webserver_port } from "../../../sites/common_site_config.json"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,8 +15,8 @@ export default defineConfig({
         target: `http://127.0.0.1:${webserver_port}`,
         ws: true,
         router: function (req) {
-          const site_name = req.headers.host.split(":")[0];
-          return `http://${site_name}:${webserver_port}`;
+          const site_name = req.headers.host.split(":")[0]
+          return `http://${site_name}:${webserver_port}`
         },
       },
     },
@@ -37,7 +37,7 @@ export default defineConfig({
               .toString()
               .split("node_modules/")[1]
               .split("/")[0]
-              .toString();
+              .toString()
           }
         },
       },
@@ -58,4 +58,4 @@ export default defineConfig({
       "tailwind.config.js",
     ],
   },
-});
+})

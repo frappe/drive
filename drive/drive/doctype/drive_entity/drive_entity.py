@@ -93,11 +93,14 @@ class DriveEntity(NestedSet):
             ],
             filters=dict(share_doctype=self.doctype, share_name=self.parent_drive_entity),
         )
-        
+
         parent_folder = frappe.db.get_value(
-            "Drive Entity", self.parent_drive_entity, ["name", "owner", "allow_comments", "allow_download"], as_dict=1
+            "Drive Entity",
+            self.parent_drive_entity,
+            ["name", "owner", "allow_comments", "allow_download"],
+            as_dict=1,
         )
-        
+
         if parent_folder.owner != frappe.session.user:
             # Allow the owner of the folder to access the entity
             # Defaults to write since its obvious that the current user has write access to the parent
@@ -112,7 +115,7 @@ class DriveEntity(NestedSet):
                 share=1,
                 notify=0,
             )
-            
+
         for permission in permissions:
             self.share(
                 share_name=self.name,
@@ -301,7 +304,9 @@ class DriveEntity(NestedSet):
             }
         )
         if entity_exists:
-            suggested_name = get_new_title(new_title, self.parent_drive_entity, document=self.document, folder=self.is_group)
+            suggested_name = get_new_title(
+                new_title, self.parent_drive_entity, document=self.document, folder=self.is_group
+            )
             frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{suggested_name}' ",
                 FileExistsError,
@@ -541,6 +546,7 @@ class DriveEntity(NestedSet):
         if self.is_group:
             for child in self.get_children():
                 child.unshare(user, user_type)
-                
+
+
 def on_doctype_update():
     frappe.db.add_index("Drive Entity", ["title"])

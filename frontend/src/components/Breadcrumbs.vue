@@ -14,7 +14,8 @@
               stroke="currentColor"
               stroke-width="2"
               stroke-linecap="round"
-              stroke-linejoin="round">
+              stroke-linejoin="round"
+            >
               <circle cx="12" cy="12" r="1" />
               <circle cx="19" cy="12" r="1" />
               <circle cx="5" cy="12" r="1" />
@@ -31,7 +32,8 @@
       :key="item.label"
       v-slot="{ href, navigate }"
       class="text-md line-clamp-1 sm:text-lg font-medium text-gray-600"
-      :to="item.route">
+      :to="item.route"
+    >
       <a
         v-if="!isLastItem(index)"
         :class="[
@@ -40,7 +42,8 @@
             : ' hover:text-gray-800',
         ]"
         :href="href"
-        @click="navigate">
+        @click="navigate"
+      >
         {{ item.label }}
         <span v-if="crumbs.length > 1" class="text-gray-600 pr-1">
           {{ "/" }}
@@ -57,14 +60,15 @@
     :entity="entity"
     @success="
       (data) => {
-        showRenameDialog = false;
-        currentTitle = data.title;
+        showRenameDialog = false
+        currentTitle = data.title
       }
-    " />
+    "
+  />
 </template>
 <script>
-import RenameDialog from "@/components/RenameDialog.vue";
-import { Dropdown } from "frappe-ui";
+import RenameDialog from "@/components/RenameDialog.vue"
+import { Dropdown } from "frappe-ui"
 
 export default {
   name: "Breadcrumbs",
@@ -74,71 +78,68 @@ export default {
       title: "",
       oldTitle: "",
       showRenameDialog: false,
-    };
+    }
   },
   computed: {
     entity() {
       return this.$route.name === "Folder"
         ? this.$store.state.currentFolder[0]
-        : this.$store.state.entityInfo[0];
+        : this.$store.state.entityInfo[0]
     },
     breadcrumbLinks() {
-      return this.$store.state.currentBreadcrumbs;
+      return this.$store.state.currentBreadcrumbs
     },
     currentTitle: {
       get() {
-        let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label;
+        let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label
         if (this.$route.name === "Document") {
           value =
             value != this.$store.state.entityInfo[0]?.title
               ? this.$store.state.entityInfo[0]?.title
-              : value;
+              : value
         }
-        document.title = value;
-        return value;
+        document.title = value
+        return value
       },
       set(newValue) {
-        let currentBreadcrumbs = this.breadcrumbLinks;
-        let updatedBreadcrumb = (currentBreadcrumbs[
-          currentBreadcrumbs.length - 1
-        ].label = newValue);
-        this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs);
-        return newValue;
+        let currentBreadcrumbs = this.breadcrumbLinks
+        this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
+        return newValue
       },
     },
     currentRoute() {
-      return this.breadcrumbLinks[this.breadcrumbLinks.length - 1].route;
+      return this.breadcrumbLinks[this.breadcrumbLinks.length - 1].route
     },
     currentEntityName() {
-      return this.currentRoute.split("/")[2];
+      return this.currentRoute.split("/")[2]
     },
     dropDownItems() {
-      if (window.innerWidth > 640) return [];
-      let allExceptLastTwo = this.breadcrumbLinks.slice(0, -1);
+      if (window.innerWidth > 640) return []
+      let allExceptLastTwo = this.breadcrumbLinks.slice(0, -1)
       return allExceptLastTwo.map((item) => {
         let onClick = item.onClick
           ? item.onClick
-          : () => this.$router.push(item.route);
+          : () => this.$router.push(item.route)
         return {
           ...item,
           icon: null,
           label: item.label,
           onClick,
-        };
-      });
+        }
+      })
     },
     crumbs() {
-      if (window.innerWidth > 640) return this.breadcrumbLinks;
+      if (window.innerWidth > 640) return this.breadcrumbLinks
 
-      let lastTwo = this.breadcrumbLinks.slice(-1);
-      return lastTwo;
+      let lastTwo = this.breadcrumbLinks.slice(-1)
+      return lastTwo
     },
   },
   methods: {
     isLastItem(index) {
       return this.breadcrumbLinks.length > 1
         ? index === this.breadcrumbLinks.length - 1
-        : false;
+        : false
     },
     canShowRenameDialog() {
       if (this.$route.name === "Folder") {
@@ -146,15 +147,15 @@ export default {
           (this.$store.state.currentFolder[0]?.owner === "You") |
           this.$store.state.currentFolder[0]?.write
         ) {
-          return (this.showRenameDialog = true);
+          return (this.showRenameDialog = true)
         }
       } else if (
         (this.$store.state.entityInfo[0]?.owner === "You") |
         (this.$store.state.entityInfo[0]?.write === 1)
       ) {
-        return (this.showRenameDialog = true);
+        return (this.showRenameDialog = true)
       }
     },
   },
-};
+}
 </script>

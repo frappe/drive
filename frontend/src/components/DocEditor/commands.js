@@ -1,11 +1,11 @@
-import { defineAsyncComponent } from "vue";
-import { Code } from "lucide-vue-next";
-import Bold from "./icons/Bold.vue";
-import Italic from "./icons/Italic.vue";
-import Strikethrough from "./icons/StrikeThrough.vue";
-import Underline from "./icons/Underline.vue";
-import NewAnnotation from "./icons/NewAnnotation.vue";
-import NewLink from "./icons/NewLink.vue";
+import { defineAsyncComponent } from "vue"
+import { Code } from "lucide-vue-next"
+import Bold from "./icons/Bold.vue"
+import Italic from "./icons/Italic.vue"
+import Strikethrough from "./icons/StrikeThrough.vue"
+import Underline from "./icons/Underline.vue"
+import NewAnnotation from "./icons/NewAnnotation.vue"
+import NewLink from "./icons/NewLink.vue"
 
 export default {
   Bold: {
@@ -53,4 +53,4 @@ export default {
     isActive: (editor) => editor.isActive("comment"),
     component: defineAsyncComponent(() => import("./NewComment.vue")),
   },
-};
+}

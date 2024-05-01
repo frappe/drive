@@ -80,20 +80,20 @@ def get_new_title(title, parent_name, document=False, folder=False):
     :return: String with new title
     """
     entity_title, entity_ext = os.path.splitext(title)
-  
+
     filters = {
         "is_active": 1,
         "parent_drive_entity": parent_name,
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
-   
+
     if entity_ext:
         mime_type = mimetypes.guess_type(title)
         filters["mime_type"] = mime_type[0]
-    
+
     if document:
         mime_type = "frappe_doc"
-    
+
     if folder:
         filters["is_group"] = 1
 
@@ -106,6 +106,7 @@ def get_new_title(title, parent_name, document=False, folder=False):
     if not sibling_entity_titles:
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
+
 
 def create_user_thumbnails_directory():
     user_directory_name = _get_user_directory_name()

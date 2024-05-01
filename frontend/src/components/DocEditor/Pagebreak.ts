@@ -1,8 +1,8 @@
-import { mergeAttributes, Node } from "@tiptap/core";
-import { TextSelection } from "prosemirror-state";
+import { mergeAttributes, Node } from "@tiptap/core"
+import { TextSelection } from "prosemirror-state"
 
 export interface PageBreakRuleOptions {
-  HTMLAttributes: Record<string, any>;
+  HTMLAttributes: Record<string, any>
 }
 
 declare module "@tiptap/core" {
@@ -11,12 +11,12 @@ declare module "@tiptap/core" {
       /**
        * Add a page break
        */
-      setPageBreak: () => ReturnType;
+      setPageBreak: () => ReturnType
       /**
        * Remove a page break
        */
-      unsetPageBreak: () => ReturnType;
-    };
+      unsetPageBreak: () => ReturnType
+    }
   }
 }
 
@@ -31,7 +31,7 @@ export const PageBreak = Node.create<PageBreakRuleOptions>({
           "page-break-after: always; border: 2px dashed lightgray; margin: 25px 0px;",
         "data-page-break": "true",
       },
-    };
+    }
   },
 
   group: "block",
@@ -45,14 +45,11 @@ export const PageBreak = Node.create<PageBreakRuleOptions>({
           (node as HTMLElement).dataset.pageBreak === "true" &&
           null,
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return [
-      "div",
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-    ];
+    return ["div", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
   },
 
   addCommands() {
@@ -66,11 +63,11 @@ export const PageBreak = Node.create<PageBreakRuleOptions>({
               // set cursor after page break
               .command(({ dispatch, tr }) => {
                 if (dispatch) {
-                  const { $to } = tr.selection;
-                  const posAfter = $to.end();
+                  const { $to } = tr.selection
+                  const posAfter = $to.end()
 
                   if ($to.nodeAfter) {
-                    tr.setSelection(TextSelection.create(tr.doc, $to.pos));
+                    tr.setSelection(TextSelection.create(tr.doc, $to.pos))
                   } else {
                     // add node after page break if it’s the end of the document
                     const node =
@@ -79,20 +76,20 @@ export const PageBreak = Node.create<PageBreakRuleOptions>({
                           pageBreakAfter: "always",
                         },
                         "data-page-break": "true",
-                      });
+                      })
                     if (node) {
-                      tr.insert(posAfter, node);
-                      tr.setSelection(TextSelection.create(tr.doc, posAfter));
+                      tr.insert(posAfter, node)
+                      tr.setSelection(TextSelection.create(tr.doc, posAfter))
                     }
                   }
 
-                  tr.scrollIntoView();
+                  tr.scrollIntoView()
                 }
 
-                return true;
+                return true
               })
               .run()
-          );
+          )
         },
       unsetPageBreak:
         () =>
@@ -100,8 +97,8 @@ export const PageBreak = Node.create<PageBreakRuleOptions>({
           return chain()
             .deleteSelection()
             .command(() => true)
-            .run();
+            .run()
         },
-    };
+    }
   },
-});
+})

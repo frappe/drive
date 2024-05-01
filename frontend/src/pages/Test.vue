@@ -15,7 +15,8 @@
           icon: 'log-out',
           label: 'Log out',
         },
-      ]">
+      ]"
+    >
       <template #default="{ open }">
         <Button :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'">
           Drop
@@ -32,9 +33,10 @@
           <div
             @click="
               () => {
-                togglePopover();
+                togglePopover()
               }
-            ">
+            "
+          >
             {{ item }}
           </div>
         </div>
@@ -44,10 +46,10 @@
 </template>
 
 <script>
-import { Popover, Button, Dropdown } from "frappe-ui";
+import { Popover, Button, Dropdown } from "frappe-ui"
 
 export default {
   name: "Test",
   components: { Popover, Button, Dropdown },
-};
+}
 </script>

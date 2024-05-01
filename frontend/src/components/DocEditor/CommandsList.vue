@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex w-40 flex-col rounded-md border bg-white p-1 text-base shadow">
+    class="flex w-40 flex-col rounded-md border bg-white p-1 text-base shadow"
+  >
     <template v-if="enabledItems.length">
       <button
         v-for="(item, index) in enabledItems"
@@ -8,17 +9,20 @@
         class="flex h-8 w-full cursor-pointer items-center rounded px-1 text-base"
         :class="{ 'bg-gray-100': index === selectedIndex }"
         @click="selectItem(index)"
-        @mouseenter="selectedIndex = index">
+        @mouseenter="selectedIndex = index"
+      >
         <component
           :is="item.icon || 'Minus'"
-          class="mr-2 h-4 w-4 text-gray-500" />
+          class="mr-2 h-4 w-4 text-gray-500"
+        />
         {{ item.title }}
         <component
           :is="item.component"
           v-if="item.component"
           :editor="editor"
           :is-open="item.isOpen"
-          @toggle-is-open="toggleIsOpen(item)">
+          @toggle-is-open="toggleIsOpen(item)"
+        >
           {{ item.title }}
         </component>
       </button>
@@ -28,7 +32,7 @@
 </template>
 
 <script>
-import { Minus } from "lucide-vue-next";
+import { Minus } from "lucide-vue-next"
 export default {
   components: {
     Minus,
@@ -53,70 +57,70 @@ export default {
   data() {
     return {
       selectedIndex: 0,
-    };
+    }
   },
 
   computed: {
     enabledItems() {
       return this.items.filter((item) =>
         item.disabled ? !item.disabled(this.editor) : true
-      );
+      )
     },
   },
 
   watch: {
     items() {
-      this.selectedIndex = 0;
+      this.selectedIndex = 0
     },
   },
 
   methods: {
     toggleIsOpen(item) {
-      item.isOpen = !item.isOpen;
+      item.isOpen = !item.isOpen
     },
 
     onKeyDown({ event }) {
       if (event.key === "ArrowUp") {
-        this.upHandler();
-        return true;
+        this.upHandler()
+        return true
       }
 
       if (event.key === "ArrowDown") {
-        this.downHandler();
-        return true;
+        this.downHandler()
+        return true
       }
 
       if (event.key === "Enter") {
-        this.enterHandler();
-        return true;
+        this.enterHandler()
+        return true
       }
 
-      return false;
+      return false
     },
 
     upHandler() {
       this.selectedIndex =
         (this.selectedIndex + this.enabledItems.length - 1) %
-        this.enabledItems.length;
+        this.enabledItems.length
     },
 
     downHandler() {
-      this.selectedIndex = (this.selectedIndex + 1) % this.enabledItems.length;
+      this.selectedIndex = (this.selectedIndex + 1) % this.enabledItems.length
     },
 
     enterHandler() {
-      this.selectItem(this.selectedIndex);
+      this.selectItem(this.selectedIndex)
     },
 
     selectItem(index) {
-      const item = this.enabledItems[index];
+      const item = this.enabledItems[index]
 
       if (item.command) {
-        this.command(item);
+        this.command(item)
       } else if (item.component) {
-        item.isOpen = true;
+        item.isOpen = true
       }
     },
   },
-};
+}
 </script>

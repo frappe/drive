@@ -3,12 +3,14 @@
     <div
       ondragstart="return false;"
       ondrop="return false;"
-      class="grid grid-cols-5 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1">
+      class="grid grid-cols-5 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
+    >
       <router-link
         v-for="item in sidebarItems"
         :key="item.label"
         v-slot="{ href, navigate }"
-        :to="item.route">
+        :to="item.route"
+      >
         <a
           class="flex flex-col items-center justify-center py-3 transition active:scale-95 rounded"
           :class="[
@@ -17,10 +19,12 @@
               : ' hover:bg-gray-100',
           ]"
           :href="href"
-          @click="navigate && $emit('toggleMobileSidebar')">
+          @click="navigate && $emit('toggleMobileSidebar')"
+        >
           <FeatherIcon
             :name="item.icon"
-            class="stroke-1.5 self-center w-auto h-5.5 text-gray-800" />
+            class="stroke-1.5 self-center w-auto h-5.5 text-gray-800"
+          />
         </a>
       </router-link>
       <!--  <span
@@ -33,21 +37,20 @@
   </div>
 </template>
 <script>
-import UserDropdown from "@/components/UserDropdown.vue";
-import { FeatherIcon } from "frappe-ui";
+import { FeatherIcon } from "frappe-ui"
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon, UserDropdown },
+  components: { FeatherIcon },
   emits: ["toggleMobileSidebar"],
   data() {
     return {
       sidebarResizing: false,
-    };
+    }
   },
   computed: {
     isExpanded() {
-      return this.$store.state.IsSidebarExpanded;
+      return this.$store.state.IsSidebarExpanded
     },
     /* currentSideBarWidth: {
         get() {
@@ -71,7 +74,7 @@ export default {
           route: "/home",
           icon: "home",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Home";
+            return this.$store.state.currentBreadcrumbs[0].label === "Home"
           },
         },
         {
@@ -79,7 +82,7 @@ export default {
           route: "/recents",
           icon: "clock",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Recents";
+            return this.$store.state.currentBreadcrumbs[0].label === "Recents"
           },
         },
         {
@@ -89,7 +92,7 @@ export default {
           highlight: () => {
             return (
               this.$store.state.currentBreadcrumbs[0].label === "Favourites"
-            );
+            )
           },
         },
         {
@@ -97,7 +100,7 @@ export default {
           route: "/shared",
           icon: "users",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Shared";
+            return this.$store.state.currentBreadcrumbs[0].label === "Shared"
           },
         },
         {
@@ -105,41 +108,41 @@ export default {
           route: "/trash",
           icon: "trash-2",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Trash";
+            return this.$store.state.currentBreadcrumbs[0].label === "Trash"
           },
         },
-      ];
+      ]
     },
   },
   methods: {
     toggleExpanded() {
-      console.log("test");
+      console.log("test")
       return this.$store.commit(
         "setIsSidebarExpanded",
         this.isExpanded ? false : true
-      );
+      )
     },
     startResize() {
-      document.addEventListener("mousemove", this.resize);
+      document.addEventListener("mousemove", this.resize)
       document.addEventListener("mouseup", () => {
-        document.body.classList.remove("select-none");
-        document.body.classList.remove("cursor-col-resize");
-        this.sidebarResizing = false;
-        document.removeEventListener("mousemove", this.resize);
-      });
+        document.body.classList.remove("select-none")
+        document.body.classList.remove("cursor-col-resize")
+        this.sidebarResizing = false
+        document.removeEventListener("mousemove", this.resize)
+      })
     },
     resize(e) {
-      this.sidebarResizing = true;
-      document.body.classList.add("select-none");
-      document.body.classList.add("cursor-col-resize");
-      let sidebarWidth = e.clientX;
-      let range = [60, 180];
+      this.sidebarResizing = true
+      document.body.classList.add("select-none")
+      document.body.classList.add("cursor-col-resize")
+      let sidebarWidth = e.clientX
+      let range = [60, 180]
       if (sidebarWidth > range[0] && sidebarWidth < range[1]) {
-        sidebarWidth = 60;
-        this.$store.commit("setIsSidebarExpanded", false);
+        sidebarWidth = 60
+        this.$store.commit("setIsSidebarExpanded", false)
       }
       if (sidebarWidth > 180) {
-        this.$store.commit("setIsSidebarExpanded", true);
+        this.$store.commit("setIsSidebarExpanded", true)
       }
       /* if (sidebarWidth < 100) {
           this.$store.commit("setIsSidebarExpanded", false )
@@ -154,11 +157,11 @@ export default {
       return {
         url: "drive.api.files.get_user_directory_size",
         onError(error) {
-          console.log(error);
+          console.log(error)
         },
         auto: false,
-      };
+      }
     },
   },
-};
+}
 </script>

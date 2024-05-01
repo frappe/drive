@@ -1,44 +1,51 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full text-neutral-100 mx-auto" />
+    class="w-10 h-full text-neutral-100 mx-auto"
+  />
   <div>
-    <div v-once v-if="loading" id="gridctr" />
+    <div v-if="loading" v-once id="gridctr" />
   </div>
 </template>
 <script setup>
-import { LoadingIndicator } from "frappe-ui";
-import { ref, onBeforeUnmount, onMounted, watch, computed } from "vue";
-import { read, utils } from "xlsx";
-import Spreadsheet from "x-data-spreadsheet";
+import { LoadingIndicator } from "frappe-ui"
+import { ref, onBeforeUnmount, onMounted, watch, computed } from "vue"
+import { read, utils } from "xlsx"
+import Spreadsheet from "x-data-spreadsheet"
 
-const props = defineProps(["previewEntity"]);
-const loading = ref(true);
+const props = defineProps({
+  previewEntity: {
+    type: Object,
+    default: null,
+  },
+})
+
+const loading = ref(true)
 const canWrite = computed(() => {
   return props.previewEntity.owner == "You"
     ? true
     : props.previewEntity.write
     ? true
-    : false;
-});
-let grid;
+    : false
+})
+let grid
 async function fetchContent() {
-  loading.value = true;
+  loading.value = true
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json; charset=utf-8",
     "X-Frappe-Site-Name": window.location.hostname,
     Range: "bytes=0-10000000",
-  };
+  }
   const res = await fetch(
     `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
     {
       method: "GET",
       headers,
     }
-  );
+  )
   if (res.ok) {
-    const ab = await res.arrayBuffer();
+    const ab = await res.arrayBuffer()
     grid = new Spreadsheet(document.getElementById("gridctr"), {
       /* mode: canWrite.value ? "edit" : "read", */
       /* showToolbar: canWrite.value, */
@@ -49,67 +56,67 @@ async function fetchContent() {
         height: () => document.getElementById("renderContainer").clientHeight,
         width: () => 1200,
       },
-    });
-    grid.loadData(stox(read(ab)));
-    loading.value = false;
+    })
+    grid.loadData(stox(read(ab)))
+    loading.value = false
   }
 }
 
 function stox(wb) {
-  var out = [];
+  var out = []
   wb.SheetNames.forEach(function (name) {
-    var o = { name: name, rows: {} };
-    var ws = wb.Sheets[name];
-    if (!ws || !ws["!ref"]) return;
-    var range = utils.decode_range(ws["!ref"]);
+    var o = { name: name, rows: {} }
+    var ws = wb.Sheets[name]
+    if (!ws || !ws["!ref"]) return
+    var range = utils.decode_range(ws["!ref"])
     // sheet_to_json will lost empty row and col at begin as default
-    range.s = { r: 0, c: 0 };
+    range.s = { r: 0, c: 0 }
     var aoa = utils.sheet_to_json(ws, {
       raw: false,
       header: 1,
       range: range,
-    });
+    })
 
     aoa.forEach(function (r, i) {
-      var cells = {};
+      var cells = {}
       r.forEach(function (c, j) {
-        cells[j] = { text: c || String(c) };
+        cells[j] = { text: c || String(c) }
 
-        var cellRef = utils.encode_cell({ r: i, c: j });
+        var cellRef = utils.encode_cell({ r: i, c: j })
 
         if (ws[cellRef] != null && ws[cellRef].f != null) {
-          cells[j].text = "=" + ws[cellRef].f;
+          cells[j].text = "=" + ws[cellRef].f
         }
-      });
-      o.rows[i] = { cells: cells };
-    });
-    o.rows.len = aoa.length;
+      })
+      o.rows[i] = { cells: cells }
+    })
+    o.rows.len = aoa.length
 
-    o.merges = [];
-    (ws["!merges"] || []).forEach(function (merge, i) {
+    o.merges = []
+    ;(ws["!merges"] || []).forEach(function (merge, i) {
       //Needed to support merged cells with empty content
       if (o.rows[merge.s.r] == null) {
-        o.rows[merge.s.r] = { cells: {} };
+        o.rows[merge.s.r] = { cells: {} }
       }
       if (o.rows[merge.s.r].cells[merge.s.c] == null) {
-        o.rows[merge.s.r].cells[merge.s.c] = {};
+        o.rows[merge.s.r].cells[merge.s.c] = {}
       }
 
       o.rows[merge.s.r].cells[merge.s.c].merge = [
         merge.e.r - merge.s.r,
         merge.e.c - merge.s.c,
-      ];
+      ]
 
-      o.merges[i] = utils.encode_range(merge);
-    });
+      o.merges[i] = utils.encode_range(merge)
+    })
 
-    out.push(o);
-  });
+    out.push(o)
+  })
 
-  return out;
+  return out
 }
 
-function xtos(sdata) {
+/* function xtos(sdata) {
   var out = utils.book_new();
   sdata.forEach(function (xws) {
     var ws = {};
@@ -173,24 +180,24 @@ function xtos(sdata) {
     utils.book_append_sheet(out, ws, xws.name);
   });
   return out;
-}
+} */
 
 watch(
   () => props.previewEntity,
-  (newValue, oldValue) => {
-    document.getElementById("gridctr").innerHTML = "";
-    fetchContent();
+  () => {
+    document.getElementById("gridctr").innerHTML = ""
+    fetchContent()
   }
-);
+)
 
 onMounted(() => {
-  fetchContent();
-});
+  fetchContent()
+})
 
 onBeforeUnmount(() => {
-  loading.value = true;
-  document.getElementById("gridctr").remove();
-});
+  loading.value = true
+  document.getElementById("gridctr").remove()
+})
 </script>
 
 <style scoped>

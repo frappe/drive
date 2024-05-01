@@ -11,18 +11,19 @@
             : 'cursor-pointer'
         }`,
       ]"
-      @click.stop.prevent="
-        focusContent({ from: comment.from, to: comment.to })
-      ">
+      @click.stop.prevent="focusContent({ from: comment.from, to: comment.to })"
+    >
       <div
         v-for="(jsonComment, j) in comment.jsonComments.comments"
         :key="`${j}_${Math.random()}`"
-        class="my-2">
+        class="my-2"
+      >
         <div class="flex gap-2 items-center">
           <Avatar
             :label="jsonComment.userName"
             :image="jsonComment.userImage"
-            class="h-7 w-7" />
+            class="h-7 w-7"
+          />
           <div>
             <span class="text-sm font-medium">
               {{ jsonComment.userName }}
@@ -34,7 +35,8 @@
           </div>
         </div>
         <div
-          class="ml-2.5 mt-2 text-sm text-gray-700 max-w-full break-word leading-snug">
+          class="ml-2.5 mt-2 text-sm text-gray-700 max-w-full break-word leading-snug"
+        >
           <p class="">{{ jsonComment.content }}</p>
         </div>
       </div>
@@ -48,7 +50,8 @@
               ? ''
               : 'max-h-0'
           }`,
-        ]">
+        ]"
+      >
         <div class="flex items-center gap-1 mt-2 mb-4">
           <Avatar :label="fullName" :image="imageURL" class="h-7 w-7 mr-1" />
           <span class="text-sm font-medium">
@@ -60,7 +63,7 @@
         <textarea
           :ref="
             (el) => {
-              textarea[comment.jsonComments.uuid] = el;
+              textarea[comment.jsonComments.uuid] = el
             }
           "
           class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto form-textarea block mx-0.5 resize-none mb-2"
@@ -68,12 +71,14 @@
           placeholder="Reply"
           @input="resize($event)"
           @focus="comment.jsonComments.uuid === activeCommentsInstance.uuid"
-          @keypress.enter.stop.prevent="setComment" />
+          @keypress.enter.stop.prevent="setComment"
+        />
         <Button
           class="w-full"
           variant="solid"
           :disabled="!commentText.length"
-          @click="setComment">
+          @click="setComment"
+        >
           Save
         </Button>
       </section>
@@ -82,57 +87,57 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from "vuex";
-import { ref, watch, computed, nextTick, onUpdated } from "vue";
-import { Avatar, Button, Input } from "frappe-ui";
-import { formatDate } from "@/utils/format";
+import { useStore } from "vuex"
+import { ref, watch, computed, nextTick, onUpdated } from "vue"
+import { Avatar, Button, Input } from "frappe-ui"
+import { formatDate } from "@/utils/format"
 
-const store = useStore();
+const store = useStore()
 
-const emit = defineEmits(["setComment"]);
+const emit = defineEmits(["setComment"])
 
 interface Props {
-  allComments: any[];
+  allComments: any[]
   activeCommentsInstance: {
-    uuid: "";
-    comments: [];
-  };
-  isCommentModeOn: boolean;
-  focusContent: ({ from, to }: { from: number; to: number }) => void;
+    uuid: ""
+    comments: []
+  }
+  isCommentModeOn: boolean
+  focusContent: ({ from, to }: { from: number; to: number }) => void
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 
-const commentText = ref<string>("");
+const commentText = ref<string>("")
 
-const textarea = ref<Record<string, any>>({});
+const textarea = ref<Record<string, any>>({})
 
 const activeCommentInstanceUuid = computed(
   () => props.activeCommentsInstance.uuid
-);
+)
 
-const fullName = computed(() => store.state.user.fullName);
+const fullName = computed(() => store.state.user.fullName)
 
-const imageURL = computed(() => store.state.user.imageURL);
+const imageURL = computed(() => store.state.user.imageURL)
 
 const setComment = () => {
-  emit("setComment", commentText.value);
-  commentText.value = "";
-};
+  emit("setComment", commentText.value)
+  commentText.value = ""
+}
 
 watch(activeCommentInstanceUuid, (val) => {
   setTimeout(() => {
-    if (!val || !props.isCommentModeOn) return;
-    commentText.value = "";
+    if (!val || !props.isCommentModeOn) return
+    commentText.value = ""
 
-    const activeTextArea: HTMLTextAreaElement = textarea.value[val];
+    const activeTextArea: HTMLTextAreaElement = textarea.value[val]
 
-    if (activeTextArea) activeTextArea.focus();
-  }, 100);
-});
+    if (activeTextArea) activeTextArea.focus()
+  }, 100)
+})
 
 function resize(e) {
-  e.target.style.height = `${e.target.scrollHeight}px`;
+  e.target.style.height = `${e.target.scrollHeight}px`
 }
 
 /* watch(commentText, (val) => {

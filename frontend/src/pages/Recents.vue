@@ -1,12 +1,13 @@
 <template>
   <PageGeneric
     url="drive.api.files.list_recents"
-    :allowEmptyContextMenu="false"
-    :showSort="false"
+    :allow-empty-context-menu="false"
+    :show-sort="false"
     :primary-message="`You haven't viewed any files recently`"
-    :secondary-message="'Files will appear here for easy access when you view them sorted by last interaction'" />
+    :secondary-message="'Files will appear here for easy access when you view them sorted by last interaction'"
+  />
 </template>
 
 <script setup>
-import PageGeneric from "@/components/PageGeneric.vue";
+import PageGeneric from "@/components/PageGeneric.vue"
 </script>

@@ -1,12 +1,13 @@
 <template>
   <div class="flex px-3 bg-white pb-2 shadow-sm">
     <Dropdown :options="fileMenuOptions">
-      <template v-slot="{ open }">
+      <template #default="{ open }">
         <button
           :class="[
             'rounded-md px-2 py-1 text-base font-medium',
             open ? 'bg-slate-100' : 'bg-white-200',
-          ]">
+          ]"
+        >
           File
         </button>
       </template>
@@ -59,13 +60,15 @@
             },
           ],
         },
-      ]">
-      <template v-slot="{ open }">
+      ]"
+    >
+      <template #default="{ open }">
         <button
           :class="[
             'rounded-md px-2 py-1 text-base font-medium',
             open ? 'bg-slate-100' : 'bg-white-200',
-          ]">
+          ]"
+        >
           Edit
         </button>
       </template>
@@ -100,13 +103,15 @@
             },
           ],
         },
-      ]">
-      <template v-slot="{ open }">
+      ]"
+    >
+      <template #default="{ open }">
         <button
           :class="[
             'rounded-md px-2 py-1 text-base font-medium',
             open ? 'bg-slate-100' : 'bg-white-200',
-          ]">
+          ]"
+        >
           View
         </button>
       </template>
@@ -147,13 +152,15 @@
             },
           ],
         },
-      ]">
-      <template v-slot="{ open }">
+      ]"
+    >
+      <template #default="{ open }">
         <button
           :class="[
             'rounded-md px-2 py-1 text-base font-medium',
             open ? 'bg-slate-100' : 'bg-white-200',
-          ]">
+          ]"
+        >
           Insert
         </button>
       </template>
@@ -194,13 +201,15 @@
             },
           ],
         },
-      ]">
-      <template v-slot="{ open }">
+      ]"
+    >
+      <template #default="{ open }">
         <button
           :class="[
             'rounded-md px-2 py-1 text-base font-medium',
             open ? 'bg-slate-100' : 'bg-white-200',
-          ]">
+          ]"
+        >
           Format
         </button>
       </template>
@@ -215,7 +224,8 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entity-name="entityName" />
+      :entity-name="entityName"
+    />
     <!-- Ideally convert the component to recieve both an array or a single entity -->
     <GeneralDialog
       v-model="showRemoveDialog"
@@ -223,16 +233,17 @@
       :for="'remove'"
       @success="
         () => {
-          $router.go(-1);
+          $router.go(-1)
         }
-      " />
+      "
+    />
   </div>
 </template>
 
 <script>
-import { Dropdown } from "frappe-ui";
-import ShareDialog from "@/components/ShareDialog.vue";
-import GeneralDialog from "@/components/GeneralDialog.vue";
+import { Dropdown } from "frappe-ui"
+import ShareDialog from "@/components/ShareDialog.vue"
+import GeneralDialog from "@/components/GeneralDialog.vue"
 
 export default {
   name: "MenuBar",
@@ -261,20 +272,6 @@ export default {
     },
   },
   emits: ["toggleCommentMode", "toggleEditMode", "toggleReadMode"],
-  computed: {
-    modeButtonText() {
-      if (this.editable) {
-        this.modeButtonIcon = "edit-3";
-        return "Editing";
-      } else if (this.isReadOnly) {
-        this.modeButtonIcon = "eye";
-        return "Reading";
-      } else if (this.isCommentModeOn) {
-        this.modeButtonIcon = "message-square";
-        return "Suggesting";
-      }
-    },
-  },
   data() {
     return {
       showShareDialog: false,
@@ -339,27 +336,41 @@ export default {
               icon: "eye",
               label: "Reading",
               handler: () => {
-                this.emitter.emit("toggleReadMode");
+                this.emitter.emit("toggleReadMode")
               },
             },
             {
               icon: "edit-3",
               label: "Editing",
               handler: () => {
-                this.emitter.emit("toggleEditMode");
+                this.emitter.emit("toggleEditMode")
               },
             },
             {
               icon: "message-square",
               label: "Suggesting",
               handler: () => {
-                this.emitter.emit("toggleCommentMode");
+                this.emitter.emit("toggleCommentMode")
               },
             },
           ],
         },
       ],
-    };
+    }
   },
-};
+  computed: {
+    modeButtonText() {
+      if (this.editable) {
+        this.modeButtonIcon = "edit-3"
+        return "Editing"
+      } else if (this.isReadOnly) {
+        this.modeButtonIcon = "eye"
+        return "Reading"
+      } else if (this.isCommentModeOn) {
+        this.modeButtonIcon = "message-square"
+        return "Suggesting"
+      }
+    },
+  },
+}
 </script>

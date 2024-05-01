@@ -64,7 +64,10 @@ def handle_tus_request(fileID=None):
         upload_length = frappe.request.headers.get("Upload-Length")
         temp_path = Path(
             frappe.get_site_path(
-                "private/files/", get_user_directory(user=frappe.session.user).name, "uploads", init_file_id
+                "private/files/",
+                get_user_directory(user=frappe.session.user).name,
+                "uploads",
+                init_file_id,
             )
         )
 

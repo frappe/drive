@@ -1,11 +1,11 @@
-import { Extension } from "@tiptap/core";
-import "@tiptap/extension-text-style";
+import { Extension } from "@tiptap/core"
+import "@tiptap/extension-text-style"
 
 /* Default highlight extension creates a mark which is not compatible with `fontSize` */
 
 export type HighlightOptions = {
-  types: string[];
-};
+  types: string[]
+}
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -13,12 +13,12 @@ declare module "@tiptap/core" {
       /**
        * Set the font size
        */
-      toggleHighlight: (backgroundColor: string) => ReturnType;
+      toggleHighlight: (backgroundColor: string) => ReturnType
       /**
        * Unset the font size
        */
-      unsetHighlight: () => ReturnType;
-    };
+      unsetHighlight: () => ReturnType
+    }
   }
 }
 
@@ -28,7 +28,7 @@ export const Highlight = Extension.create<HighlightOptions>({
   addOptions() {
     return {
       types: ["textStyle"],
-    };
+    }
   },
 
   addGlobalAttributes() {
@@ -42,17 +42,17 @@ export const Highlight = Extension.create<HighlightOptions>({
               element.style.backgroundColor.replace(/['"]+/g, ""),
             renderHTML: (attributes) => {
               if (!attributes.backgroundColor) {
-                return {};
+                return {}
               }
 
               return {
                 style: `background-color: ${attributes.backgroundColor}`,
-              };
+              }
             },
           },
         },
       },
-    ];
+    ]
   },
 
   addCommands() {
@@ -60,7 +60,7 @@ export const Highlight = Extension.create<HighlightOptions>({
       toggleHighlight:
         (backgroundColor) =>
         ({ chain }) => {
-          return chain().setMark("textStyle", { backgroundColor }).run();
+          return chain().setMark("textStyle", { backgroundColor }).run()
         },
       unsetHighlight:
         () =>
@@ -68,8 +68,8 @@ export const Highlight = Extension.create<HighlightOptions>({
           return chain()
             .setMark("textStyle", { backgroundColor: null })
             .removeEmptyTextStyle()
-            .run();
+            .run()
         },
-    };
+    }
   },
-});
+})

@@ -1,7 +1,7 @@
-import tippy from "tippy.js";
-import { VueRenderer } from "@tiptap/vue-3";
-import Mention from "@tiptap/extension-mention";
-import MentionList from "./MentionList.vue";
+import tippy from "tippy.js"
+import { VueRenderer } from "@tiptap/vue-3"
+import Mention from "@tiptap/extension-mention"
+import MentionList from "./MentionList.vue"
 
 export default function configureMention(options) {
   return Mention.configure({
@@ -9,7 +9,7 @@ export default function configureMention(options) {
       class: "mention",
     },
     suggestion: getSuggestionOptions(options),
-  });
+  })
 }
 
 function getSuggestionOptions(options) {
@@ -19,21 +19,21 @@ function getSuggestionOptions(options) {
         .filter((item) =>
           item.label.toLowerCase().startsWith(query.toLowerCase())
         )
-        .slice(0, 5);
+        .slice(0, 5)
     },
 
     render: () => {
-      let component;
-      let popup;
+      let component
+      let popup
 
       return {
         onStart: (props) => {
           component = new VueRenderer(MentionList, {
             props,
             editor: props.editor,
-          });
+          })
           if (!props.clientRect) {
-            return;
+            return
           }
           popup = tippy("body", {
             getReferenceClientRect: props.clientRect,
@@ -43,30 +43,30 @@ function getSuggestionOptions(options) {
             interactive: true,
             trigger: "manual",
             placement: "bottom-start",
-          });
+          })
         },
         onUpdate(props) {
-          component.updateProps(props);
+          component.updateProps(props)
           if (!props.clientRect) {
-            return;
+            return
           }
           popup[0].setProps({
             getReferenceClientRect: props.clientRect,
-          });
+          })
         },
         onKeyDown(props) {
           if (props.event.key === "Escape") {
-            popup[0].hide();
+            popup[0].hide()
 
-            return true;
+            return true
           }
-          return component.ref?.onKeyDown(props);
+          return component.ref?.onKeyDown(props)
         },
         onExit() {
-          popup[0].destroy();
-          component.destroy();
+          popup[0].destroy()
+          component.destroy()
         },
-      };
+      }
     },
-  };
+  }
 }

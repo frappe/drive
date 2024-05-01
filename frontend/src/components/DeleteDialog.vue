@@ -16,7 +16,8 @@
           icon-left="trash-2"
           class="w-full"
           :loading="$resources.delete.loading"
-          @click="$resources.delete.submit()">
+          @click="$resources.delete.submit()"
+        >
           Delete Forever
         </Button>
       </div>
@@ -24,8 +25,8 @@
   </Dialog>
 </template>
 <script>
-import { Dialog } from "frappe-ui";
-import { del } from "idb-keyval";
+import { Dialog } from "frappe-ui"
+import { del } from "idb-keyval"
 
 export default {
   name: "DeleteDialog",
@@ -47,10 +48,10 @@ export default {
   computed: {
     open: {
       get() {
-        return this.modelValue;
+        return this.modelValue
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.$emit("update:modelValue", value)
       },
     },
   },
@@ -64,16 +65,16 @@ export default {
           ),
         },
         onSuccess(data) {
-          this.entities.map((entity) => del(entity.name));
-          this.$emit("success", data);
+          this.entities.map((entity) => del(entity.name))
+          this.$emit("success", data)
         },
         onError(error) {
           if (error.messages) {
-            console.log(error.messages);
+            console.log(error.messages)
           }
         },
-      };
+      }
     },
   },
-};
+}
 </script>

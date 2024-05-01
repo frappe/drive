@@ -1,20 +1,25 @@
 <template>
   <div
-    class="h-2/3 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden group">
+    class="h-2/3 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden group"
+  >
     <img loading="lazy" :class="parsedStyled" :src="link" :draggable="false" />
   </div>
-  <div class="px-2 pb-1 h-1/3 content-center grid border-t border-gray-100">
-    <span class="truncate text-sm text-gray-800 mb-1">
+  <div
+    class="p-2 max-h-1/3 min-h-1/3 content-center grid border-t border-gray-100"
+  >
+    <span class="truncate text-base font-medium text-gray-800">
       {{ title }}
     </span>
-    <p :title="modified" class="truncate text-xs text-gray-600 mt-0">
-      {{ file_size }} ∙ {{ relativeModified }}
-    </p>
+    <div class="flex items-center justify-start mt-2">
+      <p :title="modified" class="truncate text-xs text-gray-600">
+        {{ file_size }} ∙ {{ relativeModified }}
+      </p>
+    </div>
   </div>
 </template>
 <script>
-import { formatMimeType } from "@/utils/format";
-import { getIconUrl, thumbnail_getIconUrl } from "@/utils/getIconUrl";
+import { formatMimeType } from "@/utils/format"
+import { getIconUrl, thumbnail_getIconUrl } from "@/utils/getIconUrl"
 
 export default {
   name: "File",
@@ -28,7 +33,7 @@ export default {
     file_size: String,
   },
   setup() {
-    return { formatMimeType, getIconUrl, thumbnail_getIconUrl };
+    return { formatMimeType, getIconUrl, thumbnail_getIconUrl }
   },
   data: function () {
     return {
@@ -36,19 +41,19 @@ export default {
         `/src/assets/images/icons/${this.mime_type}.svg`,
         import.meta.url
       ),
-    };
+    }
   },
   computed: {
     parsedStyled() {
       if (typeof this.link === "string") {
-        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] group-hover:scale-125 transition duration-250";
+        return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] group-hover:scale-125 transition duration-250"
       } else {
-        return "h-9 w-auto";
+        return "h-10 w-auto"
       }
     },
   },
   created() {
-    this.thumbnailUrl();
+    this.thumbnailUrl()
   },
   methods: {
     async thumbnailUrl() {
@@ -56,15 +61,15 @@ export default {
         formatMimeType(this.mime_type),
         this.name,
         this.file_ext
-      );
-      this.link = result;
+      )
+      this.link = result
     },
     getFileSubtitle() {
-      let fileSubtitle = formatMimeType(this.mime_type);
+      let fileSubtitle = formatMimeType(this.mime_type)
       fileSubtitle =
-        fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1);
-      return `${fileSubtitle} ∙ ${this.modified}`;
+        fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1)
+      return `${fileSubtitle} ∙ ${this.relativeModified}`
     },
   },
-};
+}
 </script>

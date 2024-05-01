@@ -11,7 +11,8 @@
           icon-left="trash-2"
           class="w-full"
           :loading="$resources.action.loading"
-          @click="$resources.action.submit()">
+          @click="$resources.action.submit()"
+        >
           {{ buttonText }}
         </Button>
       </div>
@@ -19,7 +20,7 @@
   </Dialog>
 </template>
 <script>
-import { Dialog } from "frappe-ui";
+import { Dialog } from "frappe-ui"
 
 export default {
   name: "CTADeleteDialog",
@@ -42,6 +43,7 @@ export default {
       default: false,
     },
   },
+  emits: ["update:modelValue", "success"],
   data: () => ({
     title: "",
     message: "",
@@ -49,42 +51,41 @@ export default {
     buttonVariant: "subtle",
     url: null,
   }),
-  emits: ["update:modelValue", "success"],
   computed: {
     open: {
       get() {
-        return this.modelValue;
+        return this.modelValue
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.$emit("update:modelValue", value)
       },
     },
   },
   mounted() {
-    this.evalDialog();
+    this.evalDialog()
   },
   methods: {
     evalDialog() {
       if (this.$route.name === "Recents") {
-        this.title = "Clear Recents?";
-        this.message = "All your recently viewed files will be cleared";
-        this.buttonText = "Clear";
-        this.url = "drive.api.files.remove_recents";
+        this.title = "Clear Recents?"
+        this.message = "All your recently viewed files will be cleared"
+        this.buttonText = "Clear"
+        this.url = "drive.api.files.remove_recents"
       }
       if (this.$route.name === "Favourites") {
-        this.title = "Clear Favourites?";
+        this.title = "Clear Favourites?"
         this.message =
-          "All your favourited items will be marked as unfavourite.";
-        this.buttonText = "Unfavourite";
-        this.url = "drive.api.files.add_or_remove_favourites";
+          "All your favourited items will be marked as unfavourite."
+        this.buttonText = "Unfavourite"
+        this.url = "drive.api.files.add_or_remove_favourites"
       }
       if (this.$route.name === "Trash") {
-        this.title = "Delete Forever?";
+        this.title = "Delete Forever?"
         this.message =
-          "All items in your Trash will be deleted forever. This is an irreversible process.";
-        this.buttonVariant = "solid";
-        this.buttonText = "Delete";
-        this.url = "drive.api.files.delete_entities";
+          "All items in your Trash will be deleted forever. This is an irreversible process."
+        this.buttonVariant = "solid"
+        this.buttonText = "Delete"
+        this.url = "drive.api.files.delete_entities"
       }
     },
   },
@@ -96,15 +97,15 @@ export default {
           clear_all: true,
         },
         onSuccess(data) {
-          this.$emit("success", data);
+          this.$emit("success", data)
         },
         onError(error) {
           if (error.messages) {
-            console.log(error.messages);
+            console.log(error.messages)
           }
         },
-      };
+      }
     },
   },
-};
+}
 </script>

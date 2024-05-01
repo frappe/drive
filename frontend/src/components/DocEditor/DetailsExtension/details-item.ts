@@ -1,7 +1,7 @@
-import { mergeAttributes, Node } from "@tiptap/core";
+import { mergeAttributes, Node } from "@tiptap/core"
 
 export interface DetailContentOptions {
-  readonly HTMLAttributes: Record<string, unknown>;
+  readonly HTMLAttributes: Record<string, unknown>
 }
 
 export const DetailsContent = Node.create<DetailContentOptions>({
@@ -18,7 +18,7 @@ export const DetailsContent = Node.create<DetailContentOptions>({
       {
         tag: `div[data-type="details-content"]`,
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -28,6 +28,6 @@ export const DetailsContent = Node.create<DetailContentOptions>({
         "data-type": `details-content`,
       }),
       0,
-    ];
+    ]
   },
-});
+})

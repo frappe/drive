@@ -297,7 +297,9 @@ def get_entity_with_permissions(entity_name):
             frappe.throw("Not permitted", frappe.PermissionError)
 
     entity = get_entity(entity_name, fields)
-    owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True)
+    owner_info = frappe.db.get_value(
+        "User", entity.owner, ["user_image", "full_name"], as_dict=True
+    )
     if frappe.session.user != "Guest":
         if not entity.is_group:
             mark_as_viewed(entity_name)

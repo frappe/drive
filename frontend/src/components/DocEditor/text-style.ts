@@ -1,7 +1,7 @@
-import { getMarkAttributes, Mark, mergeAttributes } from "@tiptap/core";
+import { getMarkAttributes, Mark, mergeAttributes } from "@tiptap/core"
 
 export interface TextStyleOptions {
-  HTMLAttributes: Record<string, any>;
+  HTMLAttributes: Record<string, any>
 }
 
 declare module "@tiptap/core" {
@@ -10,8 +10,8 @@ declare module "@tiptap/core" {
       /**
        * Remove spans without inline style attributes.
        */
-      removeEmptyTextStyle: () => ReturnType;
-    };
+      removeEmptyTextStyle: () => ReturnType
+    }
   }
 }
 
@@ -21,7 +21,7 @@ export const TextStyle = Mark.create<TextStyleOptions>({
   addOptions() {
     return {
       HTMLAttributes: {},
-    };
+    }
   },
 
   parseHTML() {
@@ -29,16 +29,16 @@ export const TextStyle = Mark.create<TextStyleOptions>({
       {
         tag: "span",
         getAttrs: (element) => {
-          const hasStyles = (element as HTMLElement).hasAttribute("style");
+          const hasStyles = (element as HTMLElement).hasAttribute("style")
 
           if (!hasStyles) {
-            return false;
+            return false
           }
 
-          return {};
+          return {}
         },
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -46,7 +46,7 @@ export const TextStyle = Mark.create<TextStyleOptions>({
       "span",
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
       0,
-    ];
+    ]
   },
 
   addCommands() {
@@ -54,17 +54,17 @@ export const TextStyle = Mark.create<TextStyleOptions>({
       removeEmptyTextStyle:
         () =>
         ({ state, commands }) => {
-          const attributes = getMarkAttributes(state, this.type);
+          const attributes = getMarkAttributes(state, this.type)
           const hasStyles = Object.entries(attributes).some(
             ([, value]) => !!value
-          );
+          )
 
           if (hasStyles) {
-            return true;
+            return true
           }
 
-          return commands.unsetMark(this.name);
+          return commands.unsetMark(this.name)
         },
-    };
+    }
   },
-});
+})

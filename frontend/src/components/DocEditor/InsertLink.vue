@@ -1,70 +1,73 @@
 <template>
   <slot v-bind="{ onClick: openDialog }"></slot>
   <Dialog
-    :options="{ title: 'Set Link', size: 'sm' }"
     v-model="setLinkDialog.show"
-    @after-leave="reset">
+    :options="{ title: 'Set Link', size: 'sm' }"
+    @after-leave="reset"
+  >
     <template #body-content>
       <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
       <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-gray-700">URL</span> -->
       <Input
         ref="input"
+        v-model="setLinkDialog.url"
         type="text"
         class="mt-1"
         placeholder="Link"
-        v-model="setLinkDialog.url"
-        @keydown.enter="(e) => setLink(e.target.value)" />
+        @keydown.enter="(e) => setLink(e.target.value)"
+      />
       <Button
         variant="solid"
         class="w-full mt-6"
-        @click="setLink(setLinkDialog.url)">
+        @click="setLink(setLinkDialog.url)"
+      >
         Save
       </Button>
     </template>
   </Dialog>
 </template>
 <script>
-import { Dialog, Button, Input } from "frappe-ui";
-import { ref } from "vue";
-import { useFocus } from "@vueuse/core";
+import { Dialog, Button, Input } from "frappe-ui"
+import { ref } from "vue"
+import { useFocus } from "@vueuse/core"
 
 export default {
   name: "InsertLink",
-  props: ["editor"],
   components: { Button, Input, Dialog },
+  props: ["editor"],
   setup() {
-    const input = ref();
-    const { focused } = useFocus(input, { initialValue: true });
+    const input = ref()
+    const { focused } = useFocus(input, { initialValue: true })
     return {
       input,
       focused,
-    };
+    }
   },
   data() {
     return {
       setLinkDialog: { url: "", show: false },
-    };
+    }
   },
   computed: {
     commentRootContent() {
-      const { view, state } = this.editor;
-      const { from, to } = view.state.selection;
-      return state.doc.textBetween(from, to, "");
+      const { view, state } = this.editor
+      const { from, to } = view.state.selection
+      return state.doc.textBetween(from, to, "")
     },
   },
   methods: {
     openDialog() {
-      this.emitter.emit("forceHideBubbleMenu", true);
-      let existingURL = this.editor.getAttributes("link").href;
+      this.emitter.emit("forceHideBubbleMenu", true)
+      let existingURL = this.editor.getAttributes("link").href
       if (existingURL) {
-        this.setLinkDialog.url = existingURL;
+        this.setLinkDialog.url = existingURL
       }
-      this.setLinkDialog.show = true;
+      this.setLinkDialog.show = true
     },
     setLink(url) {
       // empty
       if (url === "") {
-        this.editor.chain().focus().extendMarkRange("link").unsetLink().run();
+        this.editor.chain().focus().extendMarkRange("link").unsetLink().run()
       } else {
         // update link
         this.editor
@@ -72,16 +75,16 @@ export default {
           .focus()
           .extendMarkRange("link")
           .setLink({ href: url })
-          .run();
+          .run()
       }
 
-      this.setLinkDialog.show = false;
-      this.setLinkDialog.url = "";
+      this.setLinkDialog.show = false
+      this.setLinkDialog.url = ""
     },
     reset() {
-      this.emitter.emit("forceHideBubbleMenu", false);
-      this.setLinkDialog = this.$options.data().setLinkDialog;
+      this.emitter.emit("forceHideBubbleMenu", false)
+      this.setLinkDialog = this.$options.data().setLinkDialog
     },
   },
-};
+}
 </script>

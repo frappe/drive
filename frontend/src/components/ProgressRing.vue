@@ -7,7 +7,8 @@
       :cy="radius"
       :r="normalizedRadius"
       :stroke-width="stroke"
-      :stroke-dasharray="circumference" />
+      :stroke-dasharray="circumference"
+    />
     <circle
       class="fill-transparent stroke-current origin-center -rotate-90 transition-all"
       :class="primaryClass"
@@ -16,7 +17,8 @@
       :r="normalizedRadius"
       :stroke-width="stroke"
       :stroke-dasharray="circumference"
-      :stroke-dashoffset="strokeDashoffset" />
+      :stroke-dashoffset="strokeDashoffset"
+    />
   </svg>
 </template>
 <script>
@@ -46,14 +48,14 @@ export default {
   },
   computed: {
     normalizedRadius() {
-      return this.radius - this.stroke;
+      return this.radius - this.stroke
     },
     circumference() {
-      return this.normalizedRadius * 2 * Math.PI;
+      return this.normalizedRadius * 2 * Math.PI
     },
     strokeDashoffset() {
-      return this.circumference - (this.progress / 100) * this.circumference;
+      return this.circumference - (this.progress / 100) * this.circumference
     },
   },
-};
+}
 </script>

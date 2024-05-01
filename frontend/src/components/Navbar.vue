@@ -2,25 +2,30 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white top-0 border-b w-full">
+    class="bg-white top-0 border-b w-full"
+  >
     <div
-      class="mx-auto pl-4 py-2.5 pr-1 h-12 z-10 flex items-center justify-between">
+      class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between"
+    >
       <Breadcrumbs />
       <div class="flex gap-1">
         <div
           v-if="
             $route.meta.documentPage && connectedUsers.length > 1 && isLoggedIn
           "
-          class="hidden sm:flex bg-gray-200 rounded justify-center items-center px-1">
+          class="hidden sm:flex bg-gray-200 rounded justify-center items-center px-1"
+        >
           <UsersBar />
         </div>
         <Dropdown
           :options="actionItems"
           placement="right"
-          class="basis-5/12 lg:basis-auto">
+          class="basis-5/12 lg:basis-auto"
+        >
           <Button
             v-if="$route.meta.documentPage || $route.name === 'File'"
-            variant="ghost">
+            variant="ghost"
+          >
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
         </Dropdown>
@@ -31,7 +36,8 @@
             :disabled="!currentViewEntites?.length"
             theme="red"
             :variant="'subtle'"
-            @click="this.emitter.emit('showCTADelete')">
+            @click="emitter.emit('showCTADelete')"
+          >
             <template #prefix>
               <FeatherIcon name="trash-2" class="w-4" />
             </template>
@@ -43,19 +49,21 @@
             :disabled="!currentViewEntites?.length"
             theme="red"
             :variant="'subtle'"
-            @click="this.emitter.emit('showCTADelete')">
+            @click="emitter.emit('showCTADelete')"
+          >
             <template #prefix>
               <FeatherIcon name="trash-2" class="w-4" />
             </template>
             Clear Favourites
           </Button>
           <Button
-            class="line-clamp-1 truncate"
             v-else-if="$route.name === 'Trash'"
-            @click="this.emitter.emit('showCTADelete')"
+            class="line-clamp-1 truncate"
             :disabled="!currentViewEntites?.length"
             theme="red"
-            :variant="'subtle'">
+            :variant="'subtle'"
+            @click="emitter.emit('showCTADelete')"
+          >
             <template #prefix>
               <FeatherIcon name="trash-2" class="w-4" />
             </template>
@@ -64,9 +72,10 @@
           <Button
             v-else-if="$route.name === 'Document'"
             :disabled="!$store.state.hasWriteAccess"
-            @click="emitter.emit('saveDocument')"
             class="bg-gray-200 rounded flex justify-center items-center px-1"
-            variant="subtle">
+            variant="subtle"
+            @click="emitter.emit('saveDocument')"
+          >
             <template #prefix>
               <FeatherIcon name="save" class="w-4" />
             </template>
@@ -76,12 +85,13 @@
             v-else
             :options="newEntityOptions"
             placement="left"
-            class="basis-5/12 lg:basis-auto">
+            class="basis-5/12 lg:basis-auto"
+          >
             <Button variant="solid">
               <template #prefix>
                 <FeatherIcon name="upload" class="w-4" />
               </template>
-              New
+              Upload
               <template #suffix>
                 <FeatherIcon name="chevron-down" class="w-4" />
               </template>
@@ -99,7 +109,7 @@
           
         --></div>
         <div v-if="!isLoggedIn" class="ml-auto">
-          <Button @click="$router.push({ name: 'Login' })" variant="solid">
+          <Button variant="solid" @click="$router.push({ name: 'Login' })">
             Sign In
           </Button>
         </div>
@@ -111,10 +121,11 @@
     :parent="$route.params.entityName"
     @success="
       () => {
-        emitter.emit('fetchFolderContents');
-        showNewFolderDialog = false;
+        emitter.emit('fetchFolderContents')
+        showNewFolderDialog = false
       }
-    " />
+    "
+  />
   <RenameDialog
     v-if="showRenameDialog"
     v-model="showRenameDialog"
@@ -122,22 +133,23 @@
     :entity="selectedEntities[0]"
     @success="
       () => {
-        showRenameDialog = false;
+        showRenameDialog = false
       }
-    " />
+    "
+  />
 </template>
 <script>
-import UsersBar from "./UsersBar.vue";
-import { Dropdown, FeatherIcon, Button } from "frappe-ui";
-import NewFolderDialog from "@/components/NewFolderDialog.vue";
-import RenameDialog from "@/components/RenameDialog.vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import { formatDate } from "@/utils/format";
-import { getLink } from "@/utils/getLink";
+import UsersBar from "./UsersBar.vue"
+import { Dropdown, FeatherIcon, Button } from "frappe-ui"
+import NewFolderDialog from "@/components/NewFolderDialog.vue"
+import RenameDialog from "@/components/RenameDialog.vue"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import { formatDate } from "@/utils/format"
+import { getLink } from "@/utils/getLink"
 import {
   folderDownload,
   selectedEntitiesDownload,
-} from "@/utils/folderDownload";
+} from "@/utils/folderDownload"
 import {
   FileDown,
   FolderDown,
@@ -148,8 +160,8 @@ import {
   FolderUp,
   FileUp,
   FileText,
-} from "lucide-vue-next";
-import { h } from "vue";
+} from "lucide-vue-next"
+import { h } from "vue"
 
 export default {
   name: "Navbar",
@@ -161,11 +173,6 @@ export default {
     Button,
     Breadcrumbs,
     UsersBar,
-    FileUp,
-    FileDown,
-    FolderUp,
-    FolderPlus,
-    FileText,
   },
   props: {
     breadcrumbs: {
@@ -229,11 +236,11 @@ export default {
                   title: "Untitled Document",
                   content: null,
                   parent: this.$store.state.currentFolderID,
-                });
+                })
                 this.$router.push({
                   name: "Document",
                   params: { entityName: this.previewEntity.name },
-                });
+                })
               },
 
               isEnabled: () => this.selectedEntities?.length === 0,
@@ -241,11 +248,11 @@ export default {
           ],
         },
       ],
-    };
+    }
   },
   computed: {
     selectedEntities() {
-      return this.$store.state.entityInfo;
+      return this.$store.state.entityInfo
     },
     actionItems() {
       return [
@@ -253,7 +260,7 @@ export default {
           label: "Download",
           icon: FileDown,
           onClick: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`;
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
           isEnabled: () => {
             if (this.selectedEntities?.length === 1) {
@@ -265,7 +272,7 @@ export default {
                 return (
                   this.selectedEntities[0]?.allow_download ||
                   this.selectedEntities[0]?.owner === "You"
-                );
+                )
               }
             }
           },
@@ -275,10 +282,10 @@ export default {
           icon: FolderDown,
           onClick: () => {
             if (this.selectedEntities.length > 1) {
-              let selected_entities = this.selectedEntities;
-              selectedEntitiesDownload(selected_entities);
+              let selected_entities = this.selectedEntities
+              selectedEntitiesDownload(selected_entities)
             } else if (this.selectedEntities[0].is_group === 1) {
-              folderDownload(this.selectedEntities[0]);
+              folderDownload(this.selectedEntities[0])
             }
           },
           isEnabled: () => {
@@ -286,15 +293,15 @@ export default {
               this.selectedEntities?.length === 1 &&
               !this.selectedEntities[0]?.is_group
             ) {
-              return false;
+              return false
             }
             if (this.selectedEntities?.length) {
               const allEntitiesSatisfyCondition = this.selectedEntities?.every(
                 (entity) => {
-                  return entity.allow_download || entity.owner === "You";
+                  return entity.allow_download || entity.owner === "You"
                 }
-              );
-              return allEntitiesSatisfyCondition;
+              )
+              return allEntitiesSatisfyCondition
             }
           },
         },
@@ -302,69 +309,69 @@ export default {
           label: "Get Link",
           icon: Link2,
           onClick: () => {
-            getLink(this.selectedEntities[0]);
+            getLink(this.selectedEntities[0])
           },
           isEnabled: () => {
-            return this.selectedEntities?.length === 1;
+            return this.selectedEntities?.length === 1
           },
         },
         {
           label: "Rename",
           icon: TextCursorInput,
           onClick: () => {
-            this.showRenameDialog = true;
+            this.showRenameDialog = true
           },
           isEnabled: () => {
             return (
               this.selectedEntities?.length === 1 &&
               (this.selectedEntities[0]?.write ||
                 this.selectedEntities[0]?.owner === "You")
-            );
+            )
           },
         },
         {
           label: "Favourite",
           icon: Star,
           onClick: () => {
-            this.$resources.toggleFavourite.submit();
+            this.$resources.toggleFavourite.submit()
           },
           isEnabled: () => {
             return (
               this.selectedEntities?.length > 0 &&
               this.isLoggedIn &&
               this.selectedEntities?.every((x) => !x.is_favourite)
-            );
+            )
           },
         },
         {
           label: "Unfavourite",
           icon: Star,
           onClick: () => {
-            this.$resources.toggleFavourite.submit();
+            this.$resources.toggleFavourite.submit()
           },
           isEnabled: () => {
             return (
               this.selectedEntities?.length > 0 &&
               this.selectedEntities?.every((x) => x.is_favourite)
-            );
+            )
           },
         },
-      ].filter((item) => item.isEnabled());
+      ].filter((item) => item.isEnabled())
     },
     fullName() {
-      return this.$store.state.user.fullName;
+      return this.$store.state.user.fullName
     },
     imageURL() {
-      return this.$store.state.user.imageURL;
+      return this.$store.state.user.imageURL
     },
     isLoggedIn() {
-      return this.$store.getters.isLoggedIn;
+      return this.$store.getters.isLoggedIn
     },
     connectedUsers() {
-      return this.$store.state.connectedUsers;
+      return this.$store.state.connectedUsers
     },
     currentViewEntites() {
-      return this.$store.state.currentViewEntites;
+      return this.$store.state.currentViewEntites
     },
   },
   /*   methods: {
@@ -394,17 +401,17 @@ export default {
       return {
         url: "drive.api.files.create_document_entity",
         onSuccess(data) {
-          data.modified = formatDate(data.modified);
-          data.creation = formatDate(data.creation);
-          this.$store.commit("setEntityInfo", [data]);
-          this.previewEntity = data;
-          data.owner = "You";
+          data.modified = formatDate(data.modified)
+          data.creation = formatDate(data.creation)
+          this.$store.commit("setEntityInfo", [data])
+          this.previewEntity = data
+          data.owner = "You"
         },
         onError(data) {
-          console.log(data);
+          console.log(data)
         },
         auto: false,
-      };
+      }
     },
     toggleFavourite() {
       return {
@@ -418,10 +425,10 @@ export default {
         },
         onSuccess() {
           this.$store.state.entityInfo[0].is_favourite =
-            !this.$store.state.entityInfo[0].is_favourite;
+            !this.$store.state.entityInfo[0].is_favourite
         },
-      };
+      }
     },
   },
-};
+}
 </script>

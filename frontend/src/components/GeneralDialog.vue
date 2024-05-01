@@ -14,7 +14,8 @@
           :theme="dialogData.theme"
           class="w-full"
           :loading="$resources.method.loading"
-          @click="$resources.method.submit()">
+          @click="$resources.method.submit()"
+        >
           {{ dialogData.buttonMessage }}
         </Button>
       </div>
@@ -22,8 +23,8 @@
   </Dialog>
 </template>
 <script>
-import { Dialog, ErrorMessage } from "frappe-ui";
-import { del } from "idb-keyval";
+import { Dialog, ErrorMessage } from "frappe-ui"
+import { del } from "idb-keyval"
 
 export default {
   name: "GeneralDialog",
@@ -47,19 +48,19 @@ export default {
       default: null,
     },
   },
+  emits: ["update:modelValue", "success"],
   data() {
     return {
       errorMessage: "",
-    };
+    }
   },
-  emits: ["update:modelValue", "success"],
 
   computed: {
     dialogData() {
       const items =
         this.entities.length === 1
           ? `${this.entities.length} item`
-          : `${this.entities.length} items`;
+          : `${this.entities.length} items`
       switch (this.for) {
         case "unshare":
           return {
@@ -70,7 +71,7 @@ export default {
             theme: "red",
             buttonIcon: "trash-2",
             methodName: "drive.api.files.unshare_entities",
-          };
+          }
         case "restore":
           return {
             title: "Restore Items?",
@@ -80,7 +81,7 @@ export default {
             variant: "solid",
             buttonIcon: "refresh-ccw",
             methodName: "drive.api.files.remove_or_restore",
-          };
+          }
         case "remove":
           return {
             title: "Move to Trash?",
@@ -92,17 +93,17 @@ export default {
             variant: "subtle",
             buttonIcon: "trash-2",
             methodName: "drive.api.files.remove_or_restore",
-          };
+          }
         default:
-          return {};
+          return {}
       }
     },
     open: {
       get() {
-        return this.modelValue;
+        return this.modelValue
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.$emit("update:modelValue", value)
       },
     },
   },
@@ -118,19 +119,19 @@ export default {
               : JSON.stringify(this.entities.map((entity) => entity.name)),
         },
         onSuccess(data) {
-          this.$emit("success", data);
-          this.$resources.method.reset();
-          this.entities.map((entity) => del(entity.name));
+          this.$emit("success", data)
+          this.$resources.method.reset()
+          this.entities.map((entity) => del(entity.name))
         },
         onError(error) {
           if (error.messages) {
-            this.errorMessage = error.messages.join("\n");
+            this.errorMessage = error.messages.join("\n")
           } else {
-            this.errorMessage = error.message;
+            this.errorMessage = error.message
           }
         },
-      };
+      }
     },
   },
-};
+}
 </script>

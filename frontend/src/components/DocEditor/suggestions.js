@@ -1,5 +1,4 @@
-import { VueRenderer } from "@tiptap/vue-3";
-import { defineAsyncComponent, shallowReactive } from "vue";
+import { VueRenderer } from "@tiptap/vue-3"
 import {
   Type,
   Heading1,
@@ -14,12 +13,10 @@ import {
   AlignCenter,
   AlignRight,
   AlignLeft,
-  ImagePlus,
-  Film,
-} from "lucide-vue-next";
-import tippy from "tippy.js";
+} from "lucide-vue-next"
+import tippy from "tippy.js"
 
-import CommandsList from "./CommandsList.vue";
+import CommandsList from "./CommandsList.vue"
 
 export default {
   items: ({ query }) => {
@@ -33,7 +30,7 @@ export default {
             .focus()
             .deleteRange(range)
             .setNode("heading", { level: 1 })
-            .run();
+            .run()
         },
         disabled: (editor) => editor.isActive("table"),
       },
@@ -46,7 +43,7 @@ export default {
             .focus()
             .deleteRange(range)
             .setNode("heading", { level: 2 })
-            .run();
+            .run()
         },
         disabled: (editor) => editor.isActive("table"),
       },
@@ -59,7 +56,7 @@ export default {
             .focus()
             .deleteRange(range)
             .setNode("heading", { level: 3 })
-            .run();
+            .run()
         },
         disabled: (editor) => editor.isActive("table"),
       },
@@ -73,7 +70,7 @@ export default {
             .focus()
             .deleteRange(range)
             .setNode("heading", { level: 3 })
-            .run();
+            .run()
         },
         disabled: (editor) => editor.isActive("table"),
       },
@@ -86,7 +83,7 @@ export default {
             .focus()
             .deleteRange(range)
             .setNode("heading", { level: 4 })
-            .run();
+            .run()
         },
         disabled: (editor) => editor.isActive("table"),
       },
@@ -94,7 +91,7 @@ export default {
         title: "Bold",
         icon: Bold,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleBold().run();
+          editor.chain().focus().deleteRange(range).toggleBold().run()
         },
         disabled: (editor) => editor.isActive("bold"),
       },
@@ -102,7 +99,7 @@ export default {
         title: "Italic",
         icon: Italic,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleItalic().run();
+          editor.chain().focus().deleteRange(range).toggleItalic().run()
         },
         disabled: (editor) => editor.isActive("italic"),
       },
@@ -110,7 +107,7 @@ export default {
         title: "Underline",
         icon: UnderlineIcon,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleUnderline().run();
+          editor.chain().focus().deleteRange(range).toggleUnderline().run()
         },
         disabled: (editor) => editor.isActive("underline"),
       },
@@ -118,7 +115,7 @@ export default {
         title: "Bullet List",
         icon: List,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleBulletList().run();
+          editor.chain().focus().deleteRange(range).toggleBulletList().run()
         },
         disabled: (editor) => editor.isActive("bulletList"),
       },
@@ -126,7 +123,7 @@ export default {
         title: "Ordered List",
         icon: ListOrdered,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleOrderedList().run();
+          editor.chain().focus().deleteRange(range).toggleOrderedList().run()
         },
         disabled: (editor) => editor.isActive("bulletList"),
       },
@@ -134,12 +131,7 @@ export default {
         title: "Align Center",
         icon: AlignCenter,
         command: ({ editor, range }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .setTextAlign("center")
-            .run();
+          editor.chain().focus().deleteRange(range).setTextAlign("center").run()
         },
         disabled: (editor) => editor.isActive({ textAlign: "center" }),
       },
@@ -147,7 +139,7 @@ export default {
         title: "Align Left",
         icon: AlignLeft,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setTextAlign("left").run();
+          editor.chain().focus().deleteRange(range).setTextAlign("left").run()
         },
         disabled: (editor) => editor.isActive({ textAlign: "left" }),
       },
@@ -155,7 +147,7 @@ export default {
         title: "Align Right",
         icon: AlignRight,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setTextAlign("right").run();
+          editor.chain().focus().deleteRange(range).setTextAlign("right").run()
         },
         disabled: (editor) => editor.isActive({ textAlign: "right`" }),
       },
@@ -168,42 +160,42 @@ export default {
             .focus()
             .deleteRange(range)
             .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-            .run();
+            .run()
         },
         disabled: (editor) => editor.isActive("table"),
       },
       {
         title: "Add Column",
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).addColumnAfter().run();
+          editor.chain().focus().deleteRange(range).addColumnAfter().run()
         },
         disabled: (editor) => !editor.isActive("table"),
       },
       {
         title: "Add Row",
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).addRowAfter().run();
+          editor.chain().focus().deleteRange(range).addRowAfter().run()
         },
         disabled: (editor) => !editor.isActive("table"),
       },
       {
         title: "Delete Column",
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).deleteColumn().run();
+          editor.chain().focus().deleteRange(range).deleteColumn().run()
         },
         disabled: (editor) => !editor.isActive("table"),
       },
       {
         title: "Delete Row",
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).deleteRow().run();
+          editor.chain().focus().deleteRange(range).deleteRow().run()
         },
         disabled: (editor) => !editor.isActive("table"),
       },
       {
         title: "Delete Table",
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).deleteTable().run();
+          editor.chain().focus().deleteRange(range).deleteTable().run()
         },
         disabled: (editor) => !editor.isActive("table"),
       },
@@ -219,12 +211,12 @@ export default {
         component: defineAsyncComponent(() => import("./InsertVideo.vue")),
         isOpen: false,
       }), */
-    ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()));
+    ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()))
   },
 
   render: () => {
-    let component;
-    let popup;
+    let component
+    let popup
 
     return {
       onStart: (props) => {
@@ -232,10 +224,10 @@ export default {
           props,
           popup,
           editor: props.editor,
-        });
+        })
 
         if (!props.clientRect) {
-          return;
+          return
         }
 
         popup = tippy("body", {
@@ -246,37 +238,37 @@ export default {
           interactive: true,
           trigger: "manual",
           placement: "bottom-start",
-        });
+        })
       },
 
       onUpdate(props) {
-        component.updateProps(props);
-        component.updateProps(popup);
-        console.log(props);
-        console.log(popup);
+        component.updateProps(props)
+        component.updateProps(popup)
+        console.log(props)
+        console.log(popup)
         if (!props.clientRect) {
-          return;
+          return
         }
 
         popup[0].setProps({
           getReferenceClientRect: props.clientRect,
-        });
+        })
       },
 
       onKeyDown(props) {
         if (props.event.key === "Escape") {
-          popup[0].hide();
+          popup[0].hide()
 
-          return true;
+          return true
         }
 
-        return component.ref?.onKeyDown(props);
+        return component.ref?.onKeyDown(props)
       },
 
       onExit() {
-        popup[0].destroy();
-        component.destroy();
+        popup[0].destroy()
+        component.destroy()
       },
-    };
+    }
   },
-};
+}

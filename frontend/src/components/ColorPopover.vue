@@ -2,19 +2,22 @@
   <Popover
     trigger="hover"
     placement="right-start"
-    popoverClass="border-x-[8px] border-transparent"
+    popover-class="border-x-[8px] border-transparent"
     :hover-delay="0.25"
-    :leave-delay="0.5">
+    :leave-delay="0.5"
+  >
     <template #target="{ togglePopover, isOpen }">
       <div
         :active="isOpen"
         class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center w-full"
-        @click="togglePopover()">
+        @click="togglePopover()"
+      >
         <Palette class="h-4 w-auto mr-2 stroke-[1.75] text-gray-800" />
         <div class="text-gray-800">Color</div>
         <FeatherIcon
           :name="'chevron-right'"
-          class="h-3.5 text-gray-900 ml-auto" />
+          class="h-3.5 text-gray-900 ml-auto"
+        />
       </div>
     </template>
     <template #body-main>
@@ -30,15 +33,16 @@
               entity_name: entityName,
               new_color: color,
             })
-          " />
+          "
+        />
       </div>
     </template>
   </Popover>
 </template>
 
 <script>
-import { Popover, FeatherIcon } from "frappe-ui";
-import { Palette } from "lucide-vue-next";
+import { Popover, FeatherIcon } from "frappe-ui"
+import { Palette } from "lucide-vue-next"
 
 export default {
   name: "ColorPopover",
@@ -64,7 +68,7 @@ export default {
         "#EF7323",
         "#9333ea",
       ],
-    };
+    }
   },
   resources: {
     updateColor() {
@@ -76,14 +80,14 @@ export default {
         },
         validate(params) {
           if (!params?.new_color) {
-            return "New name is required";
+            return "New name is required"
           }
         },
         onSuccess() {
-          this.emitter.emit("fetchFolderContents");
+          this.emitter.emit("fetchFolderContents")
         },
-      };
+      }
     },
   },
-};
+}
 </script>

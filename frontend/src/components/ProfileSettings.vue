@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center">
+    class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center"
+  >
     <h1 class="font-semibold">My Profile</h1>
     <span class="text-sm py-1 mb-4 text-gray-600">
       Manage your profile and preferences
@@ -8,7 +9,7 @@
     <span class="text-base font-medium text-gray-700 mb-2">Profile</span>
     <div class="flex justify-start w-full items-center gap-2">
       <Avatar size="3xl" :image="imageURL" :label="fullName" class="mr-8" />
-      <Input v-model="fullName" iconLeft="edit-2" />
+      <Input v-model="fullName" icon-left="edit-2" />
     </div>
     <hr class="w-full mt-6 mb-4 border-1" />
     <span class="text-base font-medium text-gray-700 mb-2">Preferences</span>
@@ -44,11 +45,11 @@
   </div>
 </template>
 <script>
-import { Button, Checkbox, Input, Switch, Dropdown, Avatar } from "frappe-ui";
+import { Button, Input, Switch, Dropdown, Avatar } from "frappe-ui"
 
 export default {
   name: "NoFilesSection",
-  components: { Avatar, Button, Input, Checkbox, Switch, Dropdown },
+  components: { Avatar, Button, Input, Switch, Dropdown },
   data() {
     return {
       fullName: this.$store.state.user.fullName,
@@ -80,21 +81,21 @@ export default {
           ],
         },
       ],
-    };
+    }
   },
   computed: {
     isExpanded() {
-      return this.$store.state.IsSidebarExpanded;
+      return this.$store.state.IsSidebarExpanded
     },
     firstName() {
-      return this.$store.state.user.fullName.split(" ");
+      return this.$store.state.user.fullName.split(" ")
     },
     /* fullName() {
       return this.$store.state.user.fullName;
     }, */
     imageURL() {
-      return this.$store.state.user.imageURL;
+      return this.$store.state.user.imageURL
     },
   },
-};
+}
 </script>

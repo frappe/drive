@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center">
+    class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center"
+  >
     <div class="flex items-center w-full mb-1">
       <div class="flex flex-col items-start">
         <h1 class="font-semibold">User Groups</h1>
@@ -13,7 +14,8 @@
         variant="subtle"
         icon-left="plus"
         class="ml-auto"
-        @click="CreateRoleDialog = !CreateRoleDialog">
+        @click="CreateRoleDialog = !CreateRoleDialog"
+      >
         New
       </Button>
     </div>
@@ -22,12 +24,14 @@
 
     <div
       v-if="AllRoles?.length"
-      class="flex flex-col h-full w-full overflow-x-hidden overflow-y-scroll">
+      class="flex flex-col h-full w-full overflow-x-hidden overflow-y-scroll"
+    >
       <div
-        @click="viewGroupDetails(group.name)"
         v-for="group in AllRoles"
         :key="group.name"
-        class="flex flex-col content-center items-start w-full hover:bg-gray-50 rounded cursor-pointer group">
+        class="flex flex-col content-center items-start w-full hover:bg-gray-50 rounded cursor-pointer group"
+        @click="viewGroupDetails(group.name)"
+      >
         <div class="flex items-center w-full py-4 px-1">
           <Avatar size="xl" :label="group.name" />
           <span class="ml-2 text-base text-gray-900">{{ group.name }}</span>
@@ -35,11 +39,12 @@
             icon="trash-2"
             variant="minimal"
             class="z-40 text-red-500 ml-auto invisible group-hover:visible"
-            v-on:click.native.stop="
+            @click.prevent.stop="
               $resources.deleteUserGroup.submit({
                 group_name: group.name,
               })
-            ">
+            "
+          >
             Delete
           </Button>
         </div>
@@ -74,38 +79,35 @@
     v-model="CreateRoleDialog"
     @success="
       () => {
-        CreateRoleDialog = false;
-        $resources.getUserGroups.fetch();
+        CreateRoleDialog = false
+        $resources.getUserGroups.fetch()
       }
-    " />
+    "
+  />
   <RoleDetailsDialog
     v-if="EditRoleDialog"
     v-model="EditRoleDialog"
     :role-name="RoleName"
     @success="
       () => {
-        EditRoleDialog = false;
-        $resources.getUserGroups.fetch();
+        EditRoleDialog = false
+        $resources.getUserGroups.fetch()
       }
-    " />
+    "
+  />
 </template>
 <script>
-import { Avatar, FeatherIcon, Input } from "frappe-ui";
-import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue";
-import NewRoleDialog from "./NewRoleDialog.vue";
-import { Building } from "lucide-vue-next";
-import { Building2 } from "lucide-vue-next";
+import { Avatar, FeatherIcon } from "frappe-ui"
+import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue"
+import NewRoleDialog from "./NewRoleDialog.vue"
 
 export default {
   name: "UserRoleSettings",
   components: {
-    Input,
     Avatar,
     RoleDetailsDialog,
     NewRoleDialog,
     FeatherIcon,
-    Building,
-    Building2,
   },
   data() {
     return {
@@ -115,19 +117,19 @@ export default {
       EditRoleDialog: false,
       AllRoles: null,
       errorMessage: "",
-    };
+    }
   },
   computed: {
     memberEmails() {
-      let x = [];
-      this.UsersInRole.forEach((user) => x.push(user.email));
-      return x;
+      let x = []
+      this.UsersInRole.forEach((user) => x.push(user.email))
+      return x
     },
   },
   methods: {
     viewGroupDetails(value) {
-      this.RoleName = value;
-      this.EditRoleDialog = !this.EditRoleDialog;
+      this.RoleName = value
+      this.EditRoleDialog = !this.EditRoleDialog
     },
   },
   resources: {
@@ -138,28 +140,28 @@ export default {
           group_name: null,
         },
         onSuccess() {
-          this.errorMessage = "";
-          this.$resources.getUserGroups.fetch();
+          this.errorMessage = ""
+          this.$resources.getUserGroups.fetch()
         },
         onError(data) {
-          console.log(data);
-          this.errorMessage = data;
+          console.log(data)
+          this.errorMessage = data
         },
         auto: false,
-      };
+      }
     },
     getUserGroups() {
       return {
         url: "drive.utils.user_group.get_name_of_all_user_groups",
         onSuccess(data) {
-          this.AllRoles = data;
+          this.AllRoles = data
         },
         onError(data) {
-          console.log(data);
+          console.log(data)
         },
         auto: true,
-      };
+      }
     },
   },
-};
+}
 </script>

@@ -1,7 +1,7 @@
-import { mergeAttributes, Node } from "@tiptap/core";
+import { mergeAttributes, Node } from "@tiptap/core"
 
 export interface SummaryOptions {
-  readonly HTMLAttributes: Record<string, unknown>;
+  readonly HTMLAttributes: Record<string, unknown>
 }
 
 export const DetailsSummary = Node.create<SummaryOptions>({
@@ -10,7 +10,7 @@ export const DetailsSummary = Node.create<SummaryOptions>({
   addOptions() {
     return {
       HTMLAttributes: {},
-    };
+    }
   },
 
   content: `paragraph`,
@@ -22,7 +22,7 @@ export const DetailsSummary = Node.create<SummaryOptions>({
       {
         tag: `summary`,
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -30,6 +30,6 @@ export const DetailsSummary = Node.create<SummaryOptions>({
       `summary`,
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
       0,
-    ];
+    ]
   },
-});
+})

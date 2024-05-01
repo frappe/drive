@@ -1,11 +1,13 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full z-10 text-neutral-100 mx-auto" />
+    class="w-10 h-full z-10 text-neutral-100 mx-auto"
+  />
   <div
     v-else
     id="container"
-    class="flex items-center justify-center w-full h-full overflow-auto">
+    class="flex items-center justify-center w-full h-full overflow-auto"
+  >
     <pre
       class="sm:w-full md:w-2/3 h-[85vh] text-gray-900 text-sm border select-text rounded p-3 font-mono bg-white overflow-x-scroll overflow-y-scroll"
       >{{ blob }}</pre
@@ -16,42 +18,48 @@
 <script setup>
 /* Consider adding https://codemirror.net/ and add a mimetype eval list for all possible mimetypes */
 
-import { LoadingIndicator } from "frappe-ui";
-import { onMounted, ref, watch } from "vue";
+import { LoadingIndicator } from "frappe-ui"
+import { onMounted, ref, watch } from "vue"
 
-const props = defineProps(["previewEntity"]);
-const loading = ref(true);
-const blob = ref(null);
+const props = defineProps({
+  previewEntity: {
+    type: String,
+    default: "",
+  },
+})
+
+const loading = ref(true)
+const blob = ref(null)
 
 async function fetchContent() {
-  loading.value = true;
+  loading.value = true
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json; charset=utf-8",
     "X-Frappe-Site-Name": window.location.hostname,
     Range: "bytes=0-10000000",
-  };
+  }
   const res = await fetch(
     `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
     {
       method: "GET",
       headers,
     }
-  );
+  )
   if (res.ok) {
-    let resBlob = await res.blob();
-    blob.value = await resBlob.text();
-    loading.value = false;
+    let resBlob = await res.blob()
+    blob.value = await resBlob.text()
+    loading.value = false
   }
 }
 watch(
   () => props.previewEntity,
-  (newValue, oldValue) => {
-    fetchContent();
+  () => {
+    fetchContent()
   }
-);
+)
 onMounted(() => {
-  fetchContent();
-});
+  fetchContent()
+})
 </script>
 <style scoped></style>

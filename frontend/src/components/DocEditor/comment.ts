@@ -1,9 +1,9 @@
-import { getMarkRange, Mark, mergeAttributes } from "@tiptap/vue-3";
-import { Plugin, TextSelection } from "prosemirror-state";
+import { getMarkRange, Mark, mergeAttributes } from "@tiptap/vue-3"
+import { Plugin, TextSelection } from "prosemirror-state"
 
 export interface CommentOptions {
-  HTMLAttributes: Record<string, any>;
-  isCommentModeOn: boolean;
+  HTMLAttributes: Record<string, any>
+  isCommentModeOn: boolean
 }
 
 declare module "@tiptap/core" {
@@ -12,16 +12,16 @@ declare module "@tiptap/core" {
       /**
        * Set a comment mark
        */
-      setComment: (comment: string) => ReturnType;
+      setComment: (comment: string) => ReturnType
       /**
        * Toggle a comment mark
        */
-      toggleComment: () => ReturnType;
+      toggleComment: () => ReturnType
       /**
        * Unset a comment mark
        */
-      unsetComment: () => ReturnType;
-    };
+      unsetComment: () => ReturnType
+    }
   }
 }
 
@@ -37,7 +37,7 @@ export const Comment = Mark.create<CommentOptions>({
     return {
       HTMLAttributes: {},
       isCommentModeOn: false,
-    };
+    }
   },
 
   addAttributes() {
@@ -47,7 +47,7 @@ export const Comment = Mark.create<CommentOptions>({
         parseHTML: (el) => (el as HTMLSpanElement).getAttribute("data-comment"),
         renderHTML: (attrs) => ({ "data-comment": attrs.comment }),
       },
-    };
+    }
   },
 
   parseHTML() {
@@ -58,7 +58,7 @@ export const Comment = Mark.create<CommentOptions>({
           !!(el as HTMLSpanElement).getAttribute("data-comment")?.trim() &&
           null,
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -66,7 +66,7 @@ export const Comment = Mark.create<CommentOptions>({
       "span",
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
       0,
-    ];
+    ]
   },
 
   addCommands() {
@@ -83,36 +83,36 @@ export const Comment = Mark.create<CommentOptions>({
         () =>
         ({ commands }) =>
           commands.unsetMark("comment"),
-    };
+    }
   },
 
   addProseMirrorPlugins() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const extensionThis = this;
+    const extensionThis = this
     const plugins = [
       new Plugin({
         props: {
           handleClick(view, pos) {
-            if (!extensionThis.options.isCommentModeOn) return false;
+            if (!extensionThis.options.isCommentModeOn) return false
 
-            const { schema, doc, tr } = view.state;
+            const { schema, doc, tr } = view.state
 
-            const range = getMarkRange(doc.resolve(pos), schema.marks.comment);
-            if (!range) return false;
+            const range = getMarkRange(doc.resolve(pos), schema.marks.comment)
+            if (!range) return false
 
             const [$start, $end] = [
               doc.resolve(range.from),
               doc.resolve(range.to),
-            ];
+            ]
 
-            view.dispatch(tr.setSelection(new TextSelection($start, $end)));
+            view.dispatch(tr.setSelection(new TextSelection($start, $end)))
 
-            return true;
+            return true
           },
         },
       }),
-    ];
+    ]
 
-    return plugins;
+    return plugins
   },
-});
+})

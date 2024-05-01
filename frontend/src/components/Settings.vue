@@ -8,15 +8,16 @@
           </h1>
           <div class="mt-3 space-y-1">
             <button
+              v-for="tab in tabs"
+              :key="tab.label"
               class="flex h-7 w-full items-center gap-2 rounded px-2 py-1"
               :class="[
                 activeTab?.label == tab.label
                   ? 'bg-gray-200'
                   : 'hover:bg-gray-100',
               ]"
-              v-for="tab in tabs"
-              :key="tab.label"
-              @click="activeTab = tab">
+              @click="activeTab = tab"
+            >
               <component :is="tab.icon" class="h-4 w-4 text-gray-700" />
               <span class="text-base text-gray-800">
                 {{ tab.label }}
@@ -30,7 +31,8 @@
         <Button
           class="my-3 mr-4"
           variant="minimal"
-          @click="$emit('update:modelValue', false)">
+          @click="$emit('update:modelValue', false)"
+        >
           <FeatherIcon name="x" class="stroke-2 ml-auto h-4" />
         </Button>
       </div>
@@ -38,12 +40,11 @@
   </Dialog>
 </template>
 <script>
-import { ref, defineProps, defineEmits, markRaw } from "vue";
-import { Dialog, FeatherIcon, Button } from "frappe-ui";
-import { Info, UserCog, Users } from "lucide-vue-next";
-import ProfileSettings from "@/components/ProfileSettings.vue";
-import UserRoleSettings from "./UserRoleSettings.vue";
-import AboutSettings from "./AboutSettings.vue";
+import { ref, defineProps, markRaw } from "vue"
+import { Dialog, FeatherIcon, Button } from "frappe-ui"
+import { Users } from "lucide-vue-next"
+import ProfileSettings from "@/components/ProfileSettings.vue"
+import UserRoleSettings from "./UserRoleSettings.vue"
 
 let tabs = [
   /* {
@@ -61,16 +62,14 @@ let tabs = [
     icon: Info,
     component: markRaw(AboutSettings),
   },  */
-];
+]
 
-const emit = defineEmits(["update:modelValue"]);
-
-let show = defineProps(["modelValue"]);
-let activeTab = ref(tabs[0]);
+let show = defineProps(["modelValue"])
+let activeTab = ref(tabs[0])
 
 function closeMenu() {
-  let value = false;
-  emit("update:modelValue", value);
+  let value = false
+  this.$emit("update:modelValue", value)
 }
 
 export default {
@@ -82,8 +81,9 @@ export default {
     ProfileSettings,
     UserRoleSettings,
   },
+  emits: ["update:modelValue"],
   setup() {
-    return { tabs, show, activeTab, closeMenu };
+    return { tabs, show, activeTab, closeMenu }
   },
-};
+}
 </script>

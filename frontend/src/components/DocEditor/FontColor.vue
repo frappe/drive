@@ -2,24 +2,27 @@
   <Popover transition="default">
     <template #target="{ togglePopover, isOpen }">
       <slot
-        v-bind="{ onClick: () => togglePopover(), isActive: isOpen }"></slot>
+        v-bind="{ onClick: () => togglePopover(), isActive: isOpen }"
+      ></slot>
     </template>
     <template #body-main>
       <div class="p-2">
         <div class="text-sm text-gray-700">Text Color</div>
         <div class="mt-1 grid grid-cols-8 gap-1">
           <Tooltip
-            class="flex"
             v-for="color in foregroundColors"
             :key="color.name"
-            :text="color.name">
+            class="flex"
+            :text="color.name"
+          >
             <button
               :aria-label="color.name"
               class="flex h-5 w-5 items-center justify-center rounded border text-base"
               :style="{
                 color: color.hex,
               }"
-              @click="setForegroundColor(color)">
+              @click="setForegroundColor(color)"
+            >
               A
             </button>
           </Tooltip>
@@ -27,10 +30,11 @@
         <div class="mt-2 text-sm text-gray-700">Background Color</div>
         <div class="mt-1 grid grid-cols-8 gap-1">
           <Tooltip
-            class="flex"
             v-for="color in backgroundColors"
             :key="color.name"
-            :text="color.name">
+            class="flex"
+            :text="color.name"
+          >
             <button
               :aria-label="color.name"
               class="flex h-5 w-5 items-center justify-center rounded border text-base text-gray-900"
@@ -38,7 +42,8 @@
               :style="{
                 backgroundColor: color.hex,
               }"
-              @click="setBackgroundColor(color)">
+              @click="setBackgroundColor(color)"
+            >
               A
             </button>
           </Tooltip>
@@ -48,28 +53,12 @@
   </Popover>
 </template>
 <script>
-import { Popover, Tooltip } from "frappe-ui";
+import { Popover, Tooltip } from "frappe-ui"
 
 export default {
   name: "FontColor",
-  props: ["editor"],
   components: { Popover, Tooltip },
-  methods: {
-    setBackgroundColor(color) {
-      if (color.name != "Default") {
-        this.editor.chain().focus().toggleHighlight({ color: color.hex }).run();
-      } else {
-        this.editor.chain().focus().unsetHighlight().run();
-      }
-    },
-    setForegroundColor(color) {
-      if (color.name != "Default") {
-        this.editor.chain().focus().setColor(color.hex).run();
-      } else {
-        this.editor.chain().focus().unsetColor().run();
-      }
-    },
-  },
+  props: ["editor"],
   computed: {
     foregroundColors() {
       // tailwind css colors, scale 600
@@ -82,7 +71,7 @@ export default {
         { name: "Blue", hex: "#1579D0" },
         { name: "Purple", hex: "#9333ea" },
         { name: "Pink", hex: "#db2777" },
-      ];
+      ]
     },
     backgroundColors() {
       // tailwind css colors, scale 100
@@ -95,8 +84,24 @@ export default {
         { name: "Blue", hex: "#D3E9FC" },
         { name: "Purple", hex: "#f3e8ff" },
         { name: "Pink", hex: "#fce7f3" },
-      ];
+      ]
     },
   },
-};
+  methods: {
+    setBackgroundColor(color) {
+      if (color.name != "Default") {
+        this.editor.chain().focus().toggleHighlight({ color: color.hex }).run()
+      } else {
+        this.editor.chain().focus().unsetHighlight().run()
+      }
+    },
+    setForegroundColor(color) {
+      if (color.name != "Default") {
+        this.editor.chain().focus().setColor(color.hex).run()
+      } else {
+        this.editor.chain().focus().unsetColor().run()
+      }
+    },
+  },
+}
 </script>

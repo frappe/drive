@@ -1,33 +1,33 @@
-import { createRouter, createWebHistory } from "vue-router";
-import store from "./store";
+import { createRouter, createWebHistory } from "vue-router"
+import store from "./store"
 
 function redir404(to, from) {
   if (to.name === "Error" && from.name) {
-    return;
+    return
   }
   if (store.getters.isLoggedIn && to.fullPath === "/") {
-    return { name: "Home" };
+    return { name: "Home" }
   } else if (!store.getters.isLoggedIn && to.fullPath === "/") {
-    return { name: "Login" };
+    return { name: "Login" }
   } else {
-    return { name: "Login" };
+    return { name: "Login" }
   }
 }
 
 function clearStore(to, from) {
   if (from.name === "Document" || to.name === "Document") {
-    store.commit("setShowInfo", false);
-    return;
+    store.commit("setShowInfo", false)
+    return
   } else {
-    store.commit("setEntityInfo", []);
-    store.commit("setCurrentFolder", []);
+    store.commit("setEntityInfo", [])
+    store.commit("setCurrentFolder", [])
   }
 }
 
 function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
-    document.title = to.name;
-    store.commit("setCurrentBreadcrumbs", [{ label: to.name, route: to.path }]);
+    document.title = to.name
+    store.commit("setCurrentBreadcrumbs", [{ label: to.name, route: to.path }])
   }
 }
 
@@ -112,22 +112,22 @@ const routes = [
     beforeEnter: [redir404, clearStore],
     props: true,
   },
-];
+]
 
 let router = createRouter({
   history: createWebHistory("/drive"),
   routes,
-});
+})
 
-const HybridRouteArray = ["File", "Folder", "Document"];
+const HybridRouteArray = ["File", "Folder", "Document"]
 
 router.beforeEach((to, from, next) => {
   // If they hit a public page log them in
   if (to.matched.some((record) => record.meta.isPublicRoute)) {
     if (store.getters.isLoggedIn) {
-      next({ name: "Home" });
+      next({ name: "Home" })
     } else {
-      next();
+      next()
     }
   } else {
     // Prepend "Shared/" to the breadcrumbs if an authenticated user navigated to a file by pasting a link
@@ -139,23 +139,23 @@ router.beforeEach((to, from, next) => {
         if (from.fullPath === "/" && HybridRouteArray.includes(to.name)) {
           store.commit("setCurrentBreadcrumbs", [
             { label: "Shared", route: "/shared" },
-          ]);
+          ])
         }
       }
-      next();
+      next()
     } else {
       if (to.name === "Error") {
-        next();
+        next()
       } else {
-        next("/login");
+        next("/login")
       }
       //import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
     }
   }
-});
+})
 
-router.afterEach((to, from, failure) => {
-  sessionStorage.setItem("currentRoute", to.href);
-});
+router.afterEach((to) => {
+  sessionStorage.setItem("currentRoute", to.href)
+})
 
-export default router;
+export default router
