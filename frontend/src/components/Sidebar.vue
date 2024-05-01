@@ -11,9 +11,12 @@
       ondrop="return false;">
       <SidebarItem
         :label="'Search'"
-        :icon="'search'"
         :isCollapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)">
+        <template #icon>
+          <Search
+            class="stroke-[1.5] h-4 w-4 text-gray-700 focus:outline-none" />
+        </template>
         <template #right>
           <div
             class="flex items-center justify-start w-full duration-300 ease-in-out"
@@ -66,10 +69,11 @@ import Star from "./EspressoIcons/Star.vue";
 import Users from "./EspressoIcons/Users.vue";
 import Trash from "./EspressoIcons/Trash.vue";
 import SidebarItem from "@/components/SidebarItem.vue";
+import Home from "./EspressoIcons/Home.vue";
 
 export default {
   name: "Sidebar",
-  components: { PrimaryDropDown, ArrowLeftFromLine, SidebarItem },
+  components: { PrimaryDropDown, ArrowLeftFromLine, SidebarItem, Search },
   emits: ["toggleMobileSidebar", "showSearchPopUp"],
   data() {
     return {
@@ -96,7 +100,7 @@ export default {
         {
           label: "Home",
           route: "/home",
-          icon: "home",
+          icon: Home,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Home",
         },
         {

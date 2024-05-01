@@ -36,10 +36,12 @@
 <script setup>
 import { Tooltip, FeatherIcon } from "frappe-ui";
 import { computed } from "vue";
+import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
+const store = useStore();
 
 const props = defineProps({
   icon: {
@@ -65,6 +67,6 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  return route.path === props.to;
+  return store.state.currentBreadcrumbs[0].label === props.label;
 });
 </script>
