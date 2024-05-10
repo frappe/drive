@@ -136,7 +136,7 @@
     <ShareDialog
       v-if="showShareDialog"
       v-model="showShareDialog"
-      :entity-name="selectedEntities[0].name"
+      :entity-name="$store.state.entityInfo[0].name"
     />
     <MoveDialog
       v-if="showMoveDialog"
@@ -190,7 +190,7 @@ import DriveToolBar from "@/components/DriveToolBar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
-import ShareDialog from "@/components/ShareDialog.vue"
+import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import GeneralDialog from "@/components/GeneralDialog.vue"
 import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
@@ -287,7 +287,6 @@ export default {
   },
   data: () => ({
     folderItems: null,
-    selectedEntities: [],
     previewEntity: null,
     showPreview: false,
     showNewFolderDialog: false,
@@ -306,6 +305,7 @@ export default {
     overrideCanLoadMore: false,
     clearAll: false,
     showCTADelete: false,
+    selectedEntities: [],
   }),
 
   computed: {
@@ -685,6 +685,9 @@ export default {
     this.emitter.on("showCTADelete", () => {
       this.clearAll = true
       this.showCTADelete = true
+    })
+    this.emitter.on("showShareDialog", () => {
+      this.showShareDialog = true
     })
     this.emitter.on("selectAll", () => {
       this.clearAll()

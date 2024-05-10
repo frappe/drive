@@ -1,26 +1,35 @@
 <template>
-  <TextEditor
-    v-if="contentLoaded"
-    v-model="content"
-    v-model:settings="settings"
-    :fixed-menu="true"
-    :bubble-menu="true"
-    placeholder="Start typing ..."
-    :is-writable="isWritable"
-    :entity-name="entityName"
-    :entity="entity"
-    @save-document="saveDocument"
-  />
+  <div class="flex w-full">
+    <TextEditor
+      v-if="contentLoaded"
+      v-model="content"
+      v-model:settings="settings"
+      :fixed-menu="true"
+      :bubble-menu="true"
+      placeholder="Start typing ..."
+      :is-writable="isWritable"
+      :entity-name="entityName"
+      :entity="entity"
+      @save-document="saveDocument"
+    />
+    <ShareDialog
+      v-if="showShareDialog"
+      v-model="showShareDialog"
+      :entity-name="entityName"
+    />
+  </div>
 </template>
 
 <script>
 import TextEditor from "@/components/DocEditor/TextEditor.vue"
 import { fromUint8Array, toUint8Array } from "js-base64"
 import { formatSize, formatDate } from "@/utils/format"
+import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 
 export default {
   components: {
     TextEditor,
+    ShareDialog,
   },
   props: {
     entityName: {
@@ -40,6 +49,7 @@ export default {
       isWritable: false,
       entity: null,
       beforeUnmountSaveDone: false,
+      showShareDialog: false,
     }
   },
   computed: {
@@ -111,6 +121,9 @@ export default {
           }, 30000)
         }
       })
+    this.emitter.on("showShareDialog", () => {
+      this.showShareDialog = true
+    })
   },
   beforeUnmount() {
     clearInterval(this.timer)

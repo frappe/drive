@@ -38,7 +38,9 @@ const store = createStore({
     },
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
-    entityInfo: JSON.parse(localStorage.getItem("selectedEntities")) || null,
+    entityInfo:
+      JSON.parse(localStorage.getItem("selectedEntities")) ||
+      JSON.parse(localStorage.getItem("currentFolder")),
     currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || null,
     currentViewEntites: get("currentViewEntites") || [],
     pasteData: { entities: [], action: null },

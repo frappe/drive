@@ -23,7 +23,11 @@
           class="basis-5/12 lg:basis-auto"
         >
           <Button
-            v-if="$route.meta.documentPage || $route.name === 'File'"
+            v-if="
+              $route.meta.documentPage ||
+              $route.name === 'File' ||
+              $route.name === 'Folder'
+            "
             variant="ghost"
           >
             <FeatherIcon class="h-4" name="more-horizontal" />
@@ -35,6 +39,7 @@
             :variant="'solid'"
             :disabled="$store.state.entityInfo[0]?.owner !== 'You'"
             class="bg-gray-200 rounded flex justify-center items-center px-1"
+            @click="emitter.emit('showShareDialog')"
           >
             <template #prefix>
               <Share class="w-4" />
@@ -278,6 +283,19 @@ export default {
               )
               return allEntitiesSatisfyCondition
             }
+          },
+        },
+        {
+          label: "Share",
+          icon: Share,
+          onClick: () => {
+            this.emitter.emit("showShareDialog")
+          },
+          isEnabled: () => {
+            return (
+              this.$route.name === "Folder" &&
+              this.$store.state.entityInfo[0]?.owner === "You"
+            )
           },
         },
         {

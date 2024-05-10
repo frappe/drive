@@ -31,12 +31,24 @@
         @click="scrollEntity()"
       ></Button>
     </div>
+    <ShareDialog
+      v-if="showShareDialog"
+      v-model="showShareDialog"
+      :entity-name="props.entityName"
+    />
   </div>
 </template>
 
 <script setup>
 import { useStore } from "vuex"
-import { ref, computed, onMounted, defineProps, onBeforeUnmount } from "vue"
+import {
+  ref,
+  computed,
+  onMounted,
+  defineProps,
+  onBeforeUnmount,
+  inject,
+} from "vue"
 import { Button } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
@@ -44,9 +56,11 @@ import { formatSize, formatDate } from "@/utils/format"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
+import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 
 const router = useRouter()
 const store = useStore()
+const emitter = inject("emitter")
 const props = defineProps({
   entityName: {
     type: String,
@@ -55,6 +69,7 @@ const props = defineProps({
 })
 
 const entity = ref(null)
+const showShareDialog = ref(false)
 const currentEntity = ref(props.entityName)
 const userId = computed(() => {
   return store.state.auth.user_id
@@ -178,6 +193,9 @@ onMounted(() => {
   if (window.matchMedia("(max-width: 1500px)").matches) {
     store.commit("setIsSidebarExpanded", false)
   }
+  emitter.on("showShareDialog", () => {
+    showShareDialog.value = true
+  })
 })
 
 onBeforeUnmount(() => {
