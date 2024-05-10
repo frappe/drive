@@ -17,6 +17,7 @@
     "@fontsource/ibm-plex-mono": "^5.0.12",
     "@fontsource/lora": "^5.0.16",
     "@fontsource/nunito": "^5.0.17",
+    "@headlessui-float/vue": "^0.13.3",
     "@headlessui/vue": "^1.7.8",
     "@hocuspocus/provider": "^2.2.0",
     "@tiptap/core": "^2.0.3",
