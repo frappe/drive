@@ -48,7 +48,7 @@
           <div class="space-y-6.5">
             <div v-if="entity.owner === 'You'">
               <div class="text-base font-medium mb-4">Access</div>
-              <div class="flex items-center justify-end">
+              <div class="flex items-center justify-start">
                 <Avatar
                   size="lg"
                   :label="entity.owner"
@@ -85,9 +85,9 @@
                   />
                 </div>
 
-                <Button class="ml-auto" @click="showShareDialog = true">
+                <!-- <Button class="ml-auto" @click="showShareDialog = true">
                   Share
-                </Button>
+                </Button> -->
               </div>
             </div>
             <!-- <div v-if="entityTags.data?.length || entity.owner === 'You'">

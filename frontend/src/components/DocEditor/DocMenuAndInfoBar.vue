@@ -28,7 +28,7 @@
           <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
             <div v-if="entity.owner === 'You'">
               <div class="text-base font-medium mb-4">Access</div>
-              <div class="flex items-center justify-end">
+              <div class="flex items-center justify-start">
                 <Avatar
                   size="lg"
                   :label="entity.owner"
@@ -66,9 +66,9 @@
                   />
                 </div>
 
-                <Button class="ml-auto" @click="showShareDialog = true">
-                  Manage access
-                </Button>
+                <!-- <Button class="ml-auto" @click="showShareDialog = true">
+                  Share
+                </Button> -->
               </div>
             </div>
 
@@ -77,7 +77,7 @@
               v-model="showShareDialog"
               :entity-name="entity.name"
             />
-            <div
+            <!-- <div
               v-if="
                 $resources.entityTags.data?.length || entity.owner === 'You'
               "
@@ -126,7 +126,7 @@
                   @close="addTag = false"
                 />
               </div>
-            </div>
+            </div> -->
             <div>
               <div class="text-base font-medium mb-4">Properties</div>
               <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
