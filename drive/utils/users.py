@@ -15,7 +15,8 @@ def get_users_with_drive_user_role_and_groups(txt=""):
             doctype="User",
             filters=[
                 ["Has Role", "role", "=", "Drive User"],
-                ["full_name", "like", f"%{txt}%"],
+                ["full_name", "not like", "Administrator"],
+                ["full_name", "not like", "Guest"],
             ],
             fields=[
                 "email",
@@ -68,13 +69,18 @@ def get_all_users_on_site():
                 "message": "You do not have permission to access this resource",
             }
 
-        site_users = frappe.get_all(
+        site_users = frappe.get_list(
             doctype="User",
             fields=[
                 "username",
                 "email",
                 "full_name",
+                "user_image",
             ],
+            filters={
+                "username": ["not like", "%administrator%"],
+                "username": ["not like", "%guest%"],
+            },
         )
 
         return site_users
