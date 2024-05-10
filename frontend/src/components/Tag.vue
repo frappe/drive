@@ -1,8 +1,47 @@
 <template>
-  <Popover transition="default">
+  <div
+    class="inline-flex gap-1 items-center justify-center text-gray-800 border hover:bg-gray-200 h-7 text-base px-2 rounded group"
+  >
+    <button
+      v-if="entity.owner === 'You'"
+      class="hidden group-hover:block"
+      icon="x"
+      @click="$resources.removeTag.submit()"
+    >
+      <FeatherIcon
+        class="my-auto h-4 w-4 stroke-2"
+        name="x"
+        @click="$resources.removeTag.submit()"
+      />
+    </button>
+    <svg
+      :class="entity.owner === 'You' ? 'block group-hover:hidden' : 'block'"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="8"
+        cy="8"
+        r="4.5"
+        fill="transparent"
+        :stroke="tag.color"
+        stroke-width="3"
+      />
+    </svg>
+
+    <span class="text-base text-gray-800">
+      {{ tag.title }}
+    </span>
+  </div>
+</template>
+
+<!--  <Popover transition="default">
     <template #target="{ togglePopover }">
       <Badge
-        class="text-xs font-medium px-2"
+        class="text-base font-medium px-2"
         variant="subtle"
         :theme="`${tag.color}`"
         :style="{
@@ -13,7 +52,7 @@
           togglePopover()
         "
       >
-        {{ `${tag.title}` }}
+        <span class="text-sm">{{ `${tag.title}` }}</span>
         <FeatherIcon
           v-if="entity.owner === 'You'"
           class="my-auto h-3 stroke-2"
@@ -72,8 +111,7 @@
         </div>
       </div>
     </template>
-  </Popover>
-</template>
+  </Popover> -->
 
 <script>
 import { Badge, Popover, FeatherIcon } from "frappe-ui"
