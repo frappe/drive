@@ -31,7 +31,7 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <FeatherIcon class="h-4 w-4" name="info" />
+            <Info />
             Information
           </span>
           <div
@@ -58,7 +58,7 @@
                 <GeneralAccess
                   v-if="
                     !generalAccess.loading &&
-                    (!!generalAccess.data.length || !sharedWithList.length)
+                    (!!generalAccess.data?.length || !sharedWithList?.length)
                   "
                   size="lg"
                   class="-mr-[3px] outline outline-white"
@@ -86,11 +86,11 @@
                 </div>
 
                 <Button class="ml-auto" @click="showShareDialog = true">
-                  Manage access
+                  Share
                 </Button>
               </div>
             </div>
-            <div v-if="entityTags.data?.length || entity.owner === 'You'">
+            <!-- <div v-if="entityTags.data?.length || entity.owner === 'You'">
               <div class="text-base font-medium mb-4">Tags</div>
               <div class="flex items-center justify-start flex-wrap gap-y-4">
                 <div
@@ -134,7 +134,7 @@
                   @close="addTag = false"
                 />
               </div>
-            </div>
+            </div>  -->
             <div>
               <div class="text-base font-medium mb-4">Properties</div>
               <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
@@ -164,7 +164,7 @@
           <span
             class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <FeatherIcon class="h-4 w-4" name="message-circle" />
+            <Comment />
             Comments
           </span>
           <div v-if="entity.allow_comments" class="pb-2 px-5">
@@ -262,10 +262,10 @@
           ? 'text-black bg-gray-200'
           : ' hover:bg-gray-50',
       ]"
-      icon="info"
       variant="minimal"
       @click="switchTab(0)"
-    ></Button>
+      ><Info
+    /></Button>
     <Button
       v-if="showComments"
       class="text-gray-600"
@@ -274,10 +274,10 @@
           ? 'text-black bg-gray-200'
           : ' hover:bg-gray-50',
       ]"
-      icon="message-circle"
       variant="minimal"
       @click="switchTab(1)"
-    ></Button>
+      ><Comment
+    /></Button>
   </div>
 
   <ShareDialog
@@ -290,19 +290,17 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
-import { FeatherIcon, Avatar, call, createResource } from "frappe-ui"
+import { Avatar, call, createResource } from "frappe-ui"
 import ShareDialog from "@/components/ShareDialog.vue"
-import TagInput from "@/components/TagInput.vue"
-import Tag from "@/components/Tag.vue"
 import { formatMimeType, formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
-
+import Info from "./EspressoIcons/Info.vue"
+import Comment from "./EspressoIcons/Comment.vue"
 const store = useStore()
 const tab = ref(0)
 const newComment = ref("")
 const showShareDialog = ref(false)
-const addTag = ref(false)
 const thumbnailLink = ref("")
 
 const userId = computed(() => {
@@ -325,12 +323,6 @@ const formattedMimeType = computed(() => {
   if (entity.value.is_group) return "Folder"
   const file = formatMimeType(entity.value.mime_type)
   return file.charAt(0).toUpperCase() + file.slice(1)
-})
-
-const unaddedTags = computed(() => {
-  return userTags.data.filter(
-    ({ name: id1 }) => !entityTags.data.some(({ name: id2 }) => id2 === id1)
-  )
 })
 
 const entity = computed(() => {
