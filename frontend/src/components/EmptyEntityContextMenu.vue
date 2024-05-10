@@ -33,12 +33,10 @@
   </div>
 </template>
 <script>
-import { FeatherIcon } from "frappe-ui"
 import disableScroll from "../utils/disable-scroll"
 
 export default {
   name: "EmptyEntityContext",
-  components: { FeatherIcon },
   props: {
     actionItems: {
       type: Array,

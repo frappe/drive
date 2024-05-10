@@ -31,7 +31,18 @@
         </Dropdown>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
-            v-if="$route.name === 'Recents'"
+            v-if="$route.name === 'Document' || $route.name === 'File'"
+            :variant="'solid'"
+            :disabled="$store.state.entityInfo[0]?.owner !== 'You'"
+            class="bg-gray-200 rounded flex justify-center items-center px-1"
+          >
+            <template #prefix>
+              <Share class="w-4" />
+            </template>
+            Share
+          </Button>
+          <Button
+            v-else-if="$route.name === 'Recents'"
             class="line-clamp-1 truncate w-full"
             :disabled="!currentViewEntites?.length"
             theme="red"
@@ -69,18 +80,6 @@
             </template>
             Empty Trash
           </Button>
-          <Button
-            v-else-if="$route.name === 'Document'"
-            :disabled="!$store.state.hasWriteAccess"
-            class="bg-gray-200 rounded flex justify-center items-center px-1"
-            variant="subtle"
-            @click="emitter.emit('saveDocument')"
-          >
-            <template #prefix>
-              <FeatherIcon name="save" class="w-4" />
-            </template>
-            Save
-          </Button>
           <Dropdown
             v-else
             :options="newEntityOptions"
@@ -97,17 +96,7 @@
               </template>
             </Button>
           </Dropdown>
-          <div v-if="$store.state.hasWriteAccess"></div>
-          <!--
-
-          Pushed implementation
-          
-        <Button
-          class="stroke-1.5 ml-4 md:ml-5"
-          appearance="minimal"
-          icon="bell"></Button>
-          
-        --></div>
+        </div>
         <div v-if="!isLoggedIn" class="ml-auto">
           <Button variant="solid" @click="$router.push({ name: 'Login' })">
             Sign In
@@ -150,18 +139,15 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload"
-import {
-  FileDown,
-  FolderDown,
-  TextCursorInput,
-  Link2,
-  Star,
-  FolderPlus,
-  FolderUp,
-  FileUp,
-  FileText,
-} from "lucide-vue-next"
-import { h } from "vue"
+import Share from "./EspressoIcons/Share.vue"
+import Star from "./EspressoIcons/Star.vue"
+import Rename from "./EspressoIcons/Rename.vue"
+import Link from "./EspressoIcons/Link.vue"
+import Download from "./EspressoIcons/Download.vue"
+import NewFolder from "./EspressoIcons/NewFolder.vue"
+import FileUpload from "./EspressoIcons/File-upload.vue"
+import FolderUpload from "./EspressoIcons/Folder-upload.vue"
+import NewFile from "./EspressoIcons/NewFile.vue"
 
 export default {
   name: "Navbar",
@@ -173,6 +159,7 @@ export default {
     Button,
     Breadcrumbs,
     UsersBar,
+    Share,
   },
   props: {
     breadcrumbs: {
@@ -197,18 +184,12 @@ export default {
           items: [
             {
               label: "Upload File",
-              icon: h(FileUp, {
-                id: "foo",
-                class: "text-gray-900 stroke-[1.5]",
-              }),
+              icon: FileUpload,
               onClick: () => this.emitter.emit("uploadFile"),
             },
             {
               label: "Upload Folder",
-              icon: h(FolderUp, {
-                id: "foo",
-                class: "text-gray-900 stroke-[1.5]",
-              }),
+              icon: FolderUpload,
               onClick: () => this.emitter.emit("uploadFolder"),
               isEnabled: () => this.selectedEntities.length === 0,
             },
@@ -219,18 +200,12 @@ export default {
           items: [
             {
               label: "New Folder",
-              icon: h(FolderPlus, {
-                id: "foo",
-                class: "text-gray-900 stroke-[1.5]",
-              }),
+              icon: NewFolder,
               onClick: () => (this.showNewFolderDialog = true),
             },
             {
               label: "New Document",
-              icon: h(FileText, {
-                id: "foo",
-                class: "text-gray-900 stroke-[1.5]",
-              }),
+              icon: NewFile,
               onClick: async () => {
                 await this.$resources.createDocument.submit({
                   title: "Untitled Document",
@@ -258,7 +233,7 @@ export default {
       return [
         {
           label: "Download",
-          icon: FileDown,
+          icon: Download,
           onClick: () => {
             window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
@@ -279,7 +254,7 @@ export default {
         },
         {
           label: "Download",
-          icon: FolderDown,
+          icon: Download,
           onClick: () => {
             if (this.selectedEntities.length > 1) {
               let selected_entities = this.selectedEntities
@@ -307,7 +282,7 @@ export default {
         },
         {
           label: "Get Link",
-          icon: Link2,
+          icon: Link,
           onClick: () => {
             getLink(this.selectedEntities[0])
           },
@@ -317,7 +292,7 @@ export default {
         },
         {
           label: "Rename",
-          icon: TextCursorInput,
+          icon: Rename,
           onClick: () => {
             this.showRenameDialog = true
           },

@@ -37,7 +37,10 @@
             class="text-sm h-8 px-2 border-r border-slate-200 rounded-r-none"
             @click.stop="toggleAscending"
           >
-            <ViewOrder :class="{ '[transform:rotateX(180deg)]': ascending }" />
+            <DownArrow
+              :class="{ '[transform:rotateX(180deg)]': ascending }"
+              class="h-3.5"
+            />
           </Button>
           <Button class="text-sm h-8 rounded-l-none flex-1 hidden md:block">
             {{ orderByLabel }}
@@ -70,7 +73,7 @@
 import { Button, Dropdown } from "frappe-ui"
 import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
-import ViewOrder from "./EspressoIcons/ViewOrder.vue"
+import DownArrow from "./EspressoIcons/DownArrow.vue"
 
 export default {
   name: "DriveToolBar",
@@ -79,7 +82,7 @@ export default {
     Dropdown,
     ViewList,
     ViewGrid,
-    ViewOrder,
+    DownArrow,
   },
   props: {
     breadcrumbs: {

@@ -205,24 +205,20 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload"
-import {
-  Scan,
-  FileDown,
-  FolderDown,
-  Share2,
-  FolderInput,
-  Copy,
-  TextCursorInput,
-  Link2,
-  Info,
-  Star,
-  Trash2,
-  FolderPlus,
-  FolderUp,
-  FileUp,
-  FileText,
-  RotateCcw,
-} from "lucide-vue-next"
+import { RotateCcw } from "lucide-vue-next"
+import NewFolder from "./EspressoIcons/NewFolder.vue"
+import FileUpload from "./EspressoIcons/File-upload.vue"
+import FolderUpload from "./EspressoIcons/Folder-upload.vue"
+import Share from "./EspressoIcons/Share.vue"
+import Download from "./EspressoIcons/Download.vue"
+import Link from "./EspressoIcons/Link.vue"
+import Rename from "./EspressoIcons/Rename.vue"
+import Move from "./EspressoIcons/Move.vue"
+import Info from "./EspressoIcons/Info.vue"
+import Star from "./EspressoIcons/Star.vue"
+import Preview from "./EspressoIcons/Preview.vue"
+import Trash from "./EspressoIcons/Trash.vue"
+import NewFile from "./EspressoIcons/NewFile.vue"
 
 export default {
   name: "PageGeneric",
@@ -281,12 +277,12 @@ export default {
     primaryMessage: {
       type: String,
       required: false,
-      default: "",
+      default: "No Files here",
     },
     secondaryMessage: {
       type: String,
       required: false,
-      default: "",
+      default: "Add files",
     },
   },
   data: () => ({
@@ -354,36 +350,36 @@ export default {
       return [
         {
           label: "Upload File",
-          icon: FileUp,
+          icon: FileUpload,
           handler: () => this.emitter.emit("uploadFile"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: "Upload Folder",
-          icon: FolderUp,
+          icon: FolderUpload,
           handler: () => this.emitter.emit("uploadFolder"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: "New Folder",
-          icon: FolderPlus,
+          icon: NewFolder,
           handler: () => (this.showNewFolderDialog = true),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
           label: "New Document",
-          icon: FileText,
+          icon: NewFile,
           handler: () => this.newDocument(),
           isEnabled: () => this.selectedEntities.length === 0,
         },
-        {
+        /*{
           label: "Paste",
           icon: "clipboard",
           handler: async () => {
             this.pasteEntities()
           },
           isEnabled: () => this.$store.state.pasteData.entities.length,
-        },
+        },*/
       ].filter((item) => item.isEnabled())
     },
     actionItems() {
@@ -401,7 +397,7 @@ export default {
           },
           {
             label: "Delete forever",
-            icon: Trash2,
+            icon: Trash,
             danger: true,
             onClick: () => {
               this.showDeleteDialog = true
@@ -417,7 +413,7 @@ export default {
         return [
           {
             label: "Preview",
-            icon: Scan,
+            icon: Preview,
             onClick: () => {
               this.openEntity(this.selectedEntities[0])
             },
@@ -429,7 +425,7 @@ export default {
           },
           {
             label: "Download",
-            icon: FileDown,
+            icon: Download,
             onClick: () => {
               window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
             },
@@ -451,7 +447,7 @@ export default {
           /* Folder Download */
           {
             label: "Download",
-            icon: FolderDown,
+            icon: Download,
             onClick: () => {
               if (this.selectedEntities.length > 1) {
                 let selected_entities = this.selectedEntities
@@ -480,7 +476,7 @@ export default {
 
           {
             label: "Share",
-            icon: Share2,
+            icon: Share,
             onClick: () => {
               this.showShareDialog = true
             },
@@ -493,7 +489,7 @@ export default {
           },
           {
             label: "Get Link",
-            icon: Link2,
+            icon: Link,
             onClick: () => {
               getLink(this.selectedEntities[0])
             },
@@ -503,7 +499,7 @@ export default {
           },
           {
             label: "Rename",
-            icon: TextCursorInput,
+            icon: Rename,
             onClick: () => {
               this.showRenameDialog = true
             },
@@ -517,7 +513,7 @@ export default {
           },
           {
             label: "Move",
-            icon: FolderInput,
+            icon: Move,
             onClick: () => {
               this.showMoveDialog = true
             },
@@ -528,7 +524,7 @@ export default {
               return this.selectedEntities.length > 0 && allOwned
             },
           },
-          {
+          /* {
             label: "Duplicate",
             icon: Copy,
             onClick: () => {
@@ -544,7 +540,7 @@ export default {
                   this.selectedEntities[0].owner === "You")
               )
             },
-          },
+          }, */
           {
             label: "Show Info",
             icon: Info,
@@ -570,7 +566,7 @@ export default {
               )
             },
           },
-          {
+          /*{
             label: "Paste",
             icon: "clipboard",
             onClick: async () => {
@@ -583,7 +579,7 @@ export default {
                 this.selectedEntities[0].is_group
               )
             },
-          },
+          },*/
           {
             label: "Favourite",
             icon: Star,
@@ -623,7 +619,7 @@ export default {
           },
           {
             label: "Remove from Recents",
-            icon: Trash2,
+            icon: Trash,
             danger: true,
             onClick: () => {
               this.$resources.clearRecent.submit()
@@ -652,7 +648,7 @@ export default {
           },
           {
             label: "Move to Trash",
-            icon: Trash2,
+            icon: Trash,
             danger: true,
             onClick: () => {
               this.showRemoveDialog = true
