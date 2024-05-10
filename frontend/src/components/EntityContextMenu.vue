@@ -27,7 +27,7 @@
           :name="item.icon"
           class="h-4 w-4 mr-2"
           :class="[
-            item.danger ? 'stroke-red-200 text-red-500' : '',
+            item.danger ? 'text-red-500' : '',
             item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
           ]"
         />
