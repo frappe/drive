@@ -5,7 +5,7 @@
     >
       <Popover v-slot="{ open }" class="relative w-full">
         <PopoverButton
-          class="text-left w-full max-w-56 focus:outline-none pl-2 text-gray-600 truncate overflow-hidden"
+          class="text-left w-full max-w-full focus:outline-none pl-2 text-gray-600 truncate overflow-hidden"
         >
           <span
             v-for="(user, index) in newUsers"
@@ -60,7 +60,7 @@
         </PopoverPanel>
       </Popover>
 
-      <div class="border-l border-gray-300 h-5"></div>
+      <!--       <div class="border-l border-gray-300 h-5"></div>
 
       <Popover v-slot="{ open }" class="text-gray-700 relative flex-shrink-0">
         <PopoverButton class="flex gap-1 px-2 focus:outline-none">
@@ -84,7 +84,7 @@
             </li>
           </ul></PopoverPanel
         >
-      </Popover>
+      </Popover> -->
     </div>
     <Button
       class="col-span-2"

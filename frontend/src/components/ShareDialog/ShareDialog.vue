@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="openDialog" :options="{ size: 'md' }">
+  <Dialog v-model="openDialog" :options="{ size: 'lg' }">
     <template #body-main>
       <div class="pb-6 pt-5 max-h-[85vh]">
         <div
@@ -20,21 +20,13 @@
           v-if="showSettings"
           class="px-4 sm:px-6"
           :style="{
-            minHeight: $refs.shareMain.clientHeight + 'px',
+            minHeight: $refs.shareMain?.clientHeight + 'px',
           }"
         >
           <span class="text-gray-600 font-medium text-base">Settings</span>
-          <div class="flex flex-col space-y-3 mt-4">
-            <span
-              class="text-base text-gray-800 items-center flex justify-between"
-              >Allow Comments
-              <Switch />
-            </span>
-            <span
-              class="text-base text-gray-800 items-center flex justify-between"
-              >Allow Downloading
-              <Switch />
-            </span>
+          <div class="flex flex-col space-y-0 mt-4">
+            <Switch v-model="allowComments" label="Allow Comments" />
+            <Switch v-model="allowDownload" label="Allow Downloading" />
           </div>
         </div>
         <div
@@ -330,7 +322,6 @@ import { ref } from "vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 import { Avatar, Dialog, FeatherIcon, Switch } from "frappe-ui"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
-import { toast } from "@/utils/toasts.js"
 import { getLink } from "@/utils/getLink"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import UserSearch from "@/components/ShareDialog/UserSearch.vue"
@@ -389,7 +380,6 @@ export default {
       entity: null,
       showSettings: false,
       searchUserText: "",
-      minHeight: this.$refs.shareMain?.clientHeight,
     }
   },
   computed: {
@@ -435,6 +425,16 @@ export default {
       },
       deep: true,
     },
+    allowComments: {
+      handler() {
+        this.$resources.toggleAllowComments.submit()
+      },
+    },
+    allowDownload: {
+      handler() {
+        this.$resources.toggleAllowDownload.submit()
+      },
+    },
   },
   methods: {
     addNewUsers(data) {
@@ -467,44 +467,6 @@ export default {
         }
       }
     },
-    submit() {
-      if (this.allowComments != this.$resources.entity.data.allow_comments) {
-        this.$resources.toggleAllowComments.submit()
-      }
-      if (this.allowDownload != this.$resources.entity.data.allow_download) {
-        this.$resources.toggleAllowDownload.submit()
-      }
-    },
-    toggleComments() {
-      toast({
-        title: this.allowComments
-          ? "Comments turned off"
-          : "Comments turned on",
-        text: this.allowComments
-          ? "Users cannot read and write comments"
-          : "Users can read and write comments",
-        /* icon: "message-circle", */
-        position: "bottom-right",
-        iconClasses: "text-black-500",
-        timeout: 2,
-      })
-      this.allowComments = !this.allowComments
-    },
-    toggleDownload() {
-      toast({
-        title: this.allowDownload
-          ? "Downloading turned off"
-          : "Downloading turned on",
-        text: this.allowDownload
-          ? "Users cannot download file"
-          : "Users can download file",
-        /* icon: "download", */
-        position: "bottom-right",
-        iconClasses: "text-black-500",
-        timeout: 1,
-      })
-      this.allowDownload = !this.allowDownload
-    },
     getLink,
   },
   resources: {
@@ -535,6 +497,8 @@ export default {
         },
         onSuccess(data) {
           this.entity = data
+          this.allowComments = !!data.allow_comments
+          this.allowDownload = !!data.allow_download
         },
         auto: true,
       }
@@ -576,7 +540,7 @@ export default {
         params: {
           entity_name: this.entityName,
           method: "toggle_allow_comments",
-          new_value: this.allowComments,
+          new_value: !this.allowComments,
         },
         onSuccess() {
           this.$emit("success")
@@ -594,7 +558,7 @@ export default {
         params: {
           entity_name: this.entityName,
           method: "toggle_allow_download",
-          new_value: this.allowDownload,
+          new_value: !this.allowDownload,
         },
         onSuccess() {
           this.$emit("success")

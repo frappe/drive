@@ -64,7 +64,7 @@
   </Popover>
 </template>
 <script setup>
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { Float } from "@headlessui-float/vue"
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import Check from "@/components/EspressoIcons/Check.vue"
@@ -74,4 +74,10 @@ import disableScroll from "../../utils/disable-scroll"
 const props = defineProps(["accessObj"])
 const accessObj = ref(props.accessObj)
 defineEmits(["updateAccess, removeAccess"])
+
+onMounted(() => {
+  window.addEventListener("scroll", function () {
+    console.log("FIRE")
+  })
+})
 </script>
