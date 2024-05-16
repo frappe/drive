@@ -6,10 +6,14 @@
     :show-sort="true"
     :is-shared-folder="isSharedFolder"
     :entity-name="entityName"
+    :icon="Folder"
+    :primaryMessage="'Folder is Empty'"
+    :secondaryMessage="''"
   />
 </template>
 
 <script setup>
+import Folder from "../components/EspressoIcons/Folder.vue"
 import PageGeneric from "@/components/PageGeneric.vue"
 import { ref } from "vue"
 import { useStore } from "vuex"

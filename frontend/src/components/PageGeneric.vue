@@ -18,7 +18,6 @@
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
     >
-      {{ showSort }}
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
@@ -27,6 +26,7 @@
       </template>
       <template #placeholder>
         <NoFilesSection
+          :icon="icon"
           :primary-message="primaryMessage"
           :secondary-message="secondaryMessage"
         />
@@ -273,6 +273,10 @@ export default {
       type: String,
       required: false,
       default: "",
+    },
+    icon: {
+      type: Object,
+      default: null,
     },
     primaryMessage: {
       type: String,

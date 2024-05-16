@@ -4,11 +4,13 @@
     :allow-empty-context-menu="false"
     :is-active="false"
     :show-sort="true"
-    :primary-message="`Trash is currently empty`"
-    :secondary-message="'Items in the trash will be deleted automatically after 30 days'"
+    :icon="Trash"
+    :primaryMessage="'Trash is Empty'"
+    :secondaryMessage="''"
   />
 </template>
 
 <script setup>
 import PageGeneric from "@/components/PageGeneric.vue"
+import Trash from "../components/EspressoIcons/Trash.vue"
 </script>

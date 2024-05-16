@@ -2,7 +2,14 @@
   <div
     class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center"
   >
-    <svg viewBox="0 0 78 85" class="w-[8%] fill-transparent stroke-2 pb-6">
+    <div v-if="icon">
+      <component :is="icon" class="w-14 stroke-[0] h-auto text-gray-500 pb-4" />
+    </div>
+    <svg
+      v-else
+      viewBox="0 0 78 85"
+      class="w-[8%] fill-transparent stroke-2 pb-6"
+    >
       <path
         d="M42 31H66 M42 51H66 M42 25H55 M42 45H55 M65 9V8C65 4.13401 61.866 1 58 1H8C4.13401 1 1 4.13401 1 8V66C1 69.866 4.13401 73 8 73H10 M70 12H20C16.134 12 13 15.134 13 19V77C13 80.866 16.134 84 20 84H70C73.866 84 77 80.866 77 77V19C77 15.134 73.866 12 70 12Z"
         stroke="#454545"
@@ -12,14 +19,18 @@
         stroke="#454545"
       />
     </svg>
-    <p class="text-lg text-gray-700 font-medium">{{ primaryMessage }}</p>
-    <p class="text-base text-gray-600">{{ secondaryMessage }}</p>
+    <p class="text-base text-gray-600 font-medium">{{ primaryMessage }}</p>
+    <p class="text-sm text-gray-600">{{ secondaryMessage }}</p>
   </div>
 </template>
 <script>
 export default {
   name: "NoFilesSection",
   props: {
+    icon: {
+      type: Object,
+      default: null,
+    },
     primaryMessage: {
       type: String,
       default: "You don't have any files yet",

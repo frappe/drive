@@ -4,6 +4,9 @@
     :url="sharedUrl"
     :allow-empty-context-menu="allowEmptyContextMenu"
     :show-sort="true"
+    :icon="Users"
+    :primaryMessage="'No Shared Files'"
+    :secondaryMessage="''"
   />
 </template>
 
@@ -11,6 +14,7 @@
 import PageGeneric from "@/components/PageGeneric.vue"
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
+import Users from "../components/EspressoIcons/Users.vue"
 
 const store = useStore()
 const allowEmptyContextMenu = ref(false)
