@@ -5,7 +5,8 @@
         class="flex items-center justify-start rounded-md text-left transition-all duration-300 ease-in-out"
         :class="[
           isExpanded ? 'p-2' : 'py-2',
-          open ? 'bg-white shadow-sm' : 'hover:bg-gray-200',
+          open && !!isExpanded ? 'bg-white shadow-sm' : 'hover:bg-gray-200',
+          open ? 'hover:bg-transparent' : 'hover:bg-transparent',
         ]"
         :style="{
           width: isExpanded ? '204px' : 'auto',
