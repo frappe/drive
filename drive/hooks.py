@@ -181,9 +181,3 @@ scheduler_events = {
 # auth_hooks = [
 # 	"drive.auth.validate"
 # ]
-
-website_redirects = [
-    {"source": "/", "target": "/drive"},
-    {"source": "/me", "target": "/drive/home"},
-    {"source": "/login", "target": "/drive/login"},
-]
