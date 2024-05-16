@@ -123,13 +123,13 @@
       "label": "Parent Before Trash"
     },
     {
-      "default": "0",
+      "default": "1",
       "fieldname": "allow_comments",
       "fieldtype": "Check",
       "label": "Allow Comments"
     },
     {
-      "default": "0",
+      "default": "1",
       "fieldname": "allow_download",
       "fieldtype": "Check",
       "label": "Allow Download"
