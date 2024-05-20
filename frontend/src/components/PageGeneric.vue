@@ -48,11 +48,15 @@
       <template #toolbar>
         <DriveToolBar
           :action-items="actionItems"
-          :column-headers="columnHeaders"
+          :column-headers="showSort ? columnHeaders : null"
         />
       </template>
       <template #placeholder>
-        <NoFilesSection />
+        <NoFilesSection
+          :icon="icon"
+          :primary-message="primaryMessage"
+          :secondary-message="secondaryMessage"
+        />
       </template>
     </ListView>
     <EntityContextMenu
@@ -260,8 +264,8 @@ export default {
       required: false,
     },
     isActive: {
-      type: Boolean,
-      default: true,
+      type: Number,
+      default: 1,
       required: false,
     },
     showSort: {
@@ -288,6 +292,16 @@ export default {
       required: false,
       default: "Add files",
     },
+    recents: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    favourites: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data: () => ({
     folderItems: null,
@@ -313,6 +327,9 @@ export default {
   }),
 
   computed: {
+    filters() {
+      return this.$store.state.activeFilters
+    },
     orderBy() {
       return this.$store.state.sortOrder.ascending
         ? this.$store.state.sortOrder.field
@@ -669,6 +686,13 @@ export default {
     },
   },
   watch: {
+    filters: {
+      handler() {
+        this.pageOffset = 0
+        this.resetAndFetch()
+      },
+      deep: true,
+    },
     folderItems: {
       handler(newVal) {
         this.$store.commit("setCurrentViewEntites", newVal)
@@ -677,7 +701,7 @@ export default {
     orderBy: {
       handler() {
         this.pageOffset = 0
-        this.handleListMutation()
+        this.resetAndFetch()
       },
     },
   },
@@ -752,6 +776,25 @@ export default {
           : data
       })
     },
+    resetAndFetch() {
+      this.folderItems = null
+      this.$resources.folderContents
+        .fetch({
+          entity_name: this.entityName,
+          order_by: this.orderBy,
+          offset: 0,
+          limit: this.pageLength,
+          is_active: this.isActive,
+          recents_only: this.recents,
+          favourites_only: this.favourites,
+          file_kind_list: JSON.stringify(this.filters),
+        })
+        .then((data) => {
+          this.pageOffset = data.length
+          this.folderItems = data
+          this.overrideCanLoadMore = data.length < 60 ? false : true
+        })
+    },
     handleListMutation(entityID) {
       let index = this.folderItems.findIndex((obj) => obj.name === entityID)
       let entityPage = Math.ceil(index / this.pageLength)
@@ -759,6 +802,18 @@ export default {
         0,
         entityPage * this.pageLength - this.pageLength
       )
+
+      let endIndex = this.folderItems.findIndex(
+        (obj) =>
+          obj.name ===
+          this.$store.state.entityInfo[this.$store.state.entityInfo.length - 1]
+      )
+      let endPage = Math.ceil(endIndex / this.pageLength)
+      let endtityOgOffset = Math.max(
+        0,
+        endPage * this.pageLength - this.pageLength
+      )
+      let totalPages = endtityOgOffset - 0
       this.$resources.folderContents
         .fetch({
           entity_name: this.entityName,
@@ -766,6 +821,9 @@ export default {
           offset: entityOriginalOffset,
           limit: this.pageLength,
           is_active: this.isActive,
+          recents_only: this.recents,
+          favourites_only: this.favourites,
+          file_kind_list: JSON.stringify(this.filters),
         })
         .then((data) => {
           this.folderItems.splice(
@@ -872,6 +930,9 @@ export default {
           offset: this.pageOffset,
           limit: this.pageLength,
           is_active: this.isActive,
+          recents_only: this.recents,
+          favourites_only: this.favourites,
+          file_kind_list: JSON.stringify(this.filters),
         },
         transform(data) {
           this.$resources.folderContents.error = null
