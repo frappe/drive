@@ -302,8 +302,8 @@ const showInfoSidebar = computed(() => {
 
 const formattedMimeType = computed(() => {
   if (entity.value.is_group) return "Folder"
-  const file = formatMimeType(entity.value.mime_type)
-  return file.charAt(0).toUpperCase() + file.slice(1)
+  const file = entity.value.file_kind
+  return file?.charAt(0).toUpperCase() + file?.slice(1)
 })
 
 const entity = computed(() => {

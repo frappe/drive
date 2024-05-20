@@ -146,6 +146,14 @@
       </div>
       <div class="mx-2 h-px border-t border-gray-200"></div>
     </div>
+    <Button
+      v-if="overrideCanLoadMore"
+      class="w-full mx-auto text-base pt-8 pb-6"
+      :loading="true"
+      :disabled="true"
+      variant="ghost"
+      >Loading</Button
+    >
     <div
       id="selectionElement"
       class="h-20 w-20 absolute border-1 bg-gray-300 border-gray-400 opacity-50 mix-blend-multiply rounded"
@@ -163,7 +171,7 @@ import { ref } from "vue"
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
 
 export default {
-  name: "GridView",
+  name: "ListView",
   components: {
     Avatar,
     Button,
@@ -311,12 +319,6 @@ export default {
     },
     updateContainerRect() {
       this.containerRect = this.$refs["container"]?.getBoundingClientRect()
-    },
-    getFileSubtitle(file) {
-      let fileSubtitle = formatMimeType(file.mime_type)
-      fileSubtitle =
-        fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1)
-      return `${fileSubtitle} ∙ ${file.modified}`
     },
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null)

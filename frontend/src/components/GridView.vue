@@ -131,6 +131,7 @@
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
           <File
+            :file_kind="file.file_kind"
             :mime_type="file.mime_type"
             :file_ext="file.file_ext"
             :name="file.name"
@@ -142,6 +143,14 @@
         </div>
       </div>
     </div>
+    <Button
+      v-if="overrideCanLoadMore"
+      class="w-full mx-auto text-base pt-8 pb-4"
+      :loading="true"
+      :disabled="true"
+      variant="ghost"
+      >Loading</Button
+    >
     <div
       id="selectionElement"
       class="h-20 w-20 absolute border-1 bg-gray-300 border-gray-400 opacity-50 mix-blend-multiply rounded"
