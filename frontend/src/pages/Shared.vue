@@ -21,7 +21,7 @@ const allowEmptyContextMenu = ref(false)
 
 const sharedUrl = computed(() => {
   return store.state.shareView === "with"
-    ? "drive.api.permissions.get_shared_with_me"
-    : "drive.api.permissions.get_shared_by_me"
+    ? "drive.api.list.shared_with_user"
+    : "drive.api.list.shared_by_user"
 })
 </script>

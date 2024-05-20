@@ -1,7 +1,7 @@
 <template>
   <PageGeneric
     v-if="currentFolder.fetched"
-    :url="computedURL"
+    url="drive.api.list.files"
     :allow-empty-context-menu="allowEmptyContextMenu"
     :show-sort="true"
     :is-shared-folder="isSharedFolder"
@@ -25,7 +25,6 @@ const store = useStore()
 const router = useRouter()
 const isSharedFolder = ref(false)
 const allowEmptyContextMenu = ref(false)
-const computedURL = ref("")
 
 const props = defineProps({
   entityName: {
@@ -40,11 +39,9 @@ let currentFolder = createResource({
   params: { entity_name: props.entityName },
   transform(data) {
     if (data.owner !== store.state.auth.user_id) {
-      computedURL.value = "drive.api.files.list_folder_contents"
       isSharedFolder.value = true
       store.commit("setHasWriteAccess", data.write)
     } else {
-      computedURL.value = "drive.api.files.list_folder_contents"
       isSharedFolder.value = false
       store.commit("setHasWriteAccess", true)
     }

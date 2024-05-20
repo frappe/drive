@@ -1,6 +1,7 @@
 <template>
   <PageGeneric
-    url="drive.api.files.list_recents"
+    url="drive.api.list.files"
+    :recents="true"
     :allow-empty-context-menu="false"
     :show-sort="false"
     :icon="Recent"

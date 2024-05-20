@@ -1,6 +1,7 @@
 <template>
   <PageGeneric
-    url="drive.api.files.list_favourites"
+    url="drive.api.list.files"
+    :favourites="true"
     :allow-empty-context-menu="false"
     :show-sort="true"
     :icon="Star"

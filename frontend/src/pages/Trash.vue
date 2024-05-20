@@ -1,8 +1,8 @@
 <template>
   <PageGeneric
-    url="drive.api.files.list_trashed_entities"
+    url="drive.api.list.files"
     :allow-empty-context-menu="false"
-    :is-active="false"
+    :is-active="0"
     :show-sort="true"
     :icon="Trash"
     :primaryMessage="'Trash is Empty'"

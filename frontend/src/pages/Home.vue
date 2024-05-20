@@ -1,7 +1,7 @@
 <template>
   <PageGeneric
     v-if="homeID.fetched"
-    url="drive.api.files.list_folder_contents"
+    url="drive.api.list.files"
     :allow-empty-context-menu="true"
     :show-sort="true"
     :icon="Home"

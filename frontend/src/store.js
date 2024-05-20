@@ -38,6 +38,7 @@ const store = createStore({
     },
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
+    activeFilters: [],
     entityInfo:
       JSON.parse(localStorage.getItem("selectedEntities")) ||
       JSON.parse(localStorage.getItem("currentFolder")),
