@@ -289,6 +289,7 @@ def get_entity_with_permissions(entity_name):
         "document",
         "color",
         "parent_drive_entity",
+        "file_kind",
     ]
     if not get_general_access(entity_name):
         if not frappe.has_permission(
