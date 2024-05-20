@@ -6,13 +6,14 @@
     <PrimaryDropDown :is-expanded="isExpanded" />
 
     <div
-      class="mt-2"
+      class="mt-2.5"
       :class="!isExpanded ? 'flex flex-col items-start' : ''"
       ondragstart="return false;"
       ondrop="return false;"
     >
       <SidebarItem
         :label="'Search'"
+        class="mb-0.5"
         :is-collapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)"
       >

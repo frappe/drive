@@ -8,7 +8,12 @@
       class="flex w-full items-center justify-between duration-300 ease-in-out p-2"
     >
       <div class="flex items-center">
-        <Tooltip :text="label" placement="right" :disabled="!isCollapsed">
+        <Tooltip
+          :text="label"
+          placement="right"
+          arrow-class="fill-gray-900"
+          :disabled="!isCollapsed"
+        >
           <slot name="icon">
             <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
               <FeatherIcon
