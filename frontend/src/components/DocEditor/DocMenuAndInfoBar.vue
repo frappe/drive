@@ -66,17 +66,8 @@
                   />
                 </div>
 
-                <!-- <Button class="ml-auto" @click="showShareDialog = true">
-                  Share
-                </Button> -->
               </div>
             </div>
-
-            <ShareDialog
-              v-if="showShareDialog"
-              v-model="showShareDialog"
-              :entity-name="entity.name"
-            />
             <!-- <div
               v-if="
                 $resources.entityTags.data?.length || entity.owner === 'You'
@@ -1137,7 +1128,7 @@
   <div
     class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
   >
-    <template v-for="(item, index) in tabs">
+    <template v-for="(item, index) in tabs" :key="item.label">
       <button
         v-if="item.write === $store.state.hasWriteAccess || !item.write"
         variant="'ghost'"
@@ -1163,13 +1154,12 @@
 
 <script>
 import { FeatherIcon, Avatar, Input, Popover, Badge, Dropdown } from "frappe-ui"
-import ShareDialog from "@/components/ShareDialog.vue"
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
-import { formatMimeType, formatDate } from "@/utils/format"
+import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { v4 as uuidv4 } from "uuid"
-import { defineAsyncComponent, ref } from "vue"
+import { defineAsyncComponent } from "vue"
 import OuterCommentVue from "@/components/DocEditor/OuterComment.vue"
 import LineHeight from "./icons/line-height.vue"
 import {
@@ -1186,7 +1176,6 @@ import {
   FileUp,
   FileDown,
   ArrowDownUp,
-  HeadingIcon,
   TextQuote,
   Type,
   Info,
@@ -1204,11 +1193,8 @@ import "@fontsource/geist-mono"
 import "@fontsource/nunito"
 import ColorInput from "./ColorInput.vue"
 import Bold from "./icons/Bold.vue"
-import Italic from "./icons/Italic.vue"
 import Strikethrough from "./icons/StrikeThrough.vue"
 import Underline from "./icons/Underline.vue"
-import NewAnnotation from "./icons/NewAnnotation.vue"
-import NewLink from "./icons/NewLink.vue"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 
 export default {
@@ -1217,7 +1203,7 @@ export default {
     Input,
     FeatherIcon,
     Avatar,
-    ShareDialog,
+
     TagInput,
     Tag,
     OuterCommentVue,
