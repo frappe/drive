@@ -1,0 +1,4 @@
+[pre_model_sync]
+
+[post_model_sync]
+drive.drive.doctype.drive_entity.patches.set_file_kind

@@ -13,6 +13,7 @@ from drive.utils.files import (
 )
 from drive.utils.user_group import add_new_user_group_docshare, does_exist_user_group_docshare
 from frappe.utils import cint
+from drive.api.format import mime_to_human
 
 
 class DriveEntity(NestedSet):
@@ -24,6 +25,7 @@ class DriveEntity(NestedSet):
 
     def before_save(self):
         self.version = self.version + 1
+        self.file_kind = mime_to_human(self.mime_type, self.is_group)
 
     def after_insert(self):
         self.inherit_permissions()

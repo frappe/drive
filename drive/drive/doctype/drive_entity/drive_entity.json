@@ -100,6 +100,12 @@
       "read_only": 1
     },
     {
+      "fieldname": "file_kind",
+      "fieldtype": "Data",
+      "label": "File Kind",
+      "read_only": 0
+    },
+    {
       "default": "0",
       "fieldname": "version",
       "fieldtype": "Int",
