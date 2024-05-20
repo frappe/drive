@@ -24,6 +24,7 @@ import { getIconUrl, thumbnail_getIconUrl } from "@/utils/getIconUrl"
 export default {
   name: "File",
   props: {
+    file_kind: String,
     mime_type: String,
     file_ext: String,
     name: String,
@@ -63,12 +64,6 @@ export default {
         this.file_ext
       )
       this.link = result
-    },
-    getFileSubtitle() {
-      let fileSubtitle = formatMimeType(this.mime_type)
-      fileSubtitle =
-        fileSubtitle.charAt(0).toUpperCase() + fileSubtitle.slice(1)
-      return `${fileSubtitle} ∙ ${this.relativeModified}`
     },
   },
 }
