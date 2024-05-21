@@ -138,7 +138,7 @@ def files(
                 (DriveRecent.entity_name == DriveEntity.name)
                 & (DriveRecent.user == frappe.session.user)
             )
-            .orderby(DriveEntity.modified, order=Order.desc)
+            .orderby(DriveRecent.last_interaction, order=Order.desc)
         )
     else:
         query = query.orderby(
