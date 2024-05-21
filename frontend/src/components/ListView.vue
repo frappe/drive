@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isEmpty"
-    class="h-full flex flex-col overflow-y-hidden mt-2 px-4 pb-8"
+    class="h-full flex flex-col overflow-y-hidden mt-3.5 px-4 pb-8"
   >
     <slot name="toolbar"></slot>
     <slot name="placeholder"></slot>
@@ -10,7 +10,7 @@
   <div
     v-else
     ref="container"
-    class="h-full overflow-y-auto mt-2 px-4 pb-5"
+    class="h-full overflow-y-auto mt-3.5 px-4 pb-5"
     @mousedown.passive="(event) => handleMousedown(event)"
   >
     <slot name="toolbar"></slot>
@@ -113,7 +113,7 @@
             :image="entity.user_image"
             :label="entity.full_name"
             class="-relative mr-2"
-            size="md"
+            size="sm"
           />
           {{ entity.owner }}
         </div>

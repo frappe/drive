@@ -2,9 +2,38 @@
   <div
     ondragstart="return false;"
     ondrop="return false;"
-    class="py-2 min-h-8 flex gap-3 flex-wrap justify-end items-center w-full"
+    class="flex gap-x-3 flex-wrap justify-end items-center w-full min-h-8 mb-6"
   >
     <div class="flex gap-3 w-full justify-start items-center">
+      <div
+        v-if="$route.name === 'Shared'"
+        class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
+      >
+        <Button
+          variant="ghost"
+          class="max-h-6 leading-none transition-colors focus:outline-none"
+          :class="[
+            $store.state.shareView === 'with'
+              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : '',
+          ]"
+          @click="$store.commit('toggleShareView', 'with')"
+        >
+          Shared with You
+        </Button>
+        <Button
+          variant="ghost"
+          class="max-h-6 leading-none transition-colors focus:outline-none"
+          :class="[
+            $store.state.shareView === 'by'
+              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : '',
+          ]"
+          @click="$store.commit('toggleShareView', 'by')"
+        >
+          Shared by You
+        </Button>
+      </div>
       <Dropdown :options="filterItems" placement="left">
         <Button
           >Filter
@@ -30,29 +59,6 @@
         </div>
       </div>
       <div class="ml-auto flex gap-x-1 items-center">
-        <div
-          v-if="$route.name === 'Shared'"
-          class="bg-gray-100 rounded-[10px] p-0.5 space-x-0.5 h-8 flex ml-auto"
-        >
-          <Button
-            variant="ghost"
-            class="leading-none transition-colors focus:outline-none"
-            :class="[
-              $store.state.shareView === 'with' ? 'bg-white shadow' : '',
-            ]"
-            @click="$store.commit('toggleShareView', 'with')"
-          >
-            Shared with You
-          </Button>
-          <Button
-            variant="ghost"
-            class="leading-none transition-colors focus:outline-none"
-            :class="[$store.state.shareView === 'by' ? 'bg-white shadow' : '']"
-            @click="$store.commit('toggleShareView', 'by')"
-          >
-            Shared by You
-          </Button>
-        </div>
         <Dropdown
           v-if="columnHeaders"
           :options="orderByItems"
@@ -61,7 +67,7 @@
         >
           <div class="flex items-center whitespace-nowrap">
             <Button
-              class="text-sm h-8 px-2 border-r border-slate-200 rounded-r-none"
+              class="text-sm h-7 border-r border-slate-200 rounded-r-none"
               @click.stop="toggleAscending"
             >
               <DownArrow
@@ -69,24 +75,34 @@
                 class="h-3.5"
               />
             </Button>
-            <Button class="text-sm h-8 rounded-l-none flex-1 hidden md:block">
+            <Button class="text-sm h-7 rounded-l-none flex-1 hidden md:block">
               {{ orderByLabel }}
             </Button>
           </div>
         </Dropdown>
-        <div class="bg-gray-100 rounded-md p-0.5 space-x-0.5 h-8 flex">
+        <div
+          class="bg-gray-100 rounded-md space-x-0.5 h-7 px-0.5 py-1 flex items-center"
+        >
           <Button
             variant="ghost"
-            class="leading-none transition-colors focus:outline-none"
-            :class="[$store.state.view === 'grid' ? 'bg-white shadow' : '']"
+            class="max-h-6 leading-none transition-colors focus:outline-none"
+            :class="[
+              $store.state.view === 'grid'
+                ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+                : '',
+            ]"
             @click="$store.commit('toggleView', 'grid')"
           >
             <ViewGrid />
           </Button>
           <Button
             variant="ghost"
-            class="leading-none transition-colors focus:outline-none"
-            :class="[$store.state.view === 'list' ? 'bg-white shadow' : '']"
+            class="max-h-6 leading-none transition-colors focus:outline-none"
+            :class="[
+              $store.state.view === 'list'
+                ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+                : '',
+            ]"
             @click="$store.commit('toggleView', 'list')"
           >
             <ViewList />
