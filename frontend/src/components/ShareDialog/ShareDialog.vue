@@ -10,7 +10,7 @@
           >
           <Button
             class="ml-auto"
-            variant="minimal"
+            variant="ghost"
             @click="$emit('update:modelValue', false)"
           >
             <FeatherIcon name="x" class="stroke-2 h-4" />
@@ -36,133 +36,8 @@
           "
           ref="shareMain"
         >
-          <UserSearch
-            class="mb-5 px-4 sm:px-6"
-            :owner="$resources.sharedWith.data.owner"
-            :active-users="$resources.sharedWith.data.users"
-            :active-groups="$resources.sharedWithUserGroup.data"
-            @add-new-users="addNewUsers"
-          />
-
-          <div class="max-h-[35vh] overflow-y-scroll px-4 sm:px-6">
-            <div
-              v-if="!$resources.sharedWith.loading"
-              class="text-base space-y-4 mb-5"
-            >
-              <span class="text-gray-600 font-medium text-base">Users</span>
-              <!-- Owner -->
-              <div class="flex items-center gap-x-3">
-                <Avatar
-                  size="xl"
-                  :label="$resources.sharedWith.data.owner.full_name"
-                  :image="$resources.sharedWith.data.owner.user_image"
-                />
-                <div class="flex items-start flex-col justify-start">
-                  <span class="text-gray-900">{{
-                    $resources.sharedWith.data.owner.full_name
-                  }}</span>
-                  <span class="text-gray-700">{{
-                    $resources.sharedWith.data.owner.email
-                  }}</span>
-                </div>
-                <span class="ml-auto flex items-center gap-1 text-gray-600">
-                  Owner
-                  <Diamond class="h-3.5" />
-                </span>
-              </div>
-              <!-- Users -->
-              <div
-                v-for="(user, index) in $resources.sharedWith.data.users"
-                :key="user.name"
-                class="flex items-center gap-x-3"
-              >
-                <Avatar
-                  size="xl"
-                  :label="user.user_name"
-                  :image="user.user_image"
-                />
-                <div class="flex items-start flex-col justify-start">
-                  <span class="text-gray-900">{{
-                    user.full_name ? user.full_name : user.user_name
-                  }}</span>
-                  <span class="text-gray-700">{{
-                    user.full_name ? user.user_name : ""
-                  }}</span>
-                </div>
-                <AccessButton
-                  class="text-gray-700 relative flex-shrink-0 ml-auto"
-                  :access-obj="user"
-                  @update-access="
-                    $resources.share.submit({
-                      entity_name: entityName,
-                      method: 'share',
-                      user: user.user_name,
-                      read: user.read,
-                      write: user.write,
-                      share: 0,
-                      user_type: 'User',
-                    })
-                  "
-                  @remove-access="
-                    $resources.sharedWith.data.users.splice(index, 1),
-                      $resources.share.submit({
-                        entity_name: entityName,
-                        method: 'unshare',
-                        user: user.user_name,
-                        user_type: 'User',
-                      })
-                  "
-                />
-              </div>
-            </div>
-            <!-- Groups -->
-            <div
-              v-if="$resources.sharedWithUserGroup.data?.length"
-              class="text-base space-y-4 mb-5"
-            >
-              <span
-                v-if="$resources.sharedWithUserGroup.data?.length"
-                class="text-gray-600 font-medium text-base"
-                >Groups</span
-              >
-              <div
-                v-for="(group, index) in $resources.sharedWithUserGroup.data"
-                :key="group.user_name"
-                class="flex items-center gap-x-3"
-              >
-                <Avatar size="xl" :label="group.user_name" />
-                <div class="flex items-start flex-col justify-start">
-                  <span class="text-gray-900">{{ group.user_name }}</span>
-                </div>
-                <AccessButton
-                  class="text-gray-700 relative flex-shrink-0 ml-auto"
-                  :access-obj="group"
-                  @update-access="
-                    $resources.share.submit({
-                      entity_name: entityName,
-                      method: 'share',
-                      user: group.user_name,
-                      read: group.read,
-                      write: group.write,
-                      share: 0,
-                      user_type: 'User Group',
-                    })
-                  "
-                  @remove-access="
-                    $resources.sharedWithUserGroup.data.splice(index, 1),
-                      $resources.share.submit({
-                        entity_name: entityName,
-                        method: 'unshare',
-                        user: group.user_name,
-                        user_type: 'User Group',
-                      })
-                  "
-                />
-              </div>
-            </div>
-          </div>
           <div
-            class="grid grid-flow-col-dense grid-cols-10 items-start border-t pt-6 justify-start px-4 sm:px-6"
+            class="grid grid-flow-col-dense grid-cols-10 items-start justify-start my-5 px-4 sm:px-6"
           >
             <GeneralAccess
               size="xl"
@@ -290,9 +165,134 @@
               {{ accessMessage }}
             </span>
           </div>
+          <UserSearch
+            class="mb-5 px-4 sm:px-6"
+            :owner="$resources.sharedWith.data.owner"
+            :active-users="$resources.sharedWith.data.users"
+            :active-groups="$resources.sharedWithUserGroup.data"
+            @add-new-users="addNewUsers"
+          />
+
+          <div class="overflow-y-scroll px-4 sm:px-6">
+            <div
+              v-if="!$resources.sharedWith.loading"
+              class="text-base space-y-4 mb-5"
+            >
+              <span class="text-gray-600 font-medium text-base">Users</span>
+              <!-- Owner -->
+              <div class="flex items-center gap-x-3">
+                <Avatar
+                  size="xl"
+                  :label="$resources.sharedWith.data.owner.full_name"
+                  :image="$resources.sharedWith.data.owner.user_image"
+                />
+                <div class="flex items-start flex-col justify-start">
+                  <span class="text-gray-900">{{
+                    $resources.sharedWith.data.owner.full_name
+                  }}</span>
+                  <span class="text-gray-700">{{
+                    $resources.sharedWith.data.owner.email
+                  }}</span>
+                </div>
+                <span class="ml-auto flex items-center gap-1 text-gray-600">
+                  Owner
+                  <Diamond class="h-3.5" />
+                </span>
+              </div>
+              <!-- Users -->
+              <div
+                v-for="(user, index) in $resources.sharedWith.data.users"
+                :key="user.name"
+                class="flex items-center gap-x-3"
+              >
+                <Avatar
+                  size="xl"
+                  :label="user.user_name"
+                  :image="user.user_image"
+                />
+                <div class="flex items-start flex-col justify-start">
+                  <span class="text-gray-900">{{
+                    user.full_name ? user.full_name : user.user_name
+                  }}</span>
+                  <span class="text-gray-700">{{
+                    user.full_name ? user.user_name : ""
+                  }}</span>
+                </div>
+                <AccessButton
+                  class="text-gray-700 relative flex-shrink-0 ml-auto"
+                  :access-obj="user"
+                  @update-access="
+                    $resources.share.submit({
+                      entity_name: entityName,
+                      method: 'share',
+                      user: user.user_name,
+                      read: user.read,
+                      write: user.write,
+                      share: 0,
+                      user_type: 'User',
+                    })
+                  "
+                  @remove-access="
+                    $resources.sharedWith.data.users.splice(index, 1),
+                      $resources.share.submit({
+                        entity_name: entityName,
+                        method: 'unshare',
+                        user: user.user_name,
+                        user_type: 'User',
+                      })
+                  "
+                />
+              </div>
+            </div>
+            <!-- Groups -->
+            <div
+              v-if="$resources.sharedWithUserGroup.data?.length"
+              class="text-base space-y-4 mb-5"
+            >
+              <span
+                v-if="$resources.sharedWithUserGroup.data?.length"
+                class="text-gray-600 font-medium text-base"
+                >Groups</span
+              >
+              <div
+                v-for="(group, index) in $resources.sharedWithUserGroup.data"
+                :key="group.user_name"
+                class="flex items-center gap-x-3"
+              >
+                <Avatar size="xl" :label="group.user_name" />
+                <div class="flex items-start flex-col justify-start">
+                  <span class="text-gray-900">{{ group.user_name }}</span>
+                </div>
+                <AccessButton
+                  class="text-gray-700 relative flex-shrink-0 ml-auto"
+                  :access-obj="group"
+                  @update-access="
+                    $resources.share.submit({
+                      entity_name: entityName,
+                      method: 'share',
+                      user: group.user_name,
+                      read: group.read,
+                      write: group.write,
+                      share: 0,
+                      user_type: 'User Group',
+                    })
+                  "
+                  @remove-access="
+                    $resources.sharedWithUserGroup.data.splice(index, 1),
+                      $resources.share.submit({
+                        entity_name: entityName,
+                        method: 'unshare',
+                        user: group.user_name,
+                        user_type: 'User Group',
+                      })
+                  "
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="w-full flex items-center justify-between mt-8 px-4 sm:px-6 gap-x-2"
+          class="w-full flex items-center justify-between mt-6 px-4 sm:px-6 gap-x-2"
         >
           <Button
             v-if="!showSettings"
