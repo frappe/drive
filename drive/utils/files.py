@@ -147,8 +147,8 @@ def create_thumbnail(entity_name, path, mime_type):
                     image_path = path
                     with Image.open(image_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
-                        image.thumbnail((250, 250))
-                        image.save(str(thumbnail_savepath) + ".thumbnail", format="JPEG")
+                        image.thumbnail((512, 512))
+                        image.save(str(thumbnail_savepath) + ".thumbnail", format="webp")
                     break
                 except Exception as e:
                     print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
@@ -169,7 +169,10 @@ def create_thumbnail(entity_name, path, mime_type):
                     ret, frame = cap.read()
                     cap.release()
                     _, thumbnail_encoded = cv2.imencode(
-                        ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+                        # ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+                        ".webp",
+                        frame,
+                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
                     )
                     with open(str(thumbnail_savepath) + ".thumbnail", "wb") as f:
                         f.write(thumbnail_encoded)
