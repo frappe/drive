@@ -29,7 +29,7 @@
           />
           <ul
             v-if="searchFilterUsers?.length"
-            class="flex flex-col items-start justify-start max-h-[8rem] overflow-y-auto"
+            class="flex flex-col items-start justify-start max-h-[5.5rem] overflow-y-auto"
           >
             <li
               v-for="user in searchFilterUsers"
