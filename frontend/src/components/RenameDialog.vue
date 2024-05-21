@@ -9,14 +9,15 @@
           type="text"
           @keyup.enter="$resources.rename.submit"
         />
-        <Badge
+        <span
           v-if="entity.file_ext"
           :variant="'subtle'"
           theme="gray"
           size="sm"
-          class="ml-2"
-          :label="entity.file_ext"
-        ></Badge>
+          class="form-input font-medium ml-2 text-gray-700 border-gray-100"
+        >
+          {{ entity.file_ext.toUpperCase().slice(1) }}
+        </span>
       </div>
       <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
