@@ -42,7 +42,6 @@
           </div>
         </template>
       </SidebarItem>
-
       <SidebarItem
         v-for="item in sidebarItems"
         :key="item.label"
@@ -53,24 +52,29 @@
         class="mb-0.5"
       />
     </div>
-    <SidebarItem
-      :label="!isExpanded ? 'Expand' : 'Collapse'"
-      :is-collapsed="!isExpanded"
-      class="mt-auto"
-      @click="toggleExpanded"
-    >
-      <template #icon>
-        <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-          <ArrowLeftFromLine
-            class="stroke-[1.5] h-4 w-4 text-gray-700 duration-300 ease-in-out"
-            :class="{ '[transform:rotateY(180deg)]': !isExpanded }"
-          />
-        </span>
-      </template>
-    </SidebarItem>
+    <div class="mt-auto">
+      <StorageBar />
+      <!-- <span>{{ $resources.getRootFolderSize.data }}</span> -->
+      <SidebarItem
+        :label="!isExpanded ? 'Expand' : 'Collapse'"
+        :is-collapsed="!isExpanded"
+        class="mt-auto"
+        @click="toggleExpanded"
+      >
+        <template #icon>
+          <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
+            <ArrowLeftFromLine
+              class="stroke-[1.5] h-4 w-4 text-gray-700 duration-300 ease-in-out"
+              :class="{ '[transform:rotateY(180deg)]': !isExpanded }"
+            />
+          </span>
+        </template>
+      </SidebarItem>
+    </div>
   </div>
 </template>
 <script>
+import { formatSize } from "../utils/format"
 import PrimaryDropDown from "./PrimaryDropdown.vue"
 import { ArrowLeftFromLine } from "lucide-vue-next"
 import Search from "./EspressoIcons/Search.vue"
@@ -80,10 +84,17 @@ import Users from "./EspressoIcons/Users.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
 import Home from "./EspressoIcons/Home.vue"
+import StorageBar from "./StorageBar.vue"
 
 export default {
   name: "Sidebar",
-  components: { PrimaryDropDown, ArrowLeftFromLine, SidebarItem, Search },
+  components: {
+    PrimaryDropDown,
+    ArrowLeftFromLine,
+    SidebarItem,
+    Search,
+    StorageBar,
+  },
   emits: ["toggleMobileSidebar", "showSearchPopUp"],
   data() {
     return {
@@ -143,22 +154,12 @@ export default {
     },
   },
   methods: {
+    formatSize,
     toggleExpanded() {
       return this.$store.commit(
         "setIsSidebarExpanded",
         this.isExpanded ? false : true
       )
-    },
-  },
-  resources: {
-    getRootFolderSize() {
-      return {
-        url: "drive.api.files.get_user_directory_size",
-        onError(error) {
-          console.log(error)
-        },
-        auto: false,
-      }
     },
   },
 }
