@@ -3,7 +3,7 @@
     <template #body-main>
       <div class="pb-6 pt-5 max-h-[85vh]">
         <div
-          class="flex items-start w-full justify-between gap-x-15 mb-5 px-4 sm:px-6"
+          class="flex items-start w-full justify-between gap-x-15 mb-8 px-4 sm:px-6"
         >
           <span class="font-semibold text-2xl truncate"
             >Sharing "{{ entity?.title }}"</span
@@ -37,7 +37,7 @@
           ref="shareMain"
         >
           <div
-            class="grid grid-flow-col-dense grid-cols-10 items-start justify-start my-5 px-4 sm:px-6"
+            class="grid grid-flow-col-dense grid-cols-10 items-start justify-start mb-8 px-4 sm:px-6"
           >
             <GeneralAccess
               size="xl"
@@ -166,7 +166,8 @@
             </span>
           </div>
           <UserSearch
-            class="mb-5 px-4 sm:px-6"
+            button-variant="solid"
+            class="mb-4 px-4 sm:px-6"
             :owner="$resources.sharedWith.data.owner"
             :active-users="$resources.sharedWith.data.users"
             :active-groups="$resources.sharedWithUserGroup.data"
@@ -292,7 +293,7 @@
           </div>
         </div>
         <div
-          class="w-full flex items-center justify-between mt-6 px-4 sm:px-6 gap-x-2"
+          class="w-full flex items-center justify-between mt-2 px-4 sm:px-6 gap-x-2"
         >
           <Button
             v-if="!showSettings"
@@ -601,3 +602,9 @@ export default {
   },
 }
 </script>
+
+<style>
+dialogpanel: {
+  overflow: visible;
+}
+</style>
