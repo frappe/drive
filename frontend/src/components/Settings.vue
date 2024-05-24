@@ -1,7 +1,7 @@
 <template>
-  <Dialog v-model="show" :options="{ title: 'Settings', size: '3xl' }">
+  <Dialog v-model="show" :options="{ title: 'Settings', size: '5xl' }">
     <template #body>
-      <div class="flex" :style="{ height: 'calc(100vh - 12rem)' }">
+      <div class="flex" :style="{ height: 'calc(100vh - 10rem)' }">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
           <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
             Settings
@@ -25,12 +25,12 @@
             </button>
           </div>
         </div>
-        <div class="flex flex-1 flex-col pl-8 pr-4 pt-12">
+        <div class="flex flex-1 flex-col px-12 pt-12 overflow-y-auto">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
         <Button
-          class="my-3 mr-4"
-          variant="minimal"
+          class="my-3 mr-4 absolute right-0"
+          variant="ghost"
           @click="$emit('update:modelValue', false)"
         >
           <FeatherIcon name="x" class="stroke-2 ml-auto h-4" />
@@ -42,22 +42,32 @@
 <script>
 import { ref, defineProps, markRaw } from "vue"
 import { Dialog, FeatherIcon, Button } from "frappe-ui"
-import { Users } from "lucide-vue-next"
 import ProfileSettings from "@/components/ProfileSettings.vue"
-import UserRoleSettings from "./UserRoleSettings.vue"
+import UserSettings from "@/components/UserSettings.vue"
+import UserRoleSettings from "@/components/UserRoleSettings.vue"
+import AboutSettings from "@/components/AboutSettings.vue"
+import StorageSettings from "./StorageSettings.vue"
+import User from "./EspressoIcons/User.vue"
+import Users from "./EspressoIcons/Users.vue"
+import Cloud from "./EspressoIcons/Cloud.vue"
 
 let tabs = [
-  /* {
-    label: "My Profile",
-    icon: UserCog,
-    component: markRaw(ProfileSettings),
-  },  */
   {
-    label: "User Groups",
-    icon: Users,
-    component: markRaw(UserRoleSettings),
+    label: "Profile",
+    icon: User,
+    component: markRaw(ProfileSettings),
   },
-  /*  {
+  {
+    label: "Users",
+    icon: Users,
+    component: markRaw(UserSettings),
+  },
+  {
+    label: "Storage",
+    icon: Cloud,
+    component: markRaw(StorageSettings),
+  },
+  /*   {
     label: "About",
     icon: Info,
     component: markRaw(AboutSettings),
