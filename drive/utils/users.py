@@ -35,12 +35,15 @@ def get_users_with_drive_user_role_and_groups(txt=""):
 
 
 @frappe.whitelist()
-def get_users_with_drive_user_role(txt=""):
+def get_users_with_drive_user_role(txt="", get_roles=False):
     try:
         drive_users = frappe.get_all(
             doctype="User",
+            order_by="full_name",
             filters=[
                 ["Has Role", "role", "=", "Drive User"],
+                ["full_name", "not like", "Administrator"],
+                ["full_name", "not like", "Guest"],
                 ["full_name", "like", f"%{txt}%"],
             ],
             fields=[
@@ -49,6 +52,13 @@ def get_users_with_drive_user_role(txt=""):
                 "user_image",
             ],
         )
+        if get_roles == "true":
+            for user in drive_users:
+                if frappe.db.exists("Has Role", {"parent": user.email, "role": "Drive Admin"}):
+                    user["role"] = "Admin"
+                else:
+                    user["role"] = "User"
+
         return drive_users
 
     except Exception as e:
