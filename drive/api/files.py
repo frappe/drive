@@ -1183,10 +1183,31 @@ def auto_delete_from_trash():
 
 
 @frappe.whitelist()
-def get_user_directory_size():
+def total_storage_used():
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    query = frappe.qb.from_(DriveEntity).select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+    result = query.run(as_dict=False)
+    return result[0]
+
+
+@frappe.whitelist()
+def total_storage_used_by_file_kind():
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("total_size"))
+        .where(DriveEntity.is_group == 0)
+        .groupby(DriveEntity.file_kind)
+    )
+    return query.run(as_dict=True)
+
+
+@frappe.whitelist()
+def total_disk_storage_used():
     try:
-        user_directory = get_user_directory(0)
-        cmd = f"du -sh {Path(user_directory.path)} | grep -oP '^[\d.]+[KMG]' "
+        user_directory = get_user_directory()
+        # -sb doesnt work on macos
+        cmd = f"du -sb {Path(user_directory.path)} | cut -f1"
         result = os.popen(cmd)
         size = result.read().strip()
     except:
