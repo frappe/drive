@@ -1,103 +1,103 @@
 <template>
-  <div
-    class="flex h-full w-full flex-col items-start justify-start rounded-lg text-center"
-  >
-    <div class="flex items-center w-full mb-1">
-      <div class="flex flex-col items-start">
-        <h1 class="font-semibold">User Groups</h1>
-        <span class="text-sm py-1 mb-4 text-gray-600">
-          Create and manage user groups
-        </span>
-      </div>
-      <Button
-        size="sm"
-        variant="subtle"
-        icon-left="plus"
-        class="ml-auto"
-        @click="CreateRoleDialog = !CreateRoleDialog"
+  <div class="w-full pt-2 flex flex-col items-stretch justify-start">
+    <div v-for="(group, index) in AllRoles" :key="group.name">
+      <div
+        v-if="index > 0"
+        class="w-[95%] mx-auto h-px border-t border-gray-200"
+      ></div>
+      <div
+        class="flex text-base items-center justify-start p-2 cursor-pointer hover:bg-gray-50 rounded w-full"
+        @click.self="viewGroupDetails(group.name)"
       >
-        New
-      </Button>
+        <Avatar size="lg" :label="group.name" />
+        <span class="ml-2">{{ group.name }}</span>
+        <Dropdown
+          :button="{
+            icon: 'more-horizontal',
+            label: 'Page Options',
+            variant: 'ghost',
+          }"
+          class="ml-auto"
+          :options="[
+            {
+              label: 'Remove',
+              icon: 'trash-2',
+              onClick: () => {
+                activeGroup = group.name
+                showDeleteDialog = true
+              },
+            },
+          ]"
+        >
+          <Button>
+            <template #icon>
+              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+            </template> </Button
+        ></Dropdown>
+      </div>
     </div>
-
-    <div class="flex items-center w-full mb-1"></div>
 
     <div
-      v-if="AllRoles?.length"
-      class="flex flex-col h-full w-full overflow-x-hidden overflow-y-scroll"
+      v-if="!AllRoles?.length"
+      class="h-1/2 w-full flex flex-col items-center justify-center"
     >
-      <div
-        v-for="group in AllRoles"
-        :key="group.name"
-        class="flex flex-col content-center items-start w-full hover:bg-gray-50 rounded cursor-pointer group"
-        @click="viewGroupDetails(group.name)"
-      >
-        <div class="flex items-center w-full py-4 px-1">
-          <Avatar size="xl" :label="group.name" />
-          <span class="ml-2 text-base text-gray-900">{{ group.name }}</span>
-          <Button
-            icon="trash-2"
-            variant="minimal"
-            class="z-40 text-red-500 ml-auto invisible group-hover:visible"
-            @click.prevent.stop="
-              $resources.deleteUserGroup.submit({
-                group_name: group.name,
-              })
-            "
-          >
-            Delete
-          </Button>
-        </div>
-        <div class="mx-3 h-px border-t border-gray-200 w-full"></div>
-      </div>
-    </div>
-    <div v-else class="h-1/2 w-full flex flex-col items-center justify-center">
       <FeatherIcon class="h-10 stroke-1 text-gray-600" name="users" />
       <span class="text-gray-800 text-sm">You dont have any groups</span>
     </div>
-    <!--     <span class="text-lg font-medium">Organization Settings</span>
-    <div class="flex justify-between w-full pt-4 pb-8">
-      <div class="flex flex-col items-start">
-        <span class="text-base font-medium">Name</span>
-        <span class="text-sm py-1 text-gray-600">
-          All Drive users on this instance are a part of this
-        </span>
-      </div>
-      <Button class="font-medium text-gray-800" appearance="minimal">
-        <template #prefix>
-          <FeatherIcon name="edit" class="text-gray-800 stroke-1.5 h-4" />
-        </template>
-        Frappe
-      </Button>
-    </div> -->
-    <span class="text-sm pb-4 text-gray-600 mt-auto">
-      This page is only available to Administrators
-    </span>
+
+    <NewRoleDialog
+      v-if="CreateRoleDialog"
+      v-model="CreateRoleDialog"
+      @success="
+        () => {
+          CreateRoleDialog = false
+          $resources.getUserGroups.fetch()
+        }
+      "
+    />
+    <RoleDetailsDialog
+      v-if="EditRoleDialog"
+      v-model="EditRoleDialog"
+      :role-name="RoleName"
+      @success="
+        () => {
+          $resources.getUserGroups.fetch()
+        }
+      "
+    />
+    <Dialog
+      v-model="showDeleteDialog"
+      :options="{
+        title: 'Delete ' + activeGroup,
+        message:
+          'This will delete the group. Members will lose access to files shared with this group.',
+        size: 'sm',
+        actions: [
+          {
+            label: 'Confirm',
+            variant: 'solid',
+            theme: 'red',
+            onClick: () => {
+              $resources.deleteUserGroup.submit({
+                group_name: activeGroup,
+              })
+            },
+          },
+        ],
+      }"
+    />
+    <Button
+      variant="subtle"
+      icon-left="plus"
+      class="ml-auto my-2"
+      @click="CreateRoleDialog = !CreateRoleDialog"
+    >
+      New Group
+    </Button>
   </div>
-  <NewRoleDialog
-    v-if="CreateRoleDialog"
-    v-model="CreateRoleDialog"
-    @success="
-      () => {
-        CreateRoleDialog = false
-        $resources.getUserGroups.fetch()
-      }
-    "
-  />
-  <RoleDetailsDialog
-    v-if="EditRoleDialog"
-    v-model="EditRoleDialog"
-    :role-name="RoleName"
-    @success="
-      () => {
-        EditRoleDialog = false
-        $resources.getUserGroups.fetch()
-      }
-    "
-  />
 </template>
 <script>
-import { Avatar, FeatherIcon } from "frappe-ui"
+import { Avatar, FeatherIcon, Dropdown, Dialog } from "frappe-ui"
 import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue"
 import NewRoleDialog from "./NewRoleDialog.vue"
 
@@ -108,6 +108,8 @@ export default {
     RoleDetailsDialog,
     NewRoleDialog,
     FeatherIcon,
+    Dropdown,
+    Dialog,
   },
   data() {
     return {
@@ -117,6 +119,8 @@ export default {
       EditRoleDialog: false,
       AllRoles: null,
       errorMessage: "",
+      activeGroup: null,
+      showDeleteDialog: false,
     }
   },
   computed: {
@@ -128,6 +132,7 @@ export default {
   },
   methods: {
     viewGroupDetails(value) {
+      this.activeGroup = value
       this.RoleName = value
       this.EditRoleDialog = !this.EditRoleDialog
     },
@@ -141,6 +146,8 @@ export default {
         },
         onSuccess() {
           this.errorMessage = ""
+          this.activeGroup = ""
+          this.showDeleteDialog = false
           this.$resources.getUserGroups.fetch()
         },
         onError(data) {
