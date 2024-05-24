@@ -2,7 +2,7 @@
   <Dialog v-model:open="open" :options="{ size: 'xl', position: 'top' }">
     <template #body>
       <div class="flex px-4 py-2 gap-1 items-center border-b">
-        <FeatherIcon class="w-4 h-auto" name="search" />
+        <Search class="w-4 mr-1 h-auto" name="search" />
         <input
           icon-left="search"
           type="text"
@@ -72,7 +72,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <FeatherIcon name="home" class="mr-2 h-4 w-4 text-gray-700" />
+            <Home class="mr-2 h-4 w-4 text-gray-700" />
             Home
           </div>
           <div
@@ -82,7 +82,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <FeatherIcon name="clock" class="mr-2 h-4 w-4 text-gray-700" />
+            <Recent class="mr-2 h-4 w-4 text-gray-700" />
             Recents
           </div>
           <div
@@ -92,7 +92,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <FeatherIcon name="star" class="mr-2 h-4 w-4 text-gray-700" />
+            <Star class="mr-2 h-4 w-4 text-gray-700" />
             Favourites
           </div>
         </div>
@@ -104,7 +104,7 @@
               emitter.emit('uploadFile'), emitter.emit('showSearchPopup', false)
             "
           >
-            <FileUp class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
+            <FileUpload class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
             Upload File
           </div>
           <div
@@ -114,7 +114,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <FolderUp class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
+            <FolderUpload class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
             Upload Folder
           </div>
           <!--       <div class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
@@ -131,10 +131,17 @@
   </Dialog>
 </template>
 <script>
+import Home from "./EspressoIcons/Home.vue"
+import Recent from "./EspressoIcons/Recent.vue"
+import Favourites from "./EspressoIcons/Star.vue"
+import Search from "./EspressoIcons/Search.vue"
+import FileUpload from "./EspressoIcons/File-upload.vue"
+import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import { Dialog, FeatherIcon, Avatar } from "frappe-ui"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { FileUp, FolderUp } from "lucide-vue-next"
+import Star from "./EspressoIcons/Star.vue"
 
 export default {
   name: "SearchPopup",
@@ -144,6 +151,13 @@ export default {
     FileUp,
     FolderUp,
     Avatar,
+    Home,
+    Recent,
+    Favourites,
+    Search,
+    Star,
+    FileUpload,
+    FolderUpload,
   },
   emits: ["openEntity", "update:open"],
   setup() {
