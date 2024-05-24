@@ -28,7 +28,12 @@ def mime_to_human(mime_type, is_group):
         "application/json": "Text",
         "application/xml": "XML Data",
         "application/x-httpd-php": "Text",
+        "text/x-python": "Text",
         "application/x-python-script": "Text",
+        "application/x-sql": "Text",
+        "text/x-perl": "Text",
+        "text/x-csrc": "Text",
+        "text/x-sh": "Text",
         # Document
         "application/msword": "Document",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "Document",
@@ -59,6 +64,7 @@ def mime_to_human(mime_type, is_group):
         "video/webm": "Video",
         "video/ogg": "Video",
         "video/quicktime": "Video",
+        "video/x-matroska": "Video",
         # Book
         "application/epub+zip": "Book",
         "application/x-mobipocket-ebook": "Book",
