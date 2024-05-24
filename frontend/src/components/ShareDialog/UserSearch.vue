@@ -3,61 +3,74 @@
     <div
       class="flex items-center justify-start col-span-10 bg-gray-100 rounded text-base"
     >
-      <Popover v-slot="{ open }" class="relative w-full">
-        <PopoverButton
-          class="text-left w-full max-w-full focus:outline-none pl-2 text-gray-600 truncate overflow-hidden"
+      <Popover v-slot="{ open }" class="min-w-full">
+        <Float
+          placement="bottom"
+          :auto-update="true"
+          as="div"
+          class="relative"
+          :offset="10"
+          floating-as="template"
+          portal
+          adaptive-width
         >
-          <span
-            v-for="(user, index) in newUsers"
-            :key="user.user_name"
-            class="text-gray-800"
+          <PopoverButton
+            class="text-left w-full max-w-full focus:outline-none pl-2 text-gray-600 truncate overflow-hidden"
           >
-            <template v-if="index > 0">, </template>
-            {{ user.full_name }}
-          </span>
-          <span v-if="!newUsers.length" class="">Add users</span>
-        </PopoverButton>
-        <PopoverPanel
-          class="z-10 bg-white px-1.5 pt-1.5 shadow-2xl rounded-lg mt-3 absolute w-full"
-        >
-          <Input
-            v-model="searchUserText"
-            class="bg-white pb-1.5"
-            placeholder="Search users"
-            type="text"
-            @input="searchUserText = $event"
-          />
-          <ul
-            v-if="searchFilterUsers?.length"
-            class="flex flex-col items-start justify-start max-h-[5.5rem] overflow-y-auto"
-          >
-            <li
-              v-for="user in searchFilterUsers"
-              :key="user.email"
-              class="flex items-center justify-start px-1.5 py-1 hover:bg-gray-100 w-full rounded cursor-pointer"
-              @click="addNewUser(user)"
+            <span
+              v-for="(user, index) in newUsers"
+              :key="user.user_name"
+              class="text-gray-800"
             >
-              <Avatar
-                size="sm"
-                :label="user.full_name"
-                :image="user.user_image"
-                class="mr-2"
-              />
+              <template v-if="index > 0">, </template>
               {{ user.full_name }}
-            </li>
-          </ul>
-          <span v-else class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
-            >No users found</span
+            </span>
+            <span v-if="!newUsers.length" class="">Add users</span>
+          </PopoverButton>
+          <PopoverPanel
+            class="z-10 bg-white px-1.5 pt-1.5 shadow-2xl rounded-lg max-w-96 w-full"
           >
-          <div class="flex items-center justify-end border-t py-1 mt-1">
-            <Button
-              class="px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
-              @click="resetAll"
+            <Input
+              v-model="searchUserText"
+              class="bg-white pb-1.5"
+              placeholder="Search users"
+              type="text"
+              @input="searchUserText = $event"
+            />
+            <ul
+              v-if="searchFilterUsers?.length"
+              class="flex flex-col items-start justify-start max-h-[10rem] overflow-y-auto"
             >
-              Clear all
-            </Button>
-          </div>
-        </PopoverPanel>
+              <li
+                v-for="user in searchFilterUsers"
+                :key="user.email"
+                class="flex items-center justify-start px-1.5 py-1 hover:bg-gray-100 w-full rounded cursor-pointer"
+                @click="addNewUser(user)"
+              >
+                <Avatar
+                  size="sm"
+                  :label="user.full_name"
+                  :image="user.user_image"
+                  class="mr-2"
+                />
+                {{ user.full_name }}
+              </li>
+            </ul>
+            <span
+              v-else
+              class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
+              >No users found</span
+            >
+            <div class="flex items-center justify-end border-t py-1 mt-1">
+              <Button
+                class="px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
+                @click="resetAll"
+              >
+                Clear all
+              </Button>
+            </div>
+          </PopoverPanel>
+        </Float>
       </Popover>
 
       <!--       <div class="border-l border-gray-300 h-5"></div>
@@ -88,7 +101,7 @@
     </div>
     <Button
       class="col-span-2"
-      variant="solid"
+      :variant="buttonVariant"
       @click="
         emit('addNewUsers', { users: newUsers, access: newUserAccess }),
           (newUsers = [])
@@ -100,6 +113,7 @@
 </template>
 
 <script setup>
+import { Float } from "@headlessui-float/vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 import { defineEmits, computed, ref } from "vue"
 import { createResource, Avatar, Input, FeatherIcon } from "frappe-ui"
@@ -108,7 +122,41 @@ const searchUserText = ref("")
 const allUsers = ref([])
 const newUserAccess = ref({ read: 1, write: 0 })
 const newUsers = ref([])
-const props = defineProps(["owner", "activeUsers", "activeGroups"])
+const props = defineProps({
+  buttonVariant: {
+    type: String,
+    default: "subtle",
+  },
+  searchGroups: {
+    type: Boolean,
+    default: true,
+  },
+  activeUsers: {
+    type: Object,
+    default() {
+      return {
+        user_name: "",
+        user_image: "",
+      }
+    },
+  },
+  activeGroups: {
+    type: Object,
+    default() {
+      return {
+        user_name: "",
+      }
+    },
+  },
+  owner: {
+    type: Object,
+    default() {
+      return {
+        user_name: "",
+      }
+    },
+  },
+})
 const emit = defineEmits(["addNewUsers"])
 
 const searchFilterUsers = computed(() => {
@@ -144,7 +192,9 @@ function resetAll() {
 }
 
 let fetchAllUsers = createResource({
-  url: "drive.utils.users.get_users_with_drive_user_role_and_groups",
+  url: props.searchGroups
+    ? "drive.utils.users.get_users_with_drive_user_role_and_groups"
+    : "drive.utils.users.get_users_with_drive_user_role",
   method: "GET",
   auto: true,
   onSuccess(data) {
