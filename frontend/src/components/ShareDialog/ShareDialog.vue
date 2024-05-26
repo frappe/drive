@@ -602,9 +602,3 @@ export default {
   },
 }
 </script>
-
-<style>
-dialogpanel: {
-  overflow: visible;
-}
-</style>
