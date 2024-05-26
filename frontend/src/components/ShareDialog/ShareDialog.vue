@@ -174,7 +174,7 @@
             @add-new-users="addNewUsers"
           />
 
-          <div class="overflow-y-scroll px-4 sm:px-6">
+          <div class="overflow-y-auto px-4 sm:px-6">
             <div
               v-if="!$resources.sharedWith.loading"
               class="text-base space-y-4 mb-5"
