@@ -1,5 +1,17 @@
 <template>
   <div class="flex flex-col items-stretch justify-start pt-2">
+    <div class="mb-2 flex items-center justify-between">
+      <span class="font-medium leading-normal text-gray-800 text-base mb-2"
+        >Users</span
+      >
+      <Button
+        variant="subtle"
+        icon-left="plus"
+        @click="CreateRoleDialog = !CreateRoleDialog"
+      >
+        Invite
+      </Button>
+    </div>
     <div
       v-for="(user, index) in $resources.fetchAllUsers?.data"
       :key="user.user_name"
@@ -78,7 +90,6 @@ export default {
             delete item.email
           }
         })
-        console.log(data)
       },
       onError(error) {
         if (error.messages) {
