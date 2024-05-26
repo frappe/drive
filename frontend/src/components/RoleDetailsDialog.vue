@@ -31,6 +31,7 @@
         </div>
         <Dropdown
           class="ml-auto"
+          placement="right"
           :options="[
             {
               label: 'Remove',
@@ -148,8 +149,6 @@ export default {
         },
         onSuccess(data) {
           this.UsersInRole = data
-          //this.uniqueUsers = data
-          console.log(data)
           data.forEach((user) => {
             user.user_name = user.email
             user.user_type = "User"
