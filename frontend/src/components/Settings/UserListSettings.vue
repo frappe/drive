@@ -4,13 +4,13 @@
       <span class="font-medium leading-normal text-gray-800 text-base mb-2"
         >Users</span
       >
-      <Button
+      <!-- <Button
         variant="subtle"
         icon-left="plus"
         @click="CreateRoleDialog = !CreateRoleDialog"
       >
         Invite
-      </Button>
+      </Button> -->
     </div>
     <div
       v-for="(user, index) in $resources.fetchAllUsers?.data"
