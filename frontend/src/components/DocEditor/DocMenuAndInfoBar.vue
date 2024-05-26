@@ -18,7 +18,7 @@
       </div>
       <div v-if="entity && editor">
         <!-- Info -->
-        <div v-if="tab === 4" class="p-4 border-b">
+        <div v-if="tab === 4" class="px-5 py-4 border-b">
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
@@ -65,7 +65,6 @@
                     class="-mr-[3px] outline outline-white"
                   />
                 </div>
-
               </div>
             </div>
             <!-- <div
@@ -159,7 +158,7 @@
         </div>
 
         <!-- Comments -->
-        <div v-if="tab === 5" class="p-4 border-b">
+        <div v-if="tab === 5" class="px-5 py-4 border-b">
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
@@ -180,7 +179,7 @@
         </div>
 
         <!-- Typography -->
-        <div v-if="tab === 0" class="flex flex-col p-4 border-b">
+        <div v-if="tab === 0" class="flex flex-col px-5 py-4 border-b">
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
@@ -559,7 +558,7 @@
         </div>
 
         <!-- Insert -->
-        <div v-if="tab === 1" class="flex flex-col p-4 border-b">
+        <div v-if="tab === 1" class="flex flex-col px-5 py-4 border-b">
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
@@ -988,7 +987,7 @@
         </div>
 
         <!-- Document Settings -->
-        <div v-if="tab === 2" class="flex flex-col p-4 border-b">
+        <div v-if="tab === 2" class="flex flex-col px-5 py-4 border-b">
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
@@ -1080,7 +1079,7 @@
         </div>
 
         <!-- Transform -->
-        <div v-if="tab === 3" class="p-4 border-b">
+        <div v-if="tab === 3" class="px-5 py-4 border-b">
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
