@@ -1,38 +1,15 @@
 <template>
-  <Dialog v-model="open" :options="{ title: DialogTitle, size: 'md' }">
-    <template #body>
-      <div class="p-5">
-        <div class="flex items-start w-full justify-between gap-x-15 mb-5">
-          <span class="font-semibold text-2xl truncate">{{ DialogTitle }}</span>
-          <Button
-            class="ml-auto"
-            variant="ghost"
-            @click="$emit('update:modelValue', false)"
-          >
-            <FeatherIcon name="x" class="stroke-2 h-4" />
-          </Button>
-        </div>
-
-        <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="pl-0 mb-4"></Tabs>
-
+  <Dialog v-model="open" :options="{ title: DialogTitle, size: 'lg' }">
+    <template #body-content>
+      <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="pl-0 mb-2">
         <div
-          class="flex flex-col justify-items-start min-h-[40vh] justify-start max-h-[40vh] overflow-y-scroll pb-5"
+          class="flex flex-col justify-items-start h-[40vh] justify-start overflow-y-auto px-3"
         >
-          <NoFilesSection
-            v-if="!folderContents?.length"
-            class="my-auto"
-            primary-message="Nothing in here"
-            secondary-message=""
-          />
-          <div
-            v-for="entity in folderContents"
-            :id="entity.name"
-            :key="entity.name"
-          >
+          <div v-for="item in folderContents" :id="item.name" :key="item.name">
             <div
-              class="entity grid items-center cursor-pointer rounded pl-2 pr-4 py-1.5 group hover:bg-gray-100"
+              class="item grid items-center cursor-pointer rounded pl-2 pr-4 py-1.5 group hover:bg-gray-100"
               :draggable="false"
-              @click="openEntity(entity)"
+              @click="openEntity(item)"
               @dragenter.prevent
               @dragover.prevent
               @mousedown.stop
@@ -42,8 +19,8 @@
                 :draggable="false"
               >
                 <svg
-                  v-if="entity.is_group"
-                  :style="{ fill: entity.color }"
+                  v-if="item.is_group"
+                  :style="{ fill: item.color }"
                   :draggable="false"
                   class="h-[20px] mr-3"
                   viewBox="0 0 30 30"
@@ -55,103 +32,169 @@
                 </svg>
                 <img
                   v-else
-                  :src="getIconUrl(formatMimeType(entity.mime_type))"
+                  :src="getIconUrl(formatMimeType(item.mime_type))"
                   :draggable="false"
                   class="h-[20px] mr-3"
                 />
-                {{ entity.title }}
+                {{ item.title }}
               </div>
             </div>
             <div class="border-t w-full mx-auto max-w-[95%]"></div>
           </div>
         </div>
-        <div class="flex text-sm mt-2 mb-6 px-2">
-          <div v-for="(crumb, index) in breadcrumbs" :key="index">
+        <div
+          class="flex items-center px-2"
+          :class="breadcrumbs.length > 1 ? 'visible' : 'invisible'"
+        >
+          <Dropdown
+            v-if="dropDownItems.length"
+            class="h-7"
+            :options="dropDownItems"
+          >
+            <Button variant="ghost">
+              <template #icon>
+                <svg
+                  class="w-4 text-gray-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="19" cy="12" r="1" />
+                  <circle cx="5" cy="12" r="1" />
+                </svg>
+              </template>
+            </Button>
+          </Dropdown>
+          <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
+            {{ "/" }}
+          </span>
+          <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
             <span
               v-if="breadcrumbs.length > 1 && index > 0"
-              class="text-gray-600 mx-1"
+              class="text-gray-600 mx-0.5"
             >
-              {{ ">" }}
+              {{ "/" }}
             </span>
             <button
               class="text-base cursor-pointer"
               :class="
                 breadcrumbs.length - 1 === index
-                  ? 'text-gray-900'
-                  : 'text-gray-600'
+                  ? 'text-gray-900 text-base font-medium p-1'
+                  : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
               "
-              @click="closeEntity(index)"
+              @click="closeEntity(crumb.name)"
             >
               {{ crumb.title }}
             </button>
           </div>
         </div>
-        <div class="w-full flex items-center justify-between mt-2">
-          <!-- <Button
-          :disabled="disableNewFolder"
-          :variant="'subtle'"
-          :loading="folderContents?.loading"
-        >
-          <template #prefix><NewFolder /></template>
-          New Folder
-        </Button> -->
-          <Button
-            variant="solid"
-            class="mt-2 w-full"
-            :loading="move.loading"
-            @click="
-              move.submit({
-                entity_names: store.state.entityInfo.map((obj) => obj.name),
-                new_parent: currentFolder,
-              })
-            "
-          >
-            <template #prefix>
-              <Move></Move>
-            </template>
-            Move
-          </Button>
-        </div>
-      </div>
+      </Tabs>
+    </template>
+    <template #actions>
+      <Button
+        variant="solid"
+        class="w-full"
+        :loading="move.loading"
+        :disabled="!evalPermission"
+        @click="
+          move.submit({
+            entity_names: store.state.entityInfo.map((obj) => obj.name),
+            new_parent: currentFolder,
+          })
+        "
+      >
+        <template #prefix>
+          <Move></Move>
+        </template>
+        Move
+      </Button>
     </template>
   </Dialog>
 </template>
-
 <script setup>
-import NoFilesSection from "./NoFilesSection.vue"
 import { watch, defineEmits, computed, h, ref } from "vue"
-import { createResource, Dialog, FeatherIcon, Button, Tabs } from "frappe-ui"
+import { createResource, Dialog, Button, Tabs, Dropdown } from "frappe-ui"
 import { formatSize, formatDate, formatMimeType } from "@/utils/format"
-import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import Home from "./EspressoIcons/Home.vue"
 import Star from "./EspressoIcons/Star.vue"
 import Users from "./EspressoIcons/Users.vue"
 import Move from "./EspressoIcons/Move.vue"
-import NewFolder from "./EspressoIcons/NewFolder.vue"
 
+const store = useStore()
+const currentFolder = ref(store.state.homeFolderID)
+const emit = defineEmits(["update:modelValue", "success"])
 const props = defineProps({
   entity: {
     type: Object,
     required: false,
     default: null,
   },
-  suggestedTabIndex: {
-    type: Number,
-    default: 0,
+})
+
+const open = computed({
+  get() {
+    return props.modelValue
+  },
+  set(newValue) {
+    emit("update:modelValue", newValue)
   },
 })
-const store = useStore()
-const tabIndex = ref(props.suggestedTabIndex)
-const folderContents = ref()
-const folderName = ref("")
-const breadcrumbs = ref([{ name: store.state.homeFolderID, title: "Home" }])
+
+const evalPermission = computed(() => {
+  if (currentFolder.value) {
+    if (
+      folderPermissions.data?.owner === currentUserEmail.value ||
+      folderPermissions.data?.write === 1
+    ) {
+      return true
+    }
+  }
+  return false
+})
+
+const DialogTitle = computed(() => {
+  if (store.state.entityInfo.length > 1) {
+    return `Moving ${store.state.entityInfo.length} items`
+  } else {
+    return `Moving "${store.state.entityInfo[0].title}"`
+  }
+})
+
+const currentUserEmail = computed(() => {
+  return store.state.auth.user_id
+})
+
+const lastTwoBreadCrumbs = computed(() => {
+  if (breadcrumbs.value.length > 2) {
+    return breadcrumbs.value.slice(-2)
+  }
+  return breadcrumbs.value
+})
+
+const dropDownItems = computed(() => {
+  let allExceptLastTwo = breadcrumbs.value.slice(0, -2)
+  return allExceptLastTwo.map((item) => {
+    return {
+      ...item,
+      icon: null,
+      label: item.title,
+      onClick: () => closeEntity(item.name),
+    }
+  })
+})
 
 const tabs = [
   {
     label: "Home",
     icon: h(Home, { class: "w-4 h-4" }),
-    component: NoFilesSection,
   },
   {
     label: "Favourites",
@@ -163,87 +206,23 @@ const tabs = [
   },
 ]
 
-const disableNewFolder = computed(() => {
-  if (tabIndex.value === 0 && !!currentFolder.value) {
-    return false
-  }
-  if (folderPermissions.data?.owner === currentUserEmail.value) {
-    return false
-  } else if (folderPermissions.data?.write) {
-    return false
-  }
-  return true
-})
+const tabIndex = ref(0)
+const folderContents = ref()
+const breadcrumbs = ref([{ name: store.state.homeFolderID, title: "Home" }])
 
-const currentUserEmail = computed(() => {
-  return store.state.auth.user_id
-})
-
-const currentFolder = computed(() => {
-  if (breadcrumbs.value.length) {
-    return breadcrumbs.value[breadcrumbs.value.length - 1].name
-  }
-  return store.state.homeFolderID
-})
-
-const emit = defineEmits(["update:modelValue", "success"])
-const DialogTitle = computed(() => {
-  if (store.state.entityInfo.length > 1) {
-    return `Moving ${store.state.entityInfo.length} items`
-  } else {
-    return `Moving "${store.state.entityInfo[0].title}"`
-  }
-})
-
-const open = computed({
-  // getter
-  get() {
-    return this.modelValue
+const folderPermissions = createResource({
+  url: "drive.api.permissions.get_entity_with_permissions",
+  params: {
+    entity_name: currentFolder.value,
   },
-  // setter
-  set(newValue) {
-    emit("update:modelValue", newValue)
-  },
+  auto: false,
 })
-
-function openEntity(value) {
-  folderPermissions.fetch({
-    entity_name: value.name,
-    fields: "title,is_group,allow_comments,allow_download,owner",
-  })
-  if (value.is_group) {
-    breadcrumbs.value.push({ name: value.name, title: value.title })
-    fetchFolderContents.fetch({
-      entity_name: currentFolder.value,
-      is_active: 1,
-      recents_only: false,
-      favourites_only: false,
-      file_kind_list: JSON.stringify(["Folder"]),
-    })
-  }
-}
-
-function closeEntity(index) {
-  if (breadcrumbs.value.length > 1 && index !== breadcrumbs.value.length - 1) {
-    breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
-    if (tabIndex.value === 1) {
-      favourites.fetch()
-    } else {
-      fetchFolderContents.fetch({
-        entity_name: currentFolder.value,
-        is_active: 1,
-        recents_only: false,
-        favourites_only: false,
-        file_kind_list: JSON.stringify(["Folder"]),
-      })
-    }
-  }
-}
 
 watch(tabIndex, (newValue) => {
   switch (newValue) {
     case 0:
       breadcrumbs.value = [{ name: store.state.homeFolderID, title: "Home" }]
+      currentFolder.value = store.state.homeFolderID
       fetchFolderContents.fetch({
         entity_name: currentFolder.value,
         is_active: 1,
@@ -254,12 +233,19 @@ watch(tabIndex, (newValue) => {
       break
     case 1:
       breadcrumbs.value = [{ name: "", title: "Favourites" }]
-      favourites.fetch()
+      currentFolder.value = null
+      fetchFolderContents.fetch({
+        entity_name: "",
+        is_active: 1,
+        recents_only: false,
+        favourites_only: true,
+        file_kind_list: JSON.stringify(["Folder"]),
+      })
       break
     case 2:
       breadcrumbs.value = [{ name: "", title: "Shared" }]
+      currentFolder.value = null
       sharedWithMe.fetch({
-        entity_name: "",
         is_active: 1,
         recents_only: false,
         favourites_only: false,
@@ -273,31 +259,53 @@ watch(tabIndex, (newValue) => {
   }
 })
 
-let sharedWithMe = createResource({
-  url: "drive.api.list.shared_with_user",
-  method: "GET",
-  auto: props.suggestedTabIndex === 2 ? true : false,
-  onSuccess(data) {
-    data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size
-      entity.file_size = entity.is_group
-        ? entity.item_count + " items"
-        : formatSize(entity.file_size)
-      entity.modified = formatDate(entity.modified)
-      entity.creation = formatDate(entity.creation)
-    })
-    folderContents.value = data
-  },
-  onError(error) {
-    console.log(error)
-  },
-})
+function openEntity(value) {
+  currentFolder.value = value.name
+  folderPermissions.fetch({
+    entity_name: value.name,
+    fields: "title,is_group,allow_comments,allow_download,owner",
+  })
+  breadcrumbs.value.push({ name: value.name, title: value.title })
+  fetchFolderContents.fetch({
+    entity_name: currentFolder.value,
+    is_active: 1,
+    recents_only: false,
+    favourites_only: false,
+    file_kind_list: JSON.stringify(["Folder"]),
+  })
+}
 
-let fetchFolderContents = createResource({
+function closeEntity(name) {
+  console.log(name)
+  const index = breadcrumbs.value.findIndex((obj) => obj.name === name)
+  if (breadcrumbs.value.length > 1 && index !== breadcrumbs.value.length - 1) {
+    breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
+    currentFolder.value = breadcrumbs.value[breadcrumbs.value.length - 1].name
+    if (tabIndex.value === 2 && !currentFolder.value.length) {
+      sharedWithMe.fetch({
+        is_active: 1,
+        recents_only: false,
+        favourites_only: false,
+        file_kind_list: JSON.stringify(["Folder"]),
+      })
+    } else {
+      fetchFolderContents.fetch({
+        entity_name: currentFolder.value,
+        is_active: 1,
+        recents_only: false,
+        favourites_only: tabIndex.value === 1 ? true : false,
+        file_kind_list: JSON.stringify(["Folder"]),
+      })
+    }
+  }
+}
+
+const fetchFolderContents = createResource({
   method: "GET",
   url: "drive.api.list.files",
-  auto: props.suggestedTabIndex === 0 ? true : false,
+  auto: true,
   params: {
+    entity_name: currentFolder.value,
     is_active: 1,
     recents_only: false,
     favourites_only: false,
@@ -318,16 +326,10 @@ let fetchFolderContents = createResource({
   },
 })
 
-let favourites = createResource({
-  url: "drive.api.list.files",
-  params: {
-    is_active: 1,
-    recents_only: false,
-    favourites_only: true,
-    file_kind_list: JSON.stringify(["Folder"]),
-  },
+let sharedWithMe = createResource({
+  url: "drive.api.list.shared_with_user",
   method: "GET",
-  auto: props.suggestedTabIndex === 1 ? true : false,
+  auto: false,
   onSuccess(data) {
     data.forEach((entity) => {
       entity.size_in_bytes = entity.file_size
@@ -336,7 +338,6 @@ let favourites = createResource({
         : formatSize(entity.file_size)
       entity.modified = formatDate(entity.modified)
       entity.creation = formatDate(entity.creation)
-      entity.owner = "You"
     })
     folderContents.value = data
   },
@@ -345,7 +346,7 @@ let favourites = createResource({
   },
 })
 
-let move = createResource({
+const move = createResource({
   url: "drive.api.files.move",
   method: "POST",
   auto: false,
@@ -355,31 +356,6 @@ let move = createResource({
       store.state.entityInfo[0].name,
       store.state.entityInfo[store.state.entityInfo.length - 1].name
     )
-  },
-})
-
-let folderPermissions = createResource({
-  url: "drive.api.permissions.get_entity_with_permissions",
-  params: {
-    entity_name: currentFolder.value,
-  },
-  onSuccess(data) {
-    console.log(data)
-  },
-  auto: false,
-})
-
-let CreateNewFolder = createResource({
-  url: "drive.api.files.create_folder",
-  params: {
-    title: folderName.value,
-    parent: currentFolder.value,
-  },
-  onSuccess(data) {
-    console.log(data)
-  },
-  onError(error) {
-    console.log(error)
   },
 })
 </script>
