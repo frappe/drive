@@ -46,11 +46,11 @@
       </button>
     </template>
   </Dropdown>
-  <Settings v-if="showSettings" v-model="showSettings" />
+  <SettingsDialog v-if="showSettings" v-model="showSettings" />
 </template>
 <script>
 import { Dropdown, FeatherIcon } from "frappe-ui"
-import Settings from "@/components/Settings.vue"
+import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 
 export default {
@@ -58,7 +58,7 @@ export default {
   components: {
     Dropdown,
     FeatherIcon,
-    Settings,
+    SettingsDialog,
     FrappeDriveLogo,
   },
   props: {

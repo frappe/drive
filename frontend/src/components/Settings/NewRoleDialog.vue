@@ -68,7 +68,7 @@ import {
   Dropdown,
   FeatherIcon,
 } from "frappe-ui"
-import UserSearch from "./ShareDialog/UserSearch.vue"
+import UserSearch from "@/components/ShareDialog/UserSearch.vue"
 
 export default {
   name: "RoleDetailsDialog",
@@ -130,8 +130,6 @@ export default {
       })
     },
     removeDuplicateObjects(arr, property) {
-      console.log(arr)
-      console.log(property)
       return [...new Map(arr.map((obj) => [obj[property], obj])).values()]
     },
   },

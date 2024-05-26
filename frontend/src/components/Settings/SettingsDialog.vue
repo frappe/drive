@@ -42,14 +42,13 @@
 <script>
 import { ref, defineProps, markRaw } from "vue"
 import { Dialog, FeatherIcon, Button } from "frappe-ui"
-import ProfileSettings from "@/components/ProfileSettings.vue"
-import UserSettings from "@/components/UserSettings.vue"
-import UserRoleSettings from "@/components/UserRoleSettings.vue"
-import AboutSettings from "@/components/AboutSettings.vue"
+import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
+import UserSettings from "@/components/Settings/UserSettings.vue"
+import UserRoleSettings from "@/components/Settings/UserRoleSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
-import User from "./EspressoIcons/User.vue"
-import Users from "./EspressoIcons/Users.vue"
-import Cloud from "./EspressoIcons/Cloud.vue"
+import User from "@/components/EspressoIcons/User.vue"
+import Users from "@/components/EspressoIcons/Users.vue"
+import Cloud from "@/components/EspressoIcons/Cloud.vue"
 
 let tabs = [
   {

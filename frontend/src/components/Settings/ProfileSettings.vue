@@ -89,7 +89,7 @@
 </template>
 <script>
 import { Button, Input, Avatar, Dialog, FileUploader } from "frappe-ui"
-import Link from "./EspressoIcons/Link.vue"
+import Link from "../EspressoIcons/Link.vue"
 import { X } from "lucide-vue-next"
 import ErrorMessage from "frappe-ui/src/components/ErrorMessage.vue"
 
@@ -168,11 +168,17 @@ export default {
   },
   methods: {
     submit() {
-      this.$resources.profile.setValue.submit({
-        first_name: this.newFirstName,
-        last_name: this.newLastName,
-        user_image: this.newImageUrl,
-      })
+      this.$resources.profile.setValue
+        .submit({
+          first_name: this.newFirstName,
+          last_name: this.newLastName,
+          user_image: this.newImageUrl,
+        })
+        .then((data) => {
+          this.$store.state.user.fullName = data.full_name
+          this.$store.state.user.imageURL = data.user_image
+          this.editProfileDialog = false
+        })
     },
     validateFile(file) {
       let extension = file.name.split(".").pop().toLowerCase()

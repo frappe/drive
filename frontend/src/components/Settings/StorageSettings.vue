@@ -42,13 +42,10 @@
   </div>
 </template>
 <script>
-import { Avatar, Button, Checkbox, Input, Switch } from "frappe-ui"
-import FrappeDriveLogo from "./FrappeDriveLogo.vue"
-import { formatSize } from "../utils/format"
+import { formatSize } from "../../utils/format"
 
 export default {
   name: "StorageSettings",
-  components: { Avatar, Button, Input, Checkbox, Switch, FrappeDriveLogo },
   data() {
     return {
       fullName: this.$store.state.user.fullName,
