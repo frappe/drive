@@ -81,15 +81,6 @@ def files(
     favourites_only = json.loads(favourites_only)
     recents_only = json.loads(recents_only)
     general_access = eval_general_access(entity_name)
-    if not entity_name:
-        try:
-            entity_name = get_user_directory().name
-            print(entity_name)
-        except:
-            frappe.throw()
-
-    if recents_only:
-        selectedFields.append(DriveRecent.last_interaction.as_("modified"))
 
     query = (
         frappe.qb.from_(DriveEntity)
@@ -102,20 +93,20 @@ def files(
         .offset(offset)
         .limit(limit)
         .select(*selectedFields)
-        .where(
-            (DriveEntity.parent_drive_entity == entity_name)
-            & (DriveEntity.is_active == is_active)
-            & (
-                (UserGroupMember.user == frappe.session.user)
-                | (
-                    (DriveDocShare.user_name == frappe.session.user)
-                    | (DriveDocShare[general_access] == 1)
-                    | (DriveEntity.owner == frappe.session.user)
-                )
+    )
+    if entity_name:
+        query = query.where(DriveEntity.parent_drive_entity == entity_name)
+    query = query.where(
+        (DriveEntity.is_active == is_active)
+        & (
+            (UserGroupMember.user == frappe.session.user)
+            | (
+                (DriveDocShare.user_name == frappe.session.user)
+                | (DriveDocShare[general_access] == 1)
+                | (DriveEntity.owner == frappe.session.user)
             )
         )
     )
-
     if folders_first:
         query = query.orderby(
             Case().when(DriveEntity.is_group == True, 1).else_(2),
