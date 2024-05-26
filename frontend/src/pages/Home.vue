@@ -3,6 +3,7 @@
     v-if="homeID.fetched"
     url="drive.api.list.files"
     :allow-empty-context-menu="true"
+    :entity-name="homeID.data"
     :show-sort="true"
     :icon="Home"
     :primary-message="'Home is empty'"
