@@ -141,26 +141,3 @@ export default {
   },
 }
 </script>
-
-<style>
-/* custom scrollbar */
-::-webkit-scrollbar {
-  width: 0.5rem;
-  height: 0.5rem;
-}
-
-::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgb(237, 237, 237);
-  border-radius: 20px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #2f3237;
-}
-</style>

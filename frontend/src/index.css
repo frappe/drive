@@ -1,2 +1,31 @@
 /* frappe ui includes Inter*/
 @import "frappe-ui/src/style.css";
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c0c6cc #ebeef0;
+}
+
+html {
+  scrollbar-width: auto;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #c0c6cc;
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: #ebeef0;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+body::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
