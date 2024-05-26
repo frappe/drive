@@ -60,27 +60,24 @@
           <span class="text-gray-500 text-sm">{{ "∙" }}</span>
           <span class="text-gray-700 text-sm">Now</span>
         </div>
-        <textarea
-          :ref="
-            (el) => {
-              textarea[comment.jsonComments.uuid] = el
-            }
-          "
-          class="h-7 placeholder-gray-500 max-h-[60vh] overflow-auto form-textarea block mx-0.5 resize-none mb-2"
-          v-model="commentText"
-          placeholder="Reply"
-          @input="resize($event)"
-          @focus="comment.jsonComments.uuid === activeCommentsInstance.uuid"
-          @keypress.enter.stop.prevent="setComment"
-        />
-        <Button
-          class="w-full"
-          variant="solid"
-          :disabled="!commentText.length"
-          @click="setComment"
+        <div
+          class="flex items-center mx-auto border w-full bg-transparent rounded max-w-[99%] focus-within:ring-1 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
         >
-          Save
-        </Button>
+          <textarea
+            v-model="commentText"
+            class="w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
+            placeholder="Add comment"
+            @input="resize($event)"
+            @keypress.enter.stop.prevent="setComment"
+          />
+          <Button
+            class="hover:bg-transparent"
+            variant="ghost"
+            icon="arrow-up-circle"
+            :disabled="!commentText.length"
+            @click="setComment"
+          ></Button>
+        </div>
       </section>
     </article>
   </section>
@@ -132,7 +129,7 @@ watch(activeCommentInstanceUuid, (val) => {
 
     const activeTextArea: HTMLTextAreaElement = textarea.value[val]
 
-    if (activeTextArea) activeTextArea.focus()
+    //if (activeTextArea) activeTextArea.focus()
   }, 100)
 })
 
