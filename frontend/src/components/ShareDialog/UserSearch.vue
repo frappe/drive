@@ -53,7 +53,9 @@
                   :image="user.user_image"
                   class="mr-2"
                 />
-                {{ user.full_name }}
+                <span class="text-base text-gray-700">{{
+                  user.full_name
+                }}</span>
               </li>
             </ul>
             <span
