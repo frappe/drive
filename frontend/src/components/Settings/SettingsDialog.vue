@@ -25,7 +25,7 @@
             </button>
           </div>
         </div>
-        <div class="flex flex-1 flex-col px-12 pt-12 overflow-y-auto">
+        <div class="flex flex-1 flex-col p-12 overflow-y-auto">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
         <Button
