@@ -1,5 +1,17 @@
 <template>
   <div class="w-full pt-2 flex flex-col items-stretch justify-start">
+    <div class="mb-2 mt-4 flex items-center justify-between">
+      <span class="font-medium leading-normal text-gray-800 text-base mb-2"
+        >Groups</span
+      >
+      <Button
+        variant="subtle"
+        icon-left="plus"
+        @click="CreateRoleDialog = !CreateRoleDialog"
+      >
+        Create
+      </Button>
+    </div>
     <div v-for="(group, index) in AllRoles" :key="group.name">
       <div
         v-if="index > 0"
@@ -18,9 +30,10 @@
             variant: 'ghost',
           }"
           class="ml-auto"
+          placement="right"
           :options="[
             {
-              label: 'Remove',
+              label: 'Delete',
               icon: 'trash-2',
               onClick: () => {
                 activeGroup = group.name
@@ -86,14 +99,6 @@
         ],
       }"
     />
-    <Button
-      variant="subtle"
-      icon-left="plus"
-      class="ml-auto my-2"
-      @click="CreateRoleDialog = !CreateRoleDialog"
-    >
-      New Group
-    </Button>
   </div>
 </template>
 <script>
