@@ -1,30 +1,33 @@
 <template>
-  <Dialog v-model:open="open" :options="{ size: 'xl', position: 'top' }">
+  <Dialog v-model:open="open" :options="{ size: '2xl', position: 'top' }">
     <template #body>
-      <div class="flex px-4 py-2 gap-1 items-center border-b">
+      <div class="flex px-4 py-3 gap-1 items-center border-b">
         <Search class="w-4 mr-1 h-auto" name="search" />
         <input
+          v-model="search"
           icon-left="search"
           type="text"
           class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-gray-800 placeholder-gray-500 focus:ring-0"
           placeholder="Search"
-          @input="(event) => inputHandler(event.target.value)"
         />
       </div>
       <div
         v-if="$resources.entities.data?.length"
-        class="flex flex-col border-t px-4 overflow-y-auto overflow-x-auto max-h-[40vh] pt-2 pb-4"
+        class="flex flex-col py-4 px-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
       >
+        <span class="mb-1 pl-2 text-base text-gray-600"
+          >Search results for <strong>"{{ search }}"</strong></span
+        >
         <div
           v-for="entity in $resources.entities.data"
           :key="entity.name"
-          class="flex gap-2 w-full justify-between items-center rounded px-2 py-2 text-base cursor-pointer hover:bg-gray-100"
+          class="grid grid-flow-col grid-cols-8 gap-2 w-full items-center rounded px-2 py-2 text-base cursor-pointer hover:bg-gray-100"
           @click="openEntity(entity)"
         >
-          <div class="flex items-center gap-2 w-full max-w-[60%]">
+          <div class="flex items-center gap-2 w-full col-span-6">
             <svg
               v-if="entity.is_group"
-              class="h-auto w-5"
+              class="h-4 w-4"
               :draggable="false"
               :style="{ fill: entity.color }"
               width="16"
@@ -46,23 +49,36 @@
             </svg>
             <img
               v-else
-              class="w-5.5 h-auto"
+              class="w-4 h-4"
               :src="getIconUrl(formatMimeType(entity.mime_type))"
             />
             <span class="truncate">{{ entity.title }}</span>
           </div>
-          <div class="flex items-center">
+          <div
+            class="col-span-2 grid grid-flow-col justify-start items-center truncate"
+          >
             <Avatar
               :image="entity.user_image"
               :label="entity.full_name"
               class="relative mr-2"
-              size="sm"
+              size="xs"
             />
-            <span>{{ entity.full_name }}</span>
+            <span class="text-base text-gray-800">{{ entity.full_name }}</span>
           </div>
         </div>
       </div>
-      <div v-else class="flex flex-col mb-2 mt-4.5 first:mt-3">
+      <div
+        v-if="search.length && !$resources.entities.data?.length"
+        class="flex flex-col py-4 px-2.5"
+      >
+        <span class="mb-1 pl-2 text-base text-gray-600"
+          >No results for <strong>"{{ search }}"</strong></span
+        >
+      </div>
+      <div
+        v-if="!$resources.entities.data?.length && !search.length"
+        class="flex flex-col mb-2 mt-4 first:mt-3"
+      >
         <span class="mb-1 px-4.5 text-base text-gray-600">Jump to</span>
         <div class="px-2.5">
           <div
@@ -183,6 +199,21 @@ export default {
       },
     },
   },
+  watch: {
+    search: {
+      handler(value) {
+        if (value.length >= 3) {
+          this.search = value
+          this.$resources.entities.submit({
+            query: value,
+            home_dir: this.$store.state.homeFolderID,
+          })
+        } else {
+          this.$resources.entities.reset()
+        }
+      },
+    },
+  },
   methods: {
     openEntity(entity) {
       this.$resources.upwardPath
@@ -209,17 +240,6 @@ export default {
           }
         })
       this.emitter.emit("showSearchPopup", false)
-    },
-    inputHandler(value) {
-      if (value.length >= 3) {
-        this.search = value
-        this.$resources.entities.submit({
-          query: value,
-          home_dir: this.$store.state.homeFolderID,
-        })
-      } else {
-        this.$resources.entities.reset()
-      }
     },
   },
   resources: {
