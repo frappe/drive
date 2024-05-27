@@ -3,6 +3,7 @@
     <SidebarItem
       :label="isExpanded ? 'Storage' : '3.5GB used out of 50GB'"
       :is-collapsed="!isExpanded"
+      @click="emitter.emit('showSettings', 2)"
     >
       <template #icon>
         <Cloud class="w-4" />
@@ -29,13 +30,13 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, inject } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
 import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize } from "@/utils/format"
-
+const emitter = inject("emitter")
 const store = useStore()
 const isExpanded = computed(() => {
   return store.state.IsSidebarExpanded

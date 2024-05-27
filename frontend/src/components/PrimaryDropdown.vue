@@ -46,7 +46,11 @@
       </button>
     </template>
   </Dropdown>
-  <SettingsDialog v-if="showSettings" v-model="showSettings" />
+  <SettingsDialog
+    v-if="showSettings"
+    v-model="showSettings"
+    :suggested-tab="suggestedTab"
+  />
 </template>
 <script>
 import { Dropdown, FeatherIcon } from "frappe-ui"
@@ -66,6 +70,7 @@ export default {
   },
   data: () => ({
     showSettings: false,
+    suggestedTab: 0,
   }),
   computed: {
     firstName() {
@@ -99,6 +104,12 @@ export default {
         },
       ]
     },
+  },
+  mounted() {
+    this.emitter.on("showSettings", (val) => {
+      this.showSettings = true
+      this.suggestedTab = val
+    })
   },
   methods: {
     logout() {

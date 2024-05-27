@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ title: 'Settings', size: '5xl' }">
+  <Dialog v-model="open" :options="{ title: 'Settings', size: '5xl' }">
     <template #body>
       <div class="flex" :style="{ height: 'calc(100vh - 10rem)' }">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
@@ -39,12 +39,11 @@
     </template>
   </Dialog>
 </template>
-<script>
-import { ref, defineProps, markRaw } from "vue"
+<script setup>
+import { ref, defineProps, markRaw, computed } from "vue"
 import { Dialog, FeatherIcon, Button } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import UserSettings from "@/components/Settings/UserSettings.vue"
-import UserRoleSettings from "@/components/Settings/UserRoleSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import User from "@/components/EspressoIcons/User.vue"
 import Users from "@/components/EspressoIcons/Users.vue"
@@ -66,33 +65,28 @@ let tabs = [
     icon: Cloud,
     component: markRaw(StorageSettings),
   },
-  /*   {
-    label: "About",
-    icon: Info,
-    component: markRaw(AboutSettings),
-  },  */
 ]
 
-let show = defineProps(["modelValue"])
-let activeTab = ref(tabs[0])
-
-function closeMenu() {
-  let value = false
-  this.$emit("update:modelValue", value)
-}
-
-export default {
-  name: "Settings",
-  components: {
-    Dialog,
-    FeatherIcon,
-    Button,
-    ProfileSettings,
-    UserRoleSettings,
+const emit = defineEmits(["update:modelValue"])
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true,
   },
-  emits: ["update:modelValue"],
-  setup() {
-    return { tabs, show, activeTab, closeMenu }
+  suggestedTab: {
+    type: Number,
+    default: 0,
+    required: false,
   },
-}
+})
+let activeTab = ref(tabs[props.suggestedTab])
+
+const open = computed({
+  get() {
+    return props.modelValue
+  },
+  set(newValue) {
+    emit("update:modelValue", newValue)
+  },
+})
 </script>
