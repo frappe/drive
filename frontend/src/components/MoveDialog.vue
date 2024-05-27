@@ -3,6 +3,7 @@
     <template #body-content>
       <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="pl-0 mb-2">
         <div
+          v-if="folderContents?.length"
           class="flex flex-col justify-items-start h-[40vh] justify-start overflow-y-auto px-3"
         >
           <div v-for="item in folderContents" :id="item.name" :key="item.name">
@@ -41,6 +42,10 @@
             </div>
             <div class="border-t w-full mx-auto max-w-[95%]"></div>
           </div>
+        </div>
+        <div class="flex flex-col items-center justify-center h-[40vh]" v-else>
+          <Folder class="text-gray-600 h-10 w-auto" />
+          <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
         </div>
         <div
           class="flex items-center px-2"
@@ -127,6 +132,7 @@ import Home from "./EspressoIcons/Home.vue"
 import Star from "./EspressoIcons/Star.vue"
 import Users from "./EspressoIcons/Users.vue"
 import Move from "./EspressoIcons/Move.vue"
+import Folder from "./EspressoIcons/Folder.vue"
 
 const store = useStore()
 const currentFolder = ref(store.state.homeFolderID)
