@@ -56,7 +56,7 @@ let tabs = [
     component: markRaw(ProfileSettings),
   },
   {
-    label: "Users",
+    label: "Members",
     icon: Users,
     component: markRaw(UserSettings),
   },
