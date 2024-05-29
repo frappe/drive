@@ -223,11 +223,11 @@ def shared_with_user(
             Case().when(DriveEntity.is_group == True, 1).else_(2),
             Order.desc,
         )
-    else:
-        query = query.orderby(
-            order_by.split()[0],
-            order=Order.desc if order_by.endswith("desc") else Order.asc,
-        )
+
+    query = query.orderby(
+        order_by.split()[0],
+        order=Order.desc if order_by.endswith("desc") else Order.asc,
+    )
     if file_kind_list:
         file_kind_list = json.loads(file_kind_list)
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
@@ -311,11 +311,11 @@ def shared_by_user(
             Case().when(DriveEntity.is_group == True, 1).else_(2),
             Order.desc,
         )
-    else:
-        query = query.orderby(
-            order_by.split()[0],
-            order=Order.desc if order_by.endswith("desc") else Order.asc,
-        )
+
+    query = query.orderby(
+        order_by.split()[0],
+        order=Order.desc if order_by.endswith("desc") else Order.asc,
+    )
     if file_kind_list:
         file_kind_list = json.loads(file_kind_list)
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
