@@ -10,6 +10,7 @@ from drive.locks.distributed_lock import DistributedLock
 from pathlib import Path
 from io import BytesIO
 from drive.utils.files import get_user_directory
+from drive.api.files import create_drive_entity
 
 
 def create_user_embeds_directory(user=None):
@@ -94,6 +95,9 @@ def upload_chunked_file(fullpath=None, parent=None, last_modified=None):
     if file_size != int(frappe.form_dict.total_file_size):
         save_path.unlink()
         frappe.throw("Size on disk does not match specified filesize", ValueError)
+    drive_entity = create_drive_entity(
+        name, title, parent, save_path, file_size, file_ext, mime_type, last_modified
+    )
     return str(name + file_ext)
 
 

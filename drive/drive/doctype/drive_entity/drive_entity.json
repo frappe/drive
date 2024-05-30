@@ -2,7 +2,7 @@
   "actions": [],
   "autoname": "Prompt",
   "creation": "2021-12-30 11:21:16.076483",
-  "default_view": "Tree",
+  "default_view": "List",
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
@@ -120,7 +120,7 @@
     {
       "default": "1",
       "fieldname": "is_active",
-      "fieldtype": "Check",
+      "fieldtype": "Int",
       "label": "Is Active"
     },
     {

@@ -2,7 +2,6 @@ import frappe
 import os
 import re
 import json
-from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
 from pypika import Order, Case, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
@@ -837,9 +836,9 @@ def delete_entities(entity_names=None, clear_all=None):
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
     for entity in entity_names:
-        root_entity = get_ancestors_of("Drive Entity", entity)
+        root_entity = get_ancestors_of(entity)
         if root_entity:
-            root_entity = get_ancestors_of("Drive Entity", entity)[0]
+            root_entity = get_ancestors_of(entity)[0]
         else:
             root_entity = get_user_directory()
         owns_root_entity = frappe.has_permission(
@@ -1008,7 +1007,7 @@ def remove_or_restore(entity_names, move=False):
         if doc.owner != frappe.session.user:
             raise frappe.PermissionError("You do not have permission to remove this file")
         if doc.is_active:
-            entity_ancestors = get_ancestors_of("Drive Entity", entity)
+            entity_ancestors = get_ancestors_of(entity)
             if entity_ancestors:
                 doc.parent_before_trash = entity_ancestors[0]
                 doc.save()
@@ -1355,3 +1354,36 @@ def generate_upward_path(entity_name):
     """,
         as_dict=1,
     )
+
+
+@frappe.whitelist()
+def get_ancestors_of(entity_name):
+    """
+    Return all parent nodes till the root node
+    """
+    # CONCAT_WS('/', t.title, gp.path),
+    entity_name = frappe.db.escape(entity_name)
+    result = frappe.db.sql(
+        f"""
+        WITH RECURSIVE generated_path as ( 
+        SELECT 
+            `tabDrive Entity`.name,
+            `tabDrive Entity`.parent_drive_entity
+        FROM `tabDrive Entity` 
+        WHERE `tabDrive Entity`.name = {entity_name}
+
+        UNION ALL
+
+        SELECT 
+            t.name,
+            t.parent_drive_entity
+        FROM generated_path as gp
+        JOIN `tabDrive Entity` as t ON t.name = gp.parent_drive_entity) 
+        SELECT name FROM generated_path;
+    """,
+        as_dict=0,
+    )
+    # Match the output of frappe/nested.py get_ancestors_of
+    flattened_list = [item for sublist in result for item in sublist]
+    flattened_list.pop(0)
+    return flattened_list
