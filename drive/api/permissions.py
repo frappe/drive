@@ -1,12 +1,13 @@
 import frappe
-from pypika import Order, Case, functions as fn
-from frappe.utils.nestedset import rebuild_tree, get_ancestors_of
+from pypika import Order, Case, functions as fnof
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
 from drive.utils.user_group import get_entity_shared_with_user_groups
 from drive.utils.users import mark_as_viewed
 from drive.api.files import get_children_count
+from drive.api.files import generate_upward_path
+from drive.api.files import get_ancestors_of
 
 
 @frappe.whitelist()
@@ -304,7 +305,7 @@ def get_entity_with_permissions(entity_name):
     if frappe.session.user != "Guest":
         if not entity.is_group:
             mark_as_viewed(entity_name)
-    entity_ancestors = get_ancestors_of("Drive Entity", entity)
+    entity_ancestors = get_ancestors_of(entity_name)
     flag = False
     for z_entity_name in entity_ancestors:
         result = frappe.db.exists("Drive Entity", {"name": z_entity_name, "is_active": 0})

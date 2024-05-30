@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils.nestedset import NestedSet, get_ancestors_of
+from frappe.model.document import Document
 from pathlib import Path
 import shutil
 import uuid
@@ -16,13 +16,7 @@ from frappe.utils import cint
 from drive.api.format import mime_to_human
 
 
-class DriveEntity(NestedSet):
-    nsm_parent_field = "parent_drive_entity"
-    nsm_oldparent_field = "old_parent"
-
-    def on_update(self):
-        super().on_update()
-
+class DriveEntity(Document):
     def before_save(self):
         self.version = self.version + 1
         self.file_kind = mime_to_human(self.mime_type, self.is_group)
@@ -34,7 +28,7 @@ class DriveEntity(NestedSet):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
         frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
         frappe.db.delete("Drive DocShare", {"share_name": self.name})
-        if self.is_group:
+        if self.is_group or self.document:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
                     doctype="Drive Entity",
@@ -43,7 +37,6 @@ class DriveEntity(NestedSet):
                     user=frappe.session.user,
                 )
                 child.delete(ignore_permissions=has_write_access)
-            super().on_trash()
 
     def after_delete(self):
         if self.document:
@@ -133,6 +126,13 @@ class DriveEntity(NestedSet):
         self.allow_comments = parent_folder.allow_comments
         self.allow_download = parent_folder.allow_download
         self.save()
+    
+    def get_children(self):
+            """Return a generator that yields child Documents."""
+            child_names = frappe.get_list(self.doctype, filters={'parent_drive_entity': self.name}, pluck="name")
+            for name in child_names:
+                yield frappe.get_doc(self.doctype, name)
+
 
     @frappe.whitelist()
     def move(self, new_parent=None):
@@ -549,6 +549,6 @@ class DriveEntity(NestedSet):
             for child in self.get_children():
                 child.unshare(user, user_type)
 
-
 def on_doctype_update():
     frappe.db.add_index("Drive Entity", ["title"])
+
