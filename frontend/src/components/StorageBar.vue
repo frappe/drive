@@ -30,13 +30,14 @@
 </template>
 
 <script setup>
-import { computed, inject } from "vue"
+import { ref, computed, inject } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
 import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize } from "@/utils/format"
 const emitter = inject("emitter")
+const usedStorage = ref(0)
 const store = useStore()
 const isExpanded = computed(() => {
   return store.state.IsSidebarExpanded
@@ -44,9 +45,9 @@ const isExpanded = computed(() => {
 
 const formatedString = computed(() => {
   return (
-    formatSize(storageUsed.data) +
+    formatSize(usedStorage.value) +
     " used out of " +
-    formatSize(maxStorage.data?.storage_limit)
+    formatSize(maxStorage.data.storage_limit)
   )
 })
 
@@ -76,6 +77,11 @@ let maxStorage = createResource({
 
 let storageUsed = createResource({
   url: "drive.api.files.total_storage_used",
+  onSuccess(data) {
+    data = data[0].total_size
+    if (!data) data = 0
+    usedStorage.value = data
+  },
   onError(error) {
     if (error.messages) {
       console.log(error.messages)

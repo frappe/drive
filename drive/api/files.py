@@ -1186,8 +1186,8 @@ def auto_delete_from_trash():
 def total_storage_used():
     DriveEntity = frappe.qb.DocType("Drive Entity")
     query = frappe.qb.from_(DriveEntity).select(fn.Sum(DriveEntity.file_size).as_("total_size"))
-    result = query.run(as_dict=False)
-    return result[0]
+    result = query.run(as_dict=True)
+    return result
 
 
 @frappe.whitelist()
