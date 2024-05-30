@@ -125,7 +125,7 @@
     },
     {
       "fieldname": "parent_before_trash",
-      "fieldtype": "Data",
+      "fieldtype": "Text",
       "label": "Parent Before Trash"
     },
     {
