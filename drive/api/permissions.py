@@ -1,5 +1,5 @@
 import frappe
-from pypika import Order, Case, functions as fnof
+from pypika import Order, Case, functions as fn
 from drive.api.files import get_entity
 from drive.api.files import get_doc_content
 from drive.utils.files import get_user_directory
