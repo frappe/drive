@@ -47,7 +47,7 @@ const formatedString = computed(() => {
   return (
     formatSize(usedStorage.value) +
     " used out of " +
-    formatSize(maxStorage.data.storage_limit)
+    formatSize(maxStorage.data?.storage_limit)
   )
 })
 
