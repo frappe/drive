@@ -5,6 +5,7 @@
         >Groups</span
       >
       <Button
+        v-if="isDriveadmin"
         variant="subtle"
         icon-left="plus"
         @click="CreateRoleDialog = !CreateRoleDialog"
@@ -133,6 +134,9 @@ export default {
       let x = []
       this.UsersInRole.forEach((user) => x.push(user.email))
       return x
+    },
+    isDriveadmin() {
+      return this.$store.state.user.driveAdmin
     },
   },
   methods: {
