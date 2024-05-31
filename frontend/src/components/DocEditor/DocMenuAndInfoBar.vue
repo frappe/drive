@@ -159,7 +159,7 @@
         <!-- Comments -->
         <div v-if="tab === 5" class="px-5 py-4 border-b">
           <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+            class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
           >
             Comments
           </span>
@@ -171,7 +171,7 @@
             :is-comment-mode-on="showComments"
             @set-comment="setComment"
           />
-          <div v-else class="text-gray-600 text-sm mt-2">
+          <div v-else class="text-gray-600 text-sm my-5">
             There are no comments for the current document
           </div>
         </div>
