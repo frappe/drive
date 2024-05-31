@@ -1,5 +1,5 @@
 <template>
-  <div v-if="editor" class="flex-col w-full overflow-y-scroll">
+  <div v-if="editor" class="flex-col w-full overflow-y-auto">
     <div
       :class="[
         settings.docFont,
@@ -472,7 +472,7 @@ export default {
         configureMention(this.mentions),
         TaskList.configure({
           HTMLAttributes: {
-            class: "",
+            class: "not-prose",
           },
         }),
         TaskItem.configure({
@@ -851,11 +851,10 @@ export default {
 }
 
 span[data-comment] {
-  background: rgb(228, 245, 233);
-  user-select: all;
-  padding: 0 2px 0 2px;
-  border-radius: 5px;
-  cursor: pointer;
+  background: rgba(255, 215, 0, 0.3);
+  border-bottom: 2px solid rgb(255, 210, 0);
+  user-select: text;
+  padding: 2px;
 }
 .collaboration-cursor__caret {
   border-left: 0px solid currentColor;
@@ -890,32 +889,33 @@ span[data-comment] {
 }
 
 .my-task-item input {
-  border-radius: 10px;
-  outline: none;
-  cursor: pointer;
-  margin-right: 5px;
+  border-radius: 4px;
+  outline: 0;
+  margin-right: 10px;
 }
 .my-task-item input[type="checkbox"]:hover {
-  outline: none;
-  background-color: #0d0d0d;
+  outline: 0;
+  background-color: #d6d6d6;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease;
 }
 .my-task-item input[type="checkbox"]:focus {
-  outline: none;
-  background-color: #0d0d0d;
+  outline: 0;
+  background-color: #5b5b5b;
 }
 .my-task-item input[type="checkbox"]:active {
-  outline: none;
-  background-color: #0d0d0d;
+  outline: 0;
+  background-color: #5b5b5b;
 }
 .my-task-item input[type="checkbox"]:checked {
-  outline: none;
-  background-color: #0d0d0d;
+  outline: 0;
+  background-color: #000000;
 }
 
 summary {
   display: flex;
   width: 100%;
-  padding: 0 2rem;
+  padding: 0 2.5rem;
   box-sizing: border-box;
   pointer-events: none;
   outline: none;
@@ -926,7 +926,6 @@ summary p {
   margin-bottom: 0.15rem !important;
 }
 
-/*transition: 0.3s;*/
 .details-arrow {
   position: absolute;
   top: 0rem;
@@ -947,7 +946,7 @@ summary p {
 }
 
 div[data-type="details-content"] {
-  padding: 0rem 1.25rem;
+  padding: 0rem 2.5rem;
 }
 
 .details-wrapper {
@@ -977,12 +976,12 @@ details {
   background: #0d0d0d;
 }
 
-details[open] > summary {
+/* details[open] > summary {
   border-bottom: 1px solid lightgray;
 }
 details[open] {
   border-bottom: 1px solid lightgray;
-}
+} */
 
 details[open] + .details-arrow::before {
   content: "▼";
