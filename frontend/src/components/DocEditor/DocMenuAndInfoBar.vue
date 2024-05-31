@@ -22,7 +22,6 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <FeatherIcon class="h-4 w-4" name="info" />
             Information
           </span>
           <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
@@ -162,7 +161,6 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <FeatherIcon class="h-4 w-4 stroke-[1.5]" name="message-circle" />
             Comments
           </span>
           <OuterCommentVue
@@ -183,11 +181,10 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <Type class="h-4 w-4 stroke-[1.5]" />
             Style
           </span>
-          <span class="font-medium text-gray-600 text-xs my-2">TITLES</span>
-          <div class="w-full flex justify-between gap-1 mb-2.5">
+          <span class="font-medium text-gray-600 text-xs my-2">TITLE</span>
+          <div class="w-full flex justify-between gap-x-1.5 mb-6">
             <Button
               class="w-1/3 font-semibold"
               @click="
@@ -233,7 +230,7 @@
           </div>
 
           <span class="font-semibold text-gray-600 text-xs my-2">CONTENT</span>
-          <div class="w-full flex justify-between gap-1 mb-2.5">
+          <div class="w-full flex justify-between gap-x-1.5 mb-6">
             <Button
               class="w-1/3 font-bold"
               @click="
@@ -350,7 +347,7 @@
               "
               @click="editor.chain().focus().toggleBulletList().run()"
             >
-              <template #prefix>
+              <template #icon>
                 <List class="w-4 stroke-2" />
               </template>
             </Button>
@@ -367,8 +364,8 @@
                   : editor.chain().focus().setDetails().run()
               "
             >
-              <template #prefix>
-                <ListCollapse class="w-4" />
+              <template #icon>
+                <Details class="w-4" />
               </template>
             </Button>
             <Button
@@ -380,8 +377,8 @@
               "
               @click="editor.chain().focus().toggleOrderedList().run()"
             >
-              <template #prefix>
-                <ListOrdered class="w-4" />
+              <template #icon>
+                <OrderList class="w-4" />
               </template>
             </Button>
             <Button
@@ -393,12 +390,12 @@
               "
               @click="editor.chain().focus().toggleTaskList().run()"
             >
-              <template #prefix>
-                <ListOrdered class="w-4" />
+              <template #icon>
+                <Check class="w-4" />
               </template>
             </Button>
           </div>
-          <div class="flex gap-1 mb-2">
+          <div class="flex gap-x-1.5 mb-6">
             <div
               class="flex flex-row bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
             >
@@ -406,13 +403,13 @@
                 :variant="'subtle'"
                 @click="editor.chain().focus().indent().run()"
               >
-                <IndentIcon class="h-4" />
+                <Indent class="h-4" />
               </Button>
               <Button
                 :variant="'subtle'"
                 @click="editor.chain().focus().outdent().run()"
               >
-                <OutdentIcon class="h-4" />
+                <Outdent class="h-4" />
               </Button>
             </div>
             <div
@@ -427,7 +424,7 @@
                 "
                 @click="editor.chain().focus().setTextAlign('left').run()"
               >
-                <FeatherIcon name="align-left" class="w-4 stroke-2" />
+                <alignLeft class="w-4" />
               </Button>
               <Button
                 class="w-full"
@@ -438,7 +435,7 @@
                 "
                 @click="editor.chain().focus().setTextAlign('center').run()"
               >
-                <FeatherIcon name="align-center" class="w-4 stroke-2" />
+                <alignCenter class="w-4" />
               </Button>
               <Button
                 class="w-full"
@@ -449,7 +446,7 @@
                 "
                 @click="editor.chain().focus().setTextAlign('right').run()"
               >
-                <FeatherIcon name="align-right" class="w-4 stroke-2" />
+                <alignRight class="w-4" />
               </Button>
               <Button
                 class="w-full"
@@ -460,7 +457,7 @@
                 "
                 @click="editor.chain().focus().setTextAlign('justify').run()"
               >
-                <FeatherIcon name="align-justify" class="w-4 stroke-2" />
+                <alignJustify class="w-4" />
               </Button>
             </div>
           </div>
@@ -468,13 +465,13 @@
           <span class="font-medium text-gray-600 text-xs my-2">
             DECORATIONS
           </span>
-          <div class="w-full flex justify-between gap-1 mb-2.5">
+          <div class="w-full flex justify-between gap-x-1.5 mb-6">
             <Button
               class="w-full"
               @click="editor.chain().focus().toggleCodeBlock().run()"
             >
               <template #prefix>
-                <Code2 name="code" class="stroke-[1.5] w-4" />
+                <Codeblock name="code" class="w-4" />
               </template>
               Block
             </Button>
@@ -483,7 +480,7 @@
               @click="editor.chain().focus().toggleBlockquote().run()"
             >
               <template #prefix>
-                <TextQuote name="quote" class="stroke-[1.5] w-4" />
+                <BlockQuote name="quote" class="w-4" />
               </template>
               Focus
             </Button>
@@ -501,14 +498,14 @@
             BACKGROUND COLOR
           </span>
           <ColorInput
-            class="mt-0.5 mb-2"
+            class="mt-0.5 mb-6"
             :value="editor.getAttributes('textStyle').backgroundColor"
             @change="
               (value) => editor.chain().focus().toggleHighlight(value).run()
             "
           />
           <span class="font-medium text-gray-600 text-xs my-2">FONT</span>
-          <div class="w-full flex justify-between gap-1">
+          <div class="w-full flex justify-between gap-x-1.5">
             <Button
               class="w-1/3"
               :class="[
@@ -562,44 +559,46 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <Plus class="h-4 w-4 stroke-[1.5]" />
-            Style
+            Insert
           </span>
           <div>
-            <span class="font-medium text-gray-600 text-base">Media</span>
+            <span class="font-medium text-gray-600 text-base mb-1">Media</span>
+            <div class="w-full flex justify-between gap-x-1.5 mb-6">
+              <Button
+                class="w-full justify-start"
+                @click="addImageDialog = true"
+              >
+                <template #prefix>
+                  <Image class="text-gray-700 w-4" />
+                  Image
+                </template>
+              </Button>
+              <InsertImage v-model="addImageDialog" :editor="editor" />
 
-            <Button class="w-full justify-start" @click="addImageDialog = true">
-              <template #prefix>
-                <ImagePlus class="text-gray-700 w-4" />
-                Image
-              </template>
-            </Button>
-            <InsertImage v-model="addImageDialog" :editor="editor" />
-
-            <Button
-              class="w-full justify-start mb-2"
-              @click="addVideoDialog = true"
-            >
-              <template #prefix>
-                <FileVideo class="text-gray-700 w-4" />
-                Video
-              </template>
-            </Button>
-            <InsertVideo v-model="addVideoDialog" :editor="editor" />
+              <Button
+                class="w-full justify-start"
+                @click="addVideoDialog = true"
+              >
+                <template #prefix>
+                  <Video class="text-gray-700 w-4" />
+                  Video
+                </template>
+              </Button>
+              <InsertVideo v-model="addVideoDialog" :editor="editor" />
+            </div>
           </div>
-          <span class="font-medium text-gray-600 text-base">Break</span>
-          <div class="my-2">
+          <span class="font-medium text-gray-600 text-base mb-1">Break</span>
+          <div class="w-full flex justify-between gap-x-1.5 mb-6">
             <Button
               class="w-full px-2"
               @click="editor.chain().focus().setHorizontalRule().run()"
             >
               <template #prefix>
-                <Minus class="stroke-1" />
+                <Minus class="stroke-[1] text-gray-700" />
               </template>
               Rule
             </Button>
-          </div>
-          <div class="my-2">
+
             <Button
               class="px-2 w-full"
               @click="editor.chain().focus().setPageBreak().run()"
@@ -615,29 +614,29 @@
                 >
                   <path
                     d="M12 22H17.5C18.0304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V18M4 8V4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H14.5L20 7.5V10.5"
-                    stroke="black"
-                    stroke-width="2"
+                    stroke="currentColor"
+                    stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
                   <path
                     d="M4 4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H14.5L20 7.5M4 20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20"
-                    stroke="black"
-                    stroke-width="2"
+                    stroke="currentColor"
+                    stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
                   <path
                     d="M14 2V8H20"
-                    stroke="black"
-                    stroke-width="2"
+                    stroke="currentColor"
+                    stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
                   <path
                     d="M3 15H21"
-                    stroke="black"
-                    stroke-width="2"
+                    stroke="currentColor"
+                    stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
@@ -991,7 +990,6 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <FileText class="h-4 w-4 stroke-[1.5]" />
             Settings
           </span>
           <div class="flex items-center">
@@ -1083,13 +1081,12 @@
           <span
             class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
           >
-            <ArrowDownUp class="h-4 w-4 stroke-[1.5]" />
             Transform
           </span>
           <div>
             <span
               v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
-              class="font-medium text-gray-600 text-base"
+              class="font-medium text-gray-700 text-base"
             >
               Import
             </span>
@@ -1099,18 +1096,18 @@
               @click="() => emitter.emit('importDocFromWord')"
             >
               <template #prefix>
-                <FileUp class="text-gray-700 w-4" />
-                Import from DOCX
+                <FileUp class="text-gray-700 w-4 stroke-[1.5]" />
+                Import DOCX
               </template>
             </Button>
-            <span class="font-medium text-gray-600 text-base">Export</span>
+            <span class="font-medium text-gray-700 text-base">Export</span>
             <Button
               class="w-full justify-start"
               @click="() => emitter.emit('exportDocToPDF')"
             >
               <template #prefix>
-                <FileDown class="text-gray-700 w-4" />
-                Export to PDF
+                <FileDown class="text-gray-700 w-4 stroke-[1.5]" />
+                Export PDF
               </template>
             </Button>
             <!-- <Button class="w-full justify-start">
@@ -1164,11 +1161,6 @@ import LineHeight from "./icons/line-height.vue"
 import {
   Plus,
   Minus,
-  ListOrdered,
-  ListChecks,
-  List,
-  IndentIcon,
-  OutdentIcon,
   Heading1,
   Heading2,
   Heading3,
@@ -1176,11 +1168,9 @@ import {
   FileDown,
   ArrowDownUp,
   TextQuote,
-  Type,
   Info,
   MessageCircle,
   FileText,
-  ListCollapse,
 } from "lucide-vue-next"
 import { Code } from "lucide-vue-next"
 import { Code2 } from "lucide-vue-next"
@@ -1195,6 +1185,21 @@ import Bold from "./icons/Bold.vue"
 import Strikethrough from "./icons/StrikeThrough.vue"
 import Underline from "./icons/Underline.vue"
 import GeneralAccess from "@/components/GeneralAccess.vue"
+import Indent from "./icons/Indent.vue"
+import Outdent from "./icons/Outdent.vue"
+import Codeblock from "./icons/Codeblock.vue"
+import List from "./icons/List.vue"
+import OrderList from "./icons/OrderList.vue"
+import Check from "./icons/Check.vue"
+import Details from "./icons/Details.vue"
+import alignRight from "./icons/AlignRight.vue"
+import alignLeft from "./icons/AlignLeft.vue"
+import alignCenter from "./icons/AlignCenter.vue"
+import alignJustify from "./icons/AlignJustify.vue"
+import BlockQuote from "./icons/BlockQuote.vue"
+import Style from "./icons/Style.vue"
+import Image from "./icons/Image.vue"
+import Video from "./icons/Video.vue"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -1202,7 +1207,6 @@ export default {
     Input,
     FeatherIcon,
     Avatar,
-
     TagInput,
     Tag,
     OuterCommentVue,
@@ -1215,15 +1219,22 @@ export default {
     Bold,
     Strikethrough,
     Underline,
-    ListOrdered,
-    ListChecks,
     List,
-    IndentIcon,
-    OutdentIcon,
+    Indent,
+    Outdent,
     Code,
     Code2,
-    ImagePlus,
-    FileVideo,
+    Codeblock,
+    Check,
+    OrderList,
+    alignLeft,
+    alignRight,
+    alignCenter,
+    alignJustify,
+    BlockQuote,
+    Style,
+    Image,
+    Video,
     Table2Icon,
     Badge,
     Dropdown,
@@ -1234,12 +1245,11 @@ export default {
     FileUp,
     FileDown,
     ArrowDownUp,
-    Type,
     Info,
     TextQuote,
     MessageCircle,
     FileText,
-    ListCollapse,
+    Details,
     GeneralAccess,
   },
   inject: ["editor"],
@@ -1259,7 +1269,7 @@ export default {
       tabs: [
         {
           name: "Typography",
-          icon: Type,
+          icon: Style,
           write: true,
         },
         {
@@ -1454,21 +1464,21 @@ export default {
       return {
         url: "drive.api.permissions.get_shared_with_list",
         params: { entity_name: this.entity.name },
-        auto: true,
+        auto: this.entity.owner === "You",
       }
     },
     groupList() {
       return {
         url: "drive.api.permissions.get_shared_user_group_list",
         params: { entity_name: this.entity.name },
-        auto: true,
+        auto: this.entity.owner === "You",
       }
     },
     generalAccess() {
       return {
         url: "drive.api.permissions.get_general_access",
         params: { entity_name: this.entity.name },
-        auto: true,
+        auto: this.entity.owner === "You",
       }
     },
     userTags() {
@@ -1479,7 +1489,7 @@ export default {
             console.log(error.messages)
           }
         },
-        auto: true,
+        auto: false,
       }
     },
     entityTags() {
@@ -1491,7 +1501,7 @@ export default {
             console.log(error.messages)
           }
         },
-        auto: true,
+        auto: false,
       }
     },
   },
