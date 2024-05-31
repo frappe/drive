@@ -76,6 +76,7 @@ def files(
         DriveDocShare.public,
         DriveDocShare.everyone,
         DriveDocShare.share,
+        DriveFavourite.entity.as_("is_favourite"),
     ]
     favourites_only = json.loads(favourites_only)
     recents_only = json.loads(recents_only)
