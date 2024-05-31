@@ -851,7 +851,7 @@ export default {
 }
 
 span[data-comment] {
-  background: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.15);
   border-bottom: 2px solid rgb(255, 210, 0);
   user-select: text;
   padding: 2px;
