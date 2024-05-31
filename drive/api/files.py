@@ -207,7 +207,7 @@ def create_drive_entity(name, title, parent, path, file_size, file_ext, mime_typ
             "name": name,
             "title": title,
             "parent_drive_entity": parent,
-            "path": path,
+            "path": str(path),
             "file_size": file_size,
             "file_ext": file_ext,
             "mime_type": mime_type,
