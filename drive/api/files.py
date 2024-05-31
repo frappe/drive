@@ -999,7 +999,13 @@ def remove_or_restore(entity_names, move=False):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
 
     def depth_zero_toggle_is_active(doc):
-        doc.is_active = 0 if doc.is_active else 1
+        if doc.is_active:
+            frappe.db.delete("Drive DocShare", {"share_name": doc.name})
+            doc.is_active = 0
+        else:
+            doc.is_active = 1
+            doc.inherit_permissions()
+
         frappe.db.set_value("Drive Entity", doc.name, "is_active", doc.is_active)
 
     for entity in entity_names:
