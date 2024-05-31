@@ -1,7 +1,7 @@
 <template>
   <div
     id="DocxContainer"
-    class="object-contain max-h-[90vh] max-w-[75vw] z-10 overflow-y-scroll"
+    class="object-contain max-h-[90vh] max-w-[75vw] z-10 overflow-y-auto"
   ></div>
 </template>
 <script setup>
