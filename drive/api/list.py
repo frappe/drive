@@ -76,11 +76,12 @@ def files(
         DriveDocShare.public,
         DriveDocShare.everyone,
         DriveDocShare.share,
-        DriveFavourite.entity.as_("is_favourite"),
     ]
     favourites_only = json.loads(favourites_only)
     recents_only = json.loads(recents_only)
     general_access = eval_general_access(entity_name)
+    if recents_only:
+        selectedFields.append(DriveRecent.last_interaction.as_("modified"))
 
     query = (
         frappe.qb.from_(DriveEntity)
