@@ -52,7 +52,7 @@ const formatedString = computed(() => {
 })
 
 const calculatePercent = computed(() => {
-  let num = (100 * storageUsed.data) / maxStorage.data?.storage_limit
+  let num = (100 * usedStorage.value) / maxStorage.data?.storage_limit
   return new Intl.NumberFormat("default", {
     style: "percent",
     minimumFractionDigits: 1,
