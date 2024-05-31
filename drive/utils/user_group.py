@@ -58,6 +58,7 @@ def delete_user_group(group_name):
     try:
         frappe.db.delete("User Group", group_name)
         frappe.db.delete("User Group Member", {"parent": group_name})
+        frappe.db.delete("Drive DocShare", {"user_name": group_name, "user_doctype": "User Group"})
         return {
             "message": ("User Group deleted successfully."),
         }
