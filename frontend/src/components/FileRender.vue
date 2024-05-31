@@ -91,7 +91,6 @@ export default {
     isVideo() {
       return (
         this.previewEntity.mime_type === "video/mp4" ||
-        // Gamble that its a valid h264/h265 for now
         this.previewEntity.mime_type === "video/webm" ||
         this.previewEntity.mime_type === "video/quicktime"
       )
@@ -154,7 +153,9 @@ export default {
         this.previewEntity.mime_type &&
         [
           "image",
-          "video",
+          "video/quicktime",
+          "video/webm",
+          "video/mp4",
           "audio",
           "text",
           "text/x-python",
