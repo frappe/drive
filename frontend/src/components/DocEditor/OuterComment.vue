@@ -16,7 +16,7 @@
       <div
         v-for="(jsonComment, j) in comment.jsonComments.comments"
         :key="`${j}_${Math.random()}`"
-        class="flex items-start justify-start mb-5"
+        class="flex items-start justify-start my-5"
       >
         <Avatar
           :label="jsonComment.userName"
