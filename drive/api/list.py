@@ -72,6 +72,7 @@ def files(
         DriveEntity.allow_comments,
         DriveDocShare.read,
         DriveDocShare.user_name,
+        DriveDocShare.user_doctype,
         fn.Max(DriveDocShare.write).as_("write"),
         DriveDocShare.public,
         DriveDocShare.everyone,
@@ -186,6 +187,8 @@ def shared_with_user(
         DriveEntity.allow_download,
         DriveEntity.is_active,
         DriveEntity.allow_comments,
+        DriveDocShare.user_name,
+        DriveDocShare.user_doctype,
         DriveDocShare.read,
         fn.Max(DriveDocShare.write).as_("write"),
         DriveDocShare.everyone,
@@ -213,7 +216,7 @@ def shared_with_user(
         .where(DriveEntity.is_active == 1)
         .where(
             (UserGroupMember.user == frappe.session.user)
-            | (UserGroupMember.user == frappe.session.user)
+            | (DriveDocShare.user_name == frappe.session.user)
             | (DriveDocShare.everyone == 1)
         )
         .where(DriveDocShare.share_parent.isnull())
