@@ -209,7 +209,7 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload"
-import { RotateCcw } from "lucide-vue-next"
+import { RotateCcw, X } from "lucide-vue-next"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
@@ -659,12 +659,16 @@ export default {
               this.showUnshareDialog = true
             },
             isEnabled: () => {
-              return (
-                this.selectedEntities.length > 0 &&
-                this.selectedEntities.every((x) => x.owner != "You") &&
-                (this.selectedEntities.every((x) => x.write) ||
-                  !this.isSharedFolder)
-              )
+              if (this.selectedEntities.length) {
+                return (
+                  this.selectedEntities.every(
+                    (x) =>
+                      x.owner != "You" &&
+                      x.user_doctype === "User" &&
+                      x.everyone !== 1
+                  ) && !this.isSharedFolder
+                )
+              }
             },
           },
           {
