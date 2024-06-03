@@ -2,6 +2,7 @@ import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import path from "path"
 import { webserver_port } from "../../../sites/common_site_config.json"
+import topLevelAwait from "vite-plugin-top-level-await"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -44,12 +45,13 @@ export default defineConfig({
     },
     outDir: `../${path.basename(path.resolve(".."))}/public/frontend`,
     emptyOutDir: true,
-    target: "es2015",
+    target: "esnext",
     commonjsOptions: {
       include: [/tailwind.config.js/, /node_modules/],
     },
   },
   optimizeDeps: {
+    esbuildOptions: { target: "esnext" },
     include: [
       "frappe-ui",
       "feather-icons",
