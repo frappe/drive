@@ -29,23 +29,14 @@
             {{ user.user_name }}
           </p>
         </div>
-        <Dropdown
-          class="ml-auto"
-          placement="right"
-          :options="[
-            {
-              label: 'Remove',
-              icon: 'trash-2',
-              onClick: () => {
-                removeUser(user)
-              },
-            },
-          ]"
-          ><Button>
-            <template #icon>
-              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-            </template> </Button
-        ></Dropdown>
+        <Tooltip :text="`Kick ${user.full_name}`">
+          <Button class="ml-auto" @click="removeUser(user)"
+            ><template #icon>
+              <FeatherIcon
+                name="x"
+                class="h-4 w-auto text-gray-700" /></template
+          ></Button>
+        </Tooltip>
       </div>
       <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
@@ -58,7 +49,7 @@ import {
   Dialog,
   ErrorMessage,
   Button,
-  Dropdown,
+  Tooltip,
   FeatherIcon,
 } from "frappe-ui"
 import UserSearch from "./ShareDialog/UserSearch.vue"
@@ -72,7 +63,7 @@ export default {
     ErrorMessage,
     Button,
     Input,
-    Dropdown,
+    Tooltip,
     FeatherIcon,
   },
   props: {
