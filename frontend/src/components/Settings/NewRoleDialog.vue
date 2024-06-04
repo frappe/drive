@@ -31,6 +31,7 @@
         </div>
         <Dropdown
           class="ml-auto"
+          placement="right"
           :options="[
             {
               label: 'Remove',
