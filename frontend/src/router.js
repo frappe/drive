@@ -85,14 +85,6 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/pages/Login.vue"),
-    meta: {
-      isPublicRoute: true,
-    },
-  },
-  {
     path: "/signup",
     name: "Signup",
     component: () => import("@/pages/Signup.vue"),
@@ -111,6 +103,13 @@ const routes = [
     component: () => import("@/pages/Error.vue"),
     beforeEnter: [redir404, clearStore],
     props: true,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    redirect: () => {
+      window.location.href = "/login"
+    },
   },
 ]
 
