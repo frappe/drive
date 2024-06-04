@@ -25,6 +25,7 @@
         <Avatar size="lg" :label="group.name" />
         <span class="ml-2">{{ group.name }}</span>
         <Dropdown
+          v-if="isDriveadmin"
           :button="{
             icon: 'more-horizontal',
             label: 'Page Options',
