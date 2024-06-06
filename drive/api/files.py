@@ -277,7 +277,7 @@ def get_doc_content(drive_document_name):
     drive_document = frappe.db.get_value(
         "Drive Document",
         drive_document_name,
-        ["content", "settings"],
+        ["content", "raw_content", "settings"],
         as_dict=1,
     )
     return drive_document
@@ -290,7 +290,7 @@ def passive_rename(entity_name, new_title):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, content, file_size, settings=None):
+def save_doc(entity_name, doc_name, raw_content, content, file_size, settings=None):
     if not frappe.has_permission(
         doctype="Drive Entity",
         doc=entity_name,
@@ -301,6 +301,7 @@ def save_doc(entity_name, doc_name, content, file_size, settings=None):
     if settings:
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
     frappe.db.set_value("Drive Document", doc_name, "content", content)
+    frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
     frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
     return
 

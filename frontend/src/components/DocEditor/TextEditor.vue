@@ -148,8 +148,13 @@ export default {
       type: String,
       required: false,
     },
-    modelValue: {
+    yjsContent: {
       type: Uint8Array,
+      required: true,
+      default: null,
+    },
+    rawContent: {
+      type: String,
       required: true,
       default: null,
     },
@@ -174,7 +179,12 @@ export default {
       default: () => [],
     },
   },
-  emits: ["update:modelValue", "updateTitle", "saveDocument"],
+  emits: [
+    "update:yjsContent",
+    "updateTitle",
+    "saveDocument",
+    "update:rawContent",
+  ],
   data() {
     return {
       docWidth: this.settings.docWidth,
@@ -339,7 +349,7 @@ export default {
       this.showFilePicker = true
     })
     const doc = new Y.Doc()
-    Y.applyUpdate(doc, this.modelValue)
+    Y.applyUpdate(doc, this.yjsContent)
     // Tiny test
     // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
 
@@ -363,12 +373,16 @@ export default {
       editorProps: this.editorProps,
       onCreate() {
         componentContext.findCommentsAndStoreValues()
-        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc))
+        componentContext.$emit("update:yjsContent", Y.encodeStateAsUpdate(doc))
         componentContext.updateConnectedUsers(componentContext.editor)
       },
       onUpdate() {
         componentContext.updateConnectedUsers(componentContext.editor)
-        componentContext.$emit("update:modelValue", Y.encodeStateAsUpdate(doc))
+        componentContext.$emit(
+          "update:rawContent",
+          componentContext.editor.getHTML()
+        )
+        componentContext.$emit("update:yjsContent", Y.encodeStateAsUpdate(doc))
         componentContext.findCommentsAndStoreValues()
         componentContext.setCurrentComment()
       },

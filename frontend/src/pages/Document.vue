@@ -2,7 +2,8 @@
   <div class="flex w-full">
     <TextEditor
       v-if="contentLoaded"
-      v-model="content"
+      v-model:yjsContent="yjsContent"
+      v-model:rawContent="rawContent"
       v-model:settings="settings"
       :fixed-menu="true"
       :bubble-menu="true"
@@ -42,8 +43,9 @@ export default {
     return {
       oldTitle: null,
       title: null,
-      content: null,
+      yjsContent: null,
       settings: null,
+      rawContent: null,
       contentLoaded: false,
       document: null,
       isWritable: false,
@@ -75,7 +77,8 @@ export default {
       .then(() => {
         this.title = this.$resources.getDocument.data.title
         this.oldTitle = this.$resources.getDocument.title
-        this.content = this.$resources.getDocument.data.content
+        this.yjsContent = this.$resources.getDocument.data.content
+        this.rawContent = this.$resources.getDocument.data.rawContent
         this.document = this.$resources.getDocument.data.document
         this.isWritable =
           this.$resources.getDocument.data.owner === this.userId ||
@@ -88,7 +91,7 @@ export default {
         this.entity = this.$resources.getDocument.data
       })
       .then(() => {
-        this.content = toUint8Array(this.$resources.getDocument.data.content)
+        this.yjsContent = toUint8Array(this.$resources.getDocument.data.content)
         this.contentLoaded = true
         let currentBreadcrumbs = []
         currentBreadcrumbs = this.$store.state.currentBreadcrumbs
@@ -113,10 +116,11 @@ export default {
               entity_name: this.entityName,
               doc_name: this.document,
               title: this.titleVal,
-              content: fromUint8Array(this.content),
+              raw_content: this.rawContent,
+              content: fromUint8Array(this.yjsContent),
               settings: this.settings,
               comments: this.comments,
-              file_size: fromUint8Array(this.content).length,
+              file_size: fromUint8Array(this.yjsContent).length,
             })
           }, 30000)
         }
@@ -135,10 +139,11 @@ export default {
           entity_name: this.entityName,
           doc_name: this.document,
           title: this.titleVal,
-          content: fromUint8Array(this.content),
+          content: fromUint8Array(this.yjsContent),
+          raw_content: this.rawContent,
           settings: this.settings,
           comments: this.comments,
-          file_size: fromUint8Array(this.content).length,
+          file_size: fromUint8Array(this.yjsContent).length,
         })
       }
     },
