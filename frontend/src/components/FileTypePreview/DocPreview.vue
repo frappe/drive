@@ -1,7 +1,7 @@
 <template>
   <div
     id="DocxContainer"
-    class="object-contain max-h-[90vh] max-w-[75vw] z-10 overflow-y-auto"
+    class="object-contain h-[85vh] max-w-[65vw] z-10 overflow-y-auto rounded border"
   ></div>
 </template>
 <script setup>

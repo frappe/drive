@@ -28,7 +28,7 @@
     </div>
 
     <div
-      class="bg-gray-400 overflow-auto h-[85vh] w-[55vw] p-2 border mt-2"
+      class="bg-gray-400 overflow-auto max-h-[85vh] max-w-[65vw] min-w-[55vw] p-2 border"
       :class="pages > 100 ? 'rounded-b' : 'rounded'"
     >
       <div v-if="pages > 100" class="m-4">
@@ -115,6 +115,7 @@ onUnmounted(() => {
   user-select: text;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
