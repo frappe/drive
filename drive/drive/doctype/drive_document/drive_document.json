@@ -7,7 +7,7 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["title", "content", "settings"],
+  "field_order": ["title", "content", "settings", "comments", "raw_content"],
   "fields": [
     {
       "fieldname": "title",
@@ -29,14 +29,18 @@
       "label": "Settings"
     },
     {
-      "default": "",
       "fieldname": "comments",
       "fieldtype": "JSON",
       "label": "Comments"
+    },
+    {
+      "fieldname": "raw_content",
+      "fieldtype": "Long Text",
+      "label": "Raw Content"
     }
   ],
   "links": [],
-  "modified": "2024-04-11 14:34:54.183190",
+  "modified": "2024-06-06 12:29:14.329955",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
@@ -44,12 +48,8 @@
   "owner": "Administrator",
   "permissions": [
     {
-      "create": 0,
-      "delete": 0,
-      "export": 0,
       "read": 1,
       "role": "Guest",
-      "share": 0,
       "write": 1
     },
     {
