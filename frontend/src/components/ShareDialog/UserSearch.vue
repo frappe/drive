@@ -117,8 +117,8 @@
 <script setup>
 import { Float } from "@headlessui-float/vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
-import { defineEmits, computed, ref } from "vue"
-import { createResource, Avatar, Input, FeatherIcon } from "frappe-ui"
+import { defineEmits, computed, ref, watch } from "vue"
+import { createResource, Avatar, Input } from "frappe-ui"
 
 const searchUserText = ref("")
 const allUsers = ref([])
@@ -135,20 +135,11 @@ const props = defineProps({
   },
   activeUsers: {
     type: Object,
-    default() {
-      return {
-        user_name: "",
-        user_image: "",
-      }
-    },
+    required: true,
   },
   activeGroups: {
     type: Object,
-    default() {
-      return {
-        user_name: "",
-      }
-    },
+    required: true,
   },
   owner: {
     type: Object,
@@ -159,7 +150,13 @@ const props = defineProps({
     },
   },
 })
+const activeUsers = ref(props.activeUsers)
+const activeGroups = ref(props.activeGroups)
 const emit = defineEmits(["addNewUsers"])
+
+watch([activeUsers.value, activeGroups.value], () => {
+  allUsers.value = [...fetchAllUsers.data]
+})
 
 const searchFilterUsers = computed(() => {
   if (!searchUserText.value.length) return availableUsers.value
