@@ -50,6 +50,7 @@ def files(
     favourites_only=False,
     recents_only=False,
     file_kind_list=[],
+    mime_type_list=[],
 ):
     selectedFields = [
         DriveEntity.name,
@@ -82,9 +83,11 @@ def files(
     favourites_only = json.loads(favourites_only)
     recents_only = json.loads(recents_only)
     general_access = eval_general_access(entity_name)
+    if is_active and not entity_name:
+        entity_name = get_user_directory(frappe.session.user).name
+
     if recents_only:
         selectedFields.append(DriveRecent.last_interaction.as_("modified"))
-
     query = (
         frappe.qb.from_(DriveEntity)
         .left_join(DriveDocShare)
@@ -145,6 +148,11 @@ def files(
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
         query = query.where(Criterion.any(file_kind_criterion))
 
+    if mime_type_list:
+        mime_type_list = json.loads(mime_type_list)
+        mime_type_criterion = [DriveEntity.mime_type == mime_type for mime_type in mime_type_list]
+        query = query.where((Criterion.any(mime_type_criterion)) | (DriveEntity.is_group == True))
+
     query = query.groupby(DriveEntity.name)
     result = query.run(as_dict=True)
     return result
@@ -152,7 +160,12 @@ def files(
 
 @frappe.whitelist()
 def shared_with_user(
-    order_by="modified", limit=100, offset=0, folders_first=True, file_kind_list=[]
+    order_by="modified",
+    limit=100,
+    offset=0,
+    folders_first=True,
+    file_kind_list=[],
+    mime_type_list=[],
 ):
     """
     Returns the highest level of shared items shared with/by the current user, group or org
@@ -238,12 +251,22 @@ def shared_with_user(
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
         query = query.where(Criterion.any(file_kind_criterion))
 
+    if mime_type_list:
+        mime_type_list = json.loads(mime_type_list)
+        mime_type_criterion = [DriveEntity.mime_type == mime_type for mime_type in mime_type_list]
+        query = query.where((Criterion.any(mime_type_criterion)) | (DriveEntity.is_group == True))
+
     return query.run(as_dict=True)
 
 
 @frappe.whitelist()
 def shared_by_user(
-    order_by="modified", limit=100, offset=0, folders_first=True, file_kind_list=[]
+    order_by="modified",
+    limit=100,
+    offset=0,
+    folders_first=True,
+    file_kind_list=[],
+    mime_type_list=[],
 ):
     """
     Return the list of files and folders shared with the current user
@@ -325,5 +348,10 @@ def shared_by_user(
         file_kind_list = json.loads(file_kind_list)
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
         query = query.where(Criterion.any(file_kind_criterion))
+
+    if mime_type_list:
+        mime_type_list = json.loads(mime_type_list)
+        mime_type_criterion = [DriveEntity.mime_type == mime_type for mime_type in mime_type_list]
+        query = query.where((Criterion.any(mime_type_criterion)) | (DriveEntity.is_group == True))
 
     return query.run(as_dict=True)
