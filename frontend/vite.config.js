@@ -2,7 +2,6 @@ import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import path from "path"
 import { webserver_port } from "../../../sites/common_site_config.json"
-import topLevelAwait from "vite-plugin-top-level-await"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -30,19 +29,6 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            return id
-              .toString()
-              .split("node_modules/")[1]
-              .split("/")[0]
-              .toString()
-          }
-        },
-      },
-    },
     outDir: `../${path.basename(path.resolve(".."))}/public/frontend`,
     emptyOutDir: true,
     target: "esnext",
@@ -56,6 +42,8 @@ export default defineConfig({
       "frappe-ui",
       "feather-icons",
       "showdown",
+      "prosemirror",
+      "tiptap",
       "engine.io-client",
       "tailwind.config.js",
     ],
