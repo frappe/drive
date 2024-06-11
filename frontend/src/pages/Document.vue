@@ -78,7 +78,7 @@ export default {
         this.title = this.$resources.getDocument.data.title
         this.oldTitle = this.$resources.getDocument.title
         this.yjsContent = this.$resources.getDocument.data.content
-        this.rawContent = this.$resources.getDocument.data.rawContent
+        this.rawContent = this.$resources.getDocument.data.raw_content
         this.document = this.$resources.getDocument.data.document
         this.isWritable =
           this.$resources.getDocument.data.owner === this.userId ||
