@@ -682,35 +682,6 @@
                 New Table
               </template>
             </Button>
-            <Button
-              v-if="editor.can().deleteTable()"
-              class="w-full"
-              @click="editor.chain().focus().deleteTable().run()"
-            >
-              <template #prefix>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="w-4"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path
-                    d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10"
-                  ></path>
-                  <path d="M3 10h18"></path>
-                  <path d="M10 3v18"></path>
-                  <path d="M16 19h6"></path>
-                </svg>
-                Delete Table
-              </template>
-            </Button>
           </div>
 
           <div v-if="editor.can().deleteTable()" class="space-y-2">
@@ -869,120 +840,37 @@
                 </Button>
               </div>
             </div>
-            <div class="space-y-2">
-              <span class="font-medium text-gray-600 text-base">Cells</span>
-              <div class="flex items-stretch w-full space-x-2 justify-center">
-                <Button
-                  class="px-2 w-full"
-                  @click="editor.chain().focus().mergeCells().run()"
-                >
-                  <template #prefix>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-4"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      stroke-width="0"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                    >
-                      <path
-                        d="M21 20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V20ZM19 11V5H13.001V7H15L12 10L9 7H11V5H5V11H7V13H5V19H11V17H9L12 14L15 17H13.001V19H19V13H17V11H19ZM11 13H9V11H11V13ZM15 13H13V11H15V13Z"
-                      ></path>
-                    </svg>
-                  </template>
-                  Merge
-                </Button>
-                <Button
-                  class="px-2 w-full"
-                  @click="editor.chain().focus().splitCell().run()"
-                >
-                  <template #prefix>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-4"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      stroke-width="0"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                    >
-                      <path
-                        d="M21 20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V20ZM19 11V5H13.001V7H15L12 10L9 7H11V5H5V11H7V13H5V19H11V17H9L12 14L15 17H13.001V19H19V13H17V11H19ZM11 13H9V11H11V13ZM15 13H13V11H15V13Z"
-                      ></path>
-                    </svg>
-                  </template>
-                  Split
-                </Button>
-                <Button
-                  class="px-2 w-full"
-                  @click="editor.chain().focus().toggleHeaderCell().run()"
-                >
-                  <template #prefix>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-4"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      stroke-width="0"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                    >
-                      <path
-                        d="M15 21H9V10H15V21ZM17 21V10H22V20C22 20.5523 21.5523 21 21 21H17ZM7 21H3C2.44772 21 2 20.5523 2 20V10H7V21ZM22 8H2V4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V8Z"
-                        fill="currentColor"
-                      ></path>
-                    </svg>
-                  </template>
-                  Header
-                </Button>
-              </div>
-            </div>
           </div>
-          <!--         <div class="flex-col items-start w-full space-x-2 justify-start">
-            <span class="font-medium text-gray-600 text-base">Header</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">   
-            </div>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button
-                class="px-2"
-                @click="editor.chain().focus().toggleHeaderColumn().run()">
-                <template #prefix>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-table-column" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z"></path>
-                    <path d="M10 10h11"></path>
-                    <path d="M10 3v18"></path>
-                    <path d="M9 3l-6 6"></path>
-                    <path d="M10 7l-7 7"></path>
-                    <path d="M10 12l-7 7"></path>
-                    <path d="M10 17l-4 4"></path>
-                  </svg>
-              </template>
-                Header Col
-              </Button>
-              <Button
-                class="px-2"
-                @click="editor.chain().focus().toggleHeaderRow().run()">
-                <template #prefix>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-table-row" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z"></path>
-                    <path d="M9 3l-6 6"></path>
-                    <path d="M14 3l-7 7"></path>
-                    <path d="M19 3l-7 7"></path>
-                    <path d="M21 6l-4 4"></path>
-                    <path d="M3 10h18"></path>
-                    <path d="M10 10v11"></path>
-                  </svg>
-              </template>
-                Header Row
-              </Button>
-            </div>
-          </div> -->
+          <Button
+            v-if="editor.can().deleteTable()"
+            theme="red"
+            class="w-full mt-8"
+            @click="editor.chain().focus().deleteTable().run()"
+          >
+            <template #prefix>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10"
+                ></path>
+                <path d="M3 10h18"></path>
+                <path d="M10 3v18"></path>
+                <path d="M16 19h6"></path>
+              </svg>
+              Delete Table
+            </template>
+          </Button>
         </div>
 
         <!-- Document Settings -->
@@ -1149,13 +1037,21 @@
 </template>
 
 <script>
-import { FeatherIcon, Avatar, Input, Popover, Badge, Dropdown } from "frappe-ui"
+import {
+  FeatherIcon,
+  Avatar,
+  Input,
+  Popover,
+  Badge,
+  Dropdown,
+  Switch,
+} from "frappe-ui"
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { v4 as uuidv4 } from "uuid"
-import { defineAsyncComponent } from "vue"
+import { defineAsyncComponent, markRaw } from "vue"
 import OuterCommentVue from "@/components/DocEditor/OuterComment.vue"
 import LineHeight from "./icons/line-height.vue"
 import {
@@ -1200,10 +1096,12 @@ import BlockQuote from "./icons/BlockQuote.vue"
 import Style from "./icons/Style.vue"
 import Image from "./icons/Image.vue"
 import Video from "./icons/Video.vue"
+import { formatTimeAgo } from "@vueuse/core"
 
 export default {
   name: "DocMenuAndInfoBar",
   components: {
+    Switch,
     Input,
     FeatherIcon,
     Avatar,
@@ -1269,32 +1167,32 @@ export default {
       tabs: [
         {
           name: "Typography",
-          icon: Style,
+          icon: markRaw(Style),
           write: true,
         },
         {
           name: "Insert",
-          icon: Plus,
+          icon: markRaw(Plus),
           write: true,
         },
         {
           name: "Document Settings",
-          icon: FileText,
+          icon: markRaw(FileText),
           write: true,
         },
         {
           name: "Transforms",
-          icon: ArrowDownUp,
+          icon: markRaw(ArrowDownUp),
           write: false,
         },
         {
           name: "Information",
-          icon: Info,
+          icon: markRaw(Info),
           write: false,
         },
         {
           name: "Comments",
-          icon: MessageCircle,
+          icon: markRaw(MessageCircle),
           write: false,
         },
       ],
@@ -1377,6 +1275,11 @@ export default {
       return this.$resources.userList.data?.users.concat(
         this.$resources.groupList.data
       )
+    },
+    formattedMimeType() {
+      if (this.entity.is_group) return "Folder"
+      const file = this.entity.file_kind
+      return file?.charAt(0).toUpperCase() + file?.slice(1)
     },
   },
   methods: {

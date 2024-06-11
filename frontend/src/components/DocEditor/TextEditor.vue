@@ -24,19 +24,28 @@
       v-if="editor"
       v-show="!forceHideBubbleMenu"
       v-on-outside-click="toggleCommentMenu"
-      :update-delay="250"
-      :tippy-options="{ animation: 'shift-away' }"
+      plugin-key="main"
       :should-show="shouldShow"
       :editor="editor"
     >
       <Menu :buttons="bubbleMenuButtons" />
+    </BubbleMenu>
+    <BubbleMenu
+      v-if="editor && isWritable"
+      v-show="!forceHideBubbleMenu"
+      plugin-key="table"
+      :tippy-options="{ placement: 'bottom' }"
+      :should-show="shouldShowTableMenu"
+      :editor="editor"
+    >
+      <Menu :buttons="bubbleMenuTableButtons" />
     </BubbleMenu>
   </div>
   <DocMenuAndInfoBar ref="MenuBar" :editor="editor" :settings="settings" />
   <FilePicker
     v-if="showFilePicker"
     v-model="showFilePicker"
-    :suggested-tab-index="1"
+    :suggested-tab-index="0"
     @success="
       (val) => {
         pickedFile = val
@@ -235,6 +244,13 @@ export default {
         return buttons.map(createEditorButton)
       } else if (this.entity.allow_comments) {
         let buttons = ["Comment"]
+        return buttons.map(createEditorButton)
+      }
+      return []
+    },
+    bubbleMenuTableButtons() {
+      if (this.entity.owner === "You" || this.entity.write) {
+        let buttons = ["MergeCells", "SplitCells", "ToggleHeaderCell"]
         return buttons.map(createEditorButton)
       }
       return []
@@ -685,7 +701,7 @@ export default {
       // Doubleclick an empty paragraph returns a node size of 2.
       // So we check also for an empty text size.
       const isEmptyTextBlock =
-        !doc.textBetween(from, to).length && isTextSelection(state.selection)
+        !doc.textBetween(from, to).length && !isTextSelection(state.selection)
       const isMediaSelected =
         this.editor.isActive("image") ||
         this.editor.isActive("video") ||
@@ -696,6 +712,11 @@ export default {
         return !(empty || isEmptyTextBlock)
       } else {
         return !(!view.hasFocus() || empty || isEmptyTextBlock)
+      }
+    },
+    shouldShowTableMenu({ view, state, from, to }) {
+      if (this.editor.can().splitCell() || this.editor.can().mergeCells()) {
+        return true
       }
     },
     toggleCommentMenu() {

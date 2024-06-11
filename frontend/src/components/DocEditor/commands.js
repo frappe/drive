@@ -6,6 +6,8 @@ import Strikethrough from "./icons/StrikeThrough.vue"
 import Underline from "./icons/Underline.vue"
 import NewAnnotation from "./icons/NewAnnotation.vue"
 import NewLink from "./icons/NewLink.vue"
+import { TableCellsSplit, TableCellsMerge } from "lucide-vue-next"
+import ToggleHeaderCell from "./icons/ToggleHeaderCell.vue"
 
 export default {
   Bold: {
@@ -48,9 +50,27 @@ export default {
     type: "separator",
   },
   Comment: {
-    label: "New Annotation",
+    label: "New Comment",
     icon: NewAnnotation,
     isActive: (editor) => editor.isActive("comment"),
     component: defineAsyncComponent(() => import("./NewComment.vue")),
+  },
+  MergeCells: {
+    label: "Merge Cells",
+    icon: TableCellsMerge,
+    isActive: () => false,
+    action: (editor) => editor.chain().focus().mergeCells().run(),
+  },
+  SplitCells: {
+    label: "Split Cells",
+    icon: TableCellsSplit,
+    isActive: () => false,
+    action: (editor) => editor.chain().focus().splitCell().run(),
+  },
+  ToggleHeaderCell: {
+    label: "Toggle Header",
+    icon: ToggleHeaderCell,
+    isActive: () => false,
+    action: (editor) => editor.chain().focus().toggleHeaderCell().run(),
   },
 }
