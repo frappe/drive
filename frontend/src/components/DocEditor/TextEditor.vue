@@ -20,7 +20,7 @@
         :editor="editor"
       />
     </div>
-    <TableBubbleMenu :editor="editor" />
+    <TableBubbleMenu v-if="isWritable" :editor="editor" />
     <BubbleMenu
       v-if="editor"
       v-show="!forceHideBubbleMenu"
