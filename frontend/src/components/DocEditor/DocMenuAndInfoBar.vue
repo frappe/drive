@@ -648,12 +648,13 @@
           <span class="font-medium text-gray-600 text-base">Table</span>
           <div class="flex space-x-2 my-2">
             <Button
+              :disabled="editor.isActive('table')"
               class="w-full"
               @click="
                 editor
                   .chain()
                   .focus()
-                  .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                  .insertTable({ rows: 3, cols: 3, withHeaderRow: false })
                   .run()
               "
             >
@@ -664,7 +665,7 @@
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
-                  stroke-width="2"
+                  stroke-width="1.5"
                   stroke="currentColor"
                   fill="none"
                   stroke-linecap="round"
@@ -683,194 +684,6 @@
               </template>
             </Button>
           </div>
-
-          <div v-if="editor.can().deleteTable()" class="space-y-2">
-            <span class="font-medium text-gray-600 text-base">Row</span>
-            <div class="flex items-stretch w-full space-x-2 justify-center">
-              <Button
-                class="px-2 w-full"
-                @click="editor.chain().focus().addRowBefore().run()"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon icon-tabler icon-tabler-row-insert-top"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="1"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path
-                    d="M4 18v-4a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1z"
-                  ></path>
-                  <path d="M12 9v-4"></path>
-                  <path d="M10 7l4 0"></path>
-                </svg>
-              </Button>
-              <Button
-                class="px-2 w-full"
-                @click="editor.chain().focus().addRowAfter().run()"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon icon-tabler icon-tabler-row-insert-bottom"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="1"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path
-                    d="M20 6v4a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1z"
-                  ></path>
-                  <path d="M12 15l0 4"></path>
-                  <path d="M14 17l-4 0"></path>
-                </svg>
-              </Button>
-              <Button
-                class="px-2 w-full"
-                @click="editor.chain().focus().deleteRow().run()"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon icon-tabler icon-tabler-row-remove"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="1"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path
-                    d="M20 6v4a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1z"
-                  ></path>
-                  <path d="M10 16l4 4"></path>
-                  <path d="M10 20l4 -4"></path>
-                </svg>
-              </Button>
-            </div>
-
-            <div class="space-y-2">
-              <span class="font-medium text-gray-600 text-base my-4">
-                Column
-              </span>
-              <div class="flex items-stretch w-full space-x-2 justify-center">
-                <Button
-                  class="px-2 w-full"
-                  @click="editor.chain().focus().addColumnBefore().run()"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon icon-tabler icon-tabler-column-insert-left"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="1"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path
-                      d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"
-                    ></path>
-                    <path d="M5 12l4 0"></path>
-                    <path d="M7 10l0 4"></path>
-                  </svg>
-                </Button>
-                <Button
-                  class="w-full text-gray-600"
-                  @click="editor.chain().focus().addColumnAfter().run()"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon icon-tabler icon-tabler-column-insert-right"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="1"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path
-                      d="M6 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"
-                    ></path>
-                    <path d="M15 12l4 0"></path>
-                    <path d="M17 10l0 4"></path>
-                  </svg>
-                </Button>
-                <Button
-                  class="px-2 w-full"
-                  @click="editor.chain().focus().deleteColumn().run()"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon icon-tabler icon-tabler-column-remove"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="1"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path
-                      d="M6 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"
-                    ></path>
-                    <path d="M16 10l4 4"></path>
-                    <path d="M16 14l4 -4"></path>
-                  </svg>
-                </Button>
-              </div>
-            </div>
-          </div>
-          <Button
-            v-if="editor.can().deleteTable()"
-            theme="red"
-            class="w-full mt-8"
-            @click="editor.chain().focus().deleteTable().run()"
-          >
-            <template #prefix>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-4"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path
-                  d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10"
-                ></path>
-                <path d="M3 10h18"></path>
-                <path d="M10 3v18"></path>
-                <path d="M16 19h6"></path>
-              </svg>
-              Delete Table
-            </template>
-          </Button>
         </div>
 
         <!-- Document Settings -->
@@ -1096,7 +909,6 @@ import BlockQuote from "./icons/BlockQuote.vue"
 import Style from "./icons/Style.vue"
 import Image from "./icons/Image.vue"
 import Video from "./icons/Video.vue"
-import { formatTimeAgo } from "@vueuse/core"
 
 export default {
   name: "DocMenuAndInfoBar",

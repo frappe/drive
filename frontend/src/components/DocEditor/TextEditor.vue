@@ -20,6 +20,7 @@
         :editor="editor"
       />
     </div>
+    <TableBubbleMenu :editor="editor" />
     <BubbleMenu
       v-if="editor"
       v-show="!forceHideBubbleMenu"
@@ -29,16 +30,6 @@
       :editor="editor"
     >
       <Menu :buttons="bubbleMenuButtons" />
-    </BubbleMenu>
-    <BubbleMenu
-      v-if="editor && isWritable"
-      v-show="!forceHideBubbleMenu"
-      plugin-key="table"
-      :tippy-options="{ placement: 'bottom' }"
-      :should-show="shouldShowTableMenu"
-      :editor="editor"
-    >
-      <Menu :buttons="bubbleMenuTableButtons" />
     </BubbleMenu>
   </div>
   <DocMenuAndInfoBar ref="MenuBar" :editor="editor" :settings="settings" />
@@ -69,17 +60,15 @@ import {
   BubbleMenu,
   isTextSelection,
 } from "@tiptap/vue-3"
+import { Table } from "./Table"
 import StarterKit from "@tiptap/starter-kit"
 import Underline from "@tiptap/extension-underline"
 import Placeholder from "@tiptap/extension-placeholder"
 import TextAlign from "@tiptap/extension-text-align"
-import Table from "@tiptap/extension-table"
-import TableCell from "@tiptap/extension-table-cell"
-import TableHeader from "@tiptap/extension-table-header"
-import TableRow from "@tiptap/extension-table-row"
 import CharacterCount from "@tiptap/extension-character-count"
 import Link from "@tiptap/extension-link"
 import Typography from "@tiptap/extension-typography"
+import TableBubbleMenu from "./Table/menus/TableBubbleMenu.vue"
 /* import TextStyle from "@tiptap/extension-text-style"; */
 /* import Highlight from "@tiptap/extension-highlight";
  */ import FontFamily from "@tiptap/extension-font-family"
@@ -122,6 +111,7 @@ export default {
     Menu,
     DocMenuAndInfoBar,
     FilePicker,
+    TableBubbleMenu,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -462,9 +452,7 @@ export default {
         }),
         DetailsSummary,
         DetailsContent,
-        Table.configure({
-          resizable: true,
-        }),
+        Table,
         FontFamily.configure({
           types: ["textStyle"],
         }),
@@ -512,9 +500,6 @@ export default {
         }),
         CharacterCount,
         Underline,
-        TableRow,
-        TableHeader,
-        TableCell,
         Typography,
         TextStyle,
         FontSize.configure({
@@ -693,36 +678,15 @@ export default {
       }
       return false
     },
-    shouldShow({ view, state, from, to }) {
-      const { doc, selection } = state
-      const { empty } = selection
-
-      // Sometime check for `empty` is not enough.
-      // Doubleclick an empty paragraph returns a node size of 2.
-      // So we check also for an empty text size.
-      const isEmptyTextBlock =
-        !doc.textBetween(from, to).length && !isTextSelection(state.selection)
-      const isMediaSelected =
-        this.editor.isActive("image") ||
-        this.editor.isActive("video") ||
-        this.editor.isActive("resizableMedia")
-      if (isMediaSelected) {
-        return false
-      } else if (this.bubbleMenuButtons.length === 1) {
-        return !(empty || isEmptyTextBlock)
-      } else {
-        return !(!view.hasFocus() || empty || isEmptyTextBlock)
+    shouldShow: ({ state }) => {
+      const { from, to } = state.selection
+      // Check if the selection is within a text node
+      const node = state.doc.nodeAt(from)
+      if (node && node.type.name === "text") {
+        // Ensure the selection is not empty
+        return from !== to
       }
-    },
-    shouldShowTableMenu({ view, state, from, to }) {
-      if (this.editor.can().splitCell() || this.editor.can().mergeCells()) {
-        return true
-      }
-    },
-    toggleCommentMenu() {
-      if (this.showCommentMenu === true) {
-        this.showCommentMenu = false
-      }
+      return false // Hide the menu if the selection is outside a text node
     },
     RndColor() {
       const max = 255
@@ -1022,5 +986,31 @@ details[open] + .details-arrow::before {
   content: "▼";
   color: var(--tw-prose-bullets);
   transform: rotate(45deg);
+}
+
+.grip-row.selected {
+  background-color: #e3f0fce2;
+  content: "✓";
+}
+.grip-column.selected {
+  background-color: #e3f0fce2;
+}
+
+.grip-column.selected::before {
+  content: "✓";
+  position: absolute;
+  color: white;
+  top: -25%;
+  left: 0%;
+  font-weight: 600;
+}
+
+.grip-row.selected::before {
+  content: "✓";
+  position: absolute;
+  color: white;
+  top: -25%;
+  left: 0%;
+  font-weight: 600;
 }
 </style>
