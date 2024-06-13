@@ -30,6 +30,7 @@
               <li
                 v-for="option in button"
                 v-show="option.isDisabled ? !option.isDisabled(editor) : true"
+                :key="option.label"
                 class="w-full"
               >
                 <button
