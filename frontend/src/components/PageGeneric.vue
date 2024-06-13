@@ -323,10 +323,12 @@ export default {
     overrideCanLoadMore: false,
     clearAll: false,
     showCTADelete: false,
-    selectedEntities: [],
   }),
 
   computed: {
+    selectedEntities() {
+      return this.$store.state.entityInfo
+    },
     filters() {
       return this.$store.state.activeFilters
     },
