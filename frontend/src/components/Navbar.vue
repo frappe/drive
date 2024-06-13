@@ -29,6 +29,7 @@
               $route.name === 'Folder'
             "
             variant="ghost"
+            @click="handleSelectedEntity"
           >
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
@@ -232,246 +233,127 @@ export default {
   },
   computed: {
     selectedEntities() {
+      if (this.$route.name === "Folder") {
+        return this.$store.state.currentFolder
+      }
       return this.$store.state.entityInfo
     },
-    currentFolder() {
-      return this.$store.state.currentFolder
-    },
     actionItems() {
-      if (this.$route.name === "Folder") {
-        return [
-          {
-            label: "Download",
-            icon: Download,
-            onClick: () => {
-              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.currentFolder[0].name}&trigger_download=1`
-            },
-            isEnabled: () => {
-              if (this.currentFolder?.length === 1) {
-                if (
-                  this.currentFolder?.length === 1 &&
-                  !this.currentFolder[0]?.is_group &&
-                  !this.currentFolder[0]?.document
-                ) {
-                  return (
-                    this.currentFolder[0]?.allow_download ||
-                    this.currentFolder[0]?.owner === "You"
-                  )
-                }
-              }
-            },
+      return [
+        {
+          label: "Download",
+          icon: Download,
+          onClick: () => {
+            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
           },
-          {
-            label: "Download",
-            icon: Download,
-            onClick: () => {
-              if (this.currentFolder.length > 1) {
-                let selected_entities = this.currentFolder
-                selectedEntitiesDownload(selected_entities)
-              } else if (this.currentFolder[0].is_group === 1) {
-                folderDownload(this.currentFolder[0])
-              }
-            },
-            isEnabled: () => {
+          isEnabled: () => {
+            if (this.selectedEntities?.length === 1) {
               if (
-                this.currentFolder?.length === 1 &&
-                !this.currentFolder[0]?.is_group
+                this.selectedEntities?.length === 1 &&
+                !this.selectedEntities[0]?.is_group &&
+                !this.selectedEntities[0]?.document
               ) {
-                return false
-              }
-              if (this.currentFolder?.length) {
-                const allEntitiesSatisfyCondition = this.currentFolder?.every(
-                  (entity) => {
-                    return entity.allow_download || entity.owner === "You"
-                  }
+                return (
+                  this.selectedEntities[0]?.allow_download ||
+                  this.selectedEntities[0]?.owner === "You"
                 )
-                return allEntitiesSatisfyCondition
               }
-            },
+            }
           },
-          {
-            label: "Share",
-            icon: Share,
-            onClick: () => {
-              this.emitter.emit("showShareDialog")
-            },
-            isEnabled: () => {
-              return (
-                this.$route.name === "Folder" &&
-                this.$store.state.currentFolder[0]?.owner === "You"
-              )
-            },
+        },
+        {
+          label: "Download",
+          icon: Download,
+          onClick: () => {
+            if (this.selectedEntities.length > 1) {
+              let selected_entities = this.selectedEntities
+              selectedEntitiesDownload(selected_entities)
+            } else if (this.selectedEntities[0].is_group === 1) {
+              folderDownload(this.selectedEntities[0])
+            }
           },
-          {
-            label: "Get Link",
-            icon: Link,
-            onClick: () => {
-              getLink(this.currentFolder[0])
-            },
-            isEnabled: () => {
-              return this.currentFolder?.length === 1
-            },
-          },
-          {
-            label: "Rename",
-            icon: Rename,
-            onClick: () => {
-              this.showRenameDialog = true
-            },
-            isEnabled: () => {
-              return (
-                this.currentFolder?.length === 1 &&
-                (this.currentFolder[0]?.write ||
-                  this.currentFolder[0]?.owner === "You")
-              )
-            },
-          },
-          {
-            label: "Favourite",
-            icon: Star,
-            onClick: () => {
-              this.$resources.toggleFavourite.submit()
-            },
-            isEnabled: () => {
-              return (
-                this.currentFolder?.length > 0 &&
-                this.isLoggedIn &&
-                this.currentFolder?.every((x) => !x.is_favourite)
-              )
-            },
-          },
-          {
-            label: "Unfavourite",
-            icon: Star,
-            onClick: () => {
-              this.$resources.toggleFavourite.submit()
-            },
-            isEnabled: () => {
-              return (
-                this.currentFolder?.length > 0 &&
-                this.currentFolder?.every((x) => x.is_favourite)
-              )
-            },
-          },
-        ].filter((item) => item.isEnabled())
-      }
-      if (this.$route.name === "File" || this.$route.name === "Document") {
-        return [
-          {
-            label: "Download",
-            icon: Download,
-            onClick: () => {
-              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
-            },
-            isEnabled: () => {
-              if (this.selectedEntities?.length === 1) {
-                if (
-                  this.selectedEntities?.length === 1 &&
-                  !this.selectedEntities[0]?.is_group &&
-                  !this.selectedEntities[0]?.document
-                ) {
-                  return (
-                    this.selectedEntities[0]?.allow_download ||
-                    this.selectedEntities[0]?.owner === "You"
-                  )
+          isEnabled: () => {
+            if (
+              this.selectedEntities?.length === 1 &&
+              !this.selectedEntities[0]?.is_group
+            ) {
+              return false
+            }
+            if (this.selectedEntities?.length) {
+              const allEntitiesSatisfyCondition = this.selectedEntities?.every(
+                (entity) => {
+                  return entity.allow_download || entity.owner === "You"
                 }
-              }
-            },
-          },
-          {
-            label: "Download",
-            icon: Download,
-            onClick: () => {
-              if (this.selectedEntities.length > 1) {
-                let selected_entities = this.selectedEntities
-                selectedEntitiesDownload(selected_entities)
-              } else if (this.selectedEntities[0].is_group === 1) {
-                folderDownload(this.selectedEntities[0])
-              }
-            },
-            isEnabled: () => {
-              if (
-                this.selectedEntities?.length === 1 &&
-                !this.selectedEntities[0]?.is_group
-              ) {
-                return false
-              }
-              if (this.selectedEntities?.length) {
-                const allEntitiesSatisfyCondition =
-                  this.selectedEntities?.every((entity) => {
-                    return entity.allow_download || entity.owner === "You"
-                  })
-                return allEntitiesSatisfyCondition
-              }
-            },
-          },
-          {
-            label: "Share",
-            icon: Share,
-            onClick: () => {
-              this.emitter.emit("showShareDialog")
-            },
-            isEnabled: () => {
-              return (
-                this.$route.name === "Folder" &&
-                this.$store.state.currentFolder[0]?.owner === "You"
               )
-            },
+              return allEntitiesSatisfyCondition
+            }
           },
-          {
-            label: "Get Link",
-            icon: Link,
-            onClick: () => {
-              getLink(this.selectedEntities[0])
-            },
-            isEnabled: () => {
-              return this.selectedEntities?.length === 1
-            },
+        },
+        {
+          label: "Share",
+          icon: Share,
+          onClick: () => {
+            this.emitter.emit("showShareDialog")
           },
-          {
-            label: "Rename",
-            icon: Rename,
-            onClick: () => {
-              this.showRenameDialog = true
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities?.length === 1 &&
-                (this.selectedEntities[0]?.write ||
-                  this.selectedEntities[0]?.owner === "You")
-              )
-            },
+          isEnabled: () => {
+            return (
+              this.$route.name === "Folder" &&
+              this.$store.state.currentFolder[0]?.owner === "You"
+            )
           },
-          {
-            label: "Favourite",
-            icon: Star,
-            onClick: () => {
-              this.$resources.toggleFavourite.submit()
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities?.length > 0 &&
-                this.isLoggedIn &&
-                this.selectedEntities?.every((x) => !x.is_favourite)
-              )
-            },
+        },
+        {
+          label: "Get Link",
+          icon: Link,
+          onClick: () => {
+            getLink(this.selectedEntities[0])
           },
-          {
-            label: "Unfavourite",
-            icon: Star,
-            onClick: () => {
-              this.$resources.toggleFavourite.submit()
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities?.length > 0 &&
-                this.selectedEntities?.every((x) => x.is_favourite)
-              )
-            },
+          isEnabled: () => {
+            return this.selectedEntities?.length === 1
           },
-        ].filter((item) => item.isEnabled())
-      }
-      return []
+        },
+        {
+          label: "Rename",
+          icon: Rename,
+          onClick: () => {
+            this.showRenameDialog = true
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities?.length === 1 &&
+              (this.selectedEntities[0]?.write ||
+                this.selectedEntities[0]?.owner === "You")
+            )
+          },
+        },
+        {
+          label: "Favourite",
+          icon: Star,
+          onClick: () => {
+            this.$resources.toggleFavourite.submit()
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities?.length > 0 &&
+              this.isLoggedIn &&
+              this.selectedEntities?.every((x) => !x.is_favourite)
+            )
+          },
+        },
+        {
+          label: "Unfavourite",
+          icon: Star,
+          onClick: () => {
+            this.$resources.toggleFavourite.submit()
+          },
+          isEnabled: () => {
+            return (
+              this.selectedEntities?.length > 0 &&
+              this.selectedEntities?.every((x) => x.is_favourite)
+            )
+          },
+        },
+      ].filter((item) => item.isEnabled())
     },
     fullName() {
       return this.$store.state.user.fullName
@@ -489,28 +371,16 @@ export default {
       return this.$store.state.currentViewEntites
     },
   },
-  /*   methods: {
-    openEntity(entity) {
-      if (entity.is_group) {
-        this.$router.push({
-          name: "Folder",
-          params: { entityName: entity.name },
-        });
-      } else if (entity.document) {
-        this.$router.push({
-          name: "Document",
-          params: { entityName: entity.name },
-        });
-      } else {
-        this.previewEntity = entity;
-        this.showPreview = true;
+  methods: {
+    handleSelectedEntity() {
+      if (this.$route.name === "Folder") {
+        return this.$store.commit(
+          "setEntityInfo",
+          this.$store.state.currentFolder
+        )
       }
     },
-    hidePreview() {
-      this.showPreview = false;
-      this.previewEntity = null;
-    },
-  }, */
+  },
   resources: {
     createDocument() {
       return {

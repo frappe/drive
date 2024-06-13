@@ -82,9 +82,10 @@ export default {
   },
   computed: {
     entity() {
-      return this.$route.name === "Folder"
-        ? this.$store.state.currentFolder[0]
-        : this.$store.state.entityInfo[0]
+      if (this.$route.name === "Folder") {
+        this.$store.commit("setEntityInfo", this.$store.state.currentFolder)
+      }
+      return this.$store.state.entityInfo[0]
     },
     breadcrumbLinks() {
       return this.$store.state.currentBreadcrumbs
@@ -92,11 +93,14 @@ export default {
     currentTitle: {
       get() {
         let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label
-        if (this.$route.name === "Document") {
+        if (this.$route.name === "Document" || this.$route.name === "File") {
           value =
             value != this.$store.state.entityInfo[0]?.title
               ? this.$store.state.entityInfo[0]?.title
               : value
+        }
+        if (this.$route.name === "Folder") {
+          value = this.$store.state.currentFolder[0]?.title
         }
         document.title = value
         return value
