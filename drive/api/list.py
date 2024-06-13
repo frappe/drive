@@ -83,7 +83,8 @@ def files(
     favourites_only = json.loads(favourites_only)
     recents_only = json.loads(recents_only)
     general_access = eval_general_access(entity_name)
-    if is_active and not entity_name:
+    
+    if mime_type_list and not entity_name:
         entity_name = get_user_directory(frappe.session.user).name
 
     if recents_only:
