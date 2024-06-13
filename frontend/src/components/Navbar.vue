@@ -18,6 +18,7 @@
           <UsersBar />
         </div>
         <Dropdown
+          v-if="$store.state.entityInfo"
           :options="actionItems"
           placement="right"
           class="basis-5/12 lg:basis-auto"
