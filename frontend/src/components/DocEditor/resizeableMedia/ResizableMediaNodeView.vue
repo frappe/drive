@@ -4,7 +4,6 @@ import { ref, onMounted, computed, watch } from "vue"
 import { Node as ProseMirrorNode } from "prosemirror-model"
 import { Decoration } from "prosemirror-view"
 import { resizableMediaActions } from "./resizableMediaMenuUtil"
-import { Button } from "frappe-ui"
 import "tippy.js/animations/shift-away.css"
 import AlignItemLeft from "../icons/align-item-left.vue"
 import AlignItemRight from "../icons/align-item-right.vue"
@@ -133,7 +132,6 @@ const onHorizontalResize = (
   newMediaDimensions.height = newMediaDimensions.width / aspectRatio.value
 
   if (limitWidthOrHeightToFiftyPixels(newMediaDimensions)) return
-  console.log(newMediaDimensions)
   props.updateAttributes(newMediaDimensions)
 }
 
@@ -149,8 +147,6 @@ const onHorizontalMouseMove = (e: MouseEvent) => {
   if (diff === 0) return
 
   let directionOfMouseMove: "left" | "right"
-  console.log(diff)
-  console.log(activeDragHandle.value)
   if (activeDragHandle.value === "left") {
     directionOfMouseMove = diff > 0 ? "right" : "left"
   } else if (activeDragHandle.value === "right") {
@@ -200,10 +196,15 @@ const alignClass = computed(() => {
       data-drag-handle
     >
       <div
-        class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 z-10 absolute top-2 right-2 bg-white border backdrop-blur-sm bg-opacity-80 rounded"
+        class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute -top-10 right-0 bg-white border flex items-center justify-center shadow-lg rounded-[0.55rem] gap-x-1 p-0.5"
       >
-        <Button
-          :class="props.node.attrs.dataAlign === 'left' ? 'bg-white' : ''"
+        <button
+          class="rounded p-1"
+          :class="
+            props.node.attrs.dataAlign === 'left'
+              ? 'bg-gray-200 text-gray-600'
+              : ''
+          "
           :variant="'ghost'"
           @click="
             props.updateAttributes({
@@ -213,9 +214,14 @@ const alignClass = computed(() => {
           "
         >
           <AlignItemLeft class="rounded-none w-4 h-auto" />
-        </Button>
-        <Button
-          :class="props.node.attrs.dataAlign === 'center' ? 'bg-white' : ''"
+        </button>
+        <button
+          class="rounded p-1"
+          :class="
+            props.node.attrs.dataAlign === 'center'
+              ? 'bg-gray-200 text-gray-600'
+              : ''
+          "
           :variant="'ghost'"
           @click="
             props.updateAttributes({
@@ -225,9 +231,14 @@ const alignClass = computed(() => {
           "
         >
           <AlignItemCenter class="rounded-none w-4 h-auto" />
-        </Button>
-        <Button
-          :class="props.node.attrs.dataAlign === 'right' ? 'bg-white' : ''"
+        </button>
+        <button
+          class="rounded p-1"
+          :class="
+            props.node.attrs.dataAlign === 'right'
+              ? 'bg-gray-200 text-gray-600'
+              : ''
+          "
           :variant="'ghost'"
           @click="
             props.updateAttributes({
@@ -237,9 +248,14 @@ const alignClass = computed(() => {
           "
         >
           <AlignItemRight class="w-4 h-auto" />
-        </Button>
-        <Button
-          :class="props.node.attrs.dataFloat === 'left' ? 'bg-white' : ''"
+        </button>
+        <button
+          class="rounded p-1"
+          :class="
+            props.node.attrs.dataFloat === 'left'
+              ? 'bg-gray-200 text-gray-600'
+              : ''
+          "
           :variant="'ghost'"
           @click="
             props.updateAttributes({
@@ -249,9 +265,14 @@ const alignClass = computed(() => {
           "
         >
           <FloatItemLeft class="w-4 h-auto" />
-        </Button>
-        <Button
-          :class="props.node.attrs.dataFloat === 'right' ? 'bg-white' : ''"
+        </button>
+        <button
+          class="rounded p-1"
+          :class="
+            props.node.attrs.dataFloat === 'right'
+              ? 'bg-gray-200 text-gray-600'
+              : ''
+          "
           :variant="'ghost'"
           @click="
             props.updateAttributes({
@@ -261,7 +282,7 @@ const alignClass = computed(() => {
           "
         >
           <FloatItemRight class="w-4 h-auto" />
-        </Button>
+        </button>
       </div>
       <!-- Left Handle -->
       <div
@@ -270,7 +291,7 @@ const alignClass = computed(() => {
         @mouseup.lazy.prevent="stopHorizontalResize"
       >
         <div
-          class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute w-2 bg-white bg-opacity-80 rounded h-[55px]"
+          class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute w-2 bg-white bg-opacity-80 rounded h-[55px] shadow-xl"
         />
       </div>
       <img
@@ -301,7 +322,7 @@ const alignClass = computed(() => {
         @mouseup.lazy.prevent="stopHorizontalResize"
       >
         <div
-          class="absolute w-2 bg-white bg-opacity-80 rounded h-[55px] transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100"
+          class="absolute w-2 bg-white bg-opacity-80 rounded h-[55px] transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 shadow-xl"
         />
       </div>
     </div>
