@@ -687,48 +687,18 @@
         </div>
 
         <!-- Document Settings -->
-        <div v-if="tab === 2" class="flex flex-col px-5 py-4 border-b">
+        <div v-if="tab === 2" class="flex flex-col px-3 py-4 border-b">
           <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full px-2"
           >
             Settings
           </span>
-          <div class="flex items-center">
-            <span class="font-medium text-gray-700 text-base my-2">
-              Small Text
-            </span>
-            <Switch
-              v-model="settings.docSize"
-              :class="settings.docSize ? 'bg-black' : 'bg-gray-200'"
-              class="ml-auto auto inline-flex h-4 w-[26px] items-center rounded-full cursor-pointer"
-              @click="settings.docSize = !settings.docSize"
-            >
-              <span
-                :class="settings.docSize ? 'translate-x-3.5' : 'translate-x-1'"
-                class="inline-block h-2 w-2 transform rounded-full bg-white transition"
-              />
-            </Switch>
-          </div>
-          <div class="flex items-center">
-            <span class="font-medium text-gray-700 text-base my-2">
-              Full Width
-            </span>
-            <Switch
-              v-model="settings.docWidth"
-              :class="settings.docWidth ? 'bg-black' : 'bg-gray-200'"
-              class="ml-auto auto inline-flex h-4 w-[26px] items-center rounded-full cursor-pointer"
-              @click="settings.docWidth = !settings.docWidth"
-            >
-              <span
-                :class="settings.docWidth ? 'translate-x-3.5' : 'translate-x-1'"
-                class="inline-block h-2 w-2 transform rounded-full bg-white transition"
-              />
-            </Switch>
-          </div>
-          <span class="font-medium text-gray-700 text-base my-2">
+          <Switch v-model="settings.docSize" label="Small Text" />
+          <Switch v-model="settings.docWidth" label="Full Width" />
+          <span class="font-medium text-gray-700 text-base my-2.5 px-2.5">
             Default Font
           </span>
-          <div class="w-full flex justify-between gap-1">
+          <div class="w-full flex justify-between gap-1 px-3">
             <Button
               class="w-1/3"
               :class="[
@@ -883,8 +853,6 @@ import {
 } from "lucide-vue-next"
 import { Code } from "lucide-vue-next"
 import { Code2 } from "lucide-vue-next"
-import { ImagePlus } from "lucide-vue-next"
-import { FileVideo } from "lucide-vue-next"
 import { Table2Icon } from "lucide-vue-next"
 import "@fontsource/lora"
 import "@fontsource/geist-mono"
@@ -976,6 +944,7 @@ export default {
   data() {
     return {
       tab: this.entity?.write ? 0 : 4,
+      docFont: this.settings.docFont,
       tabs: [
         {
           name: "Typography",
