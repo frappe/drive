@@ -24,7 +24,6 @@
     <BubbleMenu
       v-if="editor"
       v-show="!forceHideBubbleMenu"
-      v-on-outside-click="toggleCommentMenu"
       plugin-key="main"
       :should-show="shouldShow"
       :editor="editor"
@@ -194,6 +193,7 @@ export default {
       buttons: [],
       forceHideBubbleMenu: false,
       provider: null,
+      document: null,
       awareness: null,
       connectedUsers: null,
       localStore: null,
@@ -356,6 +356,7 @@ export default {
     })
     const doc = new Y.Doc()
     Y.applyUpdate(doc, this.yjsContent)
+    this.document = doc
     // Tiny test
     // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
 
@@ -379,16 +380,10 @@ export default {
       editorProps: this.editorProps,
       onCreate() {
         componentContext.findCommentsAndStoreValues()
-        componentContext.$emit("update:yjsContent", Y.encodeStateAsUpdate(doc))
         componentContext.updateConnectedUsers(componentContext.editor)
       },
       onUpdate() {
         componentContext.updateConnectedUsers(componentContext.editor)
-        componentContext.$emit(
-          "update:rawContent",
-          componentContext.editor.getHTML()
-        )
-        componentContext.$emit("update:yjsContent", Y.encodeStateAsUpdate(doc))
         componentContext.findCommentsAndStoreValues()
         componentContext.setCurrentComment()
       },
@@ -522,6 +517,8 @@ export default {
       }
     })
     setTimeout(() => {
+      this.$emit("update:rawContent", this.editor.getHTML())
+      this.$emit("update:yjsContent", Y.encodeStateAsUpdate(this.document))
       this.$emit("saveDocument")
     }, 10000)
   },
@@ -545,6 +542,7 @@ export default {
     document.removeEventListener("keydown", this.saveDoc)
     this.editor.destroy()
     /* this.localStore.clearData(); */
+    this.provider.disconnect()
     this.provider.destroy()
     this.provider = null
     this.editor = null
@@ -612,6 +610,8 @@ export default {
         return
       }
       e.preventDefault()
+      this.$emit("update:rawContent", this.editor.getHTML())
+      this.$emit("update:yjsContent", Y.encodeStateAsUpdate(this.document))
       this.$emit("saveDocument")
       toast({
         title: "Document saved",
