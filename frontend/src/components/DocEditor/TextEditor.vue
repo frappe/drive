@@ -69,8 +69,8 @@ import Link from "@tiptap/extension-link"
 import Typography from "@tiptap/extension-typography"
 import TableBubbleMenu from "./Table/menus/TableBubbleMenu.vue"
 /* import TextStyle from "@tiptap/extension-text-style"; */
-/* import Highlight from "@tiptap/extension-highlight";
- */ import FontFamily from "@tiptap/extension-font-family"
+/* import Highlight from "@tiptap/extension-highlight"; */
+import FontFamily from "@tiptap/extension-font-family"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
 import { FontSize } from "./font-size"
@@ -123,10 +123,6 @@ export default {
   inheritAttrs: false,
   expose: ["editor"],
   props: {
-    fixedMenu: {
-      type: [Boolean, Array],
-      default: false,
-    },
     settings: {
       type: Object,
       default: null,
@@ -156,25 +152,9 @@ export default {
       required: true,
       default: null,
     },
-    placeholder: {
-      type: String,
-      default: "",
-    },
     isWritable: {
       type: Boolean,
       default: false,
-    },
-    bubbleMenu: {
-      type: [Boolean, Array],
-      default: false,
-    },
-    bubbleMenuOptions: {
-      type: Object,
-      default: () => ({}),
-    },
-    mentions: {
-      type: Array,
-      default: () => [],
     },
   },
   emits: [
@@ -238,47 +218,11 @@ export default {
       }
       return []
     },
-    bubbleMenuTableButtons() {
-      if (this.entity.owner === "You" || this.entity.write) {
-        let buttons = ["MergeCells", "SplitCells", "ToggleHeaderCell"]
-        return buttons.map(createEditorButton)
-      }
-      return []
-    },
     currentUserName() {
       return this.$store.state.user.fullName
     },
     currentUserImage() {
       return this.$store.state.user.imageURL
-    },
-    editorProps() {
-      return {
-        attributes: {
-          class: normalizeClass([
-            `ProseMirror prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
-          ]),
-        },
-        clipboardTextParser: (text, $context) => {
-          if (!detectMarkdown(text)) return
-          if (
-            !confirm(
-              "Do you want to convert markdown content to HTML before pasting?"
-            )
-          )
-            return
-
-          let dom = document.createElement("div")
-          dom.innerHTML = markdownToHTML(text)
-          let parser =
-            this.editor.view.someProp("clipboardParser") ||
-            this.editor.view.someProp("domParser") ||
-            DOMParser.fromSchema(this.editor.schema)
-          return parser.parseSlice(dom, {
-            preserveWhitespace: true,
-            context: $context,
-          })
-        },
-      }
     },
   },
   watch: {
@@ -323,19 +267,6 @@ export default {
     editable(value) {
       this.editor.setEditable(value)
     },
-    editorProps: {
-      deep: true,
-      attributes: {
-        spellcheck: "false",
-      },
-      handler(value) {
-        if (this.editor) {
-          this.editor.setOptions({
-            editorProps: value,
-          })
-        }
-      },
-    },
   },
   mounted() {
     if (window.matchMedia("(max-width: 1500px)").matches) {
@@ -377,7 +308,33 @@ export default {
     document.addEventListener("keydown", this.saveDoc)
     this.editor = new Editor({
       editable: this.editable,
-      editorProps: this.editorProps,
+      editorProps: {
+        attributes: {
+          class: normalizeClass([
+            `ProseMirror prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
+          ]),
+        },
+        clipboardTextParser: (text, $context) => {
+          if (!detectMarkdown(text)) return
+          if (
+            !confirm(
+              "Do you want to convert markdown content to HTML before pasting?"
+            )
+          )
+            return
+
+          let dom = document.createElement("div")
+          dom.innerHTML = markdownToHTML(text)
+          let parser =
+            this.editor.view.someProp("clipboardParser") ||
+            this.editor.view.someProp("domParser") ||
+            DOMParser.fromSchema(this.editor.schema)
+          return parser.parseSlice(dom, {
+            preserveWhitespace: true,
+            context: $context,
+          })
+        },
+      },
       onCreate() {
         componentContext.findCommentsAndStoreValues()
         componentContext.updateConnectedUsers(componentContext.editor)
@@ -669,7 +626,6 @@ export default {
         }
       }
     },
-
     printEditorContent() {
       const editorContent = document.getElementById("editor-capture")
       if (editorContent) {
@@ -855,6 +811,7 @@ span[data-comment] {
   user-select: text;
   padding: 2px;
 }
+
 .collaboration-cursor__caret {
   border-left: 0px solid currentColor;
   border-right: 2px solid currentColor;
@@ -886,7 +843,6 @@ span[data-comment] {
 .my-task-item {
   display: flex;
 }
-
 .my-task-item input {
   border-radius: 4px;
   outline: 0;
