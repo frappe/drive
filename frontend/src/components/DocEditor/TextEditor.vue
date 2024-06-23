@@ -1,5 +1,5 @@
 <template>
-  <div v-if="editor" class="flex-col w-full overflow-y-auto">
+  <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
     <div
       :class="[
         settings.docFont,
@@ -31,7 +31,12 @@
       <Menu :buttons="bubbleMenuButtons" />
     </BubbleMenu>
   </div>
-  <DocMenuAndInfoBar ref="MenuBar" :editor="editor" :settings="settings" />
+  <DocMenuAndInfoBar
+    v-if="editor && initComplete"
+    ref="MenuBar"
+    :editor="editor"
+    :settings="settings"
+  />
   <FilePicker
     v-if="showFilePicker"
     v-model="showFilePicker"
@@ -53,12 +58,7 @@
 <script>
 import "tippy.js/animations/shift-away.css"
 import { normalizeClass, computed } from "vue"
-import {
-  Editor,
-  EditorContent,
-  BubbleMenu,
-  isTextSelection,
-} from "@tiptap/vue-3"
+import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3"
 import { Table } from "./Table"
 import StarterKit from "@tiptap/starter-kit"
 import Underline from "@tiptap/extension-underline"
@@ -68,8 +68,6 @@ import CharacterCount from "@tiptap/extension-character-count"
 import Link from "@tiptap/extension-link"
 import Typography from "@tiptap/extension-typography"
 import TableBubbleMenu from "./Table/menus/TableBubbleMenu.vue"
-/* import TextStyle from "@tiptap/extension-text-style"; */
-/* import Highlight from "@tiptap/extension-highlight"; */
 import FontFamily from "@tiptap/extension-font-family"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
@@ -89,6 +87,7 @@ import Collaboration from "@tiptap/extension-collaboration"
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
 import * as Y from "yjs"
 import { WebrtcProvider } from "y-webrtc"
+import { IndexeddbPersistence } from "y-indexeddb"
 import { createEditorButton } from "./utils"
 import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue"
 import Menu from "./Menu.vue"
@@ -98,9 +97,6 @@ import { convertToHtml } from "mammoth"
 import FilePicker from "@/components/FilePicker.vue"
 import { ResizableMedia } from "./resizeableMedia"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
-import { Details } from "./DetailsExtension"
-import { DetailsSummary } from "./DetailsExtension"
-import { DetailsContent } from "./DetailsExtension"
 
 export default {
   name: "TextEditor",
@@ -147,6 +143,10 @@ export default {
       required: true,
       default: null,
     },
+    lastSaved: {
+      type: Number,
+      required: true,
+    },
     rawContent: {
       type: String,
       required: true,
@@ -162,6 +162,7 @@ export default {
     "updateTitle",
     "saveDocument",
     "update:rawContent",
+    "update:lastSaved",
   ],
   data() {
     return {
@@ -172,6 +173,9 @@ export default {
       defaultFont: "font-sans",
       buttons: [],
       forceHideBubbleMenu: false,
+      synced: false,
+      peercount: 0,
+      initComplete: true,
       provider: null,
       document: null,
       awareness: null,
@@ -226,6 +230,13 @@ export default {
     },
   },
   watch: {
+    lastSaved(newVal) {
+      const ymap = this.document.getMap("docinfo")
+      const lastSaved = ymap.get("lastsaved")
+      if (newVal > lastSaved) {
+        ymap.set("lastsaved", newVal)
+      }
+    },
     settings(newVal) {
       switch (newVal.toLowerCase()) {
         case "sans":
@@ -286,24 +297,29 @@ export default {
       this.showFilePicker = true
     })
     const doc = new Y.Doc()
-    Y.applyUpdate(doc, this.yjsContent)
+    const ymap = doc.getMap("docinfo")
+    ymap.set("lastsaved", this.lastSaved)
     this.document = doc
-    // Tiny test
-    // https://github.com/yjs/y-webrtc/blob/master/bin/server.js
 
-    /* const indexeddbProvider = new IndexeddbPersistence(
-      // Find a sane time to wipe IDB safely
-      "fdoc" + JSON.stringify(this.entityName),
+    const indexeddbProvider = new IndexeddbPersistence(
+      "fdoc-" + JSON.stringify(this.entityName),
       doc
-    ); */
+    )
+    indexeddbProvider.on("synced", () => {
+      this.initComplete = true
+    })
+    Y.applyUpdate(doc, this.yjsContent)
     const webrtcProvider = new WebrtcProvider(
-      "fdoc" + JSON.stringify(this.entityName),
+      "fdoc-" + JSON.stringify(this.entityName),
       doc,
       { signaling: ["wss://network.arjunchoudhary.com"] }
     )
+    ymap.observe(() => {
+      this.$emit("update:lastSaved", ymap.get("lastsaved"))
+    })
     this.provider = webrtcProvider
-    this.awareness = this.provider.awareness.getStates()
-    /* this.localStore = indexeddbProvider; */
+    this.awareness = this.provider.awareness
+    this.localStore = indexeddbProvider
     let componentContext = this
     document.addEventListener("keydown", this.saveDoc)
     this.editor = new Editor({
@@ -343,6 +359,14 @@ export default {
         componentContext.updateConnectedUsers(componentContext.editor)
         componentContext.findCommentsAndStoreValues()
         componentContext.setCurrentComment()
+        componentContext.$emit(
+          "update:rawContent",
+          componentContext.editor.getHTML()
+        )
+        componentContext.$emit(
+          "update:yjsContent",
+          Y.encodeStateAsUpdate(componentContext.document)
+        )
       },
       onSelectionUpdate() {
         componentContext.updateConnectedUsers(componentContext.editor)
@@ -364,8 +388,9 @@ export default {
           },
           codeBlock: {
             HTMLAttributes: {
+              spellcheck: false,
               class:
-                "not-prose my-5 px-4 pt-4 pb-2 text-[0.9em] font-mono text-black bg-gray-50 rounded border border-gray-300 overflow-x-scroll",
+                "not-prose my-5 px-4 py-2 text-[0.9em] font-mono text-black bg-gray-50 rounded border border-gray-300 overflow-x-auto",
             },
           },
           blockquote: {
@@ -395,15 +420,6 @@ export default {
             },
           },
         }),
-        Details.configure({
-          persist: true,
-          HTMLAttributes: {
-            class: "details",
-            openClassName: "details-is-open",
-          },
-        }),
-        DetailsSummary,
-        DetailsContent,
         Table,
         FontFamily.configure({
           types: ["textStyle"],
@@ -473,11 +489,30 @@ export default {
         this.$refs.MenuBar.tab = 5
       }
     })
-    setTimeout(() => {
-      this.$emit("update:rawContent", this.editor.getHTML())
-      this.$emit("update:yjsContent", Y.encodeStateAsUpdate(this.document))
-      this.$emit("saveDocument")
-    }, 10000)
+    window.addEventListener("offline", () => {
+      this.provider.disconnect()
+      this.synced = false
+      this.connected = false
+      this.peercount = 0
+    })
+    window.addEventListener("online", () => {
+      this.provider.connect()
+    })
+    this.provider.on("status", (e) => {
+      this.connected = e.connected
+    })
+    this.provider.on("peers", (e) => {
+      this.peercount = e.webrtcPeers.length
+    })
+    this.awareness.on("update", () => {
+      this.$store.commit(
+        "setConnectedUsers",
+        this.editor?.storage.collaborationCursor.users
+      )
+    })
+    this.provider.on("synced", (e) => {
+      this.synced = e.synced
+    })
   },
   updated() {
     let content = this.editor.state.doc.firstChild.textContent.slice(0, 35)
@@ -494,11 +529,10 @@ export default {
     }
   },
   beforeUnmount() {
-    //console.log(this.editor.getHTML());
     this.updateConnectedUsers(this.editor)
     document.removeEventListener("keydown", this.saveDoc)
     this.editor.destroy()
-    /* this.localStore.clearData(); */
+    this.document.destroy()
     this.provider.disconnect()
     this.provider.destroy()
     this.provider = null
@@ -569,7 +603,9 @@ export default {
       e.preventDefault()
       this.$emit("update:rawContent", this.editor.getHTML())
       this.$emit("update:yjsContent", Y.encodeStateAsUpdate(this.document))
-      this.$emit("saveDocument")
+      if (this.synced || this.peercount === 0) {
+        this.$emit("saveDocument")
+      }
       toast({
         title: "Document saved",
         position: "bottom-right",
@@ -879,69 +915,6 @@ summary {
 summary p {
   margin-top: 0.15rem !important;
   margin-bottom: 0.15rem !important;
-}
-
-.details-arrow {
-  position: absolute;
-  top: 0rem;
-  left: 0rem;
-  height: 2rem;
-  width: 2rem;
-  transition: transform 0.5s ease-in-out;
-  appearance: none;
-  box-sizing: border-box;
-  padding: 4px;
-  background: none;
-  cursor: pointer;
-  outline: none;
-}
-.details-arrow::before {
-  content: "▶";
-  color: var(--tw-prose-bullets);
-}
-
-div[data-type="details-content"] {
-  padding: 0rem 2.5rem;
-}
-
-.details-wrapper {
-  position: relative;
-}
-details {
-  min-height: 100%;
-  width: 100%;
-}
-
-details {
-  display: inline-block;
-  width: 100%; /* Adjust width as needed */
-}
-
-.details-wrapper_rendered .details-arrow {
-  pointer-events: none;
-}
-
-.details-wrapper_rendered summary {
-  transition: transform 0.3s;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.details-wrapper_rendered summary:hover {
-  background: #0d0d0d;
-}
-
-/* details[open] > summary {
-  border-bottom: 1px solid lightgray;
-}
-details[open] {
-  border-bottom: 1px solid lightgray;
-} */
-
-details[open] + .details-arrow::before {
-  content: "▼";
-  color: var(--tw-prose-bullets);
-  transform: rotate(45deg);
 }
 
 .grip-row.selected {
