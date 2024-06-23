@@ -351,7 +351,7 @@
                 <List class="w-4 stroke-2" />
               </template>
             </Button>
-            <Button
+            <!--             <Button
               class="w-full"
               :class="
                 editor.isActive('details')
@@ -367,7 +367,7 @@
               <template #icon>
                 <Details class="w-4" />
               </template>
-            </Button>
+            </Button> -->
             <Button
               class="w-full"
               :class="
