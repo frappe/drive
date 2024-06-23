@@ -326,8 +326,13 @@ export default {
   }),
 
   computed: {
-    selectedEntities() {
-      return this.$store.state.entityInfo
+    selectedEntities: {
+      get() {
+        return this.$store.state.entityInfo
+      },
+      set(val) {
+        this.$store.commit("setEntityInfo", val)
+      },
     },
     filters() {
       return this.$store.state.activeFilters
