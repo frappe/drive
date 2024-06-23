@@ -4,9 +4,11 @@
       v-if="contentLoaded"
       v-model:yjsContent="yjsContent"
       v-model:rawContent="rawContent"
+      v-model:lastSaved="lastSaved"
       v-model:settings="settings"
       :fixed-menu="true"
       :bubble-menu="true"
+      :timeout="timeout"
       placeholder="Start typing ..."
       :is-writable="isWritable"
       :entity-name="entityName"
@@ -24,12 +26,13 @@
 <script setup>
 import TextEditor from "@/components/DocEditor/TextEditor.vue"
 import { fromUint8Array, toUint8Array } from "js-base64"
-import { ref, computed, inject, onMounted } from "vue"
+import { ref, computed, inject, onMounted, onBeforeUnmount } from "vue"
 import { useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import { createResource } from "frappe-ui"
+import { watchDebounced } from "@vueuse/core"
 
 const store = useStore()
 const router = useRouter()
@@ -53,9 +56,25 @@ const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
 const showShareDialog = ref(false)
+const timeout = ref(1000 + Math.floor(Math.random() * 3000))
+const saveCount = ref(0)
+const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
+
+setTimeout(() => {
+  watchDebounced(
+    rawContent,
+    () => {
+      const now = Date.now()
+      if (now - lastSaved.value >= timeout.value) {
+        saveDocument()
+      }
+    },
+    { debounce: timeout.value, maxWait: 30000 }
+  )
+}, 1500)
 
 const saveDocument = () => {
   if (isWritable.value) {
@@ -111,6 +130,7 @@ const getDocument = createResource({
       })
       store.commit("setEntityInfo", [getDocument.data])
       store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
+      lastSaved.value = Date.now()
     }
     contentLoaded.value = true
   },
@@ -131,6 +151,10 @@ const updateDocument = createResource({
   url: "drive.api.files.save_doc",
   debounce: 0,
   auto: false,
+  onSuccess() {
+    lastSaved.value = Date.now()
+    saveCount.value++
+  },
   onError(data) {
     console.log(data)
   },
@@ -140,5 +164,11 @@ onMounted(() => {
   emitter.on("showShareDialog", () => {
     showShareDialog.value = true
   })
+})
+
+onBeforeUnmount(() => {
+  if (saveCount.value) {
+    saveDocument()
+  }
 })
 </script>
