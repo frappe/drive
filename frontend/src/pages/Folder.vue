@@ -41,9 +41,11 @@ let currentFolder = createResource({
     if (data.owner !== store.state.auth.user_id) {
       isSharedFolder.value = true
       store.commit("setHasWriteAccess", data.write)
+      allowEmptyContextMenu.value = data.write
     } else {
       isSharedFolder.value = false
       store.commit("setHasWriteAccess", true)
+      allowEmptyContextMenu.value = true
     }
   },
   onSuccess(data) {
