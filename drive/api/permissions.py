@@ -315,9 +315,16 @@ def get_entity_with_permissions(entity_name):
     
     owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True)
     breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
+    favourite = frappe.db.get_value(
+        "Drive Favourite",
+        {
+            "entity": entity_name,
+            "user":  frappe.session.user,
+        },
+        ["entity as is_favourite"]
+    )
     mark_as_viewed(entity)
-
-    return_obj = entity | user_access | owner_info | breadcrumbs
+    return_obj = entity | user_access | owner_info | breadcrumbs |  {"is_favourite": favourite}
 
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
@@ -333,7 +340,6 @@ def validate_parent_folder(entity):
     for ancestor_name in ancestors:
         if frappe.db.exists("Drive Entity", {"name": ancestor_name, "is_active": 0}):
             raise IsADirectoryError(f"Parent Folder {ancestor_name} has been deleted")
-        print(frappe.db.get_value("Drive Entity", {"name": ancestor_name}, ["name", "owner"]))
         
 def get_valid_breadcrumbs(entity, user_access):
     """
