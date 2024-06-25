@@ -51,7 +51,7 @@ const store = createStore({
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
-    homeFolderID: "",
+    homeFolderID: localStorage.getItem("HomeFolderID") || null,
     currentBreadcrumbs: JSON.parse(
       localStorage.getItem("currentBreadcrumbs")
     ) || [{ label: "Home", route: "/home" }],
@@ -142,7 +142,7 @@ const store = createStore({
       state.currentFolderID = payload
     },
     setHomeFolderID(state, payload) {
-      state.homeFolderID = payload
+      localStorage.setItem("HomeFolderID", payload)
     },
     setCurrentBreadcrumbs(state, payload) {
       localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload))
