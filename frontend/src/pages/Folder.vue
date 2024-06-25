@@ -45,35 +45,19 @@ let currentFolder = createResource({
       isSharedFolder.value = false
       store.commit("setHasWriteAccess", true)
     }
-    let currentBreadcrumbs = store.state.currentBreadcrumbs
-    // Duplicate folder in breadcrumb but unique entity ID
-    const index = currentBreadcrumbs.findIndex(
-      (item) => item.route === "/folder/" + props.entityName
-    )
-    if (index !== -1) {
-      const slicedBreadCrumb = currentBreadcrumbs.slice(0, index + 1)
-      store.commit("setCurrentBreadcrumbs", slicedBreadCrumb)
-    } else {
-      currentBreadcrumbs.push({
-        label: data.title,
-        route: `/folder/${props.entityName}`,
-      })
-      store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
-    }
-    data.item_count
-      ? (data.file_size = data.item_count + " items")
-      : delete data.file_size
-    data.modified = formatDate(data.modified)
-    data.creation = formatDate(data.creation)
-    if (data.owner === store.state.auth.user_id) {
-      allowEmptyContextMenu.value = true
-      data.owner = "You"
-    }
-    data.write ? (allowEmptyContextMenu.value = true) : null
   },
   onSuccess(data) {
     store.commit("setCurrentFolder", [data])
     store.commit("setCurrentFolderID", props.entityName)
+    let currentBreadcrumbs = store.state.currentBreadcrumbs
+    currentBreadcrumbs = [currentBreadcrumbs[0]]
+    data.breadcrumbs.forEach((item) => {
+      currentBreadcrumbs.push({
+        label: item.title,
+        route: "/folder/" + item.name,
+      })
+    })
+    store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

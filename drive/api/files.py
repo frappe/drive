@@ -1339,13 +1339,14 @@ def generate_upward_path(entity_name):
     """
     # CONCAT_WS('/', t.title, gp.path),
     entity_name = frappe.db.escape(entity_name)
-    return frappe.db.sql(
+    result = frappe.db.sql(
         f"""
         WITH RECURSIVE generated_path as ( 
         SELECT 
-            `tabDrive Entity`.title as path,
+            `tabDrive Entity`.title,
             `tabDrive Entity`.name,
-            `tabDrive Entity`.parent_drive_entity
+            `tabDrive Entity`.parent_drive_entity,
+            `tabDrive Entity`.owner
         FROM `tabDrive Entity` 
         WHERE `tabDrive Entity`.name = {entity_name}
 
@@ -1354,13 +1355,15 @@ def generate_upward_path(entity_name):
         SELECT 
             t.title,
             t.name,
-            t.parent_drive_entity
+            t.parent_drive_entity,
+            t.owner
         FROM generated_path as gp
         JOIN `tabDrive Entity` as t ON t.name = gp.parent_drive_entity) 
         SELECT * FROM generated_path;
     """,
         as_dict=1,
     )
+    return result[::-1][1::]
 
 
 @frappe.whitelist()
@@ -1394,3 +1397,44 @@ def get_ancestors_of(entity_name):
     flattened_list = [item for sublist in result for item in sublist]
     flattened_list.pop(0)
     return flattened_list
+
+@frappe.whitelist(allow_guest=True)
+def get_shared_breadcrumbs(share_name):
+    """
+    given a node return the root. stops when share_parent IS NULL
+    given a node and parent travel till
+    the child of the parent_entity and append the parent_entity
+    """
+    # CONCAT_WS('/', t.title, gp.path),
+    share_name = frappe.db.escape(share_name)
+    result = frappe.db.sql(
+        f"""
+        WITH RECURSIVE generated_path as ( 
+        SELECT 
+            `tabDrive DocShare`.name,
+            `tabDrive DocShare`.share_name,
+            `tabDrive DocShare`.share_parent
+        FROM `tabDrive DocShare` 
+        WHERE `tabDrive DocShare`.name = {share_name}
+
+        UNION ALL
+
+        SELECT 
+            `tabDrive DocShare`.name,
+            `tabDrive DocShare`.share_name,
+            `tabDrive DocShare`.share_parent
+        FROM generated_path as gp
+        JOIN `tabDrive DocShare` ON `tabDrive DocShare`.name = gp.share_parent
+        ) 
+        SELECT * FROM generated_path;
+    """,
+        as_dict=1,
+    )
+    share_breadcrumbs = []
+    for i in result:
+        share_breadcrumbs.append(
+            frappe.get_value(
+                "Drive Entity", i.share_name, ["name", "title", "parent_drive_entity", "owner"], as_dict=1
+            )
+        )
+    return share_breadcrumbs[::-1]

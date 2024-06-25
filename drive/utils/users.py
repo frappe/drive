@@ -187,7 +187,12 @@ def has_read_write_access_to_doctype(user_id, doctype_name):
     return False
 
 
-def mark_as_viewed(entity_name):
+def mark_as_viewed(entity):
+    if frappe.session.user == "Guest":
+        return
+    if entity.is_group:
+        return
+    entity_name = entity.name
     entity_log = frappe.db.get_value(
         "Drive Entity Log", {"entity_name": entity_name, "user": frappe.session.user}
     )

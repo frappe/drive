@@ -117,22 +117,24 @@ const getDocument = createResource({
     store.commit("setHasWriteAccess", isWritable)
     data.owner = data.owner === userId.value ? "You" : data.owner
     entity.value = data
-    let currentBreadcrumbs = []
-    currentBreadcrumbs = store.state.currentBreadcrumbs
-    if (
-      !currentBreadcrumbs[currentBreadcrumbs.length - 1].route.includes(
-        "/document"
-      )
-    ) {
-      currentBreadcrumbs.push({
-        label: title.value,
-        route: `/document/${props.entityName}`,
-      })
-      store.commit("setEntityInfo", [getDocument.data])
-      store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
-      lastSaved.value = Date.now()
-    }
+    lastSaved.value = Date.now()
     contentLoaded.value = true
+    let currentBreadcrumbs = store.state.currentBreadcrumbs
+    currentBreadcrumbs = [currentBreadcrumbs[0]]
+    data.breadcrumbs.forEach((item, idx) => {
+      if (idx === data.breadcrumbs.length - 1) {
+        currentBreadcrumbs.push({
+          label: item.title,
+          route: "/document/" + item.name,
+        })
+      } else {
+        currentBreadcrumbs.push({
+          label: item.title,
+          route: "/folder/" + item.name,
+        })
+      }
+    })
+    store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

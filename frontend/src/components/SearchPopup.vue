@@ -149,27 +149,21 @@
 <script>
 import Home from "./EspressoIcons/Home.vue"
 import Recent from "./EspressoIcons/Recent.vue"
-import Favourites from "./EspressoIcons/Star.vue"
 import Search from "./EspressoIcons/Search.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
-import { Dialog, FeatherIcon, Avatar } from "frappe-ui"
+import { Dialog, Avatar } from "frappe-ui"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
-import { FileUp, FolderUp } from "lucide-vue-next"
 import Star from "./EspressoIcons/Star.vue"
 
 export default {
   name: "SearchPopup",
   components: {
     Dialog,
-    FeatherIcon,
-    FileUp,
-    FolderUp,
     Avatar,
     Home,
     Recent,
-    Favourites,
     Search,
     Star,
     FileUpload,
@@ -217,9 +211,7 @@ export default {
   methods: {
     openEntity(entity) {
       this.$resources.upwardPath
-        .fetch({
-          entity_name: entity.name,
-        })
+        .fetch({ entity_name: entity.name })
         .then(() => {
           if (entity.is_group) {
             this.selectedEntities = []
@@ -255,39 +247,6 @@ export default {
         auto: false,
         method: "POST",
         url: "drive.api.files.generate_upward_path",
-        onSuccess(data) {
-          data.reverse()
-          this.currentBreadcrumbs = []
-          data.forEach((item, depth) => {
-            if (depth === 0) {
-              const includesUser = item.path
-                .toLowerCase()
-                .includes(this.fullName.toLowerCase())
-              const includesDrive = item.path
-                .toLowerCase()
-                .includes("drive".toLowerCase())
-
-              if (includesUser && includesDrive) {
-                this.currentBreadcrumbs.push({ label: "Home", route: "/home" })
-              } else {
-                this.currentBreadcrumbs.push({
-                  label: "Shared",
-                  route: "/shared",
-                })
-              }
-            } else if (
-              data.length > 2 &&
-              depth !== data.length - 1 &&
-              this.currentBreadcrumbs[0].label !== "Shared"
-            ) {
-              this.currentBreadcrumbs.push({
-                label: item.path,
-                route: "/folder/" + item.name,
-              })
-            }
-          })
-          this.$store.commit("setCurrentBreadcrumbs", this.currentBreadcrumbs)
-        },
       }
     },
   },
