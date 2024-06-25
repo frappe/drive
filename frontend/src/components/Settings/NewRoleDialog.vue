@@ -29,14 +29,9 @@
             {{ user.user_name }}
           </p>
         </div>
-        <Tooltip :text="`Kick ${user.full_name}`">
-          <Button class="ml-auto" @click="UsersInRole.splice(index, 1)"
-            ><template #icon>
-              <FeatherIcon
-                name="x"
-                class="h-4 w-auto text-gray-700" /></template
-          ></Button>
-        </Tooltip>
+        <Button class="ml-auto" @click="UsersInRole.splice(index, 1)"
+          >Remove</Button
+        >
       </div>
       <div class="flex mt-6">
         <Button

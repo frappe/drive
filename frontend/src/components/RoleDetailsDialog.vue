@@ -29,14 +29,7 @@
             {{ user.user_name }}
           </p>
         </div>
-        <Tooltip :text="`Kick ${user.full_name}`">
-          <Button class="ml-auto" @click="removeUser(user)"
-            ><template #icon>
-              <FeatherIcon
-                name="x"
-                class="h-4 w-auto text-gray-700" /></template
-          ></Button>
-        </Tooltip>
+        <Button class="ml-auto" @click="removeUser(user)">Remove</Button>
       </div>
       <ErrorMessage class="mt-2" :message="errorMessage" />
     </template>
