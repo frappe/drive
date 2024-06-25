@@ -223,6 +223,7 @@ import Star from "./EspressoIcons/Star.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
+import { toast } from "../utils/toasts.js"
 
 export default {
   name: "PageGeneric",
@@ -990,6 +991,24 @@ export default {
           ),
         },
         onSuccess() {
+          // Toggled OFF
+          if (this.selectedEntities[0].is_favourite) {
+            toast({
+              title: `${this.selectedEntities.length} ${
+                this.selectedEntities.length > 1 ? " items" : " item"
+              } removed from Favourites`,
+              position: "bottom-right",
+              timeout: 2,
+            })
+          } else {
+            toast({
+              title: `${this.selectedEntities.length} ${
+                this.selectedEntities.length > 1 ? " items" : " item"
+              } added to Favourites`,
+              position: "bottom-right",
+              timeout: 2,
+            })
+          }
           this.handleListMutation(this.selectedEntities[0].name)
           this.selectedEntities = []
         },
@@ -1006,6 +1025,13 @@ export default {
           ),
         },
         onSuccess() {
+          toast({
+            title: `Cleared  ${this.selectedEntities.length} ${
+              this.selectedEntities.length > 1 ? " items" : " item"
+            } from Recents`,
+            position: "bottom-right",
+            timeout: 2,
+          })
           this.handleListMutation(this.selectedEntities[0].name)
           this.selectedEntities = []
         },

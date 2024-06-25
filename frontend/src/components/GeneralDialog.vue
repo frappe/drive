@@ -25,6 +25,7 @@
 <script>
 import { Dialog, ErrorMessage } from "frappe-ui"
 import { del } from "idb-keyval"
+import { toast } from "../utils/toasts.js"
 
 export default {
   name: "GeneralDialog",
@@ -64,27 +65,29 @@ export default {
       switch (this.for) {
         case "unshare":
           return {
-            title: "Unshare?",
+            title: "Unshare",
             message:
               "Selected items will not be shared with you anymore and you will lose access to them.",
             buttonMessage: "Remove",
             theme: "red",
             buttonIcon: "trash-2",
             methodName: "drive.api.files.unshare_entities",
+            toastMessage: `Unshared ${items}`,
           }
         case "restore":
           return {
-            title: "Restore Items?",
+            title: "Restore Items",
             message:
               "Selected items will be restored to their original locations.",
             buttonMessage: "Restore",
             variant: "solid",
             buttonIcon: "refresh-ccw",
             methodName: "drive.api.files.remove_or_restore",
+            toastMessage: `Restored ${items}`,
           }
         case "remove":
           return {
-            title: "Move to Trash?",
+            title: "Move to Trash",
             message:
               items +
               " will be moved to Trash. Items in trash are deleted forever after 30 days. Other users will lose access to this.",
@@ -93,6 +96,7 @@ export default {
             variant: "subtle",
             buttonIcon: "trash-2",
             methodName: "drive.api.files.remove_or_restore",
+            toastMessage: `Moved ${items} to Trash`,
           }
         default:
           return {}
@@ -122,6 +126,11 @@ export default {
           this.$emit("success", data)
           this.$resources.method.reset()
           this.entities.map((entity) => del(entity.name))
+          toast({
+            title: this.dialogData.toastMessage,
+            position: "bottom-right",
+            timeout: 2,
+          })
         },
         onError(error) {
           if (error.messages) {
