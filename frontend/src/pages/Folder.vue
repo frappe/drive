@@ -50,6 +50,8 @@ let currentFolder = createResource({
     store.commit("setCurrentFolder", [data])
     store.commit("setCurrentFolderID", props.entityName)
     let currentBreadcrumbs = store.state.currentBreadcrumbs
+    data.modified = formatDate(data.modified)
+    data.creation = formatDate(data.creation)
     currentBreadcrumbs = [currentBreadcrumbs[0]]
     data.breadcrumbs.forEach((item) => {
       currentBreadcrumbs.push({
