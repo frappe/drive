@@ -9,7 +9,7 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     "Pillow>=10.0.0,<11.0.0",
-    "opencv-python-headless==4.9.0.80",
+    "opencv-python-headless>=4.10.0.84",
     "python-magic==0.4.27",
 ]
 
