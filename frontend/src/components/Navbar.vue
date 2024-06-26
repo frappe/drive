@@ -93,7 +93,7 @@
             placement="left"
             class="basis-5/12 lg:basis-auto"
           >
-            <Button variant="solid">
+            <Button variant="solid" :disabled="canUpload">
               <template #prefix>
                 <FeatherIcon name="upload" class="w-4" />
               </template>
@@ -370,6 +370,21 @@ export default {
     },
     currentViewEntites() {
       return this.$store.state.currentViewEntites
+    },
+    canUpload() {
+      if (
+        this.$route.name === "Home" &&
+        this.$store.state.currentFolderID === this.$store.state.homeFolderID
+      ) {
+        return false
+      }
+      if (
+        this.$store.state.currentFolder[0]?.owner === "You" ||
+        this.$store.state.currentFolder[0]?.write === 1
+      ) {
+        return false
+      }
+      return true
     },
   },
   methods: {
