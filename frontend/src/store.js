@@ -51,7 +51,7 @@ const store = createStore({
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
-    homeFolderID: localStorage.getItem("HomeFolderID") || null,
+    homeFolderID: get("homeFolderID") || null,
     currentBreadcrumbs: JSON.parse(
       localStorage.getItem("currentBreadcrumbs")
     ) || [{ label: "Home", route: "/home" }],
@@ -70,6 +70,11 @@ const store = createStore({
     },
     uploadsCompleted: (state) => {
       return state.uploads.filter((upload) => upload.completed)
+    },
+    homeFolderID: (state) => {
+      return state.homeFolderID
+        ? state.homeFolderID
+        : localStorage.getItem("homeFolderID")
     },
   },
   mutations: {
@@ -142,7 +147,8 @@ const store = createStore({
       state.currentFolderID = payload
     },
     setHomeFolderID(state, payload) {
-      localStorage.setItem("HomeFolderID", payload)
+      state.homeFolderID = payload
+      localStorage.setItem("homeFolderID", payload)
     },
     setCurrentBreadcrumbs(state, payload) {
       localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload))
