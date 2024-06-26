@@ -86,11 +86,13 @@ export default {
       return {
         url: "frappe.client.get",
         method: "GET",
+        auto: true,
         params: {
           doctype: "Drive Instance Settings",
         },
         onSuccess(data) {
           this.planSizeLimit = data.storage_limit
+          this.$resources.getDataByMimeType.fetch()
         },
         onError(error) {
           if (error.messages) {
@@ -99,7 +101,6 @@ export default {
             this.errorMessage = error.message
           }
         },
-        auto: true,
       }
     },
     getDataByMimeType() {
@@ -118,7 +119,7 @@ export default {
           })
           data.sort((a, b) => b.total_size - a.total_size)
         },
-        auto: true,
+        auto: false,
       }
     },
   },
