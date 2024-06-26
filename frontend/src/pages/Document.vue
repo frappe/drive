@@ -119,8 +119,22 @@ const getDocument = createResource({
     entity.value = data
     lastSaved.value = Date.now()
     contentLoaded.value = true
-    let currentBreadcrumbs = store.state.currentBreadcrumbs
-    currentBreadcrumbs = [currentBreadcrumbs[0]]
+    let currentBreadcrumbs = [
+      {
+        label: "Shared",
+        route: "/shared",
+      },
+    ]
+    const root_item = data.breadcrumbs[0]
+    if (root_item.name === store.state.homeFolderID) {
+      currentBreadcrumbs = [
+        {
+          label: "Home",
+          route: "/home",
+        },
+      ]
+      data.breadcrumbs.shift()
+    }
     data.breadcrumbs.forEach((item, idx) => {
       if (idx === data.breadcrumbs.length - 1) {
         currentBreadcrumbs.push({

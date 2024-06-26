@@ -1363,7 +1363,7 @@ def generate_upward_path(entity_name):
     """,
         as_dict=1,
     )
-    return result[::-1][1::]
+    return result[::-1]
 
 
 @frappe.whitelist()
