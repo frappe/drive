@@ -14,6 +14,8 @@ from drive.utils.files import (
 from drive.utils.user_group import add_new_user_group_docshare, does_exist_user_group_docshare
 from frappe.utils import cint
 from drive.api.format import mime_to_human
+from drive.api.files import get_ancestors_of
+from drive.api.files import generate_upward_path
 
 
 class DriveEntity(Document):
@@ -522,6 +524,11 @@ class DriveEntity(Document):
                 )
                 if shared_parent:
                     return
+
+            absolute_path = generate_upward_path(self.name)
+            for i in absolute_path:
+                if i.owner == user:
+                    frappe.throw("User owns parent folder", frappe.PermissionError)
 
             share_name = frappe.db.get_value(
                 "Drive DocShare",
