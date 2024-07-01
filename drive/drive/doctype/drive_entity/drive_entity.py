@@ -409,11 +409,14 @@ class DriveEntity(Document):
                 ptype="share",
                 user=frappe.session.user,
             ):
-                frappe.throw(
-                    "Not permitted to share",
-                    frappe.PermissionError,
-                )
-
+                for owner in get_ancestors_of(self.name):
+                    if frappe.session.user == frappe.get_value(
+                        "Drive Entity", {"name": owner}, ["owner"]
+                    ):
+                        continue
+                    else:
+                        frappe.throw("Not permitted to share", frappe.PermissionError)
+                        break
         if user:
             share_name = frappe.db.get_value(
                 "Drive DocShare",
