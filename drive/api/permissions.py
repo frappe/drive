@@ -460,7 +460,7 @@ def user_group_entity_access(entity_name=None):
         DriveDocShare.read,
         DriveDocShare.write,
         DriveDocShare.share,
-        DriveDocShare.name,
+        DriveDocShare.name.as_("docshare_name"),
     ]
 
     query = (
@@ -477,6 +477,4 @@ def user_group_entity_access(entity_name=None):
     result = query.run(as_dict=True)
     if not result:
         return False
-    max_read = max(d["read"] for d in result)
-    max_write = max(d["write"] for d in result)
-    return {"read": max_read, "write": max_write}
+    return max(result, key=lambda x: x["write"])
