@@ -4,11 +4,11 @@
       <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="pl-0 mb-2">
         <div
           v-if="folderContents?.length"
-          class="flex flex-col justify-items-start h-[40vh] justify-start overflow-y-auto px-3"
+          class="flex flex-col justify-items-start h-[40vh] justify-start overflow-y-auto"
         >
           <div v-for="item in folderContents" :id="item.name" :key="item.name">
             <div
-              class="item grid items-center cursor-pointer rounded pl-2 pr-4 py-1.5 group hover:bg-gray-100"
+              class="px-4 grid items-center cursor-pointer rounded h-8 group hover:bg-gray-100"
               :draggable="false"
               @click="openEntity(item)"
               @dragenter.prevent
@@ -16,14 +16,14 @@
               @mousedown.stop
             >
               <div
-                class="flex items-center text-gray-800 text-sm font-medium truncate"
+                class="flex items-center text-gray-800 text-base font-medium truncate"
                 :draggable="false"
               >
                 <svg
                   v-if="item.is_group"
                   :style="{ fill: item.color }"
                   :draggable="false"
-                  class="h-[20px] mr-3"
+                  class="h-4.5 mr-2"
                   viewBox="0 0 30 30"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -162,6 +162,9 @@ const evalPermission = computed(() => {
     ) {
       return true
     }
+    if (currentFolder.value === store.state.homeFolderID) {
+      return true
+    }
   }
   return false
 })
@@ -282,7 +285,6 @@ function openEntity(value) {
 }
 
 function closeEntity(name) {
-  console.log(name)
   const index = breadcrumbs.value.findIndex((obj) => obj.name === name)
   if (breadcrumbs.value.length > 1 && index !== breadcrumbs.value.length - 1) {
     breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
