@@ -26,6 +26,7 @@
       </template>
       <template #placeholder>
         <NoFilesSection
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           :icon="icon"
           :primary-message="primaryMessage"
           :secondary-message="secondaryMessage"
@@ -53,6 +54,7 @@
       </template>
       <template #placeholder>
         <NoFilesSection
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           :icon="icon"
           :primary-message="primaryMessage"
           :secondary-message="secondaryMessage"
