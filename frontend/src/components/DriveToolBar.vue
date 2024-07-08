@@ -75,7 +75,7 @@
                 class="h-3.5"
               />
             </Button>
-            <Button class="text-sm h-7 rounded-l-none flex-1 hidden md:block">
+            <Button class="text-sm h-7 rounded-l-none flex-1 md:block">
               {{ orderByLabel }}
             </Button>
           </div>
