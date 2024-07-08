@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center"
-  >
+  <div class="flex flex-col items-center justify-center">
     <div v-if="icon">
       <component :is="icon" class="w-14 stroke-[0] h-auto text-gray-500 pb-4" />
     </div>
