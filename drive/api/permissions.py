@@ -385,7 +385,7 @@ def get_general_access(entity_name):
     return query.run(as_dict=True)
 
 
-def get_user_access(entity_name):
+def get_user_access(entity_name, user=None):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -394,6 +394,8 @@ def get_user_access(entity_name):
     :rtype: frappe._dict or None
     """
     fields = ["read", "write", "share", "name as docshare_name"]
+    if not user:
+        user = frappe.session.user
     if frappe.session.user != "Guest":
         user_access = frappe.db.get_value(
             "Drive DocShare",
@@ -401,14 +403,14 @@ def get_user_access(entity_name):
                 "share_doctype": "Drive Entity",
                 "share_name": entity_name,
                 "user_doctype": "User",
-                "user_name": frappe.session.user,
+                "user_name": user,
             },
             fields,
             as_dict=1,
         )
         if user_access:
             return user_access
-        group_access = user_group_entity_access(entity_name)
+        group_access = user_group_entity_access(entity_name, user)
         if group_access:
             return group_access
         everyone_access = frappe.db.get_value(
@@ -440,7 +442,7 @@ def get_user_access(entity_name):
     return {"read": 0, "write": 0}
 
 
-def user_group_entity_access(entity_name=None):
+def user_group_entity_access(entity_name=None, user=None):
     """
     Get user group access level for current user and current entity
 
@@ -451,7 +453,8 @@ def user_group_entity_access(entity_name=None):
     :return: List of DriveEntity records
     :rtype: list
     """
-
+    if not user:
+        user = frappe.session.user
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     UserGroup = frappe.qb.DocType("User Group")
     UserGroupMember = frappe.qb.DocType("User Group Member")
@@ -468,10 +471,7 @@ def user_group_entity_access(entity_name=None):
         .join(UserGroupMember)
         .on((UserGroupMember.parent == DriveDocShare.user_name))
         .select(*selectedFields)
-        .where(
-            (DriveDocShare.share_name == entity_name)
-            & (UserGroupMember.user == frappe.session.user)
-        )
+        .where((DriveDocShare.share_name == entity_name) & (UserGroupMember.user == user))
         .groupby(UserGroupMember.name)
     )
     result = query.run(as_dict=True)

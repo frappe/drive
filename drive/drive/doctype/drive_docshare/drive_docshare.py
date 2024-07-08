@@ -5,6 +5,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, get_fullname
+from drive.api.notifications import notify_share
+from drive.api.notifications import notify_mentions
 
 exclude_from_linked_with = True
 
@@ -32,6 +34,7 @@ class DriveDocShare(Document):
     def after_insert(self):
         doc = self.get_doc()
         owner = get_fullname(self.owner)
+        entity_document = frappe.db.get_value("Drive Entity", self.share_name, ["document"])
 
         if self.everyone:
             doc.add_comment("Shared", _("{0} shared this document with everyone").format(owner))
@@ -45,6 +48,31 @@ class DriveDocShare(Document):
             doc.add_comment(
                 "Shared",
                 _("{0} shared this document with {1}").format(owner, get_fullname(self.user_name)),
+            )
+        if entity_document:
+            frappe.enqueue(
+                notify_mentions,
+                queue="long",
+                job_id=f"fdoc_{entity_document}",
+                deduplicate=False,  # Users might've gained access here
+                timeout=None,
+                now=False,
+                at_front=False,
+                entity_name=self.share_name,
+                document_name=entity_document,
+            )
+
+        if self.share_parent is None:
+            frappe.enqueue(
+                notify_share,
+                queue="long",
+                job_id=f"fdocshare_{self.name}",
+                deduplicate=True,
+                timeout=None,
+                now=False,
+                at_front=False,
+                entity_name=self.share_name,
+                docshare_name=self.name,
             )
 
     def check_share_permission(self):

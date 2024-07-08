@@ -25,6 +25,7 @@ import magic
 from datetime import datetime
 import urllib.parse
 from frappe.utils import cint
+from drive.api.notifications import notify_mentions
 
 
 def if_folder_exists(folder_name, parent):
@@ -290,7 +291,7 @@ def passive_rename(entity_name, new_title):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, raw_content, content, file_size, settings=None):
+def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
     if not frappe.has_permission(
         doctype="Drive Entity",
         doc=entity_name,
@@ -302,12 +303,25 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, settings=No
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
     frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
+    frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
     frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
+    if json.dumps(mentions):
+        frappe.enqueue(
+            notify_mentions,
+            queue="long",
+            job_id=f"fdoc_{doc_name}",
+            deduplicate=True,
+            timeout=None,
+            now=False,
+            at_front=False,
+            entity_name=entity_name,
+            document_name=doc_name,
+        )
     return
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name, trigger_download=0):
+def get_file_content(entity_name, trigger_download=0):  #
     """
     Stream file content and optionally trigger download
 
@@ -1275,20 +1289,19 @@ def move(entity_names, new_parent=None):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
+
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
         new_parent = new_parent or get_user_directory(doc.owner).name
+
         if new_parent == doc.parent_drive_entity:
             return doc
         is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
         if not is_group:
             raise NotADirectoryError()
-        doc.parent_drive_entity = new_parent
-        title = get_new_title(doc.title, new_parent)
-        if title != doc.title:
-            doc.rename(title)
-        doc.inherit_permissions()
+        doc.move(new_parent)
         doc.save()
+
     return
 
 
@@ -1398,6 +1411,7 @@ def get_ancestors_of(entity_name):
     flattened_list.pop(0)
     return flattened_list
 
+
 @frappe.whitelist(allow_guest=True)
 def get_shared_breadcrumbs(share_name):
     """
@@ -1434,7 +1448,10 @@ def get_shared_breadcrumbs(share_name):
     for i in result:
         share_breadcrumbs.append(
             frappe.get_value(
-                "Drive Entity", i.share_name, ["name", "title", "parent_drive_entity", "owner"], as_dict=1
+                "Drive Entity",
+                i.share_name,
+                ["name", "title", "parent_drive_entity", "owner"],
+                as_dict=1,
             )
         )
     return share_breadcrumbs[::-1]
