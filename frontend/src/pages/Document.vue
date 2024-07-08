@@ -26,15 +26,27 @@
 </template>
 
 <script setup>
-import TextEditor from "@/components/DocEditor/TextEditor.vue"
 import { fromUint8Array, toUint8Array } from "js-base64"
-import { ref, computed, inject, onMounted, onBeforeUnmount } from "vue"
+import {
+  ref,
+  computed,
+  inject,
+  onMounted,
+  defineAsyncComponent,
+  onBeforeUnmount,
+} from "vue"
 import { useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
-import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
+
+const TextEditor = defineAsyncComponent(() =>
+  import("@/components/DocEditor/TextEditor.vue")
+)
+const ShareDialog = defineAsyncComponent(() =>
+  import("@/components/ShareDialog/ShareDialog.vue")
+)
 
 const store = useStore()
 const router = useRouter()

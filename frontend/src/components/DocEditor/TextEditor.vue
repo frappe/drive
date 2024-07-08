@@ -92,7 +92,6 @@ import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue"
 import Menu from "./Menu.vue"
 import { toast } from "@/utils/toasts.js"
 import { PageBreak } from "./Pagebreak"
-import { convertToHtml } from "mammoth"
 import FilePicker from "@/components/FilePicker.vue"
 import { ResizableMedia } from "./resizeableMedia"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
@@ -590,7 +589,7 @@ export default {
         )
         if (res.ok) {
           let blob = await res.arrayBuffer()
-
+          const { convertToHtml } = await import("mammoth")
           convertToHtml({ arrayBuffer: blob })
             .then(function (result) {
               ctx.editor.commands.insertContent(result.value)
