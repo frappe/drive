@@ -128,13 +128,14 @@ class DriveEntity(Document):
         self.allow_comments = parent_folder.allow_comments
         self.allow_download = parent_folder.allow_download
         self.save()
-    
-    def get_children(self):
-            """Return a generator that yields child Documents."""
-            child_names = frappe.get_list(self.doctype, filters={'parent_drive_entity': self.name}, pluck="name")
-            for name in child_names:
-                yield frappe.get_doc(self.doctype, name)
 
+    def get_children(self):
+        """Return a generator that yields child Documents."""
+        child_names = frappe.get_list(
+            self.doctype, filters={"parent_drive_entity": self.name}, pluck="name"
+        )
+        for name in child_names:
+            yield frappe.get_doc(self.doctype, name)
 
     @frappe.whitelist()
     def move(self, new_parent=None):
@@ -154,6 +155,13 @@ class DriveEntity(Document):
         is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
         if not is_group:
             raise NotADirectoryError()
+        for child in self.get_children():
+            if child.name == self.name or new_parent:
+                frappe.throw(
+                    "Cannot move into itself",
+                    frappe.PermissionError,
+                )
+                return
         self.parent_drive_entity = new_parent
         title = get_new_title(self.title, new_parent)
         if title != self.title:
