@@ -2,7 +2,7 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white top-0 border-b w-full"
+    class="bg-white top-0 border-b min-w-full"
   >
     <div
       class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between"
@@ -373,7 +373,7 @@ export default {
     },
     canUpload() {
       if (
-        this.$route.name === "Home" &&
+        (this.$route.name === "Home" || this.$route.name === "Notifications") &&
         this.$store.state.currentFolderID === this.$store.state.homeFolderID
       ) {
         return false
