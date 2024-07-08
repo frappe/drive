@@ -104,6 +104,13 @@ const routes = [
     component: () => import("@/pages/Test.vue"),
   },
   {
+    path: "/login",
+    name: "Login",
+    redirect: () => {
+      window.location.href = "/login"
+    },
+  },
+  {
     path: "/:pathMatch(.*)*/",
     name: "Error",
     component: () => import("@/pages/Error.vue"),
