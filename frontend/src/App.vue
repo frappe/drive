@@ -29,7 +29,7 @@
                 <component :is="Component" id="currentPage" ref="currentPage" />
               </router-view>
             </div>
-            <InfoSidebar v-if="!$route.meta.documentPage" />
+            <InfoSidebar v-if="hideInfoSideBar" />
           </div>
         </div>
         <BottomBar v-if="isLoggedIn" class="block sm:hidden" />
@@ -101,6 +101,15 @@ export default {
     },
     showUploadTracker() {
       return this.isLoggedIn && this.$store.state.uploads.length > 0
+    },
+    hideInfoSideBar() {
+      if (this.$route.meta.documentPage) {
+        return false
+      }
+      if (this.$route.name === "Notifications") {
+        return false
+      }
+      return true
     },
   },
   mounted() {
