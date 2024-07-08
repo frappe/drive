@@ -14,8 +14,10 @@
     @mousedown.passive="(event) => handleMousedown(event)"
   >
     <slot name="toolbar"></slot>
+    <!--       class="mb-2 grid items-center space-x-4 rounded bg-gray-100 p-2"
+ -->
     <div
-      class="sticky hidden sm:grid top-0 z-10 items-center rounded bg-gray-100 min-h-7 py-1 px-2 overflow-hidden mb-1"
+      class="sticky hidden sm:grid top-0 z-10 items-center rounded bg-gray-100 min-h-7 p-2 overflow-hidden mb-2"
       :style="{ gridTemplateColumns: tableColumnsGridWidth }"
     >
       <!-- <Checkbox
@@ -25,26 +27,24 @@
           selectedEntities?.length === folderContents?.length
         "
         @click.stop="toggleSelectAll" /> -->
-      <div class="flex w-full items-center text-base text-gray-600">Name</div>
-      <div
-        class="flex w-full items-center justify-start text-base text-gray-600"
-      >
+      <div class="flex w-full items-center text-sm text-gray-600">Name</div>
+      <div class="flex w-full items-center justify-start text-sm text-gray-600">
         Owner
       </div>
       <div
         v-if="$route.name === 'Recents'"
-        class="flex w-full items-center justify-end text-base text-gray-600"
+        class="flex w-full items-center justify-end text-sm text-gray-600"
       >
         Last Accessed
       </div>
       <!-- Use the listview api if this needs to be switched in more views -->
       <div
         v-else
-        class="flex w-full items-center justify-end text-base text-gray-600"
+        class="flex w-full items-center justify-end text-sm text-gray-600"
       >
         Last Modified
       </div>
-      <div class="flex w-full items-center justify-end text-base text-gray-600">
+      <div class="flex w-full items-center justify-end text-sm text-gray-600">
         Size
       </div>
       <div />
