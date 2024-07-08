@@ -27,7 +27,7 @@
           </slot>
         </Tooltip>
         <span
-          class="flex-1 flex-shrink-0 text-base duration-300 ease-in-out"
+          class="flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
           :class="
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
@@ -53,7 +53,7 @@ const store = useStore()
 
 const props = defineProps({
   icon: {
-    type: Object,
+    type: [String, Object],
     default: null,
   },
   label: {
