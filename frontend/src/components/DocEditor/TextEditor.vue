@@ -75,7 +75,6 @@ import { FontSize } from "./font-size"
 import { Highlight } from "./backgroundColor"
 import { TextStyle } from "./text-style"
 import { Color } from "@tiptap/extension-color"
-import configureMention from "./mention"
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
 import { DOMParser } from "prosemirror-model"
 import { onOutsideClickDirective } from "frappe-ui"
@@ -97,6 +96,7 @@ import { convertToHtml } from "mammoth"
 import FilePicker from "@/components/FilePicker.vue"
 import { ResizableMedia } from "./resizeableMedia"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
+import configureMention from "./Mention/mention"
 
 export default {
   name: "TextEditor",
@@ -156,11 +156,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    userList: {
+      type: Object,
+      required: true,
+      default: null,
+    },
   },
   emits: [
     "update:yjsContent",
     "updateTitle",
     "saveDocument",
+    "mentionedUsers",
     "update:rawContent",
     "update:lastSaved",
   ],
@@ -364,6 +370,10 @@ export default {
           componentContext.editor.getHTML()
         )
         componentContext.$emit(
+          "mentionedUsers",
+          componentContext.parseMentions(componentContext.editor.getJSON())
+        )
+        componentContext.$emit(
           "update:yjsContent",
           Y.encodeStateAsUpdate(componentContext.document)
         )
@@ -455,7 +465,7 @@ export default {
         Highlight.configure({
           multicolor: true,
         }),
-        configureMention(this.mentions),
+        configureMention(this.userList),
         TaskList.configure({
           HTMLAttributes: {
             class: "not-prose",
@@ -516,6 +526,10 @@ export default {
   },
   updated() {
     let content = this.editor.state.doc.firstChild.textContent.slice(0, 35)
+    content = content.trim()
+    if (content.charAt(0) === "@") {
+      return
+    }
     if (this.originalTitle.includes("Untitled Document")) {
       if (content.length) {
         this.$store.state.entityInfo[0].title = content
@@ -603,6 +617,7 @@ export default {
       e.preventDefault()
       this.$emit("update:rawContent", this.editor.getHTML())
       this.$emit("update:yjsContent", Y.encodeStateAsUpdate(this.document))
+      this.$emit("mentionedUsers", this.parseMentions(this.editor.getJSON()))
       if (this.synced || this.peercount === 0) {
         this.$emit("saveDocument")
       }
@@ -784,6 +799,20 @@ export default {
         this.editor.chain().setComment(commentWithUuid).run()
         this.commentText = ""
       }
+    },
+    parseMentions(data) {
+      const tempMentions = (data.content || []).flatMap(this.parseMentions)
+      if (data.type === "mention") {
+        tempMentions.push({
+          id: data.attrs.id,
+          author: data.attrs.author,
+          type: data.attrs.type,
+        })
+      }
+      const uniqueMentions = [
+        ...new Set(tempMentions.map((item) => item.id)),
+      ].map((id) => tempMentions.find((item) => item.id === id))
+      return uniqueMentions
     },
   },
   resources: {

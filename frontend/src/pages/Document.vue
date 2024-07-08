@@ -6,6 +6,7 @@
       v-model:rawContent="rawContent"
       v-model:lastSaved="lastSaved"
       v-model:settings="settings"
+      :user-list="allUsers"
       :fixed-menu="true"
       :bubble-menu="true"
       :timeout="timeout"
@@ -13,6 +14,7 @@
       :is-writable="isWritable"
       :entity-name="entityName"
       :entity="entity"
+      @mentioned-users="(val) => (mentionedUsers = val)"
       @save-document="saveDocument"
     />
     <ShareDialog
@@ -55,6 +57,8 @@ const rawContent = ref(null)
 const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
+const allUsers = ref([])
+const mentionedUsers = ref()
 const showShareDialog = ref(false)
 const timeout = ref(1000 + Math.floor(Math.random() * 3000))
 const saveCount = ref(0)
@@ -86,6 +90,7 @@ const saveDocument = () => {
       raw_content: rawContent.value,
       settings: settings.value,
       comments: comments.value,
+      mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
   }
@@ -186,5 +191,35 @@ onBeforeUnmount(() => {
   if (saveCount.value) {
     saveDocument()
   }
+})
+
+let fetchAllUsers = createResource({
+  url: "drive.utils.users.get_users_with_drive_user_role_and_groups",
+  method: "GET",
+  auto: true,
+  onSuccess(data) {
+    data.forEach(function (item) {
+      if (item.name) {
+        item.value = item.name
+        item.label = item.name
+        item.type = "User Group"
+        delete item.name
+        return
+      }
+      item.value = item.email
+      item.label = item.full_name.trimEnd()
+      item.type = "User"
+      delete item.email
+      delete item.full_name
+    })
+    allUsers.value = data
+  },
+  onError(error) {
+    if (error.messages) {
+      this.errorMessage = error.messages.join("\n")
+    } else {
+      this.errorMessage = error.message
+    }
+  },
 })
 </script>
