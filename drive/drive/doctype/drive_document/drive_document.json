@@ -7,7 +7,14 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["title", "content", "settings", "comments", "raw_content"],
+  "field_order": [
+    "title",
+    "content",
+    "settings",
+    "comments",
+    "raw_content",
+    "mentions"
+  ],
   "fields": [
     {
       "fieldname": "title",
@@ -37,10 +44,15 @@
       "fieldname": "raw_content",
       "fieldtype": "Long Text",
       "label": "Raw Content"
+    },
+    {
+      "fieldname": "mentions",
+      "fieldtype": "JSON",
+      "label": "Mentions"
     }
   ],
   "links": [],
-  "modified": "2024-06-06 12:29:14.329955",
+  "modified": "2024-07-02 11:00:31.529233",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
