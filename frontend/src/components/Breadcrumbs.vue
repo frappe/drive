@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-items-center items-center text-base">
+  <div ref="container" class="flex justify-items-center items-center text-base">
     <template v-if="dropDownItems.length">
       <Dropdown class="h-7" :options="dropDownItems">
         <Button variant="ghost">
@@ -27,32 +27,32 @@
         /
       </span>
     </template>
-    <router-link
-      v-for="(item, index) in crumbs"
-      :key="item.label"
-      v-slot="{ href, navigate }"
-      class="text-md line-clamp-1 sm:text-lg font-medium text-gray-600"
-      :to="item.route"
-    >
-      <a
-        v-if="!isLastItem(index)"
+
+    <div class="flex">
+      <router-link
+        v-for="(item, index) in crumbs"
+        :key="item.label"
+        class="text-md line-clamp-1 sm:text-lg font-medium cursor-pointer"
         :class="[
-          breadcrumbLinks.length === 1 || isLastItem(index)
+          $store.state.currentBreadcrumbs.length === 1
             ? 'text-black'
-            : ' hover:text-gray-800',
+            : ' hover:text-gray-800 text-gray-600',
         ]"
-        :href="href"
-        @click="navigate"
+        :to="item.route"
       >
-        {{ item.label }}
-        <span v-if="crumbs.length > 1" class="text-gray-600 pr-1">
-          {{ "/" }}
-        </span>
-      </a>
-      <span v-else class="text-black" @click="canShowRenameDialog">
-        {{ currentTitle }}
-      </span>
-    </router-link>
+        <span> {{ item.label }}</span>
+        <span v-show="index < crumbs.length - 1" class="mx-1">/</span>
+      </router-link>
+    </div>
+
+    <span
+      v-if="$store.state.currentBreadcrumbs.length > 1"
+      class="text-black text-md line-clamp-1 sm:text-lg font-medium cursor-pointer"
+      @click="canShowRenameDialog"
+    >
+      <span class="ml-1">/</span>
+      {{ currentTitle }}
+    </span>
   </div>
   <RenameDialog
     v-if="showRenameDialog"
@@ -76,7 +76,6 @@ export default {
   data() {
     return {
       title: "",
-      oldTitle: "",
       showRenameDialog: false,
     }
   },
@@ -88,26 +87,40 @@ export default {
       return this.$store.state.entityInfo[0]
     },
     breadcrumbLinks() {
-      return this.$store.state.currentBreadcrumbs
+      let arr = this.$store.state.currentBreadcrumbs
+      if (arr.length > 1) {
+        return arr.slice(0, -1)
+      }
+      return arr
     },
     currentTitle: {
       get() {
-        let value = this.breadcrumbLinks[this.breadcrumbLinks.length - 1].label
-        if (this.$route.name === "Document" || this.$route.name === "File") {
-          value =
-            value != this.$store.state.entityInfo[0]?.title
-              ? this.$store.state.entityInfo[0]?.title
-              : value
+        const { breadcrumbLinks, $route, $store } = this
+        const { name } = $route
+        const lastBreadcrumb = breadcrumbLinks[breadcrumbLinks.length - 1]
+        const storeTitle = $store.state.entityInfo[0]?.title
+        const folderTitle = $store.state.currentFolder[0]?.title
+        let result
+
+        switch (name) {
+          case "Folder":
+            result = folderTitle
+            break
+          case "Document":
+          case "File":
+            result =
+              lastBreadcrumb.label !== storeTitle
+                ? storeTitle
+                : lastBreadcrumb.label
+            break
+          default:
+            result = lastBreadcrumb.label
         }
-        if (this.$route.name === "Folder") {
-          value = this.$store.state.currentFolder[0]?.title
-        }
-        document.title = value
-        return value
+        document.title = result
+        return result
       },
       set(newValue) {
-        let currentBreadcrumbs = this.breadcrumbLinks
-        this.$store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
+        this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbLinks)
         return newValue
       },
     },
@@ -134,9 +147,7 @@ export default {
     },
     crumbs() {
       if (window.innerWidth > 640) return this.breadcrumbLinks
-
-      let lastTwo = this.breadcrumbLinks.slice(-1)
-      return lastTwo
+      return this.breadcrumbLinks.slice(-1)
     },
   },
   methods: {
