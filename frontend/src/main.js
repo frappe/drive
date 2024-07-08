@@ -5,6 +5,7 @@ import {
   onOutsideClickDirective,
   setConfig,
   frappeRequest,
+  resourcesPlugin,
 } from "frappe-ui"
 import store from "./store"
 import router from "./router"
@@ -22,6 +23,7 @@ app.provide("emitter", emitter)
 app.use(router)
 app.use(store)
 app.use(FrappeUI)
+app.use(resourcesPlugin)
 app.directive("on-outside-click", onOutsideClickDirective)
 app.use(
   VueTippy,
