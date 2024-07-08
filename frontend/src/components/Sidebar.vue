@@ -43,6 +43,36 @@
         </template>
       </SidebarItem>
       <SidebarItem
+        :label="'Notifications'"
+        icon="inbox"
+        class="mb-0.5"
+        :is-collapsed="!isExpanded"
+        to="/notifications"
+      >
+        <template #right>
+          <div
+            class="flex items-center justify-start w-full duration-300 ease-in-out"
+            :class="
+              isExpanded
+                ? 'ml-2 opacity-100'
+                : 'ml-0 overflow-hidden relative min-w-5 min-h-5'
+            "
+          >
+            <span
+              v-if="$store.state.notifCount > 0"
+              class="text-sm text-gray-500 ease-in"
+              :class="
+                isExpanded
+                  ? 'opacity-100 ml-auto'
+                  : 'absolute top-0 left-0 bg-[#015a66] rounded w-1 h-1'
+              "
+            >
+              {{ isExpanded ? $store.state.notifCount : "" }}
+            </span>
+          </div>
+        </template>
+      </SidebarItem>
+      <SidebarItem
         v-for="item in sidebarItems"
         :key="item.label"
         :icon="item.icon"
@@ -160,6 +190,16 @@ export default {
         "setIsSidebarExpanded",
         this.isExpanded ? false : true
       )
+    },
+  },
+  resources: {
+    getUnreadCount: {
+      url: "drive.api.notifications.get_unread_count",
+      auto: true,
+      method: "GET",
+      onSuccess(data) {
+        this.$store.state.notifCount = data
+      },
     },
   },
 }

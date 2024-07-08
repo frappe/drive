@@ -33,6 +33,12 @@ function setRootBreadCrumb(to) {
 
 const routes = [
   {
+    path: "/notifications",
+    name: "Notifications",
+    component: () => import("@/pages/Notifications.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
     path: "/home",
     name: "Home",
     component: () => import("@/pages/Home.vue"),
@@ -103,13 +109,6 @@ const routes = [
     component: () => import("@/pages/Error.vue"),
     beforeEnter: [redir404, clearStore],
     props: true,
-  },
-  {
-    path: "/login",
-    name: "Login",
-    redirect: () => {
-      window.location.href = "/login"
-    },
   },
 ]
 
