@@ -1,0 +1,115 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2024-06-27 12:47:40.078303",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "from_user",
+    "to_user",
+    "read",
+    "type",
+    "message",
+    "notif_doctype",
+    "notif_doctype_name",
+    "entity_type"
+  ],
+  "fields": [
+    {
+      "fieldname": "from_user",
+      "fieldtype": "Link",
+      "label": "From User",
+      "options": "User"
+    },
+    {
+      "fieldname": "to_user",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "To User",
+      "options": "User",
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "read",
+      "fieldtype": "Check",
+      "label": "Read"
+    },
+    {
+      "fieldname": "type",
+      "fieldtype": "Select",
+      "label": "Type",
+      "options": "Share\nMention"
+    },
+    {
+      "fieldname": "message",
+      "fieldtype": "Text",
+      "label": "Message"
+    },
+    {
+      "fieldname": "notif_doctype",
+      "fieldtype": "Link",
+      "label": "Document Type",
+      "options": "DocType"
+    },
+    {
+      "fieldname": "notif_doctype_name",
+      "fieldtype": "Dynamic Link",
+      "label": "DocType Name",
+      "options": "notif_doctype"
+    },
+    {
+      "fieldname": "entity_type",
+      "fieldtype": "Data",
+      "label": "Entity Type"
+    }
+  ],
+  "links": [],
+  "modified": "2024-07-01 10:37:16.098705",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Notification",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive Admin",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive User",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}
