@@ -95,10 +95,11 @@ export default {
       return this.entity?.name
     },
     fullName() {
+      let trimmed_name = this.newName.trim()
       if (this.entity?.file_ext) {
-        return this.newName + this.entity.file_ext
+        return trimmed_name + this.entity.file_ext
       } else {
-        return this.newName
+        return trimmed_name
       }
     },
     open: {
@@ -122,7 +123,7 @@ export default {
         params: {
           method: "rename",
           entity_name: this.entityName,
-          new_title: this.fullName.trim(),
+          new_title: this.fullName,
         },
         onSuccess(data) {
           toast({
