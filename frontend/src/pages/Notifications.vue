@@ -34,7 +34,9 @@
         ></Button>
         <Button
           icon-left="check-circle"
-          @click="markAsRead.submit({ all: true })"
+          @click="
+            markAsRead.submit({ all: true }), (store.state.notifCount = 0)
+          "
           >Mark all as Read</Button
         >
       </div>
@@ -72,6 +74,7 @@ const options = {
   onRowClick: (row) => {
     if (onlyUnread.value) {
       markAsRead.submit({ name: row.name })
+      store.state.notifCount = store.state.notifCount - 1
     }
   },
   selectable: false,
@@ -140,7 +143,6 @@ const markAsRead = createResource({
   },
   onSuccess() {
     notifications.reload()
-    store.state.notifCount = store.state.notifCount - 1
   },
 })
 </script>
