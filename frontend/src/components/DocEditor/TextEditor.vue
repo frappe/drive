@@ -207,6 +207,12 @@ export default {
     editable() {
       return this.isWritable && this.tempEditable
     },
+    trackTitle() {
+      if (this.originalTitle.includes("Untitled Document")) {
+        return true
+      }
+      return false
+    },
     bubbleMenuButtons() {
       if (this.entity.owner === "You" || this.entity.write) {
         let buttons = [
@@ -329,6 +335,7 @@ export default {
     document.addEventListener("keydown", this.saveDoc)
     this.editor = new Editor({
       editable: this.editable,
+      autofocus: true,
       editorProps: {
         attributes: {
           class: normalizeClass([
@@ -522,23 +529,20 @@ export default {
     this.provider.on("synced", (e) => {
       this.synced = e.synced
     })
+    if (this.trackTitle) {
+      this.$store.state.passiveRename = true
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          this.evalImplicitTitle(true)
+        }
+      })
+    } else {
+      this.$store.state.passiveRename = false
+    }
   },
   updated() {
-    let content = this.editor.state.doc.firstChild.textContent.slice(0, 35)
-    content = content.trim()
-    if (content.charAt(0) === "@") {
-      return
-    }
-    if (this.originalTitle.includes("Untitled Document")) {
-      if (content.length) {
-        this.$store.state.entityInfo[0].title = content
-        this.$resources.rename.submit({
-          entity_name: this.entityName,
-          new_title: content,
-        })
-      } else {
-        this.$store.state.entityInfo[0].title = this.originalTitle
-      }
+    if (this.trackTitle) {
+      this.evalImplicitTitle()
     }
   },
   beforeUnmount() {
@@ -552,15 +556,6 @@ export default {
     this.editor = null
   },
   methods: {
-    evalTitle() {
-      let content = this.editor.state.doc.firstChild.textContent.slice(0, 35)
-      if (this.entity.title.includes("Untitled Document")) {
-        this.$store.state.entityInfo[0]["title"] = content
-      }
-      if (!content.length) {
-        this.$store.state.entityInfo[0]["title"] = this.entity.title
-      }
-    },
     updateConnectedUsers(editor) {
       this.$store.commit(
         "setConnectedUsers",
@@ -812,6 +807,23 @@ export default {
         ...new Set(tempMentions.map((item) => item.id)),
       ].map((id) => tempMentions.find((item) => item.id === id))
       return uniqueMentions
+    },
+    evalImplicitTitle(wipeOriginal) {
+      let content = this.editor.state.doc.textContent.trim().slice(0, 35)
+      content = content.trim()
+      if (content.charAt(0) === "@") {
+        return
+      }
+      if (content.length) {
+        if (wipeOriginal) {
+          this.originalTitle = content
+        }
+        this.$store.state.entityInfo[0].title = content
+        this.$resources.rename.submit({
+          entity_name: this.entityName,
+          new_title: content,
+        })
+      }
     },
   },
   resources: {
