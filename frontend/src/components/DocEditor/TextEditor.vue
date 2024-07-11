@@ -18,6 +18,7 @@
         autocapitalize="true"
         spellcheck="true"
         :editor="editor"
+        @keydown.enter.passive="handleEnterKey"
       />
     </div>
     <TableBubbleMenu v-if="isWritable" :editor="editor" />
@@ -202,19 +203,14 @@ export default {
         uuid: "",
         comments: [],
       },
+      implicitTitle: "",
       allComments: [],
-      originalTitle: this.entity.title,
+      isNewDocument: this.entity.title.includes("Untitled Document"),
     }
   },
   computed: {
     editable() {
       return this.isWritable && this.tempEditable
-    },
-    trackTitle() {
-      if (this.originalTitle.includes("Untitled Document")) {
-        return true
-      }
-      return false
     },
     bubbleMenuButtons() {
       if (this.entity.owner === "You" || this.entity.write) {
@@ -244,6 +240,16 @@ export default {
     },
   },
   watch: {
+    isNewDocument: {
+      handler(val) {
+        if (val) {
+          this.$store.state.passiveRename = true
+        } else {
+          this.$store.state.passiveRename = false
+        }
+      },
+      immediate: true,
+    },
     lastSaved(newVal) {
       const ymap = this.document.getMap("docinfo")
       const lastSaved = ymap.get("lastsaved")
@@ -535,24 +541,15 @@ export default {
     this.provider.on("synced", (e) => {
       this.synced = e.synced
     })
-    if (this.trackTitle) {
-      this.$store.state.passiveRename = true
-      window.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          this.evalImplicitTitle(true)
-        }
-      })
-    } else {
-      this.$store.state.passiveRename = false
-    }
   },
   updated() {
-    if (this.trackTitle) {
+    if (this.isNewDocument) {
       this.evalImplicitTitle()
     }
   },
   beforeUnmount() {
     this.updateConnectedUsers(this.editor)
+    this.$store.state.passiveRename = false
     document.removeEventListener("keydown", this.saveDoc)
     this.editor.destroy()
     this.document.destroy()
@@ -562,6 +559,12 @@ export default {
     this.editor = null
   },
   methods: {
+    handleEnterKey() {
+      if (this.$store.state.passiveRename) {
+        if (!this.implicitTitle.length) return
+        this.isNewDocument = false
+      }
+    },
     updateConnectedUsers(editor) {
       this.$store.commit(
         "setConnectedUsers",
@@ -814,20 +817,17 @@ export default {
       ].map((id) => tempMentions.find((item) => item.id === id))
       return uniqueMentions
     },
-    evalImplicitTitle(wipeOriginal) {
-      let content = this.editor.state.doc.textContent.trim().slice(0, 35)
-      content = content.trim()
-      if (content.charAt(0) === "@") {
+    evalImplicitTitle() {
+      this.implicitTitle = this.editor.state.doc.textContent.trim().slice(0, 35)
+      this.implicitTitle = this.implicitTitle.trim()
+      if (this.implicitTitle.charAt(0) === "@") {
         return
       }
-      if (content.length) {
-        if (wipeOriginal) {
-          this.originalTitle = content
-        }
-        this.$store.state.entityInfo[0].title = content
+      if (this.implicitTitle.length && this.$store.state.passiveRename) {
+        this.$store.state.entityInfo[0].title = this.implicitTitle
         this.$resources.rename.submit({
           entity_name: this.entityName,
-          new_title: content,
+          new_title: this.implicitTitle,
         })
       }
     },

@@ -132,6 +132,7 @@ export default {
             timeout: 2,
           })
           this.$store.state.entityInfo[0].title = data.title
+          this.$store.state.passiveRename = false
           this.$emit("success", data)
           this.newName = ""
           this.extension = ""
