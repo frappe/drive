@@ -26,7 +26,16 @@ export async function getLink(entity) {
 }
 
 const copyToClipboard = (str) => {
-  if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
     return navigator.clipboard.writeText(str)
-  return Promise.reject("The Clipboard API is not available.")
+  } else {
+    // Fallback to the legacy clipboard API
+    const textArea = document.createElement("textarea")
+    textArea.value = str
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand("copy")
+    document.body.removeChild(textArea)
+    return Promise.resolve()
+  }
 }
