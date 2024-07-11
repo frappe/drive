@@ -573,7 +573,6 @@
                   Image
                 </template>
               </Button>
-              <InsertImage v-model="addImageDialog" :editor="editor" />
 
               <Button
                 class="w-full justify-start"
@@ -584,7 +583,6 @@
                   Video
                 </template>
               </Button>
-              <InsertVideo v-model="addVideoDialog" :editor="editor" />
             </div>
           </div>
           <span class="font-medium text-gray-600 text-base mb-1">Break</span>
@@ -816,6 +814,12 @@
         />
       </button>
     </template>
+    <!-- 
+      Might spawn from emits 
+      so they fall outside of tabs scope
+    -->
+    <InsertImage v-model="addImageDialog" :editor="editor" />
+    <InsertVideo v-model="addVideoDialog" :editor="editor" />
   </div>
 </template>
 
@@ -1062,6 +1066,14 @@ export default {
       const file = this.entity.file_kind
       return file?.charAt(0).toUpperCase() + file?.slice(1)
     },
+  },
+  mounted() {
+    this.emitter.on("addImage", () => {
+      this.addImageDialog = true
+    })
+    this.emitter.on("addVideo", () => {
+      this.addVideoDialog = true
+    })
   },
   methods: {
     switchTab(val) {

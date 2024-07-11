@@ -3,24 +3,35 @@ import {
   Type,
   Heading1,
   Heading2,
-  Heading3,
-  Bold,
-  Italic,
-  UnderlineIcon,
-  List,
   Table,
-  ListOrdered,
-  AlignCenter,
-  AlignRight,
-  AlignLeft,
+  Minus,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpWideNarrow,
 } from "lucide-vue-next"
 import tippy from "tippy.js"
-
-import CommandsList from "./CommandsList.vue"
+import List from "../icons/List.vue"
+import OrderList from "../icons/OrderList.vue"
+import Check from "../icons/Check.vue"
+import Codeblock from "../icons/Codeblock.vue"
+import BlockQuote from "../icons/BlockQuote.vue"
+import Image from "../icons/Image.vue"
+import Video from "../icons/Video.vue"
+import PageBreak from "../icons/PageBreak.vue"
+import CommandsList from "./suggestionList.vue"
+import Mention from "../icons/Mention.vue"
+import emitter from "../../../event-bus"
 
 export default {
   items: ({ query }) => {
     return [
+      {
+        title: "Style",
+        type: "Section",
+        //disabled: () => false,
+      },
       {
         title: "Title",
         icon: Type,
@@ -35,7 +46,7 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading 1",
+        title: "Subtitle",
         icon: Heading1,
         command: ({ editor, range }) => {
           editor
@@ -48,7 +59,7 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Heading 2",
+        title: "Heading",
         icon: Heading2,
         command: ({ editor, range }) => {
           editor
@@ -61,55 +72,12 @@ export default {
         disabled: (editor) => editor.isActive("table"),
       },
       {
-        /* Write custom subtitle node */
-        title: "Subtitle",
-        icon: Heading2,
+        title: "Ordered List",
+        icon: OrderList,
         command: ({ editor, range }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .setNode("heading", { level: 3 })
-            .run()
+          editor.chain().focus().deleteRange(range).toggleOrderedList().run()
         },
-        disabled: (editor) => editor.isActive("table"),
-      },
-      {
-        title: "Heading 3",
-        icon: Heading3,
-        command: ({ editor, range }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .setNode("heading", { level: 4 })
-            .run()
-        },
-        disabled: (editor) => editor.isActive("table"),
-      },
-      {
-        title: "Bold",
-        icon: Bold,
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleBold().run()
-        },
-        disabled: (editor) => editor.isActive("bold"),
-      },
-      {
-        title: "Italic",
-        icon: Italic,
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleItalic().run()
-        },
-        disabled: (editor) => editor.isActive("italic"),
-      },
-      {
-        title: "Underline",
-        icon: UnderlineIcon,
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleUnderline().run()
-        },
-        disabled: (editor) => editor.isActive("underline"),
+        disabled: (editor) => editor.isActive("bulletList"),
       },
       {
         title: "Bullet List",
@@ -120,36 +88,40 @@ export default {
         disabled: (editor) => editor.isActive("bulletList"),
       },
       {
-        title: "Ordered List",
-        icon: ListOrdered,
+        title: "Task List",
+        icon: Check,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).toggleOrderedList().run()
+          editor.chain().focus().deleteRange(range).toggleTaskList().run()
         },
         disabled: (editor) => editor.isActive("bulletList"),
       },
       {
-        title: "Align Center",
-        icon: AlignCenter,
+        title: "Code Block",
+        icon: Codeblock,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setTextAlign("center").run()
+          editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
         },
-        disabled: (editor) => editor.isActive({ textAlign: "center" }),
+        disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Align Left",
-        icon: AlignLeft,
+        title: "Focus Block",
+        icon: BlockQuote,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setTextAlign("left").run()
+          editor.chain().focus().deleteRange(range).toggleBlockquote().run()
         },
-        disabled: (editor) => editor.isActive({ textAlign: "left" }),
+        disabled: (editor) => editor.isActive("table"),
       },
       {
-        title: "Align Right",
-        icon: AlignRight,
+        title: "Mention",
+        icon: Mention,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setTextAlign("right").run()
+          editor.chain().focus().deleteRange(range).insertContent("@").run()
         },
-        disabled: (editor) => editor.isActive({ textAlign: "right`" }),
+        disabled: () => false,
+      },
+      {
+        title: "Insert",
+        type: "Section",
       },
       {
         title: "Table",
@@ -166,6 +138,7 @@ export default {
       },
       {
         title: "Add Column",
+        icon: ArrowRight,
         command: ({ editor, range }) => {
           editor.chain().focus().deleteRange(range).addColumnAfter().run()
         },
@@ -173,44 +146,46 @@ export default {
       },
       {
         title: "Add Row",
+        icon: ArrowDown,
         command: ({ editor, range }) => {
           editor.chain().focus().deleteRange(range).addRowAfter().run()
         },
         disabled: (editor) => !editor.isActive("table"),
       },
       {
-        title: "Delete Column",
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).deleteColumn().run()
-        },
-        disabled: (editor) => !editor.isActive("table"),
-      },
-      {
-        title: "Delete Row",
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).deleteRow().run()
-        },
-        disabled: (editor) => !editor.isActive("table"),
-      },
-      {
-        title: "Delete Table",
-        command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).deleteTable().run()
-        },
-        disabled: (editor) => !editor.isActive("table"),
-      },
-      /*       shallowReactive({
         title: "Image",
-        icon: ImagePlus,
-        component: defineAsyncComponent(() => import("./InsertImage.vue")),
-        isOpen: false,
-      }),
-      shallowReactive({
+        icon: Image,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).run()
+          emitter.emit("addImage")
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
         title: "Video",
-        icon: Film,
-        component: defineAsyncComponent(() => import("./InsertVideo.vue")),
-        isOpen: false,
-      }), */
+        icon: Video,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).run()
+          emitter.emit("addVideo")
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Horizontal rule",
+        icon: Minus,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).setHorizontalRule().run()
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
+      {
+        title: "Page Break",
+        icon: PageBreak,
+        command: ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).setPageBreak().run()
+        },
+        disabled: (editor) => editor.isActive("table"),
+      },
     ].filter((item) => item.title.toLowerCase().includes(query.toLowerCase()))
   },
 
@@ -244,8 +219,6 @@ export default {
       onUpdate(props) {
         component.updateProps(props)
         component.updateProps(popup)
-        console.log(props)
-        console.log(popup)
         if (!props.clientRect) {
           return
         }

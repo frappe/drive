@@ -1,31 +1,35 @@
 <template>
   <div
-    class="flex w-40 flex-col rounded-md border bg-white p-1 text-base shadow"
+    ref="scrollContainer"
+    class="flex w-44 flex-col rounded-md border bg-white p-1.5 text-base shadow gap-y-0.5 overflow-y-auto"
   >
     <template v-if="enabledItems.length">
-      <button
-        v-for="(item, index) in enabledItems"
-        :key="index"
-        class="flex h-8 w-full cursor-pointer items-center rounded px-1 text-base"
-        :class="{ 'bg-gray-100': index === selectedIndex }"
-        @click="selectItem(index)"
-        @mouseenter="selectedIndex = index"
-      >
-        <component
-          :is="item.icon || 'Minus'"
-          class="mr-2 h-4 w-4 text-gray-500"
-        />
-        {{ item.title }}
-        <component
-          :is="item.component"
-          v-if="item.component"
-          :editor="editor"
-          :is-open="item.isOpen"
-          @toggle-is-open="toggleIsOpen(item)"
+      <div v-for="(item, index) in enabledItems" :key="index">
+        <span
+          v-if="item.type"
+          class="flex w-full p-1 text-sm font-medium text-gray-600"
+          >{{ item.title }}</span
         >
+        <button
+          v-else
+          class="flex h-7 w-full cursor-pointer items-center rounded-[0.4rem] px-1 text-base"
+          :class="{ 'bg-gray-100': index === selectedIndex }"
+          @click="selectItem(index)"
+          @mouseenter="selectedIndex = index"
+        >
+          <component :is="item.icon" class="mr-2 h-4 w-4 text-gray-600" />
           {{ item.title }}
-        </component>
-      </button>
+          <component
+            :is="item.component"
+            v-if="item.component"
+            :editor="editor"
+            :is-open="item.isOpen"
+            @toggle-is-open="toggleIsOpen(item)"
+          >
+            {{ item.title }}
+          </component>
+        </button>
+      </div>
     </template>
     <div v-else class="item">No result</div>
   </div>

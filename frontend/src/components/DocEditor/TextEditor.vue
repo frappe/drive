@@ -97,6 +97,9 @@ import { ResizableMedia } from "./resizeableMedia"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
 import configureMention from "./Mention/mention"
 
+import Commands from "./Suggestion/suggestionExtension"
+import suggestion from "./Suggestion/suggestion"
+
 export default {
   name: "TextEditor",
   components: {
@@ -436,6 +439,9 @@ export default {
             },
           },
         }),
+        Commands.configure({
+          suggestion,
+        }),
         Table,
         FontFamily.configure({
           types: ["textStyle"],
@@ -466,7 +472,7 @@ export default {
           isCommentModeOn: this.isCommentModeOn,
         }),
         Placeholder.configure({
-          placeholder: "Start typing",
+          placeholder: "Press / for commands",
         }),
         Highlight.configure({
           multicolor: true,

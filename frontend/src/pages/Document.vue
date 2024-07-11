@@ -10,7 +10,6 @@
       :fixed-menu="true"
       :bubble-menu="true"
       :timeout="timeout"
-      placeholder="Start typing ..."
       :is-writable="isWritable"
       :entity-name="entityName"
       :entity="entity"
