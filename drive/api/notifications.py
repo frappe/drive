@@ -1,5 +1,6 @@
 import frappe
 import json
+from pypika import Order
 
 
 @frappe.whitelist()
@@ -30,6 +31,7 @@ def get_notifications(only_unread):
         .inner_join(User)
         .on(Notification.from_user == User.name)
         .select(*fields)
+        .orderby(Notification.creation, order=Order.desc)
     )
 
     if only_unread:
