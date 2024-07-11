@@ -10,12 +10,11 @@ import {
 import store from "./store"
 import router from "./router"
 import App from "./App.vue"
-import mitt from "mitt"
+import emitter from "./event-bus"
 import "./index.css"
 import VueTippy from "vue-tippy"
 
 setConfig("resourceFetcher", frappeRequest)
-const emitter = mitt()
 const app = createApp(App)
 app.config.unwrapInjectedRef = true
 app.config.globalProperties.emitter = emitter
