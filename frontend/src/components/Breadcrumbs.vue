@@ -120,7 +120,6 @@ export default {
         return result
       },
       set(newValue) {
-        this.$store.commit("setCurrentBreadcrumbs", this.breadcrumbLinks)
         return newValue
       },
     },
