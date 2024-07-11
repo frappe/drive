@@ -61,6 +61,7 @@ const store = createStore({
     IsSidebarExpanded: JSON.parse(
       localStorage.getItem("IsSidebarExpanded") || true
     ),
+    passiveRename: false,
   },
   getters: {
     isLoggedIn: (state) => {
