@@ -6,8 +6,16 @@ export async function getLink(entity) {
     : entity.document
     ? `${window.location.origin}/drive/document/${entity.name}`
     : `${window.location.origin}/drive/file/${entity.name}`
-  navigator.permissions.query({ name: "clipboard-write" }).then((result) => {
-    if (result.state == "denied") {
+
+  try {
+    await copyToClipboard(link)
+    toast({
+      title: "Copied link",
+      position: "bottom-right",
+      timeout: 2,
+    })
+  } catch (err) {
+    if (err.name === "NotAllowedError") {
       toast({
         icon: "alert-triangle",
         iconClasses: "text-red-700",
@@ -15,14 +23,9 @@ export async function getLink(entity) {
         position: "bottom-right",
       })
     } else {
-      copyToClipboard(link)
-      toast({
-        title: "Copied link",
-        position: "bottom-right",
-        timeout: 2,
-      })
+      console.error("Failed to copy link:", err)
     }
-  })
+  }
 }
 
 const copyToClipboard = (str) => {
