@@ -1,48 +1,46 @@
 <template>
-  <div class="flex mb-8 w-full flex-col items-start rounded-lg text-center">
-    <h1 class="font-semibold mb-8">Storage</h1>
-    <div class="flex flex-col items-start justify-start w-full mb-4">
-      <span class="text-lg font-semibold text-gray-800 mb-3"
-        >You have used {{ formatSize(usedSpace) }} out of
-        {{ formatSize(planSizeLimit) }}</span
-      >
-      <div
-        class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0"
-      >
-        <div
-          v-for="i in $resources.getDataByMimeType.data"
-          :key="i.file_kind"
-          class="h-7"
-          :style="{
-            backgroundColor: i.color,
-            width: i.percentageFormat,
-            paddingRight: `${5 + i.percentageRaw}px`,
-          }"
-        ></div>
-      </div>
-    </div>
+  <h1 class="font-semibold mb-8">Storage</h1>
+  <div class="flex flex-col items-start justify-start w-full mb-4">
+    <span class="text-lg font-semibold text-gray-800 mb-3"
+      >You have used {{ formatSize(usedSpace) }} out of
+      {{ base2BlockSize(planSizeLimit) }}</span
+    >
     <div
-      class="flex flex-col items-start justify-start w-full rounded full px-1.5"
+      class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0"
     >
       <div
         v-for="i in $resources.getDataByMimeType.data"
         :key="i.file_kind"
-        class="w-full border-b flex items-center justify-start py-4 gap-x-2"
-      >
-        <div
-          class="h-2 w-2 rounded-full"
-          :style="{
-            backgroundColor: i.color,
-          }"
-        ></div>
-        <span class="text-gray-800 text-base">{{ i.file_kind }}</span>
-        <span class="text-gray-800 text-base ml-auto">{{ i.h_size }}</span>
-      </div>
+        class="h-7"
+        :style="{
+          backgroundColor: i.color,
+          width: i.percentageFormat,
+          paddingRight: `${5 + i.percentageRaw}px`,
+        }"
+      ></div>
+    </div>
+  </div>
+  <div
+    class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
+  >
+    <div
+      v-for="i in $resources.getDataByMimeType.data"
+      :key="i.file_kind"
+      class="w-full border-b flex items-center justify-start py-4 gap-x-2"
+    >
+      <div
+        class="h-2 w-2 rounded-full"
+        :style="{
+          backgroundColor: i.color,
+        }"
+      ></div>
+      <span class="text-gray-800 text-base">{{ i.file_kind }}</span>
+      <span class="text-gray-800 text-base ml-auto">{{ i.h_size }}</span>
     </div>
   </div>
 </template>
 <script>
-import { formatSize } from "../../utils/format"
+import { formatSize, base2BlockSize } from "../../utils/format"
 
 export default {
   name: "StorageSettings",
@@ -84,14 +82,11 @@ export default {
   resources: {
     storageLimit() {
       return {
-        url: "frappe.client.get",
+        url: "drive.api.storage.get_max_storage",
         method: "GET",
         auto: true,
-        params: {
-          doctype: "Drive Instance Settings",
-        },
         onSuccess(data) {
-          this.planSizeLimit = data.storage_limit
+          this.planSizeLimit = data
           this.$resources.getDataByMimeType.fetch()
         },
         onError(error) {
@@ -105,7 +100,7 @@ export default {
     },
     getDataByMimeType() {
       return {
-        url: "drive.api.files.total_storage_used_by_file_kind",
+        url: "drive.api.storage.total_storage_used_by_file_kind",
         onError(error) {
           console.log(error)
         },
@@ -125,6 +120,7 @@ export default {
   },
   methods: {
     formatSize,
+    base2BlockSize,
     formatPercent(num) {
       return new Intl.NumberFormat("default", {
         style: "percent",
