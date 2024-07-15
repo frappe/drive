@@ -1,9 +1,11 @@
 <template>
-  <div class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5">
+  <div
+    class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
+    @click="emitter.emit('showSettings', 3)"
+  >
     <SidebarItem
       :label="isExpanded ? 'Storage' : '3.5GB used out of 50GB'"
       :is-collapsed="!isExpanded"
-      @click="emitter.emit('showSettings', 2)"
     >
       <template #icon>
         <Cloud class="w-4" />
@@ -14,6 +16,7 @@
         class="bg-black h-1 rounded-full"
         :style="{
           width: calculatePercent,
+          maxWidth: '100%',
         }"
       ></div>
     </div>
@@ -35,7 +38,7 @@ import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
 import Cloud from "./EspressoIcons/Cloud.vue"
-import { formatSize } from "@/utils/format"
+import { formatSize, base2BlockSize } from "@/utils/format"
 const emitter = inject("emitter")
 const usedStorage = ref(0)
 const store = useStore()
@@ -47,12 +50,12 @@ const formatedString = computed(() => {
   return (
     formatSize(usedStorage.value) +
     " used out of " +
-    formatSize(maxStorage.data?.storage_limit)
+    base2BlockSize(maxStorage.data)
   )
 })
 
 const calculatePercent = computed(() => {
-  let num = (100 * usedStorage.value) / maxStorage.data?.storage_limit
+  let num = (100 * usedStorage.value) / maxStorage.data
   return new Intl.NumberFormat("default", {
     style: "percent",
     minimumFractionDigits: 1,
@@ -61,12 +64,9 @@ const calculatePercent = computed(() => {
 })
 
 let maxStorage = createResource({
-  url: "frappe.client.get",
+  url: "drive.api.storage.get_max_storage",
   method: "GET",
   cache: "max_storage",
-  params: {
-    doctype: "Drive Instance Settings",
-  },
   onError(error) {
     if (error.messages) {
       console.log(error.messages)
@@ -76,7 +76,7 @@ let maxStorage = createResource({
 })
 
 let storageUsed = createResource({
-  url: "drive.api.files.total_storage_used",
+  url: "drive.api.storage.total_storage_used",
   onSuccess(data) {
     data = data[0].total_size
     if (!data) data = 0
