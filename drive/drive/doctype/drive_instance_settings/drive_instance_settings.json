@@ -6,10 +6,10 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["instance_id", "org_name", "instance_email", "storage_limit"],
+  "field_order": ["instance_id", "org_name", "instance_email"],
   "fields": [
     {
-      "default": "placeholder_name",
+      "default": "organization",
       "fieldname": "org_name",
       "fieldtype": "Data",
       "in_list_view": 1,
@@ -25,17 +25,11 @@
       "fieldname": "instance_email",
       "fieldtype": "Data",
       "label": "Instance Email"
-    },
-    {
-      "default": "5000000000",
-      "fieldname": "storage_limit",
-      "fieldtype": "Data",
-      "label": "Storage Limit"
     }
   ],
   "issingle": 1,
   "links": [],
-  "modified": "2024-05-24 15:19:47.471676",
+  "modified": "2024-07-15 11:53:14.138404",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Instance Settings",
