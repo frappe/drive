@@ -287,7 +287,7 @@ def get_doc_content(drive_document_name):
 @frappe.whitelist()
 def passive_rename(entity_name, new_title):
     frappe.db.set_value("Drive Entity", entity_name, "title", new_title)
-    return
+    return new_title
 
 
 @frappe.whitelist()
