@@ -26,6 +26,7 @@ from datetime import datetime
 import urllib.parse
 from frappe.utils import cint
 from drive.api.notifications import notify_mentions
+from drive.api.storage import get_storage_allowed
 
 
 def if_folder_exists(folder_name, parent):
@@ -154,6 +155,9 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
         Path(get_user_uploads_directory(user=frappe.session.user))
         / f"{upload_session}_{secure_filename(title)}"
     )
+
+    if get_storage_allowed() < int(frappe.form_dict.total_file_size):
+        frappe.throw("Out of allocated storage", ValueError)
 
     with temp_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
@@ -1200,40 +1204,6 @@ def auto_delete_from_trash():
         fields=["name"],
     )
     delete_entities(result)
-
-
-@frappe.whitelist()
-def total_storage_used():
-    DriveEntity = frappe.qb.DocType("Drive Entity")
-    query = frappe.qb.from_(DriveEntity).select(fn.Sum(DriveEntity.file_size).as_("total_size"))
-    result = query.run(as_dict=True)
-    return result
-
-
-@frappe.whitelist()
-def total_storage_used_by_file_kind():
-    DriveEntity = frappe.qb.DocType("Drive Entity")
-    query = (
-        frappe.qb.from_(DriveEntity)
-        .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("total_size"))
-        .where(DriveEntity.is_group == 0)
-        .groupby(DriveEntity.file_kind)
-    )
-    return query.run(as_dict=True)
-
-
-@frappe.whitelist()
-def total_disk_storage_used():
-    try:
-        user_directory = get_user_directory()
-        # -sb doesnt work on macos
-        cmd = f"du -sb {Path(user_directory.path)} | cut -f1"
-        result = os.popen(cmd)
-        size = result.read().strip()
-    except:
-        size = "0M"
-    return size
-
 
 @frappe.whitelist()
 def toggle_allow_comments(entity_name, new_value):
