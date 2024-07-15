@@ -68,7 +68,7 @@
         </div>
       </div>
       <div
-        v-if="search.length && !$resources.entities.data?.length"
+        v-if="search.length > 3 && !$resources.entities.data?.length"
         class="flex flex-col py-4 px-2.5"
       >
         <span class="mb-1 pl-2 text-base text-gray-600"
