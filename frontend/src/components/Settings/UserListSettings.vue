@@ -1,9 +1,7 @@
 <template>
-  <div class="flex flex-col items-stretch justify-start pt-2">
-    <div class="mb-2 flex items-center justify-between">
-      <span class="font-medium leading-normal text-gray-800 text-base mb-2"
-        >Users</span
-      >
+  <h1 class="font-semibold mb-4">Users</h1>
+  <div class="flex flex-col items-stretch justify-start overflow-y-auto">
+    <div class="flex items-center justify-between">
       <!-- <Button
         variant="subtle"
         icon-left="plus"
@@ -20,7 +18,7 @@
         v-if="index > 0"
         class="w-[95%] mx-auto h-px border-t border-gray-200"
       ></div>
-      <div class="flex items-center justify-start p-2 gap-x-2">
+      <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-2">
         <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
         <div class="flex flex-col">
           <span class="text-base">{{ user.full_name }}</span>

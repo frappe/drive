@@ -1,18 +1,16 @@
 <template>
-  <div class="w-full pt-2 flex flex-col items-stretch justify-start">
-    <div class="mb-2 mt-4 flex items-center justify-between">
-      <span class="font-medium leading-normal text-gray-800 text-base mb-2"
-        >Groups</span
-      >
-      <Button
-        v-if="isDriveadmin"
-        variant="subtle"
-        icon-left="plus"
-        @click="CreateRoleDialog = !CreateRoleDialog"
-      >
-        Create
-      </Button>
-    </div>
+  <div class="flex items-center mb-2">
+    <h1 class="font-semibold">Groups</h1>
+    <Button
+      variant="subtle"
+      icon-left="plus"
+      class="ml-auto"
+      @click="CreateRoleDialog = !CreateRoleDialog"
+    >
+      Create
+    </Button>
+  </div>
+  <div class="w-full flex flex-col items-stretch justify-start overflow-y-auto">
     <div v-for="(group, index) in AllRoles" :key="group.name">
       <div
         v-if="index > 0"

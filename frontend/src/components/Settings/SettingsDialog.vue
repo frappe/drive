@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'Settings', size: '5xl' }">
     <template #body>
-      <div class="flex" :style="{ height: 'calc(100vh - 10rem)' }">
+      <div class="flex" :style="{ height: 'calc(100vh - 9rem)' }">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
           <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
             Settings
@@ -41,13 +41,18 @@
 </template>
 <script setup>
 import { ref, defineProps, markRaw, computed } from "vue"
-import { Dialog, FeatherIcon, Button } from "frappe-ui"
+import { Dialog, FeatherIcon, Button, createResource } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
-import UserSettings from "@/components/Settings/UserSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import User from "@/components/EspressoIcons/User.vue"
+import AddUser from "@/components/EspressoIcons/AddUser.vue"
 import Users from "@/components/EspressoIcons/Users.vue"
 import Cloud from "@/components/EspressoIcons/Cloud.vue"
+import UserRoleSettings from "./UserRoleSettings.vue"
+import UserListSettings from "./UserListSettings.vue"
+import { useStore } from "vuex"
+
+const store = useStore()
 
 let tabs = [
   {
@@ -56,9 +61,14 @@ let tabs = [
     component: markRaw(ProfileSettings),
   },
   {
-    label: "Members",
+    label: "Users",
+    icon: AddUser,
+    component: markRaw(UserListSettings),
+  },
+  {
+    label: "Groups",
     icon: Users,
-    component: markRaw(UserSettings),
+    component: markRaw(UserRoleSettings),
   },
   {
     label: "Storage",
@@ -87,6 +97,15 @@ const open = computed({
   },
   set(newValue) {
     emit("update:modelValue", newValue)
+  },
+})
+
+createResource({
+  url: "drive.utils.users.is_drive_admin",
+  method: "POST",
+  auto: true,
+  onSuccess(data) {
+    store.state.user.driveAdmin = data
   },
 })
 </script>
