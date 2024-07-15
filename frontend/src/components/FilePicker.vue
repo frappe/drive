@@ -69,7 +69,8 @@
             </div>
             <NoFilesSection
               v-else-if="isEmpty"
-              primary-message="You don't have any files here"
+              class="my-auto"
+              primary-message="No Files"
               secondary-message=" "
             />
             <div v-else class="h-full p-4">
