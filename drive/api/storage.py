@@ -16,7 +16,8 @@ def get_max_storage():
     """
     plan_limit = frappe.conf.get("plan_limit")
     if plan_limit:
-        limit = int(plan_limit.max_storage_usage)
+        limit = plan_limit['max_storage_usage']
+        limit = int(limit)
         return int(limit * 1024**2)
 
     max_storage = frappe.conf.get("max_storage")
