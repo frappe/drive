@@ -93,6 +93,14 @@ after_install = "drive.install.after_install"
 # }
 #
 
+permission_query_conditions = {
+    "Drive Entity": "drive.overrides.filter_drive_entity",
+    "Drive Document": "drive.overrides.filter_drive_document",
+    "Drive Favourite": "drive.overrides.filter_drive_favourite",
+    "Drive Entity Log": "drive.overrides.filter_drive_recent",
+    "Drive Notification": "drive.overrides.filter_drive_notif",
+}
+
 has_permission = {
     "Drive Entity": "drive.overrides.user_has_permission",
 }
