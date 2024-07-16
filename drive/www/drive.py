@@ -11,6 +11,8 @@ def get_context():
     context = frappe._dict()
     context.boot = get_boot()
     context.boot.csrf_token = csrf_token
+    context.csrf_token = csrf_token
+    context.site_name = frappe.local.site
     if frappe.session.user != "Guest":
         capture("active_site", "drive")
     return context
