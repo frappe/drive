@@ -16,7 +16,7 @@ def get_max_storage():
     """
     plan_limit = frappe.conf.get("plan_limit")
     if plan_limit:
-        limit = plan_limit['max_storage_usage']
+        limit = plan_limit["max_storage_usage"]
         limit = int(limit)
         return int(limit * 1024**2)
 
@@ -51,7 +51,8 @@ def total_storage_used_by_file_kind():
 def get_storage_allowed():
     limit = get_max_storage()
     usage = total_storage_used()
-    return limit - usage[0].total_size
+    usage = usage[0].total_size or 0
+    return limit - usage
 
 
 def total_disk_storage_used():
