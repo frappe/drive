@@ -56,6 +56,7 @@
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
+import Docs from "@/components/EspressoIcons/Docs.vue"
 
 export default {
   name: "PrimaryDropdown",
@@ -85,22 +86,45 @@ export default {
     settingsItems() {
       return [
         {
-          icon: "grid",
-          label: "Switch to Desk",
-          condition: () => this.$store.state.user.isSystemUser,
-          onClick() {
-            window.location.href = "/app"
-          },
+          group: "Manage",
+          hideLabel: true,
+          items: [
+            {
+              icon: "corner-up-left",
+              label: "Switch to Desk",
+              condition: () => this.$store.state.user.systemUser,
+              onClick() {
+                window.location.href = "/app"
+              },
+            },
+            {
+              icon: Docs,
+              label: "Documentation",
+              onClick: () =>
+                window.open("https://docs.frappe.io/drive", "_blank"),
+            },
+            {
+              icon: "life-buoy",
+              label: "Support",
+              onClick: () => window.open("https://t.me/frappedrive", "_blank"),
+            },
+          ],
         },
         {
-          icon: "settings",
-          label: "Settings",
-          onClick: () => (this.showSettings = true),
-        },
-        {
-          icon: "log-out",
-          label: "Log out",
-          onClick: () => this.logout(),
+          group: "Others",
+          hideLabel: true,
+          items: [
+            {
+              icon: "settings",
+              label: "Settings",
+              onClick: () => (this.showSettings = true),
+            },
+            {
+              icon: "log-out",
+              label: "Log out",
+              onClick: () => this.logout(),
+            },
+          ],
         },
       ]
     },

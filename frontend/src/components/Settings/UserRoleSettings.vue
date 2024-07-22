@@ -10,7 +10,9 @@
       Create
     </Button>
   </div>
-  <div class="w-full flex flex-col items-stretch justify-start overflow-y-auto">
+  <div
+    class="w-full h-full flex flex-col items-stretch justify-start overflow-y-auto"
+  >
     <div v-for="(group, index) in AllRoles" :key="group.name">
       <div
         v-if="index > 0"
@@ -52,7 +54,7 @@
 
     <div
       v-if="!AllRoles?.length"
-      class="h-1/2 w-full flex flex-col items-center justify-center mt-20 mb-12"
+      class="h-1/2 w-full flex flex-col items-center justify-center my-auto"
     >
       <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
       <span class="text-gray-800 text-sm mt-2">No groups</span>
