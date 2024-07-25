@@ -388,6 +388,7 @@ def get_file_content(entity_name, trigger_download=0):  #
                 drive_entity.path,
                 mimetype=drive_entity.mime_type,
                 as_attachment=True,
+                conditional=True,
                 download_name=drive_entity.title,
                 environ=frappe.request.environ,
             )
