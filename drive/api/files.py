@@ -27,7 +27,7 @@ import urllib.parse
 from frappe.utils import cint
 from drive.api.notifications import notify_mentions
 from drive.api.storage import get_storage_allowed
-
+from urllib.parse import quote
 
 def if_folder_exists(folder_name, parent):
     values = {
@@ -387,9 +387,10 @@ def get_file_content(entity_name, trigger_download=0):  #
                 download_name=drive_entity.title,
                 environ=frappe.request.environ,
             )
+            path = "/protected/" + drive_entity.path
             response.headers.add(
                 "X-Accel-Redirect",
-                drive_entity.path,
+                quote(frappe.utils.encode(path))
             )
             return response
 
