@@ -6,7 +6,8 @@ from pypika import Order, Case, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from werkzeug.utils import secure_filename, send_file
+from werkzeug.utils import secure_filename
+from werkzeug.exceptions import NotFound
 import uuid
 import mimetypes
 import hashlib
@@ -28,6 +29,7 @@ from frappe.utils import cint
 from drive.api.notifications import notify_mentions
 from drive.api.storage import get_storage_allowed
 from urllib.parse import quote
+
 
 def if_folder_exists(folder_name, parent):
     values = {
@@ -379,18 +381,18 @@ def get_file_content(entity_name, trigger_download=0):  #
         response.headers.add("Accept-Range", "bytes")
 
         if trigger_download:
-            response = send_file(
-                drive_entity.path,
-                mimetype=drive_entity.mime_type,
-                as_attachment=True,
-                conditional=True,
-                download_name=drive_entity.title,
-                environ=frappe.request.environ,
-            )
-            path = "/protected/" + drive_entity.path
+            response = Response()
+            try:
+                f = open(drive_entity.path, "rb")
+            except OSError:
+                raise NotFound
+            response = Response(wrap_file(frappe.request.environ, f), direct_passthrough=True)
+            response.headers.add('Content-Type', drive_entity.mime_type)
+            response.headers.add('Content-Length', str(drive_entity.file_size)) 
             response.headers.add(
-                "X-Accel-Redirect",
-                quote(frappe.utils.encode(path))
+                "Content-Disposition",
+                "attachment",
+                filename=format(urllib.parse.quote(drive_entity.title.encode("utf8"))),
             )
             return response
 
