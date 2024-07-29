@@ -379,12 +379,7 @@ def get_file_content(entity_name, trigger_download=0):  #
         response.headers.add("Accept-Range", "bytes")
 
         if trigger_download:
-            response.headers.add(
-                "Content-Disposition",
-                "attachment",
-                filename=format(urllib.parse.quote(drive_entity.title.encode("utf8"))),
-            )
-            return send_file(
+            response = send_file(
                 drive_entity.path,
                 mimetype=drive_entity.mime_type,
                 as_attachment=True,
@@ -392,6 +387,11 @@ def get_file_content(entity_name, trigger_download=0):  #
                 download_name=drive_entity.title,
                 environ=frappe.request.environ,
             )
+            response.headers.add(
+                "X-Accel-Redirect",
+                drive_entity.path,
+            )
+            return response
 
         response.headers.add(
             "Content-Disposition",
@@ -1205,6 +1205,7 @@ def auto_delete_from_trash():
         fields=["name"],
     )
     delete_entities(result)
+
 
 @frappe.whitelist()
 def toggle_allow_comments(entity_name, new_value):
