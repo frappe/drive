@@ -1,5 +1,5 @@
 <template>
-  <div class="hidden" />
+  <div id="fileSelection" class="hidden" />
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue"
@@ -93,12 +93,16 @@ function NonMergeMode(file) {
 }
 
 onMounted(() => {
-  dropzone.value = new Dropzone("div#dropzoneElement", {
+  dropzone.value = new Dropzone("div#dropTarget", {
     paramName: "file",
     parallelUploads: 1,
     autoProcessQueue: false,
-    clickable: true,
-    previewsContainer: "#dropzoneElement",
+    clickable: "#fileSelection",
+    disablePreviews: true,
+    createImageThumbnails: false,
+    retryChunksLimit: 5,
+    previewsContainer: "#dropTarget",
+    hiddenInputContainer: "#fileSelection",
     uploadMultiple: false,
     chunking: true,
     retryChunks: true,
