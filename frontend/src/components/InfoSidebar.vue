@@ -7,7 +7,7 @@
   >
     <div
       v-if="showInfoSidebar"
-      class="min-w-[352px] max-w-[352px] min-h-full max-h-full border-l"
+      class="sm:min-w-[352px] sm:max-w-[352px] min-w-full min-h-full max-h-full border-l"
     >
       <div v-if="typeof entity === 'number'">
         <div class="w-full px-5 py-4 border-b overflow-visible">
@@ -24,8 +24,15 @@
             <div class="font-medium truncate text-lg">
               {{ entity.title }}
             </div>
+            <Button
+              icon="x"
+              variant="ghost"
+              class="ml-auto sm:hidden"
+              @click="$store.commit('setShowInfo', false)"
+            />
           </div>
         </div>
+
         <!-- Information -->
         <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
           <span

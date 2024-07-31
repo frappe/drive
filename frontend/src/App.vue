@@ -23,7 +23,7 @@
           <div class="flex w-full h-full overflow-hidden">
             <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
             <div
-              class="flex w-full h-[calc(100vh-88px)] sm:h-[calc(100vh-52px)] overflow-hidden"
+              class="flex w-full h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)] overflow-hidden"
             >
               <router-view :key="$route.fullPath" v-slot="{ Component }">
                 <component :is="Component" id="currentPage" ref="currentPage" />
@@ -32,7 +32,7 @@
             <InfoSidebar v-if="hideInfoSideBar" />
           </div>
         </div>
-        <BottomBar v-if="isLoggedIn" class="block sm:hidden" />
+        <BottomBar v-if="isLoggedIn" class="fixed bottom-0 w-full sm:hidden" />
       </div>
       <!-- Auth -->
       <router-view v-else />
