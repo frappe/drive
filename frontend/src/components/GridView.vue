@@ -98,7 +98,7 @@
           v-for="file in files"
           :id="file.name"
           :key="file.name"
-          class="w-[172px] h-[172px] rounded-lg border group select-none entity cursor-pointer relative group:"
+          class="w-[162px] h-[162px] sm:w-[172px] sm:h-[172px] rounded-lg border group select-none entity cursor-pointer relative group:"
           draggable="true"
           :class="
             selectedEntities.includes(file)

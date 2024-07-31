@@ -2,9 +2,9 @@
   <div
     ondragstart="return false;"
     ondrop="return false;"
-    class="flex gap-x-3 flex-wrap justify-end items-center w-full min-h-8 mb-6"
+    class="flex gap-x-3 flex-wrap justify-start items-center w-full min-h-8 mb-6"
   >
-    <div class="flex gap-3 w-full justify-start items-center">
+    <div class="flex gap-3 w-full justify-start items-center flex-wrap">
       <div
         v-if="$route.name === 'Shared'"
         class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
@@ -45,17 +45,19 @@
           </template>
         </Button>
       </Dropdown>
-      <div v-for="(item, index) in activeFilters" :key="index">
-        <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
-          {{ item }}
-          <Button
-            variant="minimal"
-            @click="$store.state.activeFilters.splice(index, 1)"
-          >
-            <template #icon>
-              <FeatherIcon class="h-3 w-3" name="x" />
-            </template>
-          </Button>
+      <div class="flex flex-wrap items-start justify-start gap-1">
+        <div v-for="(item, index) in activeFilters" :key="index">
+          <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
+            {{ item }}
+            <Button
+              variant="minimal"
+              @click="$store.state.activeFilters.splice(index, 1)"
+            >
+              <template #icon>
+                <FeatherIcon class="h-3 w-3" name="x" />
+              </template>
+            </Button>
+          </div>
         </div>
       </div>
       <div class="ml-auto flex gap-x-1 items-center">

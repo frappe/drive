@@ -10,14 +10,14 @@
   <div
     v-else
     ref="container"
-    class="h-full overflow-y-auto mt-3.5 px-4 pb-5"
+    class="h-full overflow-y-auto pt-3.5 px-4 pb-5"
     @mousedown.passive="(event) => handleMousedown(event)"
   >
     <slot name="toolbar"></slot>
     <!--       class="mb-2 grid items-center space-x-4 rounded bg-gray-100 p-2"
  -->
     <div
-      class="sticky hidden sm:grid top-0 z-10 items-center rounded bg-gray-100 min-h-7 p-2 overflow-hidden mb-2"
+      class="hidden sm:grid items-center rounded bg-gray-100 min-h-7 p-2 overflow-hidden mb-2"
       :style="{ gridTemplateColumns: tableColumnsGridWidth }"
     >
       <!-- <Checkbox

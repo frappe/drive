@@ -1,7 +1,7 @@
 <template>
   <div
     :class="isExpanded ? 'w-[220px]' : 'w-[50px]'"
-    class="border-r bg-gray-50 relative hidden sm:flex h-full flex-col justify-start duration-300 ease-in-out p-2"
+    class="border-r bg-gray-50 relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out p-2"
   >
     <PrimaryDropDown :is-expanded="isExpanded" />
 
