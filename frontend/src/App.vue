@@ -15,7 +15,7 @@
         class="flex flex-col h-full overflow-hidden sm:flex-row"
       >
         <Sidebar v-if="isLoggedIn" class="hidden sm:block" />
-        <div id="dropzoneElement" class="h-full w-full overflow-hidden">
+        <div id="dropTarget" class="h-full w-full overflow-hidden">
           <Navbar
             :mobile-sidebar-is-open="showMobileSidebar"
             @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar"
