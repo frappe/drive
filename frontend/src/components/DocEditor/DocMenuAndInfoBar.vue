@@ -1,72 +1,70 @@
 <template>
-  <Transition
-    enter-from-class="translate-x-[150%] opacity-0"
-    leave-to-class="translate-x-[150%] opacity-0"
-    enter-active-class="transition duration-125"
-    leave-active-class="transition duration-125"
+  <div
+    class="transition-all duration-200 ease-in-out h-full border-l"
+    :class="
+      showInfoSidebar
+        ? 'sm:min-w-[352px] sm:max-w-[352px] min-w-full opacity-100'
+        : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
+    "
   >
-    <div
-      v-if="showInfoSidebar"
-      class="min-w-[352px] max-w-[352px] min-h-full border-l overflow-auto"
-    >
-      <div v-if="entity" class="w-full border-b pl-3 py-4">
-        <div class="flex items-center">
-          <div class="font-medium truncate text-lg">
-            {{ entity.title }}
-          </div>
+    <div v-if="entity" class="w-full border-b pl-3 py-4">
+      <div class="flex items-center">
+        <div class="font-medium truncate text-lg">
+          {{ entity.title }}
         </div>
       </div>
-      <div v-if="entity && editor">
-        <!-- Info -->
-        <div v-if="tab === 4" class="px-5 py-4 border-b">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
-          >
-            Information
-          </span>
-          <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
-            <div v-if="entity.owner === 'You'">
-              <div class="text-base font-medium mb-4">Access</div>
-              <div class="flex items-center justify-start">
+    </div>
+    <div v-if="entity && editor">
+      <!-- Info -->
+      <div v-if="tab === 4" class="px-5 py-4 border-b">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          Information
+        </span>
+        <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
+          <div v-if="entity.owner === 'You'">
+            <div class="text-base font-medium mb-4">Access</div>
+            <div class="flex items-center justify-start">
+              <Avatar
+                size="lg"
+                :label="entity.owner"
+                :image="entity.user_image"
+              ></Avatar>
+              <div class="border-l h-6 mx-1.5"></div>
+              <GeneralAccess
+                v-if="
+                  !$resources.generalAccess.loading &&
+                  (!!$resources.generalAccess.data.length ||
+                    !sharedWithList.length)
+                "
+                size="lg"
+                class="-mr-[3px] outline outline-white"
+                :general-access="$resources.generalAccess?.data?.[0]"
+              />
+              <div
+                v-if="sharedWithList?.length"
+                class="flex items-center justify-start"
+              >
                 <Avatar
+                  v-for="user in sharedWithList.slice(0, 3)"
+                  :key="user.user_name"
                   size="lg"
-                  :label="entity.owner"
-                  :image="entity.user_image"
-                ></Avatar>
-                <div class="border-l h-6 mx-1.5"></div>
-                <GeneralAccess
-                  v-if="
-                    !$resources.generalAccess.loading &&
-                    (!!$resources.generalAccess.data.length ||
-                      !sharedWithList.length)
-                  "
-                  size="lg"
+                  :label="user.full_name ? user.full_name : user.user_name"
+                  :image="user.user_image"
                   class="-mr-[3px] outline outline-white"
-                  :general-access="$resources.generalAccess?.data?.[0]"
                 />
-                <div
-                  v-if="sharedWithList?.length"
-                  class="flex items-center justify-start"
-                >
-                  <Avatar
-                    v-for="user in sharedWithList.slice(0, 3)"
-                    :key="user.user_name"
-                    size="lg"
-                    :label="user.full_name ? user.full_name : user.user_name"
-                    :image="user.user_image"
-                    class="-mr-[3px] outline outline-white"
-                  />
 
-                  <Avatar
-                    v-if="sharedWithList.slice(3).length"
-                    size="lg"
-                    :label="sharedWithList.slice(3).length.toString()"
-                    class="-mr-[3px] outline outline-white"
-                  />
-                </div>
+                <Avatar
+                  v-if="sharedWithList.slice(3).length"
+                  size="lg"
+                  :label="sharedWithList.slice(3).length.toString()"
+                  class="-mr-[3px] outline outline-white"
+                />
               </div>
             </div>
-            <!-- <div
+          </div>
+          <!-- <div
               v-if="
                 $resources.entityTags.data?.length || entity.owner === 'You'
               "
@@ -116,242 +114,240 @@
                 />
               </div>
             </div> -->
-            <div>
-              <div class="text-base font-medium mb-4">Properties</div>
-              <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-                <span class="col-span-1 text-gray-600">Type</span>
-                <span class="col-span-1">{{ formattedMimeType }}</span>
-                <span class="col-span-1 text-gray-600">Size</span>
-                <span class="col-span-1">{{ entity.file_size }}</span>
-                <span class="col-span-1 text-gray-600">Modified</span>
-                <span class="col-span-1">{{ entity.modified }}</span>
-                <span class="col-span-1 text-gray-600">Created</span>
-                <span class="col-span-1">{{ entity.creation }}</span>
-                <span class="col-span-1 text-gray-600">Owner</span>
-                <span class="col-span-1">{{ entity.full_name }}</span>
-              </div>
+          <div>
+            <div class="text-base font-medium mb-4">Properties</div>
+            <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
+              <span class="col-span-1 text-gray-600">Type</span>
+              <span class="col-span-1">{{ formattedMimeType }}</span>
+              <span class="col-span-1 text-gray-600">Size</span>
+              <span class="col-span-1">{{ entity.file_size }}</span>
+              <span class="col-span-1 text-gray-600">Modified</span>
+              <span class="col-span-1">{{ entity.modified }}</span>
+              <span class="col-span-1 text-gray-600">Created</span>
+              <span class="col-span-1">{{ entity.creation }}</span>
+              <span class="col-span-1 text-gray-600">Owner</span>
+              <span class="col-span-1">{{ entity.full_name }}</span>
             </div>
-            <div>
-              <div class="text-base font-medium mb-4">Stats</div>
-              <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-                <span class="col-span-1 text-gray-600">Words</span>
-                <span class="col-span-1">
-                  {{ editor.storage.characterCount.words() }}
-                </span>
-                <span class="col-span-1 text-gray-600">Characters</span>
-                <span class="col-span-1">
-                  {{ editor.storage.characterCount.characters() }}
-                </span>
-                <span class="col-span-1 text-gray-600">Reading Time</span>
-                <span class="col-span-1">
-                  {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
-                  {{
-                    Math.ceil(editor.storage.characterCount.words() / 200) > 1
-                      ? "mins"
-                      : "min"
-                  }}
-                </span>
-              </div>
+          </div>
+          <div>
+            <div class="text-base font-medium mb-4">Stats</div>
+            <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
+              <span class="col-span-1 text-gray-600">Words</span>
+              <span class="col-span-1">
+                {{ editor.storage.characterCount.words() }}
+              </span>
+              <span class="col-span-1 text-gray-600">Characters</span>
+              <span class="col-span-1">
+                {{ editor.storage.characterCount.characters() }}
+              </span>
+              <span class="col-span-1 text-gray-600">Reading Time</span>
+              <span class="col-span-1">
+                {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
+                {{
+                  Math.ceil(editor.storage.characterCount.words() / 200) > 1
+                    ? "mins"
+                    : "min"
+                }}
+              </span>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Comments -->
-        <div v-if="tab === 5" class="px-5 py-4 border-b">
-          <span
-            class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
+      <!-- Comments -->
+      <div v-if="tab === 5" class="px-5 py-4 border-b">
+        <span
+          class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
+        >
+          Comments
+        </span>
+        <OuterCommentVue
+          v-if="!!allComments.length"
+          :active-comments-instance="activeCommentsInstance"
+          :all-comments="allComments"
+          :focus-content="focusContent"
+          :is-comment-mode-on="showComments"
+          @set-comment="setComment"
+        />
+        <div v-else class="text-gray-600 text-sm my-5">
+          There are no comments for the current document
+        </div>
+      </div>
+
+      <!-- Typography -->
+      <div v-if="tab === 0" class="flex flex-col px-5 py-4 border-b">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          Style
+        </span>
+        <span class="font-medium text-gray-600 text-xs my-2">TITLE</span>
+        <div class="w-full flex justify-between gap-x-1.5 mb-6">
+          <Button
+            class="w-1/3 font-semibold"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setHeading({ level: 1 })
+                .run()
+            "
           >
-            Comments
-          </span>
-          <OuterCommentVue
-            v-if="!!allComments.length"
-            :active-comments-instance="activeCommentsInstance"
-            :all-comments="allComments"
-            :focus-content="focusContent"
-            :is-comment-mode-on="showComments"
-            @set-comment="setComment"
-          />
-          <div v-else class="text-gray-600 text-sm my-5">
-            There are no comments for the current document
-          </div>
+            Title
+          </Button>
+          <Button
+            class="w-1/3 font-medium"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setHeading({ level: 2 })
+                .run()
+            "
+          >
+            Subtitle
+          </Button>
+          <Button
+            class="w-1/3"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setHeading({ level: 3 })
+                .run()
+            "
+          >
+            Heading
+          </Button>
         </div>
 
-        <!-- Typography -->
-        <div v-if="tab === 0" class="flex flex-col px-5 py-4 border-b">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        <span class="font-semibold text-gray-600 text-xs my-2">CONTENT</span>
+        <div class="w-full flex justify-between gap-x-1.5 mb-6">
+          <Button
+            class="w-1/3 font-bold"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setBold()
+                .setHeading({ level: 4 })
+                .run()
+            "
           >
-            Style
-          </span>
-          <span class="font-medium text-gray-600 text-xs my-2">TITLE</span>
-          <div class="w-full flex justify-between gap-x-1.5 mb-6">
-            <Button
-              class="w-1/3 font-semibold"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .clearNodes()
-                  .unsetAllMarks()
-                  .setHeading({ level: 1 })
-                  .run()
-              "
-            >
-              Title
-            </Button>
-            <Button
-              class="w-1/3 font-medium"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .clearNodes()
-                  .unsetAllMarks()
-                  .setHeading({ level: 2 })
-                  .run()
-              "
-            >
-              Subtitle
-            </Button>
-            <Button
-              class="w-1/3"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .clearNodes()
-                  .unsetAllMarks()
-                  .setHeading({ level: 3 })
-                  .run()
-              "
-            >
-              Heading
-            </Button>
-          </div>
-
-          <span class="font-semibold text-gray-600 text-xs my-2">CONTENT</span>
-          <div class="w-full flex justify-between gap-x-1.5 mb-6">
-            <Button
-              class="w-1/3 font-bold"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .clearNodes()
-                  .unsetAllMarks()
-                  .setBold()
-                  .setHeading({ level: 4 })
-                  .run()
-              "
-            >
-              Strong
-            </Button>
-            <Button
-              class="w-1/3"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .clearNodes()
-                  .unsetAllMarks()
-                  .setParagraph()
-                  .run()
-              "
-            >
-              Body
-            </Button>
-            <Button
-              class="w-1/3"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .clearNodes()
-                  .unsetAllMarks()
-                  .setHeading({ level: 5 })
-                  .setFontSize('0.9rem')
-                  .setColor('#7c7c7c')
-                  .run()
-              "
-            >
-              Caption
-            </Button>
-          </div>
-          <span class="font-medium text-gray-600 text-xs my-2">GROUPS</span>
-          <div
-            class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
+            Strong
+          </Button>
+          <Button
+            class="w-1/3"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setParagraph()
+                .run()
+            "
           >
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('bold') ? 'bg-white border' : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleBold().run()"
-            >
-              <Bold class="w-4 stroke-2" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('italic')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleItalic().run()"
-            >
-              <FeatherIcon name="italic" class="w-4 stroke-2" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('underline')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleUnderline().run()"
-            >
-              <Underline class="w-4 stroke-2" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('strike')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleStrike().run()"
-            >
-              <Strikethrough class="w-4 stroke-2" />
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('code')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleCode().run()"
-            >
-              <Code class="w-4 stroke-2" />
-            </Button>
-          </div>
-          <div
-            class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
+            Body
+          </Button>
+          <Button
+            class="w-1/3"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .clearNodes()
+                .unsetAllMarks()
+                .setHeading({ level: 5 })
+                .setFontSize('0.9rem')
+                .setColor('#7c7c7c')
+                .run()
+            "
           >
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('bulletList')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleBulletList().run()"
-            >
-              <template #icon>
-                <List class="w-4 stroke-2" />
-              </template>
-            </Button>
-            <!--             <Button
+            Caption
+          </Button>
+        </div>
+        <span class="font-medium text-gray-600 text-xs my-2">GROUPS</span>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
+        >
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('bold') ? 'bg-white border' : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleBold().run()"
+          >
+            <Bold class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('italic')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleItalic().run()"
+          >
+            <FeatherIcon name="italic" class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('underline')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleUnderline().run()"
+          >
+            <Underline class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('strike')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleStrike().run()"
+          >
+            <Strikethrough class="w-4 stroke-2" />
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('code') ? 'bg-white shadow-sm' : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleCode().run()"
+          >
+            <Code class="w-4 stroke-2" />
+          </Button>
+        </div>
+        <div
+          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
+        >
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('bulletList')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleBulletList().run()"
+          >
+            <template #icon>
+              <List class="w-4 stroke-2" />
+            </template>
+          </Button>
+          <!--             <Button
               class="w-full"
               :class="
                 editor.isActive('details')
@@ -368,428 +364,421 @@
                 <Details class="w-4" />
               </template>
             </Button> -->
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('orderedList')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleOrderedList().run()"
-            >
-              <template #icon>
-                <OrderList class="w-4" />
-              </template>
-            </Button>
-            <Button
-              class="w-full"
-              :class="
-                editor.isActive('taskList')
-                  ? 'bg-white shadow-sm'
-                  : 'bg-transparent'
-              "
-              @click="editor.chain().focus().toggleTaskList().run()"
-            >
-              <template #icon>
-                <Check class="w-4" />
-              </template>
-            </Button>
-          </div>
-          <div class="flex gap-x-1.5 mb-6">
-            <div
-              class="flex flex-row bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
-            >
-              <Button
-                :variant="'subtle'"
-                @click="editor.chain().focus().indent().run()"
-              >
-                <Indent class="h-4" />
-              </Button>
-              <Button
-                :variant="'subtle'"
-                @click="editor.chain().focus().outdent().run()"
-              >
-                <Outdent class="h-4" />
-              </Button>
-            </div>
-            <div
-              class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
-            >
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'left' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('left').run()"
-              >
-                <alignLeft class="w-4" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'center' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('center').run()"
-              >
-                <alignCenter class="w-4" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'right' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('right').run()"
-              >
-                <alignRight class="w-4" />
-              </Button>
-              <Button
-                class="w-full"
-                :class="
-                  editor.isActive({ textAlign: 'justify' })
-                    ? 'bg-white shadow-sm'
-                    : 'bg-transparent'
-                "
-                @click="editor.chain().focus().setTextAlign('justify').run()"
-              >
-                <alignJustify class="w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <span class="font-medium text-gray-600 text-xs my-2">
-            DECORATIONS
-          </span>
-          <div class="w-full flex justify-between gap-x-1.5 mb-6">
-            <Button
-              class="w-full"
-              @click="editor.chain().focus().toggleCodeBlock().run()"
-            >
-              <template #prefix>
-                <Codeblock name="code" class="w-4" />
-              </template>
-              Block
-            </Button>
-            <Button
-              class="w-full"
-              @click="editor.chain().focus().toggleBlockquote().run()"
-            >
-              <template #prefix>
-                <BlockQuote name="quote" class="w-4" />
-              </template>
-              Focus
-            </Button>
-          </div>
-
-          <span class="font-medium text-gray-600 text-xs mt-2 mb-1">
-            TEXT COLOR
-          </span>
-          <ColorInput
-            class="mt-0.5 mb-1"
-            :value="editor.getAttributes('textStyle').color"
-            @change="(value) => editor.chain().focus().setColor(value).run()"
-          />
-          <span class="font-medium text-gray-600 text-xs mt-2 mb-1">
-            BACKGROUND COLOR
-          </span>
-          <ColorInput
-            class="mt-0.5 mb-6"
-            :value="editor.getAttributes('textStyle').backgroundColor"
-            @change="
-              (value) => editor.chain().focus().toggleHighlight(value).run()
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('orderedList')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
             "
-          />
-          <span class="font-medium text-gray-600 text-xs my-2">FONT</span>
-          <div class="w-full flex justify-between gap-x-1.5">
+            @click="editor.chain().focus().toggleOrderedList().run()"
+          >
+            <template #icon>
+              <OrderList class="w-4" />
+            </template>
+          </Button>
+          <Button
+            class="w-full"
+            :class="
+              editor.isActive('taskList')
+                ? 'bg-white shadow-sm'
+                : 'bg-transparent'
+            "
+            @click="editor.chain().focus().toggleTaskList().run()"
+          >
+            <template #icon>
+              <Check class="w-4" />
+            </template>
+          </Button>
+        </div>
+        <div class="flex gap-x-1.5 mb-6">
+          <div
+            class="flex flex-row bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
+          >
             <Button
-              class="w-1/3"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'InterVar' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="editor.chain().focus().setFontFamily('InterVar').run()"
+              :variant="'subtle'"
+              @click="editor.chain().focus().indent().run()"
             >
-              Sans
+              <Indent class="h-4" />
             </Button>
             <Button
-              class="w-1/3 font-['Lora']"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'Lora' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="editor.chain().focus().setFontFamily('Lora').run()"
+              :variant="'subtle'"
+              @click="editor.chain().focus().outdent().run()"
             >
-              Serif
+              <Outdent class="h-4" />
+            </Button>
+          </div>
+          <div
+            class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
+          >
+            <Button
+              class="w-full"
+              :class="
+                editor.isActive({ textAlign: 'left' })
+                  ? 'bg-white shadow-sm'
+                  : 'bg-transparent'
+              "
+              @click="editor.chain().focus().setTextAlign('left').run()"
+            >
+              <alignLeft class="w-4" />
             </Button>
             <Button
-              class="w-1/3"
-              :style="{ fontFamily: 'Geist Mono' }"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'Geist Mono' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="editor.chain().focus().setFontFamily('Geist Mono').run()"
+              class="w-full"
+              :class="
+                editor.isActive({ textAlign: 'center' })
+                  ? 'bg-white shadow-sm'
+                  : 'bg-transparent'
+              "
+              @click="editor.chain().focus().setTextAlign('center').run()"
             >
-              Mono
+              <alignCenter class="w-4" />
             </Button>
             <Button
-              class="w-1/3 font-['Nunito']"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'Nunito' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="editor.chain().focus().setFontFamily('Nunito').run()"
+              class="w-full"
+              :class="
+                editor.isActive({ textAlign: 'right' })
+                  ? 'bg-white shadow-sm'
+                  : 'bg-transparent'
+              "
+              @click="editor.chain().focus().setTextAlign('right').run()"
             >
-              Round
+              <alignRight class="w-4" />
+            </Button>
+            <Button
+              class="w-full"
+              :class="
+                editor.isActive({ textAlign: 'justify' })
+                  ? 'bg-white shadow-sm'
+                  : 'bg-transparent'
+              "
+              @click="editor.chain().focus().setTextAlign('justify').run()"
+            >
+              <alignJustify class="w-4" />
             </Button>
           </div>
         </div>
 
-        <!-- Insert -->
-        <div v-if="tab === 1" class="flex flex-col px-5 py-4 border-b">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        <span class="font-medium text-gray-600 text-xs my-2">
+          DECORATIONS
+        </span>
+        <div class="w-full flex justify-between gap-x-1.5 mb-6">
+          <Button
+            class="w-full"
+            @click="editor.chain().focus().toggleCodeBlock().run()"
           >
-            Insert
-          </span>
-          <div>
-            <span class="font-medium text-gray-600 text-base mb-1">Media</span>
-            <div class="w-full flex justify-between gap-x-1.5 mb-6">
-              <Button
-                class="w-full justify-start"
-                @click="addImageDialog = true"
-              >
-                <template #prefix>
-                  <Image class="text-gray-700 w-4" />
-                  Image
-                </template>
-              </Button>
+            <template #prefix>
+              <Codeblock name="code" class="w-4" />
+            </template>
+            Block
+          </Button>
+          <Button
+            class="w-full"
+            @click="editor.chain().focus().toggleBlockquote().run()"
+          >
+            <template #prefix>
+              <BlockQuote name="quote" class="w-4" />
+            </template>
+            Focus
+          </Button>
+        </div>
 
-              <Button
-                class="w-full justify-start"
-                @click="addVideoDialog = true"
-              >
-                <template #prefix>
-                  <Video class="text-gray-700 w-4" />
-                  Video
-                </template>
-              </Button>
-            </div>
-          </div>
-          <span class="font-medium text-gray-600 text-base mb-1">Break</span>
+        <span class="font-medium text-gray-600 text-xs mt-2 mb-1">
+          TEXT COLOR
+        </span>
+        <ColorInput
+          class="mt-0.5 mb-1"
+          :value="editor.getAttributes('textStyle').color"
+          @change="(value) => editor.chain().focus().setColor(value).run()"
+        />
+        <span class="font-medium text-gray-600 text-xs mt-2 mb-1">
+          BACKGROUND COLOR
+        </span>
+        <ColorInput
+          class="mt-0.5 mb-6"
+          :value="editor.getAttributes('textStyle').backgroundColor"
+          @change="
+            (value) => editor.chain().focus().toggleHighlight(value).run()
+          "
+        />
+        <span class="font-medium text-gray-600 text-xs my-2">FONT</span>
+        <div class="w-full flex justify-between gap-x-1.5">
+          <Button
+            class="w-1/3"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'InterVar' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="editor.chain().focus().setFontFamily('InterVar').run()"
+          >
+            Sans
+          </Button>
+          <Button
+            class="w-1/3 font-['Lora']"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'Lora' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="editor.chain().focus().setFontFamily('Lora').run()"
+          >
+            Serif
+          </Button>
+          <Button
+            class="w-1/3"
+            :style="{ fontFamily: 'Geist Mono' }"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'Geist Mono' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="editor.chain().focus().setFontFamily('Geist Mono').run()"
+          >
+            Mono
+          </Button>
+          <Button
+            class="w-1/3 font-['Nunito']"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'Nunito' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="editor.chain().focus().setFontFamily('Nunito').run()"
+          >
+            Round
+          </Button>
+        </div>
+      </div>
+
+      <!-- Insert -->
+      <div v-if="tab === 1" class="flex flex-col px-5 py-4 border-b">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          Insert
+        </span>
+        <div>
+          <span class="font-medium text-gray-600 text-base mb-1">Media</span>
           <div class="w-full flex justify-between gap-x-1.5 mb-6">
-            <Button
-              class="w-full px-2"
-              @click="editor.chain().focus().setHorizontalRule().run()"
-            >
+            <Button class="w-full justify-start" @click="addImageDialog = true">
               <template #prefix>
-                <Minus class="stroke-[1] text-gray-700" />
+                <Image class="text-gray-700 w-4" />
+                Image
               </template>
-              Rule
             </Button>
 
-            <Button
-              class="px-2 w-full"
-              @click="editor.chain().focus().setPageBreak().run()"
-            >
+            <Button class="w-full justify-start" @click="addVideoDialog = true">
               <template #prefix>
-                <svg
-                  class="w-3.5"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 22H17.5C18.0304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V18M4 8V4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H14.5L20 7.5V10.5"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M4 4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H14.5L20 7.5M4 20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M14 2V8H20"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M3 15H21"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                <Video class="text-gray-700 w-4" />
+                Video
               </template>
-              Page Break
             </Button>
           </div>
-          <span class="font-medium text-gray-600 text-base">Table</span>
-          <div class="flex space-x-2 my-2">
-            <Button
-              :disabled="editor.isActive('table')"
-              class="w-full"
-              @click="
-                editor
-                  .chain()
-                  .focus()
-                  .insertTable({ rows: 3, cols: 3, withHeaderRow: false })
-                  .run()
-              "
-            >
-              <template #prefix>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="w-4"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
+        </div>
+        <span class="font-medium text-gray-600 text-base mb-1">Break</span>
+        <div class="w-full flex justify-between gap-x-1.5 mb-6">
+          <Button
+            class="w-full px-2"
+            @click="editor.chain().focus().setHorizontalRule().run()"
+          >
+            <template #prefix>
+              <Minus class="stroke-[1] text-gray-700" />
+            </template>
+            Rule
+          </Button>
+
+          <Button
+            class="px-2 w-full"
+            @click="editor.chain().focus().setPageBreak().run()"
+          >
+            <template #prefix>
+              <svg
+                class="w-3.5"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 22H17.5C18.0304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V18M4 8V4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H14.5L20 7.5V10.5"
                   stroke="currentColor"
-                  fill="none"
+                  stroke-width="1.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path
-                    d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5"
-                  ></path>
-                  <path d="M3 10h18"></path>
-                  <path d="M10 3v18"></path>
-                  <path d="M16 19h6"></path>
-                  <path d="M19 16v6"></path>
-                </svg>
-                New Table
-              </template>
-            </Button>
-          </div>
+                />
+                <path
+                  d="M4 4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H14.5L20 7.5M4 20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M14 2V8H20"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M3 15H21"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </template>
+            Page Break
+          </Button>
         </div>
-
-        <!-- Document Settings -->
-        <div v-if="tab === 2" class="flex flex-col px-3 py-4 border-b">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full px-2"
+        <span class="font-medium text-gray-600 text-base">Table</span>
+        <div class="flex space-x-2 my-2">
+          <Button
+            :disabled="editor.isActive('table')"
+            class="w-full"
+            @click="
+              editor
+                .chain()
+                .focus()
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: false })
+                .run()
+            "
           >
-            Settings
-          </span>
-          <Switch v-model="settings.docSize" label="Small Text" />
-          <Switch v-model="settings.docWidth" label="Full Width" />
-          <span class="font-medium text-gray-700 text-base my-2.5 px-2.5">
-            Default Font
-          </span>
-          <div class="w-full flex justify-between gap-1 px-3">
-            <Button
-              class="w-1/3"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'InterVar' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="settings.docFont = 'font-fd-sans'"
-            >
-              Sans
-            </Button>
-            <Button
-              class="w-1/3 font-['Lora']"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'Lora' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="settings.docFont = 'font-fd-serif'"
-            >
-              Serif
-            </Button>
-            <Button
-              class="w-1/3"
-              :style="{ fontFamily: 'Geist Mono' }"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'Geist Mono' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="settings.docFont = 'font-fd-mono'"
-            >
-              Mono
-            </Button>
-            <Button
-              class="w-1/3 font-['Nunito']"
-              :class="[
-                editor.isActive('textStyle', { fontFamily: 'Nunito' })
-                  ? 'outline outline-gray-400'
-                  : '',
-              ]"
-              @click="settings.docFont = 'font-fd-round'"
-            >
-              Round
-            </Button>
-          </div>
+            <template #prefix>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5"
+                ></path>
+                <path d="M3 10h18"></path>
+                <path d="M10 3v18"></path>
+                <path d="M16 19h6"></path>
+                <path d="M19 16v6"></path>
+              </svg>
+              New Table
+            </template>
+          </Button>
         </div>
+      </div>
 
-        <!-- Transform -->
-        <div v-if="tab === 3" class="px-5 py-4 border-b">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+      <!-- Document Settings -->
+      <div v-if="tab === 2" class="flex flex-col px-3 py-4 border-b">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full px-2"
+        >
+          Settings
+        </span>
+        <Switch v-model="settings.docSize" label="Small Text" />
+        <Switch v-model="settings.docWidth" label="Full Width" />
+        <span class="font-medium text-gray-700 text-base my-2.5 px-2.5">
+          Default Font
+        </span>
+        <div class="w-full flex justify-between gap-1 px-3">
+          <Button
+            class="w-1/3"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'InterVar' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="settings.docFont = 'font-fd-sans'"
           >
-            Transform
+            Sans
+          </Button>
+          <Button
+            class="w-1/3 font-['Lora']"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'Lora' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="settings.docFont = 'font-fd-serif'"
+          >
+            Serif
+          </Button>
+          <Button
+            class="w-1/3"
+            :style="{ fontFamily: 'Geist Mono' }"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'Geist Mono' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="settings.docFont = 'font-fd-mono'"
+          >
+            Mono
+          </Button>
+          <Button
+            class="w-1/3 font-['Nunito']"
+            :class="[
+              editor.isActive('textStyle', { fontFamily: 'Nunito' })
+                ? 'outline outline-gray-400'
+                : '',
+            ]"
+            @click="settings.docFont = 'font-fd-round'"
+          >
+            Round
+          </Button>
+        </div>
+      </div>
+
+      <!-- Transform -->
+      <div v-if="tab === 3" class="px-5 py-4 border-b">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          Transform
+        </span>
+        <div>
+          <span
+            v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
+            class="font-medium text-gray-700 text-base"
+          >
+            Import
           </span>
-          <div>
-            <span
-              v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
-              class="font-medium text-gray-700 text-base"
-            >
-              Import
-            </span>
-            <Button
-              v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
-              class="w-full justify-start mb-2"
-              @click="() => emitter.emit('importDocFromWord')"
-            >
-              <template #prefix>
-                <FileUp class="text-gray-700 w-4 stroke-[1.5]" />
-                Import DOCX
-              </template>
-            </Button>
-            <span class="font-medium text-gray-700 text-base">Export</span>
-            <Button
-              class="w-full justify-start"
-              @click="() => emitter.emit('exportDocToPDF')"
-            >
-              <template #prefix>
-                <FileDown class="text-gray-700 w-4 stroke-[1.5]" />
-                Export PDF
-              </template>
-            </Button>
-            <!-- <Button class="w-full justify-start">
+          <Button
+            v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
+            class="w-full justify-start mb-2"
+            @click="() => emitter.emit('importDocFromWord')"
+          >
+            <template #prefix>
+              <FileUp class="text-gray-700 w-4 stroke-[1.5]" />
+              Import DOCX
+            </template>
+          </Button>
+          <span class="font-medium text-gray-700 text-base">Export</span>
+          <Button
+            class="w-full justify-start"
+            @click="() => emitter.emit('exportDocToPDF')"
+          >
+            <template #prefix>
+              <FileDown class="text-gray-700 w-4 stroke-[1.5]" />
+              Export PDF
+            </template>
+          </Button>
+          <!-- <Button class="w-full justify-start">
             <template #prefix>
               <FileDown class="text-gray-700 w-4" />
               Export to DOCX
             </template>
           </Button> -->
-          </div>
         </div>
       </div>
     </div>
-  </Transition>
+  </div>
   <div
     class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
   >

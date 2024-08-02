@@ -1,103 +1,101 @@
 <template>
-  <Transition
-    enter-from-class="translate-x-[150%]"
-    leave-to-class="translate-x-[150%]"
-    enter-active-class="transition duration-150"
-    leave-active-class="transition duration-150"
+  <div
+    class="transition-all duration-200 ease-in-out h-full border-l"
+    :class="
+      showInfoSidebar
+        ? 'sm:min-w-[352px] sm:max-w-[352px] min-w-full opacity-100'
+        : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
+    "
   >
-    <div
-      v-if="showInfoSidebar"
-      class="sm:min-w-[352px] sm:max-w-[352px] min-w-full min-h-full max-h-full border-l"
-    >
-      <div v-if="typeof entity === 'number'">
-        <div class="w-full px-5 py-4 border-b overflow-visible">
-          <div class="flex items-center">
-            <div class="font-medium truncate text-lg">
-              {{ store.state.entityInfo.length }} items selected
-            </div>
+    <div v-if="typeof entity === 'number'">
+      <div class="w-full px-5 py-4 border-b overflow-visible">
+        <div class="flex items-center">
+          <div class="font-medium truncate text-lg">
+            {{ store.state.entityInfo.length }} items selected
           </div>
         </div>
       </div>
-      <div v-else-if="entity">
-        <div class="w-full px-5 py-4 border-b">
-          <div class="flex items-center">
-            <div class="font-medium truncate text-lg">
-              {{ entity.title }}
-            </div>
-            <Button
-              icon="x"
-              variant="ghost"
-              class="ml-auto sm:hidden"
-              @click="$store.commit('setShowInfo', false)"
-            />
+    </div>
+    <div v-else-if="entity">
+      <div class="w-full px-5 py-4 border-b">
+        <div class="flex items-center">
+          <div class="font-medium truncate text-lg">
+            {{ entity.title }}
           </div>
+          <Button
+            icon="x"
+            variant="ghost"
+            class="ml-auto sm:hidden"
+            @click="$store.commit('setShowInfo', false)"
+          />
         </div>
+      </div>
 
-        <!-- Information -->
-        <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
-          >
-            <Info />
-            Information
-          </span>
-          <div
-            v-if="
-              (entity.mime_type?.startsWith('video') ||
-                (entity.mime_type?.startsWith('image') &&
-                  entity?.mime_type !== 'image/svg+xml')) &&
-              showInfoSidebar
-            "
-            class="h-[210px] w-full mb-4"
-          >
-            <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
-          </div>
-          <div class="space-y-6.5">
-            <div v-if="entity.owner === 'You'">
-              <div class="text-base font-medium mb-4">Access</div>
-              <div class="flex items-center justify-start">
+      <!-- Information -->
+      <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          <Info />
+          Information
+        </span>
+        <div
+          v-if="
+            (entity.mime_type?.startsWith('video') ||
+              (entity.mime_type?.startsWith('image') &&
+                entity?.mime_type !== 'image/svg+xml')) &&
+            showInfoSidebar
+          "
+          class="h-[210px] w-full mb-4"
+        >
+          <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
+        </div>
+        <div class="space-y-6.5">
+          <div v-if="entity.owner === 'You'">
+            <div class="text-base font-medium mb-4">Access</div>
+            <div class="flex items-center justify-start">
+              <Avatar
+                size="lg"
+                :label="entity.owner"
+                :image="entity.user_image"
+              />
+              <div class="border-l h-6 mx-1.5"></div>
+              <GeneralAccess
+                v-if="
+                  !generalAccess.loading &&
+                  (!!generalAccess.data?.length || !sharedWithList?.length)
+                "
+                size="lg"
+                class="-mr-[3px] outline outline-white"
+                :general-access="generalAccess?.data?.[0]"
+              />
+              <div
+                v-if="sharedWithList?.length && !sharedWithList.loading"
+                class="flex items-center justify-start"
+              >
                 <Avatar
+                  v-for="user in sharedWithList.slice(0, 3)"
+                  :key="user.user_name"
                   size="lg"
-                  :label="entity.owner"
-                  :image="entity.user_image"
-                />
-                <div class="border-l h-6 mx-1.5"></div>
-                <GeneralAccess
-                  v-if="
-                    !generalAccess.loading &&
-                    (!!generalAccess.data?.length || !sharedWithList?.length)
-                  "
-                  size="lg"
+                  :label="user.full_name ? user.full_name : user.user_name"
+                  :image="user.user_image"
                   class="-mr-[3px] outline outline-white"
-                  :general-access="generalAccess?.data?.[0]"
                 />
-                <div
-                  v-if="sharedWithList?.length && !sharedWithList.loading"
-                  class="flex items-center justify-start"
-                >
-                  <Avatar
-                    v-for="user in sharedWithList.slice(0, 3)"
-                    :key="user.user_name"
-                    size="lg"
-                    :label="user.full_name ? user.full_name : user.user_name"
-                    :image="user.user_image"
-                    class="-mr-[3px] outline outline-white"
-                  />
 
-                  <Avatar
-                    v-if="sharedWithList.slice(3).length"
-                    size="lg"
-                    :label="sharedWithList.slice(3).length.toString()"
-                    class="-mr-[3px] outline outline-white"
-                  />
-                </div>
+                <Avatar
+                  v-if="sharedWithList.slice(3).length"
+                  size="lg"
+                  :label="sharedWithList.slice(3).length.toString()"
+                  class="-mr-[3px] outline outline-white"
+                />
+              </div>
 
-                <!-- <Button class="ml-auto" @click="showShareDialog = true">
+              <!-- <Button class="ml-auto" @click="showShareDialog = true">
                   Share
                 </Button> -->
-              </div>
             </div>
-            <!-- <div v-if="entityTags.data?.length || entity.owner === 'You'">
+          </div>
+          <!-- <div v-if="entityTags.data?.length || entity.owner === 'You'">
               <div class="text-base font-medium mb-4">Tags</div>
               <div class="flex items-center justify-start flex-wrap gap-y-4">
                 <div
@@ -142,110 +140,103 @@
                 />
               </div>
             </div>  -->
-            <div>
-              <div class="text-base font-medium mb-4">Properties</div>
-              <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-                <span class="col-span-1 text-gray-600">Type</span>
-                <span class="col-span-1">{{ formattedMimeType }}</span>
-                <span v-if="entity.file_size" class="col-span-1 text-gray-600">
-                  Size
-                </span>
-                <span v-if="entity.file_size" class="col-span-1">
-                  {{ entity.file_size }}
-                </span>
-                <span class="col-span-1 text-gray-600">Modified</span>
-                <span class="col-span-1">{{ entity.modified }}</span>
-                <span class="col-span-1 text-gray-600">Created</span>
-                <span class="col-span-1">{{ entity.creation }}</span>
-                <span class="col-span-1 text-gray-600">Owner</span>
-                <span class="col-span-1">{{ entity.full_name }}</span>
-              </div>
+          <div>
+            <div class="text-base font-medium mb-4">Properties</div>
+            <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
+              <span class="col-span-1 text-gray-600">Type</span>
+              <span class="col-span-1">{{ formattedMimeType }}</span>
+              <span v-if="entity.file_size" class="col-span-1 text-gray-600">
+                Size
+              </span>
+              <span v-if="entity.file_size" class="col-span-1">
+                {{ entity.file_size }}
+              </span>
+              <span class="col-span-1 text-gray-600">Modified</span>
+              <span class="col-span-1">{{ entity.modified }}</span>
+              <span class="col-span-1 text-gray-600">Created</span>
+              <span class="col-span-1">{{ entity.creation }}</span>
+              <span class="col-span-1 text-gray-600">Owner</span>
+              <span class="col-span-1">{{ entity.full_name }}</span>
             </div>
-          </div>
-        </div>
-        <!-- Comments -->
-        <div
-          v-if="tab === 1"
-          class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
-        >
-          <span
-            class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
-          >
-            <Comment />
-            Comments
-          </span>
-          <div v-if="entity.allow_comments" class="pb-2 px-5">
-            <div
-              v-for="comment in comments.data"
-              :key="comment"
-              class="flex flex-col mb-5"
-            >
-              <div class="flex items-start justify-start">
-                <Avatar
-                  :label="comment.comment_by"
-                  :image="comment.user_image"
-                  class="h-7 w-7"
-                />
-                <div class="ml-3">
-                  <div
-                    class="flex items-center justify-start text-base gap-x-1"
-                  >
-                    <span class="font-medium">{{ comment.comment_by }}</span>
-                    <span>{{ "∙" }}</span>
-                    <span class="text-gray-600">{{ comment.creation }}</span>
-                  </div>
-                  <span
-                    class="my-2 text-base text-gray-700 break-word leading-snug"
-                  >
-                    {{ comment.content }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div
-              v-if="userId != 'Guest'"
-              class="flex items-center justify-start py-2"
-            >
-              <Avatar
-                :label="fullName"
-                :image="imageURL"
-                class="h-7 w-7 mr-3"
-              />
-              <div
-                class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
-              >
-                <textarea
-                  v-model="newComment"
-                  class="w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
-                  placeholder="Add a comment"
-                  @input="resize($event)"
-                  @keypress.enter.stop.prevent="postComment"
-                />
-                <Button
-                  class="hover:bg-transparent"
-                  variant="ghost"
-                  icon="arrow-up-circle"
-                  :disabled="!newComment.length"
-                  @click="postComment"
-                ></Button>
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-gray-600 text-sm px-5">
-            Comments have been disabled for this
-            {{ entity.is_group ? "folder" : "file" }} by its owner.
           </div>
         </div>
       </div>
+      <!-- Comments -->
       <div
-        v-else
-        class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center"
+        v-if="tab === 1"
+        class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
       >
-        <File class="w-auto h-10 text-gray-600 mb-2" />
-        <p class="text-sm text-gray-600 font-medium">No file selected</p>
+        <span
+          class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          <Comment />
+          Comments
+        </span>
+        <div v-if="entity.allow_comments" class="pb-2 px-5">
+          <div
+            v-for="comment in comments.data"
+            :key="comment"
+            class="flex flex-col mb-5"
+          >
+            <div class="flex items-start justify-start">
+              <Avatar
+                :label="comment.comment_by"
+                :image="comment.user_image"
+                class="h-7 w-7"
+              />
+              <div class="ml-3">
+                <div class="flex items-center justify-start text-base gap-x-1">
+                  <span class="font-medium">{{ comment.comment_by }}</span>
+                  <span>{{ "∙" }}</span>
+                  <span class="text-gray-600">{{ comment.creation }}</span>
+                </div>
+                <span
+                  class="my-2 text-base text-gray-700 break-word leading-snug"
+                >
+                  {{ comment.content }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="userId != 'Guest'"
+            class="flex items-center justify-start py-2"
+          >
+            <Avatar :label="fullName" :image="imageURL" class="h-7 w-7 mr-3" />
+            <div
+              class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
+            >
+              <textarea
+                v-model="newComment"
+                class="w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
+                placeholder="Add a comment"
+                @input="resize($event)"
+                @keypress.enter.stop.prevent="postComment"
+              />
+              <Button
+                class="hover:bg-transparent"
+                variant="ghost"
+                icon="arrow-up-circle"
+                :disabled="!newComment.length"
+                @click="postComment"
+              ></Button>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-gray-600 text-sm px-5">
+          Comments have been disabled for this
+          {{ entity.is_group ? "folder" : "file" }} by its owner.
+        </div>
       </div>
     </div>
-  </Transition>
+    <div
+      v-else
+      class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center"
+    >
+      <File class="w-auto h-10 text-gray-600 mb-2" />
+      <p class="text-sm text-gray-600 font-medium">No file selected</p>
+    </div>
+  </div>
 
   <div
     class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
