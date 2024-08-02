@@ -4,9 +4,7 @@
   >
     <img loading="lazy" :class="parsedStyled" :src="link" :draggable="false" />
   </div>
-  <div
-    class="p-2 max-h-1/3 min-h-1/3 content-center grid border-t border-gray-100"
-  >
+  <div class="p-2 h-1/3 content-center grid border-t border-gray-100">
     <span class="truncate text-base font-medium text-gray-800">
       {{ title }}
     </span>
