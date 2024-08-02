@@ -15,12 +15,12 @@
     <slot name="toolbar"></slot>
     <div v-if="folders.length > 0">
       <div class="text-gray-600 font-medium mt-6.5">Folders</div>
-      <div class="flex flex-row flex-wrap gap-5 mt-2">
+      <div class="grid-container mt-2">
         <div
           v-for="folder in folders"
           :id="folder.name"
           :key="folder.name"
-          class="cursor-pointer p-3 w-[172px] h-[108px] rounded-lg border group select-none entity"
+          class="cursor-pointer p-3 w-[162px] sm:w-[172px] h-[98px] sm:h-[108px] rounded-lg border group select-none entity"
           draggable="true"
           :class="
             selectedEntities.includes(folder)
@@ -76,7 +76,7 @@
               <FeatherIcon class="h-4" name="more-horizontal" />
             </Button>
           </div>
-          <div class="content-center grid mt-3.5">
+          <div class="content-center grid mt-2 sm:mt-3.5">
             <span class="truncate text-base font-medium text-gray-800">
               {{ folder.title }}
             </span>
@@ -93,7 +93,7 @@
     </div>
     <div v-if="files.length > 0" :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
       <div class="text-gray-600 font-medium">Files</div>
-      <div class="inline-flex flex-row flex-wrap gap-5 mt-4">
+      <div ref="itemContainer" class="grid-container gap-5 mt-4">
         <div
           v-for="file in files"
           :id="file.name"
@@ -420,3 +420,10 @@ export default {
   },
 }
 </script>
+<style scoped>
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(162px, 1fr));
+  gap: 20px;
+}
+</style>
