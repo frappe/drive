@@ -108,6 +108,7 @@ onMounted(() => {
     retryChunks: true,
     forceChunking: true,
     url: "/api/method/drive.api.files.upload_file",
+    dictUploadCanceled: "Upload canceled by user",
     maxFilesize: 10 * 1024, // 10GB
     timeout: 120000, // 2 minutes
     chunkSize: 20 * 1024 * 1024, // 20MB
@@ -186,21 +187,23 @@ onMounted(() => {
       progress: progress,
     })
   })
-  dropzone.value.on("error", function (file, message) {
-    let error_message
-    if (message._server_messages) {
-      error_message = JSON.parse(message._server_messages)
-        .map((element) => JSON.parse(element).message)
-        .join("\n")
+  dropzone.value.on("error", function (file, response) {
+    let message
+    if (typeof response === Object) {
+      message = JSON.parse(JSON.parse(response._server_messages)[0]).message
     }
-    error_message = message || error_message || "Upload failed"
+    message = message || response || "Upload failed"
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
-      error: error_message,
+      error: message,
     })
   })
   dropzone.value.on("success", function (file, response) {
     uploadResponse.value = response.message
+    store.commit("updateUpload", {
+      uuid: file.upload.uuid,
+      response: response.message,
+    })
   })
   dropzone.value.on("complete", function (file) {
     store.commit("updateUpload", {

@@ -70,8 +70,11 @@ const store = createStore({
     uploadsInProgress: (state) => {
       return state.uploads.filter((upload) => !upload.completed)
     },
+    uploadsFailed: (state) => {
+      return state.uploads.filter((upload) => upload.error)
+    },
     uploadsCompleted: (state) => {
-      return state.uploads.filter((upload) => upload.completed)
+      return state.uploads.filter((upload) => upload.completed && !upload.error)
     },
   },
   mutations: {
