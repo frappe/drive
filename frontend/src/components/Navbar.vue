@@ -219,10 +219,20 @@ export default {
                   content: null,
                   parent: this.$store.state.currentFolderID,
                 })
-                this.$router.push({
-                  name: "Document",
-                  params: { entityName: this.previewEntity.name },
-                })
+                if (this.$store.state.editorNewTab) {
+                  window.open(
+                    this.$router.resolve({
+                      name: "Document",
+                      params: { entityName: this.previewEntity.name },
+                    }).href,
+                    "_blank"
+                  )
+                } else {
+                  this.$router.push({
+                    name: "Document",
+                    params: { entityName: this.previewEntity.name },
+                  })
+                }
               },
 
               isEnabled: () => this.selectedEntities?.length === 0,
