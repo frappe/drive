@@ -8,12 +8,13 @@
   </div>
   <div
     v-else
+    id="main"
     ref="container"
     class="h-full flex flex-col overflow-y-auto pt-3.5 px-4 pb-8"
     @mousedown="(event) => handleMousedown(event)"
   >
     <slot name="toolbar"></slot>
-    <div v-if="folders.length > 0">
+    <div v-if="folders.length > 0 && foldersBefore">
       <div class="text-gray-600 font-medium mt-6.5">Folders</div>
       <div class="grid-container mt-2">
         <div
@@ -21,7 +22,7 @@
           :id="folder.name"
           :key="folder.name"
           class="cursor-pointer p-3 w-[162px] sm:w-[172px] h-[98px] sm:h-[108px] rounded-lg border group select-none entity"
-          draggable="true"
+          draggable="false"
           :class="
             selectedEntities.includes(folder)
               ? 'bg-gray-100 border-gray-300'
@@ -91,15 +92,20 @@
         </div>
       </div>
     </div>
-    <div v-if="files.length > 0" :class="folders.length > 0 ? 'mt-8' : 'mt-3'">
-      <div class="text-gray-600 font-medium">Files</div>
+    <div
+      v-if="files?.length > 0"
+      :class="folders.length > 0 && foldersBefore ? 'mt-8' : 'mt-0'"
+    >
+      <div class="text-gray-600 font-medium">
+        {{ foldersBefore ? "Files" : "All Files" }}
+      </div>
       <div ref="itemContainer" class="grid-container gap-5 mt-4">
         <div
           v-for="file in files"
           :id="file.name"
           :key="file.name"
           class="w-[162px] h-[162px] sm:w-[172px] sm:h-[172px] rounded-lg border group select-none entity cursor-pointer relative group:"
-          draggable="true"
+          draggable="false"
           :class="
             selectedEntities.includes(file)
               ? 'bg-gray-100 border-gray-300'
@@ -139,6 +145,8 @@
             :modified="file.modified"
             :relative-modified="file.relativeModified"
             :file_size="file.file_size"
+            :is_group="file.is_group"
+            :color="file.color"
           />
         </div>
       </div>
@@ -179,6 +187,14 @@ export default {
       type: Array,
       default: null,
     },
+    folders: {
+      type: Array,
+      default: null,
+    },
+    files: {
+      type: Array,
+      default: null,
+    },
     selectedEntities: {
       type: Array,
       default: null,
@@ -205,8 +221,8 @@ export default {
       },
       {
         direction: "bottom",
-        distance: 150,
-        interval: 2000,
+        distance: 0,
+        interval: 100,
         canLoadMore: () => props.overrideCanLoadMore,
       }
     )
@@ -220,20 +236,18 @@ export default {
   }),
   computed: {
     action() {
-      return window.innerWidth < 640 ? "click" : "dblclick"
+      if (window.innerWidth < 640) return "click"
+      if (this.$store.state.singleClick) {
+        return "click"
+      } else {
+        return "dblclick"
+      }
     },
     isEmpty() {
       return this.folderContents && this.folderContents.length === 0
     },
-    folders() {
-      return this.folderContents
-        ? this.folderContents.filter((x) => x.is_group === 1)
-        : []
-    },
-    files() {
-      return this.folderContents
-        ? this.folderContents.filter((x) => x.is_group === 0)
-        : []
+    foldersBefore() {
+      return this.$store.state.foldersBefore
     },
     displayOrderedEntities() {
       return this.folders.concat(this.files)
