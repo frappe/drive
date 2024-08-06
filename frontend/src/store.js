@@ -62,6 +62,15 @@ const store = createStore({
       localStorage.getItem("IsSidebarExpanded") || true
     ),
     passiveRename: false,
+    foldersBefore: localStorage.getItem("foldersBefore")
+      ? JSON.parse(localStorage.getItem("foldersBefore"))
+      : true,
+    singleClick: localStorage.getItem("singleClick")
+      ? JSON.parse(localStorage.getItem("singleClick"))
+      : false,
+    editorNewTab: localStorage.getItem("editorNewTab")
+      ? JSON.parse(localStorage.getItem("editorNewTab"))
+      : false,
   },
   getters: {
     isLoggedIn: (state) => {
@@ -78,6 +87,18 @@ const store = createStore({
     },
   },
   mutations: {
+    toggleFoldersBefore(state) {
+      state.foldersBefore = !state.foldersBefore
+      localStorage.setItem("foldersBefore", JSON.stringify(state.foldersBefore))
+    },
+    toggleSingleClick(state) {
+      state.singleClick = !state.singleClick
+      localStorage.setItem("singleClick", JSON.stringify(state.singleClick))
+    },
+    toggleEditorNewTab(state) {
+      state.editorNewTab = !state.editorNewTab
+      localStorage.setItem("editorNewTab", JSON.stringify(state.editorNewTab))
+    },
     setAuth(state, auth) {
       Object.assign(state.auth, auth)
     },
