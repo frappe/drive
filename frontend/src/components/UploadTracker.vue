@@ -83,8 +83,13 @@
       </Button>
     </div>
     <div v-if="!collapsed" class="max-h-64 overflow-y-auto bg-white w-full">
+      <span
+        v-if="!currentTabGetter().length"
+        class="px-1.5 text-base font-medium text-gray-800"
+        >{{ emptyMessage }}</span
+      >
       <div
-        v-for="(upload, index) in currentTabGetter"
+        v-for="(upload, index) in currentTabGetter()"
         :key="upload.uuid"
         class="cursor-pointer truncate hover:bg-gray-50 rounded px-1 group"
         @mouseover="hoverIndex = index"
@@ -201,6 +206,7 @@ export default {
       showErrorDialog: false,
       selectedUpload: null,
       currentTab: 1,
+      emptyMessage: "No uploads in progress",
     }
   },
   computed: {
@@ -208,20 +214,24 @@ export default {
       return this.$store.state.uploads
     },
     ...mapGetters(["uploadsInProgress", "uploadsCompleted", "uploadsFailed"]),
+  },
+  methods: {
     currentTabGetter() {
       switch (this.currentTab) {
         case 1:
+          this.emptyMessage = "No uploads in progress"
           return this.uploadsInProgress
         case 2:
+          this.emptyMessage = "No uploads completed"
           return this.uploadsCompleted
         case 3:
+          this.emptyMessage = "No failed uploads"
           return this.uploadsFailed
         default:
-          return this.uploadsCompleted // or handle the default case as needed
+          this.emptyMessage = "No uploads completed"
+          return this.uploadsCompleted
       }
     },
-  },
-  methods: {
     openFile(upload) {
       this.selectedUpload = upload
       if (upload.error) {
