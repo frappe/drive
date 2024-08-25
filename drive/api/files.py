@@ -304,6 +304,7 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
         raise frappe.PermissionError("You do not have permission to view this file")
     if settings:
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
+    file_size = len(content.encode('utf-8')) + len(raw_content.encode('utf-8'))
     frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
     frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
@@ -347,7 +348,16 @@ def get_file_content(entity_name, trigger_download=0):  #
     drive_entity = frappe.get_value(
         "Drive Entity",
         entity_name,
-        ["is_group", "path", "title", "mime_type", "file_size", "allow_download", "is_active", "owner"],
+        [
+            "is_group",
+            "path",
+            "title",
+            "mime_type",
+            "file_size",
+            "allow_download",
+            "is_active",
+            "owner",
+        ],
         as_dict=1,
     )
 
