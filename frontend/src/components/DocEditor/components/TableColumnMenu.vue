@@ -7,10 +7,13 @@ import { EditorState } from "@tiptap/pm/state"
 import { EditorView } from "@tiptap/pm/view"
 import type { NodeSelection } from "@tiptap/pm/state"
 import { CellSelection } from "@tiptap/pm/tables"
-import { analyzeCellSelection, isColumnGripSelected } from "../utils"
+import {
+  analyzeCellSelection,
+  isColumnGripSelected,
+} from "../extensions/table/utils"
 import { Button } from "frappe-ui"
 import { TableCellsMerge, TableCellsSplit } from "lucide-vue-next"
-import ToggleHeaderCell from "../../icons/ToggleHeaderCell.vue"
+import ToggleHeaderCell from "../icons/ToggleHeaderCell.vue"
 
 interface Props {
   editor: Editor

@@ -75,12 +75,12 @@ import { WebrtcProvider } from "y-webrtc"
 import * as Y from "yjs"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
 import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
-import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue"
-import configureMention from "./Mention/mention"
-import Menu from "./Menu.vue"
-import { Table } from "./Table"
-import TableBubbleMenu from "./Table/menus/TableBubbleMenu.vue"
-import { Comment } from "./comment"
+import DocMenuAndInfoBar from "./components/DocMenuAndInfoBar.vue"
+import configureMention from "./extensions/mention/mention"
+import Menu from "./components/Menu.vue"
+import { Table } from "./extensions/table"
+import TableBubbleMenu from "./components/TableBubbleMenu.vue"
+import { Comment } from "./extensions/comment"
 import { PageBreak } from "./extensions/Pagebreak"
 import { Highlight } from "./extensions/backgroundColor"
 import { CharacterCount } from "./extensions/character-count"
@@ -95,10 +95,10 @@ import { Placeholder } from "./extensions/placeholder"
 import { TextAlign } from "./extensions/text-align"
 import { TextStyle } from "./extensions/text-style"
 import { Underline } from "./extensions/underline"
-import { ResizableMedia } from "./resizeableMedia"
+import { ResizableMedia } from "./extensions/resizenode"
 import { createEditorButton } from "./utils"
-import suggestion from "./Suggestion/suggestion"
-import Commands from "./Suggestion/suggestionExtension"
+import suggestion from "./extensions/suggestion/suggestion"
+import Commands from "./extensions/suggestion/suggestionExtension"
 
 export default {
   name: "TextEditor",
@@ -343,7 +343,7 @@ export default {
     document.addEventListener("keydown", this.saveDoc)
     this.editor = new Editor({
       editable: this.editable,
-      autofocus: true,
+      autofocus: "start",
       editorProps: {
         attributes: {
           class: normalizeClass([

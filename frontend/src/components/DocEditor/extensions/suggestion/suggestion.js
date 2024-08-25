@@ -12,17 +12,17 @@ import {
   ArrowUpWideNarrow,
 } from "lucide-vue-next"
 import tippy from "tippy.js"
-import List from "../icons/List.vue"
-import OrderList from "../icons/OrderList.vue"
-import Check from "../icons/Check.vue"
-import Codeblock from "../icons/Codeblock.vue"
-import BlockQuote from "../icons/BlockQuote.vue"
-import Image from "../icons/Image.vue"
-import Video from "../icons/Video.vue"
-import PageBreak from "../icons/PageBreak.vue"
-import CommandsList from "./suggestionList.vue"
-import Mention from "../icons/Mention.vue"
-import emitter from "../../../event-bus"
+import List from "../../icons/List.vue"
+import OrderList from "../../icons/OrderList.vue"
+import Check from "../../icons/Check.vue"
+import Codeblock from "../../icons/Codeblock.vue"
+import BlockQuote from "../../icons/BlockQuote.vue"
+import Image from "../../icons/Image.vue"
+import Video from "../../icons/Video.vue"
+import PageBreak from "../../icons/PageBreak.vue"
+import CommandsList from "../../components/suggestionList.vue"
+import Mention from "../../icons/Mention.vue"
+import emitter from "../../../../event-bus"
 
 export default {
   items: ({ query }) => {

@@ -44,7 +44,9 @@ export default {
     label: "New Link",
     icon: NewLink,
     isActive: (editor) => editor.isActive("link"),
-    component: defineAsyncComponent(() => import("./InsertLink.vue")),
+    component: defineAsyncComponent(() =>
+      import("./components/InsertLink.vue")
+    ),
   },
   Separator: {
     type: "separator",
@@ -53,7 +55,9 @@ export default {
     label: "New Comment",
     icon: NewAnnotation,
     isActive: (editor) => editor.isActive("comment"),
-    component: defineAsyncComponent(() => import("./NewComment.vue")),
+    component: defineAsyncComponent(() =>
+      import("./components/NewComment.vue")
+    ),
   },
   MergeCells: {
     label: "Merge Cells",

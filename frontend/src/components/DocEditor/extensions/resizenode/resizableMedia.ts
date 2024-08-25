@@ -1,7 +1,7 @@
 import { mergeAttributes, Node, nodeInputRule } from "@tiptap/core"
 import { VueNodeViewRenderer } from "@tiptap/vue-3"
 
-import ResizableMediaNodeView from "./ResizableMediaNodeView.vue"
+import ResizableMediaNodeView from "../../components/ResizableMediaNodeView.vue"
 import { getMediaPasteDropPlugin, UploadFnType } from "./dropMedia.ts"
 
 declare module "@tiptap/core" {

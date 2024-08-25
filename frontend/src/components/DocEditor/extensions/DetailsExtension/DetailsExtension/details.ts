@@ -1,5 +1,5 @@
-import { deleteNode } from "../utils/deleteNodes"
-import { getSelectedContent } from "../utils/getSelectedContent"
+import { deleteNode } from "../../../utils/deleteNodes"
+import { getSelectedContent } from "../../../utils/getSelectedContent"
 
 import { mergeAttributes, Node, RawCommands } from "@tiptap/core"
 
