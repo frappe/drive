@@ -1,6 +1,6 @@
 <template>
   <div
-    class="transition-all duration-200 ease-in-out h-full border-l"
+    class="transition-all duration-200 ease-in-out h-full border-l overflow-y-auto"
     :class="
       showInfoSidebar
         ? 'sm:min-w-[352px] sm:max-w-[352px] min-w-full opacity-100'
@@ -171,6 +171,37 @@
         />
         <div v-else class="text-gray-600 text-sm my-5">
           There are no comments for the current document
+        </div>
+      </div>
+
+      <!-- Versions -->
+      <div v-if="tab === 6" class="px-2 py-4 border-b">
+        <span
+          class="px-3 inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
+        >
+          Versions
+          <Button class="ml-auto" @click="createSnapshot">New</Button>
+        </span>
+
+        <div v-if="versions.length">
+          <div
+            v-for="(version, i) in versions"
+            :key="version.date"
+            class="flex flex-col gap-y-1.5 p-2 m-2 hover:bg-gray-100 cursor-pointer rounded"
+            @click.stop="previewSnapshot(i)"
+          >
+            <span class="font-medium text-base text-gray-800">
+              {{
+                useDateFormat(new Date(version.date), "YYYY/MM/DD hh:mm:ss A")
+              }}
+            </span>
+            <span class="text-sm text-gray-700">
+              {{ version.message }}
+            </span>
+          </div>
+        </div>
+        <div v-else class="text-gray-600 text-sm my-5 px-3">
+          No previous versions available for the current document
         </div>
       </div>
 
@@ -809,6 +840,16 @@
     -->
     <InsertImage v-model="addImageDialog" :editor="editor" />
     <InsertVideo v-model="addVideoDialog" :editor="editor" />
+    <SnapshotPreviewDialog
+      v-if="snapShotDialog"
+      v-model="snapShotDialog"
+      :snapshot-data="selectedSnapshot"
+      @success="
+        () => {
+          selectedSnapshot = null
+        }
+      "
+    />
   </div>
 </template>
 
@@ -822,6 +863,7 @@ import {
   Dropdown,
   Switch,
 } from "frappe-ui"
+
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
 import { formatMimeType } from "@/utils/format"
@@ -843,6 +885,7 @@ import {
   Info,
   MessageCircle,
   FileText,
+  FileClock,
 } from "lucide-vue-next"
 import { Code } from "lucide-vue-next"
 import { Code2 } from "lucide-vue-next"
@@ -870,6 +913,9 @@ import BlockQuote from "../icons/BlockQuote.vue"
 import Style from "../icons/Style.vue"
 import Image from "../icons/Image.vue"
 import Video from "../icons/Video.vue"
+import SnapshotPreviewDialog from "./SnapshotPreviewDialog.vue"
+import { useDateFormat } from "@vueuse/core"
+import * as Y from "yjs"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -884,6 +930,7 @@ export default {
     Popover,
     InsertImage: defineAsyncComponent(() => import("./InsertImage.vue")),
     InsertVideo: defineAsyncComponent(() => import("./InsertVideo.vue")),
+    SnapshotPreviewDialog,
     LineHeight,
     Plus,
     Minus,
@@ -923,7 +970,7 @@ export default {
     Details,
     GeneralAccess,
   },
-  inject: ["editor"],
+  inject: ["editor", "versions", "document"],
   inheritAttrs: false,
   props: {
     settings: {
@@ -969,12 +1016,19 @@ export default {
           icon: markRaw(MessageCircle),
           write: false,
         },
+        {
+          name: "Versions",
+          icon: markRaw(FileClock),
+          write: false,
+        },
       ],
       newComment: "",
       showShareDialog: false,
       addImageDialog: false,
       addVideoDialog: false,
       addTag: false,
+      snapShotDialog: false,
+      selectedSnapshot: null,
     }
   },
   computed: {
@@ -1065,6 +1119,7 @@ export default {
     })
   },
   methods: {
+    useDateFormat,
     switchTab(val) {
       if (this.$store.state.showInfo == false) {
         this.$store.commit("setShowInfo", !this.$store.state.showInfo)
@@ -1142,6 +1197,35 @@ export default {
       } else {
         button.action(this.editor)
       }
+    },
+    createSnapshot() {
+      // create a version locally
+      const newVersion = Y.snapshot(this.document)
+      this.versions.push({
+        synced: false,
+        latest: true,
+        date: new Date().getTime(),
+        snapshot: Y.encodeSnapshot(newVersion),
+        clientID: this.document.clientID,
+        author: this.currentUserName,
+        message: "Manually created by " + this.currentUserName,
+      })
+    },
+    previewSnapshot(index) {
+      this.document.gc = false
+      const selectedSnapshot = Object.assign({}, this.versions[index])
+      selectedSnapshot.date = useDateFormat(
+        new Date(selectedSnapshot.date),
+        "YYYY/MM/DD hh:mm A"
+      )
+      const snapshotDoc = Y.createDocFromSnapshot(
+        this.document,
+        Y.decodeSnapshot(selectedSnapshot.snapshot)
+      )
+      selectedSnapshot.snapshot = Y.encodeStateAsUpdate(snapshotDoc)
+      this.selectedSnapshot = selectedSnapshot
+      this.document.gc = true
+      this.snapShotDialog = true
     },
   },
   resources: {
