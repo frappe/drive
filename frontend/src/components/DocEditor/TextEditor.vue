@@ -36,6 +36,7 @@
     v-if="editor && initComplete"
     ref="MenuBar"
     :editor="editor"
+    :versions="versions"
     :settings="settings"
   />
   <FilePicker
@@ -54,6 +55,16 @@
       }
     "
   />
+  <SnapshotPreviewDialog
+    v-if="snapShotDialog"
+    v-model="snapShotDialog"
+    :snapshot-data="selectedSnapshot"
+    @success="
+      () => {
+        selectedSnapshot = null
+      }
+    "
+  />
 </template>
 
 <script>
@@ -67,7 +78,6 @@ import StarterKit from "@tiptap/starter-kit"
 import { BubbleMenu, Editor, EditorContent } from "@tiptap/vue-3"
 import { onOutsideClickDirective } from "frappe-ui"
 import { DOMParser } from "prosemirror-model"
-import "tippy.js/animations/shift-away.css"
 import { v4 as uuidv4 } from "uuid"
 import { computed, normalizeClass } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
@@ -99,6 +109,8 @@ import { ResizableMedia } from "./extensions/resizenode"
 import { createEditorButton } from "./utils"
 import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
+import { TiptapTransformer } from "@hocuspocus/transformer"
+import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 
 export default {
   name: "TextEditor",
@@ -109,6 +121,7 @@ export default {
     DocMenuAndInfoBar,
     FilePicker,
     TableBubbleMenu,
+    SnapshotPreviewDialog,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -116,10 +129,12 @@ export default {
   provide() {
     return {
       editor: computed(() => this.editor),
+      document: computed(() => this.document),
+      versions: computed(() => this.versions),
     }
   },
   inheritAttrs: false,
-  expose: ["editor"],
+  //expose: ["editor", "versions"],
   props: {
     settings: {
       type: Object,
@@ -205,6 +220,9 @@ export default {
       implicitTitle: "",
       allComments: [],
       isNewDocument: this.entity.title.includes("Untitled Document"),
+      versions: [],
+      selectedSnapshot: null,
+      snapShotDialog: false,
     }
   },
   computed: {
@@ -558,6 +576,77 @@ export default {
     this.editor = null
   },
   methods: {
+    createSnapshot() {
+      // create a version locally
+      const newVersion = Y.snapshot(this.document)
+      this.versions.push({
+        synced: false,
+        latest: true,
+        date: new Date().getTime(),
+        snapshot: Y.encodeSnapshot(newVersion),
+        clientID: this.document.clientID,
+        author: this.currentUserName,
+        message: "Manually created by " + this.currentUserName,
+      })
+    },
+    previewSnapshot(index) {
+      this.document.gc = false
+      const selectedSnapshot = this.versions[index]
+      const snapshotDoc = Y.createDocFromSnapshot(
+        this.document,
+        Y.decodeSnapshot(selectedSnapshot.snapshot)
+      )
+      selectedSnapshot.snapshot = Y.encodeStateAsUpdate(snapshotDoc)
+      this.selectedSnapshot = selectedSnapshot
+      this.document.gc = true
+      this.snapShotDialog = true
+    },
+    /*     previewSnapshot(index) {
+      this.document.gc = false
+      let snapshotUpdate = Y.decodeSnapshot(this.versions[index].snapshot)
+      this.snapshotDoc = Y.encodeStateAsUpdate(
+        Y.createDocFromSnapshot(this.document, snapshotUpdate)
+      )
+      this.document.gc = true
+      this.showPreviewSnapshotDialog = true
+      return
+    }, */
+    applySnapshot(index) {
+      this.document.gc = false
+
+      // Alternate Revert with undo anti ops
+      /* 
+        const snapshotDoc = new Y.Doc()
+        Y.applyUpdate(snapshotDoc, encoded) // origin doc is needed
+        
+        const currentStateVector = Y.encodeStateVector(this.document)
+        const snapshotStateVector = Y.encodeStateVector(snapshotDoc)
+        
+        const changesSinceSnapshotUpdate = Y.encodeStateAsUpdate(
+          this.document,
+          snapshotStateVector
+        )
+        const um = new Y.UndoManager(snapshotDoc.getMap('default')) // prosemirror default fragment
+        Y.applyUpdate(snapshotDoc, changesSinceSnapshotUpdate)
+        um.undo()
+
+        const revertChangesSinceSnapshotUpdate = Y.encodeStateAsUpdate(
+          snapshotDoc,
+          currentStateVector
+        )
+        Y.applyUpdate(this.document, revertChangesSinceSnapshotUpdate)
+      */
+
+      // Deprecated
+      //const content = yDocToProsemirrorJSON(snapshotDoc, "default")
+
+      let snapshotUpdate = Y.decodeSnapshot(this.versions[index].snapshot)
+      const snapshotDoc = Y.createDocFromSnapshot(this.document, snapshotUpdate)
+      const content = TiptapTransformer.fromYdoc(snapshotDoc).default
+      this.editor.commands.setContent(content, true)
+      this.document.gc = true
+      return
+    },
     handleEnterKey() {
       if (this.$store.state.passiveRename) {
         if (!this.implicitTitle.length) return
