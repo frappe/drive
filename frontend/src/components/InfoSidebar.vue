@@ -30,7 +30,6 @@
           />
         </div>
       </div>
-
       <!-- Information -->
       <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
         <span
