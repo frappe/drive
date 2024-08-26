@@ -29,57 +29,57 @@
             @click="$store.commit('setShowInfo', false)"
           />
         </div>
-
-        <!-- Information -->
-        <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
-          <span
-            class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
-          >
-            <Info />
-            Information
-          </span>
-          <div
-            v-if="
-              (entity.mime_type?.startsWith('video') ||
-                (entity.mime_type?.startsWith('image') &&
-                  entity?.mime_type !== 'image/svg+xml')) &&
-              showInfoSidebar
-            "
-            class="h-[210px] w-full mb-4"
-          >
-            <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
-          </div>
-          <div class="space-y-6.5">
-            <div v-if="entity.owner === 'You'">
-              <div class="text-base font-medium mb-4">Access</div>
-              <div class="flex items-center justify-start">
+      </div>
+      <!-- Information -->
+      <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
+        <span
+          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          <Info />
+          Information
+        </span>
+        <div
+          v-if="
+            (entity.mime_type?.startsWith('video') ||
+              (entity.mime_type?.startsWith('image') &&
+                entity?.mime_type !== 'image/svg+xml')) &&
+            showInfoSidebar
+          "
+          class="h-[210px] w-full mb-4"
+        >
+          <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
+        </div>
+        <div class="space-y-6.5">
+          <div v-if="entity.owner === 'You'">
+            <div class="text-base font-medium mb-4">Access</div>
+            <div class="flex items-center justify-start">
+              <Avatar
+                size="lg"
+                :label="entity.owner"
+                :image="entity.user_image"
+              />
+              <div class="border-l h-6 mx-1.5"></div>
+              <GeneralAccess
+                v-if="
+                  !generalAccess.loading &&
+                  (!!generalAccess.data?.length || !sharedWithList?.length)
+                "
+                size="lg"
+                class="-mr-[3px] outline outline-white"
+                :general-access="generalAccess?.data?.[0]"
+              />
+              <div
+                v-if="sharedWithList?.length && !sharedWithList.loading"
+                class="flex items-center justify-start"
+              >
                 <Avatar
+                  v-for="user in sharedWithList.slice(0, 3)"
+                  :key="user.user_name"
                   size="lg"
-                  :label="entity.owner"
-                  :image="entity.user_image"
-                />
-                <div class="border-l h-6 mx-1.5"></div>
-                <GeneralAccess
-                  v-if="
-                    !generalAccess.loading &&
-                    (!!generalAccess.data?.length || !sharedWithList?.length)
-                  "
-                  size="lg"
+                  :label="user.full_name ? user.full_name : user.user_name"
+                  :image="user.user_image"
                   class="-mr-[3px] outline outline-white"
-                  :general-access="generalAccess?.data?.[0]"
                 />
-                <div
-                  v-if="sharedWithList?.length && !sharedWithList.loading"
-                  class="flex items-center justify-start"
-                >
-                  <Avatar
-                    v-for="user in sharedWithList.slice(0, 3)"
-                    :key="user.user_name"
-                    size="lg"
-                    :label="user.full_name ? user.full_name : user.user_name"
-                    :image="user.user_image"
-                    class="-mr-[3px] outline outline-white"
-                  />
 
                 <Avatar
                   v-if="sharedWithList.slice(3).length"
