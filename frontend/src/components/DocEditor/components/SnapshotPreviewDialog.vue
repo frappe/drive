@@ -17,9 +17,10 @@
             @click="$emit('update:modelValue', false)"
           ></Button>
         </div>
-        <div class="max-h-[74vh] overflow-y-auto mb-4">
+        <div class="mb-4">
           <PreviewEditor
             v-if="snapshotData"
+            class="border h-[74vh] rounded-md overflow-y-auto"
             :yjs-update="snapshotData.snapshot"
           />
         </div>
