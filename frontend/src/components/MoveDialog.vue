@@ -1,125 +1,139 @@
 <template>
-  <Dialog v-model="open" :options="{ title: DialogTitle, size: 'lg' }">
-    <template #body-content>
-      <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="pl-0 mb-2">
-        <div
-          v-if="folderContents?.length"
-          class="flex flex-col justify-items-start h-[40vh] justify-start overflow-y-auto"
-        >
-          <div v-for="item in folderContents" :id="item.name" :key="item.name">
+  <Dialog v-model="open" :options="{ title: DialogTitle, size: 'xl' }">
+    <template #body>
+      <div class="p-6">
+        <div class="mb-4">
+          <span class="text-2xl font-semibold leading-6 text-gray-900">{{
+            DialogTitle
+          }}</span>
+        </div>
+        <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="!pl-0">
+          <div
+            v-if="folderContents?.length"
+            class="flex flex-col justify-items-start h-[50vh] overflow-y-auto justify-start my-2"
+          >
             <div
-              class="px-4 grid items-center cursor-pointer rounded h-8 group hover:bg-gray-100"
-              :draggable="false"
-              @click="openEntity(item)"
-              @dragenter.prevent
-              @dragover.prevent
-              @mousedown.stop
+              v-for="item in folderContents"
+              :id="item.name"
+              :key="item.name"
             >
               <div
-                class="flex items-center text-gray-800 text-base font-medium truncate"
+                class="px-3 grid items-center cursor-pointer rounded h-9 group hover:bg-gray-100"
                 :draggable="false"
+                @click="openEntity(item)"
+                @dragenter.prevent
+                @dragover.prevent
+                @mousedown.stop
               >
-                <svg
-                  v-if="item.is_group"
-                  :style="{ fill: item.color }"
+                <div
+                  class="flex items-center text-gray-800 text-base font-medium truncate"
                   :draggable="false"
-                  class="h-4.5 mr-2"
-                  viewBox="0 0 30 30"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
+                  <svg
+                    v-if="item.is_group"
+                    :style="{ fill: item.color }"
+                    :draggable="false"
+                    class="h-4.5 mr-2"
+                    viewBox="0 0 30 30"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
+                    />
+                  </svg>
+                  <img
+                    v-else
+                    :src="getIconUrl(formatMimeType(item.mime_type))"
+                    :draggable="false"
+                    class="h-[20px] mr-3"
                   />
-                </svg>
-                <img
-                  v-else
-                  :src="getIconUrl(formatMimeType(item.mime_type))"
-                  :draggable="false"
-                  class="h-[20px] mr-3"
-                />
-                {{ item.title }}
+                  {{ item.title }}
+                </div>
               </div>
+              <div class="border-t w-full mx-auto max-w-[95%]"></div>
             </div>
-            <div class="border-t w-full mx-auto max-w-[95%]"></div>
           </div>
-        </div>
-        <div class="flex flex-col items-center justify-center h-[40vh]" v-else>
-          <Folder class="text-gray-600 h-10 w-auto" />
-          <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
-        </div>
-        <div
-          class="flex items-center px-2"
-          :class="breadcrumbs.length > 1 ? 'visible' : 'invisible'"
-        >
-          <Dropdown
-            v-if="dropDownItems.length"
-            class="h-7"
-            :options="dropDownItems"
+          <div
+            v-else
+            class="flex flex-col items-center justify-center h-[52vh]"
           >
-            <Button variant="ghost">
-              <template #icon>
-                <svg
-                  class="w-4 text-gray-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="1" />
-                  <circle cx="19" cy="12" r="1" />
-                  <circle cx="5" cy="12" r="1" />
-                </svg>
-              </template>
-            </Button>
-          </Dropdown>
-          <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
-            {{ "/" }}
-          </span>
-          <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
-            <span
-              v-if="breadcrumbs.length > 1 && index > 0"
-              class="text-gray-600 mx-0.5"
+            <Folder class="text-gray-600 h-10 w-auto" />
+            <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
+          </div>
+          <div
+            v-if="breadcrumbs.length > 1"
+            class="flex items-center my-2"
+            :class="breadcrumbs.length > 1 ? 'visible' : 'invisible'"
+          >
+            <Dropdown
+              v-if="dropDownItems.length"
+              class="h-7"
+              :options="dropDownItems"
             >
+              <Button variant="ghost">
+                <template #icon>
+                  <svg
+                    class="w-4 text-gray-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="19" cy="12" r="1" />
+                    <circle cx="5" cy="12" r="1" />
+                  </svg>
+                </template>
+              </Button>
+            </Dropdown>
+            <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
               {{ "/" }}
             </span>
-            <button
-              class="text-base cursor-pointer"
-              :class="
-                breadcrumbs.length - 1 === index
-                  ? 'text-gray-900 text-base font-medium p-1'
-                  : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
-              "
-              @click="closeEntity(crumb.name)"
-            >
-              {{ crumb.title }}
-            </button>
+            <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
+              <span
+                v-if="breadcrumbs.length > 1 && index > 0"
+                class="text-gray-600 mx-0.5"
+              >
+                {{ "/" }}
+              </span>
+              <button
+                class="text-base cursor-pointer"
+                :class="
+                  breadcrumbs.length - 1 === index
+                    ? 'text-gray-900 text-base font-medium p-1'
+                    : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
+                "
+                @click="closeEntity(crumb.name)"
+              >
+                {{ crumb.title }}
+              </button>
+            </div>
           </div>
-        </div>
-      </Tabs>
-    </template>
-    <template #actions>
-      <Button
-        variant="solid"
-        class="w-full"
-        :loading="move.loading"
-        :disabled="!evalPermission"
-        @click="
-          move.submit({
-            entity_names: store.state.entityInfo.map((obj) => obj.name),
-            new_parent: currentFolder,
-          })
-        "
-      >
-        <template #prefix>
-          <Move></Move>
-        </template>
-        Move
-      </Button>
+        </Tabs>
+
+        <Button
+          variant="solid"
+          class="w-full"
+          :loading="move.loading"
+          :disabled="!evalPermission"
+          @click="
+            move.submit({
+              entity_names: store.state.entityInfo.map((obj) => obj.name),
+              new_parent: currentFolder,
+            })
+          "
+        >
+          <template #prefix>
+            <Move />
+          </template>
+          Move
+        </Button>
+      </div>
     </template>
   </Dialog>
 </template>

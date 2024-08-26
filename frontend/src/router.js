@@ -103,11 +103,19 @@ const routes = [
     name: "Test",
     component: () => import("@/pages/Test.vue"),
   },
-  {
+  /*   {
     path: "/login",
     name: "Login",
     redirect: () => {
       window.location.href = "/login"
+    },
+  },  */
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/Login.vue"),
+    meta: {
+      isPublicRoute: true,
     },
   },
   {
@@ -122,6 +130,25 @@ const routes = [
 let router = createRouter({
   history: createWebHistory("/drive"),
   routes,
+  /*   scrollBehavior(to, from) {
+    return new Promise((resolve) => {
+      // Set a delay of 1000ms before scrolling
+      setTimeout(() => {
+        const element = document.getElementById('main');
+        console.log(element)
+        const { top } = element.getBoundingClientRect();
+        const scrollY = window.scrollY + top + 100; 
+        console.log('Scroll position:', scrollY);
+        element.scrollTo({
+          top: element.scrollTop + 8000, // Scroll down by the specified amount
+          behavior: 'instant',
+ // Enable smooth scrolling
+        });
+        // Always scroll to the element with ID 'main', 10 pixels above
+        resolve();
+      }, 1000); // 1000ms delay
+    });
+  }, */
 })
 
 const HybridRouteArray = ["File", "Folder", "Document"]

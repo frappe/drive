@@ -80,15 +80,15 @@
       />
     </template>
   </Dialog>
-  <!-- 
-    Prefs 
-      Folders before files
-      Custom time locale
-      Relative time toggle
-  -->
+  <!--   <h1 class="font-semibold mt-12 mb-4">Preferences</h1>
+  <Switch v-model="foldersBefore" label="Group folders before files"></Switch>
+  <Switch
+    v-model="singleClick"
+    label="Single click to open files and folders"
+  ></Switch> -->
 </template>
 <script>
-import { Button, Input, Avatar, Dialog, FileUploader } from "frappe-ui"
+import { Button, Input, Avatar, Dialog, FileUploader, Switch } from "frappe-ui"
 import Link from "../EspressoIcons/Link.vue"
 import { X } from "lucide-vue-next"
 import ErrorMessage from "frappe-ui/src/components/ErrorMessage.vue"
@@ -104,6 +104,7 @@ export default {
     X,
     FileUploader,
     ErrorMessage,
+    Switch,
   },
   data() {
     return {
@@ -164,6 +165,31 @@ export default {
     },
     imageURL() {
       return this.$store.state.user.imageURL
+    },
+    foldersBefore: {
+      get() {
+        return this.$store.state.foldersBefore
+      },
+      set() {
+        //toggled in mutation
+        this.$store.commit("toggleFoldersBefore")
+      },
+    },
+    singleClick: {
+      get() {
+        return this.$store.state.singleClick
+      },
+      set() {
+        this.$store.commit("toggleSingleClick")
+      },
+    },
+    editorNewTab: {
+      get() {
+        return this.$store.state.editorNewTab
+      },
+      set() {
+        this.$store.commit("toggleEditorNewTab")
+      },
     },
   },
   methods: {
