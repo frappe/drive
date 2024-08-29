@@ -180,23 +180,23 @@
           class="px-3 inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
         >
           Versions
-          <Button class="ml-auto" @click="createSnapshot">New</Button>
+          <Button class="ml-auto" @click="generateSnapshot">New</Button>
         </span>
-
-        <div v-if="versions.length">
+        <div v-if="$resources.getversionList.data.length">
           <div
-            v-for="(version, i) in versions"
-            :key="version.date"
+            v-for="(version, i) in $resources.getversionList.data"
+            :key="version.name"
             class="flex flex-col gap-y-1.5 p-2 m-2 hover:bg-gray-100 cursor-pointer rounded"
             @click.stop="previewSnapshot(i)"
           >
-            <span class="font-medium text-base text-gray-800">
-              {{
-                useDateFormat(new Date(version.date), "YYYY/MM/DD hh:mm:ss A")
-              }}
+            <span
+              :title="version.creation"
+              class="font-medium text-base text-gray-800"
+            >
+              {{ version.relativeTime }}
             </span>
             <span class="text-sm text-gray-700">
-              {{ version.message }}
+              {{ version.snapshot_message }}
             </span>
           </div>
         </div>
@@ -840,13 +840,22 @@
     -->
     <InsertImage v-model="addImageDialog" :editor="editor" />
     <InsertVideo v-model="addVideoDialog" :editor="editor" />
+    <NewManualSnapshotDialog
+      v-if="newSnapshotDialog"
+      v-model="newSnapshotDialog"
+      @success="
+        (data) => {
+          storeSnapshot(data)
+        }
+      "
+    />
     <SnapshotPreviewDialog
       v-if="snapShotDialog"
       v-model="snapShotDialog"
       :snapshot-data="selectedSnapshot"
       @success="
-        () => {
-          selectedSnapshot = null
+        (data) => {
+          applySnapshot(selectedSnapshot)
         }
       "
     />
@@ -863,7 +872,6 @@ import {
   Dropdown,
   Switch,
 } from "frappe-ui"
-
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
 import { formatMimeType } from "@/utils/format"
@@ -913,9 +921,11 @@ import BlockQuote from "../icons/BlockQuote.vue"
 import Style from "../icons/Style.vue"
 import Image from "../icons/Image.vue"
 import Video from "../icons/Video.vue"
-import SnapshotPreviewDialog from "./SnapshotPreviewDialog.vue"
-import { useDateFormat } from "@vueuse/core"
+import { useTimeAgo } from "@vueuse/core"
 import * as Y from "yjs"
+import { TiptapTransformer } from "@hocuspocus/transformer"
+import { fromUint8Array, toUint8Array } from "js-base64"
+import { formatDate } from "../../../utils/format"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -930,7 +940,12 @@ export default {
     Popover,
     InsertImage: defineAsyncComponent(() => import("./InsertImage.vue")),
     InsertVideo: defineAsyncComponent(() => import("./InsertVideo.vue")),
-    SnapshotPreviewDialog,
+    SnapshotPreviewDialog: defineAsyncComponent(() =>
+      import("./SnapshotPreviewDialog.vue")
+    ),
+    NewManualSnapshotDialog: defineAsyncComponent(() =>
+      import("./NewManualSnapshotDialog.vue")
+    ),
     LineHeight,
     Plus,
     Minus,
@@ -970,7 +985,7 @@ export default {
     Details,
     GeneralAccess,
   },
-  inject: ["editor", "versions", "document"],
+  inject: ["editor", "document"],
   inheritAttrs: false,
   props: {
     settings: {
@@ -1029,6 +1044,8 @@ export default {
       addTag: false,
       snapShotDialog: false,
       selectedSnapshot: null,
+      stagedSnapshot: null,
+      newSnapshotDialog: false,
     }
   },
   computed: {
@@ -1119,7 +1136,6 @@ export default {
     })
   },
   methods: {
-    useDateFormat,
     switchTab(val) {
       if (this.$store.state.showInfo == false) {
         this.$store.commit("setShowInfo", !this.$store.state.showInfo)
@@ -1198,37 +1214,105 @@ export default {
         button.action(this.editor)
       }
     },
-    createSnapshot() {
-      // create a version locally
-      const newVersion = Y.snapshot(this.document)
-      this.versions.push({
-        synced: false,
-        latest: true,
-        date: new Date().getTime(),
-        snapshot: Y.encodeSnapshot(newVersion),
-        clientID: this.document.clientID,
-        author: this.currentUserName,
-        message: "Manually created by " + this.currentUserName,
+    /* 
+      Imperative that we take the snapshot EXACTLY when the user clicks `New`
+      document state can change, so the sooner the better
+    */
+    generateSnapshot() {
+      this.newSnapshotDialog = true
+      this.stagedSnapshot = Y.snapshot(this.document)
+    },
+    storeSnapshot(message) {
+      this.$resources.storeVersion.submit({
+        entity_name: this.entity.name,
+        doc_name: this.entity.document,
+        snapshot_message: message,
+        snapshot_data: fromUint8Array(Y.encodeSnapshot(this.stagedSnapshot)),
       })
     },
     previewSnapshot(index) {
-      this.document.gc = false
-      const selectedSnapshot = Object.assign({}, this.versions[index])
-      selectedSnapshot.date = useDateFormat(
-        new Date(selectedSnapshot.date),
-        "YYYY/MM/DD hh:mm A"
+      let tempSnapshot = Y.decodeSnapshot(
+        this.$resources.getversionList.data[index].snapshot_data
       )
-      const snapshotDoc = Y.createDocFromSnapshot(
+      let tempDoc = Y.createDocFromSnapshot(
         this.document,
-        Y.decodeSnapshot(selectedSnapshot.snapshot)
+        tempSnapshot,
+        new Y.Doc({ gc: false })
       )
-      selectedSnapshot.snapshot = Y.encodeStateAsUpdate(snapshotDoc)
-      this.selectedSnapshot = selectedSnapshot
-      this.document.gc = true
+      this.selectedSnapshot = Object.assign(
+        {},
+        this.$resources.getversionList.data[index]
+      )
+      this.selectedSnapshot.snapshot_data = tempDoc
       this.snapShotDialog = true
+    },
+    applySnapshot(data) {
+      /* Simply generate the old snapshot state and write the new content */
+      const snapshotDoc = data.snapshot_data
+      const prosemirrorJSON = TiptapTransformer.fromYdoc(snapshotDoc).default // default pm fragment
+      // setContent is a transactional dispatch
+      this.editor.commands.setContent(prosemirrorJSON, true)
+    },
+    revertState(data) {
+      // DO NOT USE
+      // find a way to reset the cursor position of all connected clients
+      const snapshotDoc = new Y.Doc({ gc: false })
+      Y.applyUpdate(snapshotDoc, Y.encodeStateAsUpdate(data.snapshot_data))
+      // state vectors
+      const currentStateVector = Y.encodeStateVector(this.document)
+      const snapshotStateVector = Y.encodeStateVector(snapshotDoc)
+
+      // pack all changes from snapshot till now
+      const changesSinceSnapshotUpdate = Y.encodeStateAsUpdate(
+        this.document,
+        snapshotStateVector
+      )
+
+      // apply them
+      const um = new Y.UndoManager(snapshotDoc.getXmlFragment("default")) // prosemirror default fragment
+      Y.applyUpdate(snapshotDoc, changesSinceSnapshotUpdate)
+
+      // revert  them
+      um.undo()
+
+      // apply the revert operation
+      const revertChangesSinceSnapshotUpdate = Y.encodeStateAsUpdate(
+        snapshotDoc,
+        currentStateVector
+      )
+      // propagate changes
+      Y.applyUpdate(this.document, revertChangesSinceSnapshotUpdate)
     },
   },
   resources: {
+    storeVersion() {
+      return {
+        url: "drive.api.files.create_doc_version",
+        method: "POST",
+        auto: false,
+        onSuccess() {
+          this.stagedSnapshot = null
+          this.$resources.getversionList.fetch()
+        },
+      }
+    },
+    getversionList() {
+      return {
+        url: "drive.api.files.get_doc_version_list",
+        method: "GET",
+        params: {
+          entity_name: this.entity.name,
+        },
+        auto: this.entity.write === 1 && this.tab === 6,
+        onSuccess(data) {
+          data.forEach((element) => {
+            element.relativeTime = useTimeAgo(element.creation)
+            element.creation = formatDate(element.creation)
+            element.snapshot_data = toUint8Array(element.snapshot_data)
+          })
+        },
+      }
+    },
     userList() {
       return {
         url: "drive.api.permissions.get_shared_with_list",

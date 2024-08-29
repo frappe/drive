@@ -1,14 +1,16 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'none', size: '4xl' }">
     <template #body>
-      <div class="px-4 pb-6 pt-5 sm:px-6">
+      <div v-if="snapshotData" class="px-4 pb-6 pt-5 sm:px-6">
         <div class="w-full mb-4">
+          {{ snapshotData.snapshot_data.gc }}
           <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-            snapshotData.message
+            {{ snapshotData.snapshot_message }}
           </h3>
-          <span class="text-gray-700 text-base"
-            >Created on {{ snapshotData.date }} by
-            {{ snapshotData.author }}</span
+          <span class="text-gray-700 text-sm"
+            >Created on {{ snapshotData.creation }} by
+            <Avatar size="sm" :label="snapshotData.owner" />
+            {{ snapshotData.owner }}</span
           >
           <Button
             icon="x"
@@ -20,28 +22,25 @@
         <div class="mb-4">
           <PreviewEditor
             v-if="snapshotData"
-            class="border h-[74vh] rounded-md overflow-y-auto"
-            :yjs-update="snapshotData.snapshot"
+            class="border h-[70vh] rounded-md overflow-y-auto"
+            :yjs-update="encodeStateAsUpdate(snapshotData.snapshot_data)"
           />
         </div>
-        <Button class="w-full" :variant="'solid'">Restore</Button>
+        <div class="flex">
+          <Button class="ml-auto" :variant="'solid'" @click="applySnapshot"
+            >Restore</Button
+          >
+        </div>
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import {
-  ref,
-  computed,
-  defineEmits,
-  defineProps,
-  onMounted,
-  onBeforeUnmount,
-} from "vue"
-import { Dialog, Button, FeatherIcon } from "frappe-ui"
+import { computed, defineEmits, defineProps } from "vue"
+import { Dialog, Button, Avatar } from "frappe-ui"
 import PreviewEditor from "../PreviewEditor.vue"
-import { useDateFormat } from "@vueuse/core"
+import { encodeStateAsUpdate } from "yjs"
 
 defineOptions({
   inheritAttrs: false,
@@ -65,9 +64,8 @@ const open = computed({
   set: (value) => emit("update:modelValue", value),
 })
 
-const loading = ref(false)
-
-onBeforeUnmount(() => {
-  emit("success")
-})
+const applySnapshot = () => {
+  emit("success", props.snapshotData)
+  emit("update:modelValue", false)
+}
 </script>

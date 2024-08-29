@@ -333,7 +333,7 @@ export default {
     this.emitter.on("importDocFromWord", () => {
       this.showFilePicker = true
     })
-    const doc = new Y.Doc()
+    const doc = new Y.Doc({ gc: false })
     const ymap = doc.getMap("docinfo")
     ymap.set("lastsaved", this.lastSaved)
     this.document = doc
@@ -588,64 +588,6 @@ export default {
         author: this.currentUserName,
         message: "Manually created by " + this.currentUserName,
       })
-    },
-    previewSnapshot(index) {
-      this.document.gc = false
-      const selectedSnapshot = this.versions[index]
-      const snapshotDoc = Y.createDocFromSnapshot(
-        this.document,
-        Y.decodeSnapshot(selectedSnapshot.snapshot)
-      )
-      selectedSnapshot.snapshot = Y.encodeStateAsUpdate(snapshotDoc)
-      this.selectedSnapshot = selectedSnapshot
-      this.document.gc = true
-      this.snapShotDialog = true
-    },
-    /*     previewSnapshot(index) {
-      this.document.gc = false
-      let snapshotUpdate = Y.decodeSnapshot(this.versions[index].snapshot)
-      this.snapshotDoc = Y.encodeStateAsUpdate(
-        Y.createDocFromSnapshot(this.document, snapshotUpdate)
-      )
-      this.document.gc = true
-      this.showPreviewSnapshotDialog = true
-      return
-    }, */
-    applySnapshot(index) {
-      this.document.gc = false
-
-      // Alternate Revert with undo anti ops
-      /* 
-        const snapshotDoc = new Y.Doc()
-        Y.applyUpdate(snapshotDoc, encoded) // origin doc is needed
-        
-        const currentStateVector = Y.encodeStateVector(this.document)
-        const snapshotStateVector = Y.encodeStateVector(snapshotDoc)
-        
-        const changesSinceSnapshotUpdate = Y.encodeStateAsUpdate(
-          this.document,
-          snapshotStateVector
-        )
-        const um = new Y.UndoManager(snapshotDoc.getMap('default')) // prosemirror default fragment
-        Y.applyUpdate(snapshotDoc, changesSinceSnapshotUpdate)
-        um.undo()
-
-        const revertChangesSinceSnapshotUpdate = Y.encodeStateAsUpdate(
-          snapshotDoc,
-          currentStateVector
-        )
-        Y.applyUpdate(this.document, revertChangesSinceSnapshotUpdate)
-      */
-
-      // Deprecated
-      //const content = yDocToProsemirrorJSON(snapshotDoc, "default")
-
-      let snapshotUpdate = Y.decodeSnapshot(this.versions[index].snapshot)
-      const snapshotDoc = Y.createDocFromSnapshot(this.document, snapshotUpdate)
-      const content = TiptapTransformer.fromYdoc(snapshotDoc).default
-      this.editor.commands.setContent(content, true)
-      this.document.gc = true
-      return
     },
     handleEnterKey() {
       if (this.$store.state.passiveRename) {
