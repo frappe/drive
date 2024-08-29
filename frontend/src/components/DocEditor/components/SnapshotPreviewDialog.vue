@@ -3,13 +3,11 @@
     <template #body>
       <div v-if="snapshotData" class="px-4 pb-6 pt-5 sm:px-6">
         <div class="w-full mb-4">
-          {{ snapshotData.snapshot_data.gc }}
           <h3 class="text-2xl font-semibold leading-6 text-gray-900">
             {{ snapshotData.snapshot_message }}
           </h3>
           <span class="text-gray-700 text-sm"
             >Created on {{ snapshotData.creation }} by
-            <Avatar size="sm" :label="snapshotData.owner" />
             {{ snapshotData.owner }}</span
           >
           <Button
@@ -22,7 +20,7 @@
         <div class="mb-4">
           <PreviewEditor
             v-if="snapshotData"
-            class="border h-[70vh] rounded-md overflow-y-auto"
+            class="border h-[68vh] rounded-md overflow-y-auto"
             :yjs-update="encodeStateAsUpdate(snapshotData.snapshot_data)"
           />
         </div>
