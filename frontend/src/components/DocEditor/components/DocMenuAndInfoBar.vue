@@ -182,7 +182,7 @@
           Versions
           <Button class="ml-auto" @click="generateSnapshot">New</Button>
         </span>
-        <div v-if="$resources.getversionList.data.length">
+        <div v-if="!$resources.getversionList.loading">
           <div
             v-for="(version, i) in $resources.getversionList.data"
             :key="version.name"
@@ -1251,7 +1251,9 @@ export default {
       const snapshotDoc = data.snapshot_data
       const prosemirrorJSON = TiptapTransformer.fromYdoc(snapshotDoc).default // default pm fragment
       // setContent is a transactional dispatch
+      // wipes `lastSaved` maybe 
       this.editor.commands.setContent(prosemirrorJSON, true)
+      this.$realtime.emit("document_version_change_emit", "Drive Entity", this.entity.name, this.currentUserName, this.currentUserImage, this.$realtime.socket.id)
     },
     revertState(data) {
       // DO NOT USE

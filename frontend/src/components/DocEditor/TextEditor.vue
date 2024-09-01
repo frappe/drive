@@ -1,5 +1,6 @@
 <template>
   <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
+    {{ $store.state.subscribedDocuments }}
     <div
       :class="[
         settings.docFont,
@@ -558,6 +559,26 @@ export default {
     this.provider.on("synced", (e) => {
       this.synced = e.synced
     })
+    this.$realtime.doc_subscribe("Drive Entity", this.entityName)
+    this.$realtime.doc_open("Drive Entity", this.entityName)
+    this.$realtime.on("document_version_change_recv", (data) => {
+      const { doctype, document, author, author_image, author_id } = data
+      if (author_id === this.$realtime.socket.id) {
+        toast({
+          title: "You changed the document version",
+          position: "bottom-right",
+          timeout: 2,
+        })
+        return
+      }
+      toast({
+        title: `Document version changed`,
+        position: "bottom-right",
+        avatarURL: author_image,
+        avatarLabel: author,
+        timeout: 2,
+      })
+    })
   },
   updated() {
     if (this.isNewDocument) {
@@ -565,6 +586,9 @@ export default {
     }
   },
   beforeUnmount() {
+    this.$realtime.off("document_version_change_recv")
+    this.$realtime.doc_close("Drive Entity", this.entityName)
+    this.$realtime.doc_unsubscribe("Drive Entity", this.entityName)
     this.updateConnectedUsers(this.editor)
     this.$store.state.passiveRename = false
     document.removeEventListener("keydown", this.saveDoc)
