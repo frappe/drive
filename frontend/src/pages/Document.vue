@@ -77,8 +77,7 @@ const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
-const alternateSave = computed(() => saveCount.value % 2 === 0)
-let snapshotTimeout = null
+let intervalId = ref(null)
 
 setTimeout(() => {
   watchDebounced(
@@ -86,21 +85,12 @@ setTimeout(() => {
     () => {
       const now = Date.now()
       if (now - lastSaved.value >= timeout.value) {
-        generateSnapshot()
         saveDocument()
       }
     },
     { debounce: timeout.value, maxWait: 30000 }
   )
 }, 1500)
-
-const generateSnapshot = () => {
-  if (alternateSave.value) {
-    snapshotTimeout = setTimeout(() => {
-      emitter.emit("triggerAutoSnapshot")
-    }, 5000 + timeout.value)
-  }
-}
 
 const saveDocument = () => {
   if (isWritable.value) {
@@ -133,9 +123,14 @@ const getDocument = createResource({
     store.commit("setEntityInfo", [data])
     if (!data.settings) {
       data.settings =
-        '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false}'
+        '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
     }
     settings.value = JSON.parse(data.settings)
+
+    if (!("docSpellcheck" in settings.value)) {
+      settings.value.docSpellcheck = 1
+    }
+
     title.value = data.title
     oldTitle.value = data.title
     yjsContent.value = toUint8Array(data.content)
@@ -207,11 +202,19 @@ onMounted(() => {
   emitter.on("showShareDialog", () => {
     showShareDialog.value = true
   })
+  if (saveCount.value > 0) {
+    intervalId.value = setInterval(() => {
+      emitter.emit("triggerAutoSnapshot")
+    }, 120000 + timeout.value)
+  }
 })
 
 onBeforeUnmount(() => {
   if (saveCount.value) {
     saveDocument()
+  }
+  if (intervalId.value !== null) {
+    clearInterval(intervalId.value)
   }
 })
 
