@@ -50,7 +50,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2024-08-27 09:44:35.901519",
+  "modified": "2024-09-03 16:05:48.070364",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document Version",
@@ -66,6 +66,30 @@
       "read": 1,
       "report": 1,
       "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive User",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive Admin",
       "share": 1,
       "write": 1
     }
