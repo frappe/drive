@@ -67,6 +67,9 @@ let maxStorage = createResource({
   url: "drive.api.storage.get_max_storage",
   method: "GET",
   cache: "max_storage",
+  onSuccess(data) {
+    if (!data) data = 0
+  },
   onError(error) {
     if (error.messages) {
       console.log(error.messages)
