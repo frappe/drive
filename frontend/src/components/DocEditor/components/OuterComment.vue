@@ -138,12 +138,12 @@ function resize(e) {
 }) */
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .current-comment {
-  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 2s cubic-bezier(0.165, 0.84, 0.44, 1);
 
   &.active {
-    padding-bottom: 50px;
+    padding: 10px 0px;
   }
 }
 </style>

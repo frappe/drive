@@ -35,8 +35,8 @@
               <GeneralAccess
                 v-if="
                   !$resources.generalAccess.loading &&
-                  (!!$resources.generalAccess.data.length ||
-                    !sharedWithList.length)
+                  (!!$resources.generalAccess.data?.length ||
+                    !sharedWithList?.length)
                 "
                 size="lg"
                 class="-mr-[3px] outline outline-white"
@@ -48,10 +48,10 @@
               >
                 <Avatar
                   v-for="user in sharedWithList.slice(0, 3)"
-                  :key="user.user_name"
+                  :key="user?.user_name"
                   size="lg"
-                  :label="user.full_name ? user.full_name : user.user_name"
-                  :image="user.user_image"
+                  :label="user?.full_name ? user?.full_name : user?.user_name"
+                  :image="user?.user_image"
                   class="-mr-[3px] outline outline-white"
                 />
 
@@ -156,22 +156,13 @@
 
       <!-- Comments -->
       <div v-if="tab === 5" class="px-5 py-4 border-b">
-        <span
-          class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
-        >
-          Comments
-        </span>
-        <OuterCommentVue
-          v-if="!!allComments.length"
-          :active-comments-instance="activeCommentsInstance"
-          :all-comments="allComments"
-          :focus-content="focusContent"
-          :is-comment-mode-on="showComments"
-          @set-comment="setComment"
+        <AnnotationList
+          v-if="allAnnotations"
+          :active-annotation="activeAnnotation"
+          :all-annotations="allAnnotations"
+          :show-annotations="showComments"
+          @set-active-annotation="setActiveAnnotation"
         />
-        <div v-else class="text-gray-600 text-sm my-5">
-          There are no comments for the current document
-        </div>
       </div>
 
       <!-- Versions -->
@@ -880,6 +871,9 @@ import { v4 as uuidv4 } from "uuid"
 import { defineAsyncComponent, markRaw } from "vue"
 import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
+import Info from "@/components/EspressoIcons/Info.vue"
+import Comment from "@/components/EspressoIcons/Comment.vue"
+
 import {
   Plus,
   Minus,
@@ -890,7 +884,6 @@ import {
   FileDown,
   ArrowDownUp,
   TextQuote,
-  Info,
   MessageCircle,
   FileText,
   FileClock,
@@ -926,6 +919,7 @@ import * as Y from "yjs"
 import { TiptapTransformer } from "@hocuspocus/transformer"
 import { fromUint8Array, toUint8Array } from "js-base64"
 import { formatDate } from "../../../utils/format"
+import AnnotationList from "../components/AnnotationList.vue"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -937,6 +931,8 @@ export default {
     TagInput,
     Tag,
     OuterCommentVue,
+    Info,
+    Comment,
     Popover,
     InsertImage: defineAsyncComponent(() => import("./InsertImage.vue")),
     InsertVideo: defineAsyncComponent(() => import("./InsertVideo.vue")),
@@ -978,19 +974,28 @@ export default {
     FileUp,
     FileDown,
     ArrowDownUp,
-    Info,
     TextQuote,
     MessageCircle,
     FileText,
     Details,
     GeneralAccess,
+    AnnotationList,
   },
   inject: ["editor", "document"],
+  emits: ["update:allComments", "update:activeAnnotation"],
   inheritAttrs: false,
   props: {
     settings: {
       type: Object,
       required: true,
+    },
+    allAnnotations: {
+      type: Object,
+      required: true,
+    },
+    activeAnnotation: {
+      type: String,
+      required: false,
     },
   },
   setup() {
@@ -1028,7 +1033,7 @@ export default {
         },
         {
           name: "Comments",
-          icon: markRaw(MessageCircle),
+          icon: markRaw(Comment),
           write: false,
         },
         {
@@ -1140,6 +1145,20 @@ export default {
     })
   },
   methods: {
+    setActiveAnnotation(val) {
+      this.$emit("update:activeAnnotation", val.get("id"))
+      // focus the comment inside the editor. needs further testing
+      /*       let from = val.rangeStart
+      let to = val.rangeEnd
+      //const { node } = this.editor.view.domAtPos(this.editor.state.selection.anchor);
+      //if (node) {
+        // Use node.parentElement if domAtPos returns text node instead of a DOM element
+      //  (node.parentElement || node).scrollIntoView({ behavior: 'smooth'})
+        // scrollIntoView(false); false == dont focus ediotr 
+      //}
+      //focusCommentWithActiveId(activeCommentId)
+      //focusContentWithActiveId(activeCommentId) */
+    },
     switchTab(val) {
       if (this.$store.state.showInfo == false) {
         this.$store.commit("setShowInfo", !this.$store.state.showInfo)

@@ -1,5 +1,6 @@
 import { Mark, mergeAttributes, Range } from "@tiptap/core"
 import { Mark as PMMark } from "@tiptap/pm/model"
+import { Plugin } from "@tiptap/pm/state"
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -24,16 +25,14 @@ export interface MarkWithRange {
 export interface AnnotationOptions {
   HTMLAttributes: Record<string, any>
   onAnnotationActivated: (annotationID: string) => void
+  onAnnotationClicked: (annotationID: string) => void
 }
 
 export interface AnnotationStorage {
   activeAnnotationId: string | null
 }
 
-export const AnnotationExtension = Mark.create<
-  AnnotationOptions,
-  AnnotationStorage
->({
+export const Annotation = Mark.create<AnnotationOptions, AnnotationStorage>({
   name: "annotation",
   excludes: "",
   // https://github.com/ueberdosis/tiptap/pull/2925
@@ -45,6 +44,7 @@ export const AnnotationExtension = Mark.create<
     return {
       HTMLAttributes: {},
       onAnnotationActivated: () => {},
+      onAnnotationClicked: () => {},
     }
   },
 
@@ -149,5 +149,38 @@ export const AnnotationExtension = Mark.create<
           return dispatch?.(tr)
         },
     }
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleDOMEvents: {
+            click: (view, event) => {
+              const pos = view.posAtCoords({
+                left: event.clientX,
+                top: event.clientY,
+              })
+              const node = pos ? view.state.doc.nodeAt(pos.pos) : null
+              const mark = node
+                ? node.marks.find(
+                    (m) => m.type === view.state.schema.marks.annotation
+                  )
+                : null
+              if (mark) {
+                const annotationID = mark.attrs.annotationID
+                if (annotationID) {
+                  // Call the onAnnotationActivated function
+                  this.options.onAnnotationClicked(annotationID)
+                  this.options.onAnnotationActivated(annotationID)
+                  return true // Prevent default handling
+                }
+              }
+              return false // Allow default handling for other clicks
+            },
+          },
+        },
+      }),
+    ]
   },
 })

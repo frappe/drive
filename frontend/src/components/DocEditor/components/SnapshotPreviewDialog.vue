@@ -35,7 +35,14 @@
 </template>
 
 <script setup>
-import { computed, defineEmits, defineProps } from "vue"
+import {
+  inject,
+  computed,
+  defineEmits,
+  defineProps,
+  onMounted,
+  onBeforeUnmount,
+} from "vue"
 import { Dialog, Button, Avatar } from "frappe-ui"
 import PreviewEditor from "../PreviewEditor.vue"
 import { encodeStateAsUpdate } from "yjs"
@@ -43,7 +50,7 @@ import { encodeStateAsUpdate } from "yjs"
 defineOptions({
   inheritAttrs: false,
 })
-
+const emitter = inject("emitter")
 // Define props
 const props = defineProps({
   modelValue: {
@@ -66,4 +73,10 @@ const applySnapshot = () => {
   emit("success", props.snapshotData)
   emit("update:modelValue", false)
 }
+onMounted(() => {
+  emitter.emit("forceHideBubbleMenu", true)
+})
+onBeforeUnmount(() => {
+  emitter.emit("forceHideBubbleMenu", false)
+})
 </script>

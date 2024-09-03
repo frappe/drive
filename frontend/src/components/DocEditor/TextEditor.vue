@@ -36,6 +36,8 @@
   <DocMenuAndInfoBar
     v-if="editor && initComplete"
     ref="MenuBar"
+    v-model:allAnnotations="allAnnotations"
+    v-model:activeAnnotation="activeAnnotation"
     :editor="editor"
     :versions="versions"
     :settings="settings"
@@ -108,10 +110,11 @@ import { TextStyle } from "./extensions/text-style"
 import { Underline } from "./extensions/underline"
 import { ResizableMedia } from "./extensions/resizenode"
 import { createEditorButton } from "./utils"
+import { Annotation } from "./extensions/AnnotationExtension/annotation"
 import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
-import { TiptapTransformer } from "@hocuspocus/transformer"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
+import { formatDate } from "../../utils/format"
 
 export default {
   name: "TextEditor",
@@ -219,7 +222,10 @@ export default {
         comments: [],
       },
       implicitTitle: "",
+      allAnnotations: [],
       allComments: [],
+      activeAnnotation: "",
+      activeAnchorAnnotations: null,
       isNewDocument: this.entity.title.includes("Untitled Document"),
       versions: [],
       selectedSnapshot: null,
@@ -241,7 +247,8 @@ export default {
           "Separator",
           "Link",
           "Separator",
-          "Comment",
+          "NewAnnotation",
+          //"Comment",
         ]
         return buttons.map(createEditorButton)
       } else if (this.entity.allow_comments) {
@@ -258,6 +265,22 @@ export default {
     },
   },
   watch: {
+    activeAnchorAnnotations: {
+      handler(newVal) {
+        if (newVal) {
+          // unexpected case??
+          let yArray = this.document.getArray("docAnnotations")
+          // Toggle visibility if it's not visible in the document anymore
+          yArray.forEach((item) => {
+            if (newVal.has(item.get("id"))) {
+              item.set("anchor", 1)
+            } else {
+              item.set("anchor", 0)
+            }
+          })
+        }
+      },
+    },
     isNewDocument: {
       handler(val) {
         if (val) {
@@ -343,9 +366,6 @@ export default {
       "fdoc-" + JSON.stringify(this.entityName),
       doc
     )
-    indexeddbProvider.on("synced", () => {
-      this.initComplete = true
-    })
     Y.applyUpdate(doc, this.yjsContent)
     const webrtcProvider = new WebrtcProvider(
       "fdoc-" + JSON.stringify(this.entityName),
@@ -391,9 +411,10 @@ export default {
         },
       },
       onCreate() {
-        componentContext.findCommentsAndStoreValues()
-        componentContext.updateConnectedUsers(componentContext.editor)
+        //componentContext.findCommentsAndStoreValues()
+        //componentContext.updateConnectedUsers(componentContext.editor)
       },
+      // evaluate document version
       onUpdate() {
         componentContext.updateConnectedUsers(componentContext.editor)
         componentContext.findCommentsAndStoreValues()
@@ -410,12 +431,13 @@ export default {
           "update:yjsContent",
           Y.encodeStateAsUpdate(componentContext.document)
         )
+        componentContext.updateAnnotationStatus()
       },
       onSelectionUpdate() {
-        componentContext.updateConnectedUsers(componentContext.editor)
-        componentContext.setCurrentComment()
-        componentContext.isTextSelected =
-          !!componentContext.editor.state.selection.content().size
+        //componentContext.updateConnectedUsers(componentContext.editor)
+        //componentContext.setCurrentComment()
+        //componentContext.isTextSelected =
+        //  !!componentContext.editor.state.selection.content().size
       },
       // eslint-disable-next-line no-sparse-arrays
       extensions: [
@@ -476,6 +498,20 @@ export default {
         }),
         ,
         PageBreak,
+        Annotation.configure({
+          onAnnotationClicked: (ID) => {
+            componentContext.setAndFocusCurrentAnnotation(ID)
+          },
+          onAnnotationActivated: (ID) => {
+            //this.activeAnnotation = ID
+            if (ID) setTimeout(() => componentContext.setCurrentAnnotation(ID))
+          },
+          HTMLAttributes: {
+            //class: 'cursor-pointer annotation  annotation-number'
+            //class: 'cursor-pointer bg-amber-300 bg-opacity-20 border-b-2 border-yellow-300 pb-[1px]'
+            //class: "cursor-pointer annotation",
+          },
+        }),
         Collaboration.configure({
           document: doc,
         }),
@@ -544,6 +580,9 @@ export default {
     window.addEventListener("online", () => {
       this.provider.connect()
     })
+    this.localStore.on("synced", () => {
+      this.initComplete = true
+    })
     this.provider.on("status", (e) => {
       this.connected = e.connected
     })
@@ -600,18 +639,18 @@ export default {
     this.editor = null
   },
   methods: {
-    createSnapshot() {
-      // create a version locally
-      const newVersion = Y.snapshot(this.document)
-      this.versions.push({
-        synced: false,
-        latest: true,
-        date: new Date().getTime(),
-        snapshot: Y.encodeSnapshot(newVersion),
-        clientID: this.document.clientID,
-        author: this.currentUserName,
-        message: "Manually created by " + this.currentUserName,
+    updateAnnotationStatus() {
+      const temp = new Set()
+      this.editor.state.doc.descendants((node, pos) => {
+        const { marks } = node
+        marks.forEach((mark) => {
+          if (mark.type.name === "annotation") {
+            const annotationMark = mark.attrs.annotationID
+            temp.add(annotationMark)
+          }
+        })
       })
+      this.activeAnchorAnnotations = temp
     },
     handleEnterKey() {
       if (this.$store.state.passiveRename) {
@@ -801,6 +840,25 @@ export default {
       })
       return (this.allComments = tempComments)
     },
+    setCurrentAnnotation() {
+      let newVal = this.editor.isActive("annotation")
+      const sideBarState =
+        this.$store.state.showInfo && this.$refs.MenuBar.tab == 5
+      if (newVal && sideBarState) {
+        this.activeAnnotation =
+          this.editor.getAttributes("annotation").annotationID
+      }
+    },
+    //Click
+    setAndFocusCurrentAnnotation() {
+      let newVal = this.editor.isActive("annotation")
+      if (newVal) {
+        this.$store.state.showInfo = true
+        this.$refs.MenuBar.tab = 5
+        this.activeAnnotation =
+          this.editor.getAttributes("annotation").annotationID
+      }
+    },
     setCurrentComment() {
       let newVal = this.editor.isActive("comment")
       if (newVal) {
@@ -940,8 +998,15 @@ export default {
     margin: none !important;
   }
 }
-
+/* 
 span[data-comment] {
+  background: rgba(255, 215, 0, 0.15);
+  border-bottom: 2px solid rgb(255, 210, 0);
+  user-select: text;
+  padding: 2px;
+}
+ */
+span[data-annotation-id] {
   background: rgba(255, 215, 0, 0.15);
   border-bottom: 2px solid rgb(255, 210, 0);
   user-select: text;
