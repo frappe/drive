@@ -1,6 +1,5 @@
 <template>
   <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
-    {{ $store.state.subscribedDocuments }}
     <div
       :class="[
         settings.docFont,
@@ -17,7 +16,7 @@
         autocomplete="true"
         autocorrect="true"
         autocapitalize="true"
-        spellcheck="true"
+        :spellcheck="settings.docSpellcheck ? true : false"
         :editor="editor"
         @keydown.enter.passive="handleEnterKey"
       />
@@ -115,6 +114,7 @@ import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 import { formatDate } from "../../utils/format"
+import { Paragraph } from "./extensions/paragraph"
 
 export default {
   name: "TextEditor",
@@ -443,6 +443,11 @@ export default {
       extensions: [
         StarterKit.configure({
           history: false,
+          paragraph: {
+            HTMLAttributes: {
+              class: this.entity.version > 0 ? "not-prose" : "",
+            },
+          },
           heading: {
             levels: [1, 2, 3, 4, 5],
           },
@@ -509,7 +514,7 @@ export default {
           HTMLAttributes: {
             //class: 'cursor-pointer annotation  annotation-number'
             //class: 'cursor-pointer bg-amber-300 bg-opacity-20 border-b-2 border-yellow-300 pb-[1px]'
-            //class: "cursor-pointer annotation",
+            class: "cursor-pointer annotation",
           },
         }),
         Collaboration.configure({

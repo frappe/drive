@@ -704,6 +704,8 @@
           Settings
         </span>
         <Switch v-model="settings.docSize" label="Small Text" />
+        <Switch v-model="settings.docSpellcheck" label="Spellcheck" />
+        <Switch v-model="settings.docSize" label="Highlight Check" />
         <Switch v-model="settings.docWidth" label="Full Width" />
         <span class="font-medium text-gray-700 text-base my-2.5 px-2.5">
           Default Font
@@ -1143,6 +1145,9 @@ export default {
     this.emitter.on("triggerAutoSnapshot", () => {
       this.autoSnapshot()
     })
+  },
+  beforeUnmount() {
+    this.emitter.off("triggerAutoSnapshot")
   },
   methods: {
     setActiveAnnotation(val) {
