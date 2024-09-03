@@ -76,6 +76,7 @@ def create_document_entity(title, content, parent=None):
     drive_doc = frappe.new_doc("Drive Document")
     drive_doc.title = new_title
     drive_doc.content = content
+    drive_doc.version = 1
     drive_doc.save()
 
     drive_entity = frappe.new_doc("Drive Entity")
@@ -281,7 +282,7 @@ def get_doc_content(drive_document_name):
     drive_document = frappe.db.get_value(
         "Drive Document",
         drive_document_name,
-        ["content", "raw_content", "settings"],
+        ["content", "raw_content", "settings", "version"],
         as_dict=1,
     )
     return drive_document

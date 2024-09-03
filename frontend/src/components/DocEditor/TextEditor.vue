@@ -416,8 +416,8 @@ export default {
       },
       // evaluate document version
       onUpdate() {
-        componentContext.updateConnectedUsers(componentContext.editor)
-        componentContext.findCommentsAndStoreValues()
+        //componentContext.updateConnectedUsers(componentContext.editor)
+        //componentContext.findCommentsAndStoreValues()
         componentContext.setCurrentComment()
         componentContext.$emit(
           "update:rawContent",
