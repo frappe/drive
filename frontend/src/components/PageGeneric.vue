@@ -227,6 +227,7 @@ import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
 import { toast } from "../utils/toasts.js"
+import { capture } from "@/telemetry"
 
 export default {
   name: "PageGeneric",
@@ -960,6 +961,7 @@ export default {
         content: null,
         parent: this.$store.state.currentFolderID,
       })
+      capture("new_document_created")
       if (this.$store.state.editorNewTab) {
         window.open(
           this.$router.resolve({

@@ -64,6 +64,7 @@ import MoveDialog from "./components/MoveDialog.vue"
 import SearchPopup from "./components/SearchPopup.vue"
 import FileUploader from "./components/FileUploader.vue"
 import BottomBar from "./components/BottomBar.vue"
+import { init as initTelemetry } from "@/telemetry"
 
 export default {
   name: "App",
@@ -112,11 +113,12 @@ export default {
       return true
     },
   },
-  mounted() {
+  async mounted() {
     this.addKeyboardShortcut()
     this.emitter.on("showSearchPopup", (data) => {
       this.showSearchPopup = data
     })
+    await initTelemetry()
   },
   methods: {
     handleDefaultContext(event) {

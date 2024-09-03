@@ -329,6 +329,7 @@ import UserSearch from "@/components/ShareDialog/UserSearch.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import Check from "@/components/EspressoIcons/Check.vue"
+import { capture } from "@/telemetry"
 
 export default {
   name: "ShareDialog",
@@ -525,6 +526,7 @@ export default {
         },
         onSuccess() {
           this.$resources.share.error = null
+          capture("sharing_status_updated")
         },
         onError(error) {
           if (error.messages) {
@@ -574,6 +576,9 @@ export default {
     updateAccess() {
       return {
         url: "drive.api.files.call_controller_method",
+        onSuccess() {
+          capture("sharing_status_updated")
+        },
         onError(error) {
           if (error.messages) {
             console.log(error.messages)

@@ -6,6 +6,7 @@ import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import Dropzone from "dropzone"
+import { capture } from "@/telemetry"
 
 const store = useStore()
 const route = useRoute()
@@ -210,6 +211,7 @@ onMounted(() => {
       uuid: file.upload.uuid,
       completed: true,
     })
+    capture("new_file_uploaded")
   })
   /*   emitter.on("directUpload", (file) => {
     dropzone.value.addFile(file)
