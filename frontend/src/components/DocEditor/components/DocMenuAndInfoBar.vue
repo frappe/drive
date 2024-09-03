@@ -173,7 +173,12 @@
           Versions
           <Button class="ml-auto" @click="generateSnapshot">New</Button>
         </span>
-        <div v-if="!$resources.getversionList.loading">
+        <div
+          v-if="
+            !$resources.getversionList.loading &&
+            $resources.getversionList.data.length
+          "
+        >
           <div
             v-for="(version, i) in $resources.getversionList.data"
             :key="version.name"
