@@ -1134,6 +1134,10 @@ export default {
     this.emitter.on("addVideo", () => {
       this.addVideoDialog = true
     })
+    // document.vue debouncedWatch
+    this.emitter.on("triggerAutoSnapshot", () => {
+      this.autoSnapshot()
+    })
   },
   methods: {
     switchTab(val) {
@@ -1218,6 +1222,15 @@ export default {
       Imperative that we take the snapshot EXACTLY when the user clicks `New`
       document state can change, so the sooner the better
     */
+    autoSnapshot() {
+      this.stagedSnapshot = Y.snapshot(this.document)
+      this.$resources.storeVersion.submit({
+        entity_name: this.entity.name,
+        doc_name: this.entity.document,
+        snapshot_message: `Auto generated version by ${this.currentUserName}`,
+        snapshot_data: fromUint8Array(Y.encodeSnapshot(this.stagedSnapshot)),
+      })
+    },
     generateSnapshot() {
       this.newSnapshotDialog = true
       this.stagedSnapshot = Y.snapshot(this.document)
@@ -1251,9 +1264,16 @@ export default {
       const snapshotDoc = data.snapshot_data
       const prosemirrorJSON = TiptapTransformer.fromYdoc(snapshotDoc).default // default pm fragment
       // setContent is a transactional dispatch
-      // wipes `lastSaved` maybe 
+      // wipes `lastSaved` maybe
       this.editor.commands.setContent(prosemirrorJSON, true)
-      this.$realtime.emit("document_version_change_emit", "Drive Entity", this.entity.name, this.currentUserName, this.currentUserImage, this.$realtime.socket.id)
+      this.$realtime.emit(
+        "document_version_change_emit",
+        "Drive Entity",
+        this.entity.name,
+        this.currentUserName,
+        this.currentUserImage,
+        this.$realtime.socket.id
+      )
     },
     revertState(data) {
       // DO NOT USE
@@ -1291,6 +1311,7 @@ export default {
       return {
         url: "drive.api.files.create_doc_version",
         method: "POST",
+        debounce: 1000,
         auto: false,
         onSuccess() {
           this.stagedSnapshot = null
