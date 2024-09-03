@@ -28,12 +28,17 @@ export function base2BlockSize(bytes, decimals = 2, current = 0) {
 
 export function formatDate(date) {
   date = new Date(date)
-  let options = { year: "2-digit", month: "2-digit", day: "2-digit" }
-  let formattedDate = date.toLocaleDateString("en-GB", options)
-  // Extract the last two digits of the year
-  let year = formattedDate.split("/")[2]
-  // Reconstruct the date string with the two-digit year
-  return formattedDate.replace(year, year.slice(-2))
+
+  let formattedDate = date.toLocaleDateString(undefined, {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+  })
+  let formattedTime = date.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "numeric",
+  })
+  return `${formattedDate}, ${formattedTime}`
 }
 
 export function formatMimeType(mimeType) {
