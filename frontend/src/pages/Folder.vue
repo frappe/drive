@@ -15,7 +15,7 @@
 <script setup>
 import Folder from "../components/EspressoIcons/Folder.vue"
 import PageGeneric from "@/components/PageGeneric.vue"
-import { ref } from "vue"
+import { ref, inject, onMounted, onBeforeUnmount } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
@@ -23,6 +23,7 @@ import { formatDate } from "@/utils/format"
 
 const store = useStore()
 const router = useRouter()
+const realtime = inject("realtime")
 const isSharedFolder = ref(false)
 const allowEmptyContextMenu = ref(false)
 
@@ -32,6 +33,26 @@ const props = defineProps({
     required: false,
     default: "",
   },
+})
+
+onMounted(() => {
+  realtime.doc_subscribe("Drive Entity", props.entityName)
+  realtime.doc_open("Drive Entity", props.entityName)
+  realtime.on("doc_viewers", (data) => {
+    store.state.connectedUsers = data.users
+    userInfo.submit({ users: JSON.stringify(data.users) })
+  })
+  if (window.matchMedia("(max-width: 1500px)").matches) {
+    store.commit("setIsSidebarExpanded", false)
+  }
+})
+
+onBeforeUnmount(() => {
+  realtime.off("doc_viewers")
+  store.state.connectedUsers = []
+  realtime.doc_close("Drive Entity", currentFolder.data.name)
+  realtime.doc_unsubscribe("Drive Entity", currentFolder.data.name)
+  store.commit("setEntityInfo", [])
 })
 
 let currentFolder = createResource({
@@ -89,5 +110,23 @@ let currentFolder = createResource({
     router.replace({ name: "Error" })
   },
   auto: true,
+})
+
+let userInfo = createResource({
+  url: "frappe.desk.form.load.get_user_info_for_viewers",
+  onSuccess(data) {
+    data = Object.values(data)
+    data.forEach((item) => {
+      // compatibility with document awareness
+      if (item.fullname) {
+        item.avatar = item.image
+        item.name = item.fullname
+        delete item.image
+        delete item.fullname
+      }
+    })
+    store.state.connectedUsers = data
+  },
+  auto: false,
 })
 </script>

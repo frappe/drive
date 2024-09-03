@@ -61,6 +61,7 @@ import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 const router = useRouter()
 const store = useStore()
 const emitter = inject("emitter")
+const realtime = inject("realtime")
 const props = defineProps({
   entityName: {
     type: String,
@@ -198,6 +199,12 @@ function scrollEntity(negative = false) {
 
 onMounted(() => {
   fetchFile(props.entityName)
+  realtime.doc_subscribe("Drive Entity", props.entityName)
+  realtime.doc_open("Drive Entity", props.entityName)
+  realtime.on("doc_viewers", (data) => {
+    store.state.connectedUsers = data.users
+    userInfo.submit({ users: JSON.stringify(data.users) })
+  })
   if (window.matchMedia("(max-width: 1500px)").matches) {
     store.commit("setIsSidebarExpanded", false)
   }
@@ -207,7 +214,29 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  realtime.off("doc_viewers")
+  store.state.connectedUsers = []
+  realtime.doc_close("Drive Entity", file.data.name)
+  realtime.doc_unsubscribe("Drive Entity", file.data.name)
   store.commit("setEntityInfo", [])
+})
+
+let userInfo = createResource({
+  url: "frappe.desk.form.load.get_user_info_for_viewers",
+  // compatibility with document awareness
+  onSuccess(data) {
+    data = Object.values(data)
+    data.forEach((item) => {
+      if (item.fullname) {
+        item.avatar = item.image
+        item.name = item.fullname
+        delete item.image
+        delete item.fullname
+      }
+    })
+    store.state.connectedUsers = data
+  },
+  auto: false,
 })
 </script>
 

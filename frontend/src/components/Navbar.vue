@@ -10,9 +10,7 @@
       <Breadcrumbs />
       <div class="flex gap-1">
         <div
-          v-if="
-            $route.meta.documentPage && connectedUsers.length > 1 && isLoggedIn
-          "
+          v-if="connectedUsers.length > 1 && isLoggedIn"
           class="hidden sm:flex bg-gray-200 rounded justify-center items-center px-1"
         >
           <UsersBar />
