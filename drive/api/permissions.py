@@ -438,7 +438,7 @@ def get_user_access(entity_name, user=None):
         )
         if public_access:
             return public_access
-    
+
     return {"read": 0, "write": 0}
 
 
@@ -478,3 +478,15 @@ def user_group_entity_access(entity_name=None, user=None):
     if not result:
         return False
     return max(result, key=lambda x: x["write"])
+
+
+def has_app_permission():
+    user = frappe.session.user
+
+    if user == "Administrator":
+        return True
+
+    roles_to_check = {"Drive Admin", "Drive User", "System Manager"}
+    user_roles = frappe.get_roles(user)
+
+    return not roles_to_check.isdisjoint(user_roles)

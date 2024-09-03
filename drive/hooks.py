@@ -19,7 +19,7 @@ add_to_apps_screen = [
         "logo": "public/favicon-310x310.png",
         "title": "Drive",
         "route": "/drive",
-        # "has_permission": "drive.api.permissions.has_app_permission"
+        "has_permission": "drive.api.permissions.has_app_permission",
     }
 ]
 
