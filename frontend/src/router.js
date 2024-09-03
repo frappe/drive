@@ -103,19 +103,11 @@ const routes = [
     name: "Test",
     component: () => import("@/pages/Test.vue"),
   },
-  /*   {
+  {
     path: "/login",
     name: "Login",
     redirect: () => {
       window.location.href = "/login"
-    },
-  },  */
-  {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/pages/Login.vue"),
-    meta: {
-      isPublicRoute: true,
     },
   },
   {
