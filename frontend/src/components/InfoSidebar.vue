@@ -74,10 +74,10 @@
               >
                 <Avatar
                   v-for="user in sharedWithList.slice(0, 3)"
-                  :key="user.user_name"
+                  :key="user?.user_name"
                   size="lg"
-                  :label="user.full_name ? user.full_name : user.user_name"
-                  :image="user.user_image"
+                  :label="user?.full_name ? user?.full_name : user?.user_name"
+                  :image="user?.user_image"
                   class="-mr-[3px] outline outline-white"
                 />
 
