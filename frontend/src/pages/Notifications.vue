@@ -60,9 +60,10 @@
 </template>
 <script setup>
 import { ref, h, watch } from "vue"
-import { formatTimeAgo, useDateFormat } from "@vueuse/core"
+import { formatTimeAgo } from "@vueuse/core"
 import { createResource, Avatar, ListView, FeatherIcon } from "frappe-ui"
 import { useStore } from "vuex"
+import { formatDate } from "../utils/format"
 
 const store = useStore()
 const onlyUnread = ref(true)
@@ -125,10 +126,7 @@ const notifications = createResource({
   onSuccess(data) {
     data.forEach((item) => {
       item.relativeTime = formatTimeAgo(new Date(item.creation))
-      item.creation = useDateFormat(
-        new Date(item.creation),
-        "YYYY-MM-DD HH:mm:ss"
-      )
+      item.creation = formatDate(item.creation)
     })
   },
 })
