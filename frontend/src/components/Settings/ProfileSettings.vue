@@ -80,12 +80,12 @@
       />
     </template>
   </Dialog>
-  <!--   <h1 class="font-semibold mt-12 mb-4">Preferences</h1>
+  <h1 class="font-semibold mt-12 mb-4">Preferences</h1>
   <Switch v-model="foldersBefore" label="Group folders before files"></Switch>
   <Switch
     v-model="singleClick"
     label="Single click to open files and folders"
-  ></Switch> -->
+  ></Switch>
 </template>
 <script>
 import { Button, Input, Avatar, Dialog, FileUploader, Switch } from "frappe-ui"

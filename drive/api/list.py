@@ -82,8 +82,17 @@ def files(
     ]
     favourites_only = json.loads(favourites_only)
     recents_only = json.loads(recents_only)
+    if isinstance(folders_first, str):
+        try:
+            folders_first = json.loads(folders_first)
+        except json.JSONDecodeError:
+            frappe.log_error(
+                "Invalid JSON for folders_first: {}".format(folders_first), "JSONDecodeError"
+            )
+            folders_first = True
+    folders_first = bool(folders_first)
     general_access = eval_general_access(entity_name)
-    
+
     if mime_type_list and not entity_name:
         entity_name = get_user_directory(frappe.session.user).name
 
@@ -176,7 +185,15 @@ def shared_with_user(
     :return: List of DriveEntities with permissions
     :rtype: list[frappe._dict]
     """
-
+    if isinstance(folders_first, str):
+        try:
+            folders_first = json.loads(folders_first)
+        except json.JSONDecodeError:
+            frappe.log_error(
+                "Invalid JSON for folders_first: {}".format(folders_first), "JSONDecodeError"
+            )
+            folders_first = True
+    folders_first = bool(folders_first)
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
@@ -277,7 +294,15 @@ def shared_by_user(
     :return: List of DriveEntities with permissions
     :rtype: list[frappe._dict]
     """
-
+    if isinstance(folders_first, str):
+        try:
+            folders_first = json.loads(folders_first)
+        except json.JSONDecodeError:
+            frappe.log_error(
+                "Invalid JSON for folders_first: {}".format(folders_first), "JSONDecodeError"
+            )
+            folders_first = True
+    folders_first = bool(folders_first)
     DriveDocShare = frappe.qb.DocType("Drive DocShare")
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
