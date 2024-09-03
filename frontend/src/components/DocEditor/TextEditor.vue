@@ -1,5 +1,6 @@
 <template>
   <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
+    {{ $store.state.subscribedDocuments }}
     <div
       :class="[
         settings.docFont,
@@ -36,6 +37,7 @@
     v-if="editor && initComplete"
     ref="MenuBar"
     :editor="editor"
+    :versions="versions"
     :settings="settings"
   />
   <FilePicker
@@ -54,52 +56,62 @@
       }
     "
   />
+  <SnapshotPreviewDialog
+    v-if="snapShotDialog"
+    v-model="snapShotDialog"
+    :snapshot-data="selectedSnapshot"
+    @success="
+      () => {
+        selectedSnapshot = null
+      }
+    "
+  />
 </template>
 
 <script>
-import "tippy.js/animations/shift-away.css"
-import { normalizeClass, computed } from "vue"
-import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3"
-import { Table } from "./Table"
-import StarterKit from "@tiptap/starter-kit"
-import Underline from "@tiptap/extension-underline"
-import Placeholder from "@tiptap/extension-placeholder"
-import TextAlign from "@tiptap/extension-text-align"
-import CharacterCount from "@tiptap/extension-character-count"
+import FilePicker from "@/components/FilePicker.vue"
+import { toast } from "@/utils/toasts.js"
 import Link from "@tiptap/extension-link"
-import Typography from "@tiptap/extension-typography"
-import TableBubbleMenu from "./Table/menus/TableBubbleMenu.vue"
-import FontFamily from "@tiptap/extension-font-family"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
-import { FontSize } from "./font-size"
-import { Highlight } from "./backgroundColor"
-import { TextStyle } from "./text-style"
-import { Color } from "@tiptap/extension-color"
-import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
-import { DOMParser } from "prosemirror-model"
+import Typography from "@tiptap/extension-typography"
+import StarterKit from "@tiptap/starter-kit"
+import { BubbleMenu, Editor, EditorContent } from "@tiptap/vue-3"
 import { onOutsideClickDirective } from "frappe-ui"
+import { DOMParser } from "prosemirror-model"
 import { v4 as uuidv4 } from "uuid"
-import { Comment } from "./comment"
-import { LineHeight } from "./lineHeight"
-import { Indent } from "./indent"
-import Collaboration from "@tiptap/extension-collaboration"
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
-import * as Y from "yjs"
-import { WebrtcProvider } from "y-webrtc"
+import { computed, normalizeClass } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
-import { createEditorButton } from "./utils"
-import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue"
-import Menu from "./Menu.vue"
-import { toast } from "@/utils/toasts.js"
-import { PageBreak } from "./Pagebreak"
-import FilePicker from "@/components/FilePicker.vue"
-import { ResizableMedia } from "./resizeableMedia"
+import { WebrtcProvider } from "y-webrtc"
+import * as Y from "yjs"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
-import configureMention from "./Mention/mention"
-
-import Commands from "./Suggestion/suggestionExtension"
-import suggestion from "./Suggestion/suggestion"
+import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
+import DocMenuAndInfoBar from "./components/DocMenuAndInfoBar.vue"
+import configureMention from "./extensions/mention/mention"
+import Menu from "./components/Menu.vue"
+import { Table } from "./extensions/table"
+import TableBubbleMenu from "./components/TableBubbleMenu.vue"
+import { Comment } from "./extensions/comment"
+import { PageBreak } from "./extensions/Pagebreak"
+import { Highlight } from "./extensions/backgroundColor"
+import { CharacterCount } from "./extensions/character-count"
+import { Collaboration } from "./extensions/collaboration"
+import { CollaborationCursor } from "./extensions/collaborationCursor"
+import { Color } from "./extensions/color"
+import { FontFamily } from "./extensions/font-family"
+import { FontSize } from "./extensions/font-size"
+import { Indent } from "./extensions/indent"
+import { LineHeight } from "./extensions/lineHeight"
+import { Placeholder } from "./extensions/placeholder"
+import { TextAlign } from "./extensions/text-align"
+import { TextStyle } from "./extensions/text-style"
+import { Underline } from "./extensions/underline"
+import { ResizableMedia } from "./extensions/resizenode"
+import { createEditorButton } from "./utils"
+import suggestion from "./extensions/suggestion/suggestion"
+import Commands from "./extensions/suggestion/suggestionExtension"
+import { TiptapTransformer } from "@hocuspocus/transformer"
+import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 
 export default {
   name: "TextEditor",
@@ -110,6 +122,7 @@ export default {
     DocMenuAndInfoBar,
     FilePicker,
     TableBubbleMenu,
+    SnapshotPreviewDialog,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -117,10 +130,12 @@ export default {
   provide() {
     return {
       editor: computed(() => this.editor),
+      document: computed(() => this.document),
+      versions: computed(() => this.versions),
     }
   },
   inheritAttrs: false,
-  expose: ["editor"],
+  //expose: ["editor", "versions"],
   props: {
     settings: {
       type: Object,
@@ -206,6 +221,9 @@ export default {
       implicitTitle: "",
       allComments: [],
       isNewDocument: this.entity.title.includes("Untitled Document"),
+      versions: [],
+      selectedSnapshot: null,
+      snapShotDialog: false,
     }
   },
   computed: {
@@ -316,7 +334,7 @@ export default {
     this.emitter.on("importDocFromWord", () => {
       this.showFilePicker = true
     })
-    const doc = new Y.Doc()
+    const doc = new Y.Doc({ gc: false })
     const ymap = doc.getMap("docinfo")
     ymap.set("lastsaved", this.lastSaved)
     this.document = doc
@@ -344,7 +362,7 @@ export default {
     document.addEventListener("keydown", this.saveDoc)
     this.editor = new Editor({
       editable: this.editable,
-      autofocus: true,
+      autofocus: "start",
       editorProps: {
         attributes: {
           class: normalizeClass([
@@ -541,6 +559,26 @@ export default {
     this.provider.on("synced", (e) => {
       this.synced = e.synced
     })
+    this.$realtime.doc_subscribe("Drive Entity", this.entityName)
+    this.$realtime.doc_open("Drive Entity", this.entityName)
+    this.$realtime.on("document_version_change_recv", (data) => {
+      const { doctype, document, author, author_image, author_id } = data
+      if (author_id === this.$realtime.socket.id) {
+        toast({
+          title: "You changed the document version",
+          position: "bottom-right",
+          timeout: 2,
+        })
+        return
+      }
+      toast({
+        title: `Document version changed`,
+        position: "bottom-right",
+        avatarURL: author_image,
+        avatarLabel: author,
+        timeout: 2,
+      })
+    })
   },
   updated() {
     if (this.isNewDocument) {
@@ -548,6 +586,9 @@ export default {
     }
   },
   beforeUnmount() {
+    this.$realtime.off("document_version_change_recv")
+    this.$realtime.doc_close("Drive Entity", this.entityName)
+    this.$realtime.doc_unsubscribe("Drive Entity", this.entityName)
     this.updateConnectedUsers(this.editor)
     this.$store.state.passiveRename = false
     document.removeEventListener("keydown", this.saveDoc)
@@ -559,6 +600,19 @@ export default {
     this.editor = null
   },
   methods: {
+    createSnapshot() {
+      // create a version locally
+      const newVersion = Y.snapshot(this.document)
+      this.versions.push({
+        synced: false,
+        latest: true,
+        date: new Date().getTime(),
+        snapshot: Y.encodeSnapshot(newVersion),
+        clientID: this.document.clientID,
+        author: this.currentUserName,
+        message: "Manually created by " + this.currentUserName,
+      })
+    },
     handleEnterKey() {
       if (this.$store.state.passiveRename) {
         if (!this.implicitTitle.length) return

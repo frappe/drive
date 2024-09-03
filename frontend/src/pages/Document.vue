@@ -71,12 +71,14 @@ const entity = ref(null)
 const allUsers = ref([])
 const mentionedUsers = ref()
 const showShareDialog = ref(false)
-const timeout = ref(1000 + Math.floor(Math.random() * 3000))
+const timeout = ref(1000 + Math.floor(Math.random() * 5000))
 const saveCount = ref(0)
 const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
+const alternateSave = computed(() => saveCount.value % 2 === 0)
+let snapshotTimeout = null
 
 setTimeout(() => {
   watchDebounced(
@@ -84,12 +86,21 @@ setTimeout(() => {
     () => {
       const now = Date.now()
       if (now - lastSaved.value >= timeout.value) {
+        generateSnapshot()
         saveDocument()
       }
     },
     { debounce: timeout.value, maxWait: 30000 }
   )
 }, 1500)
+
+const generateSnapshot = () => {
+  if (alternateSave.value) {
+    snapshotTimeout = setTimeout(() => {
+      emitter.emit("triggerAutoSnapshot")
+    }, 5000 + timeout.value)
+  }
+}
 
 const saveDocument = () => {
   if (isWritable.value) {

@@ -11,9 +11,9 @@ import {
   analyzeCellSelection,
   isTableCellSelected,
   isTableSelected,
-} from "../utils"
+} from "../extensions/table/utils"
 import { TableCellsMerge, TableCellsSplit } from "lucide-vue-next"
-import ToggleHeaderCell from "../../icons/ToggleHeaderCell.vue"
+import ToggleHeaderCell from "../icons/ToggleHeaderCell.vue"
 
 interface Props {
   editor: Editor
