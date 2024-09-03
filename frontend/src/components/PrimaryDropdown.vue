@@ -53,10 +53,12 @@
   />
 </template>
 <script>
+import { markRaw } from "vue"
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Docs from "@/components/EspressoIcons/Docs.vue"
+import AppSwitcher from "@/components/AppSwitcher.vue"
 
 export default {
   name: "PrimaryDropdown",
@@ -65,6 +67,7 @@ export default {
     FeatherIcon,
     SettingsDialog,
     FrappeDriveLogo,
+    AppSwitcher,
   },
   props: {
     isExpanded: Boolean,
@@ -90,12 +93,7 @@ export default {
           hideLabel: true,
           items: [
             {
-              icon: "corner-up-left",
-              label: "Switch to Desk",
-              condition: () => this.$store.state.user.systemUser,
-              onClick() {
-                window.location.href = "/app"
-              },
+              component: markRaw(AppSwitcher),
             },
             {
               icon: Docs,

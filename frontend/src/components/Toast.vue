@@ -8,6 +8,14 @@
         :name="icon"
         :class="['h-4.5 w-4.5 mr-2', iconClasses]"
       />
+      <Avatar
+        v-else-if="avatarURL"
+        :label="avatarLabel"
+        :image="avatarURL"
+        size="sm"
+        :class="['mr-2']"
+      >
+      </Avatar>
       <div>
         <slot>
           <p
@@ -37,11 +45,13 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui"
+import Avatar from "frappe-ui/src/components/Avatar.vue"
 
 export default {
   name: "Toast",
   components: {
     FeatherIcon,
+    Avatar,
   },
   props: {
     position: {
@@ -53,6 +63,14 @@ export default {
       default: "",
     },
     iconClasses: {
+      type: String,
+      default: "",
+    },
+    avatarURL: {
+      type: String,
+      default: "",
+    },
+    avatarLabel: {
       type: String,
       default: "",
     },

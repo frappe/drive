@@ -1,0 +1,100 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2024-08-26 18:07:20.129209",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "snapshot_message",
+    "parent_entity",
+    "parent_document",
+    "snapshot_data",
+    "snapshot_size"
+  ],
+  "fields": [
+    {
+      "fieldname": "snapshot_message",
+      "fieldtype": "Text",
+      "in_list_view": 1,
+      "label": "Message",
+      "reqd": 1
+    },
+    {
+      "fieldname": "parent_entity",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Parent Entity",
+      "options": "Drive Entity",
+      "reqd": 1
+    },
+    {
+      "fieldname": "parent_document",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Parent Document",
+      "options": "Drive Document",
+      "reqd": 1
+    },
+    {
+      "fieldname": "snapshot_data",
+      "fieldtype": "Long Text",
+      "in_list_view": 1,
+      "label": "Snapshot Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "snapshot_size",
+      "fieldtype": "Int",
+      "label": "Snapshot Size"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2024-09-03 16:05:48.070364",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Document Version",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive User",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive Admin",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}

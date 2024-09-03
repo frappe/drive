@@ -16,7 +16,7 @@
         autocomplete="true"
         autocorrect="true"
         autocapitalize="true"
-        spellcheck="true"
+        :spellcheck="settings.docSpellcheck ? true : false"
         :editor="editor"
         @keydown.enter.passive="handleEnterKey"
       />
@@ -35,7 +35,10 @@
   <DocMenuAndInfoBar
     v-if="editor && initComplete"
     ref="MenuBar"
+    v-model:allAnnotations="allAnnotations"
+    v-model:activeAnnotation="activeAnnotation"
     :editor="editor"
+    :versions="versions"
     :settings="settings"
   />
   <FilePicker
@@ -54,52 +57,64 @@
       }
     "
   />
+  <SnapshotPreviewDialog
+    v-if="snapShotDialog"
+    v-model="snapShotDialog"
+    :snapshot-data="selectedSnapshot"
+    @success="
+      () => {
+        selectedSnapshot = null
+      }
+    "
+  />
 </template>
 
 <script>
-import "tippy.js/animations/shift-away.css"
-import { normalizeClass, computed } from "vue"
-import { Editor, EditorContent, BubbleMenu } from "@tiptap/vue-3"
-import { Table } from "./Table"
-import StarterKit from "@tiptap/starter-kit"
-import Underline from "@tiptap/extension-underline"
-import Placeholder from "@tiptap/extension-placeholder"
-import TextAlign from "@tiptap/extension-text-align"
-import CharacterCount from "@tiptap/extension-character-count"
+import FilePicker from "@/components/FilePicker.vue"
+import { toast } from "@/utils/toasts.js"
 import Link from "@tiptap/extension-link"
-import Typography from "@tiptap/extension-typography"
-import TableBubbleMenu from "./Table/menus/TableBubbleMenu.vue"
-import FontFamily from "@tiptap/extension-font-family"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
-import { FontSize } from "./font-size"
-import { Highlight } from "./backgroundColor"
-import { TextStyle } from "./text-style"
-import { Color } from "@tiptap/extension-color"
-import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
-import { DOMParser } from "prosemirror-model"
+import Typography from "@tiptap/extension-typography"
+import StarterKit from "@tiptap/starter-kit"
+import { BubbleMenu, Editor, EditorContent } from "@tiptap/vue-3"
 import { onOutsideClickDirective } from "frappe-ui"
+import { DOMParser } from "prosemirror-model"
 import { v4 as uuidv4 } from "uuid"
-import { Comment } from "./comment"
-import { LineHeight } from "./lineHeight"
-import { Indent } from "./indent"
-import Collaboration from "@tiptap/extension-collaboration"
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
-import * as Y from "yjs"
-import { WebrtcProvider } from "y-webrtc"
+import { computed, normalizeClass } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
-import { createEditorButton } from "./utils"
-import DocMenuAndInfoBar from "./DocMenuAndInfoBar.vue"
-import Menu from "./Menu.vue"
-import { toast } from "@/utils/toasts.js"
-import { PageBreak } from "./Pagebreak"
-import FilePicker from "@/components/FilePicker.vue"
-import { ResizableMedia } from "./resizeableMedia"
+import { WebrtcProvider } from "y-webrtc"
+import * as Y from "yjs"
 import { uploadDriveEntity } from "../../utils/chunkFileUpload"
-import configureMention from "./Mention/mention"
-
-import Commands from "./Suggestion/suggestionExtension"
-import suggestion from "./Suggestion/suggestion"
+import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
+import DocMenuAndInfoBar from "./components/DocMenuAndInfoBar.vue"
+import configureMention from "./extensions/mention/mention"
+import Menu from "./components/Menu.vue"
+import { Table } from "./extensions/table"
+import TableBubbleMenu from "./components/TableBubbleMenu.vue"
+import { Comment } from "./extensions/comment"
+import { PageBreak } from "./extensions/Pagebreak"
+import { Highlight } from "./extensions/backgroundColor"
+import { CharacterCount } from "./extensions/character-count"
+import { Collaboration } from "./extensions/collaboration"
+import { CollaborationCursor } from "./extensions/collaborationCursor"
+import { Color } from "./extensions/color"
+import { FontFamily } from "./extensions/font-family"
+import { FontSize } from "./extensions/font-size"
+import { Indent } from "./extensions/indent"
+import { LineHeight } from "./extensions/lineHeight"
+import { Placeholder } from "./extensions/placeholder"
+import { TextAlign } from "./extensions/text-align"
+import { TextStyle } from "./extensions/text-style"
+import { Underline } from "./extensions/underline"
+import { ResizableMedia } from "./extensions/resizenode"
+import { createEditorButton } from "./utils"
+import { Annotation } from "./extensions/AnnotationExtension/annotation"
+import suggestion from "./extensions/suggestion/suggestion"
+import Commands from "./extensions/suggestion/suggestionExtension"
+import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
+import { formatDate } from "../../utils/format"
+import { Paragraph } from "./extensions/paragraph"
 
 export default {
   name: "TextEditor",
@@ -110,6 +125,7 @@ export default {
     DocMenuAndInfoBar,
     FilePicker,
     TableBubbleMenu,
+    SnapshotPreviewDialog,
   },
   directives: {
     onOutsideClick: onOutsideClickDirective,
@@ -117,10 +133,12 @@ export default {
   provide() {
     return {
       editor: computed(() => this.editor),
+      document: computed(() => this.document),
+      versions: computed(() => this.versions),
     }
   },
   inheritAttrs: false,
-  expose: ["editor"],
+  //expose: ["editor", "versions"],
   props: {
     settings: {
       type: Object,
@@ -204,8 +222,14 @@ export default {
         comments: [],
       },
       implicitTitle: "",
+      allAnnotations: [],
       allComments: [],
+      activeAnnotation: "",
+      activeAnchorAnnotations: null,
       isNewDocument: this.entity.title.includes("Untitled Document"),
+      versions: [],
+      selectedSnapshot: null,
+      snapShotDialog: false,
     }
   },
   computed: {
@@ -223,7 +247,8 @@ export default {
           "Separator",
           "Link",
           "Separator",
-          "Comment",
+          "NewAnnotation",
+          //"Comment",
         ]
         return buttons.map(createEditorButton)
       } else if (this.entity.allow_comments) {
@@ -240,6 +265,22 @@ export default {
     },
   },
   watch: {
+    activeAnchorAnnotations: {
+      handler(newVal) {
+        if (newVal) {
+          // unexpected case??
+          let yArray = this.document.getArray("docAnnotations")
+          // Toggle visibility if it's not visible in the document anymore
+          yArray.forEach((item) => {
+            if (newVal.has(item.get("id"))) {
+              item.set("anchor", 1)
+            } else {
+              item.set("anchor", 0)
+            }
+          })
+        }
+      },
+    },
     isNewDocument: {
       handler(val) {
         if (val) {
@@ -316,7 +357,7 @@ export default {
     this.emitter.on("importDocFromWord", () => {
       this.showFilePicker = true
     })
-    const doc = new Y.Doc()
+    const doc = new Y.Doc({ gc: false })
     const ymap = doc.getMap("docinfo")
     ymap.set("lastsaved", this.lastSaved)
     this.document = doc
@@ -325,9 +366,6 @@ export default {
       "fdoc-" + JSON.stringify(this.entityName),
       doc
     )
-    indexeddbProvider.on("synced", () => {
-      this.initComplete = true
-    })
     Y.applyUpdate(doc, this.yjsContent)
     const webrtcProvider = new WebrtcProvider(
       "fdoc-" + JSON.stringify(this.entityName),
@@ -344,7 +382,7 @@ export default {
     document.addEventListener("keydown", this.saveDoc)
     this.editor = new Editor({
       editable: this.editable,
-      autofocus: true,
+      autofocus: "start",
       editorProps: {
         attributes: {
           class: normalizeClass([
@@ -373,9 +411,10 @@ export default {
         },
       },
       onCreate() {
-        componentContext.findCommentsAndStoreValues()
-        componentContext.updateConnectedUsers(componentContext.editor)
+        //componentContext.findCommentsAndStoreValues()
+        //componentContext.updateConnectedUsers(componentContext.editor)
       },
+      // evaluate document version
       onUpdate() {
         componentContext.updateConnectedUsers(componentContext.editor)
         componentContext.findCommentsAndStoreValues()
@@ -392,17 +431,23 @@ export default {
           "update:yjsContent",
           Y.encodeStateAsUpdate(componentContext.document)
         )
+        componentContext.updateAnnotationStatus()
       },
       onSelectionUpdate() {
-        componentContext.updateConnectedUsers(componentContext.editor)
-        componentContext.setCurrentComment()
-        componentContext.isTextSelected =
-          !!componentContext.editor.state.selection.content().size
+        //componentContext.updateConnectedUsers(componentContext.editor)
+        //componentContext.setCurrentComment()
+        //componentContext.isTextSelected =
+        //  !!componentContext.editor.state.selection.content().size
       },
       // eslint-disable-next-line no-sparse-arrays
       extensions: [
         StarterKit.configure({
           history: false,
+          paragraph: {
+            HTMLAttributes: {
+              class: this.entity.version > 0 ? "not-prose" : "",
+            },
+          },
           heading: {
             levels: [1, 2, 3, 4, 5],
           },
@@ -458,6 +503,20 @@ export default {
         }),
         ,
         PageBreak,
+        Annotation.configure({
+          onAnnotationClicked: (ID) => {
+            componentContext.setAndFocusCurrentAnnotation(ID)
+          },
+          onAnnotationActivated: (ID) => {
+            //this.activeAnnotation = ID
+            if (ID) setTimeout(() => componentContext.setCurrentAnnotation(ID))
+          },
+          HTMLAttributes: {
+            //class: 'cursor-pointer annotation  annotation-number'
+            //class: 'cursor-pointer bg-amber-300 bg-opacity-20 border-b-2 border-yellow-300 pb-[1px]'
+            class: "cursor-pointer annotation",
+          },
+        }),
         Collaboration.configure({
           document: doc,
         }),
@@ -526,6 +585,9 @@ export default {
     window.addEventListener("online", () => {
       this.provider.connect()
     })
+    this.localStore.on("synced", () => {
+      this.initComplete = true
+    })
     this.provider.on("status", (e) => {
       this.connected = e.connected
     })
@@ -541,6 +603,26 @@ export default {
     this.provider.on("synced", (e) => {
       this.synced = e.synced
     })
+    this.$realtime.doc_subscribe("Drive Entity", this.entityName)
+    this.$realtime.doc_open("Drive Entity", this.entityName)
+    this.$realtime.on("document_version_change_recv", (data) => {
+      const { doctype, document, author, author_image, author_id } = data
+      if (author_id === this.$realtime.socket.id) {
+        toast({
+          title: "You changed the document version",
+          position: "bottom-right",
+          timeout: 2,
+        })
+        return
+      }
+      toast({
+        title: `Document version changed`,
+        position: "bottom-right",
+        avatarURL: author_image,
+        avatarLabel: author,
+        timeout: 2,
+      })
+    })
   },
   updated() {
     if (this.isNewDocument) {
@@ -548,6 +630,9 @@ export default {
     }
   },
   beforeUnmount() {
+    this.$realtime.off("document_version_change_recv")
+    this.$realtime.doc_close("Drive Entity", this.entityName)
+    this.$realtime.doc_unsubscribe("Drive Entity", this.entityName)
     this.updateConnectedUsers(this.editor)
     this.$store.state.passiveRename = false
     document.removeEventListener("keydown", this.saveDoc)
@@ -559,6 +644,19 @@ export default {
     this.editor = null
   },
   methods: {
+    updateAnnotationStatus() {
+      const temp = new Set()
+      this.editor.state.doc.descendants((node, pos) => {
+        const { marks } = node
+        marks.forEach((mark) => {
+          if (mark.type.name === "annotation") {
+            const annotationMark = mark.attrs.annotationID
+            temp.add(annotationMark)
+          }
+        })
+      })
+      this.activeAnchorAnnotations = temp
+    },
     handleEnterKey() {
       if (this.$store.state.passiveRename) {
         if (!this.implicitTitle.length) return
@@ -747,6 +845,25 @@ export default {
       })
       return (this.allComments = tempComments)
     },
+    setCurrentAnnotation() {
+      let newVal = this.editor.isActive("annotation")
+      const sideBarState =
+        this.$store.state.showInfo && this.$refs.MenuBar.tab == 5
+      if (newVal && sideBarState) {
+        this.activeAnnotation =
+          this.editor.getAttributes("annotation").annotationID
+      }
+    },
+    //Click
+    setAndFocusCurrentAnnotation() {
+      let newVal = this.editor.isActive("annotation")
+      if (newVal) {
+        this.$store.state.showInfo = true
+        this.$refs.MenuBar.tab = 5
+        this.activeAnnotation =
+          this.editor.getAttributes("annotation").annotationID
+      }
+    },
     setCurrentComment() {
       let newVal = this.editor.isActive("comment")
       if (newVal) {
@@ -886,8 +1003,15 @@ export default {
     margin: none !important;
   }
 }
-
+/* 
 span[data-comment] {
+  background: rgba(255, 215, 0, 0.15);
+  border-bottom: 2px solid rgb(255, 210, 0);
+  user-select: text;
+  padding: 2px;
+}
+ */
+span[data-annotation-id] {
   background: rgba(255, 215, 0, 0.15);
   border-bottom: 2px solid rgb(255, 210, 0);
   user-select: text;

@@ -13,7 +13,8 @@
     "settings",
     "comments",
     "raw_content",
-    "mentions"
+    "mentions",
+    "version"
   ],
   "fields": [
     {
@@ -49,10 +50,15 @@
       "fieldname": "mentions",
       "fieldtype": "JSON",
       "label": "Mentions"
+    },
+    {
+      "fieldname": "version",
+      "fieldtype": "Int",
+      "label": "Version"
     }
   ],
   "links": [],
-  "modified": "2024-07-02 11:00:31.529233",
+  "modified": "2024-09-03 16:08:28.021205",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",

@@ -1,0 +1,162 @@
+<template>
+  <editor-content v-if="editor" :editor="editor" />
+</template>
+
+<script setup>
+import { ref, onMounted, onBeforeUnmount, normalizeClass } from "vue"
+import Link from "@tiptap/extension-link"
+import TaskItem from "@tiptap/extension-task-item"
+import TaskList from "@tiptap/extension-task-list"
+import Typography from "@tiptap/extension-typography"
+import StarterKit from "@tiptap/starter-kit"
+import { Editor, EditorContent } from "@tiptap/vue-3"
+import { IndexeddbPersistence } from "y-indexeddb"
+import * as Y from "yjs"
+import { Table } from "./extensions/table"
+import { PageBreak } from "./extensions/Pagebreak"
+import { Highlight } from "./extensions/backgroundColor"
+import { CharacterCount } from "./extensions/character-count"
+import { Collaboration } from "./extensions/collaboration"
+import { Color } from "./extensions/color"
+import { FontFamily } from "./extensions/font-family"
+import { FontSize } from "./extensions/font-size"
+import { Indent } from "./extensions/indent"
+import { LineHeight } from "./extensions/lineHeight"
+import { Placeholder } from "./extensions/placeholder"
+import { TextAlign } from "./extensions/text-align"
+import { TextStyle } from "./extensions/text-style"
+import { Underline } from "./extensions/underline"
+import { ResizableMedia } from "./extensions/resizenode"
+
+const editor = ref(null)
+const document = ref(null)
+const provider = ref(null)
+
+const props = defineProps({
+  yjsUpdate: {
+    type: Uint8Array,
+    required: true,
+  },
+})
+
+onMounted(() => {
+  const doc = new Y.Doc()
+  Y.applyUpdate(doc, props.yjsUpdate)
+  const indexeddbProvider = new IndexeddbPersistence("version-proxy-doc", doc)
+  provider.value = indexeddbProvider
+  document.value = doc
+  provider.value.on("synced", () => {
+    editor.value = new Editor({
+      editable: false,
+      // eslint-disable-next-line no-sparse-arrays
+      extensions: [
+        StarterKit.configure({
+          history: false,
+          heading: {
+            levels: [1, 2, 3, 4, 5],
+          },
+          listItem: {
+            HTMLAttributes: {
+              class: "prose-list-item",
+            },
+          },
+          codeBlock: {
+            HTMLAttributes: {
+              spellcheck: false,
+              class:
+                "not-prose my-5 px-4 py-2 text-[0.9em] font-mono text-black bg-gray-50 rounded border border-gray-300 overflow-x-auto",
+            },
+          },
+          blockquote: {
+            HTMLAttributes: {
+              class:
+                "prose-quoteless text-black border-l-2 pl-2 border-gray-400 text-[0.9em]",
+            },
+          },
+          code: {
+            HTMLAttributes: {
+              class:
+                "not-prose px-px font-mono bg-gray-50 text-[0.85em] rounded-sm border border-gray-300",
+            },
+          },
+          bulletList: {
+            keepMarks: true,
+            keepAttributes: false,
+            HTMLAttributes: {
+              class: "",
+            },
+          },
+          orderedList: {
+            keepMarks: true,
+            keepAttributes: false,
+            HTMLAttributes: {
+              class: "",
+            },
+          },
+        }),
+        Table,
+        FontFamily.configure({
+          types: ["textStyle"],
+        }),
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+          defaultAlignment: "left",
+        }),
+        ,
+        PageBreak,
+        Collaboration.configure({
+          document: doc,
+        }),
+        LineHeight,
+        Indent,
+        Link.configure({
+          openOnClick: false,
+        }),
+        Placeholder.configure({
+          placeholder: "Press / for commands",
+        }),
+        Highlight.configure({
+          multicolor: true,
+        }),
+        TaskList.configure({
+          HTMLAttributes: {
+            class: "not-prose",
+          },
+        }),
+        TaskItem.configure({
+          HTMLAttributes: {
+            class: "my-task-item",
+          },
+        }),
+        CharacterCount,
+        Underline,
+        Typography,
+        TextStyle,
+        FontSize.configure({
+          types: ["textStyle"],
+        }),
+        Color.configure({
+          types: ["textStyle"],
+        }),
+        ResizableMedia.configure({
+          uploadFn: () => {},
+        }),
+      ],
+      editorProps: {
+        attributes: {
+          /* !p-0 to offset .Prosemirror */
+          class: normalizeClass([
+            `text-[14px] !p-0 mx-2 my-4 prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
+          ]),
+        },
+      },
+    })
+  })
+})
+
+onBeforeUnmount(() => {
+  editor.value.destroy()
+  provider.value.clearData()
+  document.value.destroy()
+})
+</script>

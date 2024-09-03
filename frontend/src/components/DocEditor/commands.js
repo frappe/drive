@@ -4,8 +4,8 @@ import Bold from "./icons/Bold.vue"
 import Italic from "./icons/Italic.vue"
 import Strikethrough from "./icons/StrikeThrough.vue"
 import Underline from "./icons/Underline.vue"
-import NewAnnotation from "./icons/NewAnnotation.vue"
-import NewLink from "./icons/NewLink.vue"
+import { default as NewCommentIcon } from "../EspressoIcons/Comment.vue"
+import { default as NewLink } from "../EspressoIcons/Link.vue"
 import { TableCellsSplit, TableCellsMerge } from "lucide-vue-next"
 import ToggleHeaderCell from "./icons/ToggleHeaderCell.vue"
 
@@ -44,16 +44,28 @@ export default {
     label: "New Link",
     icon: NewLink,
     isActive: (editor) => editor.isActive("link"),
-    component: defineAsyncComponent(() => import("./InsertLink.vue")),
+    component: defineAsyncComponent(() =>
+      import("./components/InsertLink.vue")
+    ),
   },
   Separator: {
     type: "separator",
   },
+  NewAnnotation: {
+    label: "New Annotation",
+    icon: NewCommentIcon,
+    isActive: (editor) => editor.isActive("comment"),
+    component: defineAsyncComponent(() =>
+      import("./components/NewAnnotation.vue")
+    ),
+  },
   Comment: {
     label: "New Comment",
-    icon: NewAnnotation,
+    icon: NewLink,
     isActive: (editor) => editor.isActive("comment"),
-    component: defineAsyncComponent(() => import("./NewComment.vue")),
+    component: defineAsyncComponent(() =>
+      import("./components/NewComment.vue")
+    ),
   },
   MergeCells: {
     label: "Merge Cells",
