@@ -346,9 +346,11 @@ def get_valid_breadcrumbs(entity, user_access):
     Determine user access and generate upward path (breadcrumbs).
     """
     file_path = generate_upward_path(entity.name)
+    if entity.owner != file_path[0].owner:
+        file_path.pop(0)
     if entity.owner != frappe.session.user:
-        permission_path = get_shared_breadcrumbs(user_access.docshare_name)       
-        x = file_path[:-len(permission_path)]
+        permission_path = get_shared_breadcrumbs(user_access.docshare_name)
+        x = file_path[: -len(permission_path)]
         for i in reversed(x):
             if i.owner == frappe.session.user:
                 permission_path.insert(0, i)            
