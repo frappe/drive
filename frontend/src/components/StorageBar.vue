@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!maxStorage.loading && !storageUsed.loading"
     class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
     @click="emitter.emit('showSettings', 3)"
   >
@@ -41,6 +42,7 @@ import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
 const emitter = inject("emitter")
 const usedStorage = ref(0)
+const storageMax = ref(5368709120)
 const store = useStore()
 const isExpanded = computed(() => {
   return store.state.IsSidebarExpanded
@@ -50,12 +52,12 @@ const formatedString = computed(() => {
   return (
     formatSize(usedStorage.value) +
     " used out of " +
-    base2BlockSize(maxStorage.data)
+    base2BlockSize(storageMax.value)
   )
 })
 
 const calculatePercent = computed(() => {
-  let num = (100 * usedStorage.value) / maxStorage.data
+  let num = (100 * usedStorage.value) / storageMax.value
   return new Intl.NumberFormat("default", {
     style: "percent",
     minimumFractionDigits: 1,
@@ -69,6 +71,7 @@ let maxStorage = createResource({
   cache: "max_storage",
   onSuccess(data) {
     if (!data) data = 0
+    storageMax.value = data
   },
   onError(error) {
     if (error.messages) {
