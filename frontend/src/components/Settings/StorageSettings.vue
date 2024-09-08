@@ -1,49 +1,62 @@
 <template>
   <h1 class="font-semibold mb-8">Storage</h1>
-  <div class="flex flex-col items-start justify-start w-full mb-4">
-    <span class="text-lg font-semibold text-gray-800 mb-3"
-      >You have used {{ formatSize(usedSpace) }} out of
-      {{ base2BlockSize(planSizeLimit) }}</span
-    >
+  <div
+    v-if="!usedSpace"
+    class="h-full w-full flex flex-col items-center justify-center my-auto"
+  >
+    <Cloud class="h-7 stroke-1 text-gray-600" />
+    <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
+  </div>
+  <div v-else>
+    <div class="flex flex-col items-start justify-start w-full mb-4">
+      <span class="text-lg font-semibold text-gray-800 mb-3"
+        >You have used {{ formatSize(usedSpace) }} out of
+        {{ base2BlockSize(planSizeLimit) }}</span
+      >
+      <div
+        class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0"
+      >
+        <div
+          v-for="i in $resources.getDataByMimeType.data"
+          :key="i.file_kind"
+          class="h-7"
+          :style="{
+            backgroundColor: i.color,
+            width: i.percentageFormat,
+            paddingRight: `${5 + i.percentageRaw}px`,
+          }"
+        ></div>
+      </div>
+    </div>
     <div
-      class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0"
+      class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
     >
       <div
         v-for="i in $resources.getDataByMimeType.data"
         :key="i.file_kind"
-        class="h-7"
-        :style="{
-          backgroundColor: i.color,
-          width: i.percentageFormat,
-          paddingRight: `${5 + i.percentageRaw}px`,
-        }"
-      ></div>
-    </div>
-  </div>
-  <div
-    class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
-  >
-    <div
-      v-for="i in $resources.getDataByMimeType.data"
-      :key="i.file_kind"
-      class="w-full border-b flex items-center justify-start py-4 gap-x-2"
-    >
-      <div
-        class="h-2 w-2 rounded-full"
-        :style="{
-          backgroundColor: i.color,
-        }"
-      ></div>
-      <span class="text-gray-800 text-base">{{ i.file_kind }}</span>
-      <span class="text-gray-800 text-base ml-auto">{{ i.h_size }}</span>
+        class="w-full border-b flex items-center justify-start py-4 gap-x-2"
+      >
+        <div
+          class="h-2 w-2 rounded-full"
+          :style="{
+            backgroundColor: i.color,
+          }"
+        ></div>
+        <span class="text-gray-800 text-base">{{ i.file_kind }}</span>
+        <span class="text-gray-800 text-base ml-auto">{{ i.h_size }}</span>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import { formatSize, base2BlockSize } from "../../utils/format"
+import Cloud from "@/components/EspressoIcons/Cloud.vue"
 
 export default {
   name: "StorageSettings",
+  components: {
+    Cloud,
+  },
   data() {
     return {
       fullName: this.$store.state.user.fullName,

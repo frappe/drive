@@ -28,6 +28,13 @@
       </div>
     </div>
   </div>
+  <div
+    v-if="!$resources.fetchAllUsers?.data?.length"
+    class="h-1/2 w-full flex flex-col items-center justify-center my-auto"
+  >
+    <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
+    <span class="text-gray-800 text-sm mt-2">No Users</span>
+  </div>
 </template>
 
 <script>
