@@ -468,15 +468,15 @@ export default {
         const date = new Date(newVal + " UTC")
         const unix = Math.floor(date.getTime() / 1000)
         const now = Math.floor(Date.now() / 1000)
-        if (unix > now) {
+        if (unix < now) {
+          this.invalidAfter = null
+          this.invalidateAfterError = "Cannot select an earlier date"
+        } else {
           this.invalidateAfterError = null
           this.$resources.updateInvalidAfter.submit({
             entity_name: this.entityName,
             invalidation_date: newVal,
           })
-        } else {
-          this.invalidAfter = null
-          this.invalidateAfterError = "Cannot select an earlier date"
         }
       },
     },
