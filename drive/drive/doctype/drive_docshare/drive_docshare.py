@@ -16,6 +16,7 @@ class DriveDocShare(Document):
         self.validate_general_access()
         self.cascade_permissions_downwards()
         self.get_doc().run_method("validate_share", self)
+        self.update_children()
 
     def get_doc(self):
         if not getattr(self, "_doc", None):
@@ -25,6 +26,14 @@ class DriveDocShare(Document):
     def cascade_permissions_downwards(self):
         if self.share or self.write:
             self.read = 1
+
+    def update_children(self):
+        children = self.get_children()
+        new_value = self.valid_until
+        for child in children:
+            child.valid_until = new_value
+            child.save()
+        return
 
     def validate_general_access(self):
         if self.everyone | self.public:
@@ -91,6 +100,14 @@ class DriveDocShare(Document):
                 get_fullname(self.owner), get_fullname(self.user_name)
             ),
         )
+
+    def get_children(self):
+        """Return a generator that yields child Documents."""
+        child_names = frappe.get_list(
+            self.doctype, filters={"share_parent": self.name}, pluck="name"
+        )
+        for name in child_names:
+            yield frappe.get_doc(self.doctype, name)
 
 
 def on_doctype_update():

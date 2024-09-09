@@ -112,6 +112,7 @@ class DriveEntity(Document):
                 write=1,
                 share=1,
                 notify=0,
+                protected=1,
             )
 
         for permission in permissions:
@@ -125,6 +126,7 @@ class DriveEntity(Document):
                 everyone=permission.everyone,
                 public=permission.public,
                 notify=0,
+                protected=1,
             )
         self.allow_comments = parent_folder.allow_comments
         self.allow_download = parent_folder.allow_download
@@ -401,6 +403,7 @@ class DriveEntity(Document):
         everyone=0,
         public=0,
         notify=0,
+        protected=0,
     ):
         """
         Share this file or folder with the specified user.
@@ -472,6 +475,7 @@ class DriveEntity(Document):
                 "share": cint(share),
                 "everyone": cint(everyone),
                 "public": cint(public),
+                "protected": cint(protected),
             }
         )
 

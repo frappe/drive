@@ -23,10 +23,40 @@
             minHeight: $refs.shareMain?.clientHeight + 'px',
           }"
         >
-          <span class="text-gray-600 font-medium text-base">Settings</span>
-          <div class="flex flex-col space-y-0 mt-4">
-            <Switch v-model="allowComments" label="Allow Comments" />
-            <Switch v-model="allowDownload" label="Allow Downloading" />
+          <div class="flex flex-col space-y-4">
+            <div>
+              <span class="mb-0.5 block text-sm leading-4 text-gray-700"
+                >Preferences</span
+              >
+              <Switch v-model="allowComments" label="Allow Comments" />
+              <Switch v-model="allowDownload" label="Allow Downloading" />
+            </div>
+            <div>
+              <DatePicker
+                v-model="invalidAfter"
+                variant="subtle"
+                label="Invalidate after"
+              ></DatePicker>
+              <span
+                v-if="invalidateAfterError"
+                class="block text-xs leading-4 text-red-500 px-0.5 py-1.5"
+              >
+                {{ invalidateAfterError }}
+              </span>
+              <span
+                v-else-if="invalidAfter"
+                class="block text-xs leading-4 text-gray-700 px-0.5 py-1.5"
+              >
+                Selected documents will remain shared until
+                {{ useDateFormat(invalidAfter, "YY-MM-DD") }}
+              </span>
+              <span
+                v-else
+                class="block text-xs leading-4 text-gray-700 px-0.5 py-1.5"
+              >
+                Selected documents will remain shared indefinitely
+              </span>
+            </div>
           </div>
         </div>
         <div
@@ -174,7 +204,7 @@
             @add-new-users="addNewUsers"
           />
 
-          <div class="overflow-y-auto px-4 sm:px-6">
+          <div class="overflow-y-auto max-h-96 px-4 sm:px-6">
             <div
               v-if="!$resources.sharedWith.loading"
               class="text-base space-y-4 mb-5"
@@ -330,6 +360,9 @@ import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import Check from "@/components/EspressoIcons/Check.vue"
 import { capture } from "@/telemetry"
+import DatePicker from "frappe-ui/src/components/DatePicker.vue"
+import { formatDate } from "@/utils/format"
+import { useDateFormat } from "@vueuse/core"
 
 export default {
   name: "ShareDialog",
@@ -347,6 +380,7 @@ export default {
     AccessButton,
     Link,
     Switch,
+    DatePicker,
   },
   props: {
     modelValue: {
@@ -373,6 +407,8 @@ export default {
         everyone: false,
         public: false,
       },
+      invalidAfter: null,
+      invalidateAfterError: null,
       allowComments: true,
       allowDownload: true,
       saveLoading: false,
@@ -427,6 +463,23 @@ export default {
       },
       deep: true,
     },
+    invalidAfter: {
+      handler(newVal) {
+        const date = new Date(newVal + " UTC")
+        const unix = Math.floor(date.getTime() / 1000)
+        const now = Math.floor(Date.now() / 1000)
+        if (unix > now) {
+          this.invalidateAfterError = null
+          this.$resources.updateInvalidAfter.submit({
+            entity_name: this.entityName,
+            invalidation_date: newVal,
+          })
+        } else {
+          this.invalidAfter = null
+          this.invalidateAfterError = "Cannot select an earlier date"
+        }
+      },
+    },
     allowComments: {
       handler() {
         this.$resources.toggleAllowComments.submit()
@@ -439,6 +492,8 @@ export default {
     },
   },
   methods: {
+    formatDate,
+    useDateFormat,
     addNewUsers(data) {
       for (let i in data.users) {
         this.$resources.share.submit({
@@ -499,6 +554,9 @@ export default {
         },
         onSuccess(data) {
           this.entity = data
+          if (data.valid_until) {
+            this.invalidAfter = data.valid_until
+          }
           this.allowComments = !!data.allow_comments
           this.allowDownload = !!data.allow_download
         },
@@ -544,6 +602,24 @@ export default {
           entity_name: this.entityName,
           method: "toggle_allow_comments",
           new_value: !this.allowComments,
+        },
+        onSuccess() {
+          this.$emit("success")
+        },
+        onError(error) {
+          if (error.messages) {
+            console.log(error.messages)
+          }
+        },
+      }
+    },
+    updateInvalidAfter() {
+      return {
+        url: "drive.api.permissions.update_document_invalidation",
+        debounce: 500,
+        params: {
+          entity_name: this.entityName,
+          invalidation_date: this.invalidAfter,
         },
         onSuccess() {
           this.$emit("success")
