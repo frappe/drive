@@ -374,11 +374,11 @@ class DriveEntity(Document):
         Toggle allow comments for entity
 
         """
-
-        self.db_set("allow_comments", new_value, commit=True, update_modified=False)
+        self.allow_comments = new_value
         if self.is_group:
             for child in self.get_children():
                 child.toggle_allow_comments(new_value)
+        self.save()
 
     @frappe.whitelist()
     def toggle_allow_download(self, new_value):
@@ -386,10 +386,11 @@ class DriveEntity(Document):
         Toggle allow download for entity
 
         """
-        self.db_set("allow_download", new_value, commit=True, update_modified=False)
+        self.allow_download = new_value
         if self.is_group:
             for child in self.get_children():
                 child.toggle_allow_download(new_value)
+        self.save()
 
     @frappe.whitelist()
     def share(
