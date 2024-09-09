@@ -1,3 +1,7 @@
+import { format } from "date-fns"
+import { fromZonedTime } from "date-fns-tz"
+import store from "../store"
+
 export function formatSize(size, nDigits = 1) {
   if (size === 0) return "0 B"
   const k = 1000 // Change base to 1000 for decimal prefixes
@@ -27,17 +31,20 @@ export function base2BlockSize(bytes, decimals = 2, current = 0) {
 }
 
 export function formatDate(date) {
-  date = new Date(date)
+  const serverTimeZone = store.state.serverTZ
+  const dateObj = new Date(date)
 
-  let formattedDate = date.toLocaleDateString(undefined, {
-    year: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-  })
-  let formattedTime = date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "numeric",
-  })
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const zonedDate = fromZonedTime(dateObj, serverTimeZone)
+  const hourCycle = navigator.language || "en-US"
+
+  const formattedDate = format(zonedDate, "MM/dd/yy", { timeZone })
+  let formattedTime
+  if (hourCycle === "en-US") {
+    formattedTime = format(zonedDate, "hh:mm a", { timeZone })
+  } else {
+    formattedTime = format(zonedDate, "HH:mm", { timeZone })
+  }
   return `${formattedDate}, ${formattedTime}`
 }
 

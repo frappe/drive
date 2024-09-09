@@ -114,6 +114,7 @@ export default {
     },
   },
   async mounted() {
+    this.$store.dispatch.getServerTZ
     this.addKeyboardShortcut()
     this.emitter.on("showSearchPopup", (data) => {
       this.showSearchPopup = data
@@ -148,6 +149,16 @@ export default {
           e.preventDefault()
         }
       })
+    },
+  },
+  resources: {
+    getServerTZ: {
+      url: "drive.api.api.get_server_timezone",
+      auto: true,
+      method: "GET",
+      onSuccess(data) {
+        this.$store.state.serverTZ = data
+      },
     },
   },
 }

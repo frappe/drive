@@ -45,6 +45,7 @@ const store = createStore({
       JSON.parse(localStorage.getItem("selectedEntities")) ||
       JSON.parse(localStorage.getItem("currentFolder")) ||
       [],
+    serverTZ: null,
     currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || [],
     currentViewEntites: get("currentViewEntites") || [],
     pasteData: { entities: [], action: null },
