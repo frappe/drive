@@ -1,6 +1,7 @@
 import frappe
 import os
 import re
+from urllib.parse import quote
 import json
 from pypika import Order, Case, functions as fn
 from pathlib import Path
@@ -410,15 +411,24 @@ def get_file_content(entity_name, trigger_download=0):  #
         raise FileNotFoundError
 
     with DistributedLock(drive_entity.path, exclusive=False):
-        return send_file(
-            drive_entity.path,
-            mimetype=drive_entity.mime_type,
-            as_attachment=trigger_download,
-            conditional=True,
-            max_age=3600,
-            download_name=drive_entity.title,
-            environ=frappe.request.environ,
-        )
+        if frappe.conf.developer_mode:
+            return send_file(
+                drive_entity.path,
+                mimetype=drive_entity.mime_type,
+                as_attachment=trigger_download,
+                conditional=True,
+                max_age=3600,
+                download_name=drive_entity.title,
+                environ=frappe.request.environ,
+            )
+        else:
+            folders = drive_entity.path.split(os.path.sep)
+            new_path = "/protected/" + os.path.sep.join(folders[1:])
+            response = Response()
+            response.headers.set("Content-Length", str(drive_entity.file_size))
+            response.headers.set("X-Accel-Redirect", new_path)
+            response.headers.set("Content-Disposition", "attachment", filename=drive_entity.title)
+            return response
 
 
 def stream_file_content(drive_entity, range_header):
@@ -1434,6 +1444,7 @@ def get_shared_breadcrumbs(share_name):
     )
     share_breadcrumbs = []
     for i in result:
+        print(i)
         share_breadcrumbs.append(
             frappe.get_value(
                 "Drive Entity",
