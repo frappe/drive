@@ -109,7 +109,7 @@
           (newUsers = [])
       "
     >
-      Invite
+      {{ buttonText }}
     </Button>
   </div>
 </template>
@@ -125,6 +125,10 @@ const allUsers = ref([])
 const newUserAccess = ref({ read: 1, write: 0 })
 const newUsers = ref([])
 const props = defineProps({
+  buttonText: {
+    type: String,
+    default: "Invite",
+  },
   buttonVariant: {
     type: String,
     default: "subtle",
