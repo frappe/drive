@@ -18,8 +18,10 @@
     "everyone",
     "public",
     "notify",
+    "protected",
     "owner_parent",
-    "share_parent"
+    "share_parent",
+    "valid_until"
   ],
   "fields": [
     {
@@ -94,11 +96,22 @@
       "fieldname": "share_parent",
       "fieldtype": "Data",
       "label": "Share Parent"
+    },
+    {
+      "fieldname": "valid_until",
+      "fieldtype": "Date",
+      "label": "Valid Until"
+    },
+    {
+      "default": "0",
+      "fieldname": "protected",
+      "fieldtype": "Check",
+      "label": "Protected"
     }
   ],
   "in_create": 1,
   "links": [],
-  "modified": "2024-01-30 12:16:06.031376",
+  "modified": "2024-09-09 12:47:22.960828",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive DocShare",
