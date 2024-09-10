@@ -21,6 +21,8 @@ from drive.api.files import generate_upward_path
 class DriveEntity(Document):
     def before_save(self):
         self.version = self.version + 1
+
+    def before_insert(self):
         self.file_kind = mime_to_human(self.mime_type, self.is_group)
 
     def after_insert(self):
