@@ -23,7 +23,6 @@ add_to_apps_screen = [
     }
 ]
 
-
 # Includes in <head>
 # ------------------
 
@@ -144,6 +143,7 @@ fixtures = [{"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}]
 
 scheduler_events = {
     "daily": ["drive.api.files.auto_delete_from_trash"],
+    "daily": ["drive.api.files.delete_expired_docshares"],
 }
 
 # Testing
