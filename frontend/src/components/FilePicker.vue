@@ -150,7 +150,7 @@
                     @dragover.prevent
                     @mousedown.stop
                   >
-                    <File
+                    <GridItem
                       :file_kind="file.file_kind"
                       :mime_type="file.mime_type"
                       :file_ext="file.file_ext"
@@ -173,7 +173,7 @@
 
 <script setup>
 import NoFilesSection from "./NoFilesSection.vue"
-import File from "./File.vue"
+import GridItem from "./GridItem.vue"
 import { watch, defineEmits, computed, h, ref } from "vue"
 import { useTimeAgo } from "@vueuse/core"
 import { createResource, Dialog, Button, Tabs, Dropdown } from "frappe-ui"
@@ -223,7 +223,7 @@ const files = computed(() => {
 const open = computed({
   // getter
   get() {
-    return this.modelValue
+    return props.modelValue
   },
   // setter
   set(newValue) {

@@ -49,7 +49,7 @@ import { formatMimeType } from "@/utils/format"
 import { getIconUrl, thumbnail_getIconUrl } from "@/utils/getIconUrl"
 
 export default {
-  name: "File",
+  name: "GridItem",
   props: {
     file_kind: String,
     mime_type: String,

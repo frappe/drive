@@ -136,7 +136,7 @@
           >
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
-          <File
+          <GridItem
             :file_kind="file.file_kind"
             :mime_type="file.mime_type"
             :file_ext="file.file_ext"
@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import File from "@/components/File.vue"
+import GridItem from "@/components/GridItem.vue"
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
 import { FeatherIcon, Button } from "frappe-ui"
 import { useInfiniteScroll } from "@vueuse/core"
@@ -178,7 +178,7 @@ import { ref } from "vue"
 export default {
   name: "GridView",
   components: {
-    File,
+    GridItem,
     Button,
     FeatherIcon,
   },
