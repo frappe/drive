@@ -1,33 +1,14 @@
 <template>
   <div
-    v-if="isEmpty"
-    class="h-full flex flex-col overflow-y-hidden mt-3.5 px-4 pb-8"
-  >
-    <slot name="toolbar"></slot>
-    <slot name="placeholder"></slot>
-  </div>
-
-  <div
-    v-else
     id="main"
     ref="container"
-    class="h-full overflow-y-auto pt-3.5 px-4 pb-5"
+    class="h-full w-full"
     @mousedown.passive="(event) => handleMousedown(event)"
   >
-    <slot name="toolbar"></slot>
-    <!--       class="mb-2 grid items-center space-x-4 rounded bg-gray-100 p-2"
- -->
     <div
       class="hidden sm:grid items-center rounded bg-gray-100 min-h-7 p-2 overflow-hidden mb-2"
       :style="{ gridTemplateColumns: tableColumnsGridWidth }"
     >
-      <!-- <Checkbox
-        class="cursor-pointer duration-300 z-10"
-        :modelValue="
-          selectedEntities?.length > 1 &&
-          selectedEntities?.length === folderContents?.length
-        "
-        @click.stop="toggleSelectAll" /> -->
       <div class="flex w-full items-center text-sm text-gray-600">Name</div>
       <div class="flex w-full items-center justify-start text-sm text-gray-600">
         Owner
@@ -38,7 +19,6 @@
       >
         Last Accessed
       </div>
-      <!-- Use the listview api if this needs to be switched in more views -->
       <div
         v-else
         class="flex w-full items-center justify-end text-sm text-gray-600"
@@ -50,10 +30,24 @@
       </div>
       <div />
     </div>
-    <div v-if="foldersBefore">
-      <div v-for="entity in folders" :key="entity.name">
+    <div v-for="(entities, i) in folderContents" :key="i">
+      <div
+        v-if="Object.keys(folderContents).length > 1 && entities.length"
+        class="flex items-center w-full py-1.5 pr-2"
+      >
+        <span class="text-base text-gray-600 font-medium leading-6 pl-1.5">
+          {{ i }}
+        </span>
+      </div>
+
+      <div
+        v-if="Object.keys(folderContents).length > 1 && entities.length"
+        class="mx-2 h-px border-t border-gray-200"
+      ></div>
+      <div v-for="entity in entities" :key="entity.name">
         <div
           :id="entity.name"
+          :key="entity.name"
           class="entity grid items-center cursor-pointer rounded px-2 py-1.5 hover:bg-gray-50 group"
           :style="{
             gridTemplateColumns: tableColumnsGridWidth,
@@ -148,103 +142,6 @@
         <div class="mx-2 h-px border-t border-gray-200"></div>
       </div>
     </div>
-    <div v-for="entity in files" :key="entity.name">
-      <div
-        :id="entity.name"
-        :key="entity.name"
-        class="entity grid items-center cursor-pointer rounded px-2 py-1.5 hover:bg-gray-50 group"
-        :style="{
-          gridTemplateColumns: tableColumnsGridWidth,
-        }"
-        :class="
-          selectedEntities.includes(entity)
-            ? 'bg-gray-100'
-            : 'hover:bg-gray-100'
-        "
-        :draggable="false"
-        @[action]="dblClickEntity(entity)"
-        @click="selectEntity(entity, $event, folderContents)"
-        @contextmenu="handleEntityContext(entity, $event, folderContents)"
-        @dragstart="dragStart(entity, $event)"
-        @dragenter.prevent
-        @dragover.prevent
-        @mousedown.stop
-        @drop="isGroupOnDrop(entity)"
-      >
-        <div
-          class="flex items-center text-gray-800 text-base font-medium truncate"
-          :draggable="false"
-        >
-          <svg
-            v-if="entity.is_group"
-            class="h-auto w-5 mr-3"
-            :draggable="false"
-            :style="{ fill: entity.color }"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clip-path="url(#clip0_1942_59507)">
-              <path
-                d="M7.83412 2.88462H1.5C1.22386 2.88462 1 3.10847 1 3.38462V12.5C1 13.6046 1.89543 14.5 3 14.5H13C14.1046 14.5 15 13.6046 15 12.5V2C15 1.72386 14.7761 1.5 14.5 1.5H9.94008C9.88623 1.5 9.83382 1.51739 9.79065 1.54957L8.13298 2.78547C8.04664 2.84984 7.94182 2.88462 7.83412 2.88462Z"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_1942_59507">
-                <rect width="16" height="16" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-          <img
-            v-else
-            :src="getIconUrl(formatMimeType(entity.mime_type))"
-            :draggable="false"
-            class="h-[20px] mr-3"
-          />
-          {{ entity.title }}
-        </div>
-        <div
-          class="hidden sm:flex items-center justify-start text-gray-700 text-base truncate"
-        >
-          <Avatar
-            :image="entity.user_image"
-            :label="entity.full_name"
-            class="-relative mr-2"
-            size="sm"
-          />
-          {{ entity.owner }}
-        </div>
-        <div
-          :title="entity.modified"
-          class="hidden sm:flex items-center justify-end text-gray-700 text-base truncate"
-        >
-          {{ entity.relativeModified }}
-        </div>
-        <div class="flex w-full justify-end text-base text-gray-700">
-          {{ entity.file_size }}
-        </div>
-        <div class="flex w-full justify-end">
-          <Button
-            :variant="'ghost'"
-            :model-value="selectedEntities.includes(entity)"
-            :class="
-              selectedEntities.includes(entity)
-                ? 'visible bg-gray-300'
-                : 'bg-inherit visible'
-            "
-            class="border-1 duration-300 relative ml-auto visible group-hover:visible"
-            @click.stop="
-              handleEntityContext(entity, $event, displayOrderedEntities)
-            "
-          >
-            <FeatherIcon class="h-4" name="more-horizontal" />
-          </Button>
-        </div>
-      </div>
-      <div class="mx-2 h-px border-t border-gray-200"></div>
-    </div>
     <Button
       v-if="overrideCanLoadMore"
       class="w-full mx-auto text-base pt-8 pb-6"
@@ -278,7 +175,7 @@ export default {
   },
   props: {
     folderContents: {
-      type: Array,
+      type: Object,
       default: null,
     },
     selectedEntities: {
@@ -334,26 +231,13 @@ export default {
         : "2fr 1fr 150px 150px 40px"
     },
     isEmpty() {
-      return this.folderContents && this.folderContents.length === 0
-    },
-    folders() {
-      return this.folderContents
-        ? this.folderContents.filter((x) => x.is_group === 1)
-        : []
+      return !this.$store.state.currentViewEntites?.length
     },
     foldersBefore() {
       return this.$store.state.foldersBefore
     },
-    files() {
-      if (this.foldersBefore) {
-        return this.folderContents
-          ? this.folderContents.filter((x) => x.is_group === 0)
-          : []
-      }
-      return this.folderContents
-    },
     displayOrderedEntities() {
-      return this.folders.concat(this.files)
+      return this.$store.state.currentViewEntites
     },
   },
   mounted() {
@@ -432,7 +316,7 @@ export default {
       const selectedEntities = handleDragSelect(
         entityElements,
         this.selectionCoordinates,
-        this.folderContents
+        this.displayOrderedEntities
       )
       this.$emit("entitySelected", selectedEntities)
       this.$store.commit("setEntityInfo", selectedEntities)

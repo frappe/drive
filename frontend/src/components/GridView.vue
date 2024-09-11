@@ -1,116 +1,28 @@
 <template>
-  <div
-    v-if="isEmpty"
-    class="h-full flex flex-col overflow-y-hidden pt-3.5 px-4 pb-8"
-  >
-    <slot name="toolbar"></slot>
-    <slot name="placeholder"></slot>
-  </div>
-  <div
-    v-else
-    id="main"
-    ref="container"
-    class="h-full flex flex-col overflow-y-auto pt-3.5 px-4 pb-8"
-    @mousedown="(event) => handleMousedown(event)"
-  >
-    <slot name="toolbar"></slot>
-    <div v-if="folders.length > 0 && foldersBefore">
-      <div class="text-gray-600 font-medium mt-6.5">Folders</div>
-      <div class="grid-container mt-2">
+  <div id="main" ref="container" @mousedown="(event) => handleMousedown(event)">
+    <div v-for="(entities, i) in folderContents" :key="i">
+      <span
+        v-if="entities.length"
+        class="text-base text-gray-600 font-medium leading-6 pl-1 mt-0"
+      >
+        {{ i }}
+      </span>
+
+      <div v-if="entities.length" class="grid-container my-2">
         <div
-          v-for="folder in folders"
-          :id="folder.name"
-          :key="folder.name"
-          class="cursor-pointer p-3 w-[162px] sm:w-[172px] h-[98px] sm:h-[108px] rounded-lg border group select-none entity"
-          draggable="false"
-          :class="
-            selectedEntities.includes(folder)
-              ? 'bg-gray-100 border-gray-300'
-              : 'border-gray-200 hover:shadow-xl'
-          "
-          @[action]="dblClickEntity(folder)"
-          @click="selectEntity(folder, $event, displayOrderedEntities)"
-          @contextmenu="
-            handleEntityContext(folder, $event, displayOrderedEntities)
-          "
-          @dragstart="dragStart(folder, $event)"
-          @drop="onDrop(folder)"
-          @dragenter.prevent
-          @dragover.prevent
-          @mousedown.stop
-        >
-          <div class="flex items-start">
-            <svg
-              class="h-7.5 w-auto"
-              :draggable="false"
-              :style="{ fill: folder.color }"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clip-path="url(#clip0_1942_59507)">
-                <path
-                  d="M7.83412 2.88462H1.5C1.22386 2.88462 1 3.10847 1 3.38462V12.5C1 13.6046 1.89543 14.5 3 14.5H13C14.1046 14.5 15 13.6046 15 12.5V2C15 1.72386 14.7761 1.5 14.5 1.5H9.94008C9.88623 1.5 9.83382 1.51739 9.79065 1.54957L8.13298 2.78547C8.04664 2.84984 7.94182 2.88462 7.83412 2.88462Z"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_1942_59507">
-                  <rect width="16" height="16" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-            <Button
-              :variant="'subtle'"
-              :model-value="selectedEntities.includes(folder)"
-              :class="
-                selectedEntities.includes(folder)
-                  ? 'visible bg-gray-300'
-                  : 'bg-inherit sm:bg-gray-100 visible sm:invisible'
-              "
-              class="border-1 duration-300 relative ml-auto visible group-hover:visible sm:invisible"
-              @click.stop="
-                handleEntityContext(folder, $event, displayOrderedEntities)
-              "
-            >
-              <FeatherIcon class="h-4" name="more-horizontal" />
-            </Button>
-          </div>
-          <div class="content-center grid mt-2 sm:mt-3.5">
-            <span class="truncate text-base font-medium text-gray-800">
-              {{ folder.title }}
-            </span>
-            <p
-              :title="folder.modified"
-              class="truncate text-sm text-gray-600 mt-2"
-            >
-              {{ folder.file_size ? folder.file_size + " ∙ " : "" }}
-              {{ folder.relativeModified }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      v-if="files?.length > 0"
-      :class="folders.length > 0 && foldersBefore ? 'mt-8' : 'mt-0'"
-    >
-      <div class="text-gray-600 font-medium">
-        {{ foldersBefore ? "Files" : "All Files" }}
-      </div>
-      <div ref="itemContainer" class="grid-container gap-5 mt-4">
-        <div
-          v-for="file in files"
+          v-for="file in entities"
           :id="file.name"
           :key="file.name"
-          class="w-[162px] h-[162px] sm:w-[172px] sm:h-[172px] rounded-lg border group select-none entity cursor-pointer relative group:"
-          draggable="false"
-          :class="
+          class="rounded-lg border group select-none entity cursor-pointer relative group:"
+          :class="[
+            file.is_group && foldersBefore
+              ? 'p-3 w-[162px] sm:w-[172px] h-[98px] sm:h-[108px]'
+              : 'w-[162px] h-[162px] sm:w-[172px] sm:h-[172px]',
             selectedEntities.includes(file)
               ? 'bg-gray-100 border-gray-300'
-              : 'border-gray-200 hover:shadow-xl'
-          "
+              : 'border-gray-200 hover:shadow-xl',
+          ]"
+          draggable="false"
           @[action]="dblClickEntity(file)"
           @click="selectEntity(file, $event, displayOrderedEntities)"
           @dragstart="dragStart(file, $event)"
@@ -124,12 +36,12 @@
           <Button
             :variant="'subtle'"
             :model-value="selectedEntities.includes(file)"
-            :class="
+            class="z-10 duration-300 absolute visible group-hover:visible sm:invisible top-2 right-2"
+            :class="[
               selectedEntities.includes(file)
                 ? 'visible '
-                : 'sm:bg-gray-100 visible sm:invisible'
-            "
-            class="z-10 duration-300 absolute right-0 mr-1.5 mt-1.5 visible group-hover:visible sm:invisible"
+                : 'sm:bg-gray-100 visible sm:invisible',
+            ]"
             @click.stop="
               handleEntityContext(file, $event, displayOrderedEntities)
             "
@@ -184,7 +96,7 @@ export default {
   },
   props: {
     folderContents: {
-      type: Array,
+      type: Object,
       default: null,
     },
     folders: {
@@ -244,13 +156,13 @@ export default {
       }
     },
     isEmpty() {
-      return this.folderContents && this.folderContents.length === 0
+      return !this.$store.state.currentViewEntites?.length
     },
     foldersBefore() {
       return this.$store.state.foldersBefore
     },
     displayOrderedEntities() {
-      return this.folders.concat(this.files)
+      return this.$store.state.currentViewEntites
     },
   },
   mounted() {
@@ -318,7 +230,7 @@ export default {
       const selectedEntities = handleDragSelect(
         entityElements,
         this.selectionCoordinates,
-        this.folderContents
+        this.displayOrderedEntities
       )
       this.$emit("entitySelected", selectedEntities)
       this.$store.commit("setEntityInfo", selectedEntities)

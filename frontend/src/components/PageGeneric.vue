@@ -1,67 +1,47 @@
 <template>
-  <div class="h-full w-full" @contextmenu="toggleEmptyContext">
+  <div
+    class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto"
+    @contextmenu="toggleEmptyContext"
+  >
+    <DriveToolBar
+      :action-items="actionItems"
+      :column-headers="showSort ? columnHeaders : null"
+    />
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error"
     />
+    <NoFilesSection
+      v-else-if="folderItems && folderItems.length === 0"
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      :icon="icon"
+      :primary-message="primaryMessage"
+      :secondary-message="secondaryMessage"
+    />
     <GridView
-      v-else-if="$store.state.view === 'grid'"
-      :folder-contents="folderItems"
+      v-else-if="folderItems && $store.state.view === 'grid'"
+      :folder-contents="
+        foldersBefore ? groupedByFolder : { 'All Files': folderItems }
+      "
       :selected-entities="selectedEntities"
       :override-can-load-more="overrideCanLoadMore"
-      :folders="folders"
-      :files="files"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
-      @show-entity-context="(event) => toggleEntityContext(event)"
-      @show-empty-entity-context="(event) => toggleEmptyContext(event)"
-      @close-context-menu-event="closeContextMenu"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
-    >
-      <template #toolbar>
-        <DriveToolBar
-          :action-items="actionItems"
-          :column-headers="showSort ? columnHeaders : null"
-        />
-      </template>
-      <template #placeholder>
-        <NoFilesSection
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          :icon="icon"
-          :primary-message="primaryMessage"
-          :secondary-message="secondaryMessage"
-        />
-      </template>
-    </GridView>
+    />
     <ListView
-      v-else
-      :folder-contents="folderItems"
+      v-else-if="folderItems && $store.state.view === 'list'"
+      :folder-contents="
+        foldersBefore ? groupedByFolder : { 'All Files': folderItems }
+      "
       :selected-entities="selectedEntities"
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
-      @show-entity-context="(event) => toggleEntityContext(event)"
-      @show-empty-entity-context="(event) => toggleEmptyContext(event)"
-      @close-context-menu-event="closeContextMenu"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
-    >
-      <template #toolbar>
-        <DriveToolBar
-          :action-items="actionItems"
-          :column-headers="showSort ? columnHeaders : null"
-        />
-      </template>
-      <template #placeholder>
-        <NoFilesSection
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          :icon="icon"
-          :primary-message="primaryMessage"
-          :secondary-message="secondaryMessage"
-        />
-      </template>
-    </ListView>
+    />
     <EntityContextMenu
       v-if="showEntityContext"
       v-on-outside-click="closeContextMenu"
@@ -331,6 +311,23 @@ export default {
   }),
 
   computed: {
+    groupedByFolder() {
+      const output = {}
+      if (this.recents && this.folderItems) {
+        return this.groupByAccessed(this.folderItems)
+      }
+      if (this.folderItems) {
+        const folders = this.folderItems.filter((x) => x.is_group === 1)
+        const files = this.folderItems.filter((x) => x.is_group === 0)
+        if (folders.length > 0) {
+          output.Folders = folders
+        }
+        if (files.length > 0) {
+          output.Files = files
+        }
+      }
+      return output
+    },
     selectedEntities: {
       get() {
         return this.$store.state.entityInfo
@@ -448,6 +445,7 @@ export default {
             label: "Preview",
             icon: Preview,
             onClick: () => {
+              console.log(this.selectedEntities[0].is_group)
               this.openEntity(this.selectedEntities[0])
             },
             isEnabled: () => {
@@ -700,24 +698,8 @@ export default {
         ].filter((item) => item.isEnabled())
       }
     },
-    folders() {
-      return this.folderItems
-        ? this.folderItems.filter((x) => x.is_group === 1)
-        : []
-    },
-    files() {
-      if (this.foldersBefore) {
-        return this.folderItems
-          ? this.folderItems.filter((x) => x.is_group === 0)
-          : []
-      }
-      return this.folderItems
-    },
     foldersBefore() {
       return this.$store.state.foldersBefore
-    },
-    displayOrderedEntities() {
-      return this.folders.concat(this.files)
     },
   },
   watch: {
@@ -976,6 +958,37 @@ export default {
           params: { entityName: this.previewEntity.name },
         })
       }
+    },
+    groupByAccessed(entities) {
+      const today = new Date()
+      const grouped = {
+        Today: [],
+        "Earlier this week": [],
+        "Earlier this month": [],
+        "Earlier this year": [],
+        "Older than a year": [],
+      }
+      entities.forEach((file) => {
+        const modifiedDate = new Date(file.modified)
+        const yearDiff = today.getFullYear() - modifiedDate.getFullYear()
+        const monthDiff =
+          today.getMonth() - modifiedDate.getMonth() + yearDiff * 12 // Adjust for year difference
+        const dayDiff = Math.floor(
+          (today - modifiedDate) / (1000 * 60 * 60 * 24)
+        )
+        if (dayDiff === 0) {
+          grouped["Today"].push(file)
+        } else if (dayDiff <= 7) {
+          grouped["Earlier this week"].push(file)
+        } else if (monthDiff === 0) {
+          grouped["Earlier this month"].push(file)
+        } else if (yearDiff === 0) {
+          grouped["Earlier this year"].push(file)
+        } else {
+          grouped["Older than a year"].push(file)
+        }
+      })
+      return grouped
     },
   },
   resources: {
