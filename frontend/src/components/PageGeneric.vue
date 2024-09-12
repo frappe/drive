@@ -1,6 +1,12 @@
 <template>
   <div
+    ref="container"
     class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto"
+    @mousedown.prevent="
+      (event) => {
+        dragSelectStart(event)
+      }
+    "
     @contextmenu="toggleEmptyContext"
   >
     <DriveToolBar
@@ -167,6 +173,12 @@
         }
       "
     />
+    <div
+      id="selectionElement"
+      class="absolute border-1 bg-gray-300 border-gray-400 opacity-50 mix-blend-multiply rounded"
+      :style="selectionElementStyle"
+      :hidden="!selectionCoordinates.x1"
+    />
   </div>
 </template>
 
@@ -208,6 +220,7 @@ import Trash from "./EspressoIcons/Trash.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
 import { toast } from "../utils/toasts.js"
 import { capture } from "@/telemetry"
+import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
 
 export default {
   name: "PageGeneric",
@@ -308,6 +321,10 @@ export default {
     overrideCanLoadMore: false,
     clearAll: false,
     showCTADelete: false,
+    selectionElementStyle: {},
+    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
+    containerRect: null,
+    selectedIDs: null,
   }),
 
   computed: {
@@ -775,6 +792,9 @@ export default {
     )
     this.$store.commit("setHasWriteAccess", true)
     window.addEventListener("scroll", this.onScroll)
+    if (this.isEmpty) return
+    this.updateContainerRect()
+    visualViewport.addEventListener("resize", this.updateContainerRect)
   },
   unmounted() {
     this.folderItems = []
@@ -784,8 +804,56 @@ export default {
     window.removeEventListener("keydown", this.pasteListener)
     window.removeEventListener("keydown", this.deleteListener)
     window.removeEventListener("scroll", this.onScroll)
+    document.removeEventListener("keydown", this.selectAllListener)
+    document.removeEventListener("keydown", this.copyListener)
+    document.removeEventListener("keydown", this.cutListener)
   },
   methods: {
+    dragSelectStart(event) {
+      if (this.showEntityContext) return
+      this.selectedIDs = null
+      this.selectedEntities = []
+      document.addEventListener("mousemove", this.dragSelectMove)
+      document.addEventListener("mouseup", this.dragSelectStop)
+      this.selectionCoordinates.x1 = event.clientX
+      this.selectionCoordinates.y1 = event.clientY
+      this.selectionCoordinates.x2 = event.clientX
+      this.selectionCoordinates.y2 = event.clientY
+      this.selectionElementStyle = calculateRectangle(this.selectionCoordinates)
+    },
+    dragSelectMove(event) {
+      if (this.isEmpty) return
+      if (event.which != 1 || !this.selectionCoordinates.x1) return
+      this.selectionCoordinates.x2 = Math.max(
+        this.containerRect.left,
+        Math.min(this.containerRect.right, event.clientX)
+      )
+      this.selectionCoordinates.y2 = Math.max(
+        this.containerRect.top,
+        Math.min(this.containerRect.bottom, event.clientY)
+      )
+      this.selectionElementStyle = calculateRectangle(this.selectionCoordinates)
+      const entityElements = this.$el.querySelectorAll(".entity")
+      const selectedEntities = handleDragSelect(
+        entityElements,
+        this.selectionCoordinates,
+        this.folderContents
+      )
+      this.selectedIDs = selectedEntities
+    },
+    dragSelectStop() {
+      if (this.selectedIDs) {
+        this.selectedEntities = this.folderItems.filter((item) =>
+          this.selectedIDs.has(item.name)
+        )
+      }
+      this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 }
+      document.removeEventListener("mousemove", this.dragSelectMove)
+      document.removeEventListener("mouseup", this.dragSelectStop)
+    },
+    updateContainerRect() {
+      this.containerRect = this.$refs["container"]?.getBoundingClientRect()
+    },
     onScroll() {
       const position = window.pageYOffset
       this.$store.dispatch("saveScrollPosition", {
