@@ -1,9 +1,5 @@
 <template>
-  <div
-    id="main"
-    ref="container"
-    @mousedown.passive="(event) => handleMousedown(event)"
-  >
+  <div id="main" ref="container">
     <div
       class="hidden sm:grid items-center rounded bg-gray-100 min-h-7 p-2 overflow-hidden mb-2"
       :style="{ gridTemplateColumns: tableColumnsGridWidth }"
@@ -58,8 +54,10 @@
           "
           :draggable="false"
           @[action]="dblClickEntity(entity)"
-          @click="selectEntity(entity, $event, folderContents)"
-          @contextmenu="handleEntityContext(entity, $event, folderContents)"
+          @click="selectEntity(entity, $event, displayOrderedEntities)"
+          @contextmenu="
+            handleEntityContext(entity, $event, displayOrderedEntities)
+          "
           @dragstart="dragStart(entity, $event)"
           @dragenter.prevent
           @dragover.prevent
@@ -149,12 +147,6 @@
       variant="ghost"
       >Loading</Button
     >
-    <div
-      id="selectionElement"
-      class="h-20 w-20 absolute border-1 bg-gray-300 border-gray-400 opacity-50 mix-blend-multiply rounded"
-      :style="selectionElementStyle"
-      :hidden="!selectionCoordinates.x1"
-    />
   </div>
 </template>
 <script>
@@ -163,7 +155,6 @@ import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useInfiniteScroll } from "@vueuse/core"
 import { ref } from "vue"
-import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
 
 export default {
   name: "ListView",
@@ -210,11 +201,6 @@ export default {
     )
     return { container, useInfiniteScroll, formatMimeType, getIconUrl }
   },
-  data: () => ({
-    selectionElementStyle: {},
-    selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
-    containerRect: null,
-  }),
   computed: {
     action() {
       if (window.innerWidth < 640) return "click"
@@ -239,93 +225,7 @@ export default {
       return this.$store.state.currentViewEntites
     },
   },
-  mounted() {
-    if (this.isEmpty) return
-    this.updateContainerRect()
-    document.addEventListener("mousemove", this.handleMousemove)
-    document.addEventListener("mouseup", this.handleMouseup)
-    visualViewport.addEventListener("resize", this.updateContainerRect)
-
-    /* this.selectAllListener = (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A"))
-        this.$emit("entitySelected", this.folderContents);
-    };
- */
-    this.copyListener = (e) => {
-      if (
-        (e.ctrlKey || e.metaKey) &&
-        (e.key === "c" || e.key === "C") &&
-        this.selectedEntities.length
-      )
-        this.$store.commit("setPasteData", {
-          entities: this.selectedEntities.map((x) => x.name),
-          action: "copy",
-        })
-    }
-
-    this.cutListener = (e) => {
-      if (
-        (e.ctrlKey || e.metaKey) &&
-        (e.key === "x" || e.key === "X") &&
-        this.selectedEntities.length &&
-        this.selectedEntities.every((x) => x.owner === "You")
-      )
-        this.$store.commit("setPasteData", {
-          entities: this.selectedEntities.map((x) => x.name),
-          action: "cut",
-        })
-    }
-
-    document.addEventListener("keydown", this.selectAllListener)
-    document.addEventListener("keydown", this.copyListener)
-    document.addEventListener("keydown", this.cutListener)
-  },
-  unmounted() {
-    document.removeEventListener("keydown", this.selectAllListener)
-    document.removeEventListener("keydown", this.copyListener)
-    document.removeEventListener("keydown", this.cutListener)
-  },
   methods: {
-    toggleSelectAll() {
-      let selectAllEntites = []
-      selectAllEntites = [...this.folderContents]
-      this.$emit("entitySelected", selectAllEntites)
-      this.$store.commit("setEntityInfo", selectAllEntites)
-    },
-    handleMousedown(event) {
-      this.deselectAll()
-      this.selectionCoordinates.x1 = event.clientX
-      this.selectionCoordinates.y1 = event.clientY
-      this.selectionCoordinates.x2 = event.clientX
-      this.selectionCoordinates.y2 = event.clientY
-      this.selectionElementStyle = calculateRectangle(this.selectionCoordinates)
-    },
-    handleMousemove(event) {
-      if (event.which != 1 || !this.selectionCoordinates.x1) return
-      this.selectionCoordinates.x2 = Math.max(
-        this.containerRect.left,
-        Math.min(this.containerRect.right, event.clientX)
-      )
-      this.selectionCoordinates.y2 = Math.max(
-        this.containerRect.top,
-        Math.min(this.containerRect.bottom, event.clientY)
-      )
-      this.selectionElementStyle = calculateRectangle(this.selectionCoordinates)
-      const entityElements = this.$el.querySelectorAll(".entity")
-      const selectedEntities = handleDragSelect(
-        entityElements,
-        this.selectionCoordinates,
-        this.displayOrderedEntities
-      )
-      this.$emit("entitySelected", selectedEntities)
-      this.$store.commit("setEntityInfo", selectedEntities)
-    },
-    handleMouseup() {
-      this.selectionCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 }
-    },
-    updateContainerRect() {
-      this.containerRect = this.$refs["container"]?.getBoundingClientRect()
-    },
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null)
       this.$emit("showEmptyEntityContext", null)
@@ -393,49 +293,6 @@ export default {
         this.$store.commit("setEntityInfo", [entity])
       }
       this.$emit("showEntityContext", { x: clientX, y: clientY })
-    },
-    dragStart(entity, event) {
-      event.dataTransfer.dropEffect = "move"
-      event.dataTransfer.effectAllowed = "move"
-      // for when a user directly drags a single file
-      if (this.selectedEntities.length <= 1) {
-        this.selectEntity(entity, event)
-      }
-    },
-    async onDrop(newParent) {
-      for (let i = 0; i < this.selectedEntities.length; i++) {
-        if (this.selectedEntities[i].name === newParent.name) {
-          continue
-        }
-        await this.$resources.moveEntity.submit({
-          method: "move",
-          entity_name: this.selectedEntities[i].name,
-          new_parent: newParent.name,
-        })
-      }
-      this.deselectAll()
-      this.emitter.emit("fetchFolderContents")
-    },
-    isGroupOnDrop(entity) {
-      return entity.is_group ? this.onDrop(entity) : null
-    },
-  },
-  resources: {
-    moveEntity() {
-      return {
-        url: "drive.api.files.call_controller_method",
-        method: "POST",
-        params: {
-          method: "move",
-          entity_name: "entity name",
-          new_parent: "new entity parent",
-        },
-        validate(params) {
-          if (!params?.new_parent) {
-            return "New parent is required"
-          }
-        },
-      }
     },
   },
 }
