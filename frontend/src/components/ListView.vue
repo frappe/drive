@@ -2,7 +2,6 @@
   <div
     id="main"
     ref="container"
-    class="h-full w-full"
     @mousedown.passive="(event) => handleMousedown(event)"
   >
     <div
