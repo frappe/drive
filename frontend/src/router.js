@@ -21,6 +21,7 @@ function clearStore(to, from) {
   } else {
     store.commit("setEntityInfo", [])
     store.commit("setCurrentFolder", [])
+    store.commit("setCurrentViewEntites", [])
   }
 }
 
@@ -108,6 +109,14 @@ const routes = [
     name: "Login",
     redirect: () => {
       window.location.href = "/login"
+    },
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/Login.vue"),
+    meta: {
+      isPublicRoute: true,
     },
   },
   {
