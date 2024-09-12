@@ -11,8 +11,8 @@ export function calculateRectangle(coordinates) {
   }
 }
 
-export function handleDragSelect(entityElements, coordinates, folderContents) {
-  const selectedEntities = []
+export function handleDragSelect(entityElements, coordinates) {
+  const selectedEntities = new Set()
   entityElements.forEach((element) => {
     const elementRect = element.getBoundingClientRect()
     const maxX = Math.max(coordinates.x1, coordinates.x2)
@@ -27,8 +27,10 @@ export function handleDragSelect(entityElements, coordinates, folderContents) {
         (elementRect.right >= minX && elementRect.right <= maxX) ||
         (minX >= elementRect.left && minX <= elementRect.right))
     ) {
-      const entity = folderContents.find((entity) => entity.name === element.id)
-      selectedEntities.push(entity)
+      //element.classList.add("bg-gray-100", "border-gray-300");
+      selectedEntities.add(element.id)
+    } else {
+      // element.classList.remove("bg-gray-100", "border-gray-300");
     }
   })
   return selectedEntities
