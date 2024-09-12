@@ -2,13 +2,13 @@
   <div id="main" ref="container" @mousedown="(event) => handleMousedown(event)">
     <div v-for="(entities, i) in folderContents" :key="i">
       <span
-        v-if="entities.length"
-        class="text-base text-gray-600 font-medium leading-6 pl-1 mt-0"
+        v-if="entities.length && Object.keys(entities).length > 1"
+        class="text-base text-gray-600 font-medium leading-6 pl-1 my-0"
       >
         {{ i }}
       </span>
 
-      <div v-if="entities.length" class="grid-container my-2">
+      <div v-if="entities.length" class="grid-container mt-2 mb-4">
         <div
           v-for="file in entities"
           :id="file.name"
