@@ -112,14 +112,6 @@ const routes = [
     },
   },
   {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/pages/Login.vue"),
-    meta: {
-      isPublicRoute: true,
-    },
-  },
-  {
     path: "/:pathMatch(.*)*/",
     name: "Error",
     component: () => import("@/pages/Error.vue"),
