@@ -2,7 +2,7 @@
   <div id="main" ref="container">
     <div v-for="(entities, i) in folderContents" :key="i">
       <span
-        v-if="entities.length && Object.keys(entities).length > 1"
+        v-if="entities.length && Object.keys(folderContents).length > 1"
         class="text-base text-gray-600 font-medium leading-6 pl-1 my-0"
       >
         {{ i }}
