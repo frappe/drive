@@ -6,20 +6,27 @@
           <h3 class="text-2xl font-semibold leading-6 text-gray-900">
             {{ snapshotData.snapshot_message }}
           </h3>
-          <span class="text-gray-700 text-sm"
-            >Created on {{ snapshotData.creation }} by
-            {{ snapshotData.owner }}</span
-          >
+          <div class="flex items-center justify-start mt-1 mb-4">
+            <span class="text-gray-700 text-sm"
+              >Created on {{ snapshotData.creation }} by
+              {{ snapshotData.owner }}</span
+            >
+            <span class="ml-auto text-gray-700 text-sm mr-2"
+              >Highlight changes</span
+            >
+            <Switch v-model="showChanges" />
+          </div>
           <Button
             icon="x"
             :variant="'ghost'"
-            class="absolute top-5 right-5"
+            class="absolute top-3 right-3"
             @click="$emit('update:modelValue', false)"
           ></Button>
         </div>
-        <div class="mb-4">
+        <div class="mb-3">
           <PreviewEditor
             v-if="snapshotData"
+            :show-changes="showChanges"
             class="border h-[68vh] rounded-md overflow-y-auto"
             :yjs-update="encodeStateAsUpdate(snapshotData.snapshot_data)"
           />
@@ -42,8 +49,9 @@ import {
   defineProps,
   onMounted,
   onBeforeUnmount,
+  ref,
 } from "vue"
-import { Dialog, Button, Avatar } from "frappe-ui"
+import { Dialog, Button, Switch } from "frappe-ui"
 import PreviewEditor from "../PreviewEditor.vue"
 import { encodeStateAsUpdate } from "yjs"
 
@@ -62,6 +70,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const showChanges = ref(false)
 const emit = defineEmits(["update:modelValue", "success"])
 
 const open = computed({
