@@ -1,0 +1,102 @@
+{
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2024-09-19 14:16:44.980736",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "document_type",
+    "document_name",
+    "document_field",
+    "action_type",
+    "old_value",
+    "new_value",
+    "message"
+  ],
+  "fields": [
+    {
+      "fieldname": "message",
+      "fieldtype": "Data",
+      "label": "Message"
+    },
+    {
+      "fieldname": "document_type",
+      "fieldtype": "Link",
+      "label": "Document Type",
+      "options": "DocType"
+    },
+    {
+      "fieldname": "document_name",
+      "fieldtype": "Dynamic Link",
+      "label": "Document Name",
+      "options": "document_type"
+    },
+    {
+      "fieldname": "document_field",
+      "fieldtype": "Data",
+      "label": "Document Field"
+    },
+    {
+      "fieldname": "action_type",
+      "fieldtype": "Select",
+      "label": "Action Type",
+      "options": "create\ncomment\nrename\nedit\nmove\ndelete"
+    },
+    {
+      "fieldname": "old_value",
+      "fieldtype": "Data",
+      "label": "Old Value"
+    },
+    {
+      "fieldname": "new_value",
+      "fieldtype": "Data",
+      "label": "New Value"
+    }
+  ],
+  "links": [],
+  "modified": "2024-09-22 10:09:57.667675",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Entity Activity Log",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive Admin",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive User",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}
