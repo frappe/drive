@@ -7,6 +7,7 @@ from frappe.model.document import Document
 from frappe.utils import cint, get_fullname
 from drive.api.notifications import notify_share
 from drive.api.notifications import notify_mentions
+from drive.api.activity import create_new_activity_log
 
 exclude_from_linked_with = True
 
@@ -83,6 +84,19 @@ class DriveDocShare(Document):
                 entity_name=self.share_name,
                 docshare_name=self.name,
             )
+
+        entity_document = frappe.db.get_value("Drive Entity", self.share_name, ["title"])
+        full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
+        share_username = self.user_name
+        if self.user_doctype == "User":
+            share_username = frappe.db.get_value("User", {"name": share_username}, ["full_name"])
+        message = f"{full_name} shared {entity_document} with {share_username}"
+        create_new_activity_log(
+            doctype=self.doctype,
+            document_name=self.name,
+            activity_type="create",
+            activity_message=message,
+        )
 
     def check_share_permission(self):
         if not self.flags.ignore_share_permission and not frappe.has_permission(

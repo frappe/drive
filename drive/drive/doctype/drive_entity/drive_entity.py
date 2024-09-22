@@ -16,6 +16,7 @@ from frappe.utils import cint
 from drive.api.format import mime_to_human
 from drive.api.files import get_ancestors_of
 from drive.api.files import generate_upward_path
+from drive.api.activity import create_new_activity_log
 
 
 class DriveEntity(Document):
@@ -26,6 +27,16 @@ class DriveEntity(Document):
         self.file_kind = mime_to_human(self.mime_type, self.is_group)
 
     def after_insert(self):
+        full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
+        message = f"{full_name} created {self.title}"
+        create_new_activity_log(
+            doctype=self.doctype,
+            document_name=self.name,
+            activity_type="create",
+            activity_message=message,
+            document_field="title",
+            field_new_value=self.title,
+        )
         self.inherit_permissions()
 
     def on_trash(self):
@@ -329,7 +340,17 @@ class DriveEntity(Document):
                 FileExistsError,
             )
             return suggested_name
-
+        full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
+        message = f"{full_name} renamed {self.title} to {new_title}"
+        create_new_activity_log(
+            doctype=self.doctype,
+            document_name=self.name,
+            activity_type="rename",
+            activity_message=message,
+            document_field="title",
+            field_old_value=self.title,
+            field_new_value=new_title,
+        )
         self.title = new_title
         self.save()
         return self
@@ -472,7 +493,7 @@ class DriveEntity(Document):
 
         doc.update(
             {
-                # always add read, since you are adding!
+                # always add read, since you are adding
                 "read": 1,
                 "write": cint(write),
                 "share": cint(share),
@@ -575,6 +596,6 @@ class DriveEntity(Document):
             for child in self.get_children():
                 child.unshare(user, user_type)
 
+
 def on_doctype_update():
     frappe.db.add_index("Drive Entity", ["title"])
-
