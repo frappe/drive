@@ -10,18 +10,16 @@ def create_tag(title, color="gray"):
     :param color: Tag color
     """
 
-    title_lower = title.lower()
-
     doc = frappe.get_doc(
         {
             "doctype": "Drive Tag",
-            "title": title_lower,
+            "title": title,
             "color": color,
         }
     )
 
     tag_exists = frappe.db.exists(
-        {"doctype": "Drive Tag", "owner": frappe.session.user, "title": title_lower}
+        {"doctype": "Drive Tag", "owner": frappe.session.user, "title": title}
     )
     if tag_exists:
         frappe.throw("Tag already exists")
@@ -68,8 +66,20 @@ def get_user_tags():
 
     return frappe.db.get_list(
         "Drive Tag",
-        filters={"owner": frappe.session.user},
         fields=["name", "title", "color"],
+    )
+
+
+@frappe.whitelist()
+def get_tags_with_owner():
+    """
+    Returns all tags created by current user
+
+    """
+    return frappe.db.get_list(
+        "Drive Tag",
+        fields=["name", "title", "color", "owner"],
+        as_list=False,
     )
 
 
