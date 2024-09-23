@@ -6,10 +6,16 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["instance_id", "org_name", "instance_email"],
+  "field_order": [
+    "instance_id",
+    "org_name",
+    "instance_email",
+    "enable_user_storage_quota"
+  ],
   "fields": [
     {
       "default": "organization",
+      "description": "Used to show the organization name in the Frappe Drive portal",
       "fieldname": "org_name",
       "fieldtype": "Data",
       "in_list_view": 1,
@@ -17,19 +23,28 @@
       "reqd": 1
     },
     {
+      "description": "Not implemented yet",
       "fieldname": "instance_id",
       "fieldtype": "Data",
       "label": "Instance ID"
     },
     {
+      "description": "Not implemented yet",
       "fieldname": "instance_email",
       "fieldtype": "Data",
       "label": "Instance Email"
+    },
+    {
+      "default": "0",
+      "description": "Enable to assign a storage limit for each user. Requires making new entry for each user in <b>Drive User Storage Quota</b> DocType.",
+      "fieldname": "enable_user_storage_quota",
+      "fieldtype": "Check",
+      "label": "Enable User Storage Quota"
     }
   ],
   "issingle": 1,
   "links": [],
-  "modified": "2024-07-15 11:53:14.138404",
+  "modified": "2024-09-23 11:39:22.474933",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Instance Settings",
