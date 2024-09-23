@@ -1,17 +1,16 @@
 <template>
   <div class="w-full">
     <Popover>
-      <template #target="{ open: openPopover, togglePopover }">
+      <template #target="{ isOpen, open: openPopover, togglePopover }">
         <slot name="target" v-bind="{ open: openPopover, togglePopover }">
-          <div
-            v-on-outside-click="closePopover()"
-            class="flex items-center justify-start w-full flex-wrap gap-y-4 gap-x-2"
-          >
+          <div class="flex items-center justify-start w-full flex-wrap gap-2">
             <Tag
               v-for="tag in $resources.entityTags.data"
+              :allowDelete="isOpen"
               :key="tag.name"
               :tag="tag"
               :entity="entity"
+              @success="$resources.entityTags.fetch()"
             >
             </Tag>
             <span
@@ -20,22 +19,22 @@
             >
               This file has no tags
             </span>
-            <Button class="ml-auto" @click="togglePopover()">Add Tag</Button>
+            <Button class="ml-auto" @click="togglePopover()">Manage</Button>
           </div>
         </slot>
       </template>
       <template #body="{ isOpen, togglePopover }">
         <div
-          v-show="isOpen"
+          v-if="isOpen"
           class="relative mt-1 rounded-lg bg-white text-base shadow-2xl min-h-auto"
         >
           <div class="px-1.5 pb-1.5">
             <Input
-              class="bg-white py-1.5"
-              placeholder="Search"
               v-model="tagInputText"
               v-focus
               v-on-outside-click="closeInput"
+              class="bg-white py-1.5"
+              placeholder="Search"
               type="text"
               @input="tagInputText = $event"
               @keydown.enter="
@@ -66,7 +65,6 @@
                   :class="`bg-${item.color}-500 bg-opacity-10`"
                 >
                   <svg
-                    class="ml-auto"
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -74,10 +72,10 @@
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <circle
+                      r="4.5"
                       cx="8"
                       cy="8"
-                      r="4.5"
-                      fill="transparent"
+                      :fill="item.color"
                       :stroke="item.color"
                       stroke-width="3"
                     />
@@ -89,13 +87,15 @@
               </li>
             </ul>
             <span
-              class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
               v-else
+              class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
               >No tags found</span
             >
           </div>
           <div class="flex items-center justify-end border-t p-1">
             <Button
+              v-if="tagInputText"
+              class="mr-auto px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
               @click="
                 (e) =>
                   $resources.createTag.submit({
@@ -103,14 +103,12 @@
                     color: randomColor(),
                   })
               "
-              v-if="tagInputText"
-              class="mr-auto px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
             >
               Create tag "{{ tagInputText }}"
             </Button>
             <Button
-              @click="$resources.removeTag.submit()"
               class="px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
+              @click="$resources.removeTag.submit()"
             >
               Clear all
             </Button>
@@ -120,85 +118,7 @@
     </Popover>
   </div>
 </template>
-<!--  <Popover transition="default" :show="hackyFlag && filteredTags.length">
-      <template #target>
-        <Input
-          v-model="tagInputText"
-          v-focus
-          v-on-outside-click="closeInput"
-          type="text"
-          class="w-full"
-          @input="tagInputText = $event"
-          @keydown.enter="
-            (e) =>
-              $resources.createTag.submit({
-                title: e.target.value.trim(),
-              })
-          "
-        />
-      </template>
 
-      <template #body-main>
-        <div class="p-1" @click.stop>
-          <div v-for="tag in filteredTags" :key="tag.name">
-            <div
-              :class="`hover:bg-gray-100 cursor-pointer rounded-md py-1.5 px-2 text-gray-800 text-base`"
-              @click="
-                $resources.addTag.submit({
-                  entity: entity.name,
-                  tag: tag.name,
-                })
-              "
-            >
-              {{ tag.title }}
-            </div>
-          </div>
-        </div>
-      </template>
-    </Popover> -->
-
-<!-- <div class="flex items-center justify-start flex-wrap gap-y-4">
-      <div
-        v-if="$resources.entityTags.data?.length"
-        class="flex flex-wrap gap-2 max-w-full"
-      >
-        <Tag
-          v-for="tag in $resources.entityTags?.data"
-          :key="tag"
-          :tag="tag"
-          :entity="entity"
-          @success="
-            () => {
-              $resources.userTags.fetch()
-              $resources.entityTags.fetch()
-            }
-          "
-        />
-      </div>
-      <span v-else-if="!showTagInput" class="text-gray-700 text-base">
-        This file has no tags
-      </span>
-      <Button
-        v-if="!showTagInput && entity.owner === 'You'"
-        class="ml-auto"
-        @click="showTagInput = true"
-      >
-        Add tag
-      </Button>
-      <Input
-        v-if="showTagInput"
-        :entity="entity"
-        :unadded-tags="unaddedTags"
-        @success="
-          () => {
-            $resources.userTags.fetch()
-            $resources.entityTags.fetch()
-            showTagInput = false
-          }
-        "
-        @close="showTagInput = false"
-      />
-    </div> -->
 <script>
 import { getRandomColor } from "@/utils/random-color"
 import { Input, Popover, FeatherIcon } from "frappe-ui"
@@ -209,7 +129,6 @@ export default {
   components: {
     Input,
     Popover,
-    FeatherIcon,
     Tag,
   },
 
