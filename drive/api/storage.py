@@ -14,6 +14,12 @@ def get_max_storage():
     Returns:
         int: The maximum storage limit in bytes.
     """
+    storage_quota_enabled = frappe.db.get_single_value(
+        "Drive Instance Settings", "enable_user_storage_quota"
+    )
+    if storage_quota_enabled and (limit := validate_quota()):
+        return {"quota": limit}
+
     plan_limit = frappe.conf.get("plan_limit")
     if plan_limit:
         limit = plan_limit["max_storage_usage"]
@@ -25,7 +31,40 @@ def get_max_storage():
         add_new_site_config_key("max_storage", 5120)
     max_storage = frappe.conf.get("max_storage")
     max_storage = int(max_storage)
-    return int(max_storage * 1024**2)
+    return {"limit": int(max_storage * 1024**2)}
+
+
+def validate_quota():
+    """
+    Fetch user storage quota
+    formatted the same as `get_max_storage()`
+    """
+    quota_limit = frappe.db.get_value(
+        "Drive User Storage Quota",
+        {"User": frappe.session.user},
+        ["user_storage_limit"],
+    )
+    if quota_limit:
+        return int(quota_limit * 1024**2)
+
+
+@frappe.whitelist()
+def get_owned_files_by_storage():
+    entities = frappe.db.get_list(
+        "Drive Entity",
+        filters={"owner": frappe.session.user, "is_group": False},
+        order_by="file_size desc",
+        fields=["name", "title", "owner", "file_size", "file_kind", "mime_type"],
+    )
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("file_size"))
+        .where((DriveEntity.is_group == 0) & (DriveEntity.owner == frappe.session.user))
+        .groupby(DriveEntity.file_kind)
+    )
+    total = query.run(as_dict=True)
+    return {"entities": entities, "total": total}
 
 
 @frappe.whitelist()
