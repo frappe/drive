@@ -71,7 +71,7 @@ let maxStorage = createResource({
   cache: "max_storage",
   onSuccess(data) {
     if (!data) data = 0
-    storageMax.value = data
+    storageMax.value = data.limit || data.quota
   },
   onError(error) {
     if (error.messages) {

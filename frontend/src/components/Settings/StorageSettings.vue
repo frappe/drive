@@ -7,6 +7,43 @@
     <Cloud class="h-7 stroke-1 text-gray-600" />
     <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
   </div>
+  <div v-if="storageQuotaEnabled && usedSpace">
+    <div class="flex flex-col items-start justify-start w-full mb-4">
+      <span class="text-lg font-semibold text-gray-800 mb-3"
+        >You have used {{ formatSize(usedSpace) }} out of
+        {{ base2BlockSize(planSizeLimit) }}</span
+      >
+      <div
+        class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0"
+      >
+        <div
+          v-for="i in $resources.getOwnedFiles.data.total"
+          :key="i.file_kind"
+          class="h-7"
+          :style="{
+            backgroundColor: i.color,
+            width: i.percentageFormat,
+            paddingRight: `${5 + i.percentageRaw}px`,
+          }"
+        ></div>
+      </div>
+    </div>
+    <div
+      class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
+    >
+      <div
+        v-for="i in $resources.getOwnedFiles.data.entities"
+        :key="i.name"
+        class="w-full border-b flex items-center justify-start py-2.5 gap-x-2"
+      >
+        <img :src="getIconUrl(formatMimeType(i.mime_type))" />
+        <span class="text-gray-800 text-base">{{ i.title }}</span>
+        <span class="text-gray-800 text-base ml-auto">{{
+          formatSize(i.file_size)
+        }}</span>
+      </div>
+    </div>
+  </div>
   <div v-else>
     <div class="flex flex-col items-start justify-start w-full mb-4">
       <span class="text-lg font-semibold text-gray-800 mb-3"
@@ -49,8 +86,9 @@
   </div>
 </template>
 <script>
-import { formatSize, base2BlockSize } from "../../utils/format"
+import { formatSize, base2BlockSize, formatMimeType } from "../../utils/format"
 import Cloud from "@/components/EspressoIcons/Cloud.vue"
+import { getIconUrl } from "../../utils/getIconUrl"
 
 export default {
   name: "StorageSettings",
@@ -62,6 +100,7 @@ export default {
       fullName: this.$store.state.user.fullName,
       planSizeLimit: 50000000000,
       usedSpace: 0,
+      storageQuotaEnabled: false,
       fileKindColorMap: {
         Archive: "#C2A88D",
         Application: "#f472b6",
@@ -99,8 +138,13 @@ export default {
         method: "GET",
         auto: true,
         onSuccess(data) {
-          this.planSizeLimit = data
-          this.$resources.getDataByMimeType.fetch()
+          if (data.quota) {
+            this.storageQuotaEnabled = true
+            this.$resources.getOwnedFiles.fetch()
+          } else {
+            this.$resources.getDataByMimeType.fetch()
+          }
+          this.planSizeLimit = data.limit || data.quota
         },
         onError(error) {
           if (error.messages) {
@@ -130,8 +174,28 @@ export default {
         auto: false,
       }
     },
+    getOwnedFiles() {
+      return {
+        url: "drive.api.storage.get_owned_files_by_storage",
+        onError(error) {
+          console.log(error)
+        },
+        onSuccess(data) {
+          data.total.forEach((item) => {
+            item.color = this.fileKindColorMap[item.file_kind]
+            item.percentageRaw = (100 * item.file_size) / this.planSizeLimit
+            item.percentageFormat = this.formatPercent(item.percentageRaw)
+            item.h_size = formatSize(item.file_size)
+            this.usedSpace = this.usedSpace + item.file_size
+          })
+        },
+        auto: false,
+      }
+    },
   },
   methods: {
+    formatMimeType,
+    getIconUrl,
     formatSize,
     base2BlockSize,
     formatPercent(num) {
