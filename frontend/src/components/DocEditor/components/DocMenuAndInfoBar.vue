@@ -7,7 +7,7 @@
         : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
     "
   >
-    <div v-if="entity" class="w-full border-b pl-3 py-4">
+    <div v-if="entity" class="w-full border-b px-5 py-4">
       <div class="flex items-center">
         <div class="font-medium truncate text-lg">
           {{ entity.title }}
@@ -64,56 +64,42 @@
               </div>
             </div>
           </div>
-          <!-- <div
-              v-if="
-                $resources.entityTags.data?.length || entity.owner === 'You'
-              "
-            >
-              <div class="text-base font-medium mb-4">Tags</div>
-              <div class="flex items-center justify-start flex-wrap gap-y-4">
-                <div
-                  v-if="$resources.entityTags.data?.length"
-                  class="flex flex-wrap gap-2 max-w-full"
-                >
-                  <Tag
-                    v-for="tag in $resources.entityTags?.data"
-                    :key="tag"
-                    :tag="tag"
-                    :entity="entity"
-                    @success="
-                      () => {
-                        userTags.fetch()
-                        $resources.entityTags.fetch()
-                      }
-                    "
-                  />
-                </div>
-                <span v-else class="text-gray-700 text-sm">
-                  This file has no tags
-                </span>
-                <Button
-                  v-if="!addTag && entity.owner === 'You'"
-                  class="ml-auto"
-                  @click="addTag = true"
-                >
-                  Add tag
-                </Button>
-                <TagInput
-                  v-if="addTag"
-                  :class="{ 'w-full': $resources.entityTags.data?.length }"
+          <div
+            v-if="$resources.entityTags.data?.length || entity.owner === 'You'"
+          >
+            <div class="text-base font-medium mb-4">Tags</div>
+            <div class="flex items-center justify-start flex-wrap gap-y-4">
+              <div
+                v-if="$resources.entityTags.data?.length"
+                class="flex flex-wrap gap-2 max-w-full"
+              >
+                <Tag
+                  v-for="tag in $resources.entityTags?.data"
+                  :key="tag"
+                  :tag="tag"
                   :entity="entity"
-                  :unadded-tags="unaddedTags"
                   @success="
                     () => {
                       userTags.fetch()
                       $resources.entityTags.fetch()
-                      addTag = false
                     }
                   "
-                  @close="addTag = false"
                 />
               </div>
-            </div> -->
+              <TagInput
+                :class="{ 'w-full': $resources.entityTags.data?.length }"
+                :entity="entity"
+                @success="
+                  () => {
+                    userTags.fetch()
+                    $resources.entityTags.fetch()
+                    addTag = false
+                  }
+                "
+                @close="addTag = false"
+              />
+            </div>
+          </div>
           <div>
             <div class="text-base font-medium mb-4">Properties</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
@@ -1394,7 +1380,7 @@ export default {
             console.log(error.messages)
           }
         },
-        auto: false,
+        auto: true,
       }
     },
     entityTags() {
