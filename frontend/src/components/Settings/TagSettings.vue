@@ -5,14 +5,14 @@
       variant="subtle"
       icon-left="plus"
       class="ml-auto"
-      @click="NewTagDialog = !NewTagDialog"
+      @click="showNewTagDialog = true"
     >
       New
     </Button>
   </div>
-  <div v-for="(tag, i) in $resources.getDataByMimeType.data" :key="tag.name">
+  <div v-for="(tag, i) in $resources.getTagsWithOwner.data" :key="tag.name">
     <div
-      class="flex items-center justify-start text-base py-2.5 gap-x-2 w-full"
+      class="flex items-center justify-start text-sm py-1.5 gap-x-2 w-full"
       :class="i > 0 ? 'border-t' : ''"
     >
       <svg
@@ -64,53 +64,38 @@
       ></Dropdown>
     </div>
   </div>
-  <Dialog v-model="NewTagDialog"></Dialog>
+  <NewTagDialog
+    v-if="showNewTagDialog"
+    v-model="showNewTagDialog"
+    @success="$resources.getTagsWithOwner.fetch()"
+  ></NewTagDialog>
 </template>
 <script>
-import { Dropdown, Button, FeatherIcon, Dialog } from "frappe-ui"
+import { Dropdown, Button, FeatherIcon } from "frappe-ui"
+import NewTagDialog from "./NewTagDialog.vue"
+
 export default {
   name: "TagSettings",
   components: {
     Dropdown,
     Button,
     FeatherIcon,
-    Dialog,
+    NewTagDialog,
   },
   data() {
     return {
-      NewTagDialog: false,
+      showNewTagDialog: false,
       SelectedTag: null,
     }
   },
   resources: {
-    storageLimit() {
-      return {
-        url: "drive.api.storage.get_max_storage",
-        method: "GET",
-        auto: true,
-        onSuccess(data) {
-          this.planSizeLimit = data
-          this.$resources.getDataByMimeType.fetch()
-        },
-        onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n")
-          } else {
-            this.errorMessage = error.message
-          }
-        },
-      }
-    },
-    getDataByMimeType() {
+    getTagsWithOwner() {
       return {
         url: "drive.api.tags.get_tags_with_owner",
         onError(error) {
           console.log(error)
         },
-        onSuccess(data) {
-          console.log(data)
-        },
-        auto: false,
+        auto: true,
       }
     },
   },
