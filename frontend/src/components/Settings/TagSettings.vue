@@ -32,7 +32,6 @@
         />
       </svg>
       <span class="text-base">{{ tag.title }}</span>
-      <!-- <span class="ml-auto">{{ tag.owner }}</span> -->
       <Dropdown
         class="ml-auto"
         placement="right"
@@ -41,7 +40,6 @@
             label: 'Edit',
             icon: 'edit-2',
             onClick: () => {
-              activeTag = tag
               showEditDialog = true
             },
           },
@@ -55,7 +53,7 @@
           },
         ]"
       >
-        <Button variant="ghost">
+        <Button variant="ghost" @click="selectedTag = tag">
           <template #icon>
             <FeatherIcon
               name="more-horizontal"
@@ -69,10 +67,17 @@
     v-model="showNewTagDialog"
     @success="$resources.getTagsWithOwner.fetch()"
   ></NewTagDialog>
+  <EditTagDialog
+    v-if="showEditDialog"
+    :tag="selectedTag"
+    v-model="showEditDialog"
+    @success="$resources.getTagsWithOwner.fetch()"
+  ></EditTagDialog>
 </template>
 <script>
 import { Dropdown, Button, FeatherIcon } from "frappe-ui"
 import NewTagDialog from "./NewTagDialog.vue"
+import EditTagDialog from "./EditTagDialog.vue"
 
 export default {
   name: "TagSettings",
@@ -81,11 +86,13 @@ export default {
     Button,
     FeatherIcon,
     NewTagDialog,
+    EditTagDialog,
   },
   data() {
     return {
       showNewTagDialog: false,
-      SelectedTag: null,
+      showEditDialog: false,
+      selectedTag: null,
     }
   },
   resources: {
