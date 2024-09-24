@@ -84,15 +84,15 @@ def get_tags_with_owner():
 
 
 @frappe.whitelist()
-def update_tag_color(tag, color):
+def edit_tag(tag, title, color):
     """
     Update color for givent tag
 
     :param tag: Tag name
     :param color: Color to be update with
     """
-
     doc = frappe.get_doc("Drive Tag", tag)
+    doc.title = title
     doc.color = color
     doc.save()
 
