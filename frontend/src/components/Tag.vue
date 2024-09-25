@@ -1,8 +1,9 @@
 <template>
   <div
-    class="inline-flex gap-1 items-center justify-center text-gray-800 border hover:bg-gray-200 h-7 px-2 rounded group"
+    class="inline-flex gap-1 items-center justify-center text-gray-800 border hover:bg-gray-200 h-7 px-2 rounded group cursor-pointer"
   >
     <svg
+      v-if="entity.owner === 'You' && !allowDelete"
       width="16"
       height="16"
       viewBox="0 0 16 16"
@@ -33,14 +34,12 @@
 </template>
 
 <script>
-import { Badge, Popover, FeatherIcon } from "frappe-ui"
+import { FeatherIcon } from "frappe-ui"
 
 export default {
   name: "Tag",
 
   components: {
-    Popover,
-    Badge,
     FeatherIcon,
   },
 
