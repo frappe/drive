@@ -68,37 +68,7 @@
             v-if="$resources.entityTags.data?.length || entity.owner === 'You'"
           >
             <div class="text-base font-medium mb-4">Tags</div>
-            <div class="flex items-center justify-start flex-wrap gap-y-4">
-              <div
-                v-if="$resources.entityTags.data?.length"
-                class="flex flex-wrap gap-2 max-w-full"
-              >
-                <Tag
-                  v-for="tag in $resources.entityTags?.data"
-                  :key="tag"
-                  :tag="tag"
-                  :entity="entity"
-                  @success="
-                    () => {
-                      userTags.fetch()
-                      $resources.entityTags.fetch()
-                    }
-                  "
-                />
-              </div>
-              <TagInput
-                :class="{ 'w-full': $resources.entityTags.data?.length }"
-                :entity="entity"
-                @success="
-                  () => {
-                    userTags.fetch()
-                    $resources.entityTags.fetch()
-                    addTag = false
-                  }
-                "
-                @close="addTag = false"
-              />
-            </div>
+            <TagInput class="min-w-full" :entity="entity" />
           </div>
           <div>
             <div class="text-base font-medium mb-4">Properties</div>

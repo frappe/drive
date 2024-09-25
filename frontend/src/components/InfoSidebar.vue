@@ -92,17 +92,7 @@
           </div>
           <div>
             <div class="text-base font-medium mb-4">Tags</div>
-            <TagInput
-              :entity="entity"
-              @success="
-                () => {
-                  userTags.fetch()
-                  entityTags.fetch()
-                  addTag = false
-                }
-              "
-              @close="addTag = false"
-            />
+            <TagInput class="min-w-full" :entity="entity" />
           </div>
           <div>
             <div class="text-base font-medium mb-4">Properties</div>
@@ -328,11 +318,9 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
     if (newShowInfoSidebar == true) {
       thumbnailUrl()
       comments.fetch({ entity_name: newEntity.name })
-      entityTags.fetch({ entity: newEntity.name })
       generalAccess.fetch({ entity_name: newEntity.name })
       userList.fetch({ entity_name: newEntity.name })
       groupList.fetch({ entity_name: newEntity.name })
-      userTags.fetch()
     }
   }
 })
@@ -382,26 +370,6 @@ const userList = createResource({
 
 const groupList = createResource({
   url: "drive.api.permissions.get_shared_user_group_list",
-  auto: false,
-})
-
-let userTags = createResource({
-  url: "drive.api.tags.get_user_tags",
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
-  auto: false,
-})
-
-let entityTags = createResource({
-  url: "drive.api.tags.get_entity_tags",
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
   auto: false,
 })
 
