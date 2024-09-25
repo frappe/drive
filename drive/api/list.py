@@ -9,6 +9,7 @@ DriveEntity = frappe.qb.DocType("Drive Entity")
 DriveFavourite = frappe.qb.DocType("Drive Favourite")
 DriveDocShare = frappe.qb.DocType("Drive DocShare")
 DriveRecent = frappe.qb.DocType("Drive Entity Log")
+DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 
 parent_folder = None
 query = None
@@ -49,6 +50,7 @@ def files(
     folders_first=True,
     favourites_only=False,
     recents_only=False,
+    tag_list=[],
     file_kind_list=[],
     mime_type_list=[],
 ):
@@ -158,6 +160,12 @@ def files(
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
         query = query.where(Criterion.any(file_kind_criterion))
 
+    if tag_list:
+        tag_list = json.loads(tag_list)
+        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
+        tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
+        query = query.where(Criterion.any(tag_list_criterion))
+
     if mime_type_list:
         mime_type_list = json.loads(mime_type_list)
         mime_type_criterion = [DriveEntity.mime_type == mime_type for mime_type in mime_type_list]
@@ -175,6 +183,7 @@ def shared_with_user(
     offset=0,
     folders_first=True,
     file_kind_list=[],
+    tag_list=[],
     mime_type_list=[],
 ):
     """
@@ -269,6 +278,12 @@ def shared_with_user(
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
         query = query.where(Criterion.any(file_kind_criterion))
 
+    if tag_list:
+        tag_list = json.loads(tag_list)
+        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
+        tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
+        query = query.where(Criterion.any(tag_list_criterion))
+
     if mime_type_list:
         mime_type_list = json.loads(mime_type_list)
         mime_type_criterion = [DriveEntity.mime_type == mime_type for mime_type in mime_type_list]
@@ -284,6 +299,7 @@ def shared_by_user(
     offset=0,
     folders_first=True,
     file_kind_list=[],
+    tag_list=[],
     mime_type_list=[],
 ):
     """
@@ -374,6 +390,12 @@ def shared_by_user(
         file_kind_list = json.loads(file_kind_list)
         file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
         query = query.where(Criterion.any(file_kind_criterion))
+
+    if tag_list:
+        tag_list = json.loads(tag_list)
+        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
+        tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
+        query = query.where(Criterion.any(tag_list_criterion))
 
     if mime_type_list:
         mime_type_list = json.loads(mime_type_list)
