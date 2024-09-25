@@ -204,7 +204,7 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload"
-import { RotateCcw, X } from "lucide-vue-next"
+import { RotateCcw } from "lucide-vue-next"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
@@ -355,6 +355,12 @@ export default {
     },
     filters() {
       return this.$store.state.activeFilters
+    },
+    tags() {
+      const activeTags = this.$store.state.activeTags
+      const tagNames = []
+      activeTags.map((tag) => tagNames.push(tag.name))
+      return tagNames
     },
     orderBy() {
       return this.$store.state.sortOrder.ascending
@@ -727,6 +733,13 @@ export default {
       },
       deep: true,
     },
+    tags: {
+      handler() {
+        this.pageOffset = 0
+        this.resetAndFetch()
+      },
+      deep: true,
+    },
     folderItems: {
       handler(newVal) {
         this.$store.commit("setCurrentViewEntites", newVal)
@@ -854,13 +867,13 @@ export default {
     updateContainerRect() {
       this.containerRect = this.$refs["container"]?.getBoundingClientRect()
     },
-    onScroll() {
+    /* onScroll() {
       const position = window.pageYOffset
       this.$store.dispatch("saveScrollPosition", {
         route: this.$route.fullPath,
         position,
       })
-    },
+    }, */
     fetchNextPage() {
       this.pageOffset = this.pageOffset + this.pageLength
       this.$resources.folderContents.fetch().then((data) => {
@@ -883,6 +896,7 @@ export default {
           recents_only: this.recents,
           favourites_only: this.favourites,
           file_kind_list: JSON.stringify(this.filters),
+          tag_list: JSON.stringify(this.tags),
         })
         .then((data) => {
           this.pageOffset = data.length
@@ -920,6 +934,7 @@ export default {
           recents_only: this.recents,
           favourites_only: this.favourites,
           file_kind_list: JSON.stringify(this.filters),
+          tag_list: JSON.stringify(this.tags),
         })
         .then((data) => {
           this.folderItems.splice(
@@ -1082,6 +1097,7 @@ export default {
           recents_only: this.recents,
           favourites_only: this.favourites,
           file_kind_list: JSON.stringify(this.filters),
+          tag_list: JSON.stringify(this.tags),
         },
         transform(data) {
           this.$resources.folderContents.error = null

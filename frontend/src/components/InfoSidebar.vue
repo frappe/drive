@@ -88,57 +88,12 @@
                   class="-mr-[3px] outline outline-white"
                 />
               </div>
-
-              <!-- <Button class="ml-auto" @click="showShareDialog = true">
-                  Share
-                </Button> -->
             </div>
           </div>
-          <!-- <div v-if="entityTags.data?.length || entity.owner === 'You'">
-              <div class="text-base font-medium mb-4">Tags</div>
-              <div class="flex items-center justify-start flex-wrap gap-y-4">
-                <div
-                  v-if="entityTags.data?.length"
-                  class="flex flex-wrap gap-2 max-w-full"
-                >
-                  <Tag
-                    v-for="tag in entityTags?.data"
-                    :key="tag"
-                    :tag="tag"
-                    :entity="entity"
-                    @success="
-                      () => {
-                        userTags.fetch()
-                        entityTags.fetch()
-                      }
-                    "
-                  />
-                </div>
-                <span v-else-if="!addTag" class="text-gray-700 text-base">
-                  This file has no tags
-                </span>
-                <Button
-                  v-if="!addTag && entity.owner === 'You'"
-                  class="ml-auto"
-                  @click="addTag = true"
-                >
-                  Add tag
-                </Button>
-                <TagInput
-                  v-if="addTag"
-                  :entity="entity"
-                  :unadded-tags="unaddedTags"
-                  @success="
-                    () => {
-                      userTags.fetch()
-                      entityTags.fetch()
-                      addTag = false
-                    }
-                  "
-                  @close="addTag = false"
-                />
-              </div>
-            </div>  -->
+          <div>
+            <div class="text-base font-medium mb-4">Tags</div>
+            <TagInput class="min-w-full" :entity="entity" />
+          </div>
           <div>
             <div class="text-base font-medium mb-4">Properties</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
@@ -276,8 +231,11 @@ import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
 import Info from "./EspressoIcons/Info.vue"
 import File from "./EspressoIcons/File.vue"
 import Comment from "./EspressoIcons/Comment.vue"
+import Tag from "@/components/Tag.vue"
+import TagInput from "@/components/TagInput.vue"
 const store = useStore()
 const tab = ref(0)
+const addTag = ref(false)
 const newComment = ref("")
 const thumbnailLink = ref("")
 
@@ -360,11 +318,9 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
     if (newShowInfoSidebar == true) {
       thumbnailUrl()
       comments.fetch({ entity_name: newEntity.name })
-      entityTags.fetch({ entity: newEntity.name })
       generalAccess.fetch({ entity_name: newEntity.name })
       userList.fetch({ entity_name: newEntity.name })
       groupList.fetch({ entity_name: newEntity.name })
-      userTags.fetch()
     }
   }
 })
@@ -414,26 +370,6 @@ const userList = createResource({
 
 const groupList = createResource({
   url: "drive.api.permissions.get_shared_user_group_list",
-  auto: false,
-})
-
-let userTags = createResource({
-  url: "drive.api.tags.get_user_tags",
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
-  auto: false,
-})
-
-let entityTags = createResource({
-  url: "drive.api.tags.get_entity_tags",
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
   auto: false,
 })
 

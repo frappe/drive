@@ -48,10 +48,47 @@
       <div class="flex flex-wrap items-start justify-start gap-1">
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
-            {{ item }}
+            <component :is="item"></component>
+            <span class="text-sm ml-2">{{ item }}</span>
+
             <Button
               variant="minimal"
-              @click="$store.state.activeFilters.splice(index, 1)"
+              @click="
+                item.title
+                  ? $store.state.activeTags.splice(index, 1)
+                  : $store.state.activeFilters.splice(index, 1)
+              "
+            >
+              <template #icon>
+                <FeatherIcon class="h-3 w-3" name="x" />
+              </template>
+            </Button>
+          </div>
+        </div>
+        <div v-for="(item, index) in activeTags" :key="index">
+          <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
+            <svg
+              v-if="item.color"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                r="4.5"
+                cx="8"
+                cy="8"
+                :fill="item.color"
+                :stroke="item.color"
+                stroke-width="3"
+              />
+            </svg>
+            <span class="text-sm ml-2">{{ item.title }}</span>
+
+            <Button
+              variant="minimal"
+              @click="$store.state.activeTags.splice(index, 1)"
             >
               <template #icon>
                 <FeatherIcon class="h-3 w-3" name="x" />
@@ -144,6 +181,16 @@ export default {
     Filter,
     ChevronDown,
     FeatherIcon,
+    Folder,
+    Archive,
+    Document,
+    Spreadsheet,
+    Presentation,
+    Audio,
+    Image,
+    Video,
+    PDF,
+    Unknown,
   },
   props: {
     breadcrumbs: {
@@ -166,6 +213,9 @@ export default {
   computed: {
     activeFilters() {
       return this.$store.state.activeFilters
+    },
+    activeTags() {
+      return this.$store.state.activeTags
     },
     orderByField() {
       return this.$store.state.sortOrder.field
@@ -194,7 +244,6 @@ export default {
           label: "Folder",
           icon: Folder,
           onClick: () => {
-            // toggle folders only
             this.$store.state.activeFilters.push("Folder")
           },
         },
