@@ -10,18 +10,16 @@ def create_tag(title, color="gray"):
     :param color: Tag color
     """
 
-    title_lower = title.lower()
-
     doc = frappe.get_doc(
         {
             "doctype": "Drive Tag",
-            "title": title_lower,
+            "title": title,
             "color": color,
         }
     )
 
     tag_exists = frappe.db.exists(
-        {"doctype": "Drive Tag", "owner": frappe.session.user, "title": title_lower}
+        {"doctype": "Drive Tag", "owner": frappe.session.user, "title": title}
     )
     if tag_exists:
         frappe.throw("Tag already exists")
@@ -65,24 +63,35 @@ def get_user_tags():
     Returns all tags created by current user
 
     """
-
     return frappe.db.get_list(
         "Drive Tag",
-        filters={"owner": frappe.session.user},
         fields=["name", "title", "color"],
     )
 
 
 @frappe.whitelist()
-def update_tag_color(tag, color):
+def get_tags_with_owner():
+    """
+    Returns all tags created by current user
+
+    """
+    return frappe.db.get_list(
+        "Drive Tag",
+        fields=["name", "title", "color", "owner"],
+        as_list=False,
+    )
+
+
+@frappe.whitelist()
+def edit_tag(tag, title, color):
     """
     Update color for givent tag
 
     :param tag: Tag name
     :param color: Color to be update with
     """
-
     doc = frappe.get_doc("Drive Tag", tag)
+    doc.title = title
     doc.color = color
     doc.save()
 
@@ -109,5 +118,10 @@ def delete_tag(tag):
 
     :param tag: Tag name
     """
-
+    EntityTag = frappe.qb.DocType("Drive Entity Tag")
+    query = frappe.qb.from_(EntityTag).select(EntityTag.name).where(EntityTag.tag == tag)
+    result = query.run(as_dict=True)
+    for i in result:
+        frappe.delete_doc("Drive Entity Tag", i.name)
     frappe.delete_doc("Drive Tag", tag)
+    return result

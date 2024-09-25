@@ -18,7 +18,10 @@
               ]"
               @click="activeTab = tab"
             >
-              <component :is="tab.icon" class="h-4 w-4 text-gray-700" />
+              <component
+                :is="tab.icon"
+                class="h-4 w-4 text-gray-700 stroke-[1.5]"
+              />
               <span class="text-base text-gray-800">
                 {{ tab.label }}
               </span>
@@ -51,6 +54,8 @@ import Cloud from "@/components/EspressoIcons/Cloud.vue"
 import UserRoleSettings from "./UserRoleSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import { useStore } from "vuex"
+import { Tag } from "lucide-vue-next"
+import TagSettings from "./TagSettings.vue"
 
 const store = useStore()
 
@@ -74,6 +79,11 @@ let tabs = [
     label: "Storage",
     icon: Cloud,
     component: markRaw(StorageSettings),
+  },
+  {
+    label: "Tags",
+    icon: Tag,
+    component: markRaw(TagSettings),
   },
 ]
 
