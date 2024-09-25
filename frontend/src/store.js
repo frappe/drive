@@ -40,6 +40,7 @@ const store = createStore({
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     activeFilters: [],
+    activeTags: [],
     notifCount: 0,
     entityInfo:
       JSON.parse(localStorage.getItem("selectedEntities")) ||
