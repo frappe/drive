@@ -1,15 +1,18 @@
 <template>
-  <div class="w-full">
+  <div class="min-w-full">
     <Popover>
       <template #target="{ isOpen, open: openPopover, togglePopover }">
         <slot name="target" v-bind="{ open: openPopover, togglePopover }">
-          <div class="flex items-center justify-start w-full flex-wrap gap-2">
+          <div
+            class="flex items-center justify-start min-w-full flex-wrap gap-2"
+          >
             <Tag
               v-for="tag in $resources.entityTags.data"
-              :allowDelete="isOpen"
               :key="tag.name"
+              :allow-delete="isOpen"
               :tag="tag"
               :entity="entity"
+              @click="$store.state.activeTags.push(tag)"
               @success="$resources.entityTags.fetch()"
             >
             </Tag>
@@ -121,7 +124,7 @@
 
 <script>
 import { getRandomColor } from "@/utils/random-color"
-import { Input, Popover, FeatherIcon } from "frappe-ui"
+import { Input, Popover } from "frappe-ui"
 import Tag from "./Tag.vue"
 
 export default {
