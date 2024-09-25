@@ -63,7 +63,6 @@ def get_user_tags():
     Returns all tags created by current user
 
     """
-
     return frappe.db.get_list(
         "Drive Tag",
         fields=["name", "title", "color"],
@@ -119,5 +118,10 @@ def delete_tag(tag):
 
     :param tag: Tag name
     """
-
+    EntityTag = frappe.qb.DocType("Drive Entity Tag")
+    query = frappe.qb.from_(EntityTag).select(EntityTag.name).where(EntityTag.tag == tag)
+    result = query.run(as_dict=True)
+    for i in result:
+        frappe.delete_doc("Drive Entity Tag", i.name)
     frappe.delete_doc("Drive Tag", tag)
+    return result
