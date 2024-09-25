@@ -66,16 +66,35 @@
     v-if="showNewTagDialog"
     v-model="showNewTagDialog"
     @success="$resources.getTagsWithOwner.fetch()"
-  ></NewTagDialog>
+  />
   <EditTagDialog
     v-if="showEditDialog"
-    :tag="selectedTag"
     v-model="showEditDialog"
+    :tag="selectedTag"
     @success="$resources.getTagsWithOwner.fetch()"
-  ></EditTagDialog>
+  />
+  <Dialog
+    v-if="showDeleteDialog"
+    v-model="showDeleteDialog"
+    :options="{
+      title: 'Delete Tag',
+      message: `Are you sure you want to delete the tag ${selectedTag.title}? This action cannot be undone`,
+      size: 'sm',
+      actions: [
+        {
+          label: 'Confirm',
+          variant: 'subtle',
+          theme: 'red',
+          onClick: () => {
+            $resources.deleteTag.submit(), (showDeleteDialog = false)
+          },
+        },
+      ],
+    }"
+  />
 </template>
 <script>
-import { Dropdown, Button, FeatherIcon } from "frappe-ui"
+import { Dropdown, Button, FeatherIcon, Dialog } from "frappe-ui"
 import NewTagDialog from "./NewTagDialog.vue"
 import EditTagDialog from "./EditTagDialog.vue"
 
@@ -87,15 +106,37 @@ export default {
     FeatherIcon,
     NewTagDialog,
     EditTagDialog,
+    Dialog,
   },
   data() {
     return {
       showNewTagDialog: false,
       showEditDialog: false,
+      showDeleteDialog: false,
       selectedTag: null,
     }
   },
+  computed: {
+    deleteMessage() {
+      return `Are you sure you want to delete the tag "blog"? This action cannot be undone. All files with this tag will also lose it.`
+    },
+  },
   resources: {
+    deleteTag() {
+      return {
+        url: "drive.api.tags.delete_tag",
+        params: {
+          tag: this.selectedTag?.name,
+        },
+        onSuccess() {
+          this.$resources.getTagsWithOwner.fetch()
+        },
+        onError(error) {
+          console.log(error)
+        },
+        auto: false,
+      }
+    },
     getTagsWithOwner() {
       return {
         url: "drive.api.tags.get_tags_with_owner",
