@@ -1,67 +1,103 @@
 <template>
-  <h1 class="font-semibold mb-8">Storage</h1>
-  <div
-    v-if="!usedSpace"
-    class="h-full w-full flex flex-col items-center justify-center my-auto"
+  <h1 class="font-semibold mb-4">Storage</h1>
+  <UserStorage
+    v-if="showFileStorage"
+    :used-space="fileUsedSpace"
+    :plan-size-limit="filePlanSizeLimit"
+    :data="$resources.getOwnedFiles.data"
   >
-    <Cloud class="h-7 stroke-1 text-gray-600" />
-    <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
-  </div>
-  <div v-else>
-    <div class="flex flex-col items-start justify-start w-full mb-4">
-      <span class="text-lg font-semibold text-gray-800 mb-3"
-        >You have used {{ formatSize(usedSpace) }} out of
-        {{ base2BlockSize(planSizeLimit) }}</span
-      >
+    <template #control>
       <div
-        class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0"
+        v-if="storageQuotaEnabled"
+        class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 w-28 flex items-center px-0.5 py-1"
       >
-        <div
-          v-for="i in $resources.getDataByMimeType.data"
-          :key="i.file_kind"
-          class="h-7"
-          :style="{
-            backgroundColor: i.color,
-            width: i.percentageFormat,
-            paddingRight: `${5 + i.percentageRaw}px`,
-          }"
-        ></div>
+        <Button
+          variant="ghost"
+          class="max-h-6 leading-none transition-colors focus:outline-none"
+          :class="[
+            showFileStorage === false
+              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : '',
+          ]"
+          @click="showFileStorage = false"
+        >
+          System
+        </Button>
+        <Button
+          variant="ghost"
+          class="max-h-6 leading-none transition-colors focus:outline-none"
+          :class="[
+            showFileStorage === true
+              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : '',
+          ]"
+          @click="showFileStorage = true"
+        >
+          You
+        </Button>
       </div>
-    </div>
-    <div
-      class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
-    >
+    </template>
+  </UserStorage>
+  <SystemStorage
+    v-else
+    :used-space="systemUsedSpace"
+    :plan-size-limit="systemPlanSizeLimit"
+    :entities="$resources.getDataByMimeType.data"
+  >
+    <template #control>
       <div
-        v-for="i in $resources.getDataByMimeType.data"
-        :key="i.file_kind"
-        class="w-full border-b flex items-center justify-start py-4 gap-x-2"
+        v-if="storageQuotaEnabled"
+        class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 w-28 flex items-center px-0.5 py-1"
       >
-        <div
-          class="h-2 w-2 rounded-full"
-          :style="{
-            backgroundColor: i.color,
-          }"
-        ></div>
-        <span class="text-gray-800 text-base">{{ i.file_kind }}</span>
-        <span class="text-gray-800 text-base ml-auto">{{ i.h_size }}</span>
+        <Button
+          variant="ghost"
+          class="max-h-6 leading-none transition-colors focus:outline-none"
+          :class="[
+            showFileStorage === false
+              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : '',
+          ]"
+          @click="showFileStorage = false"
+        >
+          System
+        </Button>
+        <Button
+          variant="ghost"
+          class="max-h-6 leading-none transition-colors focus:outline-none"
+          :class="[
+            showFileStorage === true
+              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : '',
+          ]"
+          @click="showFileStorage = true"
+        >
+          You
+        </Button>
       </div>
-    </div>
-  </div>
+    </template>
+  </SystemStorage>
 </template>
 <script>
-import { formatSize, base2BlockSize } from "../../utils/format"
-import Cloud from "@/components/EspressoIcons/Cloud.vue"
+import { formatSize, base2BlockSize, formatMimeType } from "../../utils/format"
+import { getIconUrl } from "../../utils/getIconUrl"
+import SystemStorage from "./SystemStorage.vue"
+import UserStorage from "./UserStorage.vue"
 
 export default {
   name: "StorageSettings",
   components: {
-    Cloud,
+    SystemStorage,
+    UserStorage,
   },
   data() {
     return {
       fullName: this.$store.state.user.fullName,
-      planSizeLimit: 50000000000,
-      usedSpace: 0,
+      showFileStorage: false,
+      systemPlanSizeLimit: 50000000000,
+      filePlanSizeLimit: 50000000000,
+      fileUsedSpace: 0,
+      systemUsedSpace: 0,
+      storageQuotaEnabled: false,
       fileKindColorMap: {
         Archive: "#C2A88D",
         Application: "#f472b6",
@@ -85,6 +121,9 @@ export default {
     firstName() {
       return this.$store.state.user.fullName.split(" ")
     },
+    isDriveAdmin() {
+      return this.$store.state.user.driveAdmin
+    },
     /* fullName() {
         return this.$store.state.user.fullName;
       }, */
@@ -99,8 +138,13 @@ export default {
         method: "GET",
         auto: true,
         onSuccess(data) {
-          this.planSizeLimit = data
+          if (data.quota) {
+            this.storageQuotaEnabled = true
+            this.$resources.getOwnedFiles.fetch()
+          }
           this.$resources.getDataByMimeType.fetch()
+          this.filePlanSizeLimit = data.quota
+          this.systemPlanSizeLimit = data.limit
         },
         onError(error) {
           if (error.messages) {
@@ -120,18 +164,40 @@ export default {
         onSuccess(data) {
           data.forEach((item) => {
             item.color = this.fileKindColorMap[item.file_kind]
-            item.percentageRaw = (100 * item.total_size) / this.planSizeLimit
+            item.percentageRaw =
+              (100 * item.total_size) / this.systemPlanSizeLimit
             item.percentageFormat = this.formatPercent(item.percentageRaw)
             item.h_size = formatSize(item.total_size)
-            this.usedSpace = this.usedSpace + item.total_size
+            this.systemUsedSpace = this.systemUsedSpace + item.total_size
           })
           data.sort((a, b) => b.total_size - a.total_size)
         },
         auto: false,
       }
     },
+    getOwnedFiles() {
+      return {
+        url: "drive.api.storage.get_owned_files_by_storage",
+        onError(error) {
+          console.log(error)
+        },
+        onSuccess(data) {
+          data.total.forEach((item) => {
+            item.color = this.fileKindColorMap[item.file_kind]
+            item.percentageRaw = (100 * item.file_size) / this.filePlanSizeLimit
+            item.percentageFormat = this.formatPercent(item.percentageRaw)
+            item.h_size = formatSize(item.file_size)
+            this.fileUsedSpace = this.fileUsedSpace + item.file_size
+          })
+          this.showFileStorage = true
+        },
+        auto: false,
+      }
+    },
   },
   methods: {
+    formatMimeType,
+    getIconUrl,
     formatSize,
     base2BlockSize,
     formatPercent(num) {
