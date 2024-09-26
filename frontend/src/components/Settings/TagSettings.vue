@@ -2,7 +2,7 @@
   <div class="flex items-center mb-6">
     <h1 class="font-semibold">Tags</h1>
     <Button
-      variant="subtle"
+      variant="solid"
       icon-left="plus"
       class="ml-auto"
       @click="showNewTagDialog = true"
@@ -12,10 +12,11 @@
   </div>
   <div v-for="(tag, i) in $resources.getTagsWithOwner.data" :key="tag.name">
     <div
-      class="flex items-center justify-start text-sm py-1.5 gap-x-2 w-full"
+      class="flex items-center justify-start text-sm py-1.5 gap-x-1.5 w-full"
       :class="i > 0 ? 'border-t' : ''"
     >
       <svg
+        class="h-2.5"
         width="16"
         height="16"
         viewBox="0 0 16 16"
@@ -31,7 +32,7 @@
           stroke-width="3"
         />
       </svg>
-      <span class="text-base">{{ tag.title }}</span>
+      <span class="text-sm text-gray-800">{{ tag.title }}</span>
       <Dropdown
         class="ml-auto"
         placement="right"
@@ -45,6 +46,7 @@
           },
           {
             label: 'Delete',
+            theme: 'red',
             icon: 'trash-2',
             onClick: () => {
               activeTag = tag
@@ -61,6 +63,13 @@
             /> </template></Button
       ></Dropdown>
     </div>
+  </div>
+  <div
+    v-if="!$resources.getTagsWithOwner.data?.length"
+    class="h-full w-full flex flex-col items-center justify-center my-auto"
+  >
+    <Tag class="h-7 stroke-1 text-gray-600" />
+    <span class="text-gray-800 text-sm mt-2">No Tags</span>
   </div>
   <NewTagDialog
     v-if="showNewTagDialog"
@@ -95,6 +104,7 @@
 </template>
 <script>
 import { Dropdown, Button, FeatherIcon, Dialog } from "frappe-ui"
+import { Tag } from "lucide-vue-next"
 import NewTagDialog from "./NewTagDialog.vue"
 import EditTagDialog from "./EditTagDialog.vue"
 
@@ -107,6 +117,7 @@ export default {
     NewTagDialog,
     EditTagDialog,
     Dialog,
+    Tag,
   },
   data() {
     return {
