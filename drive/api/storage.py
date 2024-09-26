@@ -17,21 +17,20 @@ def get_max_storage():
     storage_quota_enabled = frappe.db.get_single_value(
         "Drive Instance Settings", "enable_user_storage_quota"
     )
-
     plan_limit = frappe.conf.get("plan_limit")
     if plan_limit:
-        limit = plan_limit["max_storage_usage"]
-        limit = int(limit)
-        return int(limit * 1024**2)
-
-    max_storage = frappe.conf.get("max_storage")
-    if not max_storage:
-        add_new_site_config_key("max_storage", 5120)
-    max_storage = frappe.conf.get("max_storage")
-    max_storage = int(max_storage)
-    if storage_quota_enabled and (limit := validate_quota()):
-        return {"quota": limit, "limit": int(max_storage * 1024**2)}
-    return {"limit": int(max_storage * 1024**2)}
+        max_storage = plan_limit["max_storage_usage"]
+        max_storage = int(max_storage)
+    if not plan_limit:
+        val = frappe.conf.get("max_storage")
+        if not val:
+            add_new_site_config_key("max_storage", 5120)
+        max_storage = frappe.conf.get("max_storage")
+        max_storage = int(max_storage)
+    max_storage = max_storage * 1024**2
+    if storage_quota_enabled and (quota := validate_quota()):
+        return {"quota": quota, "limit": max_storage}
+    return {"limit": max_storage}
 
 
 def validate_quota():
