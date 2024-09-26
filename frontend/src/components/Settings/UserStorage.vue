@@ -32,13 +32,14 @@
     class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
   >
     <div
-      v-for="i in data?.entities"
+      v-for="(i, index) in data?.entities"
       :key="i.name"
-      class="w-full border-b flex items-center justify-start py-2.5 gap-x-2"
+      class="w-full flex items-center justify-start py-3 gap-x-2"
+      :class="index > 0 ? 'border-t' : ''"
     >
       <img :src="getIconUrl(formatMimeType(i.mime_type))" />
-      <span class="text-gray-800 text-base">{{ i.title }}</span>
-      <span class="text-gray-800 text-base ml-auto">{{
+      <span class="text-gray-800 text-sm">{{ i.title }}</span>
+      <span class="text-gray-800 text-sm ml-auto">{{
         formatSize(i.file_size)
       }}</span>
     </div>
