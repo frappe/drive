@@ -4,7 +4,7 @@ from pathlib import Path
 import hashlib
 from drive.locks.distributed_lock import DistributedLock
 import json
-from frappe.utils import now
+from frappe.utils import now, split_emails, validate_email_address
 
 
 @frappe.whitelist()
@@ -218,3 +218,49 @@ def is_drive_admin():
         ):
             return True
     return False
+
+
+@frappe.whitelist(allow_guest=True)
+def accept_invitation(key):
+    if not key:
+        frappe.throw("Invalid or expired key")
+
+    invitation_name = frappe.db.exists("Drive User Invitation", {"key": key})
+    if not invitation_name:
+        frappe.throw("Invalid or expired key")
+
+    invitation = frappe.get_doc("Drive User Invitation", invitation_name)
+    invitation.accept()
+    invitation.reload()
+
+    if invitation.status == "Accepted":
+        add_drive_user_role(invitation.email)
+        frappe.local.login_manager.login_as(invitation.email)
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/drive"
+
+
+@frappe.whitelist()
+def invite_users(emails):
+    if not emails:
+        return
+
+    email_string = validate_email_address(emails, throw=False)
+    email_list = split_emails(email_string)
+    if not email_list:
+        return
+
+    existing_invites = frappe.db.get_list(
+        "Drive User Invitation",
+        filters={
+            "email": ["in", email_list],
+            "status": ["in", ["Pending", "Accepted"]],
+        },
+        pluck="email",
+    )
+
+    new_invites = list(set(email_list) - set(existing_invites))
+    for email in new_invites:
+        invite = frappe.new_doc("Drive User Invitation")
+        invite.email = email
+        invite.insert(ignore_permissions=True)
