@@ -4,7 +4,7 @@
     <Button
       variant="solid"
       icon-left="plus"
-      class="ml-auto pr-3"
+      class="ml-auto"
       @click="showInviteUserDialog = true"
     >
       Invite
@@ -20,11 +20,11 @@
         v-if="index > 0"
         class="w-[95%] mx-auto h-px border-t border-gray-200"
       ></div>
-      <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-2">
+      <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
         <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
         <div class="flex flex-col">
           <span class="text-base">{{ user.full_name }}</span>
-          <span class="text-base text-gray-700">{{ user.user_name }}</span>
+          <span class="text-xs text-gray-700">{{ user.user_name }}</span>
         </div>
         <span class="ml-auto text-base text-gray-600">{{ user.role }}</span>
       </div>
