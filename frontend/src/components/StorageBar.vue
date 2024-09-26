@@ -46,6 +46,7 @@ import { formatSize, base2BlockSize } from "@/utils/format"
 const emitter = inject("emitter")
 const usedStorage = ref(0)
 const storageMax = ref(5368709120)
+const usageUrl = ref("drive.api.storage.total_storage_used")
 const store = useStore()
 const isExpanded = computed(() => {
   return store.state.IsSidebarExpanded
@@ -74,7 +75,14 @@ let maxStorage = createResource({
   cache: "max_storage",
   onSuccess(data) {
     if (!data) data = 0
-    storageMax.value = data.quota ? data.quota : data.limit
+    if (data.quota) {
+      storageMax.value = data.quota
+      usageUrl.value = "drive.api.storage.total_storage_used_by_user"
+      storageUsed.fetch()
+    } else {
+      storageMax.value = data.limit
+      storageUsed.fetch()
+    }
   },
   onError(error) {
     if (error.messages) {
@@ -85,7 +93,7 @@ let maxStorage = createResource({
 })
 
 let storageUsed = createResource({
-  url: "drive.api.storage.total_storage_used",
+  url: usageUrl.value,
   onSuccess(data) {
     data = data[0].total_size
     if (!data) data = 0
@@ -96,6 +104,6 @@ let storageUsed = createResource({
       console.log(error.messages)
     }
   },
-  auto: true,
+  auto: false,
 })
 </script>
