@@ -14,7 +14,10 @@
     </SidebarItem>
     <div class="w-auto mx-2 bg-gray-300 rounded-full h-1 my-2">
       <div
-        class="bg-black h-1 rounded-full"
+        class="h-1 rounded-full"
+        :class="
+          (100 * usedStorage) / storageMax > 100 ? 'bg-red-500' : 'bg-black'
+        "
         :style="{
           width: calculatePercent,
           maxWidth: '100%',
@@ -71,7 +74,7 @@ let maxStorage = createResource({
   cache: "max_storage",
   onSuccess(data) {
     if (!data) data = 0
-    storageMax.value = data
+    storageMax.value = data.quota ? data.quota : data.limit
   },
   onError(error) {
     if (error.messages) {
