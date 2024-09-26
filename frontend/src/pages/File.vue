@@ -216,8 +216,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   realtime.off("doc_viewers")
   store.state.connectedUsers = []
-  realtime.doc_close("Drive Entity", file.data.name)
-  realtime.doc_unsubscribe("Drive Entity", file.data.name)
+  realtime.doc_close("Drive Entity", file.data?.name)
+  realtime.doc_unsubscribe("Drive Entity", file.data?.name)
   store.commit("setEntityInfo", [])
 })
 
