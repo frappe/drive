@@ -22,21 +22,22 @@
         }"
       ></div>
     </div>
-    <div
-      v-if="!usedSpace"
-      class="h-full w-full flex flex-col items-center justify-center my-auto"
-    >
-      <Cloud class="h-7 stroke-1 text-gray-600" />
-      <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
-    </div>
+  </div>
+  <div
+    v-if="!usedSpace"
+    class="h-full w-full flex flex-col items-center justify-center my-auto"
+  >
+    <Cloud class="h-7 stroke-1 text-gray-600" />
+    <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
   </div>
   <div
     class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
   >
     <div
-      v-for="i in entities"
+      v-for="(i, index) in entities"
       :key="i.file_kind"
-      class="w-full border-b flex items-center justify-start py-2.5 gap-x-2"
+      class="w-full flex items-center justify-start py-3 gap-x-2"
+      :class="index > 0 ? 'border-t' : ''"
     >
       <div
         class="h-2 w-2 rounded-full"
@@ -44,8 +45,8 @@
           backgroundColor: i.color,
         }"
       ></div>
-      <span class="text-gray-800 text-base">{{ i.file_kind }}</span>
-      <span class="text-gray-800 text-base ml-auto">{{ i.h_size }}</span>
+      <span class="text-gray-800 text-sm">{{ i.file_kind }}</span>
+      <span class="text-gray-800 text-sm ml-auto">{{ i.h_size }}</span>
     </div>
   </div>
 </template>
