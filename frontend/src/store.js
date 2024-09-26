@@ -39,6 +39,7 @@ const store = createStore({
     },
     view: JSON.parse(localStorage.getItem("view")) || "grid",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
+    elementExists: false,
     activeFilters: [],
     activeTags: [],
     notifCount: 0,
@@ -89,6 +90,9 @@ const store = createStore({
     },
   },
   mutations: {
+    setElementExists(state, val) {
+      state.elementExists = val
+    },
     toggleFoldersBefore(state) {
       state.foldersBefore = !state.foldersBefore
       localStorage.setItem("foldersBefore", JSON.stringify(state.foldersBefore))
@@ -183,6 +187,10 @@ const store = createStore({
     },
   },
   actions: {
+    checkElementPresence({ commit }) {
+      const exists = document.getElementById("headlessui-portal-root") !== null
+      commit("setElementExists", exists)
+    },
     async login({ commit }, payload) {
       localStorage.removeItem("is_drive_admin")
       commit("setAuth", { loading: true })
@@ -216,5 +224,13 @@ const store = createStore({
     },
   },
 })
+
+const observer = new MutationObserver(() => {
+  store.dispatch("checkElementPresence")
+})
+observer.observe(document.body, { childList: true, subtree: true })
+export function stopObserving() {
+  observer.disconnect()
+}
 
 export default store

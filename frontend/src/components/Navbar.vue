@@ -37,7 +37,10 @@
           <Button
             v-if="$route.name === 'Document' || $route.name === 'File'"
             :variant="'solid'"
-            :disabled="$store.state.entityInfo[0]?.owner !== 'You'"
+            :disabled="
+              $store.state.entityInfo[0]?.owner !== 'You' ||
+              $store.state.elementExists
+            "
             class="bg-gray-200 rounded flex justify-center items-center px-1"
             @click="emitter.emit('showShareDialog')"
           >
@@ -49,7 +52,9 @@
           <Button
             v-else-if="$route.name === 'Recents'"
             class="line-clamp-1 truncate w-full"
-            :disabled="!currentViewEntites?.length"
+            :disabled="
+              !currentViewEntites?.length || $store.state.elementExists
+            "
             theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
@@ -62,7 +67,9 @@
           <Button
             v-else-if="$route.name === 'Favourites'"
             class="line-clamp-1 truncate"
-            :disabled="!currentViewEntites?.length"
+            :disabled="
+              !currentViewEntites?.length || $store.state.elementExists
+            "
             theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
@@ -75,7 +82,9 @@
           <Button
             v-else-if="$route.name === 'Trash'"
             class="line-clamp-1 truncate"
-            :disabled="!currentViewEntites?.length"
+            :disabled="
+              !currentViewEntites?.length || $store.state.elementExists
+            "
             theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
@@ -85,13 +94,17 @@
             </template>
             Empty Trash
           </Button>
+
           <Dropdown
             v-else
             :options="newEntityOptions"
             placement="left"
             class="basis-5/12 lg:basis-auto"
           >
-            <Button variant="solid" :disabled="canUpload">
+            <Button
+              variant="solid"
+              :disabled="canUpload || $store.state.elementExists"
+            >
               <template #prefix>
                 <FeatherIcon name="upload" class="w-4" />
               </template>
@@ -243,6 +256,14 @@ export default {
     }
   },
   computed: {
+    isButtonDisabled() {
+      if (document.getElementById("headlessui-portal-root")) {
+        console.log("TRUE")
+        return true
+      }
+      console.log(document.getElementById("headlessui-portal-root"))
+      return false
+    },
     selectedEntities() {
       if (this.$route.name === "Folder") {
         return this.$store.state.currentFolder
