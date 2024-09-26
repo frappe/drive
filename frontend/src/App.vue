@@ -1,55 +1,70 @@
 <template>
-  <!-- Main container no scroll -->
-  <div
-    class="flex w-screen h-screen antialiased overflow-hidden"
-    @contextmenu="handleDefaultContext($event)"
-  >
-    <!-- Main container with scroll -->
-    <div class="h-full w-full flex flex-col">
-      <SearchPopup
-        v-if="isLoggedIn && showSearchPopup"
-        v-model="showSearchPopup"
-      />
-      <div
-        v-if="isLoggedIn || $route.meta.isHybridRoute"
-        class="flex flex-col h-full overflow-hidden sm:flex-row"
-      >
-        <Sidebar v-if="isLoggedIn" class="hidden sm:block" />
-        <div id="dropTarget" class="h-full w-full overflow-hidden">
-          <Navbar
-            :mobile-sidebar-is-open="showMobileSidebar"
-            @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar"
-          />
-          <div class="flex w-full h-full overflow-hidden">
-            <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
-            <div
-              class="flex w-full h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)] overflow-hidden"
-            >
-              <router-view :key="$route.fullPath" v-slot="{ Component }">
-                <component :is="Component" id="currentPage" ref="currentPage" />
-              </router-view>
+  <template v-if="$route.meta.errorPage">
+    <router-view :key="$route.fullPath" v-slot="{ Component }">
+      <component :is="Component" id="currentPage" ref="currentPage" />
+    </router-view>
+  </template>
+
+  <template v-else>
+    <!-- Main container no scroll -->
+    <div
+      class="flex w-screen h-screen antialiased overflow-hidden"
+      @contextmenu="handleDefaultContext($event)"
+    >
+      <!-- Main container with scroll -->
+      <div class="h-full w-full flex flex-col">
+        <SearchPopup
+          v-if="isLoggedIn && showSearchPopup"
+          v-model="showSearchPopup"
+        />
+        <div
+          v-if="isLoggedIn || $route.meta.isHybridRoute"
+          class="flex flex-col h-full overflow-hidden sm:flex-row"
+        >
+          <Sidebar v-if="isLoggedIn" class="hidden sm:block" />
+          <div id="dropTarget" class="h-full w-full overflow-hidden">
+            <Navbar
+              :mobile-sidebar-is-open="showMobileSidebar"
+              @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar"
+            />
+            <div class="flex w-full h-full overflow-hidden">
+              <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
+              <div
+                class="flex w-full h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)] overflow-hidden"
+              >
+                <router-view :key="$route.fullPath" v-slot="{ Component }">
+                  <component
+                    :is="Component"
+                    id="currentPage"
+                    ref="currentPage"
+                  />
+                </router-view>
+              </div>
+              <InfoSidebar v-if="hideInfoSideBar" />
             </div>
-            <InfoSidebar v-if="hideInfoSideBar" />
           </div>
+          <BottomBar
+            v-if="isLoggedIn"
+            class="fixed bottom-0 w-full sm:hidden"
+          />
         </div>
-        <BottomBar v-if="isLoggedIn" class="fixed bottom-0 w-full sm:hidden" />
+        <!-- Auth -->
+        <router-view v-else />
       </div>
-      <!-- Auth -->
-      <router-view v-else />
     </div>
-  </div>
-  <FileUploader v-if="isLoggedIn" />
-  <Transition
-    enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    enter-from-class="translate-y-1 opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
-    leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="translate-y-1 opacity-0"
-  >
-    <UploadTracker v-if="showUploadTracker" />
-  </Transition>
-  <Toasts />
+    <FileUploader v-if="isLoggedIn" />
+    <Transition
+      enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+      enter-from-class="translate-y-1 opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+      leave-from-class="translate-y-0 opacity-100"
+      leave-to-class="translate-y-1 opacity-0"
+    >
+      <UploadTracker v-if="showUploadTracker" />
+    </Transition>
+    <Toasts />
+  </template>
 </template>
 <script>
 import Navbar from "@/components/Navbar.vue"
