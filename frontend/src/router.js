@@ -116,6 +116,9 @@ const routes = [
     name: "Error",
     component: () => import("@/pages/Error.vue"),
     beforeEnter: [redir404, clearStore],
+    meta: {
+      errorPage: true,
+    },
     props: true,
   },
 ]
