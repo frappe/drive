@@ -18,6 +18,10 @@ def create_user_directory():
     """
     if frappe.session.user == "Guest":
         return
+    # imperative that user dir is created by an owner that has drive_user role
+    user_roles = frappe.get_roles(frappe.session.user)
+    if "Drive User" not in user_roles:
+        raise frappe.PermissionError("You do not have access to Frappe Drive")
     user_directory_name = _get_user_directory_name()
     user_directory_path = Path(frappe.get_site_path("private/files"), user_directory_name)
     user_directory_path.mkdir(exist_ok=True)
@@ -37,8 +41,8 @@ def create_user_directory():
     # (Placeholder) till we make login and onboarding
     # user_directory breaks if its not created by a `drive_user`
     user = frappe.get_doc("User", frappe.session.user)
+
     user.flags.ignore_permlevel_for_fields = ["roles"]
-    user.add_roles("Drive User")
     user.save(ignore_permissions=True)
     user_directory.insert()
     return frappe._dict({"name": user_directory.name, "path": user_directory.path})
