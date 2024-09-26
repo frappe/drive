@@ -9,18 +9,24 @@
     {
       "fieldname": "user",
       "fieldtype": "Link",
+      "in_list_view": 1,
       "label": "User",
-      "options": "User"
+      "options": "User",
+      "reqd": 1
     },
     {
+      "description": "Space to allocate in GB",
+      "documentation_url": "https://docs.frappe.io/drive/storage-quota",
       "fieldname": "user_storage_limit",
       "fieldtype": "Int",
-      "label": "Storage Limit"
+      "in_list_view": 1,
+      "label": "Storage Limit",
+      "reqd": 1
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2024-09-23 11:11:51.827673",
+  "modified": "2024-09-26 17:14:26.032137",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive User Storage Quota",
