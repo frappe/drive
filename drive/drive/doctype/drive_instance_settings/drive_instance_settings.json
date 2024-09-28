@@ -6,10 +6,17 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["instance_id", "org_name", "instance_email"],
+  "field_order": [
+    "instance_id",
+    "org_name",
+    "instance_email",
+    "self_storage_limit",
+    "enable_user_storage_quota"
+  ],
   "fields": [
     {
       "default": "organization",
+      "description": "Used to show the organization name in the Frappe Drive portal",
       "fieldname": "org_name",
       "fieldtype": "Data",
       "in_list_view": 1,
@@ -17,19 +24,36 @@
       "reqd": 1
     },
     {
+      "description": "Not implemented yet",
       "fieldname": "instance_id",
       "fieldtype": "Data",
       "label": "Instance ID"
     },
     {
+      "description": "Not implemented yet",
       "fieldname": "instance_email",
       "fieldtype": "Data",
       "label": "Instance Email"
+    },
+    {
+      "default": "0",
+      "description": "Requires making new entry for each user in <b>Drive User Storage Quota</b> DocType.",
+      "documentation_url": "https://docs.frappe.io/drive/storage-quota",
+      "fieldname": "enable_user_storage_quota",
+      "fieldtype": "Check",
+      "label": "Enable User Storage Quota"
+    },
+    {
+      "default": "5",
+      "description": "Total space to allocate to Frappe Drive in GB",
+      "fieldname": "self_storage_limit",
+      "fieldtype": "Int",
+      "label": "Total Disk Storage Limit"
     }
   ],
   "issingle": 1,
   "links": [],
-  "modified": "2024-07-15 11:53:14.138404",
+  "modified": "2024-09-26 18:00:55.517666",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Instance Settings",

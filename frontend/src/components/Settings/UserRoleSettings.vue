@@ -1,8 +1,8 @@
 <template>
-  <div class="flex items-center mb-2">
+  <div class="flex items-center mb-4">
     <h1 class="font-semibold">Groups</h1>
     <Button
-      variant="subtle"
+      variant="solid"
       icon-left="plus"
       class="ml-auto"
       @click="CreateRoleDialog = !CreateRoleDialog"
@@ -23,14 +23,9 @@
         @click.self="viewGroupDetails(group.name)"
       >
         <Avatar size="lg" :label="group.name" />
-        <span class="ml-2">{{ group.name }}</span>
+        <span class="ml-3">{{ group.name }}</span>
         <Dropdown
           v-if="isDriveadmin"
-          :button="{
-            icon: 'more-horizontal',
-            label: 'Page Options',
-            variant: 'ghost',
-          }"
           class="ml-auto"
           placement="right"
           :options="[
@@ -44,7 +39,7 @@
             },
           ]"
         >
-          <Button>
+          <Button variant="ghost">
             <template #icon>
               <FeatherIcon name="more-horizontal" class="h-4 w-4" />
             </template> </Button
@@ -85,7 +80,7 @@
       :options="{
         title: 'Delete ' + activeGroup,
         message:
-          'This will delete the group. Members will lose access to files shared with this group.',
+          'This will delete the group. Members in it will lose access to files shared with this group',
         size: 'sm',
         actions: [
           {

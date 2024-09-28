@@ -14,24 +14,74 @@ def get_max_storage():
     Returns:
         int: The maximum storage limit in bytes.
     """
+    storage_quota_enabled = frappe.db.get_single_value(
+        "Drive Instance Settings", "enable_user_storage_quota"
+    )
     plan_limit = frappe.conf.get("plan_limit")
     if plan_limit:
-        limit = plan_limit["max_storage_usage"]
-        limit = int(limit)
-        return int(limit * 1024**2)
+        max_storage = plan_limit["max_storage_usage"]
+        max_storage = int(max_storage)
+    if not plan_limit:
+        val = frappe.conf.get("max_storage")
+        if not val:
+            add_new_site_config_key("max_storage", 5120)
+        max_storage = frappe.conf.get("max_storage")
+        max_storage = int(max_storage)
+    max_storage = max_storage * 1024**2
+    if storage_quota_enabled and (quota := validate_quota()):
+        return {"quota": quota, "limit": max_storage}
+    return {"limit": max_storage}
 
-    max_storage = frappe.conf.get("max_storage")
-    if not max_storage:
-        add_new_site_config_key("max_storage", 5120)
-    max_storage = frappe.conf.get("max_storage")
-    max_storage = int(max_storage)
-    return int(max_storage * 1024**2)
+
+def validate_quota():
+    """
+    Fetch user storage quota
+    formatted the same as `get_max_storage()`
+    """
+    quota_limit = frappe.db.get_value(
+        "Drive User Storage Quota",
+        {"User": frappe.session.user},
+        ["user_storage_limit"],
+    )
+    if quota_limit:
+        return int(quota_limit * 1024**2)
+
+
+@frappe.whitelist()
+def get_owned_files_by_storage():
+    entities = frappe.db.get_list(
+        "Drive Entity",
+        filters={"owner": frappe.session.user, "is_group": False},
+        order_by="file_size desc",
+        fields=["name", "title", "owner", "file_size", "file_kind", "mime_type"],
+    )
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("file_size"))
+        .where((DriveEntity.is_group == 0) & (DriveEntity.owner == frappe.session.user))
+        .groupby(DriveEntity.file_kind)
+    )
+    total = query.run(as_dict=True)
+    return {"entities": entities, "total": total}
 
 
 @frappe.whitelist()
 def total_storage_used():
     DriveEntity = frappe.qb.DocType("Drive Entity")
     query = frappe.qb.from_(DriveEntity).select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+    result = query.run(as_dict=True)
+    return result
+
+
+@frappe.whitelist()
+def total_storage_used_by_user():
+    DriveEntity = frappe.qb.DocType("Drive Entity")
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .where(DriveEntity.owner == frappe.session.user)
+        .select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+    )
     result = query.run(as_dict=True)
     return result
 
@@ -50,9 +100,17 @@ def total_storage_used_by_file_kind():
 
 def get_storage_allowed():
     limit = get_max_storage()
-    usage = total_storage_used()
-    usage = usage[0].total_size or 0
-    return limit - usage
+    total_limit = int(limit.get("limit"))
+    total_usage = int(total_storage_used()[0].total_size or 0)
+    total_rem = total_limit - total_usage
+    if limit.get("quota") is not None:
+        quota_limit = int(limit.get("quota"))
+        usr_usage = int(total_storage_used_by_user()[0].total_size or 0)
+        usr_rem = quota_limit - usr_usage
+        return min(usr_rem, total_rem)
+    else:
+        return total_rem
+    
 
 
 def total_disk_storage_used():

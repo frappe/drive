@@ -16,8 +16,10 @@ import Home from "../components/EspressoIcons/Home.vue"
 import PageGeneric from "@/components/PageGeneric.vue"
 import { createResource } from "frappe-ui"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 
 const store = useStore()
+const router = useRouter()
 
 let homeID = createResource({
   url: "drive.api.files.get_home_folder_id",
@@ -25,6 +27,18 @@ let homeID = createResource({
   onSuccess(data) {
     store.commit("setCurrentFolderID", data)
     store.commit("setHomeFolderID", data)
+  },
+  onError(error) {
+    if (error && error.exc_type === "PermissionError") {
+      store.commit("setError", {
+        iconName: "alert-triangle",
+        iconClass: "fill-amber-500 stroke-white",
+        primaryMessage: "Forbidden",
+        secondaryMessage: "You do not have access to Frappe Drive",
+        hideButton: true,
+      })
+    }
+    router.replace({ name: "Error" })
   },
 })
 </script>
