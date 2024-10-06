@@ -3,33 +3,21 @@
   "autoname": "hash",
   "creation": "2024-09-19 14:16:44.980736",
   "doctype": "DocType",
-  "engine": "InnoDB",
+  "engine": "MyISAM",
   "field_order": [
-    "document_type",
-    "document_name",
+    "entity",
     "document_field",
     "action_type",
     "old_value",
     "new_value",
-    "message"
+    "message",
+    "meta_value"
   ],
   "fields": [
     {
       "fieldname": "message",
       "fieldtype": "Data",
       "label": "Message"
-    },
-    {
-      "fieldname": "document_type",
-      "fieldtype": "Link",
-      "label": "Document Type",
-      "options": "DocType"
-    },
-    {
-      "fieldname": "document_name",
-      "fieldtype": "Dynamic Link",
-      "label": "Document Name",
-      "options": "document_type"
     },
     {
       "fieldname": "document_field",
@@ -40,7 +28,7 @@
       "fieldname": "action_type",
       "fieldtype": "Select",
       "label": "Action Type",
-      "options": "create\ncomment\nrename\nedit\nmove\ndelete"
+      "options": "create\ncomment\nshare_add\nshare_remove\nshare_edit\nrename\nedit\nmove\ndelete"
     },
     {
       "fieldname": "old_value",
@@ -51,10 +39,22 @@
       "fieldname": "new_value",
       "fieldtype": "Data",
       "label": "New Value"
+    },
+    {
+      "fieldname": "entity",
+      "fieldtype": "Link",
+      "label": "Entity",
+      "options": "Drive Entity"
+    },
+    {
+      "description": "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare",
+      "fieldname": "meta_value",
+      "fieldtype": "Data",
+      "label": "Meta Value"
     }
   ],
   "links": [],
-  "modified": "2024-09-22 10:09:57.667675",
+  "modified": "2024-09-30 14:04:42.681085",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity Activity Log",
