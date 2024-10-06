@@ -30,9 +30,9 @@ class DriveDocShare(Document):
 
     def update_children(self):
         children = self.get_children()
-        new_value = self.valid_until
+        field_new_value = self.valid_until
         for child in children:
-            child.valid_until = new_value
+            child.valid_until = field_new_value
             child.save()
         return
 
@@ -44,21 +44,66 @@ class DriveDocShare(Document):
     def after_insert(self):
         doc = self.get_doc()
         owner = get_fullname(self.owner)
-        entity_document = frappe.db.get_value("Drive Entity", self.share_name, ["document"])
-
+        title, entity_document = frappe.db.get_value(
+            "Drive Entity", self.share_name, ["title", "document"]
+        )
+        access_level = 2 if self.write else 1
         if self.everyone:
             doc.add_comment("Shared", _("{0} shared this document with everyone").format(owner))
-        if self.public:
+            message = f"{owner} shared {title} with everyone"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="everyone",
+                activity_type="share_add",
+                activity_message=message,
+                field_old_value=False,
+                field_new_value=True,
+                field_meta_value=access_level,
+            )
+        elif self.public:
             doc.add_comment("Shared", _("{0} shared this document publicly").format(owner))
-        if self.user_doctype == "User Group":
+            message = f"{owner} shared {title} publicly"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="public",
+                activity_type="share_add",
+                activity_message=message,
+                field_old_value=False,
+                field_new_value=True,
+                field_meta_value=access_level,
+            )
+        elif self.user_doctype == "User Group":
+            message = f"{owner} shared {title} with {self.user_name}"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="User Group",
+                activity_type="share_add",
+                activity_message=message,
+                field_old_value=None,
+                field_new_value=self.user_name,
+                field_meta_value=access_level,
+            )
             doc.add_comment(
                 "Shared", _("{0} shared this document with {1}").format(owner, (self.user_name))
             )
         else:
+            share_username = frappe.db.get_value("User", {"name": self.user_name}, ["full_name"])
+            message = f"{owner} shared {title} with {share_username}"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="User",
+                activity_type="share_add",
+                activity_message=message,
+                field_old_value=None,
+                field_new_value=self.user_name,
+                field_meta_value=access_level,
+            )
+
             doc.add_comment(
                 "Shared",
                 _("{0} shared this document with {1}").format(owner, get_fullname(self.user_name)),
             )
+
         if entity_document:
             frappe.enqueue(
                 notify_mentions,
@@ -85,18 +130,66 @@ class DriveDocShare(Document):
                 docshare_name=self.name,
             )
 
-        entity_document = frappe.db.get_value("Drive Entity", self.share_name, ["title"])
-        full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
-        share_username = self.user_name
-        if self.user_doctype == "User":
-            share_username = frappe.db.get_value("User", {"name": share_username}, ["full_name"])
-        message = f"{full_name} shared {entity_document} with {share_username}"
-        create_new_activity_log(
-            doctype=self.doctype,
-            document_name=self.name,
-            activity_type="create",
-            activity_message=message,
-        )
+    def on_update(self):
+        if self.is_new_record():
+            return
+        doc = self.get_doc()
+        owner = get_fullname(self.owner)
+        title = frappe.db.get_value("Drive Entity", self.share_name, ["title"])
+        access_level = 2 if self.write else 1
+        if self.everyone:
+            doc.add_comment("Shared", _("{0} shared this document with everyone").format(owner))
+            message = f"{owner} shared {title} with everyone"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="everyone",
+                activity_type="share_edit",
+                activity_message=message,
+                field_old_value=False,
+                field_new_value=True,
+                field_meta_value=access_level,
+            )
+        elif self.public:
+            doc.add_comment("Shared", _("{0} shared this document publicly").format(owner))
+            message = f"{owner} shared {title} publicly"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="public",
+                activity_type="share_edit",
+                activity_message=message,
+                field_old_value=False,
+                field_new_value=True,
+                field_meta_value=access_level,
+            )
+        elif self.user_doctype == "User Group":
+            message = f"{owner} shared {title} with {self.user_name}"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="User Group",
+                activity_type="share_edit",
+                activity_message=message,
+                field_old_value=None,
+                field_new_value=self.user_name,
+                field_meta_value=access_level,
+            )
+            doc.add_comment(
+                "Shared", _("{0} shared this document with {1}").format(owner, (self.user_name))
+            )
+        else:
+            share_username = frappe.db.get_value("User", {"name": self.user_name}, ["full_name"])
+            message = f"{owner} shared {title} with {share_username}"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="User",
+                activity_type="share_edit",
+                activity_message=message,
+                field_old_value=None,
+                field_new_value=self.user_name,
+                field_meta_value=access_level,
+            )
+
+    def is_new_record(self):
+        return not self.get_doc_before_save()
 
     def check_share_permission(self):
         if not self.flags.ignore_share_permission and not frappe.has_permission(
@@ -107,6 +200,57 @@ class DriveDocShare(Document):
     def on_trash(self):
         if not self.flags.ignore_share_permission:
             self.check_share_permission()
+        doc = self.get_doc()
+        owner = get_fullname(self.owner)
+        title = frappe.db.get_value("Drive Entity", self.share_name, ["title"])
+        access_level = 2 if self.write else 1
+        if self.everyone:
+            doc.add_comment("Shared", _("{0} shared this document with everyone").format(owner))
+            message = f"{owner} shared {title} with everyone"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="everyone",
+                activity_type="share_remove",
+                activity_message=message,
+                field_old_value=False,
+                field_new_value=True,
+                field_meta_value=access_level,
+            )
+        elif self.public:
+            doc.add_comment("Shared", _("{0} shared this document publicly").format(owner))
+            message = f"{owner} shared {title} publicly"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="public",
+                activity_type="share_remove",
+                activity_message=message,
+                field_old_value=False,
+                field_new_value=True,
+                field_meta_value=access_level,
+            )
+        elif self.user_doctype == "User Group":
+            message = f"{owner} shared {title} with {self.user_name}"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="User Group",
+                activity_type="share_remove",
+                activity_message=message,
+                field_old_value=None,
+                field_new_value=self.user_name,
+                field_meta_value=access_level,
+            )
+        else:
+            share_username = frappe.db.get_value("User", {"name": self.user_name}, ["full_name"])
+            message = f"{owner} shared {title} with {share_username}"
+            create_new_activity_log(
+                entity=self.share_name,
+                document_field="User",
+                activity_type="share_remove",
+                activity_message=message,
+                field_old_value=None,
+                field_new_value=self.user_name,
+                field_meta_value=access_level,
+            )
 
         self.get_doc().add_comment(
             "Unshared",
