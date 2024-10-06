@@ -30,8 +30,7 @@ class DriveEntity(Document):
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
         message = f"{full_name} created {self.title}"
         create_new_activity_log(
-            doctype=self.doctype,
-            document_name=self.name,
+            entity=self.name,
             activity_type="create",
             activity_message=message,
             document_field="title",
@@ -44,6 +43,7 @@ class DriveEntity(Document):
         frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
         frappe.db.delete("Drive DocShare", {"share_name": self.name})
         frappe.db.delete("Drive Notification", {"notif_doctype_name": self.name})
+        frappe.db.delete("Drive Entity Activity Log", {"entity": self.name})
         if self.is_group or self.document:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
@@ -153,7 +153,7 @@ class DriveEntity(Document):
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)
 
-    @frappe.whitelist()
+
     def move(self, new_parent=None):
         """
         Move file or folder to the new parent folder
@@ -343,8 +343,7 @@ class DriveEntity(Document):
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
         message = f"{full_name} renamed {self.title} to {new_title}"
         create_new_activity_log(
-            doctype=self.doctype,
-            document_name=self.name,
+            entity=self.name,
             activity_type="rename",
             activity_message=message,
             document_field="title",
@@ -589,7 +588,7 @@ class DriveEntity(Document):
 
         if share_name:
             if frappe.session.user == user or frappe.session.user == self.owner:
-                frappe.db.delete("Drive DocShare", share_name)
+                frappe.delete_doc("Drive DocShare", share_name)
             else:
                 frappe.delete_doc("Drive DocShare", share_name, ignore_permissions=True)
         if self.is_group:
