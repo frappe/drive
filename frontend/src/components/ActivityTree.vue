@@ -1,75 +1,70 @@
 <template>
-  <div
-    v-for="(group, i) in groupedActivityLog"
-    :key="i"
-    class="px-4 pb-2 gap-x-2"
-  >
-    <span
-      v-if="group.length && Object.keys(groupedActivityLog).length > 1"
-      class="text-base text-gray-600 font-medium leading-6"
-    >
-      {{ i }}
-    </span>
+  <template v-for="(group, i) in groupedActivityLog" :key="i">
     <div
-      v-for="activity in group"
-      :key="activity"
-      class="flex flex-col items-start justify-start py-3"
+      v-if="group.length && Object.keys(groupedActivityLog).length > 1"
+      class="px-5 pb-2 gap-x-2"
     >
-      <div class="text-base flex items-start justify-start gap-x-2">
-        <Avatar
-          size="lg"
-          :image="activity.user_image"
-          :label="activity.full_name"
-        />
-        {{ activity.message }}
-      </div>
-      <span class="pl-9 text-xs text-gray-600 -mt-1 mb-3">{{
-        activity.creation
-      }}</span>
+      <span class="text-base text-gray-600 font-medium leading-6">
+        {{ i }}
+      </span>
       <div
-        v-if="activity.document_type === 'Drive Entity'"
-        class="flex items-center justify-start ml-8.5 flex-wrap gap-1"
+        v-for="activity in group"
+        :key="activity"
+        class="flex flex-col items-start justify-start py-3"
       >
-        <template v-if="activity.action_type === 'rename'">
-          <ActivityTreeItem
-            :entity="entity"
-            :activity="activity"
-            :title="activity.old_value"
-            :strike-through="true"
+        <div class="text-sm flex items-start justify-start gap-x-2">
+          <Avatar
+            size="md"
+            :image="activity.user_image"
+            :label="activity.full_name"
           />
+          <span class="text-sm text-gray-900">{{ activity.message }}</span>
+        </div>
+        <span class="pl-9 text-xs text-gray-600 -mt-1.5 mb-3">{{
+          activity.creation
+        }}</span>
+        <div
+          class="flex flex-col items-start justify-start ml-8.5 flex-wrap gap-1"
+        >
+          <template v-if="activity.action_type === 'rename'">
+            <div class="flex items-center justify-start flex-wrap gap-1">
+              <ActivityTreeItem
+                :entity="entity"
+                :activity="activity"
+                :title="activity.old_value"
+                :strike-through="true"
+              />
 
-          <ArrowRight class="text-gray-500 h-4" />
-          <ActivityTreeItem
+              <ArrowRight class="text-gray-500 h-4" />
+              <ActivityTreeItem
+                :activity="activity"
+                :entity="entity"
+                :title="activity.new_value"
+              />
+            </div>
+          </template>
+
+          <ActivityTreeShare
+            v-else-if="activity.action_type.startsWith('share')"
             :activity="activity"
+          >
+            <template v-if="activity.nested" #nested>
+              <div v-for="nested in activity.nested" :key="nested.name">
+                <ActivityTreeShare v-if="activity.nested" :activity="nested" />
+              </div>
+            </template>
+          </ActivityTreeShare>
+
+          <ActivityTreeItem
+            v-else
             :entity="entity"
+            :activity="activity"
             :title="activity.new_value"
           />
-        </template>
-        <ActivityTreeItem
-          v-else
-          :entity="entity"
-          :activity="activity"
-          :title="activity.new_value"
-        />
-      </div>
-      <div
-        v-if="activity.document_type === 'Drive DocShare'"
-        class="flex items-center justify-start ml-8.5 flex-wrap gap-1"
-      >
-        <div
-          :title="title ? title : entity.title"
-          class="border max-w-[220px] rounded-[7px] px-1 py-1 flex items-center justify-center gap-x-1 overflow-clip"
-        >
-          <Avatar size="xs" :image="activity.share_user_image" />
-          <span
-            class="text-sm line-clamp-1"
-            :class="strikeThrough ? 'line-through text-gray-600' : ''"
-            >{{ activity.share_user_fullname }}</span
-          >
         </div>
       </div>
     </div>
-  </div>
+  </template>
 </template>
 <script setup>
 import { useStore } from "vuex"
@@ -78,6 +73,8 @@ import { computed, ref, watch } from "vue"
 import { ArrowRight } from "lucide-vue-next"
 import { formatDate } from "../utils/format"
 import ActivityTreeItem from "./ActivityTreeItem.vue"
+import ActivityTreeShare from "./ActivityTreeShare.vue"
+import GeneralAccess from "./GeneralAccess.vue"
 
 const store = useStore()
 
@@ -100,7 +97,7 @@ const groupedActivityLog = ref({
   "This week": [],
   "Last week": [],
   "This month": [],
-  "Earlier this year": [],
+  "This year": [],
   "Older than a year": [],
 })
 
@@ -135,7 +132,7 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
         "This week": [],
         "Last week": [],
         "This month": [],
-        "Earlier this year": [],
+        "This year": [],
         "Older than a year": [],
       }
       activityLog.fetch({ entity_name: newEntity.name })
@@ -146,35 +143,29 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
 function generateMessage(activity) {
   const user = activity.full_name ? activity.full_name : activity.owner
   const creationText =
-    entity.value.is_group || entity.value.document ? "created" : "uploaded"
-  if (activity.document_type === "Drive Entity") {
-    switch (activity.action_type) {
-      case "create":
-        return `${user} ${creationText} ${entityText.value}`
-      case "rename":
-        return `${user} renamed this ${entityText.value}`
+    entity.value.is_group || entity.value.document
+      ? "created this"
+      : "uploaded this"
 
-      case "update":
-        return `${user} edited this ${entityText.value}`
-
-      case "delete":
-        return `${user} deleted this ${entityText.value}`
-
-      case "move":
-        return `${user} moved this ${entityText.value}`
-
-      default:
-        return `Unknown action type: ${activity.action_type}`
-    }
-  }
-  if (activity.document_type === "Drive DocShare") {
-    switch (activity.action_type) {
-      case "create":
-        if (activity.document_type == "Drive DocShare") {
-          return `${user} shared this ${entityText.value} with`
-        }
-        return `${user} edited this ${entityText.value}`
-    }
+  switch (activity.action_type) {
+    case "create":
+      return `${user} ${creationText} ${entityText.value}`
+    case "rename":
+      return `${user} renamed this ${entityText.value}`
+    case "edit":
+      return `${user} edited this ${entityText.value}`
+    case "delete":
+      return `${user} deleted this ${entityText.value}`
+    case "share_add":
+      return `${user} shared this ${entityText.value}`
+    case "share_edit":
+      return `${user} updated permissions on this ${entityText.value}`
+    case "share_remove":
+      return `${user} restricted this ${entityText.value}`
+    case "move":
+      return `${user} moved this ${entityText.value}`
+    default:
+      return `Unknown action type: ${activity.action_type}`
   }
 }
 
@@ -184,20 +175,39 @@ function groupAndTransform(activities) {
   yesterday.setDate(today.getDate() - 1)
   const startOfWeek = new Date(today)
   startOfWeek.setDate(today.getDate() - today.getDay())
-
+  const timeThreshold = 15 * 60 * 1000
+  // Transform and reduce loop
+  for (let index = 0; index < activities.length; index++) {
+    let activity = activities[index]
+    if (index > 0) {
+      const prevActivity = activities[index - 1]
+      const currentTime = new Date(activity.creation).getTime()
+      const prevTime = new Date(prevActivity.creation).getTime()
+      if (
+        prevActivity.action_type === activity.action_type &&
+        prevActivity.owner === activity.owner &&
+        prevActivity.document_field === activity.document_field &&
+        currentTime - prevTime <= timeThreshold
+      ) {
+        if (!prevActivity.nested) {
+          prevActivity.nested = []
+        }
+        prevActivity.nested.push(activity)
+        activities.splice(index, 1)
+        index--
+      }
+    }
+    activity.full_name =
+      activity.owner === currentUserEmail.value ? "You" : activity.full_name
+    activity.message = generateMessage(activity)
+    activity.creation = formatDate(activity.creation)
+  }
+  // calc and group by creation loop
   activities.forEach((activity) => {
     const creationDate = new Date(activity.creation)
     const dayDiff = Math.floor((today - creationDate) / (1000 * 60 * 60 * 24))
     const yearDiff = today.getFullYear() - creationDate.getFullYear()
     const monthDiff = today.getMonth() - creationDate.getMonth() + yearDiff * 12
-
-    // ttansform
-    activity.full_name =
-      activity.owner === currentUserEmail.value ? "You" : activity.full_name
-    activity.message = generateMessage(activity)
-    activity.creation = formatDate(activity.creation)
-
-    // calc and group by creation
     switch (true) {
       case creationDate.toDateString() === today.toDateString():
         groupedActivityLog.value.Today.push(activity)
@@ -217,7 +227,7 @@ function groupAndTransform(activities) {
         groupedActivityLog.value["This month"].push(activity)
         break
       case yearDiff === 0:
-        groupedActivityLog.value["Earlier this year"].push(activity)
+        groupedActivityLog.value["This year"].push(activity)
         break
       default:
         groupedActivityLog.value["Older than a year"].push(activity)

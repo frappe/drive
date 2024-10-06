@@ -5,7 +5,7 @@
   >
     <svg
       v-if="!strikeThrough && entity.is_group"
-      class="h-full mr-0.5"
+      class="h-3.5 mr-0.5"
       :draggable="false"
       :style="{ fill: entity.color }"
       width="16"
