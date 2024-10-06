@@ -35,7 +35,7 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <Info />
+          <!-- <Info /> -->
           Information
         </span>
         <div
@@ -54,7 +54,7 @@
             <div class="text-base font-medium mb-4">Access</div>
             <div class="flex items-center justify-start">
               <Avatar
-                size="lg"
+                size="md"
                 :label="entity.owner"
                 :image="entity.user_image"
               />
@@ -64,7 +64,7 @@
                   !generalAccess.loading &&
                   (!!generalAccess.data?.length || !sharedWithList?.length)
                 "
-                size="lg"
+                size="md"
                 class="-mr-[3px] outline outline-white"
                 :general-access="generalAccess?.data?.[0]"
               />
@@ -75,7 +75,7 @@
                 <Avatar
                   v-for="user in sharedWithList.slice(0, 3)"
                   :key="user?.user_name"
-                  size="lg"
+                  size="md"
                   :label="user?.full_name ? user?.full_name : user?.user_name"
                   :image="user?.user_image"
                   class="-mr-[3px] outline outline-white"
@@ -83,7 +83,7 @@
 
                 <Avatar
                   v-if="sharedWithList.slice(3).length"
-                  size="lg"
+                  size="md"
                   :label="sharedWithList.slice(3).length.toString()"
                   class="-mr-[3px] outline outline-white"
                 />
@@ -123,7 +123,7 @@
         <span
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <Comment />
+          <!--  <Comment /> -->
           Comments
         </span>
         <div v-if="entity.allow_comments" class="pb-2 px-5">
@@ -136,7 +136,7 @@
               <Avatar
                 :label="comment.comment_by"
                 :image="comment.user_image"
-                size="lg"
+                size="md"
               />
               <div class="ml-3">
                 <div class="flex items-center justify-start text-base gap-x-1">
@@ -156,12 +156,7 @@
             v-if="userId != 'Guest'"
             class="flex items-center justify-start py-2"
           >
-            <Avatar
-              :label="fullName"
-              :image="imageURL"
-              size="lg"
-              class="mr-3"
-            />
+            <Avatar :label="fullName" :image="imageURL" class="mr-3" />
             <div
               class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
             >
@@ -194,7 +189,7 @@
         <span
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <Clock />
+          <!-- <Clock /> -->
           Activity
         </span>
         <ActivityTree v-if="showActivity" />
@@ -236,7 +231,7 @@
       ><Comment
     /></Button>
     <Button
-      v-if="showActivity"
+      v-if="showComments"
       class="text-gray-600"
       :class="[
         tab === 2 && showInfoSidebar

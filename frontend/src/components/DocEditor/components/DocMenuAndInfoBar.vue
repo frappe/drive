@@ -27,7 +27,7 @@
             <div class="text-base font-medium mb-4">Access</div>
             <div class="flex items-center justify-start">
               <Avatar
-                size="lg"
+                size="md"
                 :label="entity.owner"
                 :image="entity.user_image"
               ></Avatar>
@@ -38,7 +38,7 @@
                   (!!$resources.generalAccess.data?.length ||
                     !sharedWithList?.length)
                 "
-                size="lg"
+                size="md"
                 class="-mr-[3px] outline outline-white"
                 :general-access="$resources.generalAccess?.data?.[0]"
               />
@@ -49,7 +49,7 @@
                 <Avatar
                   v-for="user in sharedWithList.slice(0, 3)"
                   :key="user?.user_name"
-                  size="lg"
+                  size="md"
                   :label="user?.full_name ? user?.full_name : user?.user_name"
                   :image="user?.user_image"
                   class="-mr-[3px] outline outline-white"
@@ -57,7 +57,7 @@
 
                 <Avatar
                   v-if="sharedWithList.slice(3).length"
-                  size="lg"
+                  size="md"
                   :label="sharedWithList.slice(3).length.toString()"
                   class="-mr-[3px] outline outline-white"
                 />
@@ -157,6 +157,19 @@
         </div>
       </div>
 
+      <!-- Activity -->
+      <div
+        v-if="tab === 7"
+        class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
+      >
+        <span
+          class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          Activity
+        </span>
+        <ActivityTree v-if="showActivity" />
+      </div>
+
       <!-- Typography -->
       <div v-if="tab === 0" class="flex flex-col px-5 py-4 border-b">
         <span
@@ -210,7 +223,7 @@
           </Button>
         </div>
 
-        <span class="font-semibold text-gray-600 text-xs my-2">CONTENT</span>
+        <span class="font-medium text-gray-600 text-xs my-2">CONTENT</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-1/3 font-bold"
@@ -883,6 +896,8 @@ import { TiptapTransformer } from "@hocuspocus/transformer"
 import { fromUint8Array, toUint8Array } from "js-base64"
 import { formatDate } from "../../../utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
+import Clock from "../../EspressoIcons/Clock.vue"
+import ActivityTree from "../../ActivityTree.vue"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -943,6 +958,8 @@ export default {
     Details,
     GeneralAccess,
     AnnotationList,
+    ActivityTree,
+    Clock,
   },
   inject: ["editor", "document"],
   emits: ["update:allComments", "update:activeAnnotation"],
@@ -1002,6 +1019,11 @@ export default {
         {
           name: "Versions",
           icon: markRaw(FileClock),
+          write: false,
+        },
+        {
+          name: "Clock",
+          icon: markRaw(Clock),
           write: false,
         },
       ],
@@ -1093,6 +1115,18 @@ export default {
       if (this.entity.is_group) return "Folder"
       const file = this.entity.file_kind
       return file?.charAt(0).toUpperCase() + file?.slice(1)
+    },
+    showActivity() {
+      return true
+      if (entity.value.owner === "You") {
+        return true
+      } else if (entity.value.write) {
+        return true
+      } else if (entity.value.allow_activity) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   mounted() {
