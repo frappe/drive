@@ -153,14 +153,13 @@
       "options": "Drive Document"
     }
   ],
-  "is_tree": 1,
+  "is_tree": 0,
   "links": [],
   "modified": "2023-10-10 11:39:15.298432",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",
   "naming_rule": "Set by user",
-  "nsm_parent_field": "parent_drive_entity",
   "owner": "Administrator",
   "permissions": [
     {
@@ -191,7 +190,7 @@
       "write": 1
     }
   ],
-  "sort_field": "modified",
+  "sort_field": "creation",
   "sort_order": "DESC",
   "states": [],
   "title_field": "title",
