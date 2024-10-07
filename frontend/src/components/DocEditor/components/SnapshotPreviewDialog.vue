@@ -11,10 +11,14 @@
               >Created on {{ snapshotData.creation }} by
               {{ snapshotData.owner }}</span
             >
-            <span class="ml-auto text-gray-700 text-sm mr-2"
-              >Highlight changes</span
+            <div
+              class="ml-auto flex items-center justify-end rounded cursor-pointer hover:bg-gray-200 pl-2 pr-1 py-1.5"
             >
-            <Switch v-model="showChanges" />
+              <span class="font-medium text-gray-800 text-sm mr-2"
+                >Highlight changes</span
+              >
+              <Switch v-model="showChanges" />
+            </div>
           </div>
           <Button
             icon="x"
