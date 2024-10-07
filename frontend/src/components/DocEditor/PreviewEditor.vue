@@ -3,7 +3,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, normalizeClass } from "vue"
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  normalizeClass,
+  inject,
+  watch,
+  computed,
+} from "vue"
+import { useStore } from "vuex"
 import Link from "@tiptap/extension-link"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
@@ -27,15 +36,28 @@ import { TextAlign } from "./extensions/text-align"
 import { TextStyle } from "./extensions/text-style"
 import { Underline } from "./extensions/underline"
 import { ResizableMedia } from "./extensions/resizenode"
+import { generateDiffDocument } from "./genDiff"
+import { DiffMarkExtension } from "./extensions/createDiffMark"
+import { Annotation } from "./extensions/AnnotationExtension/annotation"
 
 const editor = ref(null)
 const document = ref(null)
 const provider = ref(null)
+const previewContent = ref()
+const diffContent = ref()
+const store = useStore()
+const currentEditor = inject("editor")
+
+const entity = computed(() => store.state.entityInfo[0])
 
 const props = defineProps({
   yjsUpdate: {
     type: Uint8Array,
     required: true,
+  },
+  showChanges: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -54,6 +76,11 @@ onMounted(() => {
           history: false,
           heading: {
             levels: [1, 2, 3, 4, 5],
+          },
+          paragraph: {
+            HTMLAttributes: {
+              class: entity.value.version > 0 ? "not-prose" : "",
+            },
           },
           listItem: {
             HTMLAttributes: {
@@ -141,6 +168,8 @@ onMounted(() => {
         ResizableMedia.configure({
           uploadFn: () => {},
         }),
+        DiffMarkExtension,
+        Annotation,
       ],
       editorProps: {
         attributes: {
@@ -153,6 +182,30 @@ onMounted(() => {
     })
   })
 })
+watch(
+  () => props.showChanges,
+  (newValue) => {
+    if (newValue) {
+      if (diffContent.value) {
+        editor.value.commands.setContent(diffContent.value.toJSON())
+      } else {
+        generateChanges()
+      }
+    } else {
+      editor.value.commands.setContent(previewContent.value)
+    }
+  }
+)
+
+function generateChanges() {
+  previewContent.value = editor.value.getJSON()
+  diffContent.value = generateDiffDocument(
+    editor.value.schema,
+    currentEditor.value.view.state.doc.toJSON(),
+    editor.value.view.state.doc.toJSON()
+  )
+  editor.value.commands.setContent(diffContent.value.toJSON())
+}
 
 onBeforeUnmount(() => {
   editor.value.destroy()
