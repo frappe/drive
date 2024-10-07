@@ -113,6 +113,8 @@ import { Annotation } from "./extensions/AnnotationExtension/annotation"
 import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
+import { DiffMarkExtension } from "./extensions/createDiffMark"
+
 import { formatDate } from "../../utils/format"
 import { Paragraph } from "./extensions/paragraph"
 
@@ -533,9 +535,6 @@ export default {
         Link.configure({
           openOnClick: false,
         }),
-        Comment.configure({
-          isCommentModeOn: this.isCommentModeOn,
-        }),
         Placeholder.configure({
           placeholder: "Press / for commands",
         }),
@@ -566,6 +565,7 @@ export default {
         ResizableMedia.configure({
           uploadFn: (file) => uploadDriveEntity(file, this.entityName),
         }),
+        DiffMarkExtension,
       ],
     })
     this.emitter.on("emitToggleCommentMenu", () => {
