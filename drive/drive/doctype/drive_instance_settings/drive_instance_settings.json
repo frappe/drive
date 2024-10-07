@@ -44,7 +44,7 @@
       "label": "Enable User Storage Quota"
     },
     {
-      "default": "5",
+      "default": "5120",
       "description": "Total space to allocate to Frappe Drive in GB",
       "fieldname": "self_storage_limit",
       "fieldtype": "Int",
