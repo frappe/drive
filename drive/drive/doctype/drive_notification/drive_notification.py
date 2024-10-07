@@ -13,6 +13,7 @@ class DriveNotification(Document):
                 "from_user": self.from_user,
                 "to_user": self.to_user,
                 "type": self.type,
+                "read": self.read,
                 "notif_doctype_name": self.notif_doctype_name,
             }
         ):
