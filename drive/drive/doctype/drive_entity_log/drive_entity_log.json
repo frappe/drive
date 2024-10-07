@@ -5,7 +5,7 @@
   "default_view": "List",
   "doctype": "DocType",
   "editable_grid": 1,
-  "engine": "InnoDB",
+  "engine": "MyISAM",
   "field_order": ["user", "entity_name", "last_interaction"],
   "fields": [
     {

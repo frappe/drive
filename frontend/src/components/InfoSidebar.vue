@@ -35,7 +35,7 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <Info />
+          <!-- <Info /> -->
           Information
         </span>
         <div
@@ -54,7 +54,7 @@
             <div class="text-base font-medium mb-4">Access</div>
             <div class="flex items-center justify-start">
               <Avatar
-                size="lg"
+                size="md"
                 :label="entity.owner"
                 :image="entity.user_image"
               />
@@ -64,7 +64,7 @@
                   !generalAccess.loading &&
                   (!!generalAccess.data?.length || !sharedWithList?.length)
                 "
-                size="lg"
+                size="md"
                 class="-mr-[3px] outline outline-white"
                 :general-access="generalAccess?.data?.[0]"
               />
@@ -75,7 +75,7 @@
                 <Avatar
                   v-for="user in sharedWithList.slice(0, 3)"
                   :key="user?.user_name"
-                  size="lg"
+                  size="md"
                   :label="user?.full_name ? user?.full_name : user?.user_name"
                   :image="user?.user_image"
                   class="-mr-[3px] outline outline-white"
@@ -83,7 +83,7 @@
 
                 <Avatar
                   v-if="sharedWithList.slice(3).length"
-                  size="lg"
+                  size="md"
                   :label="sharedWithList.slice(3).length.toString()"
                   class="-mr-[3px] outline outline-white"
                 />
@@ -123,7 +123,7 @@
         <span
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <Comment />
+          <!--  <Comment /> -->
           Comments
         </span>
         <div v-if="entity.allow_comments" class="pb-2 px-5">
@@ -136,7 +136,7 @@
               <Avatar
                 :label="comment.comment_by"
                 :image="comment.user_image"
-                class="h-7 w-7"
+                size="md"
               />
               <div class="ml-3">
                 <div class="flex items-center justify-start text-base gap-x-1">
@@ -156,7 +156,7 @@
             v-if="userId != 'Guest'"
             class="flex items-center justify-start py-2"
           >
-            <Avatar :label="fullName" :image="imageURL" class="h-7 w-7 mr-3" />
+            <Avatar :label="fullName" :image="imageURL" class="mr-3" />
             <div
               class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
             >
@@ -181,6 +181,18 @@
           Comments have been disabled for this
           {{ entity.is_group ? "folder" : "file" }} by its owner.
         </div>
+      </div>
+      <div
+        v-if="tab === 2"
+        class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
+      >
+        <span
+          class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
+        >
+          <!-- <Clock /> -->
+          Activity
+        </span>
+        <ActivityTree v-if="showActivity" />
       </div>
     </div>
     <div
@@ -218,6 +230,18 @@
       @click="switchTab(1)"
       ><Comment
     /></Button>
+    <Button
+      v-if="showComments"
+      class="text-gray-600"
+      :class="[
+        tab === 2 && showInfoSidebar
+          ? 'text-black bg-gray-200'
+          : ' hover:bg-gray-50',
+      ]"
+      variant="minimal"
+      @click="switchTab(2)"
+      ><Clock
+    /></Button>
   </div>
 </template>
 
@@ -231,6 +255,8 @@ import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
 import Info from "./EspressoIcons/Info.vue"
 import File from "./EspressoIcons/File.vue"
 import Comment from "./EspressoIcons/Comment.vue"
+import Clock from "./EspressoIcons/Clock.vue"
+import ActivityTree from "./ActivityTree.vue"
 import Tag from "@/components/Tag.vue"
 import TagInput from "@/components/TagInput.vue"
 const store = useStore()
@@ -283,6 +309,19 @@ const showComments = computed(() => {
   } else if (entity.value.write) {
     return true
   } else if (entity.value.allow_comments) {
+    return true
+  } else {
+    return false
+  }
+})
+
+const showActivity = computed(() => {
+  return true
+  if (entity.value.owner === "You") {
+    return true
+  } else if (entity.value.write) {
+    return true
+  } else if (entity.value.allow_activity) {
     return true
   } else {
     return false
