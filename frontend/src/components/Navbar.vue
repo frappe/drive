@@ -157,6 +157,7 @@ import {
   folderDownload,
   selectedEntitiesDownload,
 } from "@/utils/folderDownload"
+import Printer from "./EspressoIcons/Printer.vue"
 import Share from "./EspressoIcons/Share.vue"
 import Star from "./EspressoIcons/Star.vue"
 import Rename from "./EspressoIcons/Rename.vue"
@@ -290,6 +291,24 @@ export default {
                   this.selectedEntities[0]?.owner === "You"
                 )
               }
+            }
+          },
+        },
+        {
+          label: "Print",
+          icon: Printer,
+          onClick: () => {
+            this.emitter.emit("printFile")
+          },
+          isEnabled: () => {
+            const validRoutes = ["File", "Document"]
+            const validFileKinds = ["Document", "Image", "PDF"]
+            if (
+              validRoutes.includes(this.$route.name) &&
+              this.selectedEntities[0]?.allow_download &&
+              validFileKinds.includes(this.selectedEntities[0]?.file_kind)
+            ) {
+              return true
             }
           },
         },

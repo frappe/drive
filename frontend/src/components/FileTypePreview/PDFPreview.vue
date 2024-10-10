@@ -35,6 +35,7 @@
         <!-- Paginate -->
         <VuePDF
           id="pdf"
+          ref="pdfComponent"
           :pdf="pdf"
           :page="currentPage"
           :text-layer="true"
@@ -45,6 +46,7 @@
       <div v-for="page in pages" v-else :key="page" class="m-4">
         <VuePDF
           id="pdf"
+          ref="pdfComponent"
           :pdf="pdf"
           :page="page"
           :text-layer="true"
@@ -57,8 +59,8 @@
 
 <script setup>
 import { LoadingIndicator } from "frappe-ui"
-import { onMounted, onUnmounted, ref, watch } from "vue"
-import { useObjectUrl } from "@vueuse/core"
+import { onMounted, onUnmounted, ref, watch, inject } from "vue"
+import { containsProp, useObjectUrl } from "@vueuse/core"
 import { Button, Input } from "frappe-ui"
 import { VuePDF, usePDF } from "@tato30/vue-pdf"
 import "@tato30/vue-pdf/style.css"
@@ -72,8 +74,10 @@ const props = defineProps({
 const loading = ref(true)
 const blob = ref(null)
 const previewURL = useObjectUrl(blob)
+const emitter = inject("emitter")
 const currentPage = ref(1)
-const { pdf, pages } = usePDF(previewURL)
+const pdfComponent = ref(null)
+const { pdf, pages, print } = usePDF(previewURL)
 
 async function fetchContent() {
   loading.value = true
@@ -96,6 +100,12 @@ async function fetchContent() {
   }
 }
 
+emitter.on("printFile", () => {
+  if (previewURL.value) {
+    window.open(previewURL.value, "_blank")
+  }
+})
+
 watch(
   () => props.previewEntity,
   () => {
@@ -107,6 +117,7 @@ onMounted(() => {
   fetchContent()
 })
 onUnmounted(() => {
+  emitter.off("printFile")
   pdf.value?.destroy()
 })
 </script>

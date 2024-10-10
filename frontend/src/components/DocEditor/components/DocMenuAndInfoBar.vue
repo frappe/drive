@@ -760,7 +760,7 @@
           <span class="font-medium text-gray-700 text-base">Export</span>
           <Button
             class="w-full justify-start"
-            @click="() => emitter.emit('exportDocToPDF')"
+            @click="() => emitter.emit('printFile')"
           >
             <template #prefix>
               <FileDown class="text-gray-700 w-4 stroke-[1.5]" />

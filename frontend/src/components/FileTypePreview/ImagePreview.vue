@@ -3,12 +3,14 @@
     v-if="loading"
     class="w-10 h-full text-neutral-100 mx-auto"
   />
-  <img v-else draggable="false" class="w-auto max-h-full" :src="previewURL" />
+  <template v-else>
+    <img draggable="false" class="w-auto max-h-full" :src="previewURL" id-="" />
+  </template>
 </template>
 
 <script setup>
 import { LoadingIndicator } from "frappe-ui"
-import { onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { onBeforeUnmount, onMounted, ref, watch, inject } from "vue"
 import { useObjectUrl } from "@vueuse/core"
 
 const props = defineProps({
@@ -21,6 +23,7 @@ const props = defineProps({
 const loading = ref(true)
 const imgBlob = ref(null)
 const previewURL = useObjectUrl(imgBlob)
+const emitter = inject("emitter")
 
 watch(props.previewEntity, () => {
   loading.value = true
@@ -48,6 +51,39 @@ async function fetchContent() {
   }
 }
 
+emitter.on("printFile", () => {
+  const printFrame = document.createElement("iframe")
+  printFrame.style.position = "absolute"
+  printFrame.style.width = "0"
+  printFrame.style.height = "0"
+  printFrame.style.border = "none"
+  document.body.appendChild(printFrame)
+  printFrame.contentWindow.document.open()
+  printFrame.contentWindow.document.write(`
+    <html>
+      <head>
+        <style>
+          img {
+            max-width: 100%;
+            height: auto;
+          }
+        </style>
+      </head>
+      <body>
+        <img src="${previewURL.value}" />
+      </body>
+    </html>
+  `)
+  printFrame.contentWindow.document.close()
+  printFrame.contentWindow.focus()
+  printFrame.contentWindow.print()
+  printFrame.onload = () => {
+    setTimeout(() => {
+      document.body.removeChild(printFrame)
+    }, 100)
+  }
+})
+
 watch(
   () => props.previewEntity,
   () => {
@@ -60,6 +96,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  emitter.off("printFile")
   loading.value = true
   imgBlob.value = null
 })

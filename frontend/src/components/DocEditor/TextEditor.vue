@@ -346,7 +346,7 @@ export default {
     if (window.matchMedia("(max-width: 1500px)").matches) {
       this.$store.commit("setIsSidebarExpanded", false)
     }
-    this.emitter.on("exportDocToPDF", () => {
+    this.emitter.on("printFile", () => {
       if (this.editor) {
         this.printEditorContent()
       }
@@ -630,6 +630,9 @@ export default {
     }
   },
   beforeUnmount() {
+    this.emitter.off("printFile")
+    this.emitter.off("forceHideBubbleMenu")
+    this.emitter.off("importDocFromWord")
     this.$realtime.off("document_version_change_recv")
     this.$realtime.doc_close("Drive Entity", this.entityName)
     this.$realtime.doc_unsubscribe("Drive Entity", this.entityName)
@@ -1001,6 +1004,11 @@ export default {
   #page-break-div {
     border: none !important;
     margin: none !important;
+  }
+  span[data-annotation-id] {
+    background-color: transparent !important;
+    border-bottom: none !important;
+    padding: none !important;
   }
 }
 /* 
