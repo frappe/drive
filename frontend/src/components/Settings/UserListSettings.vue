@@ -48,7 +48,10 @@
           disabled: !emailsToInvite.length,
           loading: $resources.inviteUsers.loading,
           onClick: () => {
-            $resources.inviteUsers.submit({ emails: emailsToInvite.join(',') })
+            $resources.inviteUsers.submit({
+              emails: emailsToInvite.join(','),
+              role: NewUserRole,
+            })
             showInviteUserDialog = false
           },
         },
@@ -56,8 +59,8 @@
     }"
   >
     <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div class="flex flex-wrap gap-1 rounded bg-gray-100 p-0.5">
+      <div class="flex items-start justify-start gap-4">
+        <div class="flex flex-wrap gap-1 rounded w-full bg-gray-100 p-0.5">
           <Button
             v-for="(email, idx) in emailsToInvite"
             :key="email"
@@ -84,6 +87,41 @@
             />
           </div>
         </div>
+        <div>
+          <Popover
+            v-slot="{ open, close }"
+            class="text-gray-700 relative flex-shrink-0 col-span-3 justify-self-end row-start-1 row-end-1"
+          >
+            <PopoverButton
+              class="flex gap-1 px-2 focus:outline-none bg-gray-100 rounded h-8 items-center text-base justify-self-end min-w-20"
+            >
+              {{ NewUserRole.slice(NewUserRole.indexOf(" ") + 1) }}
+              <FeatherIcon
+                :class="{ '[transform:rotateX(180deg)]': open }"
+                name="chevron-down"
+                class="w-4 ml-auto"
+              />
+            </PopoverButton>
+            <PopoverPanel
+              class="z-10 bg-white p-1 shadow-2xl rounded mt-1 absolute"
+              ><ul>
+                <li
+                  class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
+                  @click=";(NewUserRole = 'Drive Guest'), close()"
+                >
+                  Guest
+                  <Check v-if="NewUserRole === 'Drive Guest'" class="h-3" />
+                </li>
+                <li
+                  class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
+                  @click=";(NewUserRole = 'Drive User'), close()"
+                >
+                  User
+                  <Check v-if="NewUserRole === 'Drive User'" class="h-3" />
+                </li></ul
+            ></PopoverPanel>
+          </Popover>
+        </div>
       </div>
     </template>
   </Dialog>
@@ -94,6 +132,8 @@ import { Avatar, FeatherIcon, Dropdown, Dialog } from "frappe-ui"
 import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue"
 import NewRoleDialog from "./NewRoleDialog.vue"
 import { PlusIcon, SearchIcon, XIcon } from "lucide-vue-next"
+import Check from "@/components/EspressoIcons/Check.vue"
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 
 export default {
   name: "UserRoleSettings",
@@ -105,11 +145,16 @@ export default {
     Dropdown,
     Dialog,
     XIcon,
+    Popover,
+    PopoverButton,
+    PopoverPanel,
+    Check,
   },
   data() {
     return {
       RoleName: "",
       UsersInRole: [],
+      NewUserRole: "Drive User",
       CreateRoleDialog: false,
       EditRoleDialog: false,
       AllRoles: null,
@@ -180,9 +225,6 @@ export default {
       url: "drive.utils.users.invite_users",
       method: "POST",
       auto: false,
-      onSuccess(data) {
-        console.log(data)
-      },
       onError(error) {
         if (error.messages) {
           this.errorMessage = error.messages.join("\n")
