@@ -6,6 +6,7 @@
   "engine": "InnoDB",
   "field_order": [
     "email",
+    "role",
     "key",
     "invited_by",
     "status",
@@ -44,11 +45,17 @@
       "fieldname": "accepted_at",
       "fieldtype": "Datetime",
       "label": "Accepted At"
+    },
+    {
+      "fieldname": "role",
+      "fieldtype": "Select",
+      "label": "Role",
+      "options": "Drive User\nDrive Guest"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2024-09-26 10:50:40.592998",
+  "modified": "2024-10-10 13:22:29.733486",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive User Invitation",
