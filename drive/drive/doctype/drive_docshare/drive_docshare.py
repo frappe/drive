@@ -48,6 +48,34 @@ class DriveDocShare(Document):
             "Drive Entity", self.share_name, ["title", "document"]
         )
         access_level = 2 if self.write else 1
+
+        if entity_document:
+            frappe.enqueue(
+                notify_mentions,
+                queue="long",
+                job_id=f"fdoc_{entity_document}",
+                deduplicate=False,  # Users might've gained access here
+                timeout=None,
+                now=False,
+                at_front=False,
+                entity_name=self.share_name,
+                document_name=entity_document,
+            )
+        if self.protected:
+            return
+
+        if self.share_parent is None:
+            frappe.enqueue(
+                notify_share,
+                queue="long",
+                job_id=f"fdocshare_{self.name}",
+                deduplicate=True,
+                timeout=None,
+                now=False,
+                at_front=False,
+                entity_name=self.share_name,
+                docshare_name=self.name,
+            )
         if self.everyone:
             doc.add_comment("Shared", _("{0} shared this document with everyone").format(owner))
             message = f"{owner} shared {title} with everyone"
@@ -102,32 +130,6 @@ class DriveDocShare(Document):
             doc.add_comment(
                 "Shared",
                 _("{0} shared this document with {1}").format(owner, get_fullname(self.user_name)),
-            )
-
-        if entity_document:
-            frappe.enqueue(
-                notify_mentions,
-                queue="long",
-                job_id=f"fdoc_{entity_document}",
-                deduplicate=False,  # Users might've gained access here
-                timeout=None,
-                now=False,
-                at_front=False,
-                entity_name=self.share_name,
-                document_name=entity_document,
-            )
-
-        if self.share_parent is None:
-            frappe.enqueue(
-                notify_share,
-                queue="long",
-                job_id=f"fdocshare_{self.name}",
-                deduplicate=True,
-                timeout=None,
-                now=False,
-                at_front=False,
-                entity_name=self.share_name,
-                docshare_name=self.name,
             )
 
     def on_update(self):
