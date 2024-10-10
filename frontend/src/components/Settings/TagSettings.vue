@@ -10,66 +10,68 @@
       New
     </Button>
   </div>
-  <div v-for="(tag, i) in $resources.getTagsWithOwner.data" :key="tag.name">
-    <div
-      class="flex items-center justify-start text-sm py-1.5 gap-x-1.5 w-full"
-      :class="i > 0 ? 'border-t' : ''"
-    >
-      <svg
-        class="h-2.5"
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+  <div class="flex flex-col items-stretch justify-start overflow-y-auto">
+    <div v-for="(tag, i) in $resources.getTagsWithOwner.data" :key="tag.name">
+      <div
+        class="flex items-center justify-start text-sm py-1.5 gap-x-1.5 w-full"
+        :class="i > 0 ? 'border-t' : ''"
       >
-        <circle
-          r="4.5"
-          cx="8"
-          cy="8"
-          :fill="tag.color"
-          :stroke="tag.color"
-          stroke-width="3"
-        />
-      </svg>
-      <span class="text-sm text-gray-800">{{ tag.title }}</span>
-      <Dropdown
-        class="ml-auto"
-        placement="right"
-        :options="[
-          {
-            label: 'Edit',
-            icon: 'edit-2',
-            onClick: () => {
-              showEditDialog = true
+        <svg
+          class="h-2.5"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            r="4.5"
+            cx="8"
+            cy="8"
+            :fill="tag.color"
+            :stroke="tag.color"
+            stroke-width="3"
+          />
+        </svg>
+        <span class="text-sm text-gray-800">{{ tag.title }}</span>
+        <Dropdown
+          class="ml-auto"
+          placement="right"
+          :options="[
+            {
+              label: 'Edit',
+              icon: 'edit-2',
+              onClick: () => {
+                showEditDialog = true
+              },
             },
-          },
-          {
-            label: 'Delete',
-            theme: 'red',
-            icon: 'trash-2',
-            onClick: () => {
-              activeTag = tag
-              showDeleteDialog = true
+            {
+              label: 'Delete',
+              theme: 'red',
+              icon: 'trash-2',
+              onClick: () => {
+                activeTag = tag
+                showDeleteDialog = true
+              },
             },
-          },
-        ]"
-      >
-        <Button variant="ghost" @click="selectedTag = tag">
-          <template #icon>
-            <FeatherIcon
-              name="more-horizontal"
-              class="h-4 w-4"
-            /> </template></Button
-      ></Dropdown>
+          ]"
+        >
+          <Button variant="ghost" @click="selectedTag = tag">
+            <template #icon>
+              <FeatherIcon
+                name="more-horizontal"
+                class="h-4 w-4"
+              /> </template></Button
+        ></Dropdown>
+      </div>
     </div>
-  </div>
-  <div
-    v-if="!$resources.getTagsWithOwner.data?.length"
-    class="h-full w-full flex flex-col items-center justify-center my-auto"
-  >
-    <Tag class="h-7 stroke-1 text-gray-600" />
-    <span class="text-gray-800 text-sm mt-2">No Tags</span>
+    <div
+      v-if="!$resources.getTagsWithOwner.data?.length"
+      class="h-full w-full flex flex-col items-center justify-center my-auto"
+    >
+      <Tag class="h-7 stroke-1 text-gray-600" />
+      <span class="text-gray-800 text-sm mt-2">No Tags</span>
+    </div>
   </div>
   <NewTagDialog
     v-if="showNewTagDialog"
