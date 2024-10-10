@@ -16,6 +16,9 @@ def execute():
             "write",
             "owner",
         ],
+        filters=[
+            ["protected", "=", False],
+        ],
     )
     for share in all_shares:
         log = create_activity_log(share)
