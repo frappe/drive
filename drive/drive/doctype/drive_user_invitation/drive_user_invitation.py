@@ -66,7 +66,7 @@ class DriveUserInvitation(Document):
             frappe.throw("Invitation already accepted")
 
         user = self.create_user_if_not_exists()
-        user.append_roles("Drive User")
+        user.append_roles(self.role)
         user.save(ignore_permissions=True)
 
         self.status = "Accepted"

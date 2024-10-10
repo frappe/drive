@@ -241,7 +241,7 @@ def accept_invitation(key):
 
 
 @frappe.whitelist()
-def invite_users(emails):
+def invite_users(emails, role='Drive User'):
     if not emails:
         return
 
@@ -263,4 +263,5 @@ def invite_users(emails):
     for email in new_invites:
         invite = frappe.new_doc("Drive User Invitation")
         invite.email = email
+        invite.role = role
         invite.insert(ignore_permissions=True)
