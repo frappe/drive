@@ -4,12 +4,12 @@
     class="w-10 h-full text-neutral-100 mx-auto"
   />
   <div>
-    <div v-if="loading" v-once id="gridctr" />
+    <div v-if="loading" v-once id="gridctr" class="h-full w-full" />
   </div>
 </template>
 <script setup>
 import { LoadingIndicator } from "frappe-ui"
-import { ref, onBeforeUnmount, onMounted, watch, computed } from "vue"
+import { ref, onBeforeUnmount, onMounted, watch, computed, inject } from "vue"
 import { read, utils } from "xlsx"
 import Spreadsheet from "x-data-spreadsheet"
 
@@ -35,7 +35,6 @@ async function fetchContent() {
     Accept: "application/json",
     "Content-Type": "application/json; charset=utf-8",
     "X-Frappe-Site-Name": window.location.hostname,
-    Range: "bytes=0-10000000",
   }
   const res = await fetch(
     `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
@@ -51,10 +50,11 @@ async function fetchContent() {
       /* showToolbar: canWrite.value, */
       mode: "read",
       showToolbar: false,
-      showContextmenu: canWrite.value,
+      showContextmenu: false,
       view: {
         height: () => document.getElementById("renderContainer").clientHeight,
-        width: () => 1200,
+        width: () =>
+          document.getElementById("renderContainer").clientWidth / 1.1,
       },
     })
     grid.loadData(stox(read(ab)))
