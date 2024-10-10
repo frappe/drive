@@ -26,9 +26,7 @@
     />
     <GridView
       v-else-if="folderItems && $store.state.view === 'grid'"
-      :folder-contents="
-        foldersBefore ? groupedByFolder : { 'All Files': folderItems }
-      "
+      :folder-contents="groupedByFolder"
       :selected-entities="selectedEntities"
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
@@ -38,9 +36,7 @@
     />
     <ListView
       v-else-if="folderItems && $store.state.view === 'list'"
-      :folder-contents="
-        foldersBefore ? groupedByFolder : { 'All Files': folderItems }
-      "
+      :folder-contents="groupedByFolder"
       :selected-entities="selectedEntities"
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
@@ -329,11 +325,10 @@ export default {
 
   computed: {
     groupedByFolder() {
-      const output = {}
+      let output = {}
       if (this.recents && this.folderItems) {
-        return this.groupByAccessed(this.folderItems)
-      }
-      if (this.folderItems) {
+        output = this.groupByAccessed(this.folderItems)
+      } else if (this.folderItems && this.foldersBefore) {
         const folders = this.folderItems.filter((x) => x.is_group === 1)
         const files = this.folderItems.filter((x) => x.is_group === 0)
         if (folders.length > 0) {
@@ -342,6 +337,8 @@ export default {
         if (files.length > 0) {
           output.Files = files
         }
+      } else {
+        output = { "All Files": this.folderItems }
       }
       return output
     },
@@ -537,7 +534,8 @@ export default {
             isEnabled: () => {
               return (
                 this.selectedEntities.length === 1 &&
-                this.selectedEntities[0].owner === "You"
+                (this.selectedEntities[0].owner === "You" ||
+                  this.selectedEntities[0].share)
               )
             },
           },
