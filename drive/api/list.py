@@ -258,6 +258,7 @@ def shared_with_user(
             (UserGroupMember.user == frappe.session.user)
             | (DriveDocShare.user_name == frappe.session.user)
             | (DriveDocShare.everyone == 1)
+            | (DriveDocShare.public == 1)
         )
         .where(DriveDocShare.share_parent.isnull())
         .where(DriveEntity.owner != frappe.session.user)
