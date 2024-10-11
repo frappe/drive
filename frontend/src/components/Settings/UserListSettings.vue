@@ -2,6 +2,7 @@
   <div class="flex items-center mb-4">
     <h1 class="font-semibold">Users</h1>
     <Button
+      v-if="$store.state.user.role === 'Drive Admin'"
       variant="solid"
       icon-left="plus"
       class="ml-auto"

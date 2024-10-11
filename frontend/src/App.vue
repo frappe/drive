@@ -167,6 +167,29 @@ export default {
     },
   },
   resources: {
+    isAdmin() {
+      return {
+        url: "drive.utils.users.drive_user_level",
+        cache: "is_admin",
+        onSuccess(data) {
+          console.log(data)
+          this.$store.state.user.role = data
+        },
+        onError(error) {
+          if (error && error.exc_type === "PermissionError") {
+            this.$store.commit("setError", {
+              iconName: "alert-triangle",
+              iconClass: "fill-amber-500 stroke-white",
+              primaryMessage: "Forbidden",
+              secondaryMessage: "You do not have access to Frappe Drive",
+              hideButton: true,
+            })
+          }
+          this.$router.replace({ name: "Error" })
+        },
+        auto: true,
+      }
+    },
     getServerTZ: {
       url: "drive.api.api.get_server_timezone",
       auto: true,

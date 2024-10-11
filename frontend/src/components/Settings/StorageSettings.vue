@@ -121,8 +121,8 @@ export default {
     firstName() {
       return this.$store.state.user.fullName.split(" ")
     },
-    isDriveAdmin() {
-      return this.$store.state.user.driveAdmin
+    isDriveadmin() {
+      return this.$store.state.user.role === "Drive Admin"
     },
     /* fullName() {
         return this.$store.state.user.fullName;

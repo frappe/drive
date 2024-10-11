@@ -2,6 +2,7 @@
   <div class="flex items-center mb-4">
     <h1 class="font-semibold">Groups</h1>
     <Button
+      v-if="isDriveadmin"
       variant="solid"
       icon-left="plus"
       class="ml-auto"
@@ -132,7 +133,7 @@ export default {
       return x
     },
     isDriveadmin() {
-      return this.$store.state.user.driveAdmin
+      return this.$store.state.user.role === "Drive Admin"
     },
   },
   methods: {
