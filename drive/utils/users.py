@@ -214,14 +214,20 @@ def mark_as_viewed(entity):
 
 
 @frappe.whitelist()
-def is_drive_admin():
+def drive_user_level():
     user = frappe.session.user
+    if user == "Administrator":
+        return "Drive Admin"
+
     if user != "Guest":
-        if user == "Administrator" or frappe.db.exists(
-            "Has Role", {"parent": user, "role": "Drive Admin"}
-        ):
-            return True
-    return False
+        if frappe.db.exists("Has Role", {"parent": user, "role": "Drive Admin"}):
+            return "Drive Admin"
+        if frappe.db.exists("Has Role", {"parent": user, "role": "Drive User"}):
+            return "Drive User"
+        if frappe.db.exists("Has Role", {"parent": user, "role": "Drive Guest"}):
+            return "Drive Guest"
+
+    raise frappe.PermissionError("Unauthorized", frappe.PermissionError)
 
 
 @frappe.whitelist(allow_guest=True)
