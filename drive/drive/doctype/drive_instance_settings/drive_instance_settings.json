@@ -53,7 +53,7 @@
   ],
   "issingle": 1,
   "links": [],
-  "modified": "2024-09-26 18:00:55.517666",
+  "modified": "2024-10-11 18:16:08.133807",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Instance Settings",
@@ -85,6 +85,13 @@
       "print": 1,
       "read": 1,
       "role": "Drive User",
+      "share": 1
+    },
+    {
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "Drive Guest",
       "share": 1
     }
   ],

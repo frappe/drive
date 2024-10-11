@@ -176,6 +176,15 @@
       "delete": 1,
       "export": 1,
       "read": 1,
+      "role": "Drive Guest",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "export": 1,
+      "read": 1,
       "role": "Drive User",
       "share": 1,
       "write": 1

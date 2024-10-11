@@ -24,7 +24,7 @@
     }
   ],
   "links": [],
-  "modified": "2023-08-23 17:37:01.709815",
+  "modified": "2024-10-11 18:07:16.782138",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Favourite",
@@ -46,6 +46,18 @@
       "export": 1,
       "read": 1,
       "role": "Drive Admin",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Drive Guest",
       "share": 1,
       "write": 1
     }
