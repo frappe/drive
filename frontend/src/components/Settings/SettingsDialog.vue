@@ -58,34 +58,41 @@ import { Tag } from "lucide-vue-next"
 import TagSettings from "./TagSettings.vue"
 
 const store = useStore()
-
+const isDriveGuest = computed(() => {
+  return store.state.user.role === "Drive Guest"
+})
 let tabs = [
   {
+    enabled: true,
     label: "Profile",
     icon: User,
     component: markRaw(ProfileSettings),
   },
   {
+    enabled: true,
     label: "Users",
     icon: AddUser,
     component: markRaw(UserListSettings),
   },
   {
+    enabled: true,
     label: "Groups",
     icon: Users,
     component: markRaw(UserRoleSettings),
   },
   {
+    enabled: !isDriveGuest.value,
     label: "Storage",
     icon: Cloud,
     component: markRaw(StorageSettings),
   },
   {
+    enabled: !isDriveGuest.value,
     label: "Tags",
     icon: Tag,
     component: markRaw(TagSettings),
   },
-]
+].filter((item) => item.enabled)
 
 const emit = defineEmits(["update:modelValue"])
 const props = defineProps({
@@ -107,15 +114,6 @@ const open = computed({
   },
   set(newValue) {
     emit("update:modelValue", newValue)
-  },
-})
-
-createResource({
-  url: "drive.utils.users.is_drive_admin",
-  method: "POST",
-  auto: true,
-  onSuccess(data) {
-    store.state.user.driveAdmin = data
   },
 })
 </script>

@@ -22,7 +22,7 @@ const store = createStore({
       systemUser: getCookies().system_user === "yes",
       fullName: getCookies().full_name,
       imageURL: getCookies().user_image,
-      driveAdmin: false,
+      role: false,
     },
     error: {
       iconName: "x-circle",

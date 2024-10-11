@@ -12,6 +12,7 @@
       ondrop="return false;"
     >
       <SidebarItem
+        v-if="!isDriveGuest"
         :label="'Search'"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
@@ -43,6 +44,7 @@
         </template>
       </SidebarItem>
       <SidebarItem
+        v-if="!isDriveGuest"
         :label="'Notifications'"
         icon="inbox"
         class="mb-0.5"
@@ -83,7 +85,7 @@
       />
     </div>
     <div class="mt-auto">
-      <StorageBar />
+      <StorageBar v-if="!isDriveGuest" />
       <!-- <span>{{ $resources.getRootFolderSize.data }}</span> -->
       <SidebarItem
         :label="!isExpanded ? 'Expand' : 'Collapse'"
@@ -135,6 +137,9 @@ export default {
     isExpanded() {
       return this.$store.state.IsSidebarExpanded
     },
+    isDriveGuest() {
+      return this.$store.state.user.role === "Drive Guest"
+    },
     currentPlatform() {
       let ua = navigator.userAgent.toLowerCase()
       if (ua.indexOf("win") > -1) {
@@ -149,12 +154,14 @@ export default {
     sidebarItems() {
       return [
         {
+          enabled: !this.isDriveGuest,
           label: "Home",
           route: "/home",
           icon: Home,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Home",
         },
         {
+          enabled: true,
           label: "Recents",
           route: "/recents",
           icon: Recent,
@@ -162,6 +169,7 @@ export default {
             this.$store.state.currentBreadcrumbs[0].label === "Recents",
         },
         {
+          enabled: true,
           label: "Favourites",
           route: "/favourites",
           icon: Star,
@@ -169,18 +177,20 @@ export default {
             this.$store.state.currentBreadcrumbs[0].label === "Favourites",
         },
         {
+          enabled: true,
           label: "Shared",
           route: "/shared",
           icon: Users,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Shared",
         },
         {
+          enabled: true,
           label: "Trash",
           route: "/trash",
           icon: Trash,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Trash",
         },
-      ]
+      ].filter((item) => item.enabled)
     },
   },
   methods: {
