@@ -216,8 +216,9 @@
       ]"
       variant="minimal"
       @click="switchTab(0)"
-      ><Info
-    /></Button>
+    >
+      <Info />
+    </Button>
     <Button
       v-if="showComments"
       class="text-gray-600"
@@ -228,10 +229,11 @@
       ]"
       variant="minimal"
       @click="switchTab(1)"
-      ><Comment
-    /></Button>
+    >
+      <Comment />
+    </Button>
     <Button
-      v-if="showComments"
+      v-if="showActivity"
       class="text-gray-600"
       :class="[
         tab === 2 && showInfoSidebar
@@ -240,8 +242,9 @@
       ]"
       variant="minimal"
       @click="switchTab(2)"
-      ><Clock
-    /></Button>
+    >
+      <Clock />
+    </Button>
   </div>
 </template>
 
@@ -316,16 +319,12 @@ const showComments = computed(() => {
 })
 
 const showActivity = computed(() => {
-  return true
   if (entity.value.owner === "You") {
     return true
   } else if (entity.value.write) {
     return true
-  } else if (entity.value.allow_activity) {
-    return true
-  } else {
-    return false
   }
+  return false
 })
 
 function switchTab(val) {

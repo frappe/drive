@@ -10,22 +10,19 @@
       <div
         v-for="activity in group"
         :key="activity"
-        class="flex flex-col items-start justify-start py-3"
+        class="flex items-start justify-start py-3 gap-x-2"
       >
-        <div class="text-sm flex items-start justify-start gap-x-2">
-          <Avatar
-            size="md"
-            :image="activity.user_image"
-            :label="activity.full_name"
-          />
+        <Avatar
+          size="md"
+          :image="activity.user_image"
+          :label="activity.full_name"
+        />
+        <div class="flex flex-col items-start justify-center">
           <span class="text-sm text-gray-900">{{ activity.message }}</span>
-        </div>
-        <span class="pl-9 text-xs text-gray-600 -mt-1.5 mb-3">{{
-          activity.creation
-        }}</span>
-        <div
-          class="flex flex-col items-start justify-start ml-8.5 flex-wrap gap-1"
-        >
+          <span class="text-xs text-gray-600 mb-3">{{
+            activity.creation
+          }}</span>
+
           <template v-if="activity.action_type === 'rename'">
             <div class="flex items-center justify-start flex-wrap gap-1">
               <ActivityTreeItem
@@ -43,7 +40,6 @@
               />
             </div>
           </template>
-
           <ActivityTreeShare
             v-else-if="activity.action_type.startsWith('share')"
             :activity="activity"
@@ -108,9 +104,6 @@ const showInfoSidebar = computed(() => {
 const entityText = computed(() => {
   if (entity.value.is_group) {
     return "folder"
-  }
-  if (entity.value.document) {
-    return "document"
   }
   return "file"
 })

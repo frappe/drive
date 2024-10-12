@@ -37,7 +37,7 @@
   </div>
   <div
     v-else
-    class="flex p-1 w-full items-center justify-start text-sm gap-x-1 border rounded"
+    class="border max-w-[220px] rounded-[7px] px-1 py-1 gap-x-1 flex items-center justify-center overflow-clip text-sm"
     :class="
       activity.action_type === 'share_remove'
         ? 'strike-div text-gray-400'
@@ -56,7 +56,7 @@
         activity.document_field === "everyone" ? "Organization" : "Public"
       }}</span>
       <span>∙</span>
-      <span>{{
+      <span class="text-gray-600">{{
         activity.meta_value === "1"
           ? "View"
           : activity.meta_value === "2"
