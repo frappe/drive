@@ -1,6 +1,4 @@
 import frappe
-from drive.utils.users import is_drive_admin
-
 
 @frappe.whitelist()
 def get_name_of_all_user_groups():
@@ -30,9 +28,6 @@ def get_users_in_group(group_name):
 
 @frappe.whitelist()
 def create_user_group(group_name, members=[]):
-    if not is_drive_admin():
-        return []
-
     group_name = group_name.title()
     # Create a new User Group
     new_group = frappe.get_doc(
@@ -53,8 +48,6 @@ def create_user_group(group_name, members=[]):
 
 @frappe.whitelist()
 def delete_user_group(group_name):
-    if not is_drive_admin():
-        return []
     try:
         frappe.db.delete("User Group", group_name)
         frappe.db.delete("User Group Member", {"parent": group_name})
