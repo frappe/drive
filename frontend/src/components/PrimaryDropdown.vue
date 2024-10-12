@@ -19,7 +19,11 @@
         <FrappeDriveLogo class="w-8 h-8 rounded" />
         <div
           class="flex flex-1 flex-col text-left duration-300 ease-in-out"
-          :class="isExpanded ? 'ml-2 w-auto opacity-100' : 'ml-0 w-0 opacity-0'"
+          :class="
+            isExpanded
+              ? 'ml-2 w-auto opacity-100'
+              : 'ml-0 w-0 opacity-0 overflow-hidden'
+          "
         >
           <div class="text-base font-medium leading-none text-gray-900">
             Drive
