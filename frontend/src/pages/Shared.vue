@@ -20,6 +20,11 @@ const store = useStore()
 const allowEmptyContextMenu = ref(false)
 
 const sharedUrl = computed(() => {
+  if (store.state.user.role === "Drive Guest") {
+    return store.state.shareView === "with"
+      ? "drive.api.list.shared_with_guest"
+      : "drive.api.list.shared_by_guest"
+  }
   return store.state.shareView === "with"
     ? "drive.api.list.shared_with_user"
     : "drive.api.list.shared_by_user"
