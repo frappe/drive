@@ -37,8 +37,12 @@ let homeID = createResource({
         secondaryMessage: "You do not have access to Frappe Drive",
         hideButton: true,
       })
+      if (store.state.user.role === "Drive Guest") {
+        router.replace({ name: "Recents" })
+      } else {
+        router.replace({ name: "Error" })
+      }
     }
-    router.replace({ name: "Error" })
   },
 })
 </script>

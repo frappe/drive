@@ -430,6 +430,10 @@ def get_user_access(entity_name, user=None):
             as_dict=1,
         )
         if everyone_access:
+            if frappe.db.exists(
+                "Has Role", {"role": "Drive Guest", "parent": frappe.session.user}
+            ):
+                return {"read": 0, "write": 0}
             return everyone_access
         public_access = frappe.db.get_value(
             "Drive DocShare",
@@ -496,7 +500,7 @@ def has_app_permission():
     if user == "Administrator":
         return True
 
-    roles_to_check = {"Drive Admin", "Drive User", "System Manager"}
+    roles_to_check = {"Drive Admin", "Drive User", "Drive Guest", "System Manager"}
     user_roles = frappe.get_roles(user)
 
     return not roles_to_check.isdisjoint(user_roles)

@@ -187,7 +187,7 @@ export default {
           }
           this.$router.replace({ name: "Error" })
         },
-        auto: true,
+        auto: this.$store.getters.isLoggedIn,
       }
     },
     getServerTZ: {

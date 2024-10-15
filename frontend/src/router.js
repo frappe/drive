@@ -1,16 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 
-function redir404(to, from) {
-  if (to.name === "Error" && from.name) {
-    return
-  }
-  if (store.getters.isLoggedIn && to.fullPath === "/") {
-    return { name: "Home" }
-  } else if (!store.getters.isLoggedIn && to.fullPath === "/") {
-    return { name: "Login" }
+function redir404(to, from, next) {
+  console.log(to)
+  if (store.getters.isLoggedIn) {
+    next()
   } else {
-    return { name: "Login" }
+    next("/login")
   }
 }
 
@@ -33,6 +29,15 @@ function setRootBreadCrumb(to) {
 }
 
 const routes = [
+  {
+    path: "/",
+    redirect: () => {
+      if (store.getters.isLoggedIn) {
+        const role = store.state.user.role
+        return role === "Drive Guest" ? "/recents" : "/home"
+      }
+    },
+  },
   {
     path: "/notifications",
     name: "Notifications",
@@ -92,14 +97,6 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/signup",
-    name: "Signup",
-    component: () => import("@/pages/Signup.vue"),
-    meta: {
-      isPublicRoute: true,
-    },
-  },
-  {
     path: "/test",
     name: "Test",
     component: () => import("@/pages/Test.vue"),
@@ -126,59 +123,22 @@ const routes = [
 let router = createRouter({
   history: createWebHistory("/drive"),
   routes,
-  /*   scrollBehavior(to, from) {
-    return new Promise((resolve) => {
-      // Set a delay of 1000ms before scrolling
-      setTimeout(() => {
-        const element = document.getElementById('main');
-        console.log(element)
-        const { top } = element.getBoundingClientRect();
-        const scrollY = window.scrollY + top + 100; 
-        console.log('Scroll position:', scrollY);
-        element.scrollTo({
-          top: element.scrollTop + 8000, // Scroll down by the specified amount
-          behavior: 'instant',
- // Enable smooth scrolling
-        });
-        // Always scroll to the element with ID 'main', 10 pixels above
-        resolve();
-      }, 1000); // 1000ms delay
-    });
-  }, */
 })
 
-const HybridRouteArray = ["File", "Folder", "Document"]
-
 router.beforeEach((to, from, next) => {
-  // If they hit a public page log them in
-  if (to.matched.some((record) => record.meta.isPublicRoute)) {
-    if (store.getters.isLoggedIn) {
-      next({ name: "Home" })
-    } else {
+  switch (true) {
+    case !store.getters.isLoggedIn && to.meta.isHybridRoute:
       next()
-    }
-  } else {
-    // Prepend "Shared/" to the breadcrumbs if an authenticated user navigated to a file by pasting a link
-    if (
-      store.getters.isLoggedIn ||
-      to.matched.some((record) => record.meta.isHybridRoute)
-    ) {
-      if (to.href !== sessionStorage.getItem("currentRoute")) {
-        if (from.fullPath === "/" && HybridRouteArray.includes(to.name)) {
-          store.commit("setCurrentBreadcrumbs", [
-            { label: "Shared", route: "/shared" },
-          ])
-        }
-      }
+      break
+    case !store.getters.isLoggedIn:
+      next("/login")
+      break
+    case store.getters.isLoggedIn:
       next()
-    } else {
-      if (to.name === "Error") {
-        next()
-      } else {
-        next("/login")
-      }
-      //import.meta.env.DEV ? next("/login") : (window.location.href = "/login");
-    }
+      break
+    default:
+      next("/login")
+      break
   }
 })
 
