@@ -62,6 +62,11 @@
   color: var(--tw-prose-body);
 }
 
+.legacy-p {
+  margin-top: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
 .espresso-prose h1 {
   font-size: 1.8em;
   margin-top: 0;

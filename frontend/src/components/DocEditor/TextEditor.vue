@@ -446,7 +446,7 @@ export default {
           history: false,
           paragraph: {
             HTMLAttributes: {
-              class: this.entity.version > 0 ? "not-prose" : "",
+              class: this.entity.version > 0 ? "" : "legacy-p",
             },
           },
           heading: {
