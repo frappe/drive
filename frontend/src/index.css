@@ -1,5 +1,8 @@
 /* frappe ui includes Inter*/
 @import "frappe-ui/src/style.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   scrollbar-width: thin;

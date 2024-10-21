@@ -720,13 +720,21 @@ export default {
         timeout: 2,
       })
     },
-    printHtml(dom) {
-      const style = Array.from(document.querySelectorAll("style, link")).reduce(
-        (str, style) => str + style.outerHTML,
-        ""
-      )
-      const content = style + dom.outerHTML
-
+    printHtml() {
+      const content = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>${globalStyle}</style>
+                <style>${editorStyle}</style>
+              </head>
+              <body>
+                <div class="Prosemirror espresso-prose">
+                ${this.editor.getHTML()}
+                </div>
+              </body>
+            </html>
+          `
       const iframe = document.createElement("iframe")
       iframe.id = "el-tiptap-iframe"
       iframe.setAttribute(
