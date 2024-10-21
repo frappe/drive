@@ -33,9 +33,10 @@ const routes = [
     path: "/",
     redirect: () => {
       if (store.getters.isLoggedIn) {
-        const role = store.state.user.role
+        const role = store.state.user?.role
         return role === "Drive Guest" ? "/recents" : "/home"
       }
+      return "/login"
     },
   },
   {
@@ -83,6 +84,14 @@ const routes = [
     name: "Shared",
     component: () => import("@/pages/Shared.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/Login.vue"),
+    meta: {
+      isPublicRoute: true,
+    },
   },
   {
     path: "/favourites",

@@ -72,7 +72,7 @@ export const ResizableMedia = Node.create<MediaOptions>({
         default: "auto",
       },
       dataAlign: {
-        default: null, // 'left' | 'center' | 'right'
+        default: "center", // 'left' | 'center' | 'right'
       },
       dataFloat: {
         default: null, // 'left' | 'right'
@@ -112,7 +112,7 @@ export const ResizableMedia = Node.create<MediaOptions>({
     } else if (mediaType === "video") {
       return [
         "video",
-        { controls: "true", style: "width: 100%", ...HTMLAttributes },
+        { controls: "true", ...HTMLAttributes },
         ["source", HTMLAttributes],
       ]
     }
