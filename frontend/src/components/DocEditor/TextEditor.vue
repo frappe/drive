@@ -1,6 +1,5 @@
 <template>
   <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
-    {{ entity.version }}
     <div
       :class="[
         settings.docFont,
