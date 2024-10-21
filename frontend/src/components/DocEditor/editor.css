@@ -62,9 +62,17 @@
   color: var(--tw-prose-body);
 }
 
-.legacy-p {
-  margin-top: 1.4rem;
-  margin-bottom: 1.4rem;
+p.legacy {
+  margin-top: 1.4rem !important;
+  margin-bottom: 1.4rem !important;
+}
+
+h2.legacy {
+  margin-top: 1.6em !important;
+}
+
+h3.legacy {
+  margin-top: 1.55em !important;
 }
 
 .espresso-prose h1 {

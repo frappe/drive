@@ -1,5 +1,6 @@
 <template>
   <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
+    {{ entity.version }}
     <div
       :class="[
         settings.docFont,
@@ -446,11 +447,14 @@ export default {
           history: false,
           paragraph: {
             HTMLAttributes: {
-              class: this.entity.version > 0 ? "" : "legacy-p",
+              class: this.entity.version == 0 ? "legacy" : "",
             },
           },
           heading: {
             levels: [1, 2, 3, 4, 5],
+            HTMLAttributes: {
+              class: this.entity.version == 1 ? "legacy" : "",
+            },
           },
           listItem: {
             HTMLAttributes: {
