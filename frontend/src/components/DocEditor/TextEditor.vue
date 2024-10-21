@@ -8,7 +8,7 @@
           ? 'sm:min-w-[75vw] sm:max-w-[75vw]'
           : 'sm:min-w-[21cm] sm:max-w-[21cm]',
       ]"
-      class="flex sm:w-full items-start justify-start lg:justify-center mx-auto"
+      class="flex sm:w-full items-start justify-start lg:justify-center mx-auto px-[1cm]"
     >
       <editor-content
         id="editor-capture"
@@ -114,7 +114,8 @@ import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 import { DiffMarkExtension } from "./extensions/createDiffMark"
-
+import editorStyle from "./editor.css?inline"
+import globalStyle from "../../index.css?inline"
 import { formatDate } from "../../utils/format"
 import { Paragraph } from "./extensions/paragraph"
 
@@ -387,9 +388,7 @@ export default {
       autofocus: "start",
       editorProps: {
         attributes: {
-          class: normalizeClass([
-            `ProseMirror prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
-          ]),
+          class: normalizeClass([`espresso-prose`]),
         },
         clipboardTextParser: (text, $context) => {
           if (!detectMarkdown(text)) return
@@ -461,21 +460,13 @@ export default {
           codeBlock: {
             HTMLAttributes: {
               spellcheck: false,
-              class:
-                "not-prose my-5 px-4 py-2 text-[0.9em] font-mono text-black bg-gray-50 rounded border border-gray-300 overflow-x-auto",
             },
           },
           blockquote: {
-            HTMLAttributes: {
-              class:
-                "prose-quoteless text-black border-l-2 pl-2 border-gray-400 text-[0.9em]",
-            },
+            HTMLAttributes: {},
           },
           code: {
-            HTMLAttributes: {
-              class:
-                "not-prose px-px font-mono bg-gray-50 text-[0.85em] rounded-sm border border-gray-300",
-            },
+            HTMLAttributes: {},
           },
           bulletList: {
             keepMarks: true,
@@ -543,9 +534,7 @@ export default {
         }),
         configureMention(this.userList),
         TaskList.configure({
-          HTMLAttributes: {
-            class: "not-prose",
-          },
+          HTMLAttributes: {},
         }),
         TaskItem.configure({
           HTMLAttributes: {
@@ -964,61 +953,8 @@ export default {
 </script>
 
 <style>
-.ProseMirror {
-  outline: none;
-  caret-color: theme("colors.blue.600");
-  word-break: break-word;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: text;
-  padding: 4em 1em;
-  background: white;
-}
+@import url("./editor.css");
 
-/* 640 is sm from espresso design */
-@media only screen and (max-width: 640px) {
-  .ProseMirror {
-    display: block;
-    max-width: 100%;
-    min-width: 100%;
-  }
-}
-
-.ProseMirror a {
-  text-decoration: underline;
-}
-
-/* Firefox */
-.ProseMirror-focused:focus-visible {
-  outline: none;
-}
-
-@page {
-  size: a4;
-  margin: 4em;
-}
-/* 
-  Omit the page break div from printing added from `PageBreak.ts`
-*/
-@media print {
-  #page-break-div {
-    border: none !important;
-    margin: none !important;
-  }
-  span[data-annotation-id] {
-    background-color: transparent !important;
-    border-bottom: none !important;
-    padding: none !important;
-  }
-}
-/* 
-span[data-comment] {
-  background: rgba(255, 215, 0, 0.15);
-  border-bottom: 2px solid rgb(255, 210, 0);
-  user-select: text;
-  padding: 2px;
-}
- */
 span[data-annotation-id] {
   background: rgba(255, 215, 0, 0.15);
   border-bottom: 2px solid rgb(255, 210, 0);
@@ -1051,34 +987,6 @@ span[data-annotation-id] {
   left: 0.25em;
   user-select: none;
   white-space: nowrap;
-}
-
-/* Check list */
-.my-task-item {
-  display: flex;
-}
-.my-task-item input {
-  border-radius: 4px;
-  outline: 0;
-  margin-right: 10px;
-}
-.my-task-item input[type="checkbox"]:hover {
-  outline: 0;
-  background-color: #d6d6d6;
-  cursor: pointer;
-  transition: background 0.2s ease, border 0.2s ease;
-}
-.my-task-item input[type="checkbox"]:focus {
-  outline: 0;
-  background-color: #5b5b5b;
-}
-.my-task-item input[type="checkbox"]:active {
-  outline: 0;
-  background-color: #5b5b5b;
-}
-.my-task-item input[type="checkbox"]:checked {
-  outline: 0;
-  background-color: #000000;
 }
 
 summary {
