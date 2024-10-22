@@ -12,7 +12,7 @@
               :allow-delete="isOpen"
               :tag="tag"
               :entity="entity"
-              @click="$store.state.activeTags.push(tag)"
+              @click="filterByTag(tag)"
               @success="$resources.entityTags.fetch()"
             >
             </Tag>
@@ -126,6 +126,7 @@
 import { getRandomColor } from "@/utils/random-color"
 import { Input, Popover } from "frappe-ui"
 import Tag from "./Tag.vue"
+import { routeLocationKey } from "vue-router"
 
 export default {
   name: "TagInput",
@@ -180,6 +181,10 @@ export default {
     closeInput() {
       if (this.hackyFlag) this.$emit("close")
       this.hackyFlag = !this.hackyFlag
+    },
+    filterByTag(tag) {
+      if (this.$route.name === "File" || this.$route.name === "Document") return
+      this.$store.state.activeTags.push(tag)
     },
   },
 
