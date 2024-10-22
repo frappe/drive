@@ -392,13 +392,6 @@ export default {
         },
         clipboardTextParser: (text, $context) => {
           if (!detectMarkdown(text)) return
-          if (
-            !confirm(
-              "Do you want to convert markdown content to HTML before pasting?"
-            )
-          )
-            return
-
           let dom = document.createElement("div")
           dom.innerHTML = markdownToHTML(text)
           let parser =
@@ -451,9 +444,6 @@ export default {
           },
           heading: {
             levels: [1, 2, 3, 4, 5],
-            HTMLAttributes: {
-              class: this.entity.version == 1 ? "legacy" : "",
-            },
           },
           listItem: {
             HTMLAttributes: {

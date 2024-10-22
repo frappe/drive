@@ -67,34 +67,38 @@ p.legacy {
   margin-bottom: 1.4rem !important;
 }
 
-h2.legacy {
-  margin-top: 1.6em !important;
-}
-
-h3.legacy {
-  margin-top: 1.55em !important;
-}
-
 .espresso-prose h1 {
   font-size: 1.8em;
-  margin-top: 0;
+  margin-top: 1.8em;
   margin-bottom: 0.8em;
   line-height: 1.2;
   font-weight: 600;
 }
 
+.espresso-prose h1:first-child {
+  margin-top: 0;
+}
+
+.espresso-prose h2:first-child {
+  margin-top: 0;
+}
+
+.espresso-prose h3:first-child {
+  margin-top: 0;
+}
+
 .espresso-prose h2 {
   font-size: 1.42em;
-  margin-top: 0;
-  margin-bottom: 0.8em;
+  margin-top: 1.6em;
+  margin-bottom: 0.65em;
   line-height: 1.4;
   font-weight: 600;
 }
 
 .espresso-prose h3 {
   font-size: 1.28em;
-  margin-top: 0;
-  margin-bottom: 0.44em;
+  margin-top: 1.55em;
+  margin-bottom: 0.45em;
   line-height: 1.55;
   font-weight: 600;
 }
