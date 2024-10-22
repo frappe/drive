@@ -4,54 +4,35 @@
   >
     <template v-for="button in buttons" :key="button.label">
       <div v-if="button.type === 'separator'" class="h-5 border-l"></div>
-      <div v-else-if="button.map" class="shrink-0">
-        <Popover>
-          <template #target="{ togglePopover }">
-            <button
-              class="rounded text-base font-medium text-gray-800 transition-colors hover:bg-gray-100"
-              :set="
-                (activeBtn =
-                  button.find((b) => b.isActive(editor)) || button[0])
-              "
-              @click="togglePopover"
-            >
-              <component
-                :is="activeBtn.icon"
-                v-if="activeBtn.icon"
-                class="h-4 w-4"
-              />
-              <span v-else>
-                {{ activeBtn.label }}
-              </span>
-            </button>
-          </template>
-          <template #body="{ close }">
-            <ul class="rounded border bg-white p-1 shadow-md">
-              <li
-                v-for="option in button"
-                v-show="option.isDisabled ? !option.isDisabled(editor) : true"
-                :key="option.label"
-                class="w-full"
-              >
-                <button
-                  class="w-full rounded px-2 py-1 text-left text-base hover:bg-gray-50"
-                  @click="
-                    () => {
-                      onButtonClick(option)
-                      close()
-                    }
-                  "
-                >
-                  {{ option.label }}
-                </button>
-              </li>
-            </ul>
-          </template>
-        </Popover>
-      </div>
       <component :is="button.component || 'div'" v-else v-bind="{ editor }">
         <template #default="componentSlotProps">
+          <div
+            v-if="button.label === 'New Link' && button.isActive(editor)"
+            class="flex items-center justify-start"
+          >
+            <a
+              class="text-gray-800 text-sm underline flex items-end justify-start hover:bg-gray-100 rounded-[0.35rem] px-1 py-0.5 gap-x-1"
+              :href="editor.getAttributes('link').href"
+              target="_blank"
+            >
+              {{ editor.getAttributes("link").href }}</a
+            >
+            <button
+              class="hover:bg-gray-100 text-gray-800 rounded-[0.35rem] p-1"
+            >
+              <Edit2
+                class="h-3.5 w-auto stroke-[1.5]"
+                title="Edit Link"
+                @click="
+                  componentSlotProps?.onClick
+                    ? componentSlotProps.onClick(button)
+                    : onButtonClick(button)
+                "
+              />
+            </button>
+          </div>
           <button
+            v-else
             class="flex items-center rounded-[0.35rem] p-1 text-gray-800 transition-colors gap-1"
             :class="
               button.isActive(editor) || componentSlotProps?.isActive
@@ -84,18 +65,38 @@
 </template>
 <script>
 import { Popover, FeatherIcon } from "frappe-ui"
+import { Edit2, Unlink2 } from "lucide-vue-next"
 
 export default {
   name: "TipTapMenu",
   components: {
     Popover,
     FeatherIcon,
+    Unlink2,
+    Edit2,
   },
   inject: ["editor"],
   props: ["buttons"],
   emits: ["toggleCommentMode"],
 
   methods: {
+    getLinkFromSelection(editor) {
+      const { state } = editor
+      const { from, to } = state.selection
+      const linkAttributes = []
+      state.doc.nodesBetween(from, to, (node) => {
+        if (node.isText) {
+          node.marks.forEach((mark) => {
+            if (mark.type.name === "link") {
+              linkAttributes.push(mark.attrs)
+            }
+          })
+        }
+      })
+      const link = linkAttributes.length > 0 ? linkAttributes[0].href : null
+
+      return link
+    },
     onButtonClick(button) {
       if (typeof button.action === "string") {
         this.emitter.emit(button.action)
