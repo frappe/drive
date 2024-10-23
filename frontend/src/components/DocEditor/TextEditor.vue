@@ -28,6 +28,13 @@
       plugin-key="main"
       :should-show="shouldShow"
       :editor="editor"
+      :update-delay="0"
+      :tippy-options="{
+        appendTo: 'parent',
+        placement: 'top',
+        offset: [0, 5],
+        maxWidth: 500,
+      }"
     >
       <Menu :buttons="bubbleMenuButtons" />
     </BubbleMenu>
