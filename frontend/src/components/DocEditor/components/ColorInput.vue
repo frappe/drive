@@ -13,7 +13,7 @@
             :style="{
               background: value
                 ? value
-                : `url(/color-circle.png) center / contain`,
+                : `url(/assets/drive/frontend/color-circle.png) center / contain`,
             }"
             class="absolute left-2 top-[6px] z-10 h-4 w-4 rounded shadow-sm cursor-pointer"
             @click="togglePopover"

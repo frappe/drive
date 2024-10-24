@@ -1,22 +1,27 @@
 <template>
-  <Dialog v-model="open" :options="{ title: DialogTitle, size: 'xl' }">
-    <template #body>
-      <div class="p-6">
-        <div class="mb-4">
+  <Dialog v-model="open" :options="{ title: DialogTitle, size: '2xl' }">
+    <template #body-content>
+      <div class="">
+        <!-- <div class="mb-4">
           <span class="text-2xl font-semibold leading-6 text-gray-900">{{
             DialogTitle
           }}</span>
-        </div>
+        </div> -->
         <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="!pl-0">
           <div
             v-if="folderContents?.length"
-            class="flex flex-col justify-items-start h-[50vh] overflow-y-auto justify-start my-2"
+            class="flex flex-col justifyf-items-start h-[45vh] overflow-y-auto justify-start my-2"
           >
             <div
-              v-for="item in folderContents"
+              v-for="(item, index) in folderContents"
               :id="item.name"
               :key="item.name"
+              class=""
             >
+              <div
+                v-show="index > 0"
+                class="border-t w-full mx-auto max-w-[96%]"
+              ></div>
               <div
                 class="px-3 grid items-center cursor-pointer rounded h-9 group hover:bg-gray-100"
                 :draggable="false"
@@ -50,19 +55,20 @@
                   {{ item.title }}
                 </div>
               </div>
-              <div class="border-t w-full mx-auto max-w-[95%]"></div>
             </div>
           </div>
           <div
             v-else
-            class="flex flex-col items-center justify-center h-[52vh]"
+            class="flex flex-col items-center justify-center h-[45vh] my-2"
           >
             <Folder class="text-gray-600 h-10 w-auto" />
             <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
           </div>
+        </Tabs>
+        <div class="flex items-center justify-between max-h-7">
           <div
             v-if="breadcrumbs.length > 1"
-            class="flex items-center my-2"
+            class="flex items-center my-2 justify-start"
             :class="breadcrumbs.length > 1 ? 'visible' : 'invisible'"
           >
             <Dropdown
@@ -104,7 +110,7 @@
               <button
                 class="text-base cursor-pointer"
                 :class="
-                  breadcrumbs.length - 1 === index
+                  index === lastTwoBreadCrumbs.length - 1
                     ? 'text-gray-900 text-base font-medium p-1'
                     : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
                 "
@@ -114,25 +120,24 @@
               </button>
             </div>
           </div>
-        </Tabs>
-
-        <Button
-          variant="solid"
-          class="w-full"
-          :loading="move.loading"
-          :disabled="!evalPermission"
-          @click="
-            move.submit({
-              entity_names: store.state.entityInfo.map((obj) => obj.name),
-              new_parent: currentFolder,
-            })
-          "
-        >
-          <template #prefix>
-            <Move />
-          </template>
-          Move
-        </Button>
+          <Button
+            variant="solid"
+            class="ml-auto"
+            :loading="move.loading"
+            :disabled="!evalPermission"
+            @click="
+              move.submit({
+                entity_names: store.state.entityInfo.map((obj) => obj.name),
+                new_parent: currentFolder,
+              })
+            "
+          >
+            <template #prefix>
+              <Move />
+            </template>
+            Move
+          </Button>
+        </div>
       </div>
     </template>
   </Dialog>

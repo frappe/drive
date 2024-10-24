@@ -172,7 +172,7 @@ class DriveEntity(Document):
         if not is_group:
             raise NotADirectoryError()
         for child in self.get_children():
-            if child.name == self.name or new_parent:
+            if child.name == self.name or child.name == new_parent:
                 frappe.throw(
                     "Cannot move into itself",
                     frappe.PermissionError,

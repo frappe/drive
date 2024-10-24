@@ -115,7 +115,10 @@
             </Button>
           </Dropdown>
         </div>
-        <div v-if="!isLoggedIn" class="ml-auto">
+        <div
+          v-if="!isLoggedIn && $store.state.user.fullName === 'Guest'"
+          class="ml-auto"
+        >
           <Button variant="solid" @click="$router.push({ name: 'Login' })">
             Sign In
           </Button>
