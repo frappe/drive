@@ -86,14 +86,6 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/pages/Login.vue"),
-    meta: {
-      isPublicRoute: true,
-    },
-  },
-  {
     path: "/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),

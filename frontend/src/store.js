@@ -77,7 +77,11 @@ const store = createStore({
   },
   getters: {
     isLoggedIn: (state) => {
-      return state.auth.user_id && state.auth.user_id !== "Guest"
+      return (
+        state.auth.user_id &&
+        state.auth.user_id !== "Guest" &&
+        state.user.role !== "Guest"
+      )
     },
     uploadsInProgress: (state) => {
       return state.uploads.filter((upload) => !upload.completed)

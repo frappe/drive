@@ -2,12 +2,13 @@
   <slot v-bind="{ onClick: openDialog }"></slot>
   <Dialog
     v-model="setLinkDialog.show"
-    :options="{ title: 'Set Link', size: 'sm' }"
+    :options="{ title: setLinkDialog.title, size: 'sm' }"
     @after-leave="reset"
   >
     <template #body-content>
-      <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
-      <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-gray-700">URL</span> -->
+      <span class="text-sm italic font-medium leading-relaxed text-gray-800">{{
+        `"${linkRootContent}"`
+      }}</span>
       <Input
         ref="input"
         v-model="setLinkDialog.url"
@@ -45,11 +46,11 @@ export default {
   },
   data() {
     return {
-      setLinkDialog: { url: "", show: false },
+      setLinkDialog: { title: "Set Link", url: "", show: false },
     }
   },
   computed: {
-    commentRootContent() {
+    linkRootContent() {
       const { view, state } = this.editor
       const { from, to } = view.state.selection
       return state.doc.textBetween(from, to, "")
@@ -61,6 +62,7 @@ export default {
       let existingURL = this.editor.getAttributes("link").href
       if (existingURL) {
         this.setLinkDialog.url = existingURL
+        this.setLinkDialog.title = "Edit Link"
       }
       this.setLinkDialog.show = true
     },
