@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-center bg-white w-full shadow-lg rounded-[0.45rem] gap-1 px-0.5 py-0.5"
+    class="flex items-center justify-center bg-white shadow-lg rounded-[0.45rem] gap-x-1 px-0.5 py-0.5"
   >
     <template v-for="button in buttons" :key="button.label">
       <div v-if="button.type === 'separator'" class="h-5 border-l"></div>
@@ -11,8 +11,9 @@
             class="flex items-center justify-start"
           >
             <a
-              class="text-gray-800 text-sm underline flex items-end justify-start hover:bg-gray-100 rounded-[0.35rem] px-1 py-0.5 gap-x-1"
+              class="text-gray-800 text-sm underline hover:bg-gray-100 rounded-[0.35rem] px-1 py-0.5 gap-x-1 line-clamp-1 max-w-44"
               :href="editor.getAttributes('link').href"
+              :title="editor.getAttributes('link').href"
               target="_blank"
             >
               {{ editor.getAttributes("link").href }}</a
@@ -23,11 +24,7 @@
               <Edit2
                 class="h-3.5 w-auto stroke-[1.5]"
                 title="Edit Link"
-                @click="
-                  componentSlotProps?.onClick
-                    ? componentSlotProps.onClick(button)
-                    : onButtonClick(button)
-                "
+                @click="componentSlotProps.onClick(button)"
               />
             </button>
           </div>
