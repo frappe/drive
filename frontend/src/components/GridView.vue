@@ -202,18 +202,16 @@ export default {
       this.$emit("showEmptyEntityContext", null)
     },
     handleEntityContext(entity, event) {
-      let clientX = event.clientX
-      let clientY = event.clientY
       if (event.changedTouches) {
-        clientX = event.changedTouches[0].clientX
-        clientY = event.changedTouches[0].clientY
+        event.clientX = event.changedTouches[0].clientX
+        event.clientY = event.changedTouches[0].clientY
       }
       event.preventDefault(event)
       if (this.selectedEntities.length <= 1) {
         this.$emit("entitySelected", [entity])
         this.$store.commit("setEntityInfo", [entity])
       }
-      this.$emit("showEntityContext", { x: clientX, y: clientY })
+      this.$emit("showEntityContext", event)
     },
   },
 }
