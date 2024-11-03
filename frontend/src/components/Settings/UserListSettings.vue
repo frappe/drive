@@ -42,6 +42,7 @@
     v-model="showInviteUserDialog"
     :options="{
       title: 'Invite User',
+      size: 'lg',
       actions: [
         {
           label: 'Send Invitation',

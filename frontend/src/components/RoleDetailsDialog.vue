@@ -3,6 +3,7 @@
     <template #body-content>
       <label class="block text-base text-gray-600 my-2">Add User</label>
       <UserSearch
+        button-text="Add"
         :button-variant="'solid'"
         :search-groups="false"
         :active-users="uniqueUsers"

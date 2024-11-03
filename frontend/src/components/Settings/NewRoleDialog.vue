@@ -6,7 +6,7 @@
       <ErrorMessage class="text-sm mt-2" :message="groupNameError" />
       <label class="block text-sm text-gray-600 mt-4 mb-1">Add User</label>
       <UserSearch
-        button-text="Add"
+        :show-button="false"
         :search-groups="false"
         :active-users="uniqueUsers"
         :active-groups="[]"
@@ -112,6 +112,7 @@ export default {
   },
   methods: {
     addUser(data) {
+      console.log(data)
       data.forEach((user) => {
         this.memberError = ""
         this.UsersInRole.push(user)
