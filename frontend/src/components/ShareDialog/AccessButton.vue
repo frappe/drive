@@ -17,14 +17,14 @@
 
         <ChevronDown
           :class="{ '[transform:rotateX(180deg)]': open }"
-          class="w-4"
+          class="w-3.5"
         />
       </PopoverButton>
       <PopoverPanel class="z-10 bg-white p-1 shadow-2xl rounded w-full">
         <div v-if="open">
           <ul>
             <li
-              class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
+              class="flex items-center justify-between px-1 text-base text-gray-700 line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
               @click="
                 ;(accessObj.read = 1),
                   (accessObj.write = 0),
@@ -39,7 +39,7 @@
               />
             </li>
             <li
-              class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
+              class="flex items-center justify-between px-1 text-base text-gray-700 line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
               @click="
                 ;(accessObj.read = 1),
                   (accessObj.write = 1),
@@ -52,7 +52,7 @@
             </li>
             <hr class="my-0.5" />
             <li
-              class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer text-red-500"
+              class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer text-red-500"
               @click="$emit('removeAccess'), close()"
             >
               Remove
