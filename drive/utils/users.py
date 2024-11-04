@@ -74,100 +74,62 @@ def get_users_with_drive_user_role(txt="", get_roles=False):
 
 
 @frappe.whitelist()
-def get_all_users_on_site():
-    try:
-        has_rw_access = has_read_write_access_to_doctype(frappe.session.user, "User")
-        if not has_rw_access:
-            return {
-                "status": "error",
-                "message": "You do not have permission to access this resource",
-            }
+def add_drive_user_role(user_id, user_role):
+    allowed_roles = {"Drive User", "Drive Admin", "Drive Guest"}
 
-        site_users = frappe.get_list(
-            doctype="User",
-            fields=[
-                "username",
-                "email",
-                "full_name",
-                "user_image",
-            ],
-            filters={
-                "username": ["not like", "%administrator%"],
-                "username": ["not like", "%guest%"],
-            },
-        )
+    if user_role not in allowed_roles:
+        frappe.throw("Invalid Role")
 
-        return site_users
-
-    except Exception as e:
-        frappe.log_error("Error in fetching Drive Users: {0}".format(e))
-        return {
-            "status": "error",
-            "message": "An error occurred while fetching Drive Users",
-        }
-
-
-@frappe.whitelist()
-def add_drive_user_role(user_id):
-    has_rw_access = has_read_write_access_to_doctype(frappe.session.user, "User")
-
-    if not has_rw_access:
-        return {
-            "status": "error",
-            "message": "You do not have permission to access this resource",
-        }
+    if not frappe.has_permission(
+        doctype="User",
+        doc=user_id,
+        ptype="write",
+        user=frappe.session.user,
+    ):
+        raise frappe.PermissionError("You do not have permission to edit roles")
 
     drive_user = frappe.db.exists("User", {"name": ("like", f"%{user_id}%")})
 
     if not drive_user:
-        return {"status": "error", "message": "User with given email does not exist"}
-
-    user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": "Drive User"})
-
-    if user_role_exists is not None:
-        return {
-            "status": "error",
-            "message": "User already has the said  Role permissions ",
-        }
+        frappe.throw("User does not exist")
 
     usr = frappe.get_doc("User", user_id)
 
-    usr.add_roles("Drive User")
-
-    return {"status": "sucess", "message": "Drive User role has been sucessfully added"}
+    for role in allowed_roles:
+        user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": role})
+        if user_role_exists is not None:
+            # just wipe all for now to prevent multiple drive roles
+            usr.remove_roles(role)
+    usr.add_roles(user_role)
+    return
 
 
 @frappe.whitelist()
-def remove_drive_user_role(user_id):
-    has_rw_access = has_read_write_access_to_doctype(frappe.session.user, "User")
+def remove_drive_user_role(user_id, user_role):
+    allowed_roles = {"Drive User", "Drive Admin", "Drive Guest"}
 
-    if not has_rw_access:
-        return {
-            "status": "error",
-            "message": "You do not have permission to access this resource",
-        }
+    if user_role not in allowed_roles:
+        frappe.throw("Invalid Role")
+
+    if not frappe.has_permission(
+        doctype="User",
+        doc=user_id,
+        ptype="write",
+        user=frappe.session.user,
+    ):
+        raise frappe.PermissionError("You do not have permission to edit roles")
 
     drive_user = frappe.db.exists("User", {"name": ("like", f"%{user_id}%")})
 
     if not drive_user:
-        return {"status": "error", "message": "User with given email does not exist"}
-
-    user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": "Drive User"})
-
-    if user_role_exists is None:
-        return {
-            "status": "error",
-            "message": "User does not have Drive User as a role applied ",
-        }
+        frappe.throw("User does not exist")
 
     usr = frappe.get_doc("User", user_id)
-
-    usr.remove_roles("Drive User")
-
-    return {
-        "status": "sucess",
-        "message": "Drive User role has been sucessfully removed",
-    }
+    for role in allowed_roles:
+        user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": role})
+        if user_role_exists is not None:
+            usr.remove_roles(role)
+    return
 
 
 def has_read_write_access_to_doctype(user_id, doctype_name):
@@ -194,7 +156,9 @@ def has_read_write_access_to_doctype(user_id, doctype_name):
 def mark_as_viewed(entity):
     if frappe.session.user == "Guest":
         return
-    if not frappe.has_permission(doctype="Drive Entity Log", ptype="write", user=frappe.session.user):
+    if not frappe.has_permission(
+        doctype="Drive Entity Log", ptype="write", user=frappe.session.user
+    ):
         return
     if entity.is_group:
         return
