@@ -50,6 +50,8 @@ def get_home_folder_id(user=None):
     """Returns user directory name from user's unique id"""
     if not user:
         user = frappe.session.user
+        if 'Administrator' in frappe.get_roles(user):
+            return get_user_directory(user).name
         if 'Drive Guest' in frappe.get_roles(user):
             frappe.throw("Access forbidden: You do not have permission to access this resource.", frappe.PermissionError)
         return get_user_directory(user).name
