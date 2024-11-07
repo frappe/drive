@@ -27,7 +27,23 @@
           <span class="text-base">{{ user.full_name }}</span>
           <span class="text-xs text-gray-700">{{ user.user_name }}</span>
         </div>
-        <span class="ml-auto text-base text-gray-600">{{ user.role }}</span>
+        <Dropdown
+          v-if="$store.state.user.role === 'Drive Admin'"
+          v-slot="{ open }"
+          :options="getRoleOptions(user)"
+          placement="right"
+          class="ml-auto text-base text-gray-600"
+        >
+          <Button variant="ghost" @click="selectedUser = user"
+            >{{ user.role }}
+            <template #suffix>
+              <ChevronDown />
+            </template>
+          </Button>
+        </Dropdown>
+        <span v-else class="ml-auto text-base text-gray-600">{{
+          user.role
+        }}</span>
       </div>
     </div>
   </div>
@@ -42,6 +58,7 @@
     v-model="showInviteUserDialog"
     :options="{
       title: 'Invite User',
+      size: 'lg',
       actions: [
         {
           label: 'Send Invitation',
@@ -126,15 +143,44 @@
       </div>
     </template>
   </Dialog>
+  <Dialog
+    v-if="showRemoveUserDialog"
+    v-model="showRemoveUserDialog"
+    :options="{
+      title: 'Remove User',
+      size: 'md',
+      message: `Removing ${selectedUser.full_name} will revoke their access to Frappe Drive. All files and folders owned by them will remain intact. You can add them back using the same email address.
+`,
+      actions: [
+        {
+          variant: 'solid',
+          theme: 'red',
+          label: 'Remove',
+          loading: $resources.inviteUsers.loading,
+          onClick: () => {
+            $resources.inviteUsers.submit({
+              emails: emailsToInvite.join(','),
+              role: NewUserRole,
+            })
+            showInviteUserDialog = false
+          },
+        },
+      ],
+    }"
+  >
+  </Dialog>
 </template>
 
 <script>
+import { h } from "vue"
 import { Avatar, FeatherIcon, Dropdown, Dialog } from "frappe-ui"
 import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue"
 import NewRoleDialog from "./NewRoleDialog.vue"
+import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import { PlusIcon, SearchIcon, XIcon } from "lucide-vue-next"
 import Check from "@/components/EspressoIcons/Check.vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
+import disableScroll from "../../utils/disable-scroll"
 
 export default {
   name: "UserRoleSettings",
@@ -150,6 +196,7 @@ export default {
     PopoverButton,
     PopoverPanel,
     Check,
+    ChevronDown,
   },
   data() {
     return {
@@ -163,8 +210,10 @@ export default {
       activeGroup: null,
       showDeleteDialog: false,
       showInviteUserDialog: false,
+      showRemoveUserDialog: false,
       emailsToInvite: "",
       emailsTxt: "",
+      selectedUser: null,
     }
   },
   computed: {
@@ -175,6 +224,62 @@ export default {
     },
   },
   methods: {
+    getRoleOptions(user) {
+      return [
+        {
+          label: "Admin",
+          onClick: () => {
+            this.selectedUser.role = "Admin"
+            this.$resources.updateUserRole.submit({
+              user_id: this.selectedUser?.user_name,
+              user_role: "Drive " + this.selectedUser?.role,
+            })
+          },
+          enabled: user.role !== "Admin",
+        },
+        {
+          label: "User",
+          enabled: user.role !== "User",
+          onClick: () => {
+            this.selectedUser.role = "User"
+            this.$resources.updateUserRole.submit({
+              user_id: this.selectedUser?.user_name,
+              user_role: "Drive " + this.selectedUser?.role,
+            })
+          },
+        },
+        {
+          label: "Guest",
+          enabled: user.role !== "Guest",
+          onClick: () => {
+            this.selectedUser.role = "Guest"
+            this.$resources.updateUserRole.submit({
+              user_id: this.selectedUser?.user_name,
+              user_role: "Drive " + this.selectedUser?.role,
+            })
+          },
+        },
+        {
+          label: "Remove",
+          class: "text-red-500",
+          enabled: false,
+          component: (props) =>
+            h(
+              "button",
+              {
+                class: [
+                  "group flex w-full items-center text-red-500 rounded-md px-2 py-2 text-sm",
+                ],
+                onClick: () => (this.showRemoveUserDialog = true),
+              },
+              "Remove"
+            ),
+          onClick: () => {
+            console.log("User has been removed")
+          },
+        },
+      ].filter((item) => item.enabled)
+    },
     viewGroupDetails(value) {
       this.activeGroup = value
       this.RoleName = value
@@ -224,6 +329,18 @@ export default {
     },
     inviteUsers: {
       url: "drive.utils.users.invite_users",
+      method: "POST",
+      auto: false,
+      onError(error) {
+        if (error.messages) {
+          this.errorMessage = error.messages.join("\n")
+        } else {
+          this.errorMessage = error.message
+        }
+      },
+    },
+    updateUserRole: {
+      url: "drive.utils.users.add_drive_user_role",
       method: "POST",
       auto: false,
       onError(error) {
