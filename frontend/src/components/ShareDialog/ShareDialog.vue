@@ -567,6 +567,7 @@ export default {
           userInfo.user_image = user.user_image
           userInfo.full_name = user.full_name
           this.usersWithAccess.push(userInfo)
+          this.userAccessUpdated = true
           const index = this.rmUsersWithAccess.findIndex(
             (user) => user.user_name === userInfo.user_name
           )
@@ -574,6 +575,7 @@ export default {
             this.rmUsersWithAccess.splice(index, 1)
           }
         } else {
+          this.groupAccessUpdated = true
           this.groupsWithAccess.push(userInfo)
           const index = this.rmGroupsWithAccess.findIndex(
             (user) => user.user_name === userInfo.user_name
