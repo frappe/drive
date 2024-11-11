@@ -41,6 +41,7 @@ def mime_to_human(mime_type, is_group):
         "application/vnd.apple.pages": "Document",
         "application/x-abiword": "Document",
         "frappe_doc": "Document",
+        "frappe_whiteboard": "Whiteboard",
         # Spreadsheet
         "application/vnd.ms-excel": "Spreadsheet",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "Spreadsheet",
