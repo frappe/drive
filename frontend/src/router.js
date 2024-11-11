@@ -14,6 +14,10 @@ function clearStore(to, from) {
   if (from.name === "Document" || to.name === "Document") {
     store.commit("setShowInfo", false)
     return
+  }
+  if (from.name === "Whiteboard" || to.name === "Whiteboard") {
+    store.commit("setShowInfo", false)
+    return
   } else {
     store.commit("setEntityInfo", [])
     store.commit("setCurrentFolder", [])
@@ -64,6 +68,14 @@ const routes = [
     component: () => import("@/pages/Folder.vue"),
     meta: { sidebar: true, isHybridRoute: true },
     props: true,
+  },
+  {
+    path: "/whiteboard/:entityName",
+    name: "Whiteboard",
+    meta: { documentPage: false, isHybridRoute: true },
+    component: () => import("@/pages/Whiteboard.vue"),
+    props: true,
+    beforeEnter: [clearStore],
   },
   {
     path: "/document/:entityName",
