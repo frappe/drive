@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-clip h-full w-full">
-    <Tldraw
-      v-if="!getWhiteboard.loading && !tlDrawAccepted"
+    <Excalidraw
+      v-if="!getWhiteboard.loading"
       :draggable="false"
       :entity="entity"
       :content="content"
@@ -12,7 +12,6 @@
       v-model="showShareDialog"
       :entity-name="entityName"
     />
-    <WarningDialog v-model="tlDrawAccepted" />
   </div>
 </template>
 <script setup>
@@ -29,9 +28,10 @@ import { useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { formatDate, formatSize } from "../utils/format"
 import { watchDebounced } from "@vueuse/core"
-import WarningDialog from "../whiteboard/WarningDialog.vue"
 
-const Tldraw = defineAsyncComponent(() => import("../whiteboard/Tldraw.vue"))
+const Excalidraw = defineAsyncComponent(() =>
+  import("../whiteboard/Excalidraw.vue")
+)
 const ShareDialog = defineAsyncComponent(() =>
   import("@/components/ShareDialog/ShareDialog.vue")
 )
@@ -41,9 +41,6 @@ const showShareDialog = ref(false)
 const entity = ref(null)
 const router = useRouter()
 const isWritable = ref(false)
-const tlDrawAccepted = ref(
-  !localStorage.getItem("tldrawAccepted") ? true : false
-)
 const store = useStore()
 const userId = computed(() => store.state.auth.user_id)
 const emitter = inject("emitter")
@@ -84,7 +81,7 @@ const saveDocument = () => {
 }
 
 function save(data) {
-  content.value = data
+  content.value = JSON.stringify(data)
 }
 
 onBeforeUnmount(() => {
@@ -104,7 +101,11 @@ const getWhiteboard = createResource({
     data.creation = formatDate(data.creation)
     data.owner = data.owner === userId.value ? "You" : data.owner
     isWritable.value = data.owner === userId.value || !!data.write
+    if (data.content === "AAA=") {
+      data.content = []
+    }
     content.value = data.content
+    console.log(typeof content.value)
     store.commit("setEntityInfo", [data])
     store.commit("setHasWriteAccess", isWritable)
     entity.value = data
@@ -137,9 +138,6 @@ const getWhiteboard = createResource({
         })
       }
     })
-    console.log("--------------")
-    console.log(currentBreadcrumbs)
-    console.log("--------------")
     store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
   },
   onError(error) {
