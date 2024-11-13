@@ -4,14 +4,14 @@
       <span
         class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
       >
-        Annotations
+        {{ __("Annotations") }}
       </span>
       <Dropdown :options="filterItems" placement="left">
         <Button>
           <template #prefix>
             <Filter />
           </template>
-          {{ currentFilterLabel }}
+          {{ __(currentFilterLabel) }}
         </Button>
       </Dropdown>
     </div>
@@ -138,7 +138,7 @@
       </div>
 
       <div v-else class="text-gray-600 text-sm my-5">
-        There are annotations for the current document or category
+        {{ __("There are annotations for the current document or category") }}
       </div>
     </div>
   </div>

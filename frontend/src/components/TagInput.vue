@@ -20,9 +20,11 @@
               v-if="!$resources.entityTags.data?.length"
               class="text-gray-700 text-base"
             >
-              This file has no tags
+              {{ __("This file has no tags") }}
             </span>
-            <Button class="ml-auto" @click="togglePopover()">Manage</Button>
+            <Button class="ml-auto" @click="togglePopover()">{{
+              __("Manage")
+            }}</Button>
           </div>
         </slot>
       </template>

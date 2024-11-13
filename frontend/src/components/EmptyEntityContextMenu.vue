@@ -27,7 +27,7 @@
           :is="item.icon"
           class="h-4 w-auto mr-2 stroke-[1.75] text-gray-800"
         />
-        <div class="text-gray-800 mr-4">{{ item.label }}</div>
+        <div class="text-gray-800 mr-4">{{ __(item.label) }}</div>
       </div>
     </div>
   </div>

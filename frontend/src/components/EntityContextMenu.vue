@@ -41,7 +41,7 @@
           class="text-gray-800 mr-4"
           :class="[item.danger ? 'text-red-500' : '']"
         >
-          {{ item.label }}
+          {{ __(item.label) }}
         </div>
       </div>
     </div>
