@@ -13,6 +13,7 @@
     "lint": "eslint --fix --ext .js,.vue ."
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.17.6",
     "@fontsource/geist-mono": "^5.0.2",
     "@fontsource/ibm-plex-mono": "^5.0.12",
     "@fontsource/lora": "^5.0.16",
