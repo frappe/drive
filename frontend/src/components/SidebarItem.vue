@@ -1,8 +1,8 @@
 <template>
-  <button
+  <router-link
     class="flex h-7 w-full cursor-pointer items-center rounded text-gray-700 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-gray-400"
     :class="isActive ? 'bg-white shadow-sm' : 'hover:bg-gray-100'"
-    @click="handleClick"
+    :to="props.to"
   >
     <div
       class="flex w-full items-center justify-between duration-300 ease-in-out p-2"
@@ -39,7 +39,7 @@
       </div>
       <slot name="right" />
     </div>
-  </button>
+  </router-link>
 </template>
 
 <script setup>
