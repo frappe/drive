@@ -33,13 +33,6 @@
             <FeatherIcon class="h-4" name="more-horizontal" />
           </Button>
         </Dropdown>
-        <Button
-          v-if="$route.name === 'Whiteboard'"
-          icon-left="alert-circle"
-          class="bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-800 active:bg-yellow-200 active:text-yellow-800:"
-          @click="showWhiteboardNotice = true"
-          >Experimental</Button
-        >
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
             v-if="
