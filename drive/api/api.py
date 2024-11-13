@@ -1,6 +1,6 @@
 import frappe
 from frappe.utils import validate_email_address, split_emails
-
+from frappe.translate import get_all_translations
 
 @frappe.whitelist(allow_guest=True)
 def oauth_providers():
@@ -42,3 +42,12 @@ def oauth_providers():
 @frappe.whitelist(allow_guest=True)
 def get_server_timezone():
     return frappe.db.get_single_value('System Settings', 'time_zone')
+
+@frappe.whitelist(allow_guest=True)
+def get_translations():
+    if frappe.session.user != "Guest":
+        language = frappe.db.get_value("User", frappe.session.user, "language")
+    else:
+        language = frappe.db.get_single_value("System Settings", "language")
+
+    return get_all_translations(language)

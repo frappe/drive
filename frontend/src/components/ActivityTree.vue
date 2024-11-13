@@ -5,7 +5,7 @@
       class="px-5 pb-2 gap-x-2"
     >
       <span class="text-base text-gray-600 font-medium leading-6">
-        {{ i }}
+        {{ __(i) }}
       </span>
       <div
         v-for="activity in group"

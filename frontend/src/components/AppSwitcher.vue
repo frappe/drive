@@ -10,7 +10,7 @@
       >
         <div class="flex gap-2">
           <AppsIcon class="size-4" />
-          <span class="whitespace-nowrap"> Apps </span>
+          <span class="whitespace-nowrap"> {{ __("Apps") }} </span>
         </div>
         <FeatherIcon name="chevron-right" class="size-4 text-gray-600" />
       </button>

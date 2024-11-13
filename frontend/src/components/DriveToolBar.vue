@@ -36,7 +36,7 @@
       </div>
       <Dropdown :options="filterItems" placement="left">
         <Button
-          >Filter
+          >{{ __("Filter") }}
           <template #prefix>
             <Filter />
           </template>
@@ -115,7 +115,7 @@
               />
             </Button>
             <Button class="text-sm h-7 rounded-l-none flex-1 md:block">
-              {{ orderByLabel }}
+              {{ __(orderByLabel) }}
             </Button>
           </div>
         </Dropdown>

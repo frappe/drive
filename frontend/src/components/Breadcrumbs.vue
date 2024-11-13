@@ -40,7 +40,7 @@
         ]"
         :to="item.route"
       >
-        <span> {{ item.label }}</span>
+        <span> {{ __(item.label) }}</span>
         <span v-show="index < crumbs.length - 1" class="mx-1">/</span>
       </router-link>
     </div>

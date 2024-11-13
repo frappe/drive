@@ -93,7 +93,7 @@ export default {
     settingsItems() {
       return [
         {
-          group: "Manage",
+          group: __("Manage"),
           hideLabel: true,
           items: [
             {
@@ -101,13 +101,13 @@ export default {
             },
             {
               icon: Docs,
-              label: "Documentation",
+              label: __("Documentation"),
               onClick: () =>
                 window.open("https://docs.frappe.io/drive", "_blank"),
             },
             {
               icon: "life-buoy",
-              label: "Support",
+              label: __("Community"),
               onClick: () => window.open("https://t.me/frappedrive", "_blank"),
             },
           ],
@@ -118,12 +118,12 @@ export default {
           items: [
             {
               icon: "settings",
-              label: "Settings",
+              label: __("Settings"),
               onClick: () => (this.showSettings = true),
             },
             {
               icon: "log-out",
-              label: "Log out",
+              label: __("Log out"),
               onClick: () => this.logout(),
             },
           ],

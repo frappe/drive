@@ -5,7 +5,7 @@
         v-if="entities.length && Object.keys(folderContents).length > 1"
         class="text-base text-gray-600 font-medium leading-6 pl-1 my-0"
       >
-        {{ i }}
+        {{ __(i) }}
       </span>
 
       <div v-if="entities.length" class="grid-container mt-2 mb-4">

@@ -68,6 +68,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  highlight: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 })
 
 function handleClick() {
@@ -75,6 +80,7 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
+  if (props.highlight) return props.highlight
   return store.state.currentBreadcrumbs[0].label === props.label
 })
 </script>
