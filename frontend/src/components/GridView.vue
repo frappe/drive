@@ -23,7 +23,7 @@
               : 'border-gray-200 hover:shadow-xl',
           ]"
           draggable="false"
-          @[action]="dblClickEntity(file)"
+          @[action]="dblClickEntity(file, $event)"
           @click="selectEntity(file, $event, displayOrderedEntities)"
           @mousedown.stop
           @contextmenu="
@@ -191,9 +191,9 @@ export default {
         this.$store.commit("setEntityInfo", [entity])
       }
     },
-    dblClickEntity(entity) {
+    dblClickEntity(entity, event) {
       this.$store.commit("setEntityInfo", [entity])
-      this.$emit("openEntity", entity)
+      this.$emit("openEntity", entity, event)
     },
     deselectAll() {
       this.$emit("entitySelected", [])

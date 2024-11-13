@@ -55,7 +55,7 @@
               : 'hover:bg-gray-100'
           "
           :draggable="false"
-          @[action]="dblClickEntity(entity)"
+          @[action]="dblClickEntity(entity, $event)"
           @click="selectEntity(entity, $event, displayOrderedEntities)"
           @contextmenu="
             handleEntityContext(entity, $event, displayOrderedEntities)
@@ -272,9 +272,9 @@ export default {
         this.$store.commit("setEntityInfo", [entity])
       }
     },
-    dblClickEntity(entity) {
+    dblClickEntity(entity, event) {
       this.$store.commit("setEntityInfo", [entity])
-      this.$emit("openEntity", entity)
+      this.$emit("openEntity", entity, event)
     },
     deselectAll() {
       this.$emit("entitySelected", [])

@@ -31,7 +31,7 @@
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @show-entity-context="(data) => toggleEntityContext(data)"
-      @open-entity="(entity) => openEntity(entity)"
+      @open-entity="(entity, event) => openEntity(entity, event)"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
     />
@@ -42,7 +42,7 @@
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @show-entity-context="(data) => toggleEntityContext(data)"
-      @open-entity="(entity) => openEntity(entity)"
+      @open-entity="(entity, event) => openEntity(entity, event)"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
     />
@@ -944,38 +944,35 @@ export default {
           )
         })
     },
-    openEntity(entity) {
-      if (this.$route.name === "Trash") {
-        return
+    openEntity(entity, event) {
+      if (this.$route.name === "Trash") return
+      let routeName = ""
+      switch (entity.file_kind) {
+        case "Folder":
+          routeName = "Folder"
+          this.selectedEntities = []
+          break
+        case "Document":
+          routeName = "Document"
+          break
+        default:
+          routeName = "File"
+          this.previewEntity = entity
+          this.showPreview = true
+          break
       }
-      if (entity.is_group) {
-        this.selectedEntities = []
-        this.$router.push({
-          name: "Folder",
+      if (event?.ctrlKey || event?.metaKey) {
+        const url = this.$router.resolve({
+          name: routeName,
           params: { entityName: entity.name },
-        })
-      } else if (entity.document) {
-        if (this.$store.state.editorNewTab) {
-          window.open(
-            this.$router.resolve({
-              name: "Document",
-              params: { entityName: entity.name },
-            }).href,
-            "_blank"
-          )
-        } else {
-          this.$router.push({
-            name: "Document",
-            params: { entityName: entity.name },
-          })
-        }
+        }).href
+        window.open(url, "_blank")
       } else {
-        this.$router.push({
-          name: "File",
+        const path = this.$router.resolve({
+          name: routeName,
           params: { entityName: entity.name },
         })
-        this.previewEntity = entity
-        this.showPreview = true
+        this.$router.push(path)
       }
     },
     async pasteEntities(newParent = this.$store.state.currentFolderID) {
