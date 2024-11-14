@@ -380,7 +380,6 @@ export default {
       groupsWithAccess: [],
       rmGroupsWithAccess: [],
       // flags
-      generalAccessUpdated: false,
       groupAccessUpdated: false,
       userAccessUpdated: false,
       //comments, download
@@ -451,21 +450,12 @@ export default {
     },
   },
   beforeUnmount() {
-    if (
-      JSON.stringify(this.$resources.getGeneralAccess.data[0]) !==
-      JSON.stringify(this.generalAccess)
-    ) {
-      console.log(this.generalAccess)
-      console.log(this.$resources.getGeneralAccess.data)
-      this.generalAccessUpdated = true
-    }
     if (this.userAccessUpdated) {
       let updatedUsers = this.getUpdatedOrNewEntries(
         this.$resources.getUsersWithAccess.data.users,
         this.usersWithAccess
       )
       for (let i in updatedUsers) {
-        console.log(updatedUsers[i])
         this.$resources.share.submit({
           entity_name: this.entityName,
           method: "share",
@@ -516,7 +506,10 @@ export default {
       }
     }
     // Update general access
-    if (this.generalAccessUpdated) {
+    if (
+      JSON.stringify(this.$resources.getGeneralAccess.data) !==
+      JSON.stringify(this.generalAccess)
+    ) {
       this.$resources.updateAccess.submit({
         method: "set_general_access",
         entity_name: this.entityName,
@@ -685,8 +678,19 @@ export default {
         params: { entity_name: this.entityName },
         auto: true,
         onSuccess(data) {
-          if (data[0]) {
-            this.generalAccess = data[0]
+          data = data[0]
+          if (data) {
+            this.generalAccess = JSON.parse(JSON.stringify(data))
+          } else {
+            this.$resources.getGeneralAccess.setData(
+              (data = {
+                read: 1,
+                write: 0,
+                share: 0,
+                everyone: 0,
+                public: 0,
+              })
+            )
           }
         },
       }
