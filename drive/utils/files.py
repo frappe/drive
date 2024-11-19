@@ -23,9 +23,9 @@ def create_user_directory():
     if "Drive User" not in user_roles:
         raise frappe.PermissionError("You do not have access to Frappe Drive")
     user_directory_name = _get_user_directory_name()
-    user_directory_path = Path(frappe.get_site_path("private/files"), user_directory_name)
+    user_directory_path = Path(frappe.get_site_path("private/files/FD_data"), user_directory_name)
     user_directory_path.mkdir(exist_ok=True)
-
+    db_path = "FD_data/" + user_directory_name
     full_name = frappe.get_value("User", frappe.session.user, "full_name")
     user_directory = frappe.get_doc(
         {
@@ -33,7 +33,7 @@ def create_user_directory():
             "name": user_directory_name,
             "title": f"{full_name}'s Drive",
             "is_group": 1,
-            "path": user_directory_path,
+            "path": db_path,
         }
     )
     user_directory.flags.file_created = True
@@ -115,7 +115,7 @@ def get_new_title(title, parent_name, document=False, folder=False):
 def create_user_thumbnails_directory():
     user_directory_name = _get_user_directory_name()
     user_directory_thumnails_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "thumbnails"
+        frappe.get_site_path("private/files/FD_data"), user_directory_name, "thumbnails"
     )
     user_directory_thumnails_path.mkdir(exist_ok=True)
     return user_directory_thumnails_path
@@ -124,7 +124,7 @@ def create_user_thumbnails_directory():
 def get_user_thumbnails_directory(user=None):
     user_directory_name = _get_user_directory_name(user)
     user_directory_thumnails_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "thumbnails"
+        frappe.get_site_path("private/files/FD_data"), user_directory_name, "thumbnails"
     )
     if not os.path.exists(user_directory_thumnails_path):
         try:
