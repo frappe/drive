@@ -35,7 +35,11 @@
         </Dropdown>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
-            v-if="$route.name === 'Document' || $route.name === 'File'"
+            v-if="
+              $route.name === 'Document' ||
+              $route.name === 'File' ||
+              $route.name === 'Whiteboard'
+            "
             :variant="'solid'"
             :disabled="
               $store.state.entityInfo[0]?.owner !== 'You' ||

@@ -94,6 +94,43 @@ def create_document_entity(title, content, parent=None):
     drive_entity.save()
     return drive_entity
 
+@frappe.whitelist()
+def create_whiteboard_entity(title, content, parent=None):
+    try:
+        user_directory = get_user_directory()
+    except FileNotFoundError:
+        user_directory = create_user_directory()
+    new_title = get_new_title(title, parent, document=True)
+
+    parent = frappe.form_dict.parent or user_directory.name
+
+    if not frappe.has_permission(
+        doctype="Drive Entity",
+        doc=parent,
+        ptype="write",
+        user=frappe.session.user,
+    ):
+        frappe.throw(
+            "Cannot access folder due to insufficient permissions",
+            frappe.PermissionError,
+        )
+    drive_doc = frappe.new_doc("Drive Document")
+    drive_doc.title = new_title
+    drive_doc.content = content
+    drive_doc.version = 2
+    drive_doc.save()
+
+    drive_entity = frappe.new_doc("Drive Entity")
+    drive_entity.title = new_title
+    drive_entity.name = uuid.uuid4().hex
+    drive_entity.parent_drive_entity = parent
+    drive_entity.mime_type = "frappe_whiteboard"
+    drive_entity.document = drive_doc
+    drive_entity.file_size = 0
+    drive_entity.flags.file_created = True
+    drive_entity.save()
+    return drive_entity
+
 
 def create_uploads_directory(user=None):
     user_directory_name = get_user_directory(user).name
@@ -326,6 +363,21 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
             entity_name=entity_name,
             document_name=doc_name,
         )
+    return
+
+@frappe.whitelist()
+def save_whiteboard(entity_name, doc_name, content):
+    if not frappe.has_permission(
+        doctype="Drive Entity",
+        doc=entity_name,
+        ptype="write",
+        user=frappe.session.user,
+    ):
+        raise frappe.PermissionError("You do not have permission to view this file")
+
+    file_size = len(content.encode("utf-8")) + len(content.encode("utf-8"))
+    frappe.db.set_value("Drive Document", doc_name, "content", content)
+    frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
     return
 
 

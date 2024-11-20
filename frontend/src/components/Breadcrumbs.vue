@@ -107,6 +107,7 @@ export default {
             result = folderTitle
             break
           case "Document":
+          case "Whiteboard":
           case "File":
             result =
               lastBreadcrumb.label !== storeTitle
