@@ -134,6 +134,7 @@ export default {
     this.emitter.on("showSearchPopup", (data) => {
       this.showSearchPopup = data
     })
+    if (!this.isLoggedIn) return
     await initTelemetry()
   },
   methods: {
