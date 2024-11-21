@@ -20,7 +20,14 @@
 
 </details>
 
-[Site](https://frappe.io/drive) <!-- | [Demo](https://www.figma.com/community/file/949266436474872912) --> | [Community](https://t.me/frappedrive) | [Documentation](https://docs.frappe.io/drive/quick-start) | [Forum](https://discuss.frappe.io/)
+<div align="center" style="max-height: 55px; margin: 20px 0px">
+	<a href="https://frappecloud.com/drive/signup">
+		<img src=".github/try_on_FC_dark.svg#gh-dark-mode-only" height="50">
+    <img src=".github/try_on_FC_light.svg#gh-light-mode-only" height="50">
+	</a>
+</div>
+
+[Website](https://frappe.io/drive) <!-- | [Demo](https://www.figma.com/community/file/949266436474872912) --> | [Community](https://t.me/frappedrive) | [Documentation](https://docs.frappe.io/drive/quick-start) | [Forum](https://discuss.frappe.io/)
 
 </div>
 
@@ -29,17 +36,17 @@
 Core — the file manager
 
 - Large file uploads using multi-part uploads
-- Recursive folder uploads to maintain your folder uploaded folder structure in Drive
+- Folder uploads to maintain your structure in Drive
 - Access your files across multiple platforms
-- Preview files directly in your browser. List of supported file previews
+- Preview files directly in your browser, [supported file previews](https://docs.frappe.io/drive/previews)
 - Stream videos directly from the server
-- Search all the files you have access to
+- Search for all your files and files shared shared with you
 - View activity logs of a file to glance at the changes in permissions and file metadata
 - Manage folders in list or grid view and sort them by preference
 - Mark files as favorite and track your recently viewed files
 - Tag files and folders for better organization
-- Filter by tags or file types
-- Share files and folders with individual users, groups, everyone on the site or publicly.
+- Filter by tags or file kind
+- Share files and folders with users, groups, everyone on the site or publish publicly
 - Make user groups to collaborate quickly
 - Invite other users by emailing them directly from Drive
 - Work with guest users who have limited and controlled access to your site
@@ -62,8 +69,7 @@ Writer — the document editor
 > [!WARNING]  
 > If you're self hosting Frappe Drive. Do not use the app as the only way to store your files. Always have backup strategy for your files.
 >
-> Care is generally taken to not push breaking changes, but if you feel like that's not something you want to keep up with.
-> Consider our managed hosting on Frappe Cloud. It's the same exact code as from the `main` branch here, but with better support tooling and backups.
+> Otherwise, consider our managed hosting on [Frappe Cloud](https://frappecloud.com/). It's the same exact code as from the `main` branch here, but with better support tooling and automated backups.
 
 ### Installation
 
@@ -155,10 +161,6 @@ There are many ways you can contribute even if you don't code:
 ### License
 
 [GNU Affero General Public License v3.0](LICENSE)
-
-### Warning
-
-Frappe drive is currently marked as **beta** expect breaking changes between versions.
 
 <!-- # Docker
 
