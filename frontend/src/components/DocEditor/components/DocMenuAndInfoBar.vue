@@ -159,7 +159,7 @@
 
       <!-- Activity -->
       <div
-        v-if="tab === 7"
+        v-if="tab === 7 && userId !== 'Guest'"
         class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
       >
         <span
@@ -1015,18 +1015,23 @@ export default {
           name: "Comments",
           icon: markRaw(Comment),
           write: false,
+          disabled:
+            this.$store.state.entityInfo[0].allow_comments === 0 ||
+            this.$store.state.entityInfo[0].owner !== "You",
         },
         {
           name: "Versions",
           icon: markRaw(FileClock),
           write: false,
+          disabled: this.$store.state.entityInfo[0].write === 0,
         },
         {
           name: "Clock",
           icon: markRaw(Clock),
           write: false,
+          disabled: this.$store.state.auth.user_id === "Guest",
         },
-      ],
+      ].filter((item) => !item.disabled),
       newComment: "",
       showShareDialog: false,
       addImageDialog: false,
@@ -1117,16 +1122,13 @@ export default {
       return file?.charAt(0).toUpperCase() + file?.slice(1)
     },
     showActivity() {
-      return true
-      if (entity.value.owner === "You") {
+      if (this.userId === "Guest") return
+      else if (this.entity.owner === "You") {
         return true
-      } else if (entity.value.write) {
+      } else if (this.entity.owner.value.write) {
         return true
-      } else if (entity.value.allow_activity) {
-        return true
-      } else {
-        return false
       }
+      return false
     },
   },
   mounted() {
@@ -1384,7 +1386,7 @@ export default {
             console.log(error.messages)
           }
         },
-        auto: true,
+        auto: this.userId !== "Guest",
       }
     },
     entityTags() {
