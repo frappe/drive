@@ -105,7 +105,6 @@ const getWhiteboard = createResource({
       data.content = []
     }
     content.value = data.content
-    console.log(typeof content.value)
     store.commit("setEntityInfo", [data])
     store.commit("setHasWriteAccess", isWritable)
     entity.value = data
@@ -157,11 +156,8 @@ const saveWhiteboard = createResource({
   url: "drive.api.files.save_whiteboard",
   debounce: 0,
   auto: false,
-  onSuccess() {
-    console.log("saved")
-  },
-  onError(data) {
-    console.log(data)
+  onError(err) {
+    console.errro(err)
   },
 })
 </script>
