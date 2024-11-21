@@ -21,10 +21,17 @@
 </details>
 
 <div align="center" style="max-height: 55px; margin: 20px 0px">
-	<a href="https://frappecloud.com/drive/signup">
-		<img src=".github/try_on_FC_dark.svg#gh-dark-mode-only" height="50">
-    <img src=".github/try_on_FC_light.svg#gh-light-mode-only" height="50">
-	</a>
+<a href="https://frappecloud.com/drive/signup">
+<picture>
+
+  <source media="prefers-color-scheme: light" srcset=".github/try_on_FC_light.svg">
+
+  <source media="prefers-color-scheme: dark" srcset=".github/try_on_FC_dark.svg">
+
+  <img height="50" src=".github/try_on_FC_light.svg"  width="50%" title="Try Frappe Drive on Frappe Cloud" >
+	
+  </picture>
+</a>
 </div>
 
 [Website](https://frappe.io/drive) <!-- | [Demo](https://www.figma.com/community/file/949266436474872912) --> | [Community](https://t.me/frappedrive) | [Documentation](https://docs.frappe.io/drive/quick-start) | [Forum](https://discuss.frappe.io/)
