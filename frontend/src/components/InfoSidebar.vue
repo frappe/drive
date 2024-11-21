@@ -90,7 +90,7 @@
               </div>
             </div>
           </div>
-          <div>
+          <div v-if="userId !== 'Guest'">
             <div class="text-base font-medium mb-4">Tags</div>
             <TagInput class="min-w-full" :entity="entity" />
           </div>
@@ -152,10 +152,7 @@
               </div>
             </div>
           </div>
-          <div
-            v-if="userId != 'Guest'"
-            class="flex items-center justify-start py-2"
-          >
+          <div class="flex items-center justify-start py-2">
             <Avatar :label="fullName" :image="imageURL" class="mr-3" />
             <div
               class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
@@ -183,7 +180,7 @@
         </div>
       </div>
       <div
-        v-if="tab === 2"
+        v-if="tab === 2 && userId !== 'Guest'"
         class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
       >
         <span
@@ -233,7 +230,7 @@
       <Comment />
     </Button>
     <Button
-      v-if="showActivity"
+      v-if="showActivity && userId !== 'Guest'"
       class="text-gray-600"
       :class="[
         tab === 2 && showInfoSidebar
@@ -356,6 +353,7 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
     if (newShowInfoSidebar == true) {
       thumbnailUrl()
       comments.fetch({ entity_name: newEntity.name })
+      if (userId.value === "Guest") return
       generalAccess.fetch({ entity_name: newEntity.name })
       userList.fetch({ entity_name: newEntity.name })
       groupList.fetch({ entity_name: newEntity.name })
@@ -366,7 +364,7 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
 async function postComment() {
   if (newComment.value.length) {
     try {
-      await call("frappe.desk.form.utils.add_comment", {
+      await call("drive.utils.users.add_comment", {
         reference_doctype: "Drive Entity",
         reference_name: entity.value.name,
         content: newComment.value,

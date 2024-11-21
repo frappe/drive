@@ -247,25 +247,22 @@ export default {
       return this.isWritable && this.tempEditable
     },
     bubbleMenuButtons() {
-      if (this.entity.owner === "You" || this.entity.write) {
-        let buttons = [
+      let buttons = []
+      if (this.entity.write) {
+        buttons.push(
           "Bold",
           "Italic",
           "Underline",
           "Strikethrough",
           "Code",
           "Separator",
-          "Link",
-          "Separator",
-          "NewAnnotation",
-          //"Comment",
-        ]
-        return buttons.map(createEditorButton)
-      } else if (this.entity.allow_comments) {
-        let buttons = ["Comment"]
-        return buttons.map(createEditorButton)
+          "Link"
+        )
       }
-      return []
+      if (!!this.entity.allow_comments || this.entity.owner == "You") {
+        buttons.push("Separator", "NewAnnotation")
+      }
+      return buttons.map(createEditorButton)
     },
     currentUserName() {
       return this.$store.state.user.fullName
