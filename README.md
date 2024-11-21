@@ -24,9 +24,9 @@
 <a href="https://frappecloud.com/drive/signup">
 <picture>
 
-  <source media="prefers-color-scheme: light" srcset=".github/try_on_FC_light.svg">
+  <source media="(prefers-color-scheme: light)" srcset=".github/try_on_FC_light.svg">
 
-  <source media="prefers-color-scheme: dark" srcset=".github/try_on_FC_dark.svg">
+  <source media="(prefers-color-scheme: dark)" srcset=".github/try_on_FC_dark.svg">
 
   <img height="50" src=".github/try_on_FC_light.svg"  width="50%" title="Try Frappe Drive on Frappe Cloud" >
 	
