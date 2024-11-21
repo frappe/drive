@@ -77,6 +77,7 @@ const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
+const errorMessage = ref("")
 let intervalId = ref(null)
 
 setTimeout(() => {
@@ -221,7 +222,7 @@ onBeforeUnmount(() => {
 let fetchAllUsers = createResource({
   url: "drive.utils.users.get_users_with_drive_user_role_and_groups",
   method: "GET",
-  auto: true,
+  auto: userId.value !== "Guest",
   onSuccess(data) {
     data.forEach(function (item) {
       if (item.name) {
@@ -241,9 +242,9 @@ let fetchAllUsers = createResource({
   },
   onError(error) {
     if (error.messages) {
-      this.errorMessage = error.messages.join("\n")
+      errorMessage.value = error.messages.join("\n")
     } else {
-      this.errorMessage = error.message
+      errorMessage.value = error.message
     }
   },
 })
