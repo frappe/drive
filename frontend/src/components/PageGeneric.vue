@@ -424,6 +424,12 @@ export default {
           handler: () => this.newDocument(),
           isEnabled: () => this.selectedEntities.length === 0,
         },
+        {
+          label: "New Whiteboard",
+          icon: NewFile,
+          handler: () => this.newWhiteboard(),
+          isEnabled: () => this.selectedEntities.length === 0,
+        },
         /*{
           label: "Paste",
           icon: "clipboard",
@@ -954,7 +960,7 @@ export default {
           name: "Folder",
           params: { entityName: entity.name },
         })
-      } else if (entity.document) {
+      } else if (entity.mime_type === "frappe_doc") {
         if (this.$store.state.editorNewTab) {
           window.open(
             this.$router.resolve({
@@ -969,6 +975,11 @@ export default {
             params: { entityName: entity.name },
           })
         }
+      } else if (entity.mime_type === "frappe_whiteboard") {
+        this.$router.push({
+          name: "Whiteboard",
+          params: { entityName: entity.name },
+        })
       } else {
         this.$router.push({
           name: "File",
@@ -1038,6 +1049,28 @@ export default {
       } else {
         this.$router.push({
           name: "Document",
+          params: { entityName: this.previewEntity.name },
+        })
+      }
+    },
+    async newWhiteboard() {
+      console.log(this.$store.state.currentFolderID)
+      await this.$resources.createWhiteboard.submit({
+        title: "Untitled Whiteboard",
+        content: null,
+        parent: this.$store.state.currentFolderID,
+      })
+      if (this.$store.state.editorNewTab) {
+        window.open(
+          this.$router.resolve({
+            name: "Whiteboard",
+            params: { entityName: this.previewEntity.name },
+          }).href,
+          "_blank"
+        )
+      } else {
+        this.$router.push({
+          name: "Whiteboard",
           params: { entityName: this.previewEntity.name },
         })
       }
@@ -1208,6 +1241,23 @@ export default {
         },
         onError(error) {
           console.log(error.messages)
+        },
+        auto: false,
+      }
+    },
+    createWhiteboard() {
+      return {
+        method: "POST",
+        url: "drive.api.files.create_whiteboard_entity",
+        onSuccess(data) {
+          data.modified = formatDate(data.modified)
+          data.creation = formatDate(data.creation)
+          this.$store.commit("setEntityInfo", [data])
+          this.previewEntity = data
+          data.owner = "You"
+        },
+        onError(error) {
+          console.log(error)
         },
         auto: false,
       }

@@ -6,6 +6,9 @@ import frappeui from "frappe-ui/vite"
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), frappeui()],
+  define: {
+    "process.env.IS_PREACT": JSON.stringify("true"),
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

@@ -35,7 +35,11 @@
         </Dropdown>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
-            v-if="$route.name === 'Document' || $route.name === 'File'"
+            v-if="
+              $route.name === 'Document' ||
+              $route.name === 'File' ||
+              $route.name === 'Whiteboard'
+            "
             :variant="'solid'"
             :disabled="
               $store.state.entityInfo[0]?.owner !== 'You' ||
@@ -254,6 +258,32 @@ export default {
 
               isEnabled: () => this.selectedEntities?.length === 0,
             },
+            {
+              label: "New Whiteboard",
+              icon: NewFile,
+              onClick: async () => {
+                await this.$resources.createWhiteboard.submit({
+                  title: "Untitled Whiteboard",
+                  content: null,
+                  parent: this.$store.state.currentFolderID,
+                })
+                if (this.$store.state.editorNewTab) {
+                  window.open(
+                    this.$router.resolve({
+                      name: "Whiteboard",
+                      params: { entityName: this.previewEntity.name },
+                    }).href,
+                    "_blank"
+                  )
+                } else {
+                  this.$router.push({
+                    name: "Whiteboard",
+                    params: { entityName: this.previewEntity.name },
+                  })
+                }
+              },
+              isEnabled: () => this.selectedEntities?.length === 0,
+            },
           ],
         },
       ],
@@ -463,6 +493,23 @@ export default {
         },
         onError(data) {
           console.log(data)
+        },
+        auto: false,
+      }
+    },
+    createWhiteboard() {
+      return {
+        method: "POST",
+        url: "drive.api.files.create_whiteboard_entity",
+        onSuccess(data) {
+          data.modified = formatDate(data.modified)
+          data.creation = formatDate(data.creation)
+          this.$store.commit("setEntityInfo", [data])
+          this.previewEntity = data
+          data.owner = "You"
+        },
+        onError(error) {
+          console.log(error)
         },
         auto: false,
       }

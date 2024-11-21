@@ -103,38 +103,21 @@
                 ><ul>
                   <li
                     class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="
-                      ;(generalAccess.public = 0),
-                        (generalAccess.everyone = 1),
-                        (generalAccessUpdated = true),
-                        close()
-                    "
+                    @click="updateGeneralAccess(1), close()"
                   >
                     Organization
                     <Check v-if="generalAccess.everyone" class="h-3" />
                   </li>
                   <li
                     class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="
-                      ;(generalAccess.public = 1),
-                        (generalAccess.everyone = 0),
-                        (generalAccessUpdated = true),
-                        close()
-                    "
+                    @click="updateGeneralAccess(2), close()"
                   >
                     Public
                     <Check v-if="generalAccess.public" class="h-3" />
                   </li>
                   <li
                     class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="
-                      ;(generalAccess.public = 0),
-                        (generalAccess.read = 1),
-                        (generalAccess.write = 0),
-                        (generalAccess.everyone = 0),
-                        (generalAccessUpdated = true),
-                        close()
-                    "
+                    @click="updateGeneralAccess(0), close()"
                   >
                     Restricted
                     <Check
@@ -164,12 +147,7 @@
                 ><ul>
                   <li
                     class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="
-                      generalAccess.read === 1,
-                        (generalAccess.write = 0),
-                        (generalAccessUpdated = true),
-                        close()
-                    "
+                    @click="updateGeneralAccessLvl(1), close()"
                   >
                     Can View
                     <Check
@@ -181,12 +159,7 @@
                   </li>
                   <li
                     class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="
-                      generalAccess.read === 1,
-                        (generalAccess.write = 1),
-                        (generalAccessUpdated = true),
-                        close()
-                    "
+                    @click="updateGeneralAccessLvl(2), close()"
                   >
                     Can Edit
                     <Check
@@ -396,7 +369,6 @@ export default {
     return {
       // mock state
       generalAccess: {
-        name: this.entityName,
         read: 1,
         write: 0,
         share: 0,
@@ -408,7 +380,6 @@ export default {
       groupsWithAccess: [],
       rmGroupsWithAccess: [],
       // flags
-      generalAccessUpdated: false,
       groupAccessUpdated: false,
       userAccessUpdated: false,
       //comments, download
@@ -485,7 +456,6 @@ export default {
         this.usersWithAccess
       )
       for (let i in updatedUsers) {
-        console.log(updatedUsers[i])
         this.$resources.share.submit({
           entity_name: this.entityName,
           method: "share",
@@ -536,7 +506,10 @@ export default {
       }
     }
     // Update general access
-    if (this.generalAccessUpdated) {
+    if (
+      JSON.stringify(this.$resources.getGeneralAccess.data) !==
+      JSON.stringify(this.generalAccess)
+    ) {
       this.$resources.updateAccess.submit({
         method: "set_general_access",
         entity_name: this.entityName,
@@ -553,6 +526,46 @@ export default {
     formatDate,
     useDateFormat,
     getLink,
+    updateGeneralAccess(access) {
+      let pub = this.generalAccess["public"]
+      let org = this.generalAccess["everyone"]
+      switch (access) {
+        case 1:
+          pub = 0
+          org = 1
+          break
+        case 2:
+          pub = 1
+          org = 0
+          break
+        default:
+          pub = 0
+          org = 0
+          this.generalAccess.read = 0
+          this.generalAccess.write = 0
+      }
+      this.generalAccess.public = pub
+      this.generalAccess.everyone = org
+    },
+    updateGeneralAccessLvl(level) {
+      let read = this.generalAccess["read"]
+      let write = this.generalAccess["write"]
+      switch (level) {
+        case 2:
+          write = 1
+          read = 1
+          break
+        case 1:
+          write = 0
+          read = 1
+          break
+        default:
+          write = 0
+          read = 0
+      }
+      this.generalAccess.read = read
+      this.generalAccess.write = write
+    },
     updateUsers(data) {
       const { read, write } = data.access
       const processUser = (user) => {
@@ -665,8 +678,19 @@ export default {
         params: { entity_name: this.entityName },
         auto: true,
         onSuccess(data) {
-          if (data[0]) {
-            this.generalAccess = data[0]
+          data = data[0]
+          if (data) {
+            this.generalAccess = JSON.parse(JSON.stringify(data))
+          } else {
+            this.$resources.getGeneralAccess.setData(
+              (data = {
+                read: 1,
+                write: 0,
+                share: 0,
+                everyone: 0,
+                public: 0,
+              })
+            )
           }
         },
       }

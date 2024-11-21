@@ -37,9 +37,15 @@ class DriveDocShare(Document):
         return
 
     def validate_general_access(self):
-        if self.everyone | self.public:
+        if self.everyone or self.public:
             self.user_name = None
             self.user_doctype = None
+        elif self.user_name or self.user_doctype:
+            self.everyone = None
+            self.public= None
+        if not any([self.everyone, self.public, self.user_name, self.user_doctype]):
+            raise ValueError("Invalid Share")
+
 
     def after_insert(self):
         doc = self.get_doc()

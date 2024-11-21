@@ -4,6 +4,7 @@ from pathlib import Path
 import hashlib
 from drive.locks.distributed_lock import DistributedLock
 import json
+from frappe.rate_limiter import rate_limit
 from frappe.utils import now, split_emails, validate_email_address
 
 
@@ -241,3 +242,25 @@ def invite_users(emails, role="Drive User"):
         invite.email = email
         invite.role = role
         invite.insert(ignore_permissions=True)
+
+
+@frappe.whitelist(allow_guest=True)
+@rate_limit(key="reference_name", limit=10, seconds=60 * 60)
+def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str) -> "Comment":
+    """Allow logged user with permission to read document to add a comment"""
+    entity = frappe.get_doc("Drive Entity", reference_name)
+    if not entity.allow_comments:
+        return
+    comment = frappe.new_doc("Comment")
+    comment.update(
+        {
+            "comment_type": "Comment",
+            "reference_doctype": "Drive Entity",
+            "reference_name": entity,
+            "comment_email": comment_email,
+            "comment_by": comment_by,
+            "content": content,
+        }
+    )
+    comment.insert(ignore_permissions=True)
+    return comment

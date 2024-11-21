@@ -1,110 +1,161 @@
-<div align="center" markdown="1">
+<div align="center">
+  <a href="https://frappe.io/products/builder">
+    <img src=".github/new_logo.svg" height="80" alt="Frappe Builder Logo">
+  </a>
+  <h2>Frappe Drive</h2>
+  <p>100% open source file storage, sharing, and collaboration</p>
 
-<picture>
-  <source 
-   media="(prefers-color-scheme: dark)" 
-   srcset=".github/logo_dark.svg">
-  <img
-   width="260"
-   alt="Frappe Drive logo" 
-   src=".github/logo_light.svg">
-</picture>
-
-#### **An easy to use, document sharing and management solution.**
-
-</div>
-
-<img width="1402" alt="home" src="./.github/grid.png">
+![Frappe Drive](https://github.com/user-attachments/assets/8b4b33ad-afb4-4e64-ac10-987076c66d57)
 
 <details>
-
 <summary>More screenshots</summary>
 
-<p>&nbsp;</p>
+![Image Preview](https://github.com/user-attachments/assets/993cbd87-a96c-4e5c-8737-0c03c9222723)
 
-<img width="1402" alt="search" src="./.github/list.png">
+![File Sharing Dialog](https://github.com/user-attachments/assets/acb1a542-53d1-4d0e-b2e2-6c9b87f04e69)
 
-<p>&nbsp;</p>
+![Editor](https://github.com/user-attachments/assets/fe87dfd1-3f55-42df-94b9-f7baed03a391)
 
-<img width="1402" alt="upload" src="./.github/grid_context.png">
-
-<p>&nbsp;</p>
-
-<img width="1402" alt="share" src="./.github/share_menu.png">
-
-<p>&nbsp;</p>
-
-<img width="1402" alt="file-preview" src="./.github/file_preview.png">
-
-<p>&nbsp;</p>
-
-<img width="1402" alt="file-preview" src="./.github/text_editor.png">
-
-<p>&nbsp;</p>
-
-<img width="1402" alt="file-preview" src="./.github/text_editor_realtime.png">
+![Editor with real time editing](https://github.com/user-attachments/assets/f89a2fab-e618-4d7d-90a6-aaa2cf45fa55)
 
 </details>
 
-> **Warning**
->
-> Frappe Drive is currently in beta, and will let breaking changes through, **do not** use it as your sole backup/data storage.
+<div align="center" style="max-height: 55px; margin: 20px 0px">
+<a href="https://frappecloud.com/drive/signup">
+<picture>
 
-> **Note:** Frappe Drive is not currently accepting pull requests. File an issue to open a discussion to discuss an idea/feature request.
+  <source media="(prefers-color-scheme: light)" srcset=".github/try_on_FC_light.svg">
+
+  <source media="(prefers-color-scheme: dark)" srcset=".github/try_on_FC_dark.svg">
+
+  <img height="50" src=".github/try_on_FC_light.svg"  width="50%" title="Try Frappe Drive on Frappe Cloud" >
+	
+  </picture>
+</a>
+</div>
+
+[Website](https://frappe.io/drive) <!-- | [Demo](https://www.figma.com/community/file/949266436474872912) --> | [Community](https://t.me/frappedrive) | [Documentation](https://docs.frappe.io/drive/quick-start) | [Forum](https://discuss.frappe.io/)
+
+</div>
 
 ### Features
 
-- Upload and store files across multiple platforms.
-- View files and folders in List or Grid view and sort them by preference.
-- Preview files such as images, videos, PDFs, etc.
-- Share files or folders with others and manage their permissions.
-- Post comments on files shared with you.
-- Add files or folders to _favourites_ to make them easily accessible.
-- Use the Search Bar to search for any file or folder in your Drive.
-- Supports sharing files and folders with individual users and user groups.
-- Ships with a robust document editor that seamlessly integrates with Frappe Drive and supports real time collaborative editing.
+Core — the file manager
+
+- Large file uploads using multi-part uploads
+- Folder uploads to maintain your structure in Drive
+- Access your files across multiple platforms
+- Preview files directly in your browser, [supported file previews](https://docs.frappe.io/drive/previews)
+- Stream videos directly from the server
+- Search for all your files and files shared shared with you
+- View activity logs of a file to glance at the changes in permissions and file metadata
+- Manage folders in list or grid view and sort them by preference
+- Mark files as favorite and track your recently viewed files
+- Tag files and folders for better organization
+- Filter by tags or file kind
+- Share files and folders with users, groups, everyone on the site or publish publicly
+- Make user groups to collaborate quickly
+- Invite other users by emailing them directly from Drive
+- Work with guest users who have limited and controlled access to your site
+- Get an overview of your storage
+- Pool storage of all users together or assign a quota of storage to each user
+
+Writer — the document editor
+
+- Quickly write and share an idea directly from Drive
+- The WYSIWYG editor supports markdown
+- Collaborate with other users or guests in real time
+- Annotate, resolve and reply to other users to give suggestions
+- Manually version your documents to always be able to go back to a state
+- Automatic versioning to make sure you never lose data
+- Resize videos and images inside your document
+- Import docx documents into the editor
+- Export your documents in PDF
+- The editor is page-less but you can add page breaks to make sure you get your desired output when printing
+
+> [!WARNING]  
+> If you're self hosting Frappe Drive. Do not use the app as the only way to store your files. Always have backup strategy for your files.
+>
+> Otherwise, consider our managed hosting on [Frappe Cloud](https://frappecloud.com/). It's the same exact code as from the `main` branch here, but with better support tooling and automated backups.
 
 ### Installation
 
 To set up the repository locally, follow the steps mentioned below:
 
-1. Install bench and set up a `frappe-bench` directory by following the [installation steps](https://frappeframework.com/docs/user/en/installation).
+### Docker Compose [Recommended]
 
-1. Move into your `frappe-bench` directory and get the Drive app
-   ```sh
-   bench get-app https://github.com/frappe/drive
-   ```
-1. Create a new site
+The quickest way to set up Frappe Drive and take it for a test _drive_.
 
-   ```sh
-   bench new-site drive.site
-   ```
+Frappe framework is multi-tenant and supports multiple apps by default. This docker compose is just a standalone version with Frappe Drive pre-installed. Just put it behind your desired reverse-proxy if needed, and you're good to go.
 
-1. Map your site to localhost
+If you wish to use multiple Frappe apps or need multi-tenancy. I suggest moving over to our production ready self-hosted workflow, or join us on Frappe Cloud to get first party support and hassle-free hosting.
 
-   ```sh
-   bench --site drive.site add-to-hosts
-   ```
+**Step 1**: Setup folder and download the required files
 
-1. Install the app onto your site
+```
+mkdir frappe-drive
+cd frappe-drive
+```
 
-   ```sh
-   bench --site drive.site install-app drive
-   ```
+**Step 2**: Download the required files
 
-1. Start the bench server
+Docker Compose File:
 
-   ```sh
-   bench start
-   ```
+```
+wget -O docker-compose.yml https://raw.githubusercontent.com/frappe/drive/main/docker/docker-compose.yml
+```
 
-1. Start the frontend development server
+Frappe Drive Bench Setup Script
 
-   ```sh
-   cd apps/drive && yarn dev
-   ```
+```
+wget -O init.sh https://raw.githubusercontent.com/frappe/drive/main/docker/init.sh
+```
 
-1. Finally, open the URL http://drive.site:8000/drive in your browser to see the app running.
+**Step 3**: Run the container and daemonize it
+
+```
+docker compose up -d
+```
+
+### Normal Bench Install
+
+Install bench and set up a `frappe-bench` directory by following the [installation steps](https://frappeframework.com/docs/user/en/installation).
+
+**Step 1**: [Install Bench.](https://frappeframework.com/docs/user/en/installation)
+
+**Step 2**: Provided bench is all set up you can proceed to install Frappe Drive
+
+```sh
+bench get-app drive --branch main
+```
+
+**Step 3**: Install some Drive specific system packages
+
+Ubuntu/Debian (apt based distros)
+
+```sh
+sudo apt install ffmpeg libmagic
+```
+
+MacOs
+
+```sh
+brew install libmagic ffmpeg
+```
+
+**Step 4**: Install drive once it's downloaded
+
+```
+bench install-app drive
+```
+
+**Step 5**: Start bench if it's not already running
+
+```
+bench start
+```
+
+Frappe Drive should be accessible at `localhost:8000` or `sitename:8000`
 
 ### Contributions and Community
 
@@ -117,10 +168,6 @@ There are many ways you can contribute even if you don't code:
 ### License
 
 [GNU Affero General Public License v3.0](LICENSE)
-
-### Warning
-
-Frappe drive is currently marked as **beta** expect breaking changes between versions.
 
 <!-- # Docker
 

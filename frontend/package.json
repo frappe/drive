@@ -13,6 +13,7 @@
     "lint": "eslint --fix --ext .js,.vue ."
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.17.6",
     "@fontsource/geist-mono": "^5.0.2",
     "@fontsource/ibm-plex-mono": "^5.0.12",
     "@fontsource/lora": "^5.0.16",
@@ -35,6 +36,7 @@
     "@uppy/core": "^3.9.3",
     "@uppy/drop-target": "^2.0.4",
     "@uppy/tus": "^3.5.3",
+    "@vitejs/plugin-react": "^4.3.3",
     "@vueuse/core": "^10.3.0",
     "canvas-datagrid": "^0.4.5",
     "date-fns": "^3.6.0",
@@ -54,7 +56,9 @@
     "mitt": "^3.0.0",
     "sass": "^1.62.0",
     "socket.io-client": "^4.7.5",
+    "tldraw": "^3.4.1",
     "uuid": "^9.0.0",
+    "veaury": "^2.5.1",
     "vue": "^3.2",
     "vue-inline-svg": "^2.1.3",
     "vue-router": "^4.1.6",
