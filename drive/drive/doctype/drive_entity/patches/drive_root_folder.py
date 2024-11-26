@@ -11,10 +11,11 @@ def execute():
     Update all file DB records to point to these files
     """
     root_name = "FD_data"
-    create_root_directory(root_name)
     root_folders = get_root_entities()
     files = get_non_root_entities()
     site_root = frappe.get_site_path("private/files")
+    
+    create_root_directory(root_name)
     move_root_folders(root_folders, site_root, root_name)
     move_non_root(files, site_root, root_name)
 
@@ -87,13 +88,14 @@ def move_root_folders(root_folders, site_root, root_name):
         curr_fs_path = site_root + f"/{folder_name}/"
         new_fs_path = site_root + new_db_path
 
-        os.makedirs(curr_fs_path + "files", exist_ok=True)
-
-        shutil.move(curr_fs_path, new_fs_path)
-        frappe.db.set_value(
-           "Drive Entity", folder["name"], "path", new_db_path, update_modified=False
-        )
-
+        if curr_fs_path.exists():
+            os.makedirs(curr_fs_path + "files", exist_ok=True)
+            shutil.move(curr_fs_path, new_fs_path)
+            frappe.db.set_value(
+                "Drive Entity", folder["name"], "path", new_db_path, update_modified=False
+                )
+        else:
+            raise(f"Source folder {curr_fs_path} does not exist.")
 
 def move_non_root(files, site_root, root_name):
     """  
@@ -137,7 +139,10 @@ def move_non_root(files, site_root, root_name):
             new = site_root + str(new_fs_path)
             curr = site_root + str(curr_fs_path)
             
-            shutil.move(curr, new)
+            if curr.exists():
+                shutil.move(curr, new)
+            else: 
+                raise(f"Source folder {curr} does not exist.")
         
         new_db_path = Path(*new_db_path)
         db = str(new_db_path)
