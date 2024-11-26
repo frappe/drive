@@ -11,12 +11,12 @@ from pathlib import Path
 from io import BytesIO
 from drive.utils.files import get_user_directory
 from drive.api.files import create_drive_entity
-
+import uuid
 
 def create_user_embeds_directory(user=None):
     user_directory_name = get_user_directory(user).name
     user_directory_embeds_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "embeds"
+        frappe.get_site_path("private/files/FD_data"), user_directory_name, "embeds"
     )
     user_directory_embeds_path.mkdir(exist_ok=True)
     return user_directory_embeds_path
@@ -25,7 +25,7 @@ def create_user_embeds_directory(user=None):
 def get_user_embeds_directory(user=None):
     user_directory_name = get_user_directory(user).name
     user_directory_embeds_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "embeds"
+        frappe.get_site_path("private/files/FD_data"), user_directory_name, "embeds"
     )
     if not os.path.exists(user_directory_embeds_path):
         try:
@@ -61,7 +61,7 @@ def upload_chunked_file(fullpath=None, parent=None, last_modified=None):
     except FileNotFoundError:
         embed_directory = create_user_embeds_directory(user=drive_entity.owner)
     embed_directory = Path(
-        frappe.get_site_path("private/files"),
+        frappe.get_site_path("private/files/FD_data"),
         get_user_directory(user=drive_entity.owner).name,
         "embeds",
     )
@@ -72,7 +72,7 @@ def upload_chunked_file(fullpath=None, parent=None, last_modified=None):
 
     file = frappe.request.files["file"]
 
-    name = frappe.form_dict.uuid
+    name = uuid.uuid4().hex
     title, file_ext = os.path.splitext(frappe.form_dict.file_name)
     mime_type = frappe.form_dict.mime_type
     current_chunk = int(frappe.form_dict.chunk_index)
@@ -95,8 +95,10 @@ def upload_chunked_file(fullpath=None, parent=None, last_modified=None):
     if file_size != int(frappe.form_dict.total_file_size):
         save_path.unlink()
         frappe.throw("Size on disk does not match specified filesize", ValueError)
+    fs_name = name + file_ext
+    db_path = f"embed/{fs_name}"
     drive_entity = create_drive_entity(
-        name, title, parent, save_path, file_size, file_ext, mime_type, last_modified
+        name, title, parent, db_path, file_size, file_ext, mime_type, last_modified
     )
     return str(name + file_ext)
 

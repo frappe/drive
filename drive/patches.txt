@@ -6,3 +6,4 @@ drive.drive.doctype.drive_docshare.patches.update_protected
 drive.drive.doctype.drive_entity_activity_log.patches.initialize_creation
 drive.drive.doctype.drive_entity_activity_log.patches.share_creation
 drive.drive.doctype.drive_entity.patches.init_search_idx
+drive.drive.doctype.drive_entity.patches.drive_root_folder

@@ -135,7 +135,7 @@ def create_whiteboard_entity(title, content, parent=None):
 def create_uploads_directory(user=None):
     user_directory_name = get_user_directory(user).name
     user_directory_uploads_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "uploads"
+        frappe.get_site_path("private/files/FD_data"), user_directory_name, "uploads"
     )
     user_directory_uploads_path.mkdir(exist_ok=True)
     return user_directory_uploads_path
@@ -144,7 +144,7 @@ def create_uploads_directory(user=None):
 def get_user_uploads_directory(user=None):
     user_directory_name = get_user_directory(user).name
     user_directory_uploads_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "uploads"
+        frappe.get_site_path("private/files/FD_data"), user_directory_name, "uploads"
     )
     if not os.path.exists(user_directory_uploads_path):
         try:
@@ -191,7 +191,6 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
-    save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
     temp_path = (
         Path(get_user_uploads_directory(user=frappe.session.user))
         / f"{upload_session}_{secure_filename(title)}"
@@ -213,22 +212,22 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
         if file_size != int(frappe.form_dict.total_file_size):
             temp_path.unlink()
             frappe.throw("Size on disk does not match specified filesize", ValueError)
-        else:
-            os.rename(temp_path, save_path)
         mime_type, _ = mimetypes.guess_type(temp_path)
 
         if mime_type is None:
             # Read the first 2KB of the binary stream to determine the file type if string checking failed
             # Do a rejection workflow to reject undesired mime types
-            mime_type = magic.from_buffer(open(save_path, "rb").read(2048), mime=True)
+            mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
 
-        file_name, file_ext = os.path.splitext(title)
+        _, file_ext = os.path.splitext(title)
         name = uuid.uuid4().hex
-        path = save_path.parent / f"{name}{save_path.suffix}"
-        save_path.rename(path)
+        fs_name = name + file_ext
+        db_path = f"files/{fs_name}"
+        fs_path = frappe.get_site_path("private/files/FD_data", user_directory.name, db_path)
+        temp_path.rename(fs_path)
 
         drive_entity = create_drive_entity(
-            name, title, parent, path, file_size, file_ext, mime_type, last_modified
+            name, title, parent, db_path, file_size, file_ext, mime_type, last_modified
         )
 
         if mime_type.startswith(("image", "video")):
@@ -240,7 +239,7 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
                 at_front=True,
                 # will set to false once reactivity in new UI is solved
                 entity_name=name,
-                path=path,
+                path=fs_path,
                 mime_type=mime_type,
             )
         return drive_entity
@@ -456,6 +455,7 @@ def get_file_content(entity_name, trigger_download=0):  #
             "allow_download",
             "is_active",
             "owner",
+            "parent_drive_entity",
         ],
         as_dict=1,
     )
@@ -464,10 +464,11 @@ def get_file_content(entity_name, trigger_download=0):  #
         raise ValueError
     if drive_entity.is_active != 1:
         raise FileNotFoundError
-
+    dir = get_user_directory(frappe.session.user).name
+    path = frappe.get_site_path("private/files/FD_data", dir, drive_entity.path)
     with DistributedLock(drive_entity.path, exclusive=False):
         return send_file(
-            drive_entity.path,
+            path,
             mimetype=drive_entity.mime_type,
             as_attachment=trigger_download,
             conditional=True,
@@ -1388,7 +1389,7 @@ def search(query, home_dir):
         )
         return result
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), 'Frappe Drive Search Error')
+        frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")
         return {"error": str(e)}
 
 
