@@ -508,7 +508,7 @@ export default {
     // Update general access
     if (
       JSON.stringify(this.$resources.getGeneralAccess.data) !==
-      JSON.stringify(this.generalAccess)
+      JSON.stringify([this.generalAccess])
     ) {
       this.$resources.updateAccess.submit({
         method: "set_general_access",
@@ -678,19 +678,16 @@ export default {
         params: { entity_name: this.entityName },
         auto: true,
         onSuccess(data) {
-          data = data[0]
           if (data) {
-            this.generalAccess = JSON.parse(JSON.stringify(data))
+            this.generalAccess = JSON.parse(JSON.stringify(data[0]))
           } else {
-            this.$resources.getGeneralAccess.setData(
-              (data = {
-                read: 1,
-                write: 0,
-                share: 0,
-                everyone: 0,
-                public: 0,
-              })
-            )
+            this.$resources.getGeneralAccess.setData({
+              read: 1,
+              write: 0,
+              share: 0,
+              everyone: 0,
+              public: 0,
+            })
           }
         },
       }
