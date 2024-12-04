@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 
 function redir404(to, from, next) {
-  console.log(to)
   if (store.getters.isLoggedIn) {
     next()
   } else {
@@ -139,15 +138,22 @@ let router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const redirect = sessionStorage.getItem("redirect")
   switch (true) {
     case !store.getters.isLoggedIn && to.meta.isHybridRoute:
+      sessionStorage.setItem("redirect", JSON.stringify(to.fullPath))
       next()
       break
     case !store.getters.isLoggedIn:
       next("/login")
       break
     case store.getters.isLoggedIn:
-      next()
+      if (redirect) {
+        next(JSON.parse(redirect))
+        sessionStorage.removeItem("redirect")
+      } else {
+        next()
+      }
       break
     default:
       next("/login")
