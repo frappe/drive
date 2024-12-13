@@ -1,9 +1,10 @@
 <div align="center">
-  <a href="https://frappe.io/products/builder">
-    <img src=".github/new_logo.svg" height="80" alt="Frappe Builder Logo">
+  <a href="https://frappe.io/products/drive">
+    <img src=".github/new_logo.svg" height="80" width="80" alt="Frappe Drive Logo">
   </a>
   <h2>Frappe Drive</h2>
-  <p>100% open source file storage, sharing, and collaboration</p>
+
+**100% open source file storage, sharing, and collaboration**
 
 ![Frappe Drive](https://github.com/user-attachments/assets/8b4b33ad-afb4-4e64-ac10-987076c66d57)
 
@@ -20,69 +21,104 @@
 
 </details>
 
-<div align="center" style="max-height: 55px; margin: 20px 0px">
-<a href="https://frappecloud.com/drive/signup">
-<picture>
-
-  <source media="(prefers-color-scheme: light)" srcset=".github/try_on_FC_light.svg">
-
-  <source media="(prefers-color-scheme: dark)" srcset=".github/try_on_FC_dark.svg">
-
-  <img height="50" src=".github/try_on_FC_light.svg"  width="50%" title="Try Frappe Drive on Frappe Cloud" >
-	
-  </picture>
-</a>
-</div>
-
 [Website](https://frappe.io/drive) <!-- | [Demo](https://www.figma.com/community/file/949266436474872912) --> | [Community](https://t.me/frappedrive) | [Documentation](https://docs.frappe.io/drive/quick-start) | [Forum](https://discuss.frappe.io/)
 
 </div>
 
-### Features
+## Frappe Drive
+
+Frappe Drive is a secure and open-source cloud storage platform with a modern user interface that makes storing, collaborating, and sharing files effortless. Create and manage documents, spreadsheets, and multimedia across teams to accelerate project completion.
+
+### Motivation
+
+The idea of building a drive-like application has been floating around in Frappe since atleast [2015](https://github.com/frappe/frappe/issues/8723#issuecomment-164223523). While Frappe Framework has rather robust file handling itself, the need arose for building a standalone solution. As we dug deeper, what began as a simple file-sharing platform evolved into a comprehensive collaboration tool.
+
+## Key Features
 
 Core — the file manager
 
 - Large file uploads using multi-part uploads
 - Folder uploads to maintain your structure in Drive
-- Access your files across multiple platforms
 - Preview files directly in your browser, [supported file previews](https://docs.frappe.io/drive/previews)
 - Stream videos directly from the server
 - Search for all your files and files shared shared with you
 - View activity logs of a file to glance at the changes in permissions and file metadata
-- Manage folders in list or grid view and sort them by preference
-- Mark files as favorite and track your recently viewed files
-- Tag files and folders for better organization
-- Filter by tags or file kind
 - Share files and folders with users, groups, everyone on the site or publish publicly
-- Make user groups to collaborate quickly
-- Invite other users by emailing them directly from Drive
-- Work with guest users who have limited and controlled access to your site
-- Get an overview of your storage
+- Add guest users who have limited and controlled access to your site
 - Pool storage of all users together or assign a quota of storage to each user
 
 Writer — the document editor
 
-- Quickly write and share an idea directly from Drive
-- The WYSIWYG editor supports markdown
 - Collaborate with other users or guests in real time
 - Annotate, resolve and reply to other users to give suggestions
-- Manually version your documents to always be able to go back to a state
+- Manually version your documents to always be able to go back to an older version
 - Automatic versioning to make sure you never lose data
-- Resize videos and images inside your document
 - Import docx documents into the editor
-- Export your documents in PDF
-- The editor is page-less but you can add page breaks to make sure you get your desired output when printing
 
-> [!WARNING]  
-> If you're self hosting Frappe Drive. Do not use the app as the only way to store your files. Always have backup strategy for your files.
->
-> Otherwise, consider our managed hosting on [Frappe Cloud](https://frappecloud.com/). It's the same exact code as from the `main` branch here, but with better support tooling and automated backups.
+## Under the Hood
+
+- [**Frappe Framework**](https://github.com/frappe/frappe): A full-stack web application framework written in Python and Javascript. The framework provides a robust foundation for building web applications, including a database abstraction layer, user authentication, and a REST API.
+
+- [**Frappe UI**](https://github.com/frappe/frappe-ui): A Vue-based UI library, to provide a modern user interface. The Frappe UI library provides a variety of components that can be used to build single-page applications on top of the Frappe Framework.
+
+- [**TipTap**](https://github.com/ueberdosis/tiptap): Tiptap is a wrapper over ProseMirror that provides some friendlier APIs and defaults.
+
+- [**ProseMirror**](https://github.com/prosemirror): ProseMirror is a flexible, extensible toolkit for building rich-text editors with precise control over document structure and behavior.
+
+- [**YJS**](https://github.com/yjs/yjs): The Content Free Replicated Data type (CRDT) at the core of the real time collaboration in both the document and annotation system.
+
+## Production setup
+
+### Managed Hosting
+
+You can try [Frappe Cloud](https://frappecloud.com), a simple, user-friendly and sophisticated [open-source](https://github.com/frappe/press) platform to host Frappe applications.
+
+It takes care of installation, setup, upgrades, monitoring, maintenance and support of your Frappe deployments. It is a fully featured developer platform with an ability to manage and control multiple Frappe deployments.
+
+<div>
+	<a href="https://frappecloud.com/drive/signup" target="_blank">
+		<picture>
+			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/try-on-fc-white.png">
+			<img src="https://frappe.io/files/try-on-fc-black.png" alt="Try on Frappe Cloud" height="28" />
+		</picture>
+	</a>
+</div>
+
+<!-- ### Self hosting
+
+Follow these steps to set up Frappe Drive in production:
+
+**Step 1**: Download the easy install script
+
+```bash
+wget https://frappe.io/easy-install.py
+```
+
+**Step 2**: Run the deployment command
+
+```bash
+python3 ./easy-install.py deploy \
+    --project=drive_prod_setup \
+    --email=email@example.com \
+    --image=ghcr.io/frappe/drive \
+    --version=stable \
+    --app=drive \
+    --sitename subdomain.domain.tld
+```
+
+Replace the following parameters with your values:
+- `email@example.com`: Your email address
+- `subdomain.domain.tld`: Your domain name where Drive will be hosted
+
+The script will set up a production-ready instance of Frappe Drive with all the necessary configurations in about 5 minutes. -->
 
 ### Installation
 
 To set up the repository locally, follow the steps mentioned below:
 
-### Docker Compose [Recommended]
+## Development Setup
+
+### Docker
 
 The quickest way to set up Frappe Drive and take it for a test _drive_.
 
@@ -117,7 +153,7 @@ wget -O init.sh https://raw.githubusercontent.com/frappe/drive/main/docker/init.
 docker compose up -d
 ```
 
-### Normal Bench Install
+### Bare Metal
 
 Install bench and set up a `frappe-bench` directory by following the [installation steps](https://frappeframework.com/docs/user/en/installation).
 
@@ -162,154 +198,25 @@ Frappe Drive should be accessible at `localhost:8000` or `sitename:8000`
 There are many ways you can contribute even if you don't code:
 
 1. You can start by giving a star to this repository!
-1. If you find any issues, even if it is a typo, you can [raise an issue](https://github.com/frappe/drive/issues/new) to inform us.
-<!-- If you want to contribute code then you can fork this repo, make changes and raise a PR. ([see how to](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)) -->
+2. If you find any issues, even if it is a typo, you can [raise an issue](https://github.com/frappe/drive/issues/new) to inform us.
 
-### License
+> [!WARNING]  
+> If you're self hosting Frappe Drive. Do not use the app as the only way to store your files. Always have backup strategy for your files.
+>
+> Otherwise, consider our managed hosting on [Frappe Cloud](https://frappecloud.com/). It's the same exact code as from the `main` branch here, but with better support tooling and automated backups.
 
-[GNU Affero General Public License v3.0](LICENSE)
+### Links
 
-<!-- # Docker
-
-This guide provides step-by-step instructions to install the project using Docker via VS Code Remote Containers extension.
-
-## Prerequisites
-
-Before you begin, make sure you have the following prerequisites installed on your system:
-
-1. [Docker](https://docs.docker.com/get-docker/)
-2. [Docker Compose](https://docs.docker.com/compose/install/)
-3. User added to docker group
-   ```shell
-   sudo usermod -aG docker $USER
-   ```
-4. [VS Code Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-
-### Step 1: Cloning frappe_docker repo
-
-```shell
-git clone https://github.com/frappe/frappe_docker.git
-cd frappe_docker
-```
-
-### Step 2: Copy example devcontainer config from devcontainer-example to .devcontainer
-
-Note:
-
-Feel free to explore the files within devcontainer-example and make changes to the same, be that exposing DB ports or mount desired additional volumes.
-
-```shell
-cp -R devcontainer-example .devcontainer
-```
-
-### Step 3: Copy example VS Code config for devcontainer from development/vscode-example to development/.vscode.
-
-This will set up basic configuration for debugging.
-
-```shell
-cp -R development/vscode-example development/.vscode
-```
-
-### Step 4: Open frappe_docker folder in VS Code(After the extensions are installed).
-
-```shell
-code .
-```
-
-Note:
-
-The development directory is ignored by git.
-It is mounted and available inside the container. Create all your benches (installations of bench, the tool that manages frappe) inside this directory.
-
-### Step 5: Setup Bench
-
-Run the following commands in the terminal inside the container. You might need to create a new terminal in VSCode.
-
-```shell
-# Use default environments
-bench init --skip-redis-config-generation --frappe-branch version-14 frappe-bench
-# Or set environment versions explicitly
-nvm use v16
-PYENV_VERSION=3.10.5 bench init --skip-redis-config-generation --frappe-branch version-14 frappe-bench
-
-cd frappe-bench
-
-```
-
-### Step 6: Setup hosts
-
-We need to tell bench to use the right containers instead of localhost. Run the following commands inside the container:
-
-```shell
-bench set-config -g db_host mariadb
-bench set-config -g redis_cache redis://redis-cache:6379
-bench set-config -g redis_queue redis://redis-queue:6379
-bench set-config -g redis_socketio redis://redis-socketio:6379
-```
-
-For any reason the above commands fail, set the values in `common_site_config.json` manually.
-
-```json
-{
-  "db_host": "mariadb",
-  "redis_cache": "redis://redis-cache:6379",
-  "redis_queue": "redis://redis-queue:6379",
-  "redis_socketio": "redis://redis-socketio:6379"
-}
-```
-
-### Step 7: Create a new site
-
-Note: `sitename` must end with` .localhost` for trying deployments locally.
-
-for example:
-
-```shell
-bench new-site mydrive.localhost --no-mariadb-socket
-```
-
-The same command can be run non-interactively as well:
-
-```shell
-bench new-site mydrive.localhost --mariadb-root-password 123 --admin-password admin --no-mariadb-socket
-```
-
-### Step 8: Set bench in developer mode on the new site
-
-```shell
-bench --site mydrive.localhost set-config developer_mode 1
-bench --site mydrive.localhost clear-cache
-```
-
-### Step 9: Set current site
-
-```shell
-bench use mydrive.localhost
-```
-
-### Step 10: Install the Drive app onto the site created
-
-```shell
-bench get-app https://github.com/frappe/drive
-
-bench --site mydrive.localhost install-app drive
-```
-
-### Step 11: Start Bench
-
-Execute the following command from the `frappe-bench` directory.
-
-```shell
-bench start
-```
-
-### Step 12: Start the frontend development server
-
-You are all set now :)
-
-```shell
-cd apps/drive && yarn dev
-```
-
-Finally, open the URL http://mydrive.localhost:8000/drive in your browser to see the app running.
- -->
+- [Website](https://frappe.io/drive)
+- [Telegram Public Group](https://t.me/frappedrive)
+- [Discuss Forum](https://discuss.frappe.io/)
+- [Documentation](https://docs.frappe.io/drive/quick-start)
+<h2></h2>
+<div align="center" style="padding-top: 0.75rem;">
+	<a href="https://frappe.io" target="_blank">
+		<picture>
+			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/Frappe-white.png">
+			<img src="https://frappe.io/files/Frappe-black.png" alt="Frappe Technologies" height="28"/>
+		</picture>
+	</a>
+</div>
