@@ -84,7 +84,7 @@ It takes care of installation, setup, upgrades, monitoring, maintenance and supp
 	</a>
 </div>
 
-<!-- ### Self hosting
+### Self hosting
 
 Follow these steps to set up Frappe Drive in production:
 
@@ -107,10 +107,11 @@ python3 ./easy-install.py deploy \
 ```
 
 Replace the following parameters with your values:
+
 - `email@example.com`: Your email address
 - `subdomain.domain.tld`: Your domain name where Drive will be hosted
 
-The script will set up a production-ready instance of Frappe Drive with all the necessary configurations in about 5 minutes. -->
+The script will set up a production-ready instance of Frappe Drive with all the necessary configurations.
 
 ### Installation
 
