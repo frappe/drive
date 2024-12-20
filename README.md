@@ -33,7 +33,7 @@ Frappe Drive is a secure and open-source cloud storage platform with a modern us
 
 The idea of building a drive-like application has been floating around in Frappe since atleast [2015](https://github.com/frappe/frappe/issues/8723#issuecomment-164223523). While Frappe Framework has rather robust file handling itself, the need arose for building a standalone solution. As we dug deeper, what began as a simple file-sharing platform evolved into a comprehensive collaboration tool.
 
-## Key Features
+### Key Features
 
 Core — the file manager
 
@@ -194,7 +194,7 @@ bench start
 
 Frappe Drive should be accessible at `localhost:8000` or `sitename:8000`
 
-### Contributions and Community
+## Contribute
 
 There are many ways you can contribute even if you don't code:
 
@@ -206,13 +206,13 @@ There are many ways you can contribute even if you don't code:
 >
 > Otherwise, consider our managed hosting on [Frappe Cloud](https://frappecloud.com/). It's the same exact code as from the `main` branch here, but with better support tooling and automated backups.
 
-### Links
+### Learn and connect
 
 - [Website](https://frappe.io/drive)
 - [Telegram Public Group](https://t.me/frappedrive)
 - [Discuss Forum](https://discuss.frappe.io/)
 - [Documentation](https://docs.frappe.io/drive/quick-start)
-<h2></h2>
+
 <div align="center" style="padding-top: 0.75rem;">
 	<a href="https://frappe.io" target="_blank">
 		<picture>
