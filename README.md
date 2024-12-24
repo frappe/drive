@@ -56,7 +56,7 @@ Writer — the document editor
 
 </details>
 
-## Under the Hood
+### Under the Hood
 
 - [**Frappe Framework**](https://github.com/frappe/frappe): A full-stack web application framework written in Python and Javascript. The framework provides a robust foundation for building web applications, including a database abstraction layer, user authentication, and a REST API.
 
