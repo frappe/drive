@@ -46,15 +46,15 @@ def if_folder_exists(folder_name, parent):
 
 
 @frappe.whitelist()
-def get_home_folder_id(user=None):
+def get_home_folder_id():
     """Returns user directory name from user's unique id"""
-    if not user:
-        user = frappe.session.user
-        if 'Administrator' in frappe.get_roles(user):
-            return get_user_directory(user).name
-        if 'Drive Guest' in frappe.get_roles(user):
-            frappe.throw("Access forbidden: You do not have permission to access this resource.", frappe.PermissionError)
-        return get_user_directory(user).name
+    if "Drive Guest" in frappe.get_roles(frappe.session.user):
+        frappe.throw(
+            "Access forbidden: You do not have permission to access this resource.",
+            frappe.PermissionError,
+        )
+
+    return hashlib.md5(frappe.session.user.encode("utf-8")).hexdigest()
 
 
 @frappe.whitelist()
@@ -93,6 +93,7 @@ def create_document_entity(title, content, parent=None):
     drive_entity.flags.file_created = True
     drive_entity.save()
     return drive_entity
+
 
 @frappe.whitelist()
 def create_whiteboard_entity(title, content, parent=None):
@@ -364,6 +365,7 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
             document_name=doc_name,
         )
     return
+
 
 @frappe.whitelist()
 def save_whiteboard(entity_name, doc_name, content):
@@ -1388,7 +1390,7 @@ def search(query, home_dir):
         )
         return result
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), 'Frappe Drive Search Error')
+        frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")
         return {"error": str(e)}
 
 
