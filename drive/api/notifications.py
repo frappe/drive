@@ -8,7 +8,7 @@ def get_notifications(only_unread):
     """
     Get notifications for current user
 
-    :param only_unread: only get notifications where read is False 
+    :param only_unread: only get notifications where read is False
     """
     User = frappe.qb.DocType("User")
     Notification = frappe.qb.DocType("Drive Notification")
@@ -54,9 +54,9 @@ def get_unread_count():
 @frappe.whitelist()
 def mark_as_read(name=None, all=False):
     """
-    Mark notification for current user as read 
+    Mark notification for current user as read
 
-    :param name: ID of notification record 
+    :param name: ID of notification record
     :param all: Will mark all unread notifications as read
     """
     if all:
@@ -70,7 +70,7 @@ def mark_as_read(name=None, all=False):
 
 def notify_mentions(entity_name, document_name):
     """
-    Create a mention notification for each user mentioned 
+    Create a mention notification for each user mentioned
     :param entity_name: ID of entity
     :param document_name: ID of document containing mentions
     """
@@ -101,7 +101,7 @@ def notify_mentions(entity_name, document_name):
 
 def notify_share(entity_name, docshare_name):
     """
-    Create a share notification for each user 
+    Create a share notification for each user
     :param entity_name: ID of entity
     :param document_name: ID of docshare containing share info
     """
@@ -149,9 +149,9 @@ def create_notification(from_user, to_user, type, entity, message=None):
     """
     Create a notification
     :param from_user: notification owner user email
-    :param to_user: notification receiver user email 
+    :param to_user: notification receiver user email
     :param type: subject of notification
-    :param entity: drive_entity name 
+    :param entity: drive_entity name
     :param message: notification message
     """
     from drive.api.permissions import get_user_access

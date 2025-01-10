@@ -1,5 +1,6 @@
 import frappe
 
+
 def after_install():
     index_check = frappe.db.sql(
         """SHOW INDEX FROM `tabDrive Entity` WHERE Key_name = 'drive_entity_title_fts_idx'"""

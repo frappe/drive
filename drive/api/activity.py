@@ -17,7 +17,7 @@ def create_new_activity_log(
     doc.action_type = activity_type
     doc.message = activity_message
     doc.owner = frappe.session.user
-    doc.meta_value = field_meta_value 
+    doc.meta_value = field_meta_value
     if document_field:
         doc.old_value = field_old_value
         doc.new_value = field_new_value
@@ -56,7 +56,7 @@ def get_entity_activity_log(entity_name):
 
     result = query.run(as_dict=True)
     for i in result:
-        if i.action_type.startswith("share") and i.document_field == "User": 
+        if i.action_type.startswith("share") and i.document_field == "User":
             i.share_user_fullname, i.share_user_image = frappe.get_value(
                 "User", i.new_value, ["full_name", "user_image"]
             )

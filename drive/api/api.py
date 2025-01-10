@@ -39,6 +39,7 @@ def oauth_providers():
             )
     return out
 
+
 @frappe.whitelist(allow_guest=True)
 def get_server_timezone():
-    return frappe.db.get_single_value('System Settings', 'time_zone')
+    return frappe.db.get_single_value("System Settings", "time_zone")
