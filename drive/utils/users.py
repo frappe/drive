@@ -246,7 +246,9 @@ def invite_users(emails, role="Drive User"):
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="reference_name", limit=10, seconds=60 * 60)
-def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str) -> "Comment":
+def add_comment(
+    reference_name: str, content: str, comment_email: str, comment_by: str
+) -> "Comment":
     """Allow logged user with permission to read document to add a comment"""
     entity = frappe.get_doc("Drive Entity", reference_name)
     if not entity.allow_comments:

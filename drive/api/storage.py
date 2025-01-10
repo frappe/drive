@@ -110,7 +110,6 @@ def get_storage_allowed():
         return min(usr_rem, total_rem)
     else:
         return total_rem
-    
 
 
 def total_disk_storage_used():
