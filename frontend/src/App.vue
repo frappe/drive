@@ -155,7 +155,49 @@ export default {
       this.emitter.emit("fetchFolderContents")
     },
     addKeyboardShortcut() {
+      let clicked
+      const DOUBLE_KEY_MAPS = {
+        k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
+        h: () => this.$router.push({ name: "Home" }),
+        n: () => this.$router.push({ name: "Notifications" }),
+        f: () => this.$router.push({ name: "Favourites" }),
+        r: () => this.$router.push({ name: "Recents" }),
+        s: () => this.$router.push({ name: "Shared" }),
+        t: () => this.$router.push({ name: "Trash" }),
+      }
+      const KEY_MAPS = [
+        [
+          (e) => e.metaKey && e.key == "ArrowRight",
+          () => this.$store.commit("setIsSidebarExpanded", true),
+        ],
+        [
+          (e) => e.metaKey && e.key == "ArrowLeft",
+          () => this.$store.commit("setIsSidebarExpanded", false),
+        ],
+      ]
+
       window.addEventListener("keydown", (e) => {
+        for (const key in DOUBLE_KEY_MAPS) {
+          if (e.key === key) {
+            if (clicked === key) {
+              DOUBLE_KEY_MAPS[key]()
+              clicked = null
+            } else {
+              clicked = key
+              setTimeout(() => (clicked = null), 500)
+            }
+            e.preventDefault()
+          }
+        }
+
+        for (let [keys, action] of KEY_MAPS) {
+          if (keys(e)) {
+            e.preventDefault()
+            action()
+          }
+        }
+
+        // COMPATABILITY
         if (
           e.key === "k" &&
           (e.ctrlKey || e.metaKey) &&
