@@ -830,7 +830,6 @@ export default {
     dragSelectStart(event) {
       if (this.showEntityContext) return
       this.selectedIDs = null
-      this.selectedEntities = []
       document.addEventListener("mousemove", this.dragSelectMove)
       document.addEventListener("mouseup", this.dragSelectStop)
       this.selectionCoordinates.x1 = event.clientX
