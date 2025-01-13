@@ -11,6 +11,7 @@
   >
     <DriveToolBar
       :action-items="actionItems"
+      :multi="multi"
       :column-headers="showSort ? columnHeaders : null"
     />
     <FolderContentsError
@@ -45,6 +46,7 @@
       @open-entity="(entity) => openEntity(entity)"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
+      @update-multi="(val) => (multi = val)"
     />
     <EntityContextMenu
       v-if="showEntityContext"
@@ -299,6 +301,7 @@ export default {
     },
   },
   data: () => ({
+    multi: false,
     folderItems: null,
     previewEntity: null,
     showPreview: false,
@@ -501,6 +504,7 @@ export default {
                 }
               }
             },
+            important: true,
           },
           /* Folder Download */
           {
@@ -530,6 +534,7 @@ export default {
                 return allEntitiesSatisfyCondition
               }
             },
+            important: true,
           },
 
           {
@@ -545,6 +550,7 @@ export default {
                   this.selectedEntities[0].share)
               )
             },
+            important: true,
           },
           {
             label: "Get Link",
@@ -555,6 +561,7 @@ export default {
             isEnabled: () => {
               return this.selectedEntities.length === 1
             },
+            important: true,
           },
           {
             label: "Rename",
@@ -612,6 +619,7 @@ export default {
                 this.selectedEntities.length === 1
               )
             },
+            important: true,
           },
           {
             label: "Hide Info",
@@ -624,6 +632,7 @@ export default {
                 this.$store.state.showInfo && this.selectedEntities.length === 1
               )
             },
+            important: true,
           },
           /*{
             label: "Paste",
@@ -651,6 +660,7 @@ export default {
                 this.selectedEntities.every((x) => !x.is_favourite)
               )
             },
+            important: true,
           },
           {
             label: "Unfavourite",
@@ -664,6 +674,7 @@ export default {
                 this.selectedEntities.every((x) => x.is_favourite)
               )
             },
+            important: true,
           },
           {
             label: "Color",
@@ -722,6 +733,7 @@ export default {
               })
               return this.selectedEntities.length > 0 && allOwned
             },
+            important: true,
           },
         ].filter((item) => item.isEnabled())
       }
@@ -1178,23 +1190,26 @@ export default {
           // Toggled OFF
           if (this.selectedEntities[0].is_favourite) {
             toast({
-              title: `${this.selectedEntities.length} ${
-                this.selectedEntities.length > 1 ? " items" : " item"
-              } removed from Favourites`,
+              title: `${
+                this.selectedEntities.length > 1
+                  ? this.selectedEntities.length + " items removed"
+                  : "Removed"
+              } from Favourites`,
               position: "bottom-right",
               timeout: 2,
             })
           } else {
             toast({
-              title: `${this.selectedEntities.length} ${
-                this.selectedEntities.length > 1 ? " items" : " item"
-              } added to Favourites`,
+              title: `${
+                this.selectedEntities.length > 1
+                  ? this.selectedEntities.length + " items added"
+                  : "Added"
+              } to Favourites`,
               position: "bottom-right",
               timeout: 2,
             })
           }
           this.handleListMutation(this.selectedEntities[0].name)
-          this.selectedEntities = []
         },
       }
     },
