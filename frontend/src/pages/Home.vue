@@ -1,9 +1,7 @@
 <template>
   <PageGeneric
-    v-if="!homeID.loading"
     url="drive.api.list.files"
     :allow-empty-context-menu="true"
-    :entity-name="homeID.data"
     :show-sort="true"
     :icon="Home"
     :primary-message="'Home is empty'"
@@ -21,8 +19,9 @@ import { useRouter } from "vue-router"
 const store = useStore()
 const router = useRouter()
 
-let homeID = createResource({
+createResource({
   url: "drive.api.files.get_home_folder_id",
+  cache: "home_folder_id",
   auto: true,
   onSuccess(data) {
     store.commit("setCurrentFolderID", data)

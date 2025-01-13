@@ -212,7 +212,6 @@ import Link from "./EspressoIcons/Link.vue"
 import Rename from "./EspressoIcons/Rename.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
-import Star from "./EspressoIcons/Star.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
@@ -642,7 +641,7 @@ export default {
           },*/
           {
             label: "Favourite",
-            icon: Star,
+            icon: "star",
             onClick: () => {
               this.$resources.toggleFavourite.submit()
             },
@@ -655,7 +654,7 @@ export default {
           },
           {
             label: "Unfavourite",
-            icon: Star,
+            icon: "star",
             onClick: () => {
               this.$resources.toggleFavourite.submit()
             },
@@ -1121,7 +1120,7 @@ export default {
         url: this.url,
         auto: false,
         params: {
-          entity_name: this.entityName,
+          entity_name: this.entityName || "",
           order_by: this.orderBy,
           offset: this.pageOffset,
           limit: this.pageLength,

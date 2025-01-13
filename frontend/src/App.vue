@@ -130,7 +130,7 @@ export default {
   },
   async mounted() {
     this.$store.dispatch.getServerTZ
-    this.addKeyboardShortcut()
+    this.addKeyboardShortcuts()
     this.emitter.on("showSearchPopup", (data) => {
       this.showSearchPopup = data
     })
@@ -154,7 +154,7 @@ export default {
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents")
     },
-    addKeyboardShortcut() {
+    addKeyboardShortcuts() {
       let tapped
 
       window.addEventListener("keydown", (e) => {
@@ -182,12 +182,14 @@ export default {
             () => (this.showSearchPopup = true),
           ],
         ]
-        console.log(e.target.tagName)
+
         if (
           e.target.classList.contains("ProseMirror") ||
           e.target.tagName === "INPUT"
         )
           return
+
+        e.preventDefault()
         for (const key in DOUBLE_KEY_MAPS) {
           if (e.key === key) {
             if (tapped === key) {
@@ -197,16 +199,14 @@ export default {
               tapped = key
               setTimeout(() => (tapped = null), 500)
             }
-            e.preventDefault()
           }
         }
 
         for (let [keys, action] of KEY_MAPS) {
-          if (keys(e)) {
-            e.preventDefault()
-            action()
-          }
+          if (keys(e)) action()
         }
+
+        document.activeElement.blur()
       })
     },
   },

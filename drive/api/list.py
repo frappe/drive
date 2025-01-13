@@ -95,7 +95,7 @@ def files(
     folders_first = bool(folders_first)
     general_access = eval_general_access(entity_name)
 
-    if mime_type_list and not entity_name:
+    if not entity_name:
         entity_name = get_user_directory(frappe.session.user).name
 
     if recents_only:
@@ -112,9 +112,8 @@ def files(
         .limit(limit)
         .select(*selectedFields)
     )
-    if entity_name:
-        query = query.where(DriveEntity.parent_drive_entity == entity_name)
-    query = query.where(
+
+    query = query.where(DriveEntity.parent_drive_entity == entity_name).where(
         (DriveEntity.is_active == is_active)
         & (
             (UserGroupMember.user == frappe.session.user)
