@@ -59,6 +59,8 @@
           @contextmenu="
             handleEntityContext(entity, $event, displayOrderedEntities)
           "
+          @mouseenter="updateHoveredRow(entity)"
+          @mouseleave="clearHoveredRow"
           @dragstart="dragStart(entity, $event)"
           @dragenter.prevent
           @dragover.prevent
@@ -98,6 +100,19 @@
               class="h-[20px] mr-3"
             />
             {{ entity.title }}
+            <div
+              v-if="entity.name === hoveredRow"
+              class="justify-content-end ml-auto mr-2"
+              @click="toggleFavorite(entity)"
+            >
+              <FeatherIcon
+                name="star"
+                class="h-4"
+                :class="{
+                  'stroke-yellow-500 fill-yellow-500': entity.is_favourite,
+                }"
+              />
+            </div>
           </div>
           <div
             class="hidden sm:flex items-center justify-start text-gray-700 text-base truncate"
@@ -160,6 +175,11 @@ import { ref } from "vue"
 
 export default {
   name: "ListView",
+  data() {
+    return {
+      hoveredRow: "",
+    }
+  },
   components: {
     Avatar,
     Button,
@@ -229,6 +249,20 @@ export default {
     },
   },
   methods: {
+    updateHoveredRow(entity) {
+      this.hoveredRow = entity.name
+    },
+    clearHoveredRow() {
+      this.hoveredRow = ""
+    },
+    toggleFavorite(entity) {
+      this.$parent.$resources.toggleFavourite.update({
+        params: {
+          entity_names: [entity.name],
+        },
+      })
+      this.$parent.$resources.toggleFavourite.submit()
+    },
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null)
       this.$emit("showEmptyEntityContext", null)

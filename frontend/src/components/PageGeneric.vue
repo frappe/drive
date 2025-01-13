@@ -748,7 +748,6 @@ export default {
     },
     folderItems: {
       handler(newVal) {
-        console.log("k", newVal)
         this.$store.commit("setCurrentViewEntites", newVal)
       },
     },
