@@ -59,14 +59,13 @@
             :disabled="
               !currentViewEntites?.length || $store.state.elementExists
             "
-            theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
           >
             <template #prefix>
-              <FeatherIcon name="trash-2" class="w-4" />
+              <FeatherIcon name="clock" class="w-4" />
             </template>
-            Clear Recents
+            Clear
           </Button>
           <Button
             v-else-if="$route.name === 'Favourites'"
@@ -74,14 +73,13 @@
             :disabled="
               !currentViewEntites?.length || $store.state.elementExists
             "
-            theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
           >
             <template #prefix>
-              <FeatherIcon name="trash-2" class="w-4" />
+              <FeatherIcon name="file-minus" class="w-4" />
             </template>
-            Clear Favourites
+            Clear
           </Button>
           <Button
             v-else-if="$route.name === 'Trash'"
