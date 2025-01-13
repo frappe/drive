@@ -101,7 +101,9 @@
             />
             {{ entity.title }}
             <div
-              v-if="entity.name === hoveredRow"
+              v-if="
+                this.selectedEntities.length === 0 && entity.name === hoveredRow
+              "
               class="justify-content-end ml-auto mr-2"
               @click="toggleFavorite(entity)"
             >
