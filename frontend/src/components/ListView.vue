@@ -11,7 +11,7 @@
       >
         <div class="w-4 h-4 ml-1 mr-3 my-1">
           <input
-            @click="deselectAll"
+            @click="selectAll"
             :checked="
               selectedEntities.length ===
               Object.values(folderContents).reduce(
@@ -75,7 +75,7 @@
               : 'hover:bg-gray-50'
           "
           :draggable="false"
-          @[action]="dblClickEntity(entity)"
+          @[action]="dblClickEntity(entity, $event)"
           @click="
             !multi && selectEntity(entity, $event, displayOrderedEntities)
           "
@@ -245,6 +245,7 @@ export default {
     "showEmptyEntityContext",
     "fetchFolderContents",
     "updateOffset",
+    "update-multi",
   ],
   setup(props, { emit }) {
     const container = ref(null)
@@ -306,10 +307,13 @@ export default {
     },
     checkboxSelect(entity, event) {
       this.multi = true
+      this.$emit("update-multi", true)
       event.stopPropagation()
       this.selectEntity(entity, event)
-      if (!document.querySelector("input[type=checkbox]:checked"))
+      if (!document.querySelector("input[type=checkbox]:checked")) {
         this.multi = false
+        this.$emit("update-multi", false)
+      }
     },
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null)
@@ -350,24 +354,25 @@ export default {
         this.$store.commit("setEntityInfo", [entity])
       }
     },
-    dblClickEntity(entity) {
-      if (this.multi) return null
+    dblClickEntity(entity, event) {
+      if (this.multi || event.target.type === "checkbox") return null
       this.$store.commit("setEntityInfo", [entity])
       this.$emit("openEntity", entity)
     },
-    deselectAll() {
+    selectAll() {
       if (this.selectedEntities.length) {
         this.selectedEntities.splice(0, this.selectedEntities.length)
         this.multi = false
+        this.$emit("update-multi", false)
       } else {
         for (let group in this.folderContents) {
           this.folderContents[group].forEach((entity) => {
             this.selectedEntities.push(entity)
           })
           this.multi = true
+          this.$emit("update-multi", true)
         }
       }
-      console.log(this.selectedEntities)
       this.$emit("entitySelected", this.selectedEntities)
       this.$store.commit("setEntityInfo", this.selectedEntities)
       this.$emit("showEntityContext", null)
