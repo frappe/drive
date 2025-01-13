@@ -4,7 +4,28 @@
       class="hidden sm:grid items-center rounded bg-gray-100 min-h-7 p-2 overflow-hidden mb-2"
       :style="{ gridTemplateColumns: tableColumnsGridWidth }"
     >
-      <div class="flex w-full items-center text-sm text-gray-600">Name</div>
+      <div
+        class="flex w-full items-center text-sm text-gray-600"
+        @mouseenter="() => (selectAllHover = true)"
+        @mouseleave="() => (selectAllHover = false)"
+      >
+        <div class="w-4 h-4 ml-1 mr-3 my-1">
+          <input
+            @click="deselectAll"
+            :checked="
+              selectedEntities.length ===
+              Object.values(folderContents).reduce(
+                (l, g) => l + g?.length || 0,
+                0
+              )
+            "
+            type="checkbox"
+            class="border-gray-300 rounded-sm mr-4"
+            :class="{ hidden: !multi && !selectAllHover }"
+          />
+        </div>
+        Name
+      </div>
       <div class="flex w-full items-center justify-start text-sm text-gray-600">
         Owner
       </div>
@@ -44,23 +65,25 @@
         <div
           :id="entity.name"
           :key="entity.name"
-          class="entity grid items-center cursor-pointer rounded px-2 py-1.5 hover:bg-gray-50 group"
+          class="entity grid items-center cursor-pointer rounded-sm px-2 py-1.5 group"
           :style="{
             gridTemplateColumns: tableColumnsGridWidth,
           }"
           :class="
             selectedEntities.includes(entity)
-              ? 'bg-gray-100'
-              : 'hover:bg-gray-100'
+              ? 'bg-gray-300'
+              : 'hover:bg-gray-50'
           "
           :draggable="false"
           @[action]="dblClickEntity(entity)"
-          @click="selectEntity(entity, $event, displayOrderedEntities)"
+          @click="
+            !multi && selectEntity(entity, $event, displayOrderedEntities)
+          "
           @contextmenu="
             handleEntityContext(entity, $event, displayOrderedEntities)
           "
-          @mouseenter="updateHoveredRow(entity)"
-          @mouseleave="clearHoveredRow"
+          @mouseenter="() => (hoveredRow = entity.name)"
+          @mouseleave="() => (hoveredRow = '')"
           @dragstart="dragStart(entity, $event)"
           @dragenter.prevent
           @dragover.prevent
@@ -71,6 +94,15 @@
             class="flex items-center text-gray-800 text-base font-medium truncate"
             :draggable="false"
           >
+            <div class="w-4 h-4 ml-1 mr-3 my-1">
+              <input
+                type="checkbox"
+                @click="checkboxSelect(entity, $event)"
+                :checked="multi && selectedEntities.includes(entity)"
+                class="checked:bg-black-400 border-gray-300 rounded-sm mr-4 focus:ring-0"
+                :class="{ hidden: !multi && entity.name !== hoveredRow }"
+              />
+            </div>
             <svg
               v-if="entity.is_group"
               class="h-auto w-5 mr-3"
@@ -102,7 +134,9 @@
             {{ entity.title }}
             <div
               v-if="
-                this.selectedEntities.length === 0 && entity.name === hoveredRow
+                selectedEntities.length <= 1 &&
+                (entity.name === hoveredRow ||
+                  selectedEntities.includes(entity))
               "
               class="justify-content-end ml-auto mr-2"
               @click="toggleFavorite(entity)"
@@ -180,6 +214,8 @@ export default {
   data() {
     return {
       hoveredRow: "",
+      selectAllHover: false,
+      multi: false,
     }
   },
   components: {
@@ -251,6 +287,9 @@ export default {
     },
   },
   methods: {
+    toggleSelectAll() {
+      this.selectAllHover = !this.selectAllHove
+    },
     updateHoveredRow(entity) {
       this.hoveredRow = entity.name
     },
@@ -265,17 +304,19 @@ export default {
       })
       this.$parent.$resources.toggleFavourite.submit()
     },
+    checkboxSelect(entity, event) {
+      this.multi = true
+      event.stopPropagation()
+      this.selectEntity(entity, event)
+      if (!document.querySelector("input[type=checkbox]:checked"))
+        this.multi = false
+    },
     selectEntity(entity, event, entities) {
       this.$emit("showEntityContext", null)
       this.$emit("showEmptyEntityContext", null)
-      if (event.ctrlKey || event.metaKey) {
-        /*  this.selectedEntities.indexOf(entity) > -1
-          ? this.selectedEntities.splice(
-              this.selectedEntities.indexOf(entity),
-              1
-            ) */
+      if (this.multi || event.ctrlKey || event.metaKey) {
         if (this.selectedEntities.includes(entity)) {
-          this.selectedEntities.pop(entity)
+          this.selectedEntities.splice(this.selectedEntities.indexOf(entity), 1)
         } else {
           this.selectedEntities.push(entity)
         }
@@ -310,12 +351,25 @@ export default {
       }
     },
     dblClickEntity(entity) {
+      if (this.multi) return null
       this.$store.commit("setEntityInfo", [entity])
       this.$emit("openEntity", entity)
     },
     deselectAll() {
-      this.$emit("entitySelected", [])
-      this.$store.commit("setEntityInfo", [])
+      if (this.selectedEntities.length) {
+        this.selectedEntities.splice(0, this.selectedEntities.length)
+        this.multi = false
+      } else {
+        for (let group in this.folderContents) {
+          this.folderContents[group].forEach((entity) => {
+            this.selectedEntities.push(entity)
+          })
+          this.multi = true
+        }
+      }
+      console.log(this.selectedEntities)
+      this.$emit("entitySelected", this.selectedEntities)
+      this.$store.commit("setEntityInfo", this.selectedEntities)
       this.$emit("showEntityContext", null)
       this.$emit("showEmptyEntityContext", null)
     },
