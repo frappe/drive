@@ -25,7 +25,8 @@
       </div>
       <div />
     </div>
-    <div v-for="(entities, i) in folderContents" :key="i">
+    <Loader v-if="!folderContents || folderContents['All Files'] === null" />
+    <div v-else v-for="(entities, i) in folderContents" :key="i">
       <div
         v-if="Object.keys(folderContents).length > 1 && entities.length"
         class="flex items-center w-full py-1.5 pr-2"
@@ -151,6 +152,7 @@
 </template>
 <script>
 import { Avatar, Button, FeatherIcon } from "frappe-ui"
+import Loader from "@/components/Loader.vue"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useInfiniteScroll } from "@vueuse/core"
@@ -162,6 +164,7 @@ export default {
     Avatar,
     Button,
     FeatherIcon,
+    Loader,
   },
   props: {
     folderContents: {
