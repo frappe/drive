@@ -155,36 +155,47 @@ export default {
       this.emitter.emit("fetchFolderContents")
     },
     addKeyboardShortcut() {
-      let clicked
-      const DOUBLE_KEY_MAPS = {
-        k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
-        h: () => this.$router.push({ name: "Home" }),
-        n: () => this.$router.push({ name: "Notifications" }),
-        f: () => this.$router.push({ name: "Favourites" }),
-        r: () => this.$router.push({ name: "Recents" }),
-        s: () => this.$router.push({ name: "Shared" }),
-        t: () => this.$router.push({ name: "Trash" }),
-      }
-      const KEY_MAPS = [
-        [
-          (e) => e.metaKey && e.key == "ArrowRight",
-          () => this.$store.commit("setIsSidebarExpanded", true),
-        ],
-        [
-          (e) => e.metaKey && e.key == "ArrowLeft",
-          () => this.$store.commit("setIsSidebarExpanded", false),
-        ],
-      ]
+      let tapped
 
       window.addEventListener("keydown", (e) => {
+        const DOUBLE_KEY_MAPS = {
+          k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
+          h: () => this.$router.push({ name: "Home" }),
+          n: () => this.$router.push({ name: "Notifications" }),
+          f: () => this.$router.push({ name: "Favourites" }),
+          r: () => this.$router.push({ name: "Recents" }),
+          s: () => this.$router.push({ name: "Shared" }),
+          t: () => this.$router.push({ name: "Trash" }),
+        }
+
+        const KEY_MAPS = [
+          [
+            (e) => e.metaKey && e.key == "ArrowRight",
+            () => this.$store.commit("setIsSidebarExpanded", true),
+          ],
+          [
+            (e) => e.metaKey && e.key == "ArrowLeft",
+            () => this.$store.commit("setIsSidebarExpanded", false),
+          ],
+          [
+            (e) => e.metaKey && e.key == "k",
+            () => (this.showSearchPopup = true),
+          ],
+        ]
+        console.log(e.target.tagName)
+        if (
+          e.target.classList.contains("ProseMirror") ||
+          e.target.tagName === "INPUT"
+        )
+          return
         for (const key in DOUBLE_KEY_MAPS) {
           if (e.key === key) {
-            if (clicked === key) {
+            if (tapped === key) {
               DOUBLE_KEY_MAPS[key]()
-              clicked = null
+              tapped = null
             } else {
-              clicked = key
-              setTimeout(() => (clicked = null), 500)
+              tapped = key
+              setTimeout(() => (tapped = null), 500)
             }
             e.preventDefault()
           }
@@ -195,16 +206,6 @@ export default {
             e.preventDefault()
             action()
           }
-        }
-
-        // COMPATABILITY
-        if (
-          e.key === "k" &&
-          (e.ctrlKey || e.metaKey) &&
-          !e.target.classList.contains("ProseMirror")
-        ) {
-          this.showSearchPopup = true
-          e.preventDefault()
         }
       })
     },
