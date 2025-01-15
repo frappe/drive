@@ -76,12 +76,8 @@
           "
           :draggable="false"
           @[action]="dblClickEntity(entity, $event)"
-          @click="
-            !multi && selectEntity(entity, $event, displayOrderedEntities)
-          "
-          @contextmenu="
-            handleEntityContext(entity, $event, displayOrderedEntities)
-          "
+          @click="!multi && selectEntity(entity, $event)"
+          @contextmenu="handleEntityContext(entity, $event)"
           @mouseenter="() => (hoveredRow = entity.name)"
           @mouseleave="() => (hoveredRow = '')"
           @dragstart="dragStart(entity, $event)"
@@ -139,7 +135,7 @@
                   selectedEntities.includes(entity))
               "
               class="justify-content-end ml-auto mr-2"
-              @click="toggleFavorite(entity)"
+              @click="toggleFavorite([entity])"
             >
               <FeatherIcon
                 name="star"
@@ -201,195 +197,205 @@
     >
   </div>
 </template>
-<script>
+<script setup>
 import { Avatar, Button, FeatherIcon } from "frappe-ui"
 import Loader from "@/components/Loader.vue"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useInfiniteScroll } from "@vueuse/core"
-import { ref } from "vue"
+import { useStore } from "vuex"
+import { ref, computed } from "vue"
+import { toggleFav } from "@/stores/listView"
+import { toast, toastError } from "@/utils/toasts.js"
 
-export default {
-  name: "ListView",
-  data() {
-    return {
-      hoveredRow: "",
-      selectAllHover: false,
-      multi: false,
-    }
+const store = useStore()
+
+const hoveredRow = ref("")
+const selectAllHover = ref(false)
+const multi = ref(false)
+const container = ref(null)
+
+const action = computed(() =>
+  window.innerWidth < 640 || store.state.singleClick ? "click" : "dblclick"
+)
+const tableColumnsGridWidth = computed(() =>
+  window.innerWidth < 640 ? "2fr 1fr 40px" : "2fr 1fr 150px 150px 40px"
+)
+const displayOrderedEntities = computed(() => store.state.currentViewEntites)
+
+const emit = defineEmits([
+  "entitySelected",
+  "openEntity",
+  "showEntityContext",
+  "showEmptyEntityContext",
+  "fetchFolderContents",
+  "updateOffset",
+  "update-multi",
+])
+
+const props = defineProps({
+  folderContents: {
+    type: Object,
+    default: null,
   },
-  components: {
-    Avatar,
-    Button,
-    FeatherIcon,
-    Loader,
+  selectedEntities: {
+    type: Array,
+    default: null,
   },
-  props: {
-    folderContents: {
-      type: Object,
-      default: null,
-    },
-    selectedEntities: {
-      type: Array,
-      default: null,
-    },
-    overrideCanLoadMore: {
-      type: Boolean,
-      default: false,
-    },
+  overrideCanLoadMore: {
+    type: Boolean,
+    default: false,
   },
-  emits: [
-    "entitySelected",
-    "openEntity",
-    "showEntityContext",
-    "showEmptyEntityContext",
-    "fetchFolderContents",
-    "updateOffset",
-    "update-multi",
-  ],
-  setup(props, { emit }) {
-    const container = ref(null)
-    useInfiniteScroll(
-      container,
-      () => {
-        emit("updateOffset")
-      },
-      {
-        direction: "bottom",
-        distance: 150,
-        interval: 2000,
-        canLoadMore: () => props.overrideCanLoadMore,
-      }
+})
+
+useInfiniteScroll(container, () => emit("updateOffset"), {
+  direction: "bottom",
+  distance: 150,
+  interval: 2000,
+  canLoadMore: () => props.overrideCanLoadMore,
+})
+
+document.onkeydown = (e) => {
+  if (e.key === "ArrowDown") {
+    console.log(props.selectedEntities)
+    const current = props.selectedEntities[0].name
+    const index = store.state.currentViewEntites.findIndex(
+      ({ name }) => name === current
     )
-    return { container, useInfiniteScroll, formatMimeType, getIconUrl }
-  },
-  computed: {
-    action() {
-      if (window.innerWidth < 640) return "click"
-      if (this.$store.state.singleClick) {
-        return "click"
-      } else {
-        return "dblclick"
+    console.log(store.state.currentViewEntites[index + 1])
+  }
+}
+
+function toggleFavorite(entities) {
+  const direction = !entities[0].is_favourite
+  console.log(direction)
+  entities.forEach((e) => (e.is_favourite = direction))
+  toggleFav.submit(
+    {
+      entities: entities.map((e) => ({
+        name: e.name,
+        is_favourite: e.is_favourite,
+      })),
+    },
+    {
+      onError: () => {
+        toastError("Failed to update favourites")
+      },
+      onSuccess: () => {
+        if (!direction) {
+          toast(
+            `${
+              props.selectedEntities.length > 1
+                ? props.selectedEntities.length + " items removed"
+                : "Removed"
+            } from Favourites`
+          )
+        } else {
+          toast(
+            `${
+              props.selectedEntities.length > 1
+                ? props.selectedEntities.length + " items added"
+                : "Added"
+            } to Favourites`
+          )
+        }
+      },
+    }
+  )
+}
+
+function checkboxSelect(entity, event) {
+  multi.value = true
+  emit("update-multi", true)
+  event.stopPropagation()
+  this.selectEntity(entity, event)
+  if (!document.querySelector("input[type=checkbox]:checked")) {
+    multi.value = false
+    emit("update-multi", false)
+  }
+}
+
+function selectEntity(entity, event) {
+  emit("showEntityContext", null)
+  emit("showEmptyEntityContext", null)
+
+  if (multi || event.ctrlKey || event.metaKey) {
+    if (props.selectedEntities.includes(entity)) {
+      props.selectedEntities.splice(props.selectedEntities.indexOf(entity), 1)
+    } else {
+      props.selectedEntities.push(entity)
+    }
+    emit("entitySelected", props.selectedEntities)
+    store.commit("setEntityInfo", props.selectedEntities)
+  } else if (event.shiftKey) {
+    if (props.selectedEntities.includes(entity)) return null
+
+    props.selectedEntities.push(entity)
+
+    const entities = store.state.currentViewEntites
+    const firstIndex = entities.indexOf(props.selectedEntities[0])
+    const lastIndex = entities.indexOf(
+      props.selectedEntities[props.selectedEntities.length - 1]
+    )
+
+    let shiftSelect = entities.slice(firstIndex, lastIndex)
+
+    if (firstIndex > lastIndex) {
+      shiftSelect = entities.slice(lastIndex, firstIndex)
+    } else {
+      shiftSelect = entities.slice(firstIndex, lastIndex)
+    }
+    shiftSelect.slice(1).map((file) => {
+      if (!props.selectedEntities.includes(file)) {
+        props.selectedEntities.push(file)
       }
-    },
-    tableColumnsGridWidth() {
-      return window.innerWidth < 640
-        ? "2fr 1fr 40px"
-        : "2fr 1fr 150px 150px 40px"
-    },
-    isEmpty() {
-      return !this.$store.state.currentViewEntites?.length
-    },
-    foldersBefore() {
-      return this.$store.state.foldersBefore
-    },
-    displayOrderedEntities() {
-      return this.$store.state.currentViewEntites
-    },
-  },
-  methods: {
-    toggleSelectAll() {
-      this.selectAllHover = !this.selectAllHove
-    },
-    updateHoveredRow(entity) {
-      this.hoveredRow = entity.name
-    },
-    clearHoveredRow() {
-      this.hoveredRow = ""
-    },
-    toggleFavorite(entity) {
-      this.$parent.$resources.toggleFavourite.update({
-        params: {
-          entity_names: [entity.name],
-        },
+    })
+    emit("entitySelected", props.selectedEntities)
+    store.commit("setEntityInfo", props.selectedEntities)
+  } else {
+    props.selectedEntities = [entity]
+    emit("entitySelected", props.selectedEntities)
+    store.commit("setEntityInfo", props.selectedEntities)
+  }
+}
+
+function dblClickEntity(entity, event) {
+  if (multi || event.target.type === "checkbox") return null
+  store.commit("setEntityInfo", [entity])
+  emit("openEntity", entity)
+}
+
+function selectAll() {
+  if (props.selectedEntities.length) {
+    props.selectedEntities.splice(0, props.selectedEntities.length)
+    multi.value = false
+    emit("update-multi", false)
+  } else {
+    for (let group in props.folderContents) {
+      props.folderContents[group].forEach((entity) => {
+        props.selectedEntities.push(entity)
       })
-      this.$parent.$resources.toggleFavourite.submit()
-    },
-    checkboxSelect(entity, event) {
-      this.multi = true
-      this.$emit("update-multi", true)
-      event.stopPropagation()
-      this.selectEntity(entity, event)
-      if (!document.querySelector("input[type=checkbox]:checked")) {
-        this.multi = false
-        this.$emit("update-multi", false)
-      }
-    },
-    selectEntity(entity, event, entities) {
-      this.$emit("showEntityContext", null)
-      this.$emit("showEmptyEntityContext", null)
-      if (this.multi || event.ctrlKey || event.metaKey) {
-        if (this.selectedEntities.includes(entity)) {
-          this.selectedEntities.splice(this.selectedEntities.indexOf(entity), 1)
-        } else {
-          this.selectedEntities.push(entity)
-        }
-        this.$emit("entitySelected", this.selectedEntities)
-        this.$store.commit("setEntityInfo", this.selectedEntities)
-      } else if (event.shiftKey) {
-        if (this.selectedEntities.includes(entity)) {
-          return null
-        }
-        let shiftSelect
-        this.selectedEntities.push(entity)
-        const firstIndex = entities.indexOf(this.selectedEntities[0])
-        const lastIndex = entities.indexOf(
-          this.selectedEntities[this.selectedEntities.length - 1]
-        )
-        shiftSelect = entities.slice(firstIndex, lastIndex)
-        if (firstIndex > lastIndex) {
-          shiftSelect = entities.slice(lastIndex, firstIndex)
-        } else {
-          shiftSelect = entities.slice(firstIndex, lastIndex)
-        }
-        shiftSelect.slice(1).map((file) => {
-          if (!this.selectedEntities.includes(file)) {
-            this.selectedEntities.push(file)
-          }
-        })
-        this.$emit("entitySelected", this.selectedEntities)
-        this.$store.commit("setEntityInfo", this.selectedEntities)
-      } else {
-        this.$emit("entitySelected", [entity])
-        this.$store.commit("setEntityInfo", [entity])
-      }
-    },
-    dblClickEntity(entity, event) {
-      if (this.multi || event.target.type === "checkbox") return null
-      this.$store.commit("setEntityInfo", [entity])
-      this.$emit("openEntity", entity)
-    },
-    selectAll() {
-      if (this.selectedEntities.length) {
-        this.selectedEntities.splice(0, this.selectedEntities.length)
-        this.multi = false
-        this.$emit("update-multi", false)
-      } else {
-        for (let group in this.folderContents) {
-          this.folderContents[group].forEach((entity) => {
-            this.selectedEntities.push(entity)
-          })
-          this.multi = true
-          this.$emit("update-multi", true)
-        }
-      }
-      this.$emit("entitySelected", this.selectedEntities)
-      this.$store.commit("setEntityInfo", this.selectedEntities)
-      this.$emit("showEntityContext", null)
-      this.$emit("showEmptyEntityContext", null)
-    },
-    handleEntityContext(entity, event) {
-      if (event.changedTouches) {
-        event.clientX = event.changedTouches[0].clientX
-        event.clientY = event.changedTouches[0].clientY
-      }
-      event.preventDefault(event)
-      if (this.selectedEntities.length <= 1) {
-        this.$emit("entitySelected", [entity])
-        this.$store.commit("setEntityInfo", [entity])
-      }
-      this.$emit("showEntityContext", event)
-    },
-  },
+      multi.value = true
+      emit("update-multi", true)
+    }
+  }
+  emit("entitySelected", props.selectedEntities)
+  store.commit("setEntityInfo", props.selectedEntities)
+  emit("showEntityContext", null)
+  emit("showEmptyEntityContext", null)
+}
+
+function handleEntityContext(entity, event) {
+  if (event.changedTouches) {
+    event.clientX = event.changedTouches[0].clientX
+    event.clientY = event.changedTouches[0].clientY
+  }
+  event.preventDefault()
+
+  if (props.selectedEntities.length <= 1) {
+    emit("entitySelected", [entity])
+    store.commit("setEntityInfo", [entity])
+  }
+  emit("showEntityContext", event)
 }
 </script>
