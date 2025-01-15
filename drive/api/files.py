@@ -1034,42 +1034,41 @@ def list_favourites(order_by="modified", limit=100, offset=0):
 
 
 @frappe.whitelist()
-def add_or_remove_favourites(entity_names=None, clear_all=False):
+def set_favourite(entities=None, clear_all=False):
     """
     Favouite or unfavourite DriveEntities for specified user
 
-    :param entity_names: List of document-names
+    :param entities: List[dict] of document names and whether favorite
     :type entity_names: list[str]
     :raises ValueError: If decoded entity_names is not a list
     """
-
     if clear_all:
-        frappe.db.delete("Drive Favourite", {"user": frappe.session.user})
-        return
+        return frappe.db.delete("Drive Favourite", {"user": frappe.session.user})
 
-    if isinstance(entity_names, str):
-        entity_names = json.loads(entity_names)
-    if not isinstance(entity_names, list):
-        frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
-    for entity in entity_names:
+    if not isinstance(entities, list):
+        frappe.throw(f"Expected list but got {type(entities)}", ValueError)
+
+    for entity in entities:
         existing_doc = frappe.db.exists(
             {
                 "doctype": "Drive Favourite",
-                "entity": entity,
+                "entity": entity["name"],
                 "user": frappe.session.user,
             }
         )
-        if existing_doc:
+        if not entity.get("is_favourite"):
+            entity["is_favourite"] = not existing_doc
+
+        if not entity["is_favourite"] and existing_doc:
             frappe.delete_doc("Drive Favourite", existing_doc)
-        else:
-            doc = frappe.get_doc(
+        elif entity["is_favourite"] and not existing_doc:
+            frappe.get_doc(
                 {
                     "doctype": "Drive Favourite",
-                    "entity": entity,
+                    "entity": entity["name"],
                     "user": frappe.session.user,
                 }
-            )
-            doc.insert()
+            ).insert()
 
 
 # def toggle_is_active(doc):
