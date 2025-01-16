@@ -197,7 +197,6 @@ export default {
   data() {
     return {
       previewEntity: null,
-      showPreview: false,
       showNewFolderDialog: false,
       showRenameDialog: false,
       newEntityOptions: [
@@ -287,7 +286,6 @@ export default {
   computed: {
     isButtonDisabled() {
       if (document.getElementById("headlessui-portal-root")) {
-        console.log("TRUE")
         return true
       }
       console.log(document.getElementById("headlessui-portal-root"))

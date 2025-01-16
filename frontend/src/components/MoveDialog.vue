@@ -157,6 +157,10 @@ const store = useStore()
 const currentFolder = ref(store.state.homeFolderID)
 const emit = defineEmits(["update:modelValue", "success"])
 const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true,
+  },
   entity: {
     type: Object,
     required: false,
@@ -166,7 +170,7 @@ const props = defineProps({
 
 const open = computed({
   get() {
-    return props.modelValue
+    return props.modelValue === "m"
   },
   set(newValue) {
     emit("update:modelValue", newValue)

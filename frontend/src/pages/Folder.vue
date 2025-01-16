@@ -2,7 +2,7 @@
   <PageGeneric
     v-if="currentFolder.fetched"
     url="drive.api.list.files"
-    :allow-empty-context-menu="allowEmptyContextMenu"
+    :show-default-context-menu="allowEmptyContextMenu"
     :show-sort="true"
     :is-shared-folder="isSharedFolder"
     :entity-name="entityName"

@@ -352,7 +352,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     entityName: {
@@ -410,7 +410,7 @@ export default {
     },
     openDialog: {
       get() {
-        return this.modelValue
+        return this.modelValue === "s"
       },
       set(value) {
         this.$emit("update:modelValue", value)
