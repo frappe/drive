@@ -1226,7 +1226,7 @@ def list_recents(order_by="last_interaction", limit=100, offset=0):
 
 
 @frappe.whitelist()
-def remove_recents(entity_names=None, clear_all=False):
+def remove_recents(entity_names=[], clear_all=False):
     """
     Clear recent DriveEntities for specified user
 
@@ -1236,12 +1236,11 @@ def remove_recents(entity_names=None, clear_all=False):
     """
 
     if clear_all:
-        frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
-        return
-    if isinstance(entity_names, str):
-        entity_names = json.loads(entity_names)
+        return frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
+
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
+    print("HO", entity_names)
     for entity in entity_names:
         existing_doc = frappe.db.exists(
             {

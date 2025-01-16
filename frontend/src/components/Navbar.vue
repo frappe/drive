@@ -158,10 +158,7 @@ import RenameDialog from "@/components/RenameDialog.vue"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 import { formatDate } from "@/utils/format"
 import { getLink } from "@/utils/getLink"
-import {
-  folderDownload,
-  selectedEntitiesDownload,
-} from "@/utils/folderDownload"
+import { folderDownload, selectedEntitiesDownload } from "@/utils/download"
 import Printer from "./EspressoIcons/Printer.vue"
 import Share from "./EspressoIcons/Share.vue"
 import Star from "./EspressoIcons/Star.vue"
@@ -435,7 +432,7 @@ export default {
             )
           },
         },
-      ].filter((item) => item.isEnabled())
+      ].filter((a) => !a.isEnabled || a.isEnabled())
     },
     fullName() {
       return this.$store.state.user.fullName
