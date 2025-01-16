@@ -74,7 +74,7 @@ function getToastsGroup(position) {
         .map((toast) => {
           return h(
             "div",
-            { key: toast.key, class: "pointer-events-auto flex" },
+            { id: toast.key, class: "pointer-events-auto flex" },
             h(Toast, {
               ...toast,
               onClose: () => {

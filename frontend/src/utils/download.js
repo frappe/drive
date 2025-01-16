@@ -1,6 +1,13 @@
 import JSZip from "jszip"
+import { toast } from "./toasts"
 
 export function selectedEntitiesDownload(selected_entities) {
+  if (selected_entities.length === 1) {
+    return selected_entities[0].is_group
+      ? folderDownload(selected_entities[0])
+      : (window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${selected_entities[0].name}&trigger_download=1`)
+  }
+  const t = toast("Preparing download...")
   const generateRandomString = () =>
     [...Array(5)].map(() => Math.random().toString(36)[2]).join("")
   const randomString = generateRandomString()
@@ -32,18 +39,18 @@ export function selectedEntitiesDownload(selected_entities) {
     .then(() => {
       return zip.generateAsync({ type: "blob", streamFiles: true })
     })
-    .then(function (content) {
+    .then(async function (content) {
       var downloadLink = document.createElement("a")
       downloadLink.href = URL.createObjectURL(content)
       downloadLink.download = folderName + ".zip"
 
       document.body.appendChild(downloadLink)
+
       downloadLink.click()
       document.body.removeChild(downloadLink)
+      document.getElementById(t).remove()
     })
-    .catch((error) => {
-      console.error(error)
-    })
+    .catch(console.error)
 }
 
 export function folderDownload(root_entity) {

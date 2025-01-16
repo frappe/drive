@@ -90,7 +90,7 @@ export default {
     },
     timeout: {
       type: Number,
-      default: 2,
+      default: 10,
     },
   },
   emits: ["close"],

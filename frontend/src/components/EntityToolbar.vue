@@ -69,10 +69,7 @@
 import { useStore } from "vuex"
 import { Checkbox, Button } from "frappe-ui"
 import { computed } from "vue"
-import {
-  folderDownload,
-  selectedEntitiesDownload,
-} from "@/utils/folderDownload"
+import { folderDownload, selectedEntitiesDownload } from "@/utils/download"
 
 defineOptions({
   inheritAttrs: false,
