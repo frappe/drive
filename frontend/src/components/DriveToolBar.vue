@@ -97,32 +97,6 @@
           </div>
         </div>
       </div>
-      <div v-if="multi" class="flex gap-3">
-        <Button
-          v-for="(item, index) in actionItems.filter((i) => i.important)"
-          :key="index"
-          :loading="actionLoading"
-          :disabled="actionLoading"
-          @click="item.onClick"
-        >
-          <FeatherIcon
-            v-if="typeof item.icon === 'string'"
-            :name="item.icon"
-            class="h-4 w-4"
-            :class="
-              item.label === 'Unfavourite'
-                ? 'stroke-yellow-500 fill-yellow-500'
-                : ''
-            "
-          />
-          <component
-            :is="item.icon"
-            v-else
-            class="h-4 w-auto text-gray-800"
-            :class="item.danger ? 'text-red-500' : ''"
-          />
-        </Button>
-      </div>
       <div class="ml-auto flex gap-x-1 items-center">
         <Dropdown
           v-if="columnHeaders"
@@ -219,15 +193,7 @@ export default {
     Unknown,
   },
   props: {
-    multi: {
-      type: Boolean,
-      default: false,
-    },
     breadcrumbs: {
-      type: Array,
-      default: null,
-    },
-    actionItems: {
       type: Array,
       default: null,
     },

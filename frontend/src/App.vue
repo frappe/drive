@@ -7,10 +7,7 @@
 
   <template v-else>
     <!-- Main container no scroll -->
-    <div
-      class="flex w-screen h-screen antialiased overflow-hidden"
-      @contextmenu="handleDefaultContext($event)"
-    >
+    <div class="flex w-screen h-screen antialiased overflow-hidden">
       <!-- Main container with scroll -->
       <div class="h-full w-full flex flex-col">
         <SearchPopup
@@ -138,19 +135,6 @@ export default {
     await initTelemetry()
   },
   methods: {
-    handleDefaultContext(event) {
-      if (this.$route.meta.documentPage) {
-        return
-      } else if (
-        this.$store.state.entityInfo[0]?.mime_type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
-        this.$route.name === "File"
-      ) {
-        return
-      } else {
-        return event.preventDefault()
-      }
-    },
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents")
     },
@@ -216,7 +200,6 @@ export default {
         url: "drive.utils.users.drive_user_level",
         cache: "is_admin",
         onSuccess(data) {
-          console.log(data)
           this.$store.state.user.role = data
         },
         onError(error) {

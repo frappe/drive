@@ -2,18 +2,11 @@
   <div
     ref="container"
     class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
-    @mousedown.prevent="
-      (event) => {
-        dragSelectStart(event)
-      }
-    "
-    @contextmenu="toggleEmptyContext"
+    @mousedown.prevent="(e) => dragSelectStart(e)"
+    @contextmenu="handleContextMenu"
   >
-    <DriveToolBar
-      :action-items="actionItems"
-      :multi="multi"
-      :column-headers="showSort ? columnHeaders : null"
-    />
+    <DriveToolBar :column-headers="showSort ? columnHeaders : null" />
+
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error"
@@ -25,126 +18,116 @@
       :primary-message="primaryMessage"
       :secondary-message="secondaryMessage"
     />
+    <ListView
+      v-else-if="$store.state.view === 'list'"
+      :folder-contents="groupedByFolder"
+      :override-can-load-more="overrideCanLoadMore"
+      :action-items="actionItems"
+      @fetch-folder-contents="() => $resources.folderContents.fetch()"
+      @update-offset="fetchNextPage"
+    />
     <GridView
       v-else-if="folderItems && $store.state.view === 'grid'"
       :folder-contents="groupedByFolder"
       :selected-entities="selectedEntities"
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
-      @show-entity-context="(data) => toggleEntityContext(data)"
       @open-entity="(entity) => openEntity(entity)"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
-    />
-    <ListView
-      v-else-if="$store.state.view === 'list'"
-      :folder-contents="groupedByFolder"
-      :selected-entities="selectedEntities"
-      :override-can-load-more="overrideCanLoadMore"
-      :action-items="actionItems"
-      @show-entity-context="(data) => toggleEntityContext(data)"
-      @open-entity="(entity) => openEntity(entity)"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()"
-      @update-offset="fetchNextPage"
-      @update-multi="(val) => (multi = val)"
-    />
-    <EntityContextMenu
-      v-if="showEntityContext"
-      v-on-outside-click="closeContextMenu"
-      :entity-name="selectedEntities[0].name"
-      :action-items="actionItems"
-      :entity-context="entityContext"
-      :close="closeContextMenu"
     />
     <EmptyEntityContextMenu
-      v-if="showEmptyEntityContextMenu && allowEmptyContextMenu"
-      v-on-outside-click="closeContextMenu"
-      :action-items="emptyActionItems"
-      :entity-context="entityContext"
-      :close="closeContextMenu"
+      v-if="showDefaultContextMenu && defaultContextTriggered"
+      v-on-outside-click="() => (defaultContextTriggered = false)"
+      :close="() => (defaultContextTriggered = false)"
+      :action-items="defaultActionItems"
+      :event="clickEvent"
     />
     <NewFolderDialog
-      v-if="showNewFolderDialog"
-      v-model="showNewFolderDialog"
+      v-if="dialog === 'f'"
+      v-model="dialog"
       :parent="$route.params.entityName"
       @success="
-        (data) => {
+        () => {
           // Will break if more folders exist than the pagelength
           // Need to check the sort and see where the newly created folder fits
           // And re-fetch that offset
           handleListMutation()
-          showNewFolderDialog = false
+          dialog = null
         }
       "
     />
     <RenameDialog
-      v-if="showRenameDialog"
-      v-model="showRenameDialog"
+      v-if="dialog === 'rn'"
+      v-model="dialog"
       :entity="selectedEntities[0]"
       @success="
         (data) => {
           handleListMutation(data.name)
-          showRenameDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <GeneralDialog
-      v-if="showRemoveDialog"
-      v-model="showRemoveDialog"
+      v-if="dialog === 'remove'"
+      v-model="dialog"
       :entities="selectedEntities"
       :for="'remove'"
       @success="
         () => {
           handleListMutation()
-          showRemoveDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <GeneralDialog
-      v-model="showUnshareDialog"
+      v-if="dialog === 'unshare'"
+      v-model="dialog"
       :entities="selectedEntities"
       :for="'unshare'"
       @success="
         () => {
           handleListMutation()
-          showUnshareDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <GeneralDialog
-      v-model="showRestoreDialog"
+      v-if="dialog === 'restore'"
+      v-model="dialog"
       :entities="selectedEntities"
       :for="'restore'"
       @success="
         () => {
           handleListMutation()
-          showRestoreDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
+      v-if="dialog === 's'"
+      v-model="dialog"
       :entity-name="$store.state.entityInfo[0].name"
     />
     <MoveDialog
-      v-if="showMoveDialog"
-      v-model="showMoveDialog"
+      v-if="dialog === 'm'"
+      v-model="dialog"
       :entity-name="selectedEntities[0].name"
       @success="
         () => {
           handleListMutation(selectedEntities[0].name)
-          showMoveDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <DeleteDialog
-      v-model="showDeleteDialog"
+      v-if="dialog === 'd'"
+      v-model="dialog"
       :entities="
         selectedEntities.length > 0
           ? selectedEntities
@@ -156,7 +139,7 @@
           folderItems = null
           selectedEntities = []
           fetchNextPage()
-          showDeleteDialog = false
+          dialog = null
         }
       "
     />
@@ -249,7 +232,7 @@ export default {
       default: null,
       required: false,
     },
-    allowEmptyContextMenu: {
+    showDefaultContextMenu: {
       type: Boolean,
       default: false,
       required: false,
@@ -300,21 +283,11 @@ export default {
     },
   },
   data: () => ({
-    multi: false,
+    clickEvent: null,
     folderItems: null,
     previewEntity: null,
-    showPreview: false,
-    showNewFolderDialog: false,
-    showRenameDialog: false,
-    showShareDialog: false,
-    showRemoveDialog: false,
-    showDeleteDialog: false,
-    showUnshareDialog: false,
-    showRestoreDialog: false,
-    showMoveDialog: false,
-    showEntityContext: false,
-    showEmptyEntityContextMenu: false,
-    entityContext: {},
+    dialog: "",
+    defaultContextTriggered: false,
     pageLength: 60,
     pageOffset: 0,
     overrideCanLoadMore: false,
@@ -399,7 +372,7 @@ export default {
         },
       ].filter((item) => item.sortable)
     },
-    emptyActionItems() {
+    defaultActionItems() {
       return [
         {
           label: "Upload File",
@@ -416,7 +389,7 @@ export default {
         {
           label: "New Folder",
           icon: NewFolder,
-          handler: () => (this.showNewFolderDialog = true),
+          handler: () => (this.dialog = "f"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
@@ -447,14 +420,12 @@ export default {
           {
             label: "Restore",
             icon: RotateCcw,
-            onClick: () => (this.showRestoreDialog = true),
+            onClick: () => (this.dialog = "restore"),
           },
           {
             label: "Delete forever",
             icon: Trash,
-            onClick: () => {
-              this.showDeleteDialog = true
-            },
+            onClick: () => (this.dialog = "d"),
             isEnabled: () => this.$route.name === "Trash",
           },
         ].filter((a) => !a.isEnabled || a.isEnabled())
@@ -478,7 +449,7 @@ export default {
           {
             label: "Share",
             icon: Share,
-            onClick: () => (this.showShareDialog = true),
+            onClick: () => (this.dialog = "s"),
             isEnabled: (e) =>
               e.owner === "You" || e.owner.label === "You" || e.share,
             important: true,
@@ -492,14 +463,14 @@ export default {
           {
             label: "Rename",
             icon: Rename,
-            onClick: () => (this.showRenameDialog = true),
+            onClick: () => (this.dialog = "rn"),
             isEnabled: (e) =>
               e.write || e.owner === "You" || e.owner.label === "You",
           },
           {
             label: "Move",
             icon: Move,
-            onClick: () => (this.showMoveDialog = true),
+            onClick: () => (this.dialog = "m"),
             isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
             multi: true,
           },
@@ -600,7 +571,7 @@ export default {
             label: "Unshare",
             danger: true,
             icon: "trash-2",
-            onClick: () => (this.showUnshareDialog = true),
+            onClick: () => (this.dialog = "unshare"),
             isEnabled: (e) =>
               e.owner != "You" &&
               e.user_doctype === "User" &&
@@ -611,9 +582,7 @@ export default {
             label: "Move to Trash",
             icon: Trash,
             danger: true,
-            onClick: () => {
-              this.showRemoveDialog = true
-            },
+            onClick: () => (this.dialog = "remove"),
             isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
             important: true,
             multi: true,
@@ -661,9 +630,7 @@ export default {
       this.clearAll = true
       this.showCTADelete = true
     })
-    this.emitter.on("showShareDialog", () => {
-      this.showShareDialog = true
-    })
+    this.emitter.on("showShareDialog", () => (this.dialog = "s"))
     this.emitter.on("selectAll", () => {
       this.clearAll()
     })
@@ -683,7 +650,7 @@ export default {
 
     this.deleteListener = (e) => {
       if (e.key === "Delete" && this.selectedEntities.length)
-        this.showRemoveDialog = true
+        this.dialog = "remove"
     }
     window.addEventListener("keydown", this.deleteListener)
 
@@ -722,8 +689,12 @@ export default {
     document.removeEventListener("keydown", this.cutListener)
   },
   methods: {
+    handleContextMenu(event) {
+      this.clickEvent = event
+      this.defaultContextTriggered = true
+      event.preventDefault()
+    },
     dragSelectStart(event) {
-      if (this.showEntityContext) return
       this.selectedIDs = null
       document.addEventListener("mousemove", this.dragSelectMove)
       document.addEventListener("mouseup", this.dragSelectStop)
@@ -877,7 +848,6 @@ export default {
           params: { entityName: entity.name },
         })
         this.previewEntity = entity
-        this.showPreview = true
       }
     },
     async pasteEntities(newParent = this.$store.state.currentFolderID) {
@@ -893,34 +863,6 @@ export default {
       this.selectedEntities = []
       this.$store.commit("setPasteData", { entities: [], action: null })
       this.$resources.folderContents.fetch()
-    },
-    toggleEntityContext(event) {
-      if (!event) this.showEntityContext = false
-      else {
-        this.showEntityContext = true
-        this.showEmptyEntityContextMenu = false
-        this.entityContext = event
-      }
-    },
-    toggleEmptyContext(event) {
-      if (!event) {
-        this.showEntityContext = false
-        this.showEmptyEntityContextMenu = false
-      } else if (this.selectedEntities.length === 0) {
-        this.selectedEntities = []
-        this.showEntityContext = false
-        this.showEmptyEntityContextMenu = true
-        this.entityContext = event
-      } else if (this.selectedEntities.length > 0) {
-        this.showEntityContext = true
-        this.showEmptyEntityContextMenu = false
-        this.entityContext = event
-      }
-    },
-    closeContextMenu() {
-      this.showEntityContext = false
-      this.showEmptyEntityContextMenu = false
-      this.entityContext = undefined
     },
     async newDocument() {
       await this.$resources.createDocument.submit({
@@ -1026,7 +968,6 @@ export default {
         },
         transform(data) {
           this.$resources.folderContents.error = null
-          console.log(data)
           data.forEach((entity) => {
             entity.size_in_bytes = entity.file_size
             if (entity.is_group) {

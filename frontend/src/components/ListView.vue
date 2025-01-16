@@ -24,7 +24,7 @@
             v-for="row in group.rows"
             :key="row.name"
             :row="row"
-            @dblclick="() => openEntity(row)"
+            @dblclick="openFile(row)"
           >
             <template #="{ column, item }">
               <ListRowItem
@@ -116,9 +116,8 @@ import { useInfiniteScroll } from "@vueuse/core"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { ref, computed, h } from "vue"
-import { toggleFav } from "@/resources/files"
-import { toast, toastError } from "@/utils/toasts.js"
 import Folder from "./MimeIcons/Folder.vue"
+import { openEntity } from "@/utils/files"
 
 const store = useStore()
 const route = useRoute()
@@ -126,10 +125,6 @@ const route = useRoute()
 const props = defineProps({
   folderContents: {
     type: Object,
-    default: null,
-  },
-  selectedEntities: {
-    type: Array,
     default: null,
   },
   overrideCanLoadMore: {
@@ -203,7 +198,6 @@ const selectedColumns = [
 ].filter((k) => (k.enabled ? k.enabled(route.name) : true))
 
 const emit = defineEmits([
-  "openEntity",
   "showEntityContext",
   "showEmptyEntityContext",
   "fetchFolderContents",
@@ -217,8 +211,10 @@ useInfiniteScroll(container, () => emit("updateOffset"), {
   canLoadMore: () => props.overrideCanLoadMore,
 })
 
-const openEntity = () =>
-  store.commit("setEntityInfo", [entity]) && emit("openEntity", entity)
+function openFile(entity) {
+  store.commit("setEntityInfo", [entity])
+  openEntity(entity)
+}
 
 function handleAction(selectedItems, action) {
   store.commit("setEntityInfo", selectedItems)

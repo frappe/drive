@@ -1,7 +1,7 @@
 <template>
   <PageGeneric
     url="drive.api.list.files"
-    :allow-empty-context-menu="true"
+    :show-default-context-menu="true"
     :show-sort="true"
     :icon="Home"
     :primary-message="'Home is empty'"

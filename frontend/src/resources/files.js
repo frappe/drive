@@ -18,3 +18,12 @@ export const clearRecent = createResource({
     }
   },
 })
+
+export const getFiles = createResource({
+  url: "drive.api.files.get",
+  makeParams({ folder }) {
+    return {
+      folder,
+    }
+  },
+})
