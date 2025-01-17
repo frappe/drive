@@ -1,4 +1,4 @@
-import { toast } from "../utils/toasts.js"
+import { toast } from "@/utils/toasts.js"
 
 export async function getLink(entity) {
   const link = entity.is_group
@@ -9,11 +9,7 @@ export async function getLink(entity) {
 
   try {
     await copyToClipboard(link)
-    toast({
-      title: "Copied link",
-      position: "bottom-right",
-      timeout: 2,
-    })
+    toast("Copied link")
   } catch (err) {
     if (err.name === "NotAllowedError") {
       toast({

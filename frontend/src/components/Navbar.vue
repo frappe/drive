@@ -15,24 +15,6 @@
         >
           <UsersBar />
         </div>
-        <Dropdown
-          v-if="$store.state.entityInfo"
-          :options="actionItems"
-          placement="right"
-          class="basis-5/12 lg:basis-auto"
-        >
-          <Button
-            v-if="
-              $route.meta.documentPage ||
-              $route.name === 'File' ||
-              $route.name === 'Folder'
-            "
-            variant="ghost"
-            @click="handleSelectedEntity"
-          >
-            <FeatherIcon class="h-4" name="more-horizontal" />
-          </Button>
-        </Dropdown>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
             v-if="
@@ -158,7 +140,7 @@ import RenameDialog from "@/components/RenameDialog.vue"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 import { formatDate } from "@/utils/format"
 import { getLink } from "@/utils/getLink"
-import { folderDownload, selectedEntitiesDownload } from "@/utils/download"
+import { folderDownload, entitiesDownload } from "@/utils/download"
 import Printer from "./EspressoIcons/Printer.vue"
 import Share from "./EspressoIcons/Share.vue"
 import Star from "./EspressoIcons/Star.vue"
@@ -344,7 +326,7 @@ export default {
           onClick: () => {
             if (this.selectedEntities.length > 1) {
               let selected_entities = this.selectedEntities
-              selectedEntitiesDownload(selected_entities)
+              entitiesDownload(selected_entities)
             } else if (this.selectedEntities[0].is_group === 1) {
               folderDownload(this.selectedEntities[0])
             }

@@ -42,6 +42,7 @@ const store = createStore({
     elementExists: false,
     activeFilters: [],
     activeTags: [],
+    activeEntity: {},
     notifCount: 0,
     entityInfo:
       JSON.parse(localStorage.getItem("selectedEntities")) ||
@@ -148,6 +149,9 @@ const store = createStore({
     setEntityInfo(state, payload) {
       localStorage.setItem("selectedEntities", JSON.stringify(payload))
       state.entityInfo = payload
+    },
+    setActiveEntity(state, payload) {
+      state.activeEntity = payload
     },
     setCurrentFolder(state, payload) {
       localStorage.setItem("currentFolder", JSON.stringify(payload))

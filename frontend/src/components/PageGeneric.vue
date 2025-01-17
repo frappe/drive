@@ -1030,7 +1030,8 @@ export default {
         },
         onSuccess() {
           // Toggled OFF
-          if (this.selectedEntities[0].is_favourite) {
+          console.log(this.selectedEntities[0].is_favourite)
+          if (this.selectedEntities[0].is_favourite === false) {
             toast({
               title: `${
                 this.selectedEntities.length > 1
