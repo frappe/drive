@@ -135,12 +135,13 @@ const props = defineProps({
     type: Array,
   },
 })
+const emit = defineEmits(["updateOffset"])
 
-const multi = ref(false)
 const container = ref(null)
 
 const entities = computed(() => store.state.currentViewEntites)
 const formattedRows = computed(() => {
+  if (!props.folderContents) return []
   let groups = Object.keys(props.folderContents)
     .map((k) => ({
       group: k,
@@ -197,13 +198,6 @@ const selectedColumns = [
   { label: "", key: "options", align: "right", width: "10px" },
 ].filter((k) => (k.enabled ? k.enabled(route.name) : true))
 
-const emit = defineEmits([
-  "showEntityContext",
-  "showEmptyEntityContext",
-  "fetchFolderContents",
-  "updateOffset",
-  "update-multi",
-])
 useInfiniteScroll(container, () => emit("updateOffset"), {
   direction: "bottom",
   distance: 150,

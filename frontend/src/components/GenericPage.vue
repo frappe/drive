@@ -1,0 +1,406 @@
+<template>
+  <div
+    ref="container"
+    class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
+    @contextmenu="handleContextMenu"
+  >
+    <!-- <DriveToolBar :column-headers="showSort ? columnHeaders : null" /> -->
+    <DriveToolBar :column-headers="null" />
+
+    <!-- This sucks, redo it -->
+    <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />
+    <NoFilesSection
+      v-else-if="getEntities.data?.length === 0"
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      :icon="icon"
+      :primary-message="primaryMessage"
+      :secondary-message="secondaryMessage"
+    />
+    <ListView
+      v-else-if="$store.state.view === 'list'"
+      :folder-contents="getEntities.data && grouper(getEntities.data)"
+      :override-can-load-more="overrideCanLoadMore"
+      :action-items="actionItems"
+      @update-offset="() => (pageOffset += pageLength)"
+    />
+    <EmptyEntityContextMenu
+      v-if="$route.name === 'Home' && defaultContextTriggered"
+      v-on-outside-click="() => (defaultContextTriggered = false)"
+      :close="() => (defaultContextTriggered = false)"
+      :action-items="defaultActionItems"
+      :event="clickEvent"
+    />
+    <NewFolderDialog
+      v-if="dialog === 'f'"
+      v-model="dialog"
+      :parent="$route.params.entityName"
+      @success="
+        () => {
+          // Will break if more folders exist than the pagelength
+          // Need to check the sort and see where the newly created folder fits
+          // And re-fetch that offset
+          handleListMutation()
+          dialog = null
+        }
+      "
+    />
+    <RenameDialog
+      v-if="dialog === 'rn'"
+      v-model="dialog"
+      :entity="selectedEntities[0]"
+      @success="
+        (data) => {
+          handleListMutation(data.name)
+          dialog = null
+        }
+      "
+    />
+    <GeneralDialog
+      v-if="dialog === 'remove'"
+      v-model="dialog"
+      :entities="selectedEntities"
+      :for="'remove'"
+      @success="
+        () => {
+          handleListMutation()
+          dialog = null
+          selectedEntities = []
+        }
+      "
+    />
+    <GeneralDialog
+      v-if="dialog === 'unshare'"
+      v-model="dialog"
+      :entities="selectedEntities"
+      :for="'unshare'"
+      @success="
+        () => {
+          handleListMutation()
+          dialog = null
+          selectedEntities = []
+        }
+      "
+    />
+    <GeneralDialog
+      v-if="dialog === 'restore'"
+      v-model="dialog"
+      :entities="selectedEntities"
+      :for="'restore'"
+      @success="
+        () => {
+          handleListMutation()
+          dialog = null
+          selectedEntities = []
+        }
+      "
+    />
+    <ShareDialog
+      v-if="dialog === 's'"
+      v-model="dialog"
+      :entity-name="$store.state.entityInfo[0].name"
+    />
+    <MoveDialog
+      v-if="dialog === 'm'"
+      v-model="dialog"
+      :entity-name="selectedEntities[0].name"
+      @success="
+        () => {
+          handleListMutation(selectedEntities[0].name)
+          dialog = null
+          selectedEntities = []
+        }
+      "
+    />
+    <DeleteDialog
+      v-if="dialog === 'd'"
+      v-model="dialog"
+      :entities="
+        selectedEntities.length > 0
+          ? selectedEntities
+          : $resources.folderContents.data
+      "
+      @success="
+        () => {
+          offset = 0
+          folderItems = null
+          selectedEntities = []
+          fetchNextPage()
+          dialog = null
+        }
+      "
+    />
+    <CTADeleteDialog
+      v-if="dialog === 'cta'"
+      v-model="dialog"
+      :clear-all="clearAll"
+      @success="
+        () => {
+          offset = 0
+          folderItems = null
+          selectedEntities = []
+          fetchNextPage()
+          dialog = null
+        }
+      "
+    />
+  </div>
+</template>
+<script setup>
+import ListView from "@/components/ListView.vue"
+import GridView from "@/components/GridView.vue"
+import DriveToolBar from "@/components/DriveToolBar.vue"
+import NoFilesSection from "@/components/NoFilesSection.vue"
+import NewFolderDialog from "@/components/NewFolderDialog.vue"
+import RenameDialog from "@/components/RenameDialog.vue"
+import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
+import GeneralDialog from "@/components/GeneralDialog.vue"
+import DeleteDialog from "@/components/DeleteDialog.vue"
+import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
+import MoveDialog from "../components/MoveDialog.vue"
+import FolderContentsError from "@/components/FolderContentsError.vue"
+import EntityContextMenu from "@/components/EntityContextMenu.vue"
+import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
+import { formatSize, formatDate } from "@/utils/format"
+import { getLink } from "@/utils/getLink"
+import { useTimeAgo } from "@vueuse/core"
+import { toggleFav, clearRecent } from "@/resources/files"
+import useEmitter from "@/utils/getEmitter"
+import { selectedEntitiesDownload } from "@/utils/download"
+import { RotateCcw } from "lucide-vue-next"
+import NewFolder from "./EspressoIcons/NewFolder.vue"
+import FileUpload from "./EspressoIcons/File-upload.vue"
+import FolderUpload from "./EspressoIcons/Folder-upload.vue"
+import Share from "./EspressoIcons/Share.vue"
+import Download from "./EspressoIcons/Download.vue"
+import Link from "./EspressoIcons/Link.vue"
+import Rename from "./EspressoIcons/Rename.vue"
+import Move from "./EspressoIcons/Move.vue"
+import Info from "./EspressoIcons/Info.vue"
+import Preview from "./EspressoIcons/Preview.vue"
+import Trash from "./EspressoIcons/Trash.vue"
+import NewFile from "./EspressoIcons/NewFile.vue"
+import { toast } from "../utils/toasts.js"
+import { capture } from "@/telemetry"
+import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
+import { ref, computed } from "vue"
+import { useRoute } from "vue-router"
+import { useStore } from "vuex"
+import { groupByFolder } from "@/utils/files"
+import emitter from "@/event-bus.js"
+
+const props = defineProps({
+  url: String,
+  grouper: { type: Function, default: groupByFolder },
+  showSort: { type: Boolean, default: true },
+  icon: Object,
+  primaryMessage: String,
+  secondaryMessage: { type: String, default: "" },
+  getEntities: Object,
+})
+const route = useRoute()
+const store = useStore()
+
+const container = ref(null)
+const dialog = ref(null)
+const selectedEntities = ref([])
+const pageOffset = ref(0)
+const pageLength = 60
+
+const DEFAULT_PARAMS = computed(() => ({
+  entityName: "",
+  isSharedFolder: false,
+  pageLength,
+  pageOffset,
+}))
+
+props.getEntities.update({
+  params: DEFAULT_PARAMS.value,
+})
+props.getEntities.fetch()
+
+const clickEvent = ref(null)
+const defaultContextTriggered = ref(false)
+function handleContextMenu(event) {
+  clickEvent.value = event
+  defaultContextTriggered.value = true
+  event.preventDefault()
+}
+
+// Action Items
+const defaultActionItems = computed(() => {
+  return [
+    {
+      label: "Upload File",
+      icon: FileUpload,
+      handler: () => emitter.emit("uploadFile"),
+      isEnabled: () => selectedEntities.value.length === 0,
+    },
+    {
+      label: "Upload Folder",
+      icon: FolderUpload,
+      handler: () => emitter.emit("uploadFolder"),
+      isEnabled: () => selectedEntities.value.length === 0,
+    },
+    {
+      label: "New Folder",
+      icon: NewFolder,
+      handler: () => (dialog.value = "f"),
+      isEnabled: () => selectedEntities.value.length === 0,
+    },
+    {
+      label: "New Document",
+      icon: NewFile,
+      handler: () => this.newDocument(),
+      isEnabled: () => selectedEntities.value.length === 0,
+    },
+    {
+      label: "New Whiteboard",
+      icon: NewFile,
+      handler: () => this.newWhiteboard(),
+      isEnabled: () => selectedEntities.value.length === 0,
+    },
+  ].filter((a) => !a.isEnabled || a.isEnabled())
+})
+
+const actionItems = computed(() => {
+  if (route.name === "Trash") {
+    return [
+      {
+        label: "Restore",
+        icon: RotateCcw,
+        onClick: () => (dialog.value = "restore"),
+      },
+      {
+        label: "Delete forever",
+        icon: Trash,
+        onClick: () => (dialog.value = "d"),
+        isEnabled: () => route.name === "Trash",
+      },
+    ].filter((a) => !a.isEnabled || a.isEnabled())
+  } else {
+    return [
+      {
+        label: "Preview",
+        icon: Preview,
+        onClick: ([entity]) => this.openEntity(entity),
+        important: true,
+      },
+      {
+        label: "Download",
+        icon: Download,
+        onClick: selectedEntitiesDownload,
+        isEnabled: (e) =>
+          e.allow_download || e.owner === "You" || e.owner.label === "You",
+        multi: true,
+        important: true,
+      },
+      {
+        label: "Share",
+        icon: Share,
+        onClick: () => (dialog.value = "s"),
+        isEnabled: (e) =>
+          e.owner === "You" || e.owner.label === "You" || e.share,
+        important: true,
+      },
+      {
+        label: "Get Link",
+        icon: Link,
+        onClick: ([entity]) => getLink(entity),
+        important: true,
+      },
+      {
+        label: "Rename",
+        icon: Rename,
+        onClick: () => (dialog.value = "rn"),
+        isEnabled: (e) =>
+          e.write || e.owner === "You" || e.owner.label === "You",
+      },
+      {
+        label: "Move",
+        icon: Move,
+        onClick: () => (dialog.value = "m"),
+        isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
+        multi: true,
+      },
+      {
+        label: "Show Info",
+        icon: Info,
+        onClick: () => store.commit("setShowInfo", true),
+        isEnabled: () => !store.state.showInfo,
+        important: true,
+      },
+      {
+        label: "Hide Info",
+        icon: Info,
+        onClick: () => store.commit("setShowInfo", false),
+        isEnabled: () => store.state.showInfo,
+        important: true,
+      },
+      {
+        label: "Favourite",
+        icon: "star",
+        onClick: (entities) =>
+          toggleFav.submit({
+            entities,
+          }),
+        isEnabled: (e, multi) => !e.is_favourite || multi,
+        important: true,
+        multi: true,
+      },
+      {
+        label: "Unfavourite",
+        icon: "star",
+        onClick: (entities) =>
+          toggleFav.submit({
+            entities: entities.map((e) => ({
+              name: e.name,
+              is_favourite: false,
+            })),
+          }),
+        isEnabled: (e) => e.is_favourite,
+        important: true,
+        multi: true,
+      },
+      {
+        label: "Remove from Recents",
+        icon: "clock",
+        onClick: (entities) =>
+          clearRecent.submit(
+            {
+              entities,
+            },
+            {
+              onSuccess: () =>
+                entities.length > 1
+                  ? toast(`Cleared  ${entities.length} files from Recents`)
+                  : null,
+            }
+          ),
+        isEnabled: () => route.name === "Recents",
+        important: true,
+        multi: true,
+      },
+      {
+        label: "Unshare",
+        danger: true,
+        icon: "trash-2",
+        onClick: () => (dialog.value = "unshare"),
+        isEnabled: (e) =>
+          e.owner != "You" &&
+          e.user_doctype === "User" &&
+          e.everyone !== 1 &&
+          !this.isSharedFolder,
+      },
+      {
+        label: "Move to Trash",
+        icon: Trash,
+        danger: true,
+        onClick: () => (dialog.value = "remove"),
+        isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
+        important: true,
+        multi: true,
+      },
+    ]
+  }
+})
+</script>

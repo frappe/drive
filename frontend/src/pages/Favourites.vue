@@ -1,9 +1,6 @@
 <template>
-  <PageGeneric
-    url="drive.api.list.files"
-    :favourites="true"
-    :show-default-context-menu="false"
-    :show-sort="true"
+  <GenericPage
+    :getEntities="getFavourites"
     :icon="Star"
     :primaryMessage="'No Favourite Files'"
     :secondaryMessage="''"
@@ -11,6 +8,7 @@
 </template>
 
 <script setup>
-import PageGeneric from "@/components/PageGeneric.vue"
+import GenericPage from "@/components/GenericPage.vue"
 import Star from "../components/EspressoIcons/Star.vue"
+import { getFavourites } from "@/resources/files"
 </script>

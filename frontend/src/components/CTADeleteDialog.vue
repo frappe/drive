@@ -29,7 +29,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     entities: {
@@ -54,7 +54,7 @@ export default {
   computed: {
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue === "cta"
       },
       set(value) {
         this.$emit("update:modelValue", value)

@@ -7,10 +7,8 @@
   >
     <DriveToolBar :column-headers="showSort ? columnHeaders : null" />
 
-    <FolderContentsError
-      v-if="$resources.folderContents.error"
-      :error="$resources.folderContents.error"
-    />
+    <!-- This sucks, redo it -->
+    <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />
     <NoFilesSection
       v-else-if="folderItems && folderItems.length === 0"
       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -23,7 +21,6 @@
       :folder-contents="groupedByFolder"
       :override-can-load-more="overrideCanLoadMore"
       :action-items="actionItems"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
     />
     <GridView
@@ -33,7 +30,6 @@
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
       @open-entity="(entity) => openEntity(entity)"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
     />
     <EmptyEntityContextMenu
@@ -144,7 +140,8 @@
       "
     />
     <CTADeleteDialog
-      v-model="showCTADelete"
+      v-if="dialog === 'cta'"
+      v-model="dialog"
       :clear-all="clearAll"
       @success="
         () => {
@@ -152,7 +149,7 @@
           folderItems = null
           selectedEntities = []
           fetchNextPage()
-          showCTADelete = false
+          dialog = null
         }
       "
     />
@@ -202,6 +199,7 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { toast } from "../utils/toasts.js"
 import { capture } from "@/telemetry"
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
+import { getEntities } from "@/resources/files"
 
 export default {
   name: "PageGeneric",
@@ -283,6 +281,7 @@ export default {
     },
   },
   data: () => ({
+    getEntities,
     clickEvent: null,
     folderItems: null,
     previewEntity: null,
@@ -292,7 +291,6 @@ export default {
     pageOffset: 0,
     overrideCanLoadMore: false,
     clearAll: false,
-    showCTADelete: false,
     selectionElementStyle: {},
     selectionCoordinates: { x1: 0, x2: 0, y1: 0, y2: 0 },
     containerRect: null,
@@ -622,13 +620,27 @@ export default {
     },
   },
   mounted() {
+    getEntities.update({
+      params: {
+        entity_name: this.entityName,
+        order_by: this.orderBy,
+        offset: this.pageOffset,
+        limit: this.pageLength,
+        folders_first: this.foldersBefore,
+        is_active: this.isActive,
+        recents_only: this.recents,
+        favourites_only: this.favourites,
+        file_kind_list: JSON.stringify(this.filters),
+        tag_list: JSON.stringify(this.tags),
+      },
+    })
     this.fetchNextPage()
     this.emitter.on("fetchFolderContents", () => {
       this.handleListMutation()
     })
     this.emitter.on("showCTADelete", () => {
       this.clearAll = true
-      this.showCTADelete = true
+      this.dialog = "cta"
     })
     this.emitter.on("showShareDialog", () => (this.dialog = "s"))
     this.emitter.on("selectAll", () => {
@@ -746,12 +758,18 @@ export default {
     }, */
     fetchNextPage() {
       this.pageOffset = this.pageOffset + this.pageLength
-      this.$resources.folderContents.fetch().then((data) => {
+      getEntities.submit({ pageOffset: this.pageOffset }).then((data) => {
         this.overrideCanLoadMore = data.length < 60 ? false : true
         this.folderItems = this.folderItems
           ? this.folderItems.concat(data)
           : data
       })
+      // this.$resources.folderContents.fetch().then((data) => {
+      //   this.overrideCanLoadMore = data.length < 60 ? false : true
+      //   this.folderItems = this.folderItems
+      //     ? this.folderItems.concat(data)
+      //     : data
+      // })
     },
     resetAndFetch() {
       this.folderItems = null
