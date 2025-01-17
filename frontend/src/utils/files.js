@@ -33,3 +33,10 @@ export const openEntity = (entity) => {
     })
   }
 }
+
+export const groupByFolder = (entities) => {
+  return {
+    Folders: entities.filter((x) => x.is_group === 1),
+    Files: entities.filter((x) => x.is_group === 0),
+  }
+}

@@ -44,7 +44,7 @@ def eval_general_access(entity_name):
 def files(
     entity_name=None,
     order_by="modified",
-    is_active=1,
+    is_active=True,
     limit=100,
     offset=0,
     folders_first=True,
@@ -54,6 +54,11 @@ def files(
     file_kind_list=[],
     mime_type_list=[],
 ):
+    favourites_only = favourites_only == "true"
+    recents_only = recents_only == "true"
+    folders_first = folders_first == True or folders_first == "true"
+    is_active = is_active == True or is_active == "true"
+
     selectedFields = [
         DriveEntity.name,
         DriveEntity.title,
@@ -82,17 +87,6 @@ def files(
         DriveDocShare.share,
         DriveFavourite.entity.as_("is_favourite"),
     ]
-    favourites_only = json.loads(favourites_only)
-    recents_only = json.loads(recents_only)
-    if isinstance(folders_first, str):
-        try:
-            folders_first = json.loads(folders_first)
-        except json.JSONDecodeError:
-            frappe.log_error(
-                "Invalid JSON for folders_first: {}".format(folders_first), "JSONDecodeError"
-            )
-            folders_first = True
-    folders_first = bool(folders_first)
     general_access = eval_general_access(entity_name)
 
     if not entity_name:

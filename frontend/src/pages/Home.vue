@@ -1,8 +1,6 @@
 <template>
-  <PageGeneric
-    url="drive.api.list.files"
-    :show-default-context-menu="true"
-    :show-sort="true"
+  <GenericPage
+    :getEntities="getHome"
     :icon="Home"
     :primary-message="'Home is empty'"
     :secondary-message="'Add files by dropping them here'"
@@ -11,8 +9,9 @@
 
 <script setup>
 import Home from "../components/EspressoIcons/Home.vue"
-import PageGeneric from "@/components/PageGeneric.vue"
+import GenericPage from "@/components/GenericPage.vue"
 import { createResource } from "frappe-ui"
+import { getHome } from "@/resources/files"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 

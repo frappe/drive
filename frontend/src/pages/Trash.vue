@@ -1,16 +1,13 @@
 <template>
-  <PageGeneric
-    url="drive.api.list.files"
-    :show-default-context-menu="false"
-    :is-active="0"
-    :show-sort="true"
+  <GenericPage
+    :getEntities="getTrash"
     :icon="Trash"
     :primaryMessage="'Trash is Empty'"
-    :secondaryMessage="''"
   />
 </template>
 
 <script setup>
-import PageGeneric from "@/components/PageGeneric.vue"
+import GenericPage from "@/components/GenericPage.vue"
 import Trash from "../components/EspressoIcons/Trash.vue"
+import { getTrash } from "@/resources/files"
 </script>
