@@ -47,6 +47,7 @@
         :icon="item.icon"
         :label="item.label"
         :to="item.route"
+        @mouseenter="item.preload?.fetch?.()"
         :is-collapsed="!isExpanded"
         class="mb-0.5"
       />
@@ -84,6 +85,13 @@ import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
 import Home from "./EspressoIcons/Home.vue"
 import StorageBar from "./StorageBar.vue"
+import {
+  getHome,
+  getRecents,
+  getFavourites,
+  getTrash,
+  getShared,
+} from "@/resources/files"
 
 export default {
   name: "Sidebar",
@@ -125,6 +133,7 @@ export default {
           label: "Home",
           route: "/home",
           icon: Home,
+          preload: getHome,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Home",
         },
         {
@@ -132,6 +141,7 @@ export default {
           label: "Recents",
           route: "/recents",
           icon: Recent,
+          preload: getRecents,
           highlight:
             this.$store.state.currentBreadcrumbs[0].label === "Recents",
         },
@@ -140,6 +150,7 @@ export default {
           label: "Favourites",
           route: "/favourites",
           icon: Star,
+          preload: getFavourites,
           highlight:
             this.$store.state.currentBreadcrumbs[0].label === "Favourites",
         },
@@ -147,6 +158,7 @@ export default {
           enabled: true,
           label: "Shared",
           route: "/shared",
+          preload: getShared,
           icon: Users,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Shared",
         },
@@ -154,6 +166,7 @@ export default {
           enabled: true,
           label: "Trash",
           route: "/trash",
+          preload: getTrash,
           icon: Trash,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Trash",
         },

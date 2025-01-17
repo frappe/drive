@@ -1,10 +1,11 @@
-import { createResource, createListResource } from "frappe-ui"
+import { createResource } from "frappe-ui"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 
 // GETTERS
 const COMMON_OPTIONS = {
   method: "GET",
+  debounce: 500,
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
       this.$store.commit("setError", {
