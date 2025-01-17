@@ -1,11 +1,11 @@
 import JSZip from "jszip"
 import { toast } from "./toasts"
 
-export function selectedEntitiesDownload(selected_entities) {
-  if (selected_entities.length === 1) {
-    return selected_entities[0].is_group
-      ? folderDownload(selected_entities[0])
-      : (window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${selected_entities[0].name}&trigger_download=1`)
+export function entitiesDownload(entities) {
+  if (entities.length === 1) {
+    return entities[0].is_group
+      ? folderDownload(entities[0])
+      : (window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${entities[0].name}&trigger_download=1`)
   }
   const t = toast("Preparing download...")
   const generateRandomString = () =>
@@ -33,7 +33,7 @@ export function selectedEntitiesDownload(selected_entities) {
     }
   }
 
-  const promises = selected_entities.map((entity) => processEntity(entity, zip))
+  const promises = entities.map((entity) => processEntity(entity, zip))
 
   Promise.all(promises)
     .then(() => {

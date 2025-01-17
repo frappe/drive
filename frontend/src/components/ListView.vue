@@ -10,7 +10,8 @@
     }"
   >
     <ListHeader />
-    <template v-if="formattedRows.length">
+    <Loader v-if="!entities" />
+    <template v-else>
       <div v-for="group in formattedRows" :key="group.group">
         <ListGroupHeader :group="group">
           <slot
@@ -46,21 +47,20 @@
         </ListGroupRows>
       </div>
     </template>
-    <Loader v-else />
     <ListSelectBanner>
       <template #actions="{ selections }">
         <div class="flex gap-3">
           <Button
             v-for="(item, index) in actionItems
               .filter(
+                (i) => i.important && ([...selections].length === 1 || i.multi)
+              )
+              .filter(
                 (i) =>
                   !i.isEnabled ||
                   [...selections]
                     .map((n) => entities.find((e) => e.name === n))
                     .every((e) => i.isEnabled(e, [...selections].length !== 1))
-              )
-              .filter(
-                (i) => i.important && ([...selections].length === 1 || i.multi)
               )"
             :key="index"
             @click="
@@ -118,28 +118,23 @@ import { useRoute } from "vue-router"
 import { ref, computed, h } from "vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { openEntity } from "@/utils/files"
-
 const store = useStore()
 const route = useRoute()
 
 const props = defineProps({
-  folderContents: {
-    type: Object,
-    default: null,
-  },
+  folderContents: Object,
+  actionItems: Array,
+  entities: Array,
   overrideCanLoadMore: {
     type: Boolean,
     default: false,
   },
-  actionItems: {
-    type: Array,
-  },
 })
+const activeEntity = computed(() => store.state.activeEntity)
 const emit = defineEmits(["updateOffset"])
 
 const container = ref(null)
 
-const entities = computed(() => store.state.currentViewEntites)
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
   let groups = Object.keys(props.folderContents)
@@ -211,7 +206,7 @@ function openFile(entity) {
 }
 
 function handleAction(selectedItems, action) {
-  store.commit("setEntityInfo", selectedItems)
+  store.commit("setActiveEntity", selectedItems[0])
   action.onClick(selectedItems)
 }
 
@@ -221,7 +216,7 @@ function dropdownActionItems(row) {
     .map((a) => ({
       ...a,
       onClick: () => {
-        store.commit("setEntityInfo", [row])
+        store.commit("setActiveEntity", row)
         a.onClick([row])
       },
     }))

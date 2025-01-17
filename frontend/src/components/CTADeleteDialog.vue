@@ -77,8 +77,8 @@ export default {
       }
       if (this.$route.name === "Favourites") {
         this.title = "Clear favourites?"
-        this.message = "All your favourite items will ."
-        this.buttonText = "Unfavourite"
+        this.message = "All your favourite items will cleared."
+        this.buttonText = "Clear"
         this.url = "drive.api.files.set_favourites"
       }
       if (this.$route.name === "Trash") {

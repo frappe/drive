@@ -1,6 +1,9 @@
 import { createResource } from "frappe-ui"
+import { toast } from "@/utils/toasts"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
+
+import store from "@/store"
 
 // GETTERS
 const COMMON_OPTIONS = {
@@ -8,7 +11,7 @@ const COMMON_OPTIONS = {
   debounce: 500,
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
-      this.$store.commit("setError", {
+      store.commit("setError", {
         primaryMessage: "Forbidden",
         secondaryMessage: "Insufficient permissions for this resource",
       })
@@ -87,14 +90,34 @@ export const toggleFav = createResource({
       entities,
     }
   },
+  onSuccess() {
+    if (toggleFav.params.entities[0].is_favourite === false) {
+      toast(
+        `${
+          toggleFav.params.entities.length > 1
+            ? toggleFav.params.entities.length + " items removed"
+            : "Removed"
+        } from Favourites`
+      )
+    } else {
+      toast(
+        `${
+          toggleFav.params.entities.length > 1
+            ? toggleFav.params.entities.length + " items added"
+            : "Added"
+        } to Favourites`
+      )
+    }
+  },
 })
 
 export const clearRecent = createResource({
   url: "drive.api.files.remove_recents",
-  makeParams({ entities }) {
-    console.log(entities.map((e) => e.name))
-    return {
-      entity_names: entities.map((e) => e.name),
-    }
-  },
+  makeParams: ({ entities }) => ({
+    entity_names: entities.map((e) => e.name),
+  }),
+  onSuccess: () =>
+    clearRecent.params.entities.length > 1
+      ? toast(`Cleared  ${entities.length} files from Recents`)
+      : null,
 })
