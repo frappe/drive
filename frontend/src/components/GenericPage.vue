@@ -164,7 +164,6 @@ import { formatSize, formatDate } from "@/utils/format"
 import { getLink } from "@/utils/getLink"
 import { useTimeAgo } from "@vueuse/core"
 import { toggleFav, clearRecent } from "@/resources/files"
-import useEmitter from "@/utils/getEmitter"
 import { selectedEntitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
@@ -204,11 +203,11 @@ const container = ref(null)
 const dialog = ref(null)
 const selectedEntities = ref([])
 const pageOffset = ref(0)
+const entityName = ref("")
 const pageLength = 60
 
 const DEFAULT_PARAMS = computed(() => ({
-  entityName: "",
-  isSharedFolder: false,
+  entityName,
   pageLength,
   pageOffset,
 }))
