@@ -1,6 +1,5 @@
 <template>
   <div
-    ref="container"
     class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
     @contextmenu="handleContextMenu"
   >
@@ -17,6 +16,7 @@
       :secondary-message="secondaryMessage"
     />
     <ListView
+      ref="view"
       v-else-if="$store.state.view === 'list'"
       :folder-contents="getEntities.data && grouper(getEntities.data)"
       :entities="getEntities.data"
@@ -36,11 +36,11 @@
       v-model="dialog"
       :parent="$route.params.entityName"
       @success="
-        () => {
+        (data) => {
           // Will break if more folders exist than the pagelength
           // Need to check the sort and see where the newly created folder fits
           // And re-fetch that offset
-          handleListMutation()
+          handleListMutate({ new: true, data: data })
           dialog = null
         }
       "
@@ -51,7 +51,7 @@
       :entity="activeEntity"
       @success="
         (data) => {
-          handleListMutation(data.name)
+          handleListMutate({ data })
           dialog = null
         }
       "
@@ -64,7 +64,7 @@
       :for="'remove'"
       @success="
         () => {
-          handleListMutation()
+          handleListMutate({ delete: true, data: { name: activeEntity.name } })
           dialog = null
         }
       "
@@ -88,7 +88,7 @@
       :for="'restore'"
       @success="
         () => {
-          handleListMutation()
+          handleListMutate({ delete: true, data: { name: activeEntity.name } })
           dialog = null
         }
       "
@@ -104,7 +104,7 @@
       :entity="activeEntity"
       @success="
         () => {
-          handleListMutation(activeEntity.name)
+          handleListMutate({ delete: true, data: { name: activeEntity.name } })
           dialog = null
         }
       "
@@ -115,7 +115,12 @@
       :entities="activeEntity || getEntities.data"
       @success="
         () => {
-          offset = 0
+          if (activeEntity)
+            handleListMutate({
+              delete: true,
+              data: { name: activeEntity.name },
+            })
+          else getEntities.setData([])
           dialog = null
         }
       "
@@ -129,6 +134,7 @@
           offset = 0
           folderItems = null
           fetchNextPage()
+          handleListMutatation()
           dialog = null
         }
       "
@@ -171,7 +177,7 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { toast } from "../utils/toasts.js"
 import { capture } from "@/telemetry"
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
-import { ref, computed } from "vue"
+import { ref, computed, useTemplateRef } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { groupByFolder } from "@/utils/files"
@@ -190,7 +196,6 @@ const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
-const container = ref(null)
 const dialog = ref(null)
 const activeEntity = computed(() => store.state.activeEntity)
 
@@ -415,4 +420,14 @@ const actionItems = computed(() => {
     ]
   }
 })
+
+function handleListMutate({ data: newData, new: _new, delete: _delete }) {
+  props.getEntities.setData((data) => {
+    if (_new) data.push(newData)
+    const index = data.findIndex((o) => o.name === newData.name)
+    if (_delete) data.splice(index, 1)
+    else data.splice(index, 1, { ...data[index], ...newData })
+    return data
+  })
+}
 </script>

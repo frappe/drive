@@ -198,7 +198,7 @@ const DialogTitle = computed(() => {
   if (store.state.entityInfo.length > 1) {
     return `Moving ${store.state.entityInfo.length} items`
   } else {
-    return `Moving "${store.state.entityInfo[0].title}"`
+    return `Moving "${props.entity.title}"`
   }
 })
 

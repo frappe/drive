@@ -130,10 +130,10 @@ const props = defineProps({
     default: false,
   },
 })
-const activeEntity = computed(() => store.state.activeEntity)
 const emit = defineEmits(["updateOffset"])
-
 const container = ref(null)
+
+// Used for list mutation
 
 const formattedRows = computed(() => {
   if (!props.folderContents) return []

@@ -70,7 +70,7 @@ export default {
     if (props.entity?.is_group || props.entity?.document) {
       newName.value = props.entity.title
       if (route.meta.documentPage) {
-        store.state.entityInfo[0].title = newName.value
+        store.state.activeEntity.title = newName.value
       }
     } else {
       parsedName = props.entity?.title.split(".").slice(0, -1).join(".")
@@ -127,13 +127,13 @@ export default {
         },
         onSuccess(data) {
           toast({
-            title: `Renamed ${this.$store.state.entityInfo[0].title} to ${this.newName}`,
+            title: `Renamed ${this.$store.state.activeEntity.title} to ${this.newName}`,
             position: "bottom-right",
             timeout: 2,
           })
-          this.$store.state.entityInfo[0].title = data.title
+          this.$store.state.activeEntity.title = data.title
           this.$store.state.passiveRename = false
-          this.$emit("success", data)
+          this.$emit("success", { name: data.name, title: data.title })
           this.newName = ""
           this.extension = ""
           this.errorMessage = ""
