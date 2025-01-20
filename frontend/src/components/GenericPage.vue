@@ -177,7 +177,7 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { toast } from "../utils/toasts.js"
 import { capture } from "@/telemetry"
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
-import { ref, computed, useTemplateRef } from "vue"
+import { ref, computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { groupByFolder } from "@/utils/files"
@@ -197,6 +197,7 @@ const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
+const clearAll = ref(false)
 const activeEntity = computed(() => store.state.activeEntity)
 
 const page_offset = ref(0)
@@ -430,4 +431,10 @@ function handleListMutate({ data: newData, new: _new, delete: _delete }) {
     return data
   })
 }
+// emitter handling
+emitter.on("showCTADelete", () => {
+  clearAll.value = true
+  dialog.value = "cta"
+})
+emitter.on("showShareDialog", () => (dialog.value = "s"))
 </script>
