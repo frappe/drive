@@ -18,15 +18,12 @@
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
             v-if="
-              $route.name === 'Document' ||
-              $route.name === 'File' ||
-              $route.name === 'Whiteboard'
+              ($route.name === 'Document' ||
+                $route.name === 'File' ||
+                $route.name === 'Whiteboard') &&
+              $store.state.activeEntity.owner !== 'You'
             "
             :variant="'solid'"
-            :disabled="
-              $store.state.entityInfo[0]?.owner !== 'You' ||
-              $store.state.elementExists
-            "
             class="bg-gray-200 rounded flex justify-center items-center px-1"
             @click="emitter.emit('showShareDialog')"
           >
@@ -35,74 +32,22 @@
             </template>
             Share
           </Button>
-          <Button
-            v-else-if="$route.name === 'Recents'"
-            class="line-clamp-1 truncate w-full"
-            :disabled="
-              !currentViewEntites?.length || $store.state.elementExists
-            "
-            :variant="'subtle'"
-            @click="emitter.emit('showCTADelete')"
-          >
-            <template #prefix>
-              <FeatherIcon name="clock" class="w-4" />
-            </template>
-            Clear
-          </Button>
-          <Button
-            v-else-if="$route.name === 'Favourites'"
-            class="line-clamp-1 truncate"
-            :disabled="
-              !currentViewEntites?.length || $store.state.elementExists
-            "
-            :variant="'subtle'"
-            @click="emitter.emit('showCTADelete')"
-          >
-            <template #prefix>
-              <FeatherIcon name="file-minus" class="w-4" />
-            </template>
-            Clear
-          </Button>
-          <Button
-            v-else-if="$route.name === 'Trash'"
-            class="line-clamp-1 truncate"
-            :disabled="
-              !currentViewEntites?.length || $store.state.elementExists
-            "
-            theme="red"
-            :variant="'subtle'"
-            @click="emitter.emit('showCTADelete')"
-          >
-            <template #prefix>
-              <FeatherIcon name="trash-2" class="w-4" />
-            </template>
-            Empty Trash
-          </Button>
-
-          <Dropdown
-            v-else
-            :options="newEntityOptions"
-            placement="left"
-            class="basis-5/12 lg:basis-auto"
-          >
+          <template v-for="button of possibleButtons" :key="button.route">
             <Button
-              variant="solid"
-              :disabled="canUpload || $store.state.elementExists"
+              v-if="$route.name === button.route"
+              class="line-clamp-1 truncate w-full"
+              :disabled="!button.entities.data.length"
+              :variant="'subtle'"
+              @click="emitter.emit('showCTADelete')"
             >
               <template #prefix>
-                <FeatherIcon name="upload" class="w-4" />
+                <FeatherIcon :name="button.icon" class="w-4" />
               </template>
-              New
-              <template #suffix>
-                <FeatherIcon name="chevron-down" class="w-4" />
-              </template>
+              {{ button.label }}
             </Button>
-          </Dropdown>
+          </template>
         </div>
-        <div
-          v-if="!isLoggedIn && $store.state.user.fullName === 'Guest'"
-          class="ml-auto"
-        >
+        <div v-else class="ml-auto">
           <Button variant="solid" @click="$router.push({ name: 'Login' })">
             Sign In
           </Button>
@@ -110,401 +55,28 @@
       </div>
     </div>
   </nav>
-  <NewFolderDialog
-    v-model="showNewFolderDialog"
-    :parent="$route.params.entityName"
-    @success="
-      () => {
-        emitter.emit('fetchFolderContents')
-        showNewFolderDialog = false
-      }
-    "
-  />
-  <RenameDialog
-    v-if="showRenameDialog"
-    v-model="showRenameDialog"
-    :parent="$route.params.entityName"
-    :entity="selectedEntities[0] ? selectedEntities[0] : currentFolder[0]"
-    @success="
-      () => {
-        showRenameDialog = false
-      }
-    "
-  />
 </template>
-<script>
+<script setup>
 import UsersBar from "./UsersBar.vue"
-import { Dropdown, FeatherIcon, Button } from "frappe-ui"
-import NewFolderDialog from "@/components/NewFolderDialog.vue"
-import RenameDialog from "@/components/RenameDialog.vue"
+import { FeatherIcon, Button } from "frappe-ui"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
-import { formatDate } from "@/utils/format"
-import { getLink } from "@/utils/getLink"
-import { folderDownload, entitiesDownload } from "@/utils/download"
-import Printer from "./EspressoIcons/Printer.vue"
 import Share from "./EspressoIcons/Share.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Rename from "./EspressoIcons/Rename.vue"
-import Link from "./EspressoIcons/Link.vue"
-import Download from "./EspressoIcons/Download.vue"
-import NewFolder from "./EspressoIcons/NewFolder.vue"
-import FileUpload from "./EspressoIcons/File-upload.vue"
-import FolderUpload from "./EspressoIcons/Folder-upload.vue"
-import NewFile from "./EspressoIcons/NewFile.vue"
-import { capture } from "@/telemetry"
+import { useStore } from "vuex"
+import { computed } from "vue"
+import { getRecents, getFavourites, getTrash } from "@/resources/files"
 
-export default {
-  name: "Navbar",
-  components: {
-    RenameDialog,
-    NewFolderDialog,
-    Dropdown,
-    FeatherIcon,
-    Button,
-    Breadcrumbs,
-    UsersBar,
-    Share,
-  },
-  props: {
-    breadcrumbs: {
-      type: Array,
-      default: null,
-    },
-    mobileSidebarIsOpen: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ["toggleMobileSidebar", "fetchRecents"],
-  data() {
-    return {
-      previewEntity: null,
-      showNewFolderDialog: false,
-      showRenameDialog: false,
-      newEntityOptions: [
-        {
-          group: "Upload",
-          items: [
-            {
-              label: "Upload File",
-              icon: FileUpload,
-              onClick: () => this.emitter.emit("uploadFile"),
-            },
-            {
-              label: "Upload Folder",
-              icon: FolderUpload,
-              onClick: () => this.emitter.emit("uploadFolder"),
-              isEnabled: () => this.selectedEntities.length === 0,
-            },
-          ],
-        },
-        {
-          group: "New",
-          items: [
-            {
-              label: "New Folder",
-              icon: NewFolder,
-              onClick: () => (this.showNewFolderDialog = true),
-            },
-            {
-              label: "New Document",
-              icon: NewFile,
-              onClick: async () => {
-                await this.$resources.createDocument.submit({
-                  title: "Untitled Document",
-                  content: null,
-                  parent: this.$store.state.currentFolderID,
-                })
-                capture("new_document_created")
-                if (this.$store.state.editorNewTab) {
-                  window.open(
-                    this.$router.resolve({
-                      name: "Document",
-                      params: { entityName: this.previewEntity.name },
-                    }).href,
-                    "_blank"
-                  )
-                } else {
-                  this.$router.push({
-                    name: "Document",
-                    params: { entityName: this.previewEntity.name },
-                  })
-                }
-              },
+const store = useStore()
+const isLoggedIn = computed(() => store.getters.isLoggedIn)
+const connectedUsers = computed(() => store.state.connectedUsers)
 
-              isEnabled: () => this.selectedEntities?.length === 0,
-            },
-            {
-              label: "New Whiteboard",
-              icon: NewFile,
-              onClick: async () => {
-                await this.$resources.createWhiteboard.submit({
-                  title: "Untitled Whiteboard",
-                  content: null,
-                  parent: this.$store.state.currentFolderID,
-                })
-                if (this.$store.state.editorNewTab) {
-                  window.open(
-                    this.$router.resolve({
-                      name: "Whiteboard",
-                      params: { entityName: this.previewEntity.name },
-                    }).href,
-                    "_blank"
-                  )
-                } else {
-                  this.$router.push({
-                    name: "Whiteboard",
-                    params: { entityName: this.previewEntity.name },
-                  })
-                }
-              },
-              isEnabled: () => this.selectedEntities?.length === 0,
-            },
-          ],
-        },
-      ],
-    }
+const possibleButtons = [
+  { route: "Recents", label: "Clear", icon: "clock", entities: getRecents },
+  {
+    route: "Favourites",
+    label: "Clear",
+    icon: "star",
+    entities: getFavourites,
   },
-  computed: {
-    isButtonDisabled() {
-      if (document.getElementById("headlessui-portal-root")) {
-        return true
-      }
-      console.log(document.getElementById("headlessui-portal-root"))
-      return false
-    },
-    selectedEntities() {
-      if (this.$route.name === "Folder") {
-        return this.$store.state.currentFolder
-      }
-      return this.$store.state.entityInfo
-    },
-    actionItems() {
-      return [
-        {
-          label: "Download",
-          icon: Download,
-          onClick: () => {
-            window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
-          },
-          isEnabled: () => {
-            if (this.selectedEntities?.length === 1) {
-              if (
-                this.selectedEntities?.length === 1 &&
-                !this.selectedEntities[0]?.is_group &&
-                !this.selectedEntities[0]?.document
-              ) {
-                return (
-                  this.selectedEntities[0]?.allow_download ||
-                  this.selectedEntities[0]?.owner === "You"
-                )
-              }
-            }
-          },
-        },
-        {
-          label: "Print",
-          icon: Printer,
-          onClick: () => {
-            this.emitter.emit("printFile")
-          },
-          isEnabled: () => {
-            const validRoutes = ["File", "Document"]
-            const validFileKinds = ["Document", "Image", "PDF"]
-            if (
-              validRoutes.includes(this.$route.name) &&
-              this.selectedEntities[0]?.allow_download &&
-              validFileKinds.includes(this.selectedEntities[0]?.file_kind)
-            ) {
-              return true
-            }
-          },
-        },
-        {
-          label: "Download",
-          icon: Download,
-          onClick: () => {
-            if (this.selectedEntities.length > 1) {
-              let selected_entities = this.selectedEntities
-              entitiesDownload(selected_entities)
-            } else if (this.selectedEntities[0].is_group === 1) {
-              folderDownload(this.selectedEntities[0])
-            }
-          },
-          isEnabled: () => {
-            if (
-              this.selectedEntities?.length === 1 &&
-              !this.selectedEntities[0]?.is_group
-            ) {
-              return false
-            }
-            if (this.selectedEntities?.length) {
-              const allEntitiesSatisfyCondition = this.selectedEntities?.every(
-                (entity) => {
-                  return entity.allow_download || entity.owner === "You"
-                }
-              )
-              return allEntitiesSatisfyCondition
-            }
-          },
-        },
-        {
-          label: "Share",
-          icon: Share,
-          onClick: () => {
-            this.emitter.emit("showShareDialog")
-          },
-          isEnabled: () => {
-            return (
-              this.$route.name === "Folder" &&
-              this.$store.state.currentFolder[0]?.owner === "You"
-            )
-          },
-        },
-        {
-          label: "Get Link",
-          icon: Link,
-          onClick: () => {
-            getLink(this.selectedEntities[0])
-          },
-          isEnabled: () => {
-            return this.selectedEntities?.length === 1
-          },
-        },
-        {
-          label: "Rename",
-          icon: Rename,
-          onClick: () => {
-            this.showRenameDialog = true
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities?.length === 1 &&
-              (this.selectedEntities[0]?.write ||
-                this.selectedEntities[0]?.owner === "You")
-            )
-          },
-        },
-        {
-          label: "Favourite",
-          icon: Star,
-          onClick: () => {
-            this.$resources.toggleFavourite.submit()
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities?.length > 0 &&
-              this.isLoggedIn &&
-              this.selectedEntities?.every((x) => !x.is_favourite)
-            )
-          },
-        },
-        {
-          label: "Unfavourite",
-          icon: Star,
-          onClick: () => {
-            this.$resources.toggleFavourite.submit()
-          },
-          isEnabled: () => {
-            return (
-              this.selectedEntities?.length > 0 &&
-              this.selectedEntities?.every((x) => x.is_favourite)
-            )
-          },
-        },
-      ].filter((a) => !a.isEnabled || a.isEnabled())
-    },
-    fullName() {
-      return this.$store.state.user.fullName
-    },
-    imageURL() {
-      return this.$store.state.user.imageURL
-    },
-    isLoggedIn() {
-      return this.$store.getters.isLoggedIn
-    },
-    connectedUsers() {
-      return this.$store.state.connectedUsers
-    },
-    currentViewEntites() {
-      return this.$store.state.currentViewEntites
-    },
-    canUpload() {
-      if (
-        (this.$route.name === "Home" || this.$route.name === "Notifications") &&
-        this.$store.state.currentFolderID === this.$store.state.homeFolderID
-      ) {
-        return false
-      }
-      if (
-        this.$store.state.currentFolder[0]?.owner === "You" ||
-        this.$store.state.currentFolder[0]?.write === 1
-      ) {
-        return false
-      }
-      return true
-    },
-  },
-  methods: {
-    handleSelectedEntity() {
-      if (this.$route.name === "Folder") {
-        return this.$store.commit(
-          "setEntityInfo",
-          this.$store.state.currentFolder
-        )
-      }
-    },
-  },
-  resources: {
-    createDocument() {
-      return {
-        url: "drive.api.files.create_document_entity",
-        onSuccess(data) {
-          data.modified = formatDate(data.modified)
-          data.creation = formatDate(data.creation)
-          this.$store.commit("setEntityInfo", [data])
-          this.previewEntity = data
-          data.owner = "You"
-        },
-        onError(data) {
-          console.log(data)
-        },
-        auto: false,
-      }
-    },
-    createWhiteboard() {
-      return {
-        method: "POST",
-        url: "drive.api.files.create_whiteboard_entity",
-        onSuccess(data) {
-          data.modified = formatDate(data.modified)
-          data.creation = formatDate(data.creation)
-          this.$store.commit("setEntityInfo", [data])
-          this.previewEntity = data
-          data.owner = "You"
-        },
-        onError(error) {
-          console.log(error)
-        },
-        auto: false,
-      }
-    },
-    toggleFavourite() {
-      return {
-        method: "POST",
-        auto: false,
-        url: "drive.api.files.add_or_remove_favourites",
-        params: {
-          entity_names: JSON.stringify(
-            this.selectedEntities?.map((entity) => entity.name)
-          ),
-        },
-        onSuccess() {
-          this.$store.state.entityInfo[0].is_favourite =
-            !this.$store.state.entityInfo[0].is_favourite
-        },
-      }
-    },
-  },
-}
+  { route: "Trash", label: "Empty Trash", icon: "trash", entities: getTrash },
+]
 </script>
