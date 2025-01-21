@@ -1,113 +1,74 @@
 <template>
-  <Dialog v-model="open" :options="{ title: title, size: 'sm' }">
+  <Dialog v-model="open" :options="{ title: 'Are you sure?', size: 'sm' }">
     <template #body-content>
       <p class="text-gray-600">
-        {{ message }}
+        {{ current.message }}
       </p>
       <div class="flex mt-5">
         <Button
-          :variant="buttonVariant"
+          :variant="current.buttonVariant"
           theme="red"
           icon-left="trash-2"
           class="w-full"
-          :loading="$resources.action.loading"
-          @click="$resources.action.submit()"
+          :loading="current.resource.loading"
+          @click="current.resource.submit() && emit('success')"
         >
-          {{ buttonText }}
+          {{ current.buttonText }}
         </Button>
       </div>
     </template>
   </Dialog>
 </template>
-<script>
+<script setup>
 import { Dialog } from "frappe-ui"
+import { computed } from "vue"
+import { useRoute } from "vue-router"
+import { toggleFav, clearRecent, clearTrash } from "@/resources/files"
 
-export default {
-  name: "CTADeleteDialog",
-  components: {
-    Dialog,
+const props = defineProps({
+  modelValue: String,
+  clearAll: Boolean,
+  entities: Array,
+})
+const emit = defineEmits(["update:modelValue", "success"])
+
+const open = computed({
+  get: () => {
+    return props.modelValue === "cta"
   },
-  props: {
-    modelValue: {
-      type: String,
-      required: true,
-    },
-    entities: {
-      type: Array,
-      required: false,
-      default: null,
-    },
-    clearAll: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+  set: (value) => {
+    emit("update:modelValue", value)
   },
-  emits: ["update:modelValue", "success"],
-  data: () => ({
-    title: "",
-    message: "",
-    buttonText: "",
-    buttonVariant: "subtle",
-    url: null,
-  }),
-  computed: {
-    open: {
-      get() {
-        return this.modelValue === "cta"
-      },
-      set(value) {
-        this.$emit("update:modelValue", value)
-      },
-    },
-  },
-  mounted() {
-    this.evalDialog()
-    document.onkeydown = (e) => {
-      if (e.key === "Escape") this.open = false
-    }
-  },
-  methods: {
-    evalDialog() {
-      if (this.$route.name === "Recents") {
-        this.title = "Clear recents?"
-        this.message = "All your recently viewed files will be cleared."
-        this.buttonText = "Clear"
-        this.url = "drive.api.files.remove_recents"
-      }
-      if (this.$route.name === "Favourites") {
-        this.title = "Clear favourites?"
-        this.message = "All your favourite items will cleared."
-        this.buttonText = "Clear"
-        this.url = "drive.api.files.set_favourites"
-      }
-      if (this.$route.name === "Trash") {
-        this.title = "Delete forever?"
-        this.message =
-          "All items in your Trash will be deleted forever. This is an irreversible process."
-        this.buttonVariant = "solid"
-        this.buttonText = "Delete"
-        this.url = "drive.api.files.delete_entities"
-      }
-    },
-  },
-  resources: {
-    action() {
-      return {
-        url: this.url,
-        params: {
-          clear_all: true,
-        },
-        onSuccess(data) {
-          this.$emit("success", data)
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
-        },
-      }
-    },
-  },
+})
+
+// this.evalDialog()
+
+document.onkeydown = (e) => {
+  if (e.key === "Escape") open.value = false
 }
+
+const route = useRoute()
+const dialogConfigs = [
+  {
+    route: "Recents",
+    message: "All your recently viewed files will be cleared.",
+    buttonText: "Clear",
+    resource: clearRecent,
+  },
+  {
+    route: "Favourites",
+    message: "All your favourite items will be cleared.",
+    buttonText: "Clear",
+    resource: toggleFav,
+  },
+  {
+    route: "Trash",
+    message:
+      "All items in your Trash will be deleted forever. This is an irreversible process.",
+    buttonVariant: "solid",
+    buttonText: "Delete",
+    resource: clearTrash,
+  },
+]
+const current = dialogConfigs.find(({ route: _route }) => _route === route.name)
 </script>

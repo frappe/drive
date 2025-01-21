@@ -131,10 +131,8 @@
       :clear-all="clearAll"
       @success="
         () => {
-          offset = 0
-          folderItems = null
-          fetchNextPage()
-          handleListMutatation()
+          getEntities.setData([])
+          handleListMutate({ delete: true, all: true })
           dialog = null
         }
       "
@@ -422,11 +420,12 @@ const actionItems = computed(() => {
   }
 })
 
-function handleListMutate({ data: newData, new: _new, delete: _delete }) {
+function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
   props.getEntities.setData((data) => {
     if (_new) data.push(newData)
     const index = data.findIndex((o) => o.name === newData.name)
-    if (_delete) data.splice(index, 1)
+    if (_delete && all) data.splice(0, data.length)
+    else if (_delete && !all) data.splice(index, 1)
     else data.splice(index, 1, { ...data[index], ...newData })
     return data
   })

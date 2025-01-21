@@ -38,6 +38,7 @@
               class="line-clamp-1 truncate w-full"
               :disabled="!button.entities.data.length"
               :variant="'subtle'"
+              :theme="button.theme || 'gray'"
               @click="emitter.emit('showCTADelete')"
             >
               <template #prefix>
@@ -77,6 +78,12 @@ const possibleButtons = [
     icon: "star",
     entities: getFavourites,
   },
-  { route: "Trash", label: "Empty Trash", icon: "trash", entities: getTrash },
+  {
+    route: "Trash",
+    label: "Empty Trash",
+    icon: "trash",
+    entities: getTrash,
+    theme: "red",
+  },
 ]
 </script>
