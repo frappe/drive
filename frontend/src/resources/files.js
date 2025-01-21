@@ -4,6 +4,7 @@ import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 
 import store from "@/store"
+import router from "@/router"
 
 // GETTERS
 const COMMON_OPTIONS = {
@@ -15,7 +16,7 @@ const COMMON_OPTIONS = {
         primaryMessage: "Forbidden",
         secondaryMessage: "Insufficient permissions for this resource",
       })
-      this.$router.replace({ name: "Error" })
+      router.replace({ name: "Error" })
     }
   },
   transform(data) {
@@ -44,6 +45,12 @@ export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   cache: "home-folder-contents",
+})
+
+// Separate for cache purposes
+export const getFolderContents = createResource({
+  ...COMMON_OPTIONS,
+  url: "drive.api.list.files",
 })
 
 export const getRecents = createResource({

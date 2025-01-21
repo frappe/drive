@@ -16,8 +16,8 @@
       :secondary-message="secondaryMessage"
     />
     <ListView
-      ref="view"
       v-else-if="$store.state.view === 'list'"
+      ref="view"
       :folder-contents="getEntities.data && grouper(getEntities.data)"
       :entities="getEntities.data"
       :override-can-load-more="overrideCanLoadMore"
@@ -25,7 +25,10 @@
       @update-offset="() => (page_offset += page_length)"
     />
     <EmptyEntityContextMenu
-      v-if="$route.name === 'Home' && defaultContextTriggered"
+      v-if="
+        ($route.name === 'Home' || $route.name === 'Folder') &&
+        defaultContextTriggered
+      "
       v-on-outside-click="() => (defaultContextTriggered = false)"
       :close="() => (defaultContextTriggered = false)"
       :action-items="defaultActionItems"
@@ -175,7 +178,7 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { toast } from "../utils/toasts.js"
 import { capture } from "@/telemetry"
 import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { groupByFolder } from "@/utils/files"
@@ -197,9 +200,9 @@ const store = useStore()
 const dialog = ref(null)
 const clearAll = ref(false)
 const activeEntity = computed(() => store.state.activeEntity)
+const entity_name = computed(() => store.state.currentFolderID)
 
 const page_offset = ref(0)
-const entity_name = ref("")
 const page_length = 1
 const DEFAULT_PARAMS = computed(() => ({
   entity_name,
