@@ -85,10 +85,12 @@ export const getTrash = createResource({
 // SETTERS
 export const toggleFav = createResource({
   url: "drive.api.files.set_favourite",
-  makeParams({ entities }) {
-    return {
-      entities,
-    }
+  makeParams(data) {
+    return data
+      ? {
+          entities: data.entities,
+        }
+      : { clear_all: true }
   },
   onSuccess() {
     if (toggleFav.params.entities[0].is_favourite === false) {
@@ -113,11 +115,30 @@ export const toggleFav = createResource({
 
 export const clearRecent = createResource({
   url: "drive.api.files.remove_recents",
-  makeParams: ({ entities }) => ({
-    entity_names: entities.map((e) => e.name),
-  }),
+  makeParams: (data) =>
+    data
+      ? {
+          entity_names: data.entities.map((e) => e.name),
+        }
+      : { clear_all: true },
   onSuccess: () =>
-    clearRecent.params.entities.length > 1
-      ? toast(`Cleared  ${entities.length} files from Recents`)
+    getRecents.previousData > 1
+      ? toast(`Cleared  ${getRecents.previousData.length} files from Recents`)
       : null,
+})
+
+export const clearTrash = createResource({
+  url: "drive.api.files.delete_entities",
+  makeParams: (data) =>
+    data
+      ? {
+          entity_names: data.entities.map((e) => e.name),
+        }
+      : { clear_all: true },
+  onSuccess: () =>
+    toast(
+      `Permanently deleted  ${clearRecent.params.entities} file${
+        clearRecent.params.entities === 1 ? "" : "s"
+      }.`
+    ),
 })
