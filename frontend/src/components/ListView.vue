@@ -10,7 +10,7 @@
     }"
   >
     <ListHeader />
-    <Loader v-if="!entities" />
+    <Loader v-if="!entities || entities.loading" />
     <template v-else>
       <div v-for="group in formattedRows" :key="group.group">
         <ListGroupHeader :group="group">

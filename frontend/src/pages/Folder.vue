@@ -1,24 +1,22 @@
 <template>
-  <PageGeneric
+  <GenericPage
     v-if="currentFolder.fetched"
-    url="drive.api.list.files"
-    :show-sort="true"
-    :is-shared-folder="isSharedFolder"
-    :entity-name="entityName"
+    :getEntities="getFolderContents"
+    :allowEmpty
     :icon="Folder"
     :primaryMessage="'Folder is Empty'"
-    :secondaryMessage="''"
   />
 </template>
 
 <script setup>
 import Folder from "../components/EspressoIcons/Folder.vue"
-import PageGeneric from "@/components/PageGeneric.vue"
+import GenericPage from "@/components/GenericPage.vue"
 import { ref, inject, onMounted, onBeforeUnmount } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { formatDate } from "@/utils/format"
+import { getFolderContents } from "@/resources/files"
 
 const store = useStore()
 const router = useRouter()
@@ -33,6 +31,8 @@ const props = defineProps({
     default: "",
   },
 })
+getFolderContents.reset()
+getFolderContents.update({ entity_name: props.entityName })
 
 onMounted(() => {
   realtime.doc_subscribe("Drive Entity", props.entityName)
