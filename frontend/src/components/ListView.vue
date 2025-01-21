@@ -27,13 +27,24 @@
             :row="row"
             @dblclick="openFile(row)"
           >
-            <template #="{ column, item }">
+            <template #="{ idx, column, item }">
               <ListRowItem
                 :column="column"
                 :row="row"
                 :item="item"
                 :align="column.align"
               >
+                <template v-if="idx === 0" #suffix>
+                  <div class="grow justify-items-end">
+                    <FeatherIcon
+                      v-if="row.is_favourite"
+                      name="star"
+                      width="16"
+                      height="16"
+                      class="stroke-amber-500 fill-amber-500"
+                    />
+                  </div>
+                </template>
                 <template v-if="column.key === 'options'">
                   <Dropdown :options="dropdownActionItems(row)">
                     <Button class="bg-white">
@@ -170,14 +181,13 @@ const selectedColumns = [
   },
   {
     label: "Owner",
-    key: "owner",
+    getLabel: ({ row }) => row.owner.label,
     prefix: ({ row }) =>
       h(Avatar, {
         shape: "circle",
         image: row.user_image,
         label: row.full_name,
         size: "sm",
-        tooltip: "Hey",
       }),
   },
   {
@@ -187,7 +197,7 @@ const selectedColumns = [
   },
   {
     label: "Size",
-    key: "file_size",
+    key: "",
     getLabel: ({ row }) => row.file_size || "-",
   },
   { label: "", key: "options", align: "right", width: "10px" },

@@ -311,7 +311,6 @@ const actionItems = computed(() => {
         label: "Preview",
         icon: Preview,
         onClick: ([entity]) => openEntity(entity),
-        important: true,
       },
       {
         label: "Download",
@@ -349,20 +348,19 @@ const actionItems = computed(() => {
         onClick: () => (dialog.value = "m"),
         isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
         multi: true,
+        important: true,
       },
       {
         label: "Show Info",
         icon: Info,
         onClick: () => store.commit("setShowInfo", true),
         isEnabled: () => !store.state.showInfo,
-        important: true,
       },
       {
         label: "Hide Info",
         icon: Info,
         onClick: () => store.commit("setShowInfo", false),
         isEnabled: () => store.state.showInfo,
-        important: true,
       },
       {
         label: "Favourite",
