@@ -4,23 +4,16 @@
       <Input
         ref="input"
         v-model="folderName"
-        placeholder="Untitled Folder"
+        placeholder="New folder"
         type="text"
-        @keyup.enter="
-          (e) =>
-            $resources.createFolder.submit({
-              title: e.target.value.trim(),
-              parent,
-            })
-        "
+        @keyup.enter="submit"
       />
-      <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
         <Button
           variant="solid"
           class="w-full"
-          :loading="$resources.createFolder.loading"
-          @click="$resources.createFolder.submit()"
+          :loading="createFolder.loading"
+          @click="submit"
         >
           Create
         </Button>
@@ -29,83 +22,45 @@
   </Dialog>
 </template>
 
-<script>
-import { ref } from "vue"
-import { useFocus } from "@vueuse/core"
-import { Dialog, Input, ErrorMessage } from "frappe-ui"
+<script setup>
+import { ref, computed } from "vue"
+import { Dialog, Input, createResource } from "frappe-ui"
 
-export default {
-  name: "NewFolderDialog",
-  components: {
-    Dialog,
-    Input,
-    ErrorMessage,
-  },
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true,
-    },
-    parent: {
-      type: String,
-      default: "",
-    },
-  },
-  emits: ["update:modelValue", "success"],
-  setup() {
-    const input = ref()
-    const { focused } = useFocus(input, { initialValue: true })
+const props = defineProps({
+  modelValue: String,
+  parent: String,
+})
+const emit = defineEmits(["update:modelValue", "success", "mutate"])
+const folderName = ref("")
+
+const createFolder = createResource({
+  url: "drive.api.files.create_folder",
+  makeParams(title) {
     return {
-      input,
-      focused,
+      title,
+      parent: props.parent,
     }
   },
-  data() {
-    return {
-      folderName: "",
-      errorMessage: "",
+  validate(params) {
+    if (!params?.title) {
+      return "Folder name is required"
     }
   },
-  computed: {
-    open: {
-      get() {
-        return this.modelValue === "f"
-      },
-      set(value) {
-        this.$emit("update:modelValue", value)
-        if (!value) {
-          this.folderName = ""
-          this.errorMessage = ""
-        }
-      },
-    },
+  onSuccess(data) {
+    folderName.value = ""
+    emit("success", data)
   },
-  resources: {
-    createFolder() {
-      return {
-        url: "drive.api.files.create_folder",
-        params: {
-          title: this.folderName,
-          parent: this.parent,
-        },
-        /* validate(params) {
-          if (!params?.title) {
-            return "Folder name is required";
-          }
-        }, */
-        onSuccess(data) {
-          this.folderName = ""
-          this.$emit("success", data)
-        },
-        onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n")
-          } else {
-            this.errorMessage = error.message
-          }
-        },
-      }
-    },
+})
+
+const open = computed({
+  get: () => {
+    return props.modelValue === "f"
   },
-}
+  set: (value) => {
+    emit("update:modelValue", value)
+    if (!value) folderName.value = ""
+  },
+})
+
+const submit = () => createFolder.submit(folderName.value.trim())
 </script>

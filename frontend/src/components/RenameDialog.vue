@@ -3,11 +3,10 @@
     <template #body-content>
       <div class="flex items-center justify-center">
         <Input
-          ref="input"
           v-model="newName"
           class="w-full"
           type="text"
-          @keyup.enter="$resources.rename.submit"
+          @keyup.enter="submit"
         />
         <span
           v-if="entity.file_ext"
@@ -19,134 +18,57 @@
           {{ entity.file_ext.toUpperCase().slice(1) }}
         </span>
       </div>
-      <ErrorMessage class="mt-2" :message="errorMessage" />
       <div class="flex mt-8">
-        <Button
-          variant="solid"
-          class="w-full"
-          :loading="$resources.rename.loading"
-          @click="$resources.rename.submit"
-        >
-          Rename
-        </Button>
+        <Button variant="solid" class="w-full" @click="submit"> Rename </Button>
       </div>
     </template>
   </Dialog>
 </template>
 
-<script>
-import { ref } from "vue"
-import { Dialog, Input, ErrorMessage, Badge } from "frappe-ui"
-import { useFocus } from "@vueuse/core"
+<script setup>
+import { ref, computed } from "vue"
+import { Dialog, Input } from "frappe-ui"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { toast } from "../utils/toasts.js"
+import { rename } from "@/resources/files"
 
-export default {
-  name: "RenameDialog",
-  components: {
-    Dialog,
-    Input,
-    ErrorMessage,
-    Badge,
+const props = defineProps({ modelValue: Boolean })
+const emit = defineEmits(["update:modelValue", "success", "mutate"])
+const newName = ref("")
+const store = useStore()
+const entity = computed(() => store.state.activeEntity)
+
+if (entity.value.is_group || entity.value.document) {
+  newName.value = entity.value.title
+  if (useRoute().meta.documentPage) {
+    store.state.activeEntity.title = newName.value
+  }
+} else {
+  newName.value = entity.value.title.split(".").slice(0, -1).join(".").trim()
+}
+
+const open = computed({
+  get: () => {
+    return props.modelValue === "rn"
   },
-  props: {
-    modelValue: {
-      type: String,
-      required: true,
-    },
-    entity: {
-      type: Object,
-      required: false,
-      default: null,
-    },
+  set: (value) => {
+    emit("update:modelValue", value)
+    if (!value) newName.value = ""
   },
-  emits: ["update:modelValue", "success"],
-  setup(props) {
-    const newName = ref("")
-    const route = useRoute()
-    const store = useStore()
-    let parsedName = ""
-    if (props.entity?.is_group || props.entity?.document) {
-      newName.value = props.entity.title
-      if (route.meta.documentPage) {
-        store.state.activeEntity.title = newName.value
-      }
-    } else {
-      parsedName = props.entity?.title.split(".").slice(0, -1).join(".")
-    }
-    newName.value = parsedName?.length > 1 ? parsedName : props.entity?.title
-    const input = ref()
-    const { focused } = useFocus(input, { initialValue: true })
-    return {
-      input,
-      focused,
-      newName,
-    }
-  },
-  data() {
-    return {
-      errorMessage: "",
-      extension: "",
-    }
-  },
-  computed: {
-    entityName() {
-      return this.entity?.name
-    },
-    fullName() {
-      let trimmed_name = this.newName.trim()
-      if (this.entity?.file_ext) {
-        return trimmed_name + this.entity.file_ext
-      } else {
-        return trimmed_name
-      }
-    },
-    open: {
-      get() {
-        return this.modelValue === "rn"
-      },
-      set(value) {
-        this.$emit("update:modelValue", value)
-        if (!value) {
-          this.newName = ""
-          this.errorMessage = ""
-        }
-      },
-    },
-  },
-  resources: {
-    rename() {
-      return {
-        url: "drive.api.files.call_controller_method",
-        method: "POST",
-        params: {
-          method: "rename",
-          entity_name: this.entityName,
-          new_title: this.fullName,
-        },
-        onSuccess(data) {
-          toast({
-            title: `Renamed ${this.$store.state.activeEntity.title} to ${this.newName}`,
-            position: "bottom-right",
-            timeout: 2,
-          })
-          this.$store.state.activeEntity.title = data.title
-          this.$store.state.passiveRename = false
-          this.$emit("success", { name: data.name, title: data.title })
-          this.newName = ""
-          this.extension = ""
-          this.errorMessage = ""
-        },
-        onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n")
-          } else {
-            this.errorMessage = error.message
-          }
-        },
-      }
-    },
-  },
+})
+
+const submit = () => {
+  emit("mutate", {
+    name: entity.value.name,
+    title: entity.value.file_ext
+      ? newName.value + entity.value.file_ext
+      : newName.value,
+  })
+  rename.submit({
+    entity_name: entity.value.name,
+    new_title: entity.value.file_ext
+      ? newName.value + entity.value.file_ext
+      : newName.value,
+  })
 }
 </script>
