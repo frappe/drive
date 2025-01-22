@@ -20,7 +20,6 @@
       ref="view"
       :folder-contents="getEntities.data && grouper(getEntities.data)"
       :entities="getEntities.data"
-      :override-can-load-more="overrideCanLoadMore"
       :action-items="actionItems"
       @update-offset="() => (page_offset += page_length)"
     />
@@ -40,11 +39,8 @@
       :parent="$route.params.entityName"
       @success="
         (data) => {
-          // Will break if more folders exist than the pagelength
-          // Need to check the sort and see where the newly created folder fits
-          // And re-fetch that offset
-          handleListMutate({ new: true, data: data })
-          dialog = null
+          handleListMutate({ new: true, data })
+          resetDialog()
         }
       "
     />
@@ -52,12 +48,8 @@
       v-if="dialog === 'rn'"
       v-model="dialog"
       :entity="activeEntity"
-      @success="
-        (data) => {
-          handleListMutate({ data })
-          dialog = null
-        }
-      "
+      @trigger="mutate"
+      @success="resetDialog"
     />
     <!-- BROKEN - multiple allowing? -->
     <GeneralDialog
@@ -155,11 +147,8 @@ import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "../components/MoveDialog.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
-import EntityContextMenu from "@/components/EntityContextMenu.vue"
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
-import { formatSize, formatDate } from "@/utils/format"
 import { getLink } from "@/utils/getLink"
-import { useTimeAgo } from "@vueuse/core"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
@@ -185,7 +174,6 @@ import { groupByFolder } from "@/utils/files"
 import emitter from "@/event-bus.js"
 
 const props = defineProps({
-  url: String,
   grouper: { type: Function, default: groupByFolder },
   showSort: { type: Boolean, default: true },
   icon: Object,
@@ -202,16 +190,8 @@ const clearAll = ref(false)
 const activeEntity = computed(() => store.state.activeEntity)
 const entity_name = computed(() => store.state.currentFolderID)
 
-const page_offset = ref(0)
-const page_length = 1
-const DEFAULT_PARAMS = computed(() => ({
-  entity_name,
-  page_length,
-  page_offset,
-}))
-
 props.getEntities.update({
-  params: DEFAULT_PARAMS.value,
+  params: { entity_name },
 })
 props.getEntities.fetch()
 
@@ -365,13 +345,14 @@ const actionItems = computed(() => {
       {
         label: "Favourite",
         icon: "star",
-        onClick: (entities) =>
-          toggleFav.submit({
-            entities: entities.map((e) => ({
-              name: e.name,
-              is_favourite: true,
-            })),
-          }),
+        onClick: (entities) => {
+          entities = entities.map((e) => ({
+            name: e.name,
+            is_favourite: true,
+          }))
+          toggleFav.submit({ entities })
+          entities.map((data) => handleListMutate({ data }))
+        },
         isEnabled: (e, multi) => !e.is_favourite || multi,
         important: true,
         multi: true,
@@ -379,13 +360,14 @@ const actionItems = computed(() => {
       {
         label: "Unfavourite",
         icon: "star",
-        onClick: (entities) =>
-          toggleFav.submit({
-            entities: entities.map((e) => ({
-              name: e.name,
-              is_favourite: false,
-            })),
-          }),
+        onClick: (entities) => {
+          entities = entities.map((e) => ({
+            name: e.name,
+            is_favourite: false,
+          }))
+          toggleFav.submit({ entities })
+          entities.map((data) => handleListMutate({ data }))
+        },
         isEnabled: (e) => e.is_favourite,
         important: true,
         multi: true,
@@ -437,4 +419,7 @@ emitter.on("showCTADelete", () => {
   dialog.value = "cta"
 })
 emitter.on("showShareDialog", () => (dialog.value = "s"))
+
+const resetDialog = () => (dialog.value = null)
+const mutate = (data) => handleListMutate({ data })
 </script>
