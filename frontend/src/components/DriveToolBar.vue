@@ -110,12 +110,12 @@
               @click.stop="toggleAscending"
             >
               <DownArrow
-                :class="{ '[transform:rotateX(180deg)]': ascending }"
+                :class="{ '[transform:rotateX(180deg)]': !sortOrder.ascending }"
                 class="h-3.5"
               />
             </Button>
             <Button class="text-sm h-7 rounded-l-none flex-1 md:block">
-              {{ orderByLabel }}
+              {{ sortOrder.label }}
             </Button>
           </div>
         </Dropdown>
@@ -152,7 +152,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { FeatherIcon, Button, Dropdown } from "frappe-ui"
 import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
@@ -169,159 +169,86 @@ import Image from "./MimeIcons/Image.vue"
 import Video from "./MimeIcons/Video.vue"
 import PDF from "./MimeIcons/PDF.vue"
 import Unknown from "./MimeIcons/Unknown.vue"
+import { computed, onMounted, watch } from "vue"
+import { useStore } from "vuex"
 
-export default {
-  name: "DriveToolBar",
-  components: {
-    Button,
-    Dropdown,
-    ViewList,
-    ViewGrid,
-    DownArrow,
-    Filter,
-    ChevronDown,
-    FeatherIcon,
-    Folder,
-    Archive,
-    Document,
-    Spreadsheet,
-    Presentation,
-    Audio,
-    Image,
-    Video,
-    PDF,
-    Unknown,
+const store = useStore()
+const props = defineProps({
+  columnHeaders: Array,
+})
+const sortOrder = defineModel()
+
+const activeFilters = computed(() => store.state.activeFilters)
+const activeTags = computed(() => store.state.activeTags)
+const orderByItems = computed(() => {
+  return props.columnHeaders.map((header) => ({
+    ...header,
+    onClick: () =>
+      (sortOrder.value = {
+        field: header.field,
+        label: header.label,
+        ascending: sortOrder.value.ascending,
+      }),
+  }))
+})
+const TYPES = [
+  {
+    label: "Folder",
+    icon: Folder,
   },
-  props: {
-    breadcrumbs: {
-      type: Array,
-      default: null,
-    },
-    columnHeaders: {
-      type: Array,
-      default: null,
-    },
-    actionLoading: {
-      type: Boolean,
-      default: false,
-    },
+  {
+    label: "Image",
+    icon: Image,
   },
-  computed: {
-    activeFilters() {
-      return this.$store.state.activeFilters
-    },
-    activeTags() {
-      return this.$store.state.activeTags
-    },
-    orderByField() {
-      return this.$store.state.sortOrder.field
-    },
-    orderByLabel() {
-      return this.$store.state.sortOrder.label
-    },
-    ascending() {
-      return this.$store.state.sortOrder.ascending
-    },
-    orderByItems() {
-      return this.columnHeaders.map((header) => ({
-        ...header,
-        onClick: () => {
-          this.$store.commit("setSortOrder", {
-            field: header.field,
-            label: header.label,
-            ascending: this.ascending,
-          })
-        },
-      }))
-    },
-    filterItems() {
-      return [
-        {
-          label: "Folder",
-          icon: Folder,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Folder")
-          },
-        },
-        {
-          label: "Image",
-          icon: Image,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Image")
-          },
-        },
-        {
-          label: "Audio",
-          icon: Audio,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Audio")
-          },
-        },
-        {
-          label: "Video",
-          icon: Video,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Video")
-          },
-        },
-        {
-          label: "PDF",
-          icon: PDF,
-          onClick: () => {
-            this.$store.state.activeFilters.push("PDF")
-          },
-        },
-        {
-          label: "Document",
-          icon: Document,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Document")
-          },
-        },
-        {
-          label: "Spreadsheet",
-          icon: Spreadsheet,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Spreadsheet")
-          },
-        },
-        {
-          label: "Archive",
-          icon: Archive,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Archive")
-          },
-        },
-        {
-          label: "Presentation",
-          icon: Presentation,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Presentation")
-          },
-        },
-        {
-          label: "Unknown",
-          icon: Unknown,
-          onClick: () => {
-            this.$store.state.activeFilters.push("Unknown")
-          },
-        },
-      ].filter((item) => !this.activeFilters.includes(item.label))
-    },
+  {
+    label: "Audio",
+    icon: Audio,
   },
-  mounted() {
-    for (let element of this.$el.getElementsByTagName("button")) {
-      element.classList.remove("focus:ring-2", "focus:ring-offset-2")
-    }
+  {
+    label: "Video",
+    icon: Video,
   },
-  methods: {
-    toggleAscending() {
-      this.$store.commit("setSortOrder", {
-        field: this.orderByField,
-        label: this.orderByLabel,
-        ascending: !this.ascending,
-      })
-    },
+  {
+    label: "PDF",
+    icon: PDF,
   },
+  {
+    label: "Document",
+    icon: Document,
+  },
+  {
+    label: "Spreadsheet",
+    icon: Spreadsheet,
+  },
+  {
+    label: "Archive",
+    icon: Archive,
+  },
+  {
+    label: "Presentation",
+    icon: Presentation,
+  },
+  {
+    label: "Unknown",
+    icon: Unknown,
+  },
+]
+TYPES.forEach((t) => {
+  t.onClick = () => store.state.activeFilters.push(t.label)
+})
+const filterItems = computed(() => {
+  return TYPES.filter((item) => !activeFilters.value.includes(item.label))
+})
+onMounted(() => {
+  for (let element of document.getElementsByTagName("button")) {
+    element.classList.remove("focus:ring-2", "focus:ring-offset-2")
+  }
+})
+const toggleAscending = () => {
+  sortOrder.value = {
+    field: sortOrder.value.field,
+    label: sortOrder.value.label,
+    ascending: !sortOrder.value.ascending,
+  }
 }
 </script>
