@@ -46,6 +46,7 @@ export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   cache: "home-folder-contents",
+  auto: true,
 })
 
 // Separate for cache purposes
@@ -61,6 +62,7 @@ export const getRecents = createResource({
   makeParams: (params) => {
     return { ...params, recents_only: true }
   },
+  auto: true,
 })
 
 export const getFavourites = createResource({
@@ -89,6 +91,7 @@ export const getTrash = createResource({
   makeParams: (params) => {
     return { ...params, is_active: false }
   },
+  auto: true,
 })
 
 // SETTERS

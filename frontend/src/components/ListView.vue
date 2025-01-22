@@ -28,7 +28,7 @@
             @click="setActive(row)"
             @dblclick="openEntity(row)"
           >
-            <template #="{ idx, column, item }">
+            <template #default="{ idx, column, item }">
               <ListRowItem
                 :column="column"
                 :row="row"

@@ -4,7 +4,7 @@
     @contextmenu="handleContextMenu"
   >
     <!-- <DriveToolBar :column-headers="showSort ? columnHeaders : null" /> -->
-    <DriveToolBar :column-headers="null" />
+    <DriveToolBar v-model="sortOrder" :column-headers="columnHeaders" />
 
     <!-- This sucks, redo it -->
     <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />
@@ -163,9 +163,6 @@ import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
-import { toast } from "../utils/toasts.js"
-import { capture } from "@/telemetry"
-import { calculateRectangle, handleDragSelect } from "@/utils/dragSelect"
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
@@ -186,13 +183,26 @@ const store = useStore()
 
 const dialog = ref(null)
 const clearAll = ref(false)
+const sortOrder = ref({
+  label: "Name",
+  field: "title",
+  ascending: true,
+})
 const activeEntity = computed(() => store.state.activeEntity)
 const entity_name = computed(() => store.state.currentFolderID)
-
-props.getEntities.update({
-  params: { entity_name },
-})
-props.getEntities.fetch()
+watch(
+  sortOrder,
+  () => {
+    console.log(sortOrder)
+    props.getEntities.fetch({
+      entity_name: entity_name.value,
+      order_by: sortOrder.value.ascending
+        ? sortOrder.value.field
+        : sortOrder.value.field + " desc",
+    })
+  },
+  { immediate: true }
+)
 
 const clickEvent = ref(null)
 const defaultContextTriggered = ref(false)
@@ -426,4 +436,27 @@ const mutate = (data) => {
   handleListMutate({ data })
   resetDialog()
 }
+
+const columnHeaders = [
+  {
+    label: "Name",
+    field: "title",
+  },
+  {
+    label: "Owner",
+    field: "owner",
+  },
+  {
+    label: "Modified",
+    field: "modified",
+  },
+  {
+    label: "Size",
+    field: "file_size",
+  },
+  {
+    label: "Type",
+    field: "mime_type",
+  },
+]
 </script>
