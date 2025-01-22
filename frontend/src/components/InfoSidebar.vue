@@ -7,16 +7,7 @@
         : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
     "
   >
-    <div v-if="typeof entity === 'number'">
-      <div class="w-full px-5 py-4 border-b overflow-visible">
-        <div class="flex items-center">
-          <div class="font-medium truncate text-lg">
-            {{ store.state.entityInfo.length }} items selected
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-else-if="entity">
+    <div v-if="entity">
       <div class="w-full px-5 py-4 border-b">
         <div class="flex items-center">
           <div class="font-medium truncate text-lg">
@@ -257,67 +248,39 @@ import File from "./EspressoIcons/File.vue"
 import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
-import Tag from "@/components/Tag.vue"
 import TagInput from "@/components/TagInput.vue"
 const store = useStore()
 const tab = ref(0)
-const addTag = ref(false)
 const newComment = ref("")
 const thumbnailLink = ref("")
 
-const userId = computed(() => {
-  return store.state.auth.user_id
-})
+const userId = computed(() => store.state.auth.user_id)
+const fullName = computed(() => store.state.user.fullName)
+const imageURL = computed(() => store.state.user.imageURL)
 
-const fullName = computed(() => {
-  return store.state.user.fullName
-})
-
-const imageURL = computed(() => {
-  return store.state.user.imageURL
-})
-
-const showInfoSidebar = computed(() => {
-  return store.state.showInfo
-})
+const showInfoSidebar = computed(() => store.state.showInfo)
 
 const formattedMimeType = computed(() => {
   if (entity.value.is_group) return "Folder"
   const file = entity.value.file_kind
   return file?.charAt(0).toUpperCase() + file?.slice(1)
 })
-
-const entity = computed(() => {
-  if (store.state.activeEntity) return store.state.activeEntity
-  else if (store.state.currentFolder?.length)
-    return store.state.currentFolder[0]
-  return false
-})
-
+const entity = computed(() => store.state.activeEntity)
 const sharedWithList = computed(() => {
   return userList.data?.users.concat(groupList.data)
 })
 
-const showComments = computed(() => {
-  if (entity.value.owner === "You") {
-    return true
-  } else if (entity.value.write) {
-    return true
-  } else if (entity.value.allow_comments) {
-    return true
-  } else {
-    return false
-  }
-})
+const showComments = computed(
+  () =>
+    entity.value &&
+    (entity.value.owner === "You" ||
+      entity.value.write ||
+      entity.value.allow_comments)
+)
 
-const showActivity = computed(() => {
-  if (entity.value.owner === "You") {
-    return true
-  } else if (entity.value.write) {
-    return true
-  }
-  return false
-})
+const showActivity = computed(
+  () => entity.value && (entity.value.owner === "You" || entity.value.write)
+)
 
 function switchTab(val) {
   if (store.state.showInfo == false) {

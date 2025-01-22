@@ -42,7 +42,7 @@ const store = createStore({
     elementExists: false,
     activeFilters: [],
     activeTags: [],
-    activeEntity: {},
+    activeEntity: null,
     notifCount: 0,
     entityInfo:
       JSON.parse(localStorage.getItem("selectedEntities")) ||

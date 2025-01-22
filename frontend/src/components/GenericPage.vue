@@ -49,7 +49,6 @@
       v-model="dialog"
       :entity="activeEntity"
       @trigger="mutate"
-      @success="resetDialog"
     />
     <!-- BROKEN - multiple allowing? -->
     <GeneralDialog
@@ -334,13 +333,13 @@ const actionItems = computed(() => {
         label: "Show Info",
         icon: Info,
         onClick: () => store.commit("setShowInfo", true),
-        isEnabled: () => !store.state.showInfo,
+        isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
         label: "Hide Info",
         icon: Info,
         onClick: () => store.commit("setShowInfo", false),
-        isEnabled: () => store.state.showInfo,
+        isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
         label: "Favourite",
@@ -404,6 +403,7 @@ const actionItems = computed(() => {
 })
 
 function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
+  console.log("in", newData)
   props.getEntities.setData((data) => {
     if (_new) data.push(newData)
     const index = data.findIndex((o) => o.name === newData.name)
@@ -413,6 +413,7 @@ function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
     return data
   })
 }
+
 // emitter handling
 emitter.on("showCTADelete", () => {
   clearAll.value = true
@@ -421,5 +422,8 @@ emitter.on("showCTADelete", () => {
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 
 const resetDialog = () => (dialog.value = null)
-const mutate = (data) => handleListMutate({ data })
+const mutate = (data) => {
+  handleListMutate({ data })
+  resetDialog()
+}
 </script>
