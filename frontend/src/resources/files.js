@@ -37,7 +37,8 @@ const COMMON_OPTIONS = {
       entity.relativeModified = useTimeAgo(entity.modified)
       entity.modified = formatDate(entity.modified)
       entity.creation = formatDate(entity.creation)
-      entity.owner = true ? "You" : entity.full_name
+      entity.owner =
+        entity.owner === store.state.auth.user_id ? "You" : entity.full_name
     })
   },
 }

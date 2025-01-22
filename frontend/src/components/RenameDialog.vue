@@ -32,7 +32,7 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { rename } from "@/resources/files"
 
-const props = defineProps({ modelValue: Boolean })
+const props = defineProps({ modelValue: String })
 const emit = defineEmits(["update:modelValue", "success", "mutate"])
 const newName = ref("")
 const store = useStore()
@@ -58,7 +58,13 @@ const open = computed({
 })
 
 const submit = () => {
-  emit("mutate", {
+  console.log({
+    name: entity.value.name,
+    title: entity.value.file_ext
+      ? newName.value + entity.value.file_ext
+      : newName.value,
+  })
+  emit("trigger", {
     name: entity.value.name,
     title: entity.value.file_ext
       ? newName.value + entity.value.file_ext

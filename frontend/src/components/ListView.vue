@@ -15,8 +15,8 @@
       <div v-for="group in formattedRows" :key="group.group">
         <ListGroupHeader :group="group">
           <slot
-            name="group-header"
             v-if="$slots['group-header']"
+            name="group-header"
             v-bind="{ group }"
           />
         </ListGroupHeader>
@@ -25,7 +25,8 @@
             v-for="row in group.rows"
             :key="row.name"
             :row="row"
-            @dblclick="openFile(row)"
+            @click="setActive(row)"
+            @dblclick="openEntity(row)"
           >
             <template #="{ idx, column, item }">
               <ListRowItem
@@ -123,28 +124,20 @@ import {
 import Loader from "@/components/Loader.vue"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
-import { useInfiniteScroll } from "@vueuse/core"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
-import { ref, computed, h } from "vue"
+import { computed, h, ref } from "vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { openEntity } from "@/utils/files"
+
 const store = useStore()
 const route = useRoute()
-
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
   entities: Array,
-  overrideCanLoadMore: {
-    type: Boolean,
-    default: false,
-  },
 })
-const emit = defineEmits(["updateOffset"])
-const container = ref(null)
-
-// Used for list mutation
+const selectedRow = ref(null)
 
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
@@ -201,32 +194,23 @@ const selectedColumns = [
     getLabel: ({ row }) => row.file_size || "-",
   },
   { label: "", key: "options", align: "right", width: "10px" },
-].filter((k) => (k.enabled ? k.enabled(route.name) : true))
+].filter((k) => !k.enabled || k.enabled(route.name))
 
-useInfiniteScroll(container, () => emit("updateOffset"), {
-  direction: "bottom",
-  distance: 150,
-  interval: 2000,
-  canLoadMore: () => props.overrideCanLoadMore,
-})
-
-function openFile(entity) {
-  store.commit("setEntityInfo", [entity])
-  openEntity(entity)
+const setActive = (entity) => {
+  store.commit("setActiveEntity", entity)
+  selectedRow.value = entity.name
 }
 
-function handleAction(selectedItems, action) {
-  store.commit("setActiveEntity", selectedItems[0])
+const handleAction = (selectedItems, action) => {
   action.onClick(selectedItems)
 }
 
-function dropdownActionItems(row) {
+const dropdownActionItems = (row) => {
   return props.actionItems
     .filter((a) => !a.isEnabled || a.isEnabled(row))
     .map((a) => ({
       ...a,
       onClick: () => {
-        store.commit("setActiveEntity", row)
         a.onClick([row])
       },
     }))

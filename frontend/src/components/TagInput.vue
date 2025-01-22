@@ -7,17 +7,17 @@
             class="flex items-center justify-start min-w-full flex-wrap gap-2"
           >
             <Tag
-              v-for="tag in $resources.entityTags.data"
+              v-for="tag in entityTags.data"
               :key="tag.name"
               :allow-delete="isOpen"
               :tag="tag"
               :entity="entity"
               @click="filterByTag(tag)"
-              @success="$resources.entityTags.fetch()"
+              @success="entityTags.fetch()"
             >
             </Tag>
             <span
-              v-if="!$resources.entityTags.data?.length"
+              v-if="!entityTags.data?.length"
               class="text-gray-700 text-base"
             >
               This file has no tags
@@ -42,9 +42,9 @@
               @input="tagInputText = $event"
               @keydown.enter="
                 (e) =>
-                  $resources.createTag.submit({
+                  createTag.submit({
                     title: tagInputText.trim(),
-                    color: randomColor(),
+                    color: getRandomColor(),
                   })
               "
             />
@@ -57,7 +57,7 @@
                 :key="item"
                 class="flex items-center justify-start px-1.5 py-1 hover:bg-gray-100 w-full rounded cursor-pointer"
                 @click="
-                  $resources.addTag.submit({
+                  addTag.submit({
                     entity: entity.name,
                     tag: item.name,
                   })
@@ -101,9 +101,9 @@
               class="mr-auto px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
               @click="
                 (e) =>
-                  $resources.createTag.submit({
+                  createTag.submit({
                     title: tagInputText.trim(),
-                    color: randomColor(),
+                    color: getRandomColor(),
                   })
               "
             >
@@ -111,7 +111,7 @@
             </Button>
             <Button
               class="px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
-              @click="$resources.removeTag.submit()"
+              @click="removeTag.submit()"
             >
               Clear all
             </Button>
@@ -122,140 +122,85 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { getRandomColor } from "@/utils/random-color"
-import { Input, Popover } from "frappe-ui"
+import { createResource, Input, Popover } from "frappe-ui"
+import { ref, computed } from "vue"
 import Tag from "./Tag.vue"
-import { routeLocationKey } from "vue-router"
+import { useStore } from "vuex"
+import { useRoute } from "vue-router"
 
-export default {
-  name: "TagInput",
-  components: {
-    Input,
-    Popover,
-    Tag,
-  },
+const store = useStore()
+const route = useRoute()
 
-  props: {
-    entity: {
-      type: Object,
-      required: true,
-      default: null,
-    },
-  },
+const props = defineProps({ entity: Object })
+const emit = defineEmits(["success", "close"])
+const showTagInput = ref(false)
+const tagInputText = ref("")
+const hackyFlag = ref(false)
 
-  emits: ["success", "close"],
-  expose: ["togglePopover"],
-  data() {
-    return {
-      showTagInput: false,
-      tagInputText: "",
-      hackyFlag: false, // temporary hacky flag to circumvent v-on-outside-click from running on mounting
-    }
-  },
+const unaddedTags = computed(() => {
+  return userTags?.data?.filter(
+    ({ name: id1 }) => !entityTags.data?.some?.(({ name: id2 }) => id2 === id1)
+  )
+})
 
-  computed: {
-    unaddedTags() {
-      return this.$resources.userTags?.data?.filter(
-        ({ name: id1 }) =>
-          !this.$resources.entityTags?.data?.some(
-            ({ name: id2 }) => id2 === id1
-          )
-      )
-    },
+const filteredTags = computed(() => {
+  return unaddedTags.value.filter((x) =>
+    x.title.toLowerCase().startsWith(tagInputText.value.toLowerCase())
+  )
+})
 
-    filteredTags() {
-      return this.unaddedTags?.filter((x) =>
-        x.title.toLowerCase().startsWith(this.tagInputText.toLowerCase())
-      )
-    },
-  },
-
-  methods: {
-    togglePopover(val) {
-      this.showTagInput = val ?? !this.showTagInput
-    },
-    randomColor() {
-      return getRandomColor()
-    },
-    closeInput() {
-      if (this.hackyFlag) this.$emit("close")
-      this.hackyFlag = !this.hackyFlag
-    },
-    filterByTag(tag) {
-      if (this.$route.name === "File" || this.$route.name === "Document") return
-      this.$store.state.activeTags.push(tag)
-    },
-  },
-
-  resources: {
-    userTags() {
-      return {
-        url: "drive.api.tags.get_user_tags",
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
-        },
-        auto: true,
-      }
-    },
-    entityTags() {
-      return {
-        url: "drive.api.tags.get_entity_tags",
-        params: { entity: this.entity.name },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
-        },
-        auto: true,
-      }
-    },
-    createTag() {
-      return {
-        url: "drive.api.tags.create_tag",
-        onSuccess(data) {
-          this.$resources.addTag.submit({
-            entity: this.entity.name,
-            tag: data,
-          })
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
-        },
-      }
-    },
-    removeTag() {
-      return {
-        url: "drive.api.tags.remove_tag",
-        params: {
-          entity: this.entity.name,
-          all: true,
-        },
-        onSuccess() {
-          this.$resources.entityTags.fetch()
-          this.$emit("success")
-        },
-      }
-    },
-    addTag() {
-      return {
-        url: "drive.api.tags.add_tag",
-        onSuccess() {
-          this.$emit("success")
-          this.$resources.entityTags.fetch()
-          this.$resources.userTags.fetch()
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
-        },
-      }
-    },
-  },
+const closeInput = () => {
+  if (hackyFlag.value) emit("close")
+  hackyFlag.value = !hackyFlag.value
 }
+
+const filterByTag = (tag) => {
+  if (route.name === "File" || route.name === "Document") return
+  store.state.activeTags.push(tag)
+}
+const userTags = createResource({
+  url: "drive.api.tags.get_user_tags",
+  auto: true,
+})
+
+const entityTags = createResource({
+  url: "drive.api.tags.get_entity_tags",
+  makeParams: () => {
+    return { entity: props.entity.name }
+  },
+  auto: true,
+})
+
+const createTag = createResource({
+  url: "drive.api.tags.create_tag",
+  onSuccess(data) {
+    addTag.submit({
+      entity: props.entity.name,
+      tag: data,
+    })
+  },
+})
+
+const removeTag = createResource({
+  url: "drive.api.tags.remove_tag",
+  makeParams: () => ({
+    entity: props.entity.name,
+    all: true,
+  }),
+  onSuccess() {
+    entityTags.fetch()
+    emit("success")
+  },
+})
+
+const addTag = createResource({
+  url: "drive.api.tags.add_tag",
+  onSuccess() {
+    emit("success")
+    entityTags.fetch()
+    userTags.fetch()
+  },
+})
 </script>

@@ -97,7 +97,7 @@ def edit_tag(tag, title, color):
 
 
 @frappe.whitelist()
-def remove_tag(entity, tag):
+def remove_tag(entity, tag=None, all=False):
     """
     Remove tag from entity
 
@@ -107,7 +107,7 @@ def remove_tag(entity, tag):
 
     entity_doc = frappe.get_doc("Drive Entity", entity)
     for tag_doc in entity_doc.tags:
-        if tag_doc.tag == tag and tag_doc.owner == frappe.session.user:
+        if (tag_doc.tag == tag or all) and tag_doc.owner == frappe.session.user:
             tag_doc.delete(ignore_permissions=True)
 
 
