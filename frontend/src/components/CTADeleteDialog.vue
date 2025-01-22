@@ -41,8 +41,6 @@ const open = computed({
   },
 })
 
-// this.evalDialog()
-
 document.onkeydown = (e) => {
   if (e.key === "Escape") open.value = false
 }
