@@ -1,0 +1,57 @@
+{
+  "actions": [],
+  "autoname": "UUID",
+  "creation": "2025-01-23 16:04:40.527171",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": ["entity", "user", "level"],
+  "fields": [
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User"
+    },
+    {
+      "fieldname": "level",
+      "fieldtype": "Int",
+      "in_list_view": 1,
+      "label": "Level",
+      "reqd": 1
+    },
+    {
+      "fieldname": "entity",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Entity",
+      "options": "Drive Entity",
+      "reqd": 1
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2025-01-23 16:27:46.594384",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Permission",
+  "naming_rule": "UUID",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": [],
+  "title_field": "entity"
+}
