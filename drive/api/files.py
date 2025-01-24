@@ -49,10 +49,7 @@ def if_folder_exists(folder_name, parent):
 def get_home_folder_id():
     """Returns user directory name from user's unique id"""
     if "Drive Guest" in frappe.get_roles(frappe.session.user):
-        frappe.throw(
-            "Access forbidden: You do not have permission to access this resource.",
-            frappe.PermissionError,
-        )
+        frappe.throw("", frappe.PermissionError)
 
     return hashlib.md5(frappe.session.user.encode("utf-8")).hexdigest()
 

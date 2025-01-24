@@ -191,7 +191,7 @@ const selectedColumns = [
   {
     label: "Size",
     key: "",
-    getLabel: ({ row }) => row.file_size || "-",
+    getLabel: ({ row }) => row.file_size_pretty,
   },
   { label: "", key: "options", align: "right", width: "10px" },
 ].filter((k) => !k.enabled || k.enabled(route.name))

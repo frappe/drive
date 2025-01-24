@@ -20,25 +20,13 @@ const COMMON_OPTIONS = {
     }
   },
   transform(data) {
-    data.forEach((entity) => {
-      entity.size_in_bytes = entity.file_size
-      if (entity.is_group) {
-        if (entity.item_count === 0 || entity.item_count > 0) {
-          entity.file_size = entity.item_count + " item"
-          if (entity.item_count > 1) {
-            entity.file_size = entity.item_count + " items"
-          }
-        } else {
-          entity.file_size = ""
-        }
-      } else {
-        entity.file_size = formatSize(entity.file_size)
-      }
+    return Object.entries(data).map(([name, entity]) => {
+      entity.name = name
+      entity.file_size_pretty = formatSize(entity.file_size)
       entity.relativeModified = useTimeAgo(entity.modified)
       entity.modified = formatDate(entity.modified)
       entity.creation = formatDate(entity.creation)
-      entity.owner =
-        entity.owner === store.state.auth.user_id ? "You" : entity.full_name
+      return entity
     })
   },
 }
@@ -46,13 +34,13 @@ export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   cache: "home-folder-contents",
-  auto: true,
 })
 
 // Separate for cache purposes
 export const getFolderContents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
+  makeParams: (params) => params,
 })
 
 export const getRecents = createResource({
@@ -62,14 +50,12 @@ export const getRecents = createResource({
   makeParams: (params) => {
     return { ...params, recents_only: true }
   },
-  auto: true,
 })
 
 export const getFavourites = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   cache: "favourite-folder-contents",
-  auto: true,
   makeParams: (params) => {
     return { ...params, favourites_only: true }
   },
@@ -91,7 +77,6 @@ export const getTrash = createResource({
   makeParams: (params) => {
     return { ...params, is_active: false }
   },
-  auto: true,
 })
 
 // SETTERS

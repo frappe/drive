@@ -1,146 +1,90 @@
 import frappe
 import json
 from drive.utils.files import get_user_directory
+from .permissions import get_teams
 from pypika import Order, Criterion, Case, functions as fn
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
 DriveEntity = frappe.qb.DocType("Drive Entity")
+Entity = frappe.qb.DocType("Drive Entity")
+Team = frappe.qb.DocType("Drive Team")
+TeamMember = frappe.qb.DocType("Drive Team Member")
 DriveFavourite = frappe.qb.DocType("Drive Favourite")
 DriveDocShare = frappe.qb.DocType("Drive DocShare")
-DriveRecent = frappe.qb.DocType("Drive Entity Log")
+Recents = frappe.qb.DocType("Drive Entity Log")
 DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 
-parent_folder = None
-query = None
+ENTITY_FIELDS = [
+    "name",
+    "title",
+    "is_group",
+    "modified",
+    "creation",
+    "file_size",
+    "file_ext",
+    "color",
+    "document",
+    "parent_entity",
+]
 
 
-def validate_parent(entity_name):
-    entity_name, is_group, is_active = frappe.db.get_value(
-        "Drive Entity", entity_name, ["name", "is_group", "is_active"]
-    )
-    if not is_group:
-        frappe.throw("Specified entity is not a folder", NotADirectoryError)
-    if not is_active:
-        frappe.throw("Specified folder has been trashed by the owner")
-    return
-
-
-def eval_general_access(entity_name):
-    is_public = False
-    if frappe.db.exists(
-        {
-            "doctype": "Drive DocShare",
-            "share_doctype": "Drive Entity",
-            "share_name": entity_name,
-            "public": 1,
-        }
-    ):
-        is_public = True
-    return "public" if is_public else "everyone"
-
-
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def files(
+    team,
     entity_name=None,
-    order_by="modified",
-    is_active=True,
-    limit=100,
+    order_by="title",
+    is_active=1,
     offset=0,
-    folders_first=True,
-    favourites_only=False,
-    recents_only=False,
+    favourites_only=0,
+    recents_only=0,
     tag_list=[],
-    file_kind_list=[],
-    mime_type_list=[],
 ):
-    favourites_only = favourites_only == "true"
-    recents_only = recents_only == "true"
-    folders_first = folders_first == True or folders_first == "true"
-    is_active = is_active == True or is_active == "true"
+    teams = get_teams()
+    print(team, get_teams())
+    if team not in teams:
+        raise frappe.exceptions.PageDoesNotExistError()
 
-    selectedFields = [
-        DriveEntity.name,
-        DriveEntity.title,
-        DriveEntity.is_group,
-        DriveEntity.owner,
-        DriveUser.full_name,
-        DriveUser.user_image,
-        DriveEntity.modified,
-        DriveEntity.creation,
-        DriveEntity.file_size,
-        DriveEntity.file_kind,
-        DriveEntity.file_ext,
-        DriveEntity.color,
-        DriveEntity.document,
-        DriveEntity.mime_type,
-        DriveEntity.parent_drive_entity,
-        DriveEntity.allow_download,
-        DriveEntity.is_active,
-        DriveEntity.allow_comments,
-        DriveDocShare.read,
-        DriveDocShare.user_name,
-        DriveDocShare.user_doctype,
-        DriveDocShare.write,
-        DriveDocShare.public,
-        DriveDocShare.everyone,
-        DriveDocShare.share,
-        DriveFavourite.entity.as_("is_favourite"),
-    ]
-    general_access = eval_general_access(entity_name)
-
+    # If not specified, get home folder
     if not entity_name:
-        entity_name = get_user_directory(frappe.session.user).name
-
-    if recents_only:
-        selectedFields.append(DriveRecent.last_interaction.as_("modified"))
-    query = (
-        frappe.qb.from_(DriveEntity)
-        .left_join(DriveDocShare)
-        .on((DriveDocShare.share_name == DriveEntity.name))
-        .left_join(UserGroupMember)
-        .on((UserGroupMember.parent == DriveDocShare.user_name))
-        .left_join(DriveUser)
-        .on((DriveEntity.owner == DriveUser.email))
-        .offset(offset)
-        .limit(limit)
-        .select(*selectedFields)
-    )
-
-    query = query.where(DriveEntity.parent_drive_entity == entity_name).where(
-        (DriveEntity.is_active == is_active)
-        & (
-            (UserGroupMember.user == frappe.session.user)
-            | (
-                (DriveDocShare.user_name == frappe.session.user)
-                | (DriveDocShare[general_access] == 1)
-                | (DriveEntity.owner == frappe.session.user)
-            )
-        )
-    )
-    if folders_first:
-        query = query.orderby(
-            Case().when(DriveEntity.is_group == True, 1).else_(2),
-            Order.desc,
-        )
-    if favourites_only:
-        query = query.right_join(DriveFavourite).on(
-            (DriveFavourite.entity == DriveEntity.name)
-            & (DriveFavourite.user == frappe.session.user)
-        )
+        entity_name = (
+            frappe.qb.from_(Entity)
+            .where(((Entity.team == team) & Entity.parent_entity.isnull()))
+            .select(Entity.name)
+            .run(as_dict=True)
+        )[0]["name"]
+    # Verify that entity exists and is part of the team
     else:
-        query = query.left_join(DriveFavourite).on(
-            (DriveFavourite.entity == DriveEntity.name)
-            & (DriveFavourite.user == frappe.session.user)
-        )
+        if not frappe.qb.from_(Entity).where((Entity.name == entity_name) & (Entity.team == team)):
+            raise frappe.exceptions.PageDoesNotExistError()
+
+    # Get all the children entities
+    query = (
+        frappe.qb.from_(Entity)
+        .join(TeamMember)
+        .on((TeamMember.parenttype == "Drive Entity") & (TeamMember.parent == Entity.name))
+        .where(Entity.parent_entity == entity_name)
+        .where(Entity.is_active == is_active)
+        .offset(offset)
+        .limit(100)
+        .select(*ENTITY_FIELDS, TeamMember.user)
+    )
+
+    # Get favourites data (only that, if applicable)
+    if favourites_only:
+        query = query.right_join(DriveFavourite)
+    else:
+        query = query.left_join(DriveFavourite)
+    query = query.on(
+        (DriveFavourite.entity == DriveEntity.name) & (DriveFavourite.user == frappe.session.user)
+    )
+
     if recents_only:
         query = (
-            query.right_join(DriveRecent)
-            .on(
-                (DriveRecent.entity_name == DriveEntity.name)
-                & (DriveRecent.user == frappe.session.user)
-            )
-            .orderby(DriveRecent.last_interaction, order=Order.desc)
+            query.select(Recents.last_interaction.as_("modified"))
+            .right_join(Recents)
+            .on((Recents.entity_name == Entity.name) & (Recents.user == frappe.session.user))
+            .orderby(Recents.last_interaction, order=Order.desc)
         )
     else:
         query = query.orderby(
@@ -148,24 +92,20 @@ def files(
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
 
-    if file_kind_list:
-        file_kind_list = json.loads(file_kind_list)
-        file_kind_criterion = [DriveEntity.file_kind == file_kind for file_kind in file_kind_list]
-        query = query.where(Criterion.any(file_kind_criterion))
-
     if tag_list:
         tag_list = json.loads(tag_list)
         query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
         tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
         query = query.where(Criterion.any(tag_list_criterion))
 
-    if mime_type_list:
-        mime_type_list = json.loads(mime_type_list)
-        mime_type_criterion = [DriveEntity.mime_type == mime_type for mime_type in mime_type_list]
-        query = query.where((Criterion.any(mime_type_criterion)) | (DriveEntity.is_group == True))
-
-    query = query.groupby(DriveEntity.name)
-    result = query.run(as_dict=True)
+    result = {}
+    for r in query.run(as_dict=True):
+        name = r.pop("name")
+        if name in result:
+            result[name]["owners"].append(r["user"])
+        else:
+            r["owners"] = [r.pop("user")]
+            result[name] = r
     return result
 
 
