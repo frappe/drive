@@ -189,13 +189,12 @@ const sortOrder = ref({
   ascending: true,
 })
 const activeEntity = computed(() => store.state.activeEntity)
-const entity_name = computed(() => store.state.currentFolderID)
+
 watch(
   sortOrder,
   () => {
-    console.log(sortOrder)
     props.getEntities.fetch({
-      entity_name: entity_name.value,
+      team: route.params.team,
       order_by: sortOrder.value.ascending
         ? sortOrder.value.field
         : sortOrder.value.field + " desc",

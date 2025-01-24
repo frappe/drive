@@ -8,10 +8,8 @@ from drive.utils.files import (
     create_user_directory,
     get_new_title,
     get_user_thumbnails_directory,
-    create_user_thumbnails_directory,
     create_thumbnail,
 )
-from drive.utils.user_group import add_new_user_group_docshare, does_exist_user_group_docshare
 from frappe.utils import cint
 from drive.api.format import mime_to_human
 from drive.api.files import get_ancestors_of
@@ -20,12 +18,6 @@ from drive.api.activity import create_new_activity_log
 
 
 class DriveEntity(Document):
-    def before_save(self):
-        self.version = self.version + 1
-
-    def before_insert(self):
-        self.file_kind = mime_to_human(self.mime_type, self.is_group)
-
     def after_insert(self):
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
         message = f"{full_name} created {self.title}"
@@ -84,8 +76,7 @@ class DriveEntity(Document):
 
     def inherit_permissions(self):
         """Cascade parent permissions to new child entity"""
-
-        if self.parent_drive_entity is None:
+        if self.parent_entity is None:
             return
 
         permissions = frappe.get_all(
@@ -102,13 +93,13 @@ class DriveEntity(Document):
                 "owner",
                 "creation",
             ],
-            filters=dict(share_doctype=self.doctype, share_name=self.parent_drive_entity),
+            filters=dict(share_doctype=self.doctype, share_name=self.parent_entity),
         )
 
         parent_folder = frappe.db.get_value(
             "Drive Entity",
-            self.parent_drive_entity,
-            ["name", "owner", "allow_comments", "allow_download"],
+            self.parent_entity,
+            ["name", "owner"],
             as_dict=1,
         )
 

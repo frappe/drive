@@ -12,6 +12,17 @@ from drive.api.files import get_ancestors_of
 from frappe.utils import getdate
 
 
+def get_teams():
+    """
+    Returns all the teams that the current user is part off
+    """
+    return frappe.get_all(
+        "Drive Team Member",
+        pluck="parent",
+        filters=[["parenttype", "=", "Drive Team"], ["user", "=", frappe.session.user]],
+    )
+
+
 @frappe.whitelist()
 def get_shared_with_list(entity_name):
     """

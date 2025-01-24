@@ -16,8 +16,10 @@
     "is_active",
     "color",
     "file_ext",
+    "file_size",
     "tags",
-    "document"
+    "document",
+    "owners"
   ],
   "fields": [
     {
@@ -29,8 +31,7 @@
       "default": "0",
       "fieldname": "is_group",
       "fieldtype": "Check",
-      "label": "Is Group",
-      "read_only": 1
+      "label": "Is Group"
     },
     {
       "fieldname": "path",
@@ -86,10 +87,21 @@
       "label": "Team",
       "options": "Drive Team",
       "reqd": 1
+    },
+    {
+      "fieldname": "owners",
+      "fieldtype": "Table MultiSelect",
+      "label": "Owners",
+      "options": "Drive Team Member"
+    },
+    {
+      "fieldname": "file_size",
+      "fieldtype": "Int",
+      "label": "File Size"
     }
   ],
   "links": [],
-  "modified": "2025-01-23 14:40:22.354616",
+  "modified": "2025-01-24 12:22:31.361638",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",
