@@ -14,7 +14,7 @@
     "path",
     "entity_size",
     "color",
-    "file_ext",
+    "mime_type",
     "file_size",
     "tags",
     "is_active",
@@ -44,12 +44,6 @@
       "in_list_view": 1,
       "label": "Title",
       "reqd": 1
-    },
-    {
-      "fieldname": "file_ext",
-      "fieldtype": "Data",
-      "label": "File Ext",
-      "read_only": 1
     },
     {
       "default": "1",
@@ -97,10 +91,16 @@
       "fieldname": "kind",
       "fieldtype": "Small Text",
       "label": "Kind"
+    },
+    {
+      "fieldname": "mime_type",
+      "fieldtype": "Data",
+      "label": "MIME Type",
+      "read_only": 1
     }
   ],
   "links": [],
-  "modified": "2025-01-27 11:25:59.136990",
+  "modified": "2025-01-27 12:49:29.343925",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",

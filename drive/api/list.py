@@ -22,7 +22,7 @@ ENTITY_FIELDS = [
     "modified",
     "creation",
     "file_size",
-    "file_ext",
+    "mime_type",
     "color",
     "document",
     "owner",
@@ -40,6 +40,7 @@ def files(
     favourites_only=0,
     recents_only=0,
     tag_list=[],
+    mime_type_list=[],
 ):
     teams = get_teams()
     if team not in teams:
@@ -90,6 +91,12 @@ def files(
         query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
         tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
         query = query.where(Criterion.any(tag_list_criterion))
+
+    if mime_type_list:
+        mime_type_list = json.loads(mime_type_list)
+        query = query.where(
+            Criterion.any(DriveEntity.mime_type == mime_type for mime_type in mime_type_list)
+        )
 
     return query.run(as_dict=True)
 

@@ -3,7 +3,6 @@ import frappe
 from datetime import datetime, timedelta
 import uuid
 import mimetypes
-import json
 import base64
 import magic
 from pathlib import Path

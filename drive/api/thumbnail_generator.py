@@ -13,9 +13,8 @@ from drive.utils.files import (
     get_user_directory,
     create_user_directory,
     get_new_title,
-    get_user_thumbnails_directory,
+    get_team_thumbnails_directory,
     create_user_thumbnails_directory,
-    create_thumbnail,
 )
 
 
@@ -43,7 +42,7 @@ def create_image_thumbnail(entity_name):
             response.headers.set("Content-Type", "image/jpeg")
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
-            user_thumbnails_directory = get_user_thumbnails_directory(drive_entity.owner)
+            user_thumbnails_directory = get_team_thumbnails_directory(drive_entity.team)
             thumbnail_getpath = Path(user_thumbnails_directory, entity_name)
             with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
                 thumbnail_data = BytesIO(file.read())
@@ -81,7 +80,7 @@ def create_video_thumbnail(entity_name):
             response.headers.set("Content-Type", "image/jpeg")
             response.headers.set("Content-Disposition", "inline", filename=entity_name)
         else:
-            user_thumbnails_directory = get_user_thumbnails_directory(drive_entity.owner)
+            user_thumbnails_directory = get_team_thumbnails_directory(drive_entity.team)
             thumbnail_getpath = Path(user_thumbnails_directory, entity_name)
             with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
                 thumbnail_data = BytesIO(file.read())

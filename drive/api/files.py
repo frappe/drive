@@ -15,7 +15,7 @@ from drive.utils.files import (
     get_user_directory,
     create_user_directory,
     get_new_title,
-    get_user_thumbnails_directory,
+    get_team_thumbnails_directory,
     create_user_thumbnails_directory,
     create_thumbnail,
 )
@@ -184,7 +184,6 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
     site_folder = frappe.get_site_path("private/files")
-    save_path = Path(site_folder, home_folder["name"]) / f"{parent}_{secure_filename(title)}"
     temp_path = (
         Path(frappe.get_site_path("private/files"), home_folder["name"], "uploads")
         / f"{upload_session}_{secure_filename(title)}"
@@ -206,29 +205,24 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
         if file_size != int(frappe.form_dict.total_file_size):
             temp_path.unlink()
             frappe.throw("Size on disk does not match specified filesize", ValueError)
-        else:
-            os.rename(temp_path, save_path)
+
         mime_type, _ = mimetypes.guess_type(temp_path)
 
         if mime_type is None:
             # Read the first 2KB of the binary stream to determine the file type if string checking failed
             # Do a rejection workflow to reject undesired mime types
-            mime_type = magic.from_buffer(open(save_path, "rb").read(2048), mime=True)
+            mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
 
-        file_name, file_ext = os.path.splitext(title)
-        name = uuid.uuid4().hex
-        path = save_path.parent / f"{name}{save_path.suffix}"
-        save_path.rename(path)
         drive_entity = create_drive_entity(
-            name,
             team,
             title,
             parent,
-            str(save_path)[len(site_folder) - 1 :],
             file_size,
-            file_ext,
+            mime_type,
             last_modified,
+            lambda n: Path(home_folder["name"]) / f"{n}{temp_path.suffix}",
         )
+        os.rename(temp_path, Path(site_folder) / drive_entity.path)
 
         if mime_type.startswith(("image", "video")):
             frappe.enqueue(
@@ -238,29 +232,30 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
                 now=True,
                 at_front=True,
                 # will set to false once reactivity in new UI is solved
-                entity_name=name,
-                path=path,
+                entity_name=drive_entity.name,
+                path=Path(frappe.get_site_path("private/files")) / drive_entity.path,
                 mime_type=mime_type,
+                team=team,
             )
         return drive_entity
 
 
-def create_drive_entity(name, team, title, parent, path, file_size, file_ext, last_modified):
+def create_drive_entity(team, title, parent, file_size, mime_type, last_modified, entity_path):
     drive_entity = frappe.get_doc(
         {
             "doctype": "Drive Entity",
-            "name": name,
             "team": team,
             "title": title,
             "parent_entity": parent,
-            "path": path,
             "file_size": file_size,
-            "file_ext": file_ext,
+            "mime_type": mime_type,
         }
     )
 
     drive_entity.flags.file_created = True
     drive_entity.insert()
+    drive_entity.path = entity_path(drive_entity.name)
+    drive_entity.save()
     if last_modified:
         dt_object = datetime.fromtimestamp(int(last_modified) / 1000.0)
         formatted_datetime = dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")

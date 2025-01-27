@@ -2,7 +2,7 @@
   <GenericPage
     :recents="true"
     :grouper="groupByTime"
-    :getEntities="getRecents"
+    :get-entities="getRecents"
     :show-sort="false"
     :icon="Recent"
     primary-message="No Recent Files"

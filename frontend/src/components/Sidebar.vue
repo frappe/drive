@@ -131,7 +131,7 @@ export default {
         {
           enabled: !this.isDriveGuest,
           label: "Home",
-          route: "/home",
+          route: `/${this.$route.params.team}/`,
           icon: Home,
           preload: getHome,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Home",
@@ -139,7 +139,7 @@ export default {
         {
           enabled: true,
           label: "Recents",
-          route: "/recents",
+          route: `/${this.$route.params.team}/recents`,
           icon: Recent,
           preload: getRecents,
           highlight:
@@ -148,7 +148,7 @@ export default {
         {
           enabled: true,
           label: "Favourites",
-          route: "/favourites",
+          route: `/${this.$route.params.team}/favourites`,
           icon: Star,
           preload: getFavourites,
           highlight:
@@ -157,7 +157,7 @@ export default {
         {
           enabled: true,
           label: "Shared",
-          route: "/shared",
+          route: `/${this.$route.params.team}/shared`,
           preload: getShared,
           icon: Users,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Shared",
@@ -165,7 +165,7 @@ export default {
         {
           enabled: true,
           label: "Trash",
-          route: "/trash",
+          route: `/${this.$route.params.team}/trash`,
           preload: getTrash,
           icon: Trash,
           highlight: this.$store.state.currentBreadcrumbs[0].label === "Trash",
