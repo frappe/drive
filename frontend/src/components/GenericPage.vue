@@ -189,7 +189,6 @@ const sortOrder = ref({
   ascending: true,
 })
 const activeEntity = computed(() => store.state.activeEntity)
-
 watch(
   sortOrder,
   () => {
