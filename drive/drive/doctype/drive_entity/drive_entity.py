@@ -7,11 +7,10 @@ from drive.utils.files import (
     get_user_directory,
     create_user_directory,
     get_new_title,
-    get_user_thumbnails_directory,
+    get_team_thumbnails_directory,
     create_thumbnail,
 )
 from frappe.utils import cint
-from drive.api.format import mime_to_human
 from drive.api.files import get_ancestors_of
 from drive.api.files import generate_upward_path
 from drive.api.activity import create_new_activity_log
@@ -54,7 +53,7 @@ class DriveEntity(Document):
             max_attempts = 3
             for attempt in range(max_attempts):
                 try:
-                    Path(self.path).unlink()
+                    Path(frappe.get_site_path("private/files"), self.path).unlink()
                     break
                 except Exception as e:
                     print(f"Attempt {attempt + 1}: Failed to delete file - {e}")
@@ -63,8 +62,8 @@ class DriveEntity(Document):
                 max_attempts = 3
                 for attempt in range(max_attempts):
                     try:
-                        user_thumbnails_directory = get_user_thumbnails_directory()
-                        thumbnail_getpath = Path(user_thumbnails_directory, self.name)
+                        thumbnails_directory = get_team_thumbnails_directory(self.team)
+                        thumbnail_getpath = Path(thumbnails_directory, self.name)
                         Path(str(thumbnail_getpath) + ".thumbnail").unlink()
                         break
                     except Exception as e:
@@ -139,7 +138,7 @@ class DriveEntity(Document):
     def get_children(self):
         """Return a generator that yields child Documents."""
         child_names = frappe.get_list(
-            self.doctype, filters={"parent_drive_entity": self.name}, pluck="name"
+            self.doctype, filters={"parent_entity": self.name}, pluck="name"
         )
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)

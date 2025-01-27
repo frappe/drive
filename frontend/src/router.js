@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { createResource } from "frappe-ui"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -57,14 +56,38 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/file/:entityName",
+    path: "/:team/recents",
+    name: "Recents",
+    component: () => import("@/pages/Recents.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
+    path: "/:team/shared",
+    name: "Shared",
+    component: () => import("@/pages/Shared.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
+    path: "/:team/favourites",
+    name: "Favourites",
+    component: () => import("@/pages/Favourites.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/:team/trash",
+    name: "Trash",
+    component: () => import("@/pages/Trash.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
+    path: "/:team/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { sidebar: true, isHybridRoute: true, filePage: true },
     props: true,
   },
   {
-    path: "/folder/:entityName",
+    path: "/:team/folder/:entityName",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { sidebar: true, isHybridRoute: true },
@@ -85,35 +108,6 @@ const routes = [
     component: () => import("@/pages/Document.vue"),
     props: true,
     beforeEnter: [clearStore],
-  },
-  {
-    path: "/recents",
-    name: "Recents",
-    component: () => import("@/pages/Recents.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
-  },
-  {
-    path: "/shared",
-    name: "Shared",
-    component: () => import("@/pages/Shared.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
-  },
-  {
-    path: "/favourites",
-    name: "Favourites",
-    component: () => import("@/pages/Favourites.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/trash",
-    name: "Trash",
-    component: () => import("@/pages/Trash.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
-  },
-  {
-    path: "/test",
-    name: "Test",
-    component: () => import("@/pages/Test.vue"),
   },
   {
     path: "/login",

@@ -103,8 +103,6 @@ def get_new_title(title, parent_name, folder=False):
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
 
-    if entity_ext:
-        filters["file_ext"] = entity_ext
     if folder:
         filters["is_group"] = 1
 
@@ -128,27 +126,16 @@ def create_user_thumbnails_directory():
     return user_directory_thumnails_path
 
 
-def get_user_thumbnails_directory(user=None):
-    user_directory_name = _get_user_directory_name(user)
-    user_directory_thumnails_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "thumbnails"
+def get_team_thumbnails_directory(team_name):
+    return Path(
+        frappe.get_site_path("private/files"), get_home_folder(team_name)["name"], "thumbnails"
     )
-    if not os.path.exists(user_directory_thumnails_path):
-        try:
-            user_directory_thumnails_path = create_user_thumbnails_directory()
-        except FileNotFoundError:
-            user_directory_thumnails_path = create_user_thumbnails_directory()
-    return user_directory_thumnails_path
 
 
-def create_thumbnail(entity_name, path, mime_type):
-    user_thumbnails_directory = None
-    try:
-        user_thumbnails_directory = get_user_thumbnails_directory()
-    except FileNotFoundError:
-        user_thumbnails_directory = create_user_thumbnails_directory()
+def create_thumbnail(entity_name, path, mime_type, team):
+    user_thumbnails_directory = get_team_thumbnails_directory(team)
+    thumbnail_savepath = Path(user_thumbnails_directory, entity_name + ".thumbnail")
 
-    thumbnail_savepath = Path(user_thumbnails_directory, entity_name)
     with DistributedLock(path, exclusive=False):
         if mime_type.startswith("image"):
             max_retries = 3
@@ -159,9 +146,10 @@ def create_thumbnail(entity_name, path, mime_type):
                     with Image.open(image_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
                         image.thumbnail((512, 512))
-                        image.save(str(thumbnail_savepath) + ".thumbnail", format="webp")
+                        image.save(str(thumbnail_savepath), format="webp")
                     break
                 except Exception as e:
+                    print(e)
                     print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
                     retry_count += 1
             else:
