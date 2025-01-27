@@ -4,7 +4,7 @@
   "creation": "2025-01-23 16:04:40.527171",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["entity", "user", "level"],
+  "field_order": ["entity", "user", "read", "comment", "share", "write"],
   "fields": [
     {
       "fieldname": "user",
@@ -13,24 +13,41 @@
       "options": "User"
     },
     {
-      "fieldname": "level",
-      "fieldtype": "Int",
-      "in_list_view": 1,
-      "label": "Level",
-      "reqd": 1
-    },
-    {
       "fieldname": "entity",
       "fieldtype": "Link",
       "in_list_view": 1,
       "label": "Entity",
       "options": "Drive Entity",
       "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "read",
+      "fieldtype": "Check",
+      "label": "Read"
+    },
+    {
+      "default": "0",
+      "fieldname": "comment",
+      "fieldtype": "Check",
+      "label": "Comment"
+    },
+    {
+      "default": "0",
+      "fieldname": "share",
+      "fieldtype": "Check",
+      "label": "Share"
+    },
+    {
+      "default": "0",
+      "fieldname": "write",
+      "fieldtype": "Check",
+      "label": "Write"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-01-23 16:27:46.594384",
+  "modified": "2025-01-27 11:24:39.783722",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Permission",

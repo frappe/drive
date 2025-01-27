@@ -13,13 +13,13 @@
     "parent_entity",
     "path",
     "entity_size",
-    "is_active",
     "color",
     "file_ext",
     "file_size",
     "tags",
+    "is_active",
     "document",
-    "owners"
+    "kind"
   ],
   "fields": [
     {
@@ -89,19 +89,18 @@
       "reqd": 1
     },
     {
-      "fieldname": "owners",
-      "fieldtype": "Table MultiSelect",
-      "label": "Owners",
-      "options": "Drive Team Member"
-    },
-    {
       "fieldname": "file_size",
       "fieldtype": "Int",
       "label": "File Size"
+    },
+    {
+      "fieldname": "kind",
+      "fieldtype": "Small Text",
+      "label": "Kind"
     }
   ],
   "links": [],
-  "modified": "2025-01-24 12:22:31.361638",
+  "modified": "2025-01-27 11:25:59.136990",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",

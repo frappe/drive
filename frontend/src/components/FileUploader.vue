@@ -100,10 +100,11 @@ onMounted(() => {
     autoProcessQueue: false,
     clickable: "#fileSelection",
     disablePreviews: true,
+    addRemoveLinks: true,
     createImageThumbnails: false,
     retryChunksLimit: 5,
-    previewsContainer: "#dropTarget",
     hiddenInputContainer: "#fileSelection",
+    // Do we want to allow multi uploads?
     uploadMultiple: false,
     chunking: true,
     retryChunks: true,
@@ -125,19 +126,11 @@ onMounted(() => {
       }
     },
     sending: function (file, xhr, formData) {
-      if (file.lastModified) {
-        formData.append("last_modified", file.lastModified)
-      }
-      if (file.parent) {
-        formData.append("parent", file.parent)
-      }
-      if (file.newFullPath) {
-        formData.append("fullpath", file.newFullPath)
-      } else if (file.webkitRelativePath) {
-        formData.append("fullpath", file.webkitRelativePath)
-      } else if (file.fullPath) {
-        formData.append("fullpath", file.fullPath)
-      }
+      formData.append("team", route.params.team)
+      if (file.lastModified) formData.append("last_modified", file.lastModified)
+      if (file.parent) formData.append("parent", file.parent)
+      const path = file.newFullPath || file.webkitRelativePath || file.fullPath
+      if (path) formData.append("fullpath", path)
     },
     params: function (files, xhr, chunk) {
       if (chunk) {

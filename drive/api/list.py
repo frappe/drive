@@ -1,6 +1,6 @@
 import frappe
 import json
-from drive.utils.files import get_user_directory
+from drive.utils.files import get_home_folder
 from .permissions import get_teams
 from pypika import Order, Criterion, Case, functions as fn
 
@@ -41,18 +41,12 @@ def files(
     tag_list=[],
 ):
     teams = get_teams()
-    print(team, get_teams())
     if team not in teams:
         raise frappe.exceptions.PageDoesNotExistError()
 
     # If not specified, get home folder
     if not entity_name:
-        entity_name = (
-            frappe.qb.from_(Entity)
-            .where(((Entity.team == team) & Entity.parent_entity.isnull()))
-            .select(Entity.name)
-            .run(as_dict=True)
-        )[0]["name"]
+        entity_name = get_home_folder(team)
     # Verify that entity exists and is part of the team
     else:
         if not frappe.qb.from_(Entity).where((Entity.name == entity_name) & (Entity.team == team)):
