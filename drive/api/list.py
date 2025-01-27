@@ -25,6 +25,7 @@ ENTITY_FIELDS = [
     "file_ext",
     "color",
     "document",
+    "owner",
     "parent_entity",
 ]
 
@@ -42,26 +43,24 @@ def files(
 ):
     teams = get_teams()
     if team not in teams:
-        raise frappe.exceptions.PageDoesNotExistError()
+        frappe.throw("Team doesn't exist", frappe.exceptions.PageDoesNotExistError)
 
-    # If not specified, get home folder
     if not entity_name:
-        entity_name = get_home_folder(team)
-    # Verify that entity exists and is part of the team
+        # If not specified, get home folder
+        entity_name = get_home_folder(team)["name"]
     else:
+        # Verify that entity exists and is part of the team
         if not frappe.qb.from_(Entity).where((Entity.name == entity_name) & (Entity.team == team)):
-            raise frappe.exceptions.PageDoesNotExistError()
+            frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
 
     # Get all the children entities
     query = (
         frappe.qb.from_(Entity)
-        .join(TeamMember)
-        .on((TeamMember.parenttype == "Drive Entity") & (TeamMember.parent == Entity.name))
         .where(Entity.parent_entity == entity_name)
         .where(Entity.is_active == is_active)
         .offset(offset)
         .limit(100)
-        .select(*ENTITY_FIELDS, TeamMember.user)
+        .select(*ENTITY_FIELDS)
     )
 
     # Get favourites data (only that, if applicable)
@@ -92,15 +91,7 @@ def files(
         tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
         query = query.where(Criterion.any(tag_list_criterion))
 
-    result = {}
-    for r in query.run(as_dict=True):
-        name = r.pop("name")
-        if name in result:
-            result[name]["owners"].append(r["user"])
-        else:
-            r["owners"] = [r.pop("user")]
-            result[name] = r
-    return result
+    return query.run(as_dict=True)
 
 
 @frappe.whitelist()

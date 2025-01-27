@@ -148,13 +148,13 @@ const formattedRows = computed(() => {
       collapsed: false,
     }))
     .filter((g) => g.rows.length)
-  groups = groups.map((g) => ({
-    ...g,
-    rows: g.rows.map((r) => ({
-      ...r,
-      owner: { label: r.owner, image: r.user_image },
-    })),
-  }))
+  // groups = groups.map((g) => ({
+  //   ...g,
+  //   rows: g.rows.map((r) => ({
+  //     ...r,
+  //     owner: { label: r.owner, image: r.user_image },
+  //   })),
+  // }))
   return groups
 })
 
@@ -174,14 +174,15 @@ const selectedColumns = [
   },
   {
     label: "Owner",
-    getLabel: ({ row }) => row.owner.label,
-    prefix: ({ row }) =>
-      h(Avatar, {
-        shape: "circle",
-        image: row.user_image,
-        label: row.full_name,
-        size: "sm",
-      }),
+    key: "",
+    getLabel: ({ row }) => row.owner,
+    // prefix: ({ row }) =>
+    //   h(Avatar, {
+    //     shape: "circle",
+    //     image: row.user_image,
+    //     label: row.full_name,
+    //     size: "sm",
+    //   }),
   },
   {
     label: route.name === "Recents" ? "Last Accessed" : "Last Modified",
