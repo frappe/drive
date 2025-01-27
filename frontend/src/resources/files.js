@@ -20,12 +20,13 @@ const COMMON_OPTIONS = {
     }
   },
   transform(data) {
-    return Object.entries(data).map(([name, entity]) => {
-      entity.name = name
+    return data.map((entity) => {
       entity.file_size_pretty = formatSize(entity.file_size)
       entity.relativeModified = useTimeAgo(entity.modified)
       entity.modified = formatDate(entity.modified)
       entity.creation = formatDate(entity.creation)
+      entity.owner =
+        entity.owner === store.state.auth.user_id ? "You" : entity.owner
       return entity
     })
   },

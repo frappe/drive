@@ -94,14 +94,19 @@
                 Size
               </span>
               <span v-if="entity.file_size" class="col-span-1">
-                {{ entity.file_size }}
+                {{ entity.file_size_pretty }}
+                {{ `(${entity.file_size})` }}
               </span>
               <span class="col-span-1 text-gray-600">Modified</span>
               <span class="col-span-1">{{ entity.modified }}</span>
               <span class="col-span-1 text-gray-600">Uploaded</span>
               <span class="col-span-1">{{ entity.creation }}</span>
               <span class="col-span-1 text-gray-600">Owner</span>
-              <span class="col-span-1">{{ entity.full_name }}</span>
+              <span class="col-span-1">{{
+                entity.owner === "You"
+                  ? $store.state.auth.user_id + " (you)"
+                  : entity.owner
+              }}</span>
             </div>
           </div>
         </div>
@@ -117,7 +122,8 @@
           <!--  <Comment /> -->
           Comments
         </span>
-        <div v-if="entity.allow_comments" class="pb-2 px-5">
+        <!-- Check commenting permissions -->
+        <div v-if="true" class="pb-2 px-5">
           <div
             v-for="comment in comments.data"
             :key="comment"
@@ -249,6 +255,7 @@ import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
+
 const store = useStore()
 const tab = ref(0)
 const newComment = ref("")
@@ -262,14 +269,13 @@ const showInfoSidebar = computed(() => store.state.showInfo)
 
 const formattedMimeType = computed(() => {
   if (entity.value.is_group) return "Folder"
-  const file = entity.value.file_kind
-  return file?.charAt(0).toUpperCase() + file?.slice(1)
+  const kind = formatMimeType(entity.value.mime_type)
+  return kind.charAt(0).toUpperCase() + kind.slice(1)
 })
 const entity = computed(() => store.state.activeEntity)
 const sharedWithList = computed(() => {
   return userList.data?.users.concat(groupList.data)
 })
-
 const showComments = computed(
   () =>
     entity.value &&

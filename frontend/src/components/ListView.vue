@@ -141,31 +141,23 @@ const selectedRow = ref(null)
 
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
-  let groups = Object.keys(props.folderContents)
+  return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,
       rows: props.folderContents[k] || [],
       collapsed: false,
     }))
     .filter((g) => g.rows.length)
-  // groups = groups.map((g) => ({
-  //   ...g,
-  //   rows: g.rows.map((r) => ({
-  //     ...r,
-  //     owner: { label: r.owner, image: r.user_image },
-  //   })),
-  // }))
-  return groups
 })
 
 const selectedColumns = [
   {
     label: "Name",
     key: "title",
-    getLabel: ({ row }) =>
-      row.file_ext
-        ? row.title.slice(0, row.title.length - row.file_ext.length)
-        : row.title,
+    getLabel: ({ row: { title } }) =>
+      title.lastIndexOf(".") === -1
+        ? title
+        : title.slice(0, title.lastIndexOf(".")),
     prefix: ({ row }) =>
       row.is_group
         ? h(Folder)
