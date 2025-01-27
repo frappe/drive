@@ -7,6 +7,8 @@ from PIL import Image, ImageOps
 from drive.locks.distributed_lock import DistributedLock
 import cv2
 
+Entity = frappe.qb.DocType("Drive Entity")
+
 
 def create_user_directory():
     """
@@ -49,6 +51,15 @@ def create_user_directory():
     return frappe._dict({"name": user_directory.name, "path": user_directory.path})
 
 
+def get_home_folder(team):
+    return (
+        frappe.qb.from_(Entity)
+        .where(((Entity.team == team) & Entity.parent_entity.isnull()))
+        .select(Entity.name, Entity.path)
+        .run(as_dict=True)
+    )[0]
+
+
 def get_user_directory(user=None):
     """
     Return the document-name, and path of the specified user's user directory
@@ -76,7 +87,7 @@ def _get_user_directory_name(user=None):
 
 
 @frappe.whitelist()
-def get_new_title(title, parent_name, document=False, folder=False):
+def get_new_title(title, parent_name, folder=False):
     """
     Returns new title for an entity if same title exists for another entity at the same level
 
@@ -88,17 +99,12 @@ def get_new_title(title, parent_name, document=False, folder=False):
 
     filters = {
         "is_active": 1,
-        "parent_drive_entity": parent_name,
+        "parent_entity": parent_name,
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
 
     if entity_ext:
-        mime_type = mimetypes.guess_type(title)
-        filters["mime_type"] = mime_type[0]
-
-    if document:
-        mime_type = "frappe_doc"
-
+        filters["file_ext"] = entity_ext
     if folder:
         filters["is_group"] = 1
 

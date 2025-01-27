@@ -11,6 +11,7 @@ import mimetypes
 import hashlib
 import json
 from drive.utils.files import (
+    get_home_folder,
     get_user_directory,
     create_user_directory,
     get_new_title,
@@ -139,11 +140,8 @@ def create_uploads_directory(user=None):
     return user_directory_uploads_path
 
 
-def get_user_uploads_directory(user=None):
-    user_directory_name = get_user_directory(user).name
-    user_directory_uploads_path = Path(
-        frappe.get_site_path("private/files"), user_directory_name, "uploads"
-    )
+def get_user_uploads_directory(team_name):
+    user_directory_uploads_path = Path(frappe.get_site_path("private/files"), team_name, "uploads")
     if not os.path.exists(user_directory_uploads_path):
         try:
             user_directory_uploads_path = create_uploads_directory()
@@ -153,7 +151,7 @@ def get_user_uploads_directory(user=None):
 
 
 @frappe.whitelist()
-def upload_file(fullpath=None, parent=None, last_modified=None):
+def upload_file(team, fullpath=None, parent=None, last_modified=None):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -165,12 +163,8 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
     :raises ValueError: If the size of the stored file does not match the specified filesize
     :return: DriveEntity doc once the entire file has been uploaded
     """
-    try:
-        user_directory = get_user_directory()
-    except FileNotFoundError:
-        user_directory = create_user_directory()
-
-    parent = frappe.form_dict.parent or user_directory.name
+    home_folder = get_home_folder(team)
+    parent = parent or home_folder["name"]
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
@@ -189,9 +183,10 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
-    save_path = Path(user_directory.path) / f"{parent}_{secure_filename(title)}"
+    site_folder = frappe.get_site_path("private/files")
+    save_path = Path(site_folder, home_folder["name"]) / f"{parent}_{secure_filename(title)}"
     temp_path = (
-        Path(get_user_uploads_directory(user=frappe.session.user))
+        Path(frappe.get_site_path("private/files"), home_folder["name"], "uploads")
         / f"{upload_session}_{secure_filename(title)}"
     )
 
@@ -206,7 +201,7 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
         else:
             pass
 
-    if current_chunk + 1 == total_chunks:
+    if current_chunk == total_chunks - 1:
         file_size = temp_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
             temp_path.unlink()
@@ -224,9 +219,15 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
         name = uuid.uuid4().hex
         path = save_path.parent / f"{name}{save_path.suffix}"
         save_path.rename(path)
-
         drive_entity = create_drive_entity(
-            name, title, parent, path, file_size, file_ext, mime_type, last_modified
+            name,
+            team,
+            title,
+            parent,
+            str(save_path)[len(site_folder) - 1 :],
+            file_size,
+            file_ext,
+            last_modified,
         )
 
         if mime_type.startswith(("image", "video")):
@@ -244,19 +245,20 @@ def upload_file(fullpath=None, parent=None, last_modified=None):
         return drive_entity
 
 
-def create_drive_entity(name, title, parent, path, file_size, file_ext, mime_type, last_modified):
+def create_drive_entity(name, team, title, parent, path, file_size, file_ext, last_modified):
     drive_entity = frappe.get_doc(
         {
             "doctype": "Drive Entity",
             "name": name,
+            "team": team,
             "title": title,
-            "parent_drive_entity": parent,
-            "path": str(path),
+            "parent_entity": parent,
+            "path": path,
             "file_size": file_size,
             "file_ext": file_ext,
-            "mime_type": mime_type,
         }
     )
+
     drive_entity.flags.file_created = True
     drive_entity.insert()
     if last_modified:
