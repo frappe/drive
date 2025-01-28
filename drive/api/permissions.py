@@ -5,7 +5,6 @@ from pypika import Order, Case, functions as fn
 from drive.utils.users import mark_as_viewed
 from drive.api.files import (
     generate_upward_path,
-    get_shared_breadcrumbs,
     get_ancestors_of,
     get_user_directory,
     get_doc_content,
@@ -53,16 +52,10 @@ def get_entity_with_permissions(entity_name):
     :return: DriveEntity with permissions
     :rtype: frappe._dict
     """
-    # if not frappe.has_permission(
-    #     doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-    # ):
-    #     frappe.throw("Not found", frappe.NotFound)
-
     entity = frappe.db.get_value(
         "Drive Entity", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
     )
     user_access = get_user_access(entity)
-    print(user_access)
     if user_access.get("read") == 0:
         frappe.throw("Not found", frappe.NotFound)
 
@@ -346,9 +339,9 @@ def get_valid_breadcrumbs(entity, user_access):
     Determine user access and generate upward path (breadcrumbs).
     """
     file_path = generate_upward_path(entity.name)
-    if user_access.get("team") or user_access.get("admin"):
+    if user_access.get("type") in ["admin", "team"]:
         return file_path
-    permission_path = get_shared_breadcrumbs(user_access.permission_name)
+    permission_path = get_shared_breadcrumbs(entity.nam, user_access.type)
     x = file_path[: -len(permission_path)]
     for i in reversed(x):
         if i.owner == frappe.session.user:
@@ -433,9 +426,12 @@ def get_user_access(entity, user=None):
     # Otherwise, check team/admin/owner
     teams = get_teams(user)
     if user == entity.owner:
-        return {"read": 1, "comment": 1, "share": 1, "write": 1, "admin": 1}
+        return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
     if entity.team in teams:
-        return {"read": 1, "comment": 1, "share": 1, "write": 0, "team": 1}
+        # Allow write access for uploading to home folder
+        if entity.parent_entity == None:
+            return {"read": 1, "comment": 1, "share": 0, "write": 1, "type": "team"}
+        return {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
 
     return NO_ACCESS
 
@@ -538,3 +534,46 @@ def auto_delete_expired_docshares():
     if expired_documents:
         frappe.enqueue(batch_delete_docshares, docshares=expired_documents)
     return
+
+
+def get_shared_breadcrumbs(name, type=None):
+    """
+    given a node return the root. stops when share_parent IS NULL
+    given a node and parent travel till
+    the child of the parent_entity and append the parent_entity
+    """
+    share_name = frappe.db.escape(share_name)
+    result = frappe.db.sql(
+        f"""
+        WITH RECURSIVE generated_path as ( 
+        SELECT 
+            `tabDrive DocShare`.name,
+            `tabDrive DocShare`.share_name,
+            `tabDrive DocShare`.share_parent
+        FROM `tabDrive DocShare` 
+        WHERE `tabDrive DocShare`.name = {share_name}
+
+        UNION ALL
+
+        SELECT 
+            `tabDrive DocShare`.name,
+            `tabDrive DocShare`.share_name,
+            `tabDrive DocShare`.share_parent
+        FROM generated_path as gp
+        JOIN `tabDrive DocShare` ON `tabDrive DocShare`.name = gp.share_parent
+        ) 
+        SELECT * FROM generated_path;
+    """,
+        as_dict=1,
+    )
+    share_breadcrumbs = []
+    for i in result:
+        share_breadcrumbs.append(
+            frappe.get_value(
+                "Drive Entity",
+                i.share_name,
+                ["name", "title", "parent_drive_entity", "owner"],
+                as_dict=1,
+            )
+        )
+    return share_breadcrumbs[::-1]
