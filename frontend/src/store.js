@@ -50,16 +50,16 @@ const store = createStore({
       [],
     serverTZ: null,
     currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || [],
-    currentViewEntites: get("currentViewEntites") || [],
+    currentEntitites: get("currentEntitites") || [],
     pasteData: { entities: [], action: null },
     showInfo: JSON.parse(localStorage.getItem("showInfo")) || false,
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
     homeFolderID: localStorage.getItem("homeFolderID"),
-    currentBreadcrumbs: JSON.parse(
-      localStorage.getItem("currentBreadcrumbs")
-    ) || [{ label: "Home", route: "/home" }],
+    breadcrumbs: JSON.parse(localStorage.getItem("breadcrumbs")) || [
+      { label: "Home", route: "/home" },
+    ],
     allComments: "",
     activeCommentsInstance: "",
     IsSidebarExpanded: JSON.parse(
@@ -157,9 +157,10 @@ const store = createStore({
       localStorage.setItem("currentFolder", JSON.stringify(payload))
       state.currentFolder = payload
     },
-    setCurrentViewEntites(state, payload) {
-      state.currentViewEntites = payload
-      set("currentViewEntites", JSON.stringify(payload))
+    setCurrentEntitites(state, payload) {
+      console.log(payload)
+      state.currentEntitites = payload
+      set("currentEntitites", JSON.stringify(payload))
     },
     setPasteData(state, payload) {
       state.pasteData = payload
@@ -185,9 +186,9 @@ const store = createStore({
       state.homeFolderID = payload
       localStorage.setItem("homeFolderID", payload)
     },
-    setCurrentBreadcrumbs(state, payload) {
-      localStorage.setItem("currentBreadcrumbs", JSON.stringify(payload))
-      state.currentBreadcrumbs = payload
+    setBreadcrumbs(state, payload) {
+      localStorage.setItem("breadcrumbs", JSON.stringify(payload))
+      state.breadcrumbs = payload
     },
     setIsSidebarExpanded(state, payload) {
       localStorage.setItem("IsSidebarExpanded", JSON.stringify(payload))

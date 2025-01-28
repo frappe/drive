@@ -4,7 +4,15 @@
   "creation": "2025-01-23 16:04:40.527171",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["entity", "user", "read", "comment", "share", "write"],
+  "field_order": [
+    "entity",
+    "user",
+    "read",
+    "comment",
+    "share",
+    "write",
+    "valid_until"
+  ],
   "fields": [
     {
       "fieldname": "user",
@@ -43,11 +51,16 @@
       "fieldname": "write",
       "fieldtype": "Check",
       "label": "Write"
+    },
+    {
+      "fieldname": "valid_until",
+      "fieldtype": "Datetime",
+      "label": "Valid Until"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-01-27 11:24:39.783722",
+  "modified": "2025-01-27 15:44:50.143373",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Permission",

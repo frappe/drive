@@ -442,28 +442,25 @@ def get_file_content(entity_name, trigger_download=0):  #
     trigger_download = int(trigger_download)
     drive_entity = frappe.get_value(
         "Drive Entity",
-        entity_name,
+        {"name": entity_name, "is_active": 1},
         [
             "is_group",
             "path",
             "title",
             "mime_type",
             "file_size",
-            "allow_download",
             "is_active",
             "owner",
         ],
         as_dict=1,
     )
-
     if not drive_entity or drive_entity.is_group:
-        raise ValueError
-    if drive_entity.is_active != 1:
-        raise FileNotFoundError
+        frappe.throw("Not found", frappe.NotFound)
 
-    with DistributedLock(drive_entity.path, exclusive=False):
+    path = Path(frappe.get_site_path("private/files")) / drive_entity.path
+    with DistributedLock(path, exclusive=False):
         return send_file(
-            drive_entity.path,
+            path,
             mimetype=drive_entity.mime_type,
             as_attachment=trigger_download,
             conditional=True,
@@ -836,18 +833,6 @@ def list_trashed_entities(
             child_count = get_children_count(i.name)
             i["item_count"] = child_count
     return result
-
-
-def get_entity(entity_name, fields=None):
-    """
-    Return specific entity
-
-    :param entity_name: Document-name of the file or folder
-    :raises PermissionError: If the user does not have access to the specified entity
-    :rtype: frappe._dict
-    """
-    fields = fields or ["name", "title", "owner"]
-    return frappe.db.get_value("Drive Entity", entity_name, fields, as_dict=1)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -1400,7 +1385,7 @@ def generate_upward_path(entity_name):
         SELECT 
             `tabDrive Entity`.title,
             `tabDrive Entity`.name,
-            `tabDrive Entity`.parent_drive_entity,
+            `tabDrive Entity`.parent_entity,
             `tabDrive Entity`.owner
         FROM `tabDrive Entity` 
         WHERE `tabDrive Entity`.name = {entity_name}
@@ -1410,10 +1395,10 @@ def generate_upward_path(entity_name):
         SELECT 
             t.title,
             t.name,
-            t.parent_drive_entity,
+            t.parent_entity,
             t.owner
         FROM generated_path as gp
-        JOIN `tabDrive Entity` as t ON t.name = gp.parent_drive_entity) 
+        JOIN `tabDrive Entity` as t ON t.name = gp.parent_entity) 
         SELECT * FROM generated_path;
     """,
         as_dict=1,

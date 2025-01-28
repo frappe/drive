@@ -2,11 +2,11 @@
   <div class="flex justify-items-center items-center text-base">
     <div class="flex text-md line-clamp-1 sm:text-lg font-medium">
       <template
-        v-for="(item, index) in $store.state.currentBreadcrumbs"
+        v-for="(item, index) in $store.state.breadcrumbs"
         :key="item.label"
       >
         <router-link
-          v-if="index !== $store.state.currentBreadcrumbs.length - 1"
+          v-if="index !== $store.state.breadcrumbs.length - 1"
           class="text-gray-600 hover:text-gray-800"
           :to="item.route"
         >

@@ -20,14 +20,14 @@ function clearStore(to, from) {
   } else {
     store.commit("setEntityInfo", [])
     store.commit("setCurrentFolder", [])
-    store.commit("setCurrentViewEntites", [])
+    store.commit("setCurrentEntitites", [])
   }
 }
 
 function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = to.name
-    store.commit("setCurrentBreadcrumbs", [{ label: to.name, route: to.path }])
+    store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
 }
 

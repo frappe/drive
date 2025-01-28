@@ -1,10 +1,9 @@
 import { createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
-import { formatSize, formatDate } from "@/utils/format"
-import { useTimeAgo } from "@vueuse/core"
 
 import store from "@/store"
 import router from "@/router"
+import { prettyData } from "../utils/files"
 
 // GETTERS
 const COMMON_OPTIONS = {
@@ -20,15 +19,8 @@ const COMMON_OPTIONS = {
     }
   },
   transform(data) {
-    return data.map((entity) => {
-      entity.file_size_pretty = formatSize(entity.file_size)
-      entity.relativeModified = useTimeAgo(entity.modified)
-      entity.modified = formatDate(entity.modified)
-      entity.creation = formatDate(entity.creation)
-      entity.owner =
-        entity.owner === store.state.auth.user_id ? "You" : entity.owner
-      return entity
-    })
+    store.commit("setCurrentEntitites", data)
+    return prettyData(data)
   },
 }
 export const getHome = createResource({

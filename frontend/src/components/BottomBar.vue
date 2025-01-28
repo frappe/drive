@@ -74,7 +74,7 @@ export default {
           route: "/home",
           icon: "home",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Home"
+            return this.$store.state.breadcrumbs[0].label === "Home"
           },
         },
         {
@@ -82,7 +82,7 @@ export default {
           route: "/recents",
           icon: "clock",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Recents"
+            return this.$store.state.breadcrumbs[0].label === "Recents"
           },
         },
         {
@@ -90,9 +90,7 @@ export default {
           route: "/favourites",
           icon: "star",
           highlight: () => {
-            return (
-              this.$store.state.currentBreadcrumbs[0].label === "Favourites"
-            )
+            return this.$store.state.breadcrumbs[0].label === "Favourites"
           },
         },
         {
@@ -100,7 +98,7 @@ export default {
           route: "/shared",
           icon: "users",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Shared"
+            return this.$store.state.breadcrumbs[0].label === "Shared"
           },
         },
         {
@@ -108,7 +106,7 @@ export default {
           route: "/trash",
           icon: "trash-2",
           highlight: () => {
-            return this.$store.state.currentBreadcrumbs[0].label === "Trash"
+            return this.$store.state.breadcrumbs[0].label === "Trash"
           },
         },
       ]

@@ -1,10 +1,13 @@
 import router from "@/router"
+import store from "@/store"
+import { formatSize, formatDate } from "@/utils/format"
+import { useTimeAgo } from "@vueuse/core"
 
-export const openEntity = (entity) => {
+export const openEntity = (team, entity) => {
   if (entity.is_group) {
     router.push({
       name: "Folder",
-      params: { entityName: entity.name },
+      params: { team, entityName: entity.name },
     })
   } else if (entity.mime_type === "frappe_doc") {
     if (this.$store.state.editorNewTab) {
@@ -39,4 +42,16 @@ export const groupByFolder = (entities) => {
     Folders: entities.filter((x) => x.is_group === 1),
     Files: entities.filter((x) => x.is_group === 0),
   }
+}
+
+export const prettyData = (entities) => {
+  return entities.map((entity) => {
+    entity.file_size_pretty = formatSize(entity.file_size)
+    entity.relativeModified = useTimeAgo(entity.modified)
+    entity.modified = formatDate(entity.modified)
+    entity.creation = formatDate(entity.creation)
+    entity.owner =
+      entity.owner === store.state.auth.user_id ? "You" : entity.owner
+    return entity
+  })
 }
