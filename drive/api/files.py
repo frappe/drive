@@ -1397,15 +1397,22 @@ def generate_upward_path(entity_name):
                     JOIN `tabDrive Entity` as t ON t.name = gp.parent_entity
             )
         SELECT
-            *
+            gp.title,
+            gp.name,
+            gp.parent_entity,
+            gp.owner,
+            p.read,
+            p.write,
+            p.comment,
+            p.share
         FROM
-            generated_path 
-        LEFT JOIN `tabDrive Permission`
-        ON generated_path.name = `tabDrive Permission`.entity;
+            generated_path  as gp
+        LEFT JOIN `tabDrive Permission` as p
+        ON gp.name = p.entity;
     """,
         as_dict=1,
     )
-    return result[::-1]
+    return result
 
 
 @frappe.whitelist()
