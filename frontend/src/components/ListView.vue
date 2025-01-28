@@ -138,7 +138,6 @@ const props = defineProps({
   entities: Array,
 })
 const selectedRow = ref(null)
-
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
   return Object.keys(props.folderContents)

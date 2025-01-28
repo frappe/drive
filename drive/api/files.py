@@ -264,7 +264,7 @@ def create_drive_entity(team, title, parent, file_size, mime_type, last_modified
 
 
 @frappe.whitelist()
-def create_folder(title, parent=None):
+def create_folder(team, title, parent=None):
     """
     Create a new folder.
 
@@ -274,13 +274,9 @@ def create_folder(title, parent=None):
     :raises FileExistsError: If a folder with the same name already exists in the specified parent folder
     :return: DriveEntity doc of the new folder
     """
+    home_folder = get_home_folder(team)
+    parent = parent or home_folder.name
 
-    try:
-        user_directory = get_user_directory()
-    except FileNotFoundError:
-        user_directory = create_user_directory()
-
-    parent = parent or user_directory.name
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
@@ -290,7 +286,7 @@ def create_folder(title, parent=None):
         )
 
     entity_exists = frappe.db.exists(
-        {"doctype": "Drive Entity", "parent_drive_entity": parent, "title": title}
+        {"doctype": "Drive Entity", "parent_entity": parent, "title": title}
     )
     if entity_exists:
         suggested_name = get_new_title(title, parent, folder=True)
@@ -302,10 +298,10 @@ def create_folder(title, parent=None):
     drive_entity = frappe.get_doc(
         {
             "doctype": "Drive Entity",
-            "name": uuid.uuid4().hex,
             "title": title,
+            "team": team,
             "is_group": 1,
-            "parent_drive_entity": parent,
+            "parent_entity": parent,
             "color": "#525252",
         }
     )
@@ -1377,8 +1373,9 @@ def generate_upward_path(entity_name):
     Given an ID traverse upwards till the root node
     Stops when parent_drive_entity IS NULL
     """
+    entity = frappe.db.escape(entity_name)
     result = frappe.db.sql(
-        """WITH RECURSIVE
+        f"""WITH RECURSIVE
             generated_path as (
                 SELECT
                     `tabDrive Entity`.title,
@@ -1388,7 +1385,7 @@ def generate_upward_path(entity_name):
                 FROM
                     `tabDrive Entity`
                 WHERE
-                    `tabDrive Entity`.name = %(entity)
+                    `tabDrive Entity`.name = {entity}
                 UNION ALL
                 SELECT
                     t.title,
@@ -1406,7 +1403,6 @@ def generate_upward_path(entity_name):
         LEFT JOIN `tabDrive Permission`
         ON generated_path.name = `tabDrive Permission`.entity;
     """,
-        values={"entity": entity_name},
         as_dict=1,
     )
     return result[::-1]

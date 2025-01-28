@@ -31,6 +31,7 @@ def files(
     teams = get_teams()
     if team not in teams:
         frappe.throw("Team doesn't exist", frappe.exceptions.PageDoesNotExistError)
+    print(entity_name)
 
     if not entity_name:
         # If not specified, get home folder
