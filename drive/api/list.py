@@ -1,7 +1,7 @@
 import frappe
 import json
 from drive.utils.files import get_home_folder
-from .permissions import get_teams
+from .permissions import get_teams, ENTITY_FIELDS
 from pypika import Order, Criterion, Case, functions as fn
 
 DriveUser = frappe.qb.DocType("User")
@@ -14,20 +14,6 @@ DriveFavourite = frappe.qb.DocType("Drive Favourite")
 DriveDocShare = frappe.qb.DocType("Drive DocShare")
 Recents = frappe.qb.DocType("Drive Entity Log")
 DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
-
-ENTITY_FIELDS = [
-    "name",
-    "title",
-    "is_group",
-    "modified",
-    "creation",
-    "file_size",
-    "mime_type",
-    "color",
-    "document",
-    "owner",
-    "parent_entity",
-]
 
 
 @frappe.whitelist()

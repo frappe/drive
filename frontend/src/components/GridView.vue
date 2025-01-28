@@ -141,13 +141,13 @@ export default {
       }
     },
     isEmpty() {
-      return !this.$store.state.currentViewEntites?.length
+      return !this.$store.state.currentEntitites?.length
     },
     foldersBefore() {
       return this.$store.state.foldersBefore
     },
     displayOrderedEntities() {
-      return this.$store.state.currentViewEntites
+      return this.$store.state.currentEntitites
     },
   },
   methods: {

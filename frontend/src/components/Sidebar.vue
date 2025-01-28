@@ -134,7 +134,7 @@ export default {
           route: `/${this.$route.params.team}/`,
           icon: Home,
           preload: getHome,
-          highlight: this.$store.state.currentBreadcrumbs[0].label === "Home",
+          highlight: this.$store.state.breadcrumbs[0].label === "Home",
         },
         {
           enabled: true,
@@ -142,8 +142,7 @@ export default {
           route: `/${this.$route.params.team}/recents`,
           icon: Recent,
           preload: getRecents,
-          highlight:
-            this.$store.state.currentBreadcrumbs[0].label === "Recents",
+          highlight: this.$store.state.breadcrumbs[0].label === "Recents",
         },
         {
           enabled: true,
@@ -151,8 +150,7 @@ export default {
           route: `/${this.$route.params.team}/favourites`,
           icon: Star,
           preload: getFavourites,
-          highlight:
-            this.$store.state.currentBreadcrumbs[0].label === "Favourites",
+          highlight: this.$store.state.breadcrumbs[0].label === "Favourites",
         },
         {
           enabled: true,
@@ -160,7 +158,7 @@ export default {
           route: `/${this.$route.params.team}/shared`,
           preload: getShared,
           icon: Users,
-          highlight: this.$store.state.currentBreadcrumbs[0].label === "Shared",
+          highlight: this.$store.state.breadcrumbs[0].label === "Shared",
         },
         {
           enabled: true,
@@ -168,7 +166,7 @@ export default {
           route: `/${this.$route.params.team}/trash`,
           preload: getTrash,
           icon: Trash,
-          highlight: this.$store.state.currentBreadcrumbs[0].label === "Trash",
+          highlight: this.$store.state.breadcrumbs[0].label === "Trash",
         },
       ].filter((item) => item.enabled)
     },

@@ -108,7 +108,7 @@ const getWhiteboard = createResource({
     store.commit("setEntityInfo", [data])
     store.commit("setHasWriteAccess", isWritable)
     entity.value = data
-    let currentBreadcrumbs = [
+    let breadcrumbs = [
       {
         label: "Shared",
         route: "/shared",
@@ -116,7 +116,7 @@ const getWhiteboard = createResource({
     ]
     const root_item = data.breadcrumbs[0]
     if (root_item.name === store.state.homeFolderID) {
-      currentBreadcrumbs = [
+      breadcrumbs = [
         {
           label: "Home",
           route: "/home",
@@ -126,18 +126,18 @@ const getWhiteboard = createResource({
     }
     data.breadcrumbs.forEach((item, idx) => {
       if (idx === data.breadcrumbs.length - 1) {
-        currentBreadcrumbs.push({
+        breadcrumbs.push({
           label: item.title,
           route: "/whiteboard/" + item.name,
         })
       } else {
-        currentBreadcrumbs.push({
+        breadcrumbs.push({
           label: item.title,
           route: "/folder/" + item.name,
         })
       }
     })
-    store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
+    store.commit("setBreadcrumbs", breadcrumbs)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

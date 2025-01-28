@@ -3,7 +3,6 @@
     class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
     @contextmenu="handleContextMenu"
   >
-    <!-- <DriveToolBar :column-headers="showSort ? columnHeaders : null" /> -->
     <DriveToolBar v-model="sortOrder" :column-headers="columnHeaders" />
 
     <!-- This sucks, redo it -->
@@ -167,6 +166,7 @@ import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { groupByFolder } from "@/utils/files"
+import { openEntity } from "@/utils/files"
 import emitter from "@/event-bus.js"
 
 const props = defineProps({
@@ -208,40 +208,6 @@ function handleContextMenu(event) {
   clickEvent.value = event
   defaultContextTriggered.value = true
   event.preventDefault()
-}
-
-function openEntity(entity) {
-  if (entity.is_group) {
-    router.push({
-      name: "Folder",
-      params: { entityName: entity.name },
-    })
-  } else if (entity.mime_type === "frappe_doc") {
-    if (store.state.editorNewTab) {
-      window.open(
-        router.resolve({
-          name: "Document",
-          params: { entityName: entity.name },
-        }).href,
-        "_blank"
-      )
-    } else {
-      router.push({
-        name: "Document",
-        params: { entityName: entity.name },
-      })
-    }
-  } else if (entity.mime_type === "frappe_whiteboard") {
-    router.push({
-      name: "Whiteboard",
-      params: { entityName: entity.name },
-    })
-  } else {
-    router.push({
-      name: "File",
-      params: { entityName: entity.name },
-    })
-  }
 }
 
 // Action Items
@@ -297,7 +263,7 @@ const actionItems = computed(() => {
       {
         label: "Preview",
         icon: Preview,
-        onClick: ([entity]) => openEntity(entity),
+        onClick: ([entity]) => openEntity(route.params.team, entity),
       },
       {
         label: "Download",

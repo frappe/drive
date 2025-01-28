@@ -142,7 +142,7 @@ const getDocument = createResource({
     entity.value = data
     lastSaved.value = Date.now()
     contentLoaded.value = true
-    let currentBreadcrumbs = [
+    let breadcrumbs = [
       {
         label: "Shared",
         route: "/shared",
@@ -150,7 +150,7 @@ const getDocument = createResource({
     ]
     const root_item = data.breadcrumbs[0]
     if (root_item.name === store.state.homeFolderID) {
-      currentBreadcrumbs = [
+      breadcrumbs = [
         {
           label: "Home",
           route: "/home",
@@ -160,18 +160,18 @@ const getDocument = createResource({
     }
     data.breadcrumbs.forEach((item, idx) => {
       if (idx === data.breadcrumbs.length - 1) {
-        currentBreadcrumbs.push({
+        breadcrumbs.push({
           label: item.title,
           route: "/document/" + item.name,
         })
       } else {
-        currentBreadcrumbs.push({
+        breadcrumbs.push({
           label: item.title,
           route: "/folder/" + item.name,
         })
       }
     })
-    store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
+    store.commit("setBreadcrumbs", breadcrumbs)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

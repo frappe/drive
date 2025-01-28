@@ -26,7 +26,7 @@
             :key="row.name"
             :row="row"
             @click="setActive(row)"
-            @dblclick="openEntity(row)"
+            @dblclick="() => openEntity(route.params.team, row)"
           >
             <template #default="{ idx, column, item }">
               <ListRowItem

@@ -1,26 +1,90 @@
 import frappe
-from pypika import Order, Case, functions as fn
-from drive.api.files import get_entity
-from drive.api.files import get_doc_content
-from drive.utils.files import get_user_directory
-from drive.utils.user_group import get_entity_shared_with_user_groups
-from drive.utils.users import mark_as_viewed
-from drive.api.files import get_children_count
-from drive.api.files import generate_upward_path
-from drive.api.files import get_shared_breadcrumbs
-from drive.api.files import get_ancestors_of
 from frappe.utils import getdate
+from pypika import Order, Case, functions as fn
+
+from drive.utils.users import mark_as_viewed
+from drive.api.files import (
+    generate_upward_path,
+    get_shared_breadcrumbs,
+    get_ancestors_of,
+    get_user_directory,
+    get_doc_content,
+)
 
 
-def get_teams():
+ENTITY_FIELDS = [
+    "name",
+    "title",
+    "is_group",
+    "modified",
+    "creation",
+    "file_size",
+    "mime_type",
+    "color",
+    "document",
+    "owner",
+    "parent_entity",
+]
+
+
+def get_teams(user=None):
     """
-    Returns all the teams that the current user is part off
+    Returns all the teams that the current user is part of.
     """
+    if not user:
+        user = frappe.session.user
     return frappe.get_all(
         "Drive Team Member",
         pluck="parent",
-        filters=[["parenttype", "=", "Drive Team"], ["user", "=", frappe.session.user]],
+        filters=[
+            ["parenttype", "=", "Drive Team"],
+            ["user", "=", user],
+        ],
     )
+
+
+@frappe.whitelist(allow_guest=True)
+def get_entity_with_permissions(entity_name):
+    """
+    Return file data with permissions
+
+    :param entity_name: Name of file document.
+    :raises IsADirectoryError: If this DriveEntity doc is not a file
+    :return: DriveEntity with permissions
+    :rtype: frappe._dict
+    """
+    # if not frappe.has_permission(
+    #     doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
+    # ):
+    #     frappe.throw("Not found", frappe.NotFound)
+
+    entity = frappe.db.get_value(
+        "Drive Entity", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
+    )
+    user_access = get_user_access(entity)
+    print(user_access)
+    if user_access.get("read") == 0:
+        frappe.throw("Not found", frappe.NotFound)
+
+    owner_info = frappe.db.get_value(
+        "User", entity.owner, ["user_image", "full_name"], as_dict=True
+    )
+    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
+    favourite = frappe.db.get_value(
+        "Drive Favourite",
+        {
+            "entity": entity_name,
+            "user": frappe.session.user,
+        },
+        ["entity as is_favourite"],
+    )
+    mark_as_viewed(entity)
+    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
+
+    if entity.document:
+        entity_doc_content = get_doc_content(entity.document)
+        return_obj = return_obj | entity_doc_content
+    return return_obj
 
 
 @frappe.whitelist()
@@ -277,107 +341,19 @@ def get_all_my_entities(fields=None):
     return list({x["name"]: x for x in all_entities}.values())
 
 
-@frappe.whitelist(allow_guest=True)
-def get_entity_with_permissions(entity_name):
-    """
-    Return file data with permissions
-
-    :param entity_name: Name of file document.
-    :raises IsADirectoryError: If this DriveEntity doc is not a file
-    :return: DriveEntity with permissions
-    :rtype: frappe._dict
-    """
-
-    fields = [
-        "name",
-        "title",
-        "owner",
-        "is_group",
-        "is_active",
-        "modified",
-        "creation",
-        "file_size",
-        "mime_type",
-        "file_ext",
-        "allow_comments",
-        "allow_download",
-        "document",
-        "color",
-        "parent_drive_entity",
-        "file_kind",
-    ]
-    if not get_general_access(entity_name):
-        if not frappe.has_permission(
-            doctype="Drive Entity", doc=entity_name, ptype="read", user=frappe.session.user
-        ):
-            frappe.throw("Not permitted", frappe.PermissionError)
-
-    entity = get_entity(entity_name, fields)
-
-    validate_parent_folder(entity)
-    if not entity.is_active:
-        frappe.throw("Specified file has been trashed by the owner")
-
-    if entity.owner == frappe.session.user:
-        valid_until = frappe.db.get_value(
-            "Drive DocShare",
-            {"share_name": entity_name},
-            ["valid_until"],
-            as_dict=0,
-        )
-        user_access = {"read": 1, "write": 1, "share": 1, "valid_until": valid_until}
-    else:
-        user_access = get_user_access(entity.name)
-
-    if user_access.get("read") == 0:
-        frappe.throw("Unauthorized", frappe.PermissionError)
-
-    owner_info = frappe.db.get_value(
-        "User", entity.owner, ["user_image", "full_name"], as_dict=True
-    )
-    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
-    favourite = frappe.db.get_value(
-        "Drive Favourite",
-        {
-            "entity": entity_name,
-            "user": frappe.session.user,
-        },
-        ["entity as is_favourite"],
-    )
-    mark_as_viewed(entity)
-    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
-
-    if entity.document:
-        entity_doc_content = get_doc_content(entity.document)
-        return_obj = return_obj | entity_doc_content
-
-    return return_obj
-
-
-def validate_parent_folder(entity):
-    """
-    Validate if the parent folder exists and is active.
-    """
-    ancestors = get_ancestors_of(entity.name)
-    for ancestor_name in ancestors:
-        if frappe.db.exists("Drive Entity", {"name": ancestor_name, "is_active": 0}):
-            raise IsADirectoryError(f"Parent Folder {ancestor_name} has been deleted")
-
-
 def get_valid_breadcrumbs(entity, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
     file_path = generate_upward_path(entity.name)
-    if entity.owner != file_path[0].owner:
-        file_path.pop(0)
-    if entity.owner != frappe.session.user:
-        permission_path = get_shared_breadcrumbs(user_access.docshare_name)
-        x = file_path[: -len(permission_path)]
-        for i in reversed(x):
-            if i.owner == frappe.session.user:
-                permission_path.insert(0, i)
-        file_path = permission_path
+    if user_access.get("team") or user_access.get("admin"):
+        return file_path
+    permission_path = get_shared_breadcrumbs(user_access.permission_name)
+    x = file_path[: -len(permission_path)]
+    for i in reversed(x):
+        if i.owner == frappe.session.user:
+            permission_path.insert(0, i)
+    file_path = permission_path
     return file_path
 
 
@@ -411,7 +387,7 @@ def get_general_access(entity_name):
     return query.run(as_dict=True)
 
 
-def get_user_access(entity_name, user=None):
+def get_user_access(entity, user=None):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -419,57 +395,49 @@ def get_user_access(entity_name, user=None):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
-    fields = ["read", "write", "share", "name as docshare_name", "valid_until"]
+    fields = ["read", "comment", "write", "share", "name as permission_name", "valid_until"]
+    NO_ACCESS = {
+        "read": 0,
+        "comment": 0,
+        "share": 0,
+        "write": 0,
+    }
     if not user:
         user = frappe.session.user
-    if frappe.session.user != "Guest":
-        user_access = frappe.db.get_value(
-            "Drive DocShare",
-            {
-                "share_doctype": "Drive Entity",
-                "share_name": entity_name,
-                "user_doctype": "User",
-                "user_name": user,
-            },
-            fields,
-            as_dict=1,
-        )
-        if user_access:
-            return user_access
-        group_access = user_group_entity_access(entity_name, user)
-        if group_access:
-            return group_access
-        everyone_access = frappe.db.get_value(
-            "Drive DocShare",
-            {"share_name": entity_name, "everyone": 1},
-            fields,
-            as_dict=1,
-        )
-        if everyone_access:
-            if frappe.db.exists(
-                "Has Role", {"role": "Drive Guest", "parent": frappe.session.user}
-            ):
-                return {"read": 0, "write": 0}
-            return everyone_access
-        public_access = frappe.db.get_value(
-            "Drive DocShare",
-            {"share_name": entity_name, "public": 1},
-            fields,
-            as_dict=1,
-        )
-        if public_access:
-            return public_access
-    else:
-        public_access = frappe.db.get_value(
-            "Drive DocShare",
-            {"share_name": entity_name, "public": 1},
-            fields,
-            as_dict=1,
-        )
-        if public_access:
-            return public_access
 
-    return {"read": 0, "write": 0}
+    # If unauthorized
+    if frappe.session.user == "Guest":
+        public_access = frappe.db.get_value(
+            "Drive Permission",
+            {"entity": entity.name, "user": None},
+            fields,
+            as_dict=1,
+        )
+        if public_access:
+            return public_access
+        return NO_ACCESS
+
+    # If logged in, first get Permission
+    user_access = frappe.db.get_value(
+        "Drive Permission",
+        {
+            "entity": entity.name,
+            "user": user,
+        },
+        fields,
+        as_dict=1,
+    )
+    if user_access:
+        return user_access
+
+    # Otherwise, check team/admin/owner
+    teams = get_teams(user)
+    if user == entity.owner:
+        return {"read": 1, "comment": 1, "share": 1, "write": 1, "admin": 1}
+    if entity.team in teams:
+        return {"read": 1, "comment": 1, "share": 1, "write": 0, "team": 1}
+
+    return NO_ACCESS
 
 
 def user_group_entity_access(entity_name=None, user=None):

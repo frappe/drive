@@ -73,7 +73,7 @@ let currentFolder = createResource({
     store.commit("setCurrentFolderID", props.entityName)
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
-    let currentBreadcrumbs = [
+    let breadcrumbs = [
       {
         label: "Shared",
         route: "/shared",
@@ -81,7 +81,7 @@ let currentFolder = createResource({
     ]
     const root_item = data.breadcrumbs[0]
     if (root_item.name === store.state.homeFolderID) {
-      currentBreadcrumbs = [
+      breadcrumbs = [
         {
           label: "Home",
           route: "/home",
@@ -90,12 +90,12 @@ let currentFolder = createResource({
       data.breadcrumbs.shift()
     }
     data.breadcrumbs.forEach((item, idx) => {
-      currentBreadcrumbs.push({
+      breadcrumbs.push({
         label: item.title,
         route: "/folder/" + item.name,
       })
     })
-    store.commit("setCurrentBreadcrumbs", currentBreadcrumbs)
+    store.commit("setBreadcrumbs", breadcrumbs)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

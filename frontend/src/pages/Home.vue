@@ -1,6 +1,6 @@
 <template>
   <GenericPage
-    :getEntities="getHome"
+    :get-entities="getHome"
     :icon="Home"
     :primary-message="'Home is empty'"
     :secondary-message="'Add files by dropping them here'"
