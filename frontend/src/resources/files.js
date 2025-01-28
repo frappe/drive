@@ -33,7 +33,9 @@ export const getHome = createResource({
 export const getFolderContents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
-  makeParams: (params) => params,
+  makeParams: (params) => {
+    return { ...getFolderContents.params, ...params }
+  },
 })
 
 export const getRecents = createResource({

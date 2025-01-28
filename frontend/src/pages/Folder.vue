@@ -14,12 +14,13 @@ import GenericPage from "@/components/GenericPage.vue"
 import { ref, inject, onMounted, onBeforeUnmount } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import { formatDate } from "@/utils/format"
 import { getFolderContents } from "@/resources/files"
 
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 const realtime = inject("realtime")
 const isSharedFolder = ref(false)
 const allowEmptyContextMenu = ref(false)
@@ -32,7 +33,11 @@ const props = defineProps({
   },
 })
 getFolderContents.reset()
-getFolderContents.update({ entity_name: props.entityName })
+getFolderContents.update({
+  params: {
+    entity_name: props.entityName,
+  },
+})
 
 onMounted(() => {
   realtime.doc_subscribe("Drive Entity", props.entityName)
@@ -57,17 +62,6 @@ onBeforeUnmount(() => {
 let currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
-  transform(data) {
-    if (data.owner !== store.state.auth.user_id) {
-      isSharedFolder.value = true
-      store.commit("setHasWriteAccess", data.write)
-      allowEmptyContextMenu.value = !!data.write
-    } else {
-      isSharedFolder.value = false
-      store.commit("setHasWriteAccess", true)
-      allowEmptyContextMenu.value = true
-    }
-  },
   onSuccess(data) {
     store.commit("setCurrentFolder", [data])
     store.commit("setCurrentFolderID", props.entityName)
@@ -84,12 +78,12 @@ let currentFolder = createResource({
       breadcrumbs = [
         {
           label: "Home",
-          route: "/home",
+          route: `/${route.params.team}/`,
         },
       ]
       data.breadcrumbs.shift()
     }
-    data.breadcrumbs.forEach((item, idx) => {
+    data.breadcrumbs.forEach((item) => {
       breadcrumbs.push({
         label: item.title,
         route: "/folder/" + item.name,
