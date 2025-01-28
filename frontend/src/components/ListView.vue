@@ -38,11 +38,17 @@
                 <template v-if="idx === 0" #suffix>
                   <div class="grow justify-items-end">
                     <FeatherIcon
-                      v-if="row.is_favourite"
+                      v-if="row.is_favourite && route.name !== 'Favourites'"
                       name="star"
                       width="16"
                       height="16"
                       class="stroke-amber-500 fill-amber-500"
+                    />
+                    <FeatherIcon
+                      v-else-if="row.accessed && route.name !== 'Recents'"
+                      name="clock"
+                      width="16"
+                      height="16"
                     />
                   </div>
                 </template>

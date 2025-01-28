@@ -31,7 +31,6 @@ def files(
     teams = get_teams()
     if team not in teams:
         frappe.throw("Team doesn't exist", frappe.exceptions.PageDoesNotExistError)
-    print(entity_name)
 
     if not entity_name:
         # If not specified, get home folder
@@ -57,21 +56,26 @@ def files(
     else:
         query = query.left_join(DriveFavourite)
     query = query.on(
-        (DriveFavourite.entity == DriveEntity.name) & (DriveFavourite.user == frappe.session.user)
-    )
+        (DriveFavourite.entity == Entity.name) & (DriveFavourite.user == frappe.session.user)
+    ).select(DriveFavourite.name.as_("is_favourite"))
 
     if recents_only:
         query = (
-            query.select(Recents.last_interaction.as_("modified"))
-            .right_join(Recents)
+            query.right_join(Recents)
             .on((Recents.entity_name == Entity.name) & (Recents.user == frappe.session.user))
             .orderby(Recents.last_interaction, order=Order.desc)
         )
     else:
-        query = query.orderby(
+        query = (
+            query.left_join(Recents).on(
+                (Recents.entity_name == Entity.name) & (Recents.user == frappe.session.user)
+            )
+        ).orderby(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
+
+    query = query.select(Recents.last_interaction.as_("accessed"))
 
     if tag_list:
         tag_list = json.loads(tag_list)
