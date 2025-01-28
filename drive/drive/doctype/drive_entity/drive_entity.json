@@ -100,7 +100,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-01-27 12:49:29.343925",
+  "modified": "2025-01-28 12:55:09.067611",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",
@@ -115,27 +115,12 @@
     {
       "create": 1,
       "delete": 1,
+      "email": 1,
       "export": 1,
+      "print": 1,
       "read": 1,
-      "role": "Drive Guest",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "delete": 1,
-      "export": 1,
-      "read": 1,
-      "role": "Drive User",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "delete": 1,
-      "export": 1,
-      "read": 1,
-      "role": "Drive Admin",
+      "report": 1,
+      "role": "All",
       "share": 1,
       "write": 1
     }

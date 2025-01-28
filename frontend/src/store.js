@@ -22,7 +22,6 @@ const store = createStore({
       systemUser: getCookies().system_user === "yes",
       fullName: getCookies().full_name,
       imageURL: getCookies().user_image,
-      role: false,
     },
     error: {
       iconName: "x-circle",
@@ -78,11 +77,7 @@ const store = createStore({
   },
   getters: {
     isLoggedIn: (state) => {
-      return (
-        state.auth.user_id &&
-        state.auth.user_id !== "Guest" &&
-        state.user.role !== "Guest"
-      )
+      return state.auth.user_id && state.auth.user_id !== "Guest"
     },
     uploadsInProgress: (state) => {
       return state.uploads.filter((upload) => !upload.completed)
@@ -158,7 +153,6 @@ const store = createStore({
       state.currentFolder = payload
     },
     setCurrentEntitites(state, payload) {
-      console.log(payload)
       state.currentEntitites = payload
       set("currentEntitites", JSON.stringify(payload))
     },

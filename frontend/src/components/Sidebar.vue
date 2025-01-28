@@ -47,7 +47,7 @@
         :icon="item.icon"
         :label="item.label"
         :to="item.route"
-        @mouseenter="item.preload?.fetch?.()"
+        @mouseenter="item.preload?.fetch?.({ team: $route.params.team })"
         :is-collapsed="!isExpanded"
         class="mb-0.5"
       />

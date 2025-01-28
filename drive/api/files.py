@@ -1219,7 +1219,7 @@ def remove_recents(entity_names=[], clear_all=False):
 
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
-    print("HO", entity_names)
+
     for entity in entity_names:
         existing_doc = frappe.db.exists(
             {
@@ -1377,30 +1377,36 @@ def generate_upward_path(entity_name):
     Given an ID traverse upwards till the root node
     Stops when parent_drive_entity IS NULL
     """
-    # CONCAT_WS('/', t.title, gp.path),
-    entity_name = frappe.db.escape(entity_name)
     result = frappe.db.sql(
-        f"""
-        WITH RECURSIVE generated_path as ( 
-        SELECT 
-            `tabDrive Entity`.title,
-            `tabDrive Entity`.name,
-            `tabDrive Entity`.parent_entity,
-            `tabDrive Entity`.owner
-        FROM `tabDrive Entity` 
-        WHERE `tabDrive Entity`.name = {entity_name}
-
-        UNION ALL
-
-        SELECT 
-            t.title,
-            t.name,
-            t.parent_entity,
-            t.owner
-        FROM generated_path as gp
-        JOIN `tabDrive Entity` as t ON t.name = gp.parent_entity) 
-        SELECT * FROM generated_path;
+        """WITH RECURSIVE
+            generated_path as (
+                SELECT
+                    `tabDrive Entity`.title,
+                    `tabDrive Entity`.name,
+                    `tabDrive Entity`.parent_entity,
+                    `tabDrive Entity`.owner
+                FROM
+                    `tabDrive Entity`
+                WHERE
+                    `tabDrive Entity`.name = %(entity)
+                UNION ALL
+                SELECT
+                    t.title,
+                    t.name,
+                    t.parent_entity,
+                    t.owner
+                FROM
+                    generated_path as gp
+                    JOIN `tabDrive Entity` as t ON t.name = gp.parent_entity
+            )
+        SELECT
+            *
+        FROM
+            generated_path 
+        LEFT JOIN `tabDrive Permission`
+        ON generated_path.name = `tabDrive Permission`.entity;
     """,
+        values={"entity": entity_name},
         as_dict=1,
     )
     return result[::-1]
@@ -1437,48 +1443,3 @@ def get_ancestors_of(entity_name):
     flattened_list = [item for sublist in result for item in sublist]
     flattened_list.pop(0)
     return flattened_list
-
-
-@frappe.whitelist(allow_guest=True)
-def get_shared_breadcrumbs(share_name):
-    """
-    given a node return the root. stops when share_parent IS NULL
-    given a node and parent travel till
-    the child of the parent_entity and append the parent_entity
-    """
-    # CONCAT_WS('/', t.title, gp.path),
-    share_name = frappe.db.escape(share_name)
-    result = frappe.db.sql(
-        f"""
-        WITH RECURSIVE generated_path as ( 
-        SELECT 
-            `tabDrive DocShare`.name,
-            `tabDrive DocShare`.share_name,
-            `tabDrive DocShare`.share_parent
-        FROM `tabDrive DocShare` 
-        WHERE `tabDrive DocShare`.name = {share_name}
-
-        UNION ALL
-
-        SELECT 
-            `tabDrive DocShare`.name,
-            `tabDrive DocShare`.share_name,
-            `tabDrive DocShare`.share_parent
-        FROM generated_path as gp
-        JOIN `tabDrive DocShare` ON `tabDrive DocShare`.name = gp.share_parent
-        ) 
-        SELECT * FROM generated_path;
-    """,
-        as_dict=1,
-    )
-    share_breadcrumbs = []
-    for i in result:
-        share_breadcrumbs.append(
-            frappe.get_value(
-                "Drive Entity",
-                i.share_name,
-                ["name", "title", "parent_drive_entity", "owner"],
-                as_dict=1,
-            )
-        )
-    return share_breadcrumbs[::-1]
