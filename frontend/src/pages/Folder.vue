@@ -1,17 +1,16 @@
 <template>
   <GenericPage
     v-if="currentFolder.fetched"
-    :getEntities="getFolderContents"
-    :allowEmpty
+    :get-entities="getFolderContents"
     :icon="Folder"
-    :primaryMessage="'Folder is Empty'"
+    :primary-message="'Folder is Empty'"
   />
 </template>
 
 <script setup>
 import Folder from "../components/EspressoIcons/Folder.vue"
 import GenericPage from "@/components/GenericPage.vue"
-import { ref, inject, onMounted, onBeforeUnmount } from "vue"
+import { inject, onMounted, onBeforeUnmount } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { useRouter, useRoute } from "vue-router"
@@ -22,8 +21,6 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 const realtime = inject("realtime")
-const isSharedFolder = ref(false)
-const allowEmptyContextMenu = ref(false)
 
 const props = defineProps({
   entityName: {
@@ -74,7 +71,7 @@ let currentFolder = createResource({
       },
     ]
     const root_item = data.breadcrumbs[0]
-    if (root_item.name === store.state.homeFolderID) {
+    if (root_item.parent_entity === null) {
       breadcrumbs = [
         {
           label: "Home",

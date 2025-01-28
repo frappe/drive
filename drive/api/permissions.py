@@ -56,6 +56,7 @@ def get_entity_with_permissions(entity_name):
         "Drive Entity", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
     )
     user_access = get_user_access(entity)
+
     if user_access.get("read") == 0:
         frappe.throw("Not found", frappe.NotFound)
 
@@ -339,15 +340,16 @@ def get_valid_breadcrumbs(entity, user_access):
     Determine user access and generate upward path (breadcrumbs).
     """
     file_path = generate_upward_path(entity.name)
+    accessible_path = []
+    # If team/admin of this entity, then entire
     if user_access.get("type") in ["admin", "team"]:
-        return file_path
-    permission_path = get_shared_breadcrumbs(entity.nam, user_access.type)
-    x = file_path[: -len(permission_path)]
-    for i in reversed(x):
-        if i.owner == frappe.session.user:
-            permission_path.insert(0, i)
-    file_path = permission_path
-    return file_path
+        return file_path[::-1]
+
+    for k in file_path:
+        if not k["read"] and user_access.get("type") != "team":
+            break
+        accessible_path.append(k)
+    return accessible_path[::-1]
 
 
 @frappe.whitelist()
@@ -420,6 +422,7 @@ def get_user_access(entity, user=None):
         fields,
         as_dict=1,
     )
+
     if user_access:
         return user_access
 
