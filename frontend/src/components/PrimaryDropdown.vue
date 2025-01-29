@@ -31,7 +31,7 @@
           <div
             class="line-clamp-1 overflow-hidden mt-1 text-sm leading-none text-gray-700"
           >
-            {{ fullName }}
+            {{ fullName }} - {{ $store.state.teams[$route.params.team] }}
           </div>
         </div>
         <div
