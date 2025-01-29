@@ -51,7 +51,7 @@ const store = createStore({
     currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || [],
     currentEntitites: get("currentEntitites") || [],
     pasteData: { entities: [], action: null },
-    showInfo: JSON.parse(localStorage.getItem("showInfo")) || false,
+    showInfo: false,
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
