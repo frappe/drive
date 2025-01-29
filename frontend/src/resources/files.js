@@ -31,9 +31,9 @@ export const getHome = createResource({
 
 export const getTeams = createResource({
   url: "/api/method/drive.api.permissions.get_teams",
-  makeParams: (params) => ({
+  params: {
     details: 1,
-  }),
+  },
   method: "GET",
   cache: "teams",
   auto: true,

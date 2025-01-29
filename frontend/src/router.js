@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
+import { getTeams } from "./resources/files"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -34,10 +35,11 @@ function setRootBreadCrumb(to) {
 const routes = [
   {
     path: "/",
-    redirect: () => {
+    component: () => null,
+    beforeEnter: async () => {
       if (store.getters.isLoggedIn) {
-        const role = store.state.user?.role
-        return role === "Drive Guest" ? "/recents" : "/home"
+        await getTeams.fetch()
+        return "/" + Object.keys(getTeams.data)[0]
       }
       return "/login"
     },
@@ -116,16 +118,16 @@ const routes = [
       window.location.href = "/login"
     },
   },
-  {
-    path: "/:pathMatch(.*)*/",
-    name: "Error",
-    component: () => import("@/pages/Error.vue"),
-    beforeEnter: [redir404, clearStore],
-    meta: {
-      errorPage: true,
-    },
-    props: true,
-  },
+  // {
+  //   path: "/:pathMatch(.*)*/",
+  //   name: "Error",
+  //   component: () => import("@/pages/Error.vue"),
+  //   beforeEnter: [redir404, clearStore],
+  //   meta: {
+  //     errorPage: true,
+  //   },
+  //   props: true,
+  // },
 ]
 
 let router = createRouter({

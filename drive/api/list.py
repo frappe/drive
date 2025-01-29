@@ -58,8 +58,11 @@ def files(
             fn.Coalesce(DrivePermission.read, 1).as_("read"),
             fn.Coalesce(DrivePermission.comment, 1).as_("comment"),
             fn.Coalesce(DrivePermission.share, 1).as_("share"),
-            fn.Coalesce(DrivePermission.write, 0).as_("write"),
+            fn.Coalesce(DrivePermission.write, DriveEntity.owner == frappe.session.user).as_(
+                "write"
+            ),
         )
+        .where(fn.Coalesce(DrivePermission.read, 1).as_("read") == 1)
     )
 
     # Get favourites data (only that, if applicable)
