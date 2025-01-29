@@ -24,6 +24,9 @@ export default defineConfig({
       include: [/tailwind.config.js/, /node_modules/],
     },
   },
+  server: {
+    allowedHosts: ["drive.local"],
+  },
   optimizeDeps: {
     esbuildOptions: { target: "esnext" },
     include: [

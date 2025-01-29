@@ -5,7 +5,6 @@ from pypika import Order, Case, functions as fn
 from drive.utils.users import mark_as_viewed
 from drive.api.files import (
     generate_upward_path,
-    get_ancestors_of,
     get_user_directory,
     get_doc_content,
 )
@@ -26,13 +25,14 @@ ENTITY_FIELDS = [
 ]
 
 
-def get_teams(user=None):
+@frappe.whitelist()
+def get_teams(user=None, details=None):
     """
     Returns all the teams that the current user is part of.
     """
     if not user:
         user = frappe.session.user
-    return frappe.get_all(
+    teams = frappe.get_all(
         "Drive Team Member",
         pluck="parent",
         filters=[
@@ -40,6 +40,10 @@ def get_teams(user=None):
             ["user", "=", user],
         ],
     )
+    if details:
+        return {team: frappe.get_doc("Drive Team", team) for team in teams}
+
+    return teams
 
 
 @frappe.whitelist(allow_guest=True)

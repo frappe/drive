@@ -135,7 +135,6 @@ let file = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
-    console.log("MADE IT!")
     store.commit("setActiveEntity", data)
     let breadcrumbs = [
       {

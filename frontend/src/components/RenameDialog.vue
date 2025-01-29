@@ -58,12 +58,6 @@ const open = computed({
 })
 
 const submit = () => {
-  console.log({
-    name: entity.value.name,
-    title: entity.value.file_ext
-      ? newName.value + entity.value.file_ext
-      : newName.value,
-  })
   emit("trigger", {
     name: entity.value.name,
     title: entity.value.file_ext

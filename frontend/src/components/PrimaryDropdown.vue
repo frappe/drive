@@ -26,12 +26,12 @@
           "
         >
           <div class="text-base font-medium leading-none text-gray-900">
-            Drive
+            {{ teamName }}
           </div>
           <div
             class="line-clamp-1 overflow-hidden mt-1 text-sm leading-none text-gray-700"
           >
-            {{ fullName }} - {{ $store.state.teams[$route.params.team] }}
+            {{ fullName }}
           </div>
         </div>
         <div
@@ -56,92 +56,87 @@
     :suggested-tab="suggestedTab"
   />
 </template>
-<script>
+
+<script setup>
 import { markRaw } from "vue"
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Docs from "@/components/EspressoIcons/Docs.vue"
 import AppSwitcher from "@/components/AppSwitcher.vue"
+import TeamSwitcher from "@/components/TeamSwitcher.vue"
+import { getTeams } from "@/resources/files"
+import emitter from "@/event-bus"
+import { ref, computed } from "vue"
+import { useStore } from "vuex"
+import { useRouter, useRoute } from "vue-router"
 
-export default {
-  name: "PrimaryDropdown",
-  components: {
-    Dropdown,
-    FeatherIcon,
-    SettingsDialog,
-    FrappeDriveLogo,
-    AppSwitcher,
-  },
-  props: {
-    isExpanded: Boolean,
-  },
-  data: () => ({
-    showSettings: false,
-    suggestedTab: 0,
-  }),
-  computed: {
-    firstName() {
-      return this.$store.state.user.fullName.split(" ")
-    },
-    fullName() {
-      return this.$store.state.user.fullName
-    },
-    userEmail() {
-      return this.$store.state.auth.user_id
-    },
-    settingsItems() {
-      return [
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+
+const props = defineProps({
+  isExpanded: Boolean,
+})
+const showSettings = ref(false)
+const suggestedTab = ref(0)
+const teamName = computed(() => {
+  if (!getTeams.data || !route.params.team) return
+  const teams = getTeams.data.message || getTeams.data
+  return teams[route.params.team]?.title || router.replace({ name: "Error" })
+})
+const fullName = computed(() => store.state.user.fullName)
+
+const settingsItems = computed(() => {
+  return [
+    {
+      group: "Manage",
+      hideLabel: true,
+      items: [
         {
-          group: "Manage",
-          hideLabel: true,
-          items: [
-            {
-              component: markRaw(AppSwitcher),
-            },
-            {
-              icon: Docs,
-              label: "Documentation",
-              onClick: () =>
-                window.open("https://docs.frappe.io/drive", "_blank"),
-            },
-            {
-              icon: "life-buoy",
-              label: "Support",
-              onClick: () => window.open("https://t.me/frappedrive", "_blank"),
-            },
-          ],
+          component: markRaw(TeamSwitcher),
         },
         {
-          group: "Others",
-          hideLabel: true,
-          items: [
-            {
-              icon: "settings",
-              label: "Settings",
-              onClick: () => (this.showSettings = true),
-            },
-            {
-              icon: "log-out",
-              label: "Log out",
-              onClick: () => this.logout(),
-            },
-          ],
+          component: markRaw(AppSwitcher),
         },
-      ]
+        {
+          icon: Docs,
+          label: "Documentation",
+          onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
+        },
+        {
+          icon: "life-buoy",
+          label: "Support",
+          onClick: () => window.open("https://t.me/frappedrive", "_blank"),
+        },
+      ],
     },
-  },
-  mounted() {
-    this.emitter.on("showSettings", (val) => {
-      this.showSettings = true
-      this.suggestedTab = val
-    })
-  },
-  methods: {
-    logout() {
-      this.$store.dispatch("logout")
-      this.$router.redirect("/")
+    {
+      group: "Others",
+      hideLabel: true,
+      items: [
+        {
+          icon: "settings",
+          label: "Settings",
+          onClick: () => (showSettings.value = true),
+        },
+        {
+          icon: "log-out",
+          label: "Log out",
+          onClick: logout,
+        },
+      ],
     },
-  },
+  ]
+})
+
+emitter.on("showSettings", (val) => {
+  showSettings.value = true
+  suggestedTab.value = val
+})
+
+function logout() {
+  store.dispatch("logout")
+  router.redirect("/")
 }
 </script>
