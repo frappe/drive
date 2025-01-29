@@ -182,9 +182,16 @@ const selectedColumns = [
     //   }),
   },
   {
-    label: route.name === "Recents" ? "Last Accessed" : "Last Modified",
+    label: "Last Modified",
     getLabel: ({ row }) => row.relativeModified,
     key: "modified",
+    isEnabled: (n) => n !== "Recents",
+  },
+  {
+    label: "Last Accessed",
+    getLabel: ({ row }) => row.relativeAccessed,
+    key: "modified",
+    isEnabled: (n) => n === "Recents",
   },
   {
     label: "Size",
@@ -192,7 +199,7 @@ const selectedColumns = [
     getLabel: ({ row }) => row.file_size_pretty,
   },
   { label: "", key: "options", align: "right", width: "10px" },
-].filter((k) => !k.enabled || k.enabled(route.name))
+].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entity) => {
   store.commit("setActiveEntity", entity)
