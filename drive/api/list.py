@@ -7,6 +7,7 @@ from pypika import Order, Criterion, Case, functions as fn
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
 DriveEntity = frappe.qb.DocType("Drive Entity")
+DrivePermission = frappe.qb.DocType("Drive Permission")
 Entity = frappe.qb.DocType("Drive Entity")
 Team = frappe.qb.DocType("Drive Team")
 TeamMember = frappe.qb.DocType("Drive Team Member")
@@ -45,9 +46,20 @@ def files(
         frappe.qb.from_(Entity)
         .where(Entity.parent_entity == entity_name)
         .where(Entity.is_active == is_active)
+        .left_join(DrivePermission)
+        .on(
+            (DrivePermission.entity == Entity.name) & (DrivePermission.user == frappe.session.user)
+        )
         .offset(offset)
         .limit(100)
-        .select(*ENTITY_FIELDS)
+        # Give defaults as a team member
+        .select(
+            *ENTITY_FIELDS,
+            fn.Coalesce(DrivePermission.read, 1).as_("read"),
+            fn.Coalesce(DrivePermission.comment, 1).as_("comment"),
+            fn.Coalesce(DrivePermission.share, 1).as_("share"),
+            fn.Coalesce(DrivePermission.write, 0).as_("write"),
+        )
     )
 
     # Get favourites data (only that, if applicable)

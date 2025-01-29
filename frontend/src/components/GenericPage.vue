@@ -269,8 +269,6 @@ const actionItems = computed(() => {
         label: "Download",
         icon: Download,
         onClick: entitiesDownload,
-        isEnabled: (e) =>
-          e.allow_download || e.owner === "You" || e.owner.label === "You",
         multi: true,
         important: true,
       },
@@ -278,8 +276,7 @@ const actionItems = computed(() => {
         label: "Share",
         icon: Share,
         onClick: () => (dialog.value = "s"),
-        isEnabled: (e) =>
-          e.owner === "You" || e.owner.label === "You" || e.share,
+        isEnabled: (e) => e.share,
         important: true,
       },
       {
@@ -292,14 +289,13 @@ const actionItems = computed(() => {
         label: "Rename",
         icon: Rename,
         onClick: () => (dialog.value = "rn"),
-        isEnabled: (e) =>
-          e.write || e.owner === "You" || e.owner.label === "You",
+        isEnabled: (e) => e.write,
       },
       {
         label: "Move",
         icon: Move,
         onClick: () => (dialog.value = "m"),
-        isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
+        isEnabled: (e) => e.write,
         multi: true,
         important: true,
       },
@@ -368,7 +364,7 @@ const actionItems = computed(() => {
         label: "Move to Trash",
         icon: Trash,
         onClick: () => (dialog.value = "remove"),
-        isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
+        isEnabled: (e) => e.write,
         important: true,
         multi: true,
       },

@@ -113,7 +113,7 @@
       </div>
       <!-- Comments -->
       <div
-        v-if="tab === 1"
+        v-if="entity.comment && tab === 1"
         class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
       >
         <span
@@ -123,7 +123,7 @@
           Comments
         </span>
         <!-- Check commenting permissions -->
-        <div v-if="true" class="pb-2 px-5">
+        <div class="pb-2 px-5">
           <div
             v-for="comment in comments.data"
             :key="comment"
@@ -171,10 +171,6 @@
             </div>
           </div>
         </div>
-        <div v-else class="text-gray-600 text-sm px-5">
-          Comments have been disabled for this
-          {{ entity.is_group ? "folder" : "file" }} by its owner.
-        </div>
       </div>
       <div
         v-if="tab === 2 && userId !== 'Guest'"
@@ -186,7 +182,7 @@
           <!-- <Clock /> -->
           Activity
         </span>
-        <ActivityTree v-if="showActivity" />
+        <ActivityTree v-if="entity.write" />
       </div>
     </div>
     <div
@@ -214,7 +210,7 @@
       <Info />
     </Button>
     <Button
-      v-if="showComments"
+      v-if="entity?.comment"
       class="text-gray-600"
       :class="[
         tab === 1 && showInfoSidebar
@@ -227,7 +223,7 @@
       <Comment />
     </Button>
     <Button
-      v-if="showActivity && userId !== 'Guest'"
+      v-if="entity?.write"
       class="text-gray-600"
       :class="[
         tab === 2 && showInfoSidebar
@@ -255,6 +251,7 @@ import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
+import { entitiesDownload } from "../utils/download"
 
 const store = useStore()
 const tab = ref(0)
@@ -272,21 +269,13 @@ const formattedMimeType = computed(() => {
   const kind = formatMimeType(entity.value.mime_type)
   return kind.charAt(0).toUpperCase() + kind.slice(1)
 })
-const entity = computed(() => store.state.activeEntity)
+const entity = computed(() => {
+  console.log(store.state.activeEntity)
+  return store.state.activeEntity
+})
 const sharedWithList = computed(() => {
   return userList.data?.users.concat(groupList.data)
 })
-const showComments = computed(
-  () =>
-    entity.value &&
-    (entity.value.owner === "You" ||
-      entity.value.write ||
-      entity.value.allow_comments)
-)
-
-const showActivity = computed(
-  () => entity.value && (entity.value.owner === "You" || entity.value.write)
-)
 
 function switchTab(val) {
   if (store.state.showInfo == false) {

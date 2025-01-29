@@ -48,6 +48,7 @@ export const prettyData = (entities) => {
   return entities.map((entity) => {
     entity.file_size_pretty = formatSize(entity.file_size)
     entity.relativeModified = useTimeAgo(entity.modified)
+    if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
     entity.modified = formatDate(entity.modified)
     entity.creation = formatDate(entity.creation)
     entity.owner =
