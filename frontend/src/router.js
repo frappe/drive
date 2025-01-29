@@ -43,7 +43,7 @@ const routes = [
     },
   },
   {
-    path: "/notifications",
+    path: "/:team/notifications",
     name: "Notifications",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
