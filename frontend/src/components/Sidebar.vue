@@ -38,7 +38,7 @@
         icon="inbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
-        to="/notifications"
+        :to="'/' + $route.params.team + '/notifications'"
       >
       </SidebarItem>
       <SidebarItem
