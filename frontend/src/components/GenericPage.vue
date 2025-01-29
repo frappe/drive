@@ -373,7 +373,6 @@ const actionItems = computed(() => {
 })
 
 function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
-  console.log("in", newData)
   props.getEntities.setData((data) => {
     if (_new) data.push(newData)
     const index = data.findIndex((o) => o.name === newData.name)

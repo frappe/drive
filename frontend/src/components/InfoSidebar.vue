@@ -269,7 +269,6 @@ const formattedMimeType = computed(() => {
   return kind.charAt(0).toUpperCase() + kind.slice(1)
 })
 const entity = computed(() => {
-  console.log(store.state.activeEntity)
   return store.state.activeEntity
 })
 const sharedWithList = computed(() => {

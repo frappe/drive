@@ -29,6 +29,16 @@ export const getHome = createResource({
   cache: "home-folder-contents",
 })
 
+export const getTeams = createResource({
+  url: "/api/method/drive.api.permissions.get_teams",
+  makeParams: (params) => ({
+    details: 1,
+  }),
+  method: "GET",
+  cache: "teams",
+  auto: true,
+})
+
 // Separate for cache purposes
 export const getFolderContents = createResource({
   ...COMMON_OPTIONS,
