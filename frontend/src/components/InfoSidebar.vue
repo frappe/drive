@@ -173,13 +173,12 @@
         </div>
       </div>
       <div
-        v-if="tab === 2 && userId !== 'Guest'"
+        v-if="entity.write && tab === 2"
         class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
       >
         <span
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <!-- <Clock /> -->
           Activity
         </span>
         <ActivityTree v-if="entity.write" />
@@ -195,6 +194,7 @@
   </div>
 
   <div
+    v-if="showInfoSidebar"
     class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
   >
     <Button
@@ -251,7 +251,6 @@ import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
-import { entitiesDownload } from "../utils/download"
 
 const store = useStore()
 const tab = ref(0)
@@ -303,10 +302,14 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
     typeof newEntity !== "number" &&
     typeof newEntity !== "undefined"
   ) {
+    if (
+      (!newEntity.write && tab.value === 2) ||
+      (!newEntity.comment && tab.value === 1)
+    )
+      tab.value = 0
     if (newShowInfoSidebar == true) {
       thumbnailUrl()
       comments.fetch({ entity_name: newEntity.name })
-      if (userId.value === "Guest") return
       generalAccess.fetch({ entity_name: newEntity.name })
       userList.fetch({ entity_name: newEntity.name })
       groupList.fetch({ entity_name: newEntity.name })
