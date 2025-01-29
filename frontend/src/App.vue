@@ -45,7 +45,6 @@
             class="fixed bottom-0 w-full sm:hidden"
           />
         </div>
-        <!-- Auth -->
         <router-view v-else />
       </div>
     </div>

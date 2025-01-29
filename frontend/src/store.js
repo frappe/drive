@@ -15,7 +15,6 @@ let getCookies = () => {
 const store = createStore({
   state: {
     auth: {
-      loading: false,
       user_id: getCookies().user_id,
     },
     user: {
@@ -105,14 +104,11 @@ const store = createStore({
       state.editorNewTab = !state.editorNewTab
       localStorage.setItem("editorNewTab", JSON.stringify(state.editorNewTab))
     },
-    setAuth(state, auth) {
-      Object.assign(state.auth, auth)
-    },
     setError(state, error) {
       Object.assign(state.error, error)
     },
-    setUser(state, user) {
-      Object.assign(state.user, user)
+    setTeams(state, teams) {
+      Object.assign(state.teams, teams)
     },
     setUploads(state, uploads) {
       state.uploads = uploads
@@ -194,30 +190,7 @@ const store = createStore({
       const exists = document.getElementById("headlessui-portal-root") !== null
       commit("setElementExists", exists)
     },
-    async login({ commit }, payload) {
-      localStorage.removeItem("is_drive_admin")
-      commit("setAuth", { loading: true })
-      clear()
-      let res = await call("login", {
-        usr: payload.email,
-        pwd: payload.password,
-      })
-      if (res) {
-        commit("setAuth", {
-          loading: false,
-          user_id: getCookies().user_id,
-        })
-        commit("setUser", {
-          fullName: getCookies().full_name,
-          imageURL: getCookies().user_image
-            ? window.location.origin + getCookies().user_image
-            : null,
-        })
-        return res
-      }
-    },
-    async logout({ commit }) {
-      commit("setAuth", { loading: true })
+    async logout() {
       await call("logout")
       clear()
       window.location.reload()
