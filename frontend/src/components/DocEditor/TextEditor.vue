@@ -392,7 +392,7 @@ export default {
       autofocus: "start",
       editorProps: {
         attributes: {
-          class: normalizeClass([`espresso-prose`]),
+          class: normalizeClass([`prose prose-sm`]),
         },
         clipboardTextParser: (text, $context) => {
           if (!detectMarkdown(text)) return
