@@ -8,12 +8,8 @@
     ]"
   >
     <Globe
-      v-if="props.generalAccess.public"
+      v-if="accessType === 'public'"
       :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
-    />
-    <Organization
-      v-else-if="props.generalAccess.everyone"
-      :class="size == 'sm' ? 'h-[80%] w-[80%]' : 'h-[70%] w-[70%]'"
     />
     <Lock
       v-else
@@ -24,20 +20,13 @@
 </template>
 <script setup>
 import Lock from "@/components/EspressoIcons/Lock.vue"
-import Organization from "./EspressoIcons/Organization.vue"
 import Globe from "./EspressoIcons/Globe.vue"
 import { computed } from "vue"
 
 const props = defineProps({
-  generalAccess: {
-    type: Object,
-    default() {
-      return {
-        read: 0,
-        public: 0,
-        everyone: 0,
-      }
-    },
+  accessType: {
+    type: String,
+    default: "",
   },
   size: {
     type: String,
@@ -52,10 +41,8 @@ const props = defineProps({
 const colorClasses = computed(() => {
   if (props.disabled) {
     return "bg-gray-300 text-gray-500"
-  } else if (props.generalAccess.public) {
+  } else if (props.accessType === "public") {
     return "bg-red-100 text-red-500"
-  } else if (props.generalAccess.everyone) {
-    return "bg-blue-100 text-blue-500"
   }
   return "text-gray-600 bg-gray-100"
 })

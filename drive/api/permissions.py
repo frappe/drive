@@ -95,38 +95,25 @@ def get_shared_with_list(entity_name):
     :return: List of users, with permissions and last modified datetime
     :rtype: list[frappe._dict]
     """
-
     if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="write", user=frappe.session.user
+        doctype="Drive Entity", doc=entity_name, ptype="share", user=frappe.session.user
     ):
         raise frappe.PermissionError
-
-    entity_owner = frappe.db.get_value("Drive Entity", entity_name, "owner")
-
-    users = frappe.db.get_all(
-        "Drive DocShare",
+    permissions = frappe.db.get_all(
+        "Drive Permission",
         filters={
-            "share_doctype": "Drive Entity",
-            "share_name": entity_name,
-            "user_doctype": "User",
-            "user_name": ["not in", [frappe.session.user, entity_owner]],
-            "everyone": 0,
-            "public": 0,
-            "protected": 0,
+            "entity": entity_name,
         },
-        order_by="name",
-        fields=["user_name", "read", "write", "share"],
+        order_by="user",
+        fields=["user", "read", "write", "comment", "share"],
     )
 
-    entity_owner_info = frappe.db.get_value(
-        "User", entity_owner, ["user_image", "full_name", "email"], as_dict=True
-    )
-    for user in users:
+    for p in permissions:
         user_info = frappe.db.get_value(
-            "User", user.user_name, ["user_image", "full_name"], as_dict=True
+            "User", p.user, ["user_image", "full_name", "email"], as_dict=True
         )
-        user.update(user_info)
-    return {"owner": entity_owner_info, "users": users}
+        p.update(user_info)
+    return permissions
 
 
 @frappe.whitelist()

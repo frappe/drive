@@ -25,7 +25,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["drive.local"],
+    allowedHosts: ["drive.localhost"],
   },
   optimizeDeps: {
     esbuildOptions: { target: "esnext" },
