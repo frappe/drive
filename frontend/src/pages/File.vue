@@ -194,7 +194,7 @@ let file = createResource({
 
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
-  fetchFile(currentEntity.value.name)
+  if (currentEntity.value) fetchFile(currentEntity.value.name)
 }
 
 onMounted(() => {

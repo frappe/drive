@@ -7,10 +7,7 @@
 
   <template v-else>
     <!-- Main container no scroll -->
-    <div
-      class="flex w-screen h-screen antialiased overflow-hidden"
-      @contextmenu="handleDefaultContext($event)"
-    >
+    <div class="flex w-screen h-screen antialiased overflow-hidden">
       <!-- Main container with scroll -->
       <div class="h-full w-full flex flex-col">
         <SearchPopup
@@ -130,7 +127,7 @@ export default {
   },
   async mounted() {
     this.$store.dispatch.getServerTZ
-    this.addKeyboardShortcut()
+    this.addKeyboardShortcuts()
     this.emitter.on("showSearchPopup", (data) => {
       this.showSearchPopup = data
     })
@@ -138,32 +135,62 @@ export default {
     await initTelemetry()
   },
   methods: {
-    handleDefaultContext(event) {
-      if (this.$route.meta.documentPage) {
-        return
-      } else if (
-        this.$store.state.entityInfo[0]?.mime_type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
-        this.$route.name === "File"
-      ) {
-        return
-      } else {
-        return event.preventDefault()
-      }
-    },
     async currentPageEmitTrigger() {
       this.emitter.emit("fetchFolderContents")
     },
-    addKeyboardShortcut() {
+    addKeyboardShortcuts() {
+      let tapped
+
       window.addEventListener("keydown", (e) => {
-        if (
-          e.key === "k" &&
-          (e.ctrlKey || e.metaKey) &&
-          !e.target.classList.contains("ProseMirror")
-        ) {
-          this.showSearchPopup = true
-          e.preventDefault()
+        const DOUBLE_KEY_MAPS = {
+          k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
+          h: () => this.$router.push({ name: "Home" }),
+          n: () => this.$router.push({ name: "Notifications" }),
+          f: () => this.$router.push({ name: "Favourites" }),
+          r: () => this.$router.push({ name: "Recents" }),
+          s: () => this.$router.push({ name: "Shared" }),
+          t: () => this.$router.push({ name: "Trash" }),
         }
+
+        const KEY_MAPS = [
+          [
+            (e) => e.metaKey && e.key == "ArrowRight",
+            () => this.$store.commit("setIsSidebarExpanded", true),
+          ],
+          [
+            (e) => e.metaKey && e.key == "ArrowLeft",
+            () => this.$store.commit("setIsSidebarExpanded", false),
+          ],
+          [
+            (e) => e.metaKey && e.key == "k",
+            () => (this.showSearchPopup = true),
+          ],
+        ]
+
+        if (
+          e.target.classList.contains("ProseMirror") ||
+          e.target.tagName === "INPUT"
+        )
+          return
+
+        e.preventDefault()
+        for (const key in DOUBLE_KEY_MAPS) {
+          if (e.key === key) {
+            if (tapped === key) {
+              DOUBLE_KEY_MAPS[key]()
+              tapped = null
+            } else {
+              tapped = key
+              setTimeout(() => (tapped = null), 500)
+            }
+          }
+        }
+
+        for (let [keys, action] of KEY_MAPS) {
+          if (keys(e)) action()
+        }
+
+        document.activeElement.blur()
       })
     },
   },
@@ -173,7 +200,6 @@ export default {
         url: "drive.utils.users.drive_user_level",
         cache: "is_admin",
         onSuccess(data) {
-          console.log(data)
           this.$store.state.user.role = data
         },
         onError(error) {

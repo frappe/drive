@@ -1,5 +1,6 @@
 import frappe
 
+
 @frappe.whitelist()
 def get_name_of_all_user_groups():
     try:

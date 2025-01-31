@@ -26,16 +26,17 @@
           v-if="typeof item.icon === 'string'"
           :name="item.icon"
           class="h-4 w-4 mr-2"
-          :class="[
-            item.danger ? 'text-red-500' : '',
-            item.label === 'Unfavourite' ? 'fill-amber-400 text-amber-400' : '',
-          ]"
+          :class="
+            item.label === 'Unfavourite'
+              ? 'stroke-yellow-500 fill-yellow-500'
+              : ''
+          "
         />
         <component
           :is="item.icon"
           v-else
           class="h-4 w-auto mr-2 text-gray-800"
-          :class="[item.danger ? 'text-red-500' : '']"
+          :class="item.danger ? 'text-red-500' : ''"
         />
         <div
           class="text-gray-800 mr-4"

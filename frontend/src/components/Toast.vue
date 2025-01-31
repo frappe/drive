@@ -1,6 +1,7 @@
 <template>
   <div
-    class="my-2 min-w-[15rem] max-w-[45rem] rounded-md border bg-white p-3 shadow-[0_4px_12px_#0000001a]"
+    class="my-2 min-w-[15rem] max-w-[45rem] rounded-md border p-3 shadow-[0_4px_12px_#0000001a]"
+    :class="background"
   >
     <div class="flex place-items-center">
       <FeatherIcon
@@ -44,6 +45,7 @@
   </div>
 </template>
 <script>
+import { StepResult } from "@tiptap/pm/transform"
 import { FeatherIcon } from "frappe-ui"
 import Avatar from "frappe-ui/src/components/Avatar.vue"
 
@@ -54,9 +56,13 @@ export default {
     Avatar,
   },
   props: {
+    background: {
+      type: String,
+      default: "bg-white",
+    },
     position: {
       type: String,
-      default: "top-center",
+      default: "bottom-right",
     },
     icon: {
       type: String,
@@ -84,7 +90,7 @@ export default {
     },
     timeout: {
       type: Number,
-      default: 5,
+      default: 10,
     },
   },
   emits: ["close"],

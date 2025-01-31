@@ -2,7 +2,7 @@
   <PageGeneric
     url="drive.api.list.files"
     :favourites="true"
-    :allow-empty-context-menu="false"
+    :show-default-context-menu="false"
     :show-sort="true"
     :icon="Star"
     :primaryMessage="'No Favourite Files'"

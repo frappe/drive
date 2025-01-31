@@ -46,15 +46,15 @@ def if_folder_exists(folder_name, parent):
 
 
 @frappe.whitelist()
-def get_home_folder_id(user=None):
+def get_home_folder_id():
     """Returns user directory name from user's unique id"""
-    if not user:
-        user = frappe.session.user
-        if 'Administrator' in frappe.get_roles(user):
-            return get_user_directory(user).name
-        if 'Drive Guest' in frappe.get_roles(user):
-            frappe.throw("Access forbidden: You do not have permission to access this resource.", frappe.PermissionError)
-        return get_user_directory(user).name
+    if "Drive Guest" in frappe.get_roles(frappe.session.user):
+        frappe.throw(
+            "Access forbidden: You do not have permission to access this resource.",
+            frappe.PermissionError,
+        )
+
+    return hashlib.md5(frappe.session.user.encode("utf-8")).hexdigest()
 
 
 @frappe.whitelist()
@@ -93,6 +93,7 @@ def create_document_entity(title, content, parent=None):
     drive_entity.flags.file_created = True
     drive_entity.save()
     return drive_entity
+
 
 @frappe.whitelist()
 def create_whiteboard_entity(title, content, parent=None):
@@ -364,6 +365,7 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
             document_name=doc_name,
         )
     return
+
 
 @frappe.whitelist()
 def save_whiteboard(entity_name, doc_name, content):
@@ -1032,42 +1034,41 @@ def list_favourites(order_by="modified", limit=100, offset=0):
 
 
 @frappe.whitelist()
-def add_or_remove_favourites(entity_names=None, clear_all=False):
+def set_favourite(entities=None, clear_all=False):
     """
     Favouite or unfavourite DriveEntities for specified user
 
-    :param entity_names: List of document-names
+    :param entities: List[dict] of document names and whether favorite
     :type entity_names: list[str]
     :raises ValueError: If decoded entity_names is not a list
     """
-
     if clear_all:
-        frappe.db.delete("Drive Favourite", {"user": frappe.session.user})
-        return
+        return frappe.db.delete("Drive Favourite", {"user": frappe.session.user})
 
-    if isinstance(entity_names, str):
-        entity_names = json.loads(entity_names)
-    if not isinstance(entity_names, list):
-        frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
-    for entity in entity_names:
+    if not isinstance(entities, list):
+        frappe.throw(f"Expected list but got {type(entities)}", ValueError)
+
+    for entity in entities:
         existing_doc = frappe.db.exists(
             {
                 "doctype": "Drive Favourite",
-                "entity": entity,
+                "entity": entity["name"],
                 "user": frappe.session.user,
             }
         )
-        if existing_doc:
+        if not entity.get("is_favourite"):
+            entity["is_favourite"] = not existing_doc
+
+        if not entity["is_favourite"] and existing_doc:
             frappe.delete_doc("Drive Favourite", existing_doc)
-        else:
-            doc = frappe.get_doc(
+        elif entity["is_favourite"] and not existing_doc:
+            frappe.get_doc(
                 {
                     "doctype": "Drive Favourite",
-                    "entity": entity,
+                    "entity": entity["name"],
                     "user": frappe.session.user,
                 }
-            )
-            doc.insert()
+            ).insert()
 
 
 # def toggle_is_active(doc):
@@ -1225,7 +1226,7 @@ def list_recents(order_by="last_interaction", limit=100, offset=0):
 
 
 @frappe.whitelist()
-def remove_recents(entity_names=None, clear_all=False):
+def remove_recents(entity_names=[], clear_all=False):
     """
     Clear recent DriveEntities for specified user
 
@@ -1235,12 +1236,11 @@ def remove_recents(entity_names=None, clear_all=False):
     """
 
     if clear_all:
-        frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
-        return
-    if isinstance(entity_names, str):
-        entity_names = json.loads(entity_names)
+        return frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
+
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
+    print("HO", entity_names)
     for entity in entity_names:
         existing_doc = frappe.db.exists(
             {
@@ -1388,7 +1388,7 @@ def search(query, home_dir):
         )
         return result
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), 'Frappe Drive Search Error')
+        frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")
         return {"error": str(e)}
 
 

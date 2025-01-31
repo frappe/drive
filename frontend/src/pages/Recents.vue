@@ -2,7 +2,7 @@
   <PageGeneric
     url="drive.api.list.files"
     :recents="true"
-    :allow-empty-context-menu="false"
+    :show-default-context-menu="false"
     :show-sort="false"
     :icon="Recent"
     primary-message="No Recent Files"

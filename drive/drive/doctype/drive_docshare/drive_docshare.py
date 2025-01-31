@@ -42,10 +42,9 @@ class DriveDocShare(Document):
             self.user_doctype = None
         elif self.user_name or self.user_doctype:
             self.everyone = None
-            self.public= None
+            self.public = None
         if not any([self.everyone, self.public, self.user_name, self.user_doctype]):
             raise ValueError("Invalid Share")
-
 
     def after_insert(self):
         doc = self.get_doc()

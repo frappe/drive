@@ -74,7 +74,7 @@ function getToastsGroup(position) {
         .map((toast) => {
           return h(
             "div",
-            { key: toast.key, class: "pointer-events-auto flex" },
+            { id: toast.key, class: "pointer-events-auto flex" },
             h(Toast, {
               ...toast,
               onClose: () => {
@@ -87,12 +87,23 @@ function getToastsGroup(position) {
 }
 
 export function toast(options) {
+  if (typeof options === "string") options = { title: options }
   let id = `toast-${Math.random().toString(36).slice(2, 9)}`
   let toast = reactive({
     key: id,
-    position: "top-center",
+    position: "bottom-right",
     ...options,
   })
   toasts.value.push(toast)
   return id
+}
+
+export function toastError(title) {
+  toast({
+    title,
+    icon: "alert-circle",
+    background: "bg-red-200",
+    text: "Reload page",
+    timeout: 50,
+  })
 }

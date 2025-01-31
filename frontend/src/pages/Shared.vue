@@ -2,7 +2,7 @@
   <PageGeneric
     :key="sharedUrl"
     :url="sharedUrl"
-    :allow-empty-context-menu="allowEmptyContextMenu"
+    :show-default-context-menu="allowEmptyContextMenu"
     :show-sort="true"
     :icon="Users"
     :primaryMessage="'No Shared Files'"

@@ -302,7 +302,7 @@ def get_entity_with_permissions(entity_name):
             frappe.throw("Not permitted", frappe.PermissionError)
 
     entity = get_entity(entity_name, fields)
-    
+
     validate_parent_folder(entity)
     if not entity.is_active:
         frappe.throw("Specified file has been trashed by the owner")
@@ -320,26 +320,29 @@ def get_entity_with_permissions(entity_name):
 
     if user_access.get("read") == 0:
         frappe.throw("Unauthorized", frappe.PermissionError)
-    
-    owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True)
+
+    owner_info = frappe.db.get_value(
+        "User", entity.owner, ["user_image", "full_name"], as_dict=True
+    )
     breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
     favourite = frappe.db.get_value(
         "Drive Favourite",
         {
             "entity": entity_name,
-            "user":  frappe.session.user,
+            "user": frappe.session.user,
         },
-        ["entity as is_favourite"]
+        ["entity as is_favourite"],
     )
     mark_as_viewed(entity)
-    return_obj = entity | user_access | owner_info | breadcrumbs |  {"is_favourite": favourite}
+    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
 
     if entity.document:
         entity_doc_content = get_doc_content(entity.document)
         return_obj = return_obj | entity_doc_content
-    
+
     return return_obj
-    
+
+
 def validate_parent_folder(entity):
     """
     Validate if the parent folder exists and is active.
@@ -348,7 +351,8 @@ def validate_parent_folder(entity):
     for ancestor_name in ancestors:
         if frappe.db.exists("Drive Entity", {"name": ancestor_name, "is_active": 0}):
             raise IsADirectoryError(f"Parent Folder {ancestor_name} has been deleted")
-        
+
+
 def get_valid_breadcrumbs(entity, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
@@ -361,9 +365,10 @@ def get_valid_breadcrumbs(entity, user_access):
         x = file_path[: -len(permission_path)]
         for i in reversed(x):
             if i.owner == frappe.session.user:
-                permission_path.insert(0, i)            
+                permission_path.insert(0, i)
         file_path = permission_path
     return file_path
+
 
 @frappe.whitelist()
 def get_general_access(entity_name):

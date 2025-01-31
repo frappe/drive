@@ -59,14 +59,13 @@
             :disabled="
               !currentViewEntites?.length || $store.state.elementExists
             "
-            theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
           >
             <template #prefix>
-              <FeatherIcon name="trash-2" class="w-4" />
+              <FeatherIcon name="clock" class="w-4" />
             </template>
-            Clear Recents
+            Clear
           </Button>
           <Button
             v-else-if="$route.name === 'Favourites'"
@@ -74,14 +73,13 @@
             :disabled="
               !currentViewEntites?.length || $store.state.elementExists
             "
-            theme="red"
             :variant="'subtle'"
             @click="emitter.emit('showCTADelete')"
           >
             <template #prefix>
-              <FeatherIcon name="trash-2" class="w-4" />
+              <FeatherIcon name="file-minus" class="w-4" />
             </template>
-            Clear Favourites
+            Clear
           </Button>
           <Button
             v-else-if="$route.name === 'Trash'"
@@ -160,10 +158,7 @@ import RenameDialog from "@/components/RenameDialog.vue"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 import { formatDate } from "@/utils/format"
 import { getLink } from "@/utils/getLink"
-import {
-  folderDownload,
-  selectedEntitiesDownload,
-} from "@/utils/folderDownload"
+import { folderDownload, selectedEntitiesDownload } from "@/utils/download"
 import Printer from "./EspressoIcons/Printer.vue"
 import Share from "./EspressoIcons/Share.vue"
 import Star from "./EspressoIcons/Star.vue"
@@ -202,7 +197,6 @@ export default {
   data() {
     return {
       previewEntity: null,
-      showPreview: false,
       showNewFolderDialog: false,
       showRenameDialog: false,
       newEntityOptions: [
@@ -292,7 +286,6 @@ export default {
   computed: {
     isButtonDisabled() {
       if (document.getElementById("headlessui-portal-root")) {
-        console.log("TRUE")
         return true
       }
       console.log(document.getElementById("headlessui-portal-root"))
@@ -437,7 +430,7 @@ export default {
             )
           },
         },
-      ].filter((item) => item.isEnabled())
+      ].filter((a) => !a.isEnabled || a.isEnabled())
     },
     fullName() {
       return this.$store.state.user.fullName

@@ -52,7 +52,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     entity: {
@@ -104,7 +104,7 @@ export default {
     },
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue === "rn"
       },
       set(value) {
         this.$emit("update:modelValue", value)

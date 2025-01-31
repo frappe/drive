@@ -153,7 +153,6 @@ class DriveEntity(Document):
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)
 
-
     def move(self, new_parent=None):
         """
         Move file or folder to the new parent folder

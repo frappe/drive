@@ -42,7 +42,7 @@ export default {
       type: Array,
       default: null,
     },
-    entityContext: {
+    event: {
       type: Object,
       default: null,
     },
@@ -83,21 +83,19 @@ export default {
       document.querySelector("#currentPage").classList.remove("disable-scroll")
     },
     calculateY() {
-      if (this.entityContext.y >= this.parentHeight - this.childHeight) {
+      if (this.event.y >= this.parentHeight - this.childHeight) {
         return (this.$refs.emptyContextMenu.style.top =
-          this.entityContext.y - this.childHeight + "px")
+          this.event.y - this.childHeight + "px")
       } else {
-        return (this.$refs.emptyContextMenu.style.top =
-          this.entityContext.y + "px")
+        return (this.$refs.emptyContextMenu.style.top = this.event.y + "px")
       }
     },
     calculateX() {
-      if (this.entityContext.x >= this.parentWidth - this.childWidth) {
+      if (this.event.x >= this.parentWidth - this.childWidth) {
         return (this.$refs.emptyContextMenu.style.left =
-          this.entityContext.x - this.childWidth + "px")
+          this.event.x - this.childWidth + "px")
       } else {
-        return (this.$refs.emptyContextMenu.style.left =
-          this.entityContext.x + "px")
+        return (this.$refs.emptyContextMenu.style.left = this.event.x + "px")
       }
     },
   },

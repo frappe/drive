@@ -1,18 +1,12 @@
 <template>
   <div
     ref="container"
-    class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto"
-    @mousedown.prevent="
-      (event) => {
-        dragSelectStart(event)
-      }
-    "
-    @contextmenu="toggleEmptyContext"
+    class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
+    @mousedown.prevent="(e) => dragSelectStart(e)"
+    @contextmenu="handleContextMenu"
   >
-    <DriveToolBar
-      :action-items="actionItems"
-      :column-headers="showSort ? columnHeaders : null"
-    />
+    <DriveToolBar :column-headers="showSort ? columnHeaders : null" />
+
     <FolderContentsError
       v-if="$resources.folderContents.error"
       :error="$resources.folderContents.error"
@@ -24,125 +18,116 @@
       :primary-message="primaryMessage"
       :secondary-message="secondaryMessage"
     />
+    <ListView
+      v-else-if="$store.state.view === 'list'"
+      :folder-contents="groupedByFolder"
+      :override-can-load-more="overrideCanLoadMore"
+      :action-items="actionItems"
+      @fetch-folder-contents="() => $resources.folderContents.fetch()"
+      @update-offset="fetchNextPage"
+    />
     <GridView
       v-else-if="folderItems && $store.state.view === 'grid'"
       :folder-contents="groupedByFolder"
       :selected-entities="selectedEntities"
       :override-can-load-more="overrideCanLoadMore"
       @entity-selected="(selected) => (selectedEntities = selected)"
-      @show-entity-context="(data) => toggleEntityContext(data)"
       @open-entity="(entity) => openEntity(entity)"
       @fetch-folder-contents="() => $resources.folderContents.fetch()"
       @update-offset="fetchNextPage"
-    />
-    <ListView
-      v-else-if="folderItems && $store.state.view === 'list'"
-      :folder-contents="groupedByFolder"
-      :selected-entities="selectedEntities"
-      :override-can-load-more="overrideCanLoadMore"
-      @entity-selected="(selected) => (selectedEntities = selected)"
-      @show-entity-context="(data) => toggleEntityContext(data)"
-      @open-entity="(entity) => openEntity(entity)"
-      @fetch-folder-contents="() => $resources.folderContents.fetch()"
-      @update-offset="fetchNextPage"
-    />
-    <EntityContextMenu
-      v-if="showEntityContext"
-      v-on-outside-click="closeContextMenu"
-      :entity-name="selectedEntities[0].name"
-      :action-items="actionItems"
-      :entity-context="entityContext"
-      :close="closeContextMenu"
     />
     <EmptyEntityContextMenu
-      v-if="showEmptyEntityContextMenu && allowEmptyContextMenu"
-      v-on-outside-click="closeContextMenu"
-      :action-items="emptyActionItems"
-      :entity-context="entityContext"
-      :close="closeContextMenu"
+      v-if="showDefaultContextMenu && defaultContextTriggered"
+      v-on-outside-click="() => (defaultContextTriggered = false)"
+      :close="() => (defaultContextTriggered = false)"
+      :action-items="defaultActionItems"
+      :event="clickEvent"
     />
     <NewFolderDialog
-      v-if="showNewFolderDialog"
-      v-model="showNewFolderDialog"
+      v-if="dialog === 'f'"
+      v-model="dialog"
       :parent="$route.params.entityName"
       @success="
-        (data) => {
+        () => {
           // Will break if more folders exist than the pagelength
           // Need to check the sort and see where the newly created folder fits
           // And re-fetch that offset
           handleListMutation()
-          showNewFolderDialog = false
+          dialog = null
         }
       "
     />
     <RenameDialog
-      v-if="showRenameDialog"
-      v-model="showRenameDialog"
+      v-if="dialog === 'rn'"
+      v-model="dialog"
       :entity="selectedEntities[0]"
       @success="
         (data) => {
           handleListMutation(data.name)
-          showRenameDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <GeneralDialog
-      v-if="showRemoveDialog"
-      v-model="showRemoveDialog"
+      v-if="dialog === 'remove'"
+      v-model="dialog"
       :entities="selectedEntities"
       :for="'remove'"
       @success="
         () => {
           handleListMutation()
-          showRemoveDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <GeneralDialog
-      v-model="showUnshareDialog"
+      v-if="dialog === 'unshare'"
+      v-model="dialog"
       :entities="selectedEntities"
       :for="'unshare'"
       @success="
         () => {
           handleListMutation()
-          showUnshareDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <GeneralDialog
-      v-model="showRestoreDialog"
+      v-if="dialog === 'restore'"
+      v-model="dialog"
       :entities="selectedEntities"
       :for="'restore'"
       @success="
         () => {
           handleListMutation()
-          showRestoreDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
+      v-if="dialog === 's'"
+      v-model="dialog"
       :entity-name="$store.state.entityInfo[0].name"
     />
     <MoveDialog
-      v-if="showMoveDialog"
-      v-model="showMoveDialog"
+      v-if="dialog === 'm'"
+      v-model="dialog"
       :entity-name="selectedEntities[0].name"
       @success="
         () => {
           handleListMutation(selectedEntities[0].name)
-          showMoveDialog = false
+          dialog = null
           selectedEntities = []
         }
       "
     />
     <DeleteDialog
-      v-model="showDeleteDialog"
+      v-if="dialog === 'd'"
+      v-model="dialog"
       :entities="
         selectedEntities.length > 0
           ? selectedEntities
@@ -154,7 +139,7 @@
           folderItems = null
           selectedEntities = []
           fetchNextPage()
-          showDeleteDialog = false
+          dialog = null
         }
       "
     />
@@ -198,10 +183,9 @@ import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import { formatSize, formatDate } from "@/utils/format"
 import { getLink } from "@/utils/getLink"
 import { useTimeAgo } from "@vueuse/core"
-import {
-  folderDownload,
-  selectedEntitiesDownload,
-} from "@/utils/folderDownload"
+import { toggleFav, clearRecent } from "@/resources/files"
+
+import { selectedEntitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
@@ -212,7 +196,6 @@ import Link from "./EspressoIcons/Link.vue"
 import Rename from "./EspressoIcons/Rename.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
-import Star from "./EspressoIcons/Star.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
@@ -249,7 +232,7 @@ export default {
       default: null,
       required: false,
     },
-    allowEmptyContextMenu: {
+    showDefaultContextMenu: {
       type: Boolean,
       default: false,
       required: false,
@@ -300,20 +283,11 @@ export default {
     },
   },
   data: () => ({
+    clickEvent: null,
     folderItems: null,
     previewEntity: null,
-    showPreview: false,
-    showNewFolderDialog: false,
-    showRenameDialog: false,
-    showShareDialog: false,
-    showRemoveDialog: false,
-    showDeleteDialog: false,
-    showUnshareDialog: false,
-    showRestoreDialog: false,
-    showMoveDialog: false,
-    showEntityContext: false,
-    showEmptyEntityContextMenu: false,
-    entityContext: {},
+    dialog: "",
+    defaultContextTriggered: false,
     pageLength: 60,
     pageOffset: 0,
     overrideCanLoadMore: false,
@@ -398,7 +372,7 @@ export default {
         },
       ].filter((item) => item.sortable)
     },
-    emptyActionItems() {
+    defaultActionItems() {
       return [
         {
           label: "Upload File",
@@ -415,7 +389,7 @@ export default {
         {
           label: "New Folder",
           icon: NewFolder,
-          handler: () => (this.showNewFolderDialog = true),
+          handler: () => (this.dialog = "f"),
           isEnabled: () => this.selectedEntities.length === 0,
         },
         {
@@ -438,7 +412,7 @@ export default {
           },
           isEnabled: () => this.$store.state.pasteData.entities.length,
         },*/
-      ].filter((item) => item.isEnabled())
+      ].filter((a) => !a.isEnabled || a.isEnabled())
     },
     actionItems() {
       if (this.$route.name === "Trash") {
@@ -446,143 +420,59 @@ export default {
           {
             label: "Restore",
             icon: RotateCcw,
-            onClick: () => {
-              this.showRestoreDialog = true
-            },
-            isEnabled: () => {
-              return this.selectedEntities.length > 0
-            },
+            onClick: () => (this.dialog = "restore"),
           },
           {
             label: "Delete forever",
             icon: Trash,
-            danger: true,
-            onClick: () => {
-              this.showDeleteDialog = true
-            },
-            isEnabled: () => {
-              if (this.$route.name === "Trash") {
-                return this.selectedEntities.length > 0
-              }
-            },
+            onClick: () => (this.dialog = "d"),
+            isEnabled: () => this.$route.name === "Trash",
           },
-        ].filter((item) => item.isEnabled())
+        ].filter((a) => !a.isEnabled || a.isEnabled())
       } else {
         return [
           {
             label: "Preview",
             icon: Preview,
-            onClick: () => {
-              console.log(this.selectedEntities[0].is_group)
-              this.openEntity(this.selectedEntities[0])
-            },
-            isEnabled: () => {
-              if (this.selectedEntities.length === 1) {
-                return true
-              }
-            },
+            onClick: ([entity]) => this.openEntity(entity),
+            important: true,
           },
           {
             label: "Download",
             icon: Download,
-            onClick: () => {
-              window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${this.selectedEntities[0].name}&trigger_download=1`
-            },
-            isEnabled: () => {
-              if (this.selectedEntities.length === 1) {
-                if (
-                  this.selectedEntities.length === 1 &&
-                  !this.selectedEntities[0].is_group &&
-                  !this.selectedEntities[0].document
-                ) {
-                  return (
-                    this.selectedEntities[0].allow_download ||
-                    this.selectedEntities[0].owner === "You"
-                  )
-                }
-              }
-            },
+            onClick: selectedEntitiesDownload,
+            isEnabled: (e) =>
+              e.allow_download || e.owner === "You" || e.owner.label === "You",
+            multi: true,
+            important: true,
           },
-          /* Folder Download */
-          {
-            label: "Download",
-            icon: Download,
-            onClick: () => {
-              if (this.selectedEntities.length > 1) {
-                let selected_entities = this.selectedEntities
-                selectedEntitiesDownload(selected_entities)
-              } else if (this.selectedEntities[0].is_group === 1) {
-                folderDownload(this.selectedEntities[0])
-              }
-            },
-            isEnabled: () => {
-              if (
-                this.selectedEntities.length === 1 &&
-                !this.selectedEntities[0].is_group
-              ) {
-                return false
-              }
-              if (this.selectedEntities.length) {
-                const allEntitiesSatisfyCondition = this.selectedEntities.every(
-                  (entity) => {
-                    return entity.allow_download || entity.owner === "You"
-                  }
-                )
-                return allEntitiesSatisfyCondition
-              }
-            },
-          },
-
           {
             label: "Share",
             icon: Share,
-            onClick: () => {
-              this.showShareDialog = true
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities.length === 1 &&
-                (this.selectedEntities[0].owner === "You" ||
-                  this.selectedEntities[0].share)
-              )
-            },
+            onClick: () => (this.dialog = "s"),
+            isEnabled: (e) =>
+              e.owner === "You" || e.owner.label === "You" || e.share,
+            important: true,
           },
           {
             label: "Get Link",
             icon: Link,
-            onClick: () => {
-              getLink(this.selectedEntities[0])
-            },
-            isEnabled: () => {
-              return this.selectedEntities.length === 1
-            },
+            onClick: ([entity]) => getLink(entity),
+            important: true,
           },
           {
             label: "Rename",
             icon: Rename,
-            onClick: () => {
-              this.showRenameDialog = true
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities.length === 1 &&
-                (this.selectedEntities[0].write ||
-                  this.selectedEntities[0].owner === "You")
-              )
-            },
+            onClick: () => (this.dialog = "rn"),
+            isEnabled: (e) =>
+              e.write || e.owner === "You" || e.owner.label === "You",
           },
           {
             label: "Move",
             icon: Move,
-            onClick: () => {
-              this.showMoveDialog = true
-            },
-            isEnabled: () => {
-              const allOwned = this.selectedEntities.every((entity) => {
-                return entity.owner === "You"
-              })
-              return this.selectedEntities.length > 0 && allOwned
-            },
+            onClick: () => (this.dialog = "m"),
+            isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
+            multi: true,
           },
           /* {
             label: "Duplicate",
@@ -604,27 +494,16 @@ export default {
           {
             label: "Show Info",
             icon: Info,
-            onClick: () => {
-              this.$store.commit("setShowInfo", true)
-            },
-            isEnabled: () => {
-              return (
-                !this.$store.state.showInfo &&
-                this.selectedEntities.length === 1
-              )
-            },
+            onClick: () => this.$store.commit("setShowInfo", true),
+            isEnabled: () => !this.$store.state.showInfo,
+            important: true,
           },
           {
             label: "Hide Info",
             icon: Info,
-            onClick: () => {
-              this.$store.commit("setShowInfo", false)
-            },
-            isEnabled: () => {
-              return (
-                this.$store.state.showInfo && this.selectedEntities.length === 1
-              )
-            },
+            onClick: () => this.$store.commit("setShowInfo", false),
+            isEnabled: () => this.$store.state.showInfo,
+            important: true,
           },
           /*{
             label: "Paste",
@@ -642,89 +521,73 @@ export default {
           },*/
           {
             label: "Favourite",
-            icon: Star,
-            onClick: () => {
-              this.$resources.toggleFavourite.submit()
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities.length > 0 &&
-                this.selectedEntities.every((x) => !x.is_favourite)
-              )
-            },
+            icon: "star",
+            onClick: (entities) =>
+              toggleFav.submit({
+                entities,
+              }),
+            isEnabled: (e, multi) => !e.is_favourite || multi,
+            important: true,
+            multi: true,
           },
           {
             label: "Unfavourite",
-            icon: Star,
-            onClick: () => {
-              this.$resources.toggleFavourite.submit()
-            },
-            isEnabled: () => {
-              return (
-                this.selectedEntities.length > 0 &&
-                this.selectedEntities.every((x) => x.is_favourite)
-              )
-            },
+            icon: "star",
+            onClick: (entities) =>
+              toggleFav.submit({
+                entities: entities.map((e) => ({
+                  name: e.name,
+                  is_favourite: false,
+                })),
+              }),
+            isEnabled: (e) => e.is_favourite,
+            important: true,
+            multi: true,
           },
-          {
-            label: "Color",
-            isEnabled: () => {
-              return (
-                this.selectedEntities.length === 1 &&
-                this.selectedEntities[0].is_group &&
-                (this.selectedEntities[0].write === 1 ||
-                  this.selectedEntities[0].owner === "You")
-              )
-            },
-          },
+          // {
+          //   label: "Color",
+          //   isEnabled: (e) => e.is_group && (e.write || e.owner === "You" || e.owner.label === "You"),
+          // },
           {
             label: "Remove from Recents",
-            icon: Trash,
-            danger: true,
-            onClick: () => {
-              this.$resources.clearRecent.submit()
-            },
-            isEnabled: () => {
-              if (this.$route.name === "Recents") {
-                return this.selectedEntities.length > 0
-              }
-            },
+            icon: "clock",
+            onClick: (entities) =>
+              clearRecent.submit(
+                {
+                  entities,
+                },
+                {
+                  onSuccess: () =>
+                    entities.length > 1
+                      ? toast(`Cleared  ${entities.length} files from Recents`)
+                      : null,
+                }
+              ),
+            isEnabled: () => this.$route.name === "Recents",
+            important: true,
+            multi: true,
           },
           {
             label: "Unshare",
             danger: true,
             icon: "trash-2",
-            onClick: () => {
-              this.showUnshareDialog = true
-            },
-            isEnabled: () => {
-              if (this.selectedEntities.length) {
-                return (
-                  this.selectedEntities.every(
-                    (x) =>
-                      x.owner != "You" &&
-                      x.user_doctype === "User" &&
-                      x.everyone !== 1
-                  ) && !this.isSharedFolder
-                )
-              }
-            },
+            onClick: () => (this.dialog = "unshare"),
+            isEnabled: (e) =>
+              e.owner != "You" &&
+              e.user_doctype === "User" &&
+              e.everyone !== 1 &&
+              !this.isSharedFolder,
           },
           {
             label: "Move to Trash",
             icon: Trash,
             danger: true,
-            onClick: () => {
-              this.showRemoveDialog = true
-            },
-            isEnabled: () => {
-              const allOwned = this.selectedEntities.every((entity) => {
-                return entity.owner === "You"
-              })
-              return this.selectedEntities.length > 0 && allOwned
-            },
+            onClick: () => (this.dialog = "remove"),
+            isEnabled: (e) => e.owner === "You" || e.owner.label === "You",
+            important: true,
+            multi: true,
           },
-        ].filter((item) => item.isEnabled())
+        ]
       }
     },
     foldersBefore() {
@@ -767,9 +630,7 @@ export default {
       this.clearAll = true
       this.showCTADelete = true
     })
-    this.emitter.on("showShareDialog", () => {
-      this.showShareDialog = true
-    })
+    this.emitter.on("showShareDialog", () => (this.dialog = "s"))
     this.emitter.on("selectAll", () => {
       this.clearAll()
     })
@@ -789,7 +650,7 @@ export default {
 
     this.deleteListener = (e) => {
       if (e.key === "Delete" && this.selectedEntities.length)
-        this.showRemoveDialog = true
+        this.dialog = "remove"
     }
     window.addEventListener("keydown", this.deleteListener)
 
@@ -828,10 +689,13 @@ export default {
     document.removeEventListener("keydown", this.cutListener)
   },
   methods: {
+    handleContextMenu(event) {
+      this.clickEvent = event
+      this.defaultContextTriggered = true
+      event.preventDefault()
+    },
     dragSelectStart(event) {
-      if (this.showEntityContext) return
       this.selectedIDs = null
-      this.selectedEntities = []
       document.addEventListener("mousemove", this.dragSelectMove)
       document.addEventListener("mouseup", this.dragSelectStop)
       this.selectionCoordinates.x1 = event.clientX
@@ -928,7 +792,6 @@ export default {
         0,
         endPage * this.pageLength - this.pageLength
       )
-      let totalPages = endtityOgOffset - 0
       this.$resources.folderContents
         .fetch({
           entity_name: this.entityName,
@@ -955,7 +818,6 @@ export default {
         return
       }
       if (entity.is_group) {
-        this.selectedEntities = []
         this.$router.push({
           name: "Folder",
           params: { entityName: entity.name },
@@ -986,7 +848,6 @@ export default {
           params: { entityName: entity.name },
         })
         this.previewEntity = entity
-        this.showPreview = true
       }
     },
     async pasteEntities(newParent = this.$store.state.currentFolderID) {
@@ -1002,34 +863,6 @@ export default {
       this.selectedEntities = []
       this.$store.commit("setPasteData", { entities: [], action: null })
       this.$resources.folderContents.fetch()
-    },
-    toggleEntityContext(event) {
-      if (!event) this.showEntityContext = false
-      else {
-        this.showEntityContext = true
-        this.showEmptyEntityContextMenu = false
-        this.entityContext = event
-      }
-    },
-    toggleEmptyContext(event) {
-      if (!event) {
-        this.showEntityContext = false
-        this.showEmptyEntityContextMenu = false
-      } else if (this.selectedEntities.length === 0) {
-        this.selectedEntities = []
-        this.showEntityContext = false
-        this.showEmptyEntityContextMenu = true
-        this.entityContext = event
-      } else if (this.selectedEntities.length > 0) {
-        this.showEntityContext = true
-        this.showEmptyEntityContextMenu = false
-        this.entityContext = event
-      }
-    },
-    closeContextMenu() {
-      this.showEntityContext = false
-      this.showEmptyEntityContextMenu = false
-      this.entityContext = undefined
     },
     async newDocument() {
       await this.$resources.createDocument.submit({
@@ -1119,9 +952,10 @@ export default {
       return {
         method: "GET",
         url: this.url,
+        cache: "folder-contents",
         auto: false,
         params: {
-          entity_name: this.entityName,
+          entity_name: this.entityName || "",
           order_by: this.orderBy,
           offset: this.pageOffset,
           limit: this.pageLength,
@@ -1180,51 +1014,26 @@ export default {
           // Toggled OFF
           if (this.selectedEntities[0].is_favourite) {
             toast({
-              title: `${this.selectedEntities.length} ${
-                this.selectedEntities.length > 1 ? " items" : " item"
-              } removed from Favourites`,
+              title: `${
+                this.selectedEntities.length > 1
+                  ? this.selectedEntities.length + " items removed"
+                  : "Removed"
+              } from Favourites`,
               position: "bottom-right",
               timeout: 2,
             })
           } else {
             toast({
-              title: `${this.selectedEntities.length} ${
-                this.selectedEntities.length > 1 ? " items" : " item"
-              } added to Favourites`,
+              title: `${
+                this.selectedEntities.length > 1
+                  ? this.selectedEntities.length + " items added"
+                  : "Added"
+              } to Favourites`,
               position: "bottom-right",
               timeout: 2,
             })
           }
           this.handleListMutation(this.selectedEntities[0].name)
-          this.selectedEntities = []
-        },
-      }
-    },
-    clearRecent() {
-      return {
-        method: "POST",
-        auto: false,
-        url: "drive.api.files.remove_recents",
-        params: {
-          entity_names: JSON.stringify(
-            this.selectedEntities?.map((entity) => entity.name)
-          ),
-        },
-        onSuccess() {
-          toast({
-            title: `Cleared  ${this.selectedEntities.length} ${
-              this.selectedEntities.length > 1 ? " items" : " item"
-            } from Recents`,
-            position: "bottom-right",
-            timeout: 2,
-          })
-          this.handleListMutation(this.selectedEntities[0].name)
-          this.selectedEntities = []
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
         },
       }
     },

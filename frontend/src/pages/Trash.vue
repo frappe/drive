@@ -1,7 +1,7 @@
 <template>
   <PageGeneric
     url="drive.api.list.files"
-    :allow-empty-context-menu="false"
+    :show-default-context-menu="false"
     :is-active="0"
     :show-sort="true"
     :icon="Trash"

@@ -69,7 +69,7 @@ export default {
   computed: {
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue === "f"
       },
       set(value) {
         this.$emit("update:modelValue", value)

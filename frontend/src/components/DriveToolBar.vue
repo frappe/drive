@@ -5,6 +5,17 @@
     class="flex gap-x-3 flex-wrap justify-start items-center w-full min-h-8 mb-6"
   >
     <div class="flex gap-3 w-full justify-start items-center flex-wrap">
+      <Dropdown :options="filterItems" placement="left">
+        <Button
+          >Filter
+          <template #prefix>
+            <Filter />
+          </template>
+          <template #suffix>
+            <ChevronDown />
+          </template>
+        </Button>
+      </Dropdown>
       <div
         v-if="$route.name === 'Shared'"
         class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
@@ -34,17 +45,6 @@
           Shared by You
         </Button>
       </div>
-      <Dropdown :options="filterItems" placement="left">
-        <Button
-          >Filter
-          <template #prefix>
-            <Filter />
-          </template>
-          <template #suffix>
-            <ChevronDown />
-          </template>
-        </Button>
-      </Dropdown>
       <div class="flex flex-wrap items-start justify-start gap-1">
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
@@ -197,10 +197,6 @@ export default {
       type: Array,
       default: null,
     },
-    actionItems: {
-      type: Array,
-      default: null,
-    },
     columnHeaders: {
       type: Array,
       default: null,
@@ -329,4 +325,3 @@ export default {
   },
 }
 </script>
-./EspressoIcons/Sort.vue

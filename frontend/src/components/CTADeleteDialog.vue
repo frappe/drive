@@ -63,24 +63,26 @@ export default {
   },
   mounted() {
     this.evalDialog()
+    document.onkeydown = (e) => {
+      if (e.key === "Escape") this.open = false
+    }
   },
   methods: {
     evalDialog() {
       if (this.$route.name === "Recents") {
-        this.title = "Clear Recents?"
-        this.message = "All your recently viewed files will be cleared"
+        this.title = "Clear recents?"
+        this.message = "All your recently viewed files will be cleared."
         this.buttonText = "Clear"
         this.url = "drive.api.files.remove_recents"
       }
       if (this.$route.name === "Favourites") {
-        this.title = "Clear Favourites?"
-        this.message =
-          "All your favourited items will be marked as unfavourite."
+        this.title = "Clear favourites?"
+        this.message = "All your favourite items will ."
         this.buttonText = "Unfavourite"
-        this.url = "drive.api.files.add_or_remove_favourites"
+        this.url = "drive.api.files.set_favourites"
       }
       if (this.$route.name === "Trash") {
-        this.title = "Delete Forever?"
+        this.title = "Delete forever?"
         this.message =
           "All items in your Trash will be deleted forever. This is an irreversible process."
         this.buttonVariant = "solid"

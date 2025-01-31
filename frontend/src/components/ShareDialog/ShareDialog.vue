@@ -318,6 +318,7 @@ import {
   FeatherIcon,
   Switch,
   LoadingIndicator,
+  DatePicker,
 } from "frappe-ui"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
@@ -327,7 +328,6 @@ import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import Check from "@/components/EspressoIcons/Check.vue"
 import { capture } from "@/telemetry"
-import DatePicker from "frappe-ui/src/components/DatePicker.vue"
 import { formatDate } from "@/utils/format"
 import { useDateFormat } from "@vueuse/core"
 
@@ -352,7 +352,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     entityName: {
@@ -410,7 +410,7 @@ export default {
     },
     openDialog: {
       get() {
-        return this.modelValue
+        return this.modelValue === "s"
       },
       set(value) {
         this.$emit("update:modelValue", value)

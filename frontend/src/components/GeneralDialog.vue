@@ -104,7 +104,7 @@ export default {
     },
     open: {
       get() {
-        return this.modelValue
+        return this.modelValue === this.for
       },
       set(value) {
         this.$emit("update:modelValue", value)
