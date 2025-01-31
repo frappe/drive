@@ -406,16 +406,11 @@ class DriveEntity(Document):
     @frappe.whitelist()
     def share(
         self,
-        share_name=None,
         user=None,
-        user_type=None,
-        read=1,
-        write=0,
-        share=0,
-        everyone=0,
-        public=0,
-        notify=0,
-        protected=0,
+        read=None,
+        comment=None,
+        share=None,
+        write=None,
     ):
         """
         Share this file or folder with the specified user.
@@ -427,7 +422,6 @@ class DriveEntity(Document):
         :param share: 1 if share permission is to be granted. Defaults to 0
         :param notify: 1 if the user should be notified. Defaults to 1
         """
-
         if frappe.session.user != self.owner:
             if not frappe.has_permission(
                 doctype="Drive Entity",
@@ -443,146 +437,56 @@ class DriveEntity(Document):
                     else:
                         frappe.throw("Not permitted to share", frappe.PermissionError)
                         break
-        if user:
-            share_name = frappe.db.get_value(
-                "Drive DocShare",
-                {
-                    "user_name": user,
-                    "user_doctype": user_type,
-                    "share_name": self.name,
-                    "share_doctype": "Drive Entity",
-                },
-            )
-        if cint(public) or cint(everyone):
-            share_name = frappe.db.get_value(
-                "Drive DocShare",
-                {
-                    "share_name": self.name,
-                    "share_doctype": "Drive Entity",
-                    "user_name": None,
-                    "user_doctype": None,
-                },
-            )
-        if share_name:
-            doc = frappe.get_doc("Drive DocShare", share_name)
 
-        else:
-            doc = frappe.new_doc("Drive DocShare")
-            doc.update(
-                {
-                    "user_name": user,
-                    "user_doctype": user_type,
-                    "share_doctype": "Drive Entity",
-                    "share_name": self.name,
-                    "everyone": cint(everyone),
-                    "public": cint(public),
-                }
-            )
-
-        doc.update(
+        permission = frappe.db.get_value(
+            "Drive Permission",
             {
-                # always add read, since you are adding
-                "read": 1,
-                "write": cint(write),
-                "share": cint(share),
-                "everyone": cint(everyone),
-                "public": cint(public),
-                "protected": cint(protected),
+                "entity": self.name,
+                "user": user or "",
+            },
+        )
+        if not permission:
+            permission = frappe.new_doc("Drive Permission")
+        else:
+            permission = frappe.get_doc("Drive Permission", permission)
+
+        levels = [["read", read], ["comment", comment], ["share", share], ["write", write]]
+        permission.update(
+            {
+                "user": user,
+                "entity": self.name,
             }
+            | {l[0]: l[1] for l in levels if l[1] != None}
         )
 
-        if frappe.db.exists(
-            {
-                "doctype": "Drive DocShare",
-                "share_doctype": "Drive Entity",
-                "share_name": self.parent_drive_entity,
-                "everyone": cint(everyone),
-                "public": cint(public),
-                "user_name": user,
-                "user_doctype": user_type,
-            }
-        ):
-            parent_docshare = frappe.db.get_value(
-                "Drive DocShare",
-                {
-                    "share_doctype": "Drive Entity",
-                    "share_name": self.parent_drive_entity,
-                    "everyone": cint(everyone),
-                    "public": cint(public),
-                    "user_name": user,
-                    "user_doctype": user_type,
-                },
-                "name",
-            )
-            doc.update({"owner_parent": parent_docshare, "share_parent": parent_docshare})
-        doc.save(ignore_permissions=True)
-        if self.is_group:
-            for child in self.get_children():
-                child.share(
-                    user=user,
-                    user_type=user_type,
-                    read=read,
-                    write=write,
-                    share=share,
-                    everyone=everyone,
-                    public=public,
-                )
+        permission.save(ignore_permissions=True)
 
     @frappe.whitelist()
-    def unshare(self, user, user_type="User"):
+    def unshare(self, user=None):
         """Unshare this file or folder with the specified user
 
         :param user: User or group with whom this is to be shared
         :param user_type:
         """
+        absolute_path = generate_upward_path(self.name)
+        print(absolute_path)
+        for i in absolute_path:
+            if i.owner == user:
+                frappe.throw("User owns parent folder", frappe.PermissionError)
 
-        if user:
-            if user != self.owner and frappe.session.user != self.owner:
-                shared_parent = frappe.db.exists(
-                    "Drive DocShare",
-                    {
-                        "user_name": user,
-                        "user_doctype": user_type,
-                        "share_name": self.parent_drive_entity,
-                        "share_doctype": "Drive Entity",
-                    },
-                )
-                if shared_parent:
-                    return
+        perm_name = frappe.db.get_value(
+            "Drive Permission",
+            {
+                "user": user,
+                "entity": self.name,
+            },
+        )
+        if perm_name:
+            frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
 
-            absolute_path = generate_upward_path(self.name)
-            for i in absolute_path:
-                if i.owner == user:
-                    frappe.throw("User owns parent folder", frappe.PermissionError)
-
-            share_name = frappe.db.get_value(
-                "Drive DocShare",
-                {
-                    "user_name": user,
-                    "user_doctype": user_type,
-                    "share_name": self.name,
-                    "share_doctype": "Drive Entity",
-                },
-            )
-        else:
-            share_name = frappe.db.get_value(
-                "Drive DocShare",
-                {
-                    "share_name": self.name,
-                    "share_doctype": "Drive Entity",
-                    "user_name": None,
-                    "user_doctype": None,
-                },
-            )
-
-        if share_name:
-            if frappe.session.user == user or frappe.session.user == self.owner:
-                frappe.delete_doc("Drive DocShare", share_name)
-            else:
-                frappe.delete_doc("Drive DocShare", share_name, ignore_permissions=True)
         if self.is_group:
             for child in self.get_children():
-                child.unshare(user, user_type)
+                child.unshare(user)
 
 
 def on_doctype_update():

@@ -52,12 +52,11 @@ import {
 import { Button } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
-import { formatSize, formatDate } from "@/utils/format"
 import { useRouter, useRoute } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import { prettyData } from "../utils/files"
+import { prettyData } from "@/utils/files"
 
 const router = useRouter()
 const route = useRoute()
@@ -197,7 +196,7 @@ onMounted(() => {
     store.commit("setIsSidebarExpanded", false)
   }
   emitter.on("showShareDialog", () => {
-    showShareDialog.value = true
+    showShareDialog.value = "s"
   })
 })
 

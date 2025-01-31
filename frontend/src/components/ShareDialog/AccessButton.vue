@@ -10,7 +10,7 @@
       <PopoverButton
         class="flex gap-1 px-2 focus:outline-none bg-gray-100 rounded h-7 items-center text-base"
       >
-        {{ accessObj.write ? "Can Edit" : "Can View" }}
+        Manage
         <span class="hidden">{{
           open ? disableScroll.on() : disableScroll.off()
         }}</span>
@@ -24,34 +24,20 @@
         <div v-if="open">
           <ul>
             <li
+              v-for="(access, idx) in filtered_access_levels"
+              :key="idx"
               class="flex items-center justify-between px-1 text-base text-gray-700 line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
               @click="
-                ;(accessObj.read = 1),
-                  (accessObj.write = 0),
-                  $emit('updateAccess'),
+                ;(accessObj[access] = !accessObj[access]),
+                  $emit('updateAccess', { [access]: accessObj[access] }),
                   close()
               "
             >
-              Can View
-              <Check
-                v-if="accessObj.read === 1 && accessObj.write === 0"
-                class="h-3"
-              />
+              Can {{ access }}
+              <Check v-if="accessObj[access]" class="h-3" />
             </li>
             <li
-              class="flex items-center justify-between px-1 text-base text-gray-700 line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-              @click="
-                ;(accessObj.read = 1),
-                  (accessObj.write = 1),
-                  $emit('updateAccess'),
-                  close()
-              "
-            >
-              Can Edit
-              <Check v-if="accessObj.write === 1" class="h-3" />
-            </li>
-            <hr class="my-0.5" />
-            <li
+              v-if="userAccess.write"
               class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer text-red-500"
               @click="$emit('removeAccess'), close()"
             >
@@ -64,14 +50,17 @@
   </Popover>
 </template>
 <script setup>
-import { ref } from "vue"
 import { Float } from "@headlessui-float/vue"
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import Check from "@/components/EspressoIcons/Check.vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 import disableScroll from "../../utils/disable-scroll"
+import { ref } from "vue"
 
-const props = defineProps(["accessObj"])
+const props = defineProps({ userAccess: Object, accessObj: Object })
 const accessObj = ref(props.accessObj)
 defineEmits(["updateAccess", "removeAccess"])
+
+const ACCESS_LEVELS = ["read", "comment", "share", "write"]
+const filtered_access_levels = ACCESS_LEVELS.filter((l) => props.userAccess[l])
 </script>

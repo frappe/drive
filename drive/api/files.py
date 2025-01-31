@@ -165,12 +165,10 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
-
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
             parent = if_folder_exists(i, parent)
-
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
@@ -212,7 +210,6 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
             # Read the first 2KB of the binary stream to determine the file type if string checking failed
             # Do a rejection workflow to reject undesired mime types
             mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
-
         drive_entity = create_drive_entity(
             team,
             title,
