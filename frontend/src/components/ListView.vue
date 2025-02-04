@@ -21,47 +21,49 @@
           />
         </ListGroupHeader>
         <ListGroupRows :group="group">
-          <ListRow
-            v-for="row in group.rows"
-            :key="row.name"
-            :row="row"
-            @click="setActive(row)"
-            @dblclick="() => openEntity(route.params.team, row)"
-          >
-            <template #default="{ idx, column, item }">
-              <ListRowItem
-                :column="column"
-                :row="row"
-                :item="item"
-                :align="column.align"
-              >
-                <template v-if="idx === 0" #suffix>
-                  <div class="grow justify-items-end">
-                    <FeatherIcon
-                      v-if="row.is_favourite && route.name !== 'Favourites'"
-                      name="star"
-                      width="16"
-                      height="16"
-                      class="stroke-amber-500 fill-amber-500"
-                    />
-                    <FeatherIcon
-                      v-else-if="row.accessed && route.name !== 'Recents'"
-                      name="clock"
-                      width="16"
-                      height="16"
-                    />
-                  </div>
-                </template>
-                <template v-if="column.key === 'options'">
-                  <Dropdown :options="dropdownActionItems(row)">
-                    <Button class="bg-white">
-                      <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-                    </Button>
-                  </Dropdown>
-                </template>
-              </ListRowItem>
-            </template>
-          </ListRow>
+          <template v-for="row in group.rows" :key="row.name">
+            <ListRow
+              :class="selectedRow === row.name ? '!bg-surface-gray-2' : ''"
+              :row="row"
+              class="hover:bg-surface-menu-bar"
+              @click="setActive(row)"
+              @dblclick="() => openEntity(route.params.team, row)"
+            >
+              <template #default="{ idx, column, item }">
+                <ListRowItem
+                  :column="column"
+                  :row="row"
+                  :item="item"
+                  :align="column.align"
+                >
+                  <template v-if="idx === 0" #suffix>
+                    <div class="grow justify-items-end">
+                      <FeatherIcon
+                        v-if="row.is_favourite && route.name !== 'Favourites'"
+                        name="star"
+                        width="16"
+                        height="16"
+                        class="stroke-amber-500 fill-amber-500"
+                      />
+                      <FeatherIcon
+                        v-else-if="row.accessed && route.name !== 'Recents'"
+                        name="clock"
+                        width="16"
+                        height="16"
+                      />
+                    </div>
+                  </template>
+                  <template v-if="column.key === 'options'">
+                    <Dropdown :options="dropdownActionItems(row)">
+                      <Button class="bg-white">
+                        <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+                      </Button>
+                    </Dropdown>
+                  </template>
+                </ListRowItem>
+              </template>
+            </ListRow>
+          </template>
         </ListGroupRows>
       </div>
     </template>
@@ -202,8 +204,13 @@ const selectedColumns = [
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entity) => {
-  store.commit("setActiveEntity", entity)
-  selectedRow.value = entity.name
+  if (entity.name === store.state.activeEntity?.name) {
+    selectedRow.value = null
+    store.commit("setActiveEntity", null)
+  } else {
+    selectedRow.value = entity.name
+    store.commit("setActiveEntity", entity)
+  }
 }
 
 const handleAction = (selectedItems, action) => {
