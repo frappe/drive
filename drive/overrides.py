@@ -3,7 +3,7 @@ from drive.api.permissions import get_user_access
 
 
 def user_has_permission(doc, ptype, user):
-    if doc.owner == user:
+    if doc.owner == user or user == "Administrator":
         return True
     access = get_user_access(doc, user)
     if ptype in access:

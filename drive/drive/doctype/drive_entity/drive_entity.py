@@ -32,7 +32,7 @@ class DriveEntity(Document):
     def on_trash(self):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
         frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
-        frappe.db.delete("Drive DocShare", {"share_name": self.name})
+        frappe.db.delete("Drive Permission", {"entity": self.name})
         frappe.db.delete("Drive Notification", {"notif_doctype_name": self.name})
         frappe.db.delete("Drive Entity Activity Log", {"entity": self.name})
         if self.is_group or self.document:
