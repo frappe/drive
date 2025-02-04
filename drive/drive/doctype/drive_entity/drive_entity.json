@@ -12,7 +12,6 @@
     "is_group",
     "parent_entity",
     "path",
-    "entity_size",
     "color",
     "mime_type",
     "file_size",
@@ -70,12 +69,6 @@
       "options": "Drive Entity"
     },
     {
-      "fieldname": "entity_size",
-      "fieldtype": "Int",
-      "label": "File Size",
-      "read_only": 1
-    },
-    {
       "fieldname": "team",
       "fieldtype": "Link",
       "label": "Team",
@@ -100,7 +93,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-01-28 12:55:09.067611",
+  "modified": "2025-02-04 14:41:31.492718",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",
