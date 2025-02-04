@@ -148,34 +148,52 @@
           </div>
 
           <div class="overflow-y-auto max-h-96 px-4 sm:px-6">
+            <Autocomplete
+              :options="[
+                { value: 'read', label: 'Read' },
+                { value: 'comment', label: 'Comment' },
+                { value: 'share', label: 'Share' },
+                { value: 'write', label: 'Write' },
+              ]"
+              v-model="share.access"
+              placeholder="Select people"
+              :multiple="true"
+              :hideSearch="true"
+            ></Autocomplete>
+            <div class="flex mt-3">
+              <TextInput
+                type="email"
+                class="grow"
+                size="sm"
+                variant="subtle"
+                v-model="share.name"
+                placeholder="share with..."
+              />
+              <Button
+                :disabled="share.name.length === 0"
+                class="ms-3"
+                @click="
+                  updateAccess.submit({
+                    entity_name: entity.name,
+                    user: share.name,
+                    ...share.access.reduce((acc, { value }) => {
+                      acc[value] = 1
+                      return acc
+                    }, {}),
+                  })
+                "
+              >
+                Share
+              </Button>
+            </div>
             <div
               v-if="!getUsersWithAccess.loading"
-              class="text-base space-y-4 mb-5"
+              class="text-base space-y-4 mb-5 mt-3"
             >
               <span class="text-gray-600 font-medium text-base">Users</span>
-
-              <!-- Owner -->
-              <!-- <div class="flex items-center gap-x-3">
-                <Avatar
-                  size="lg"
-                  :label="getUsersWithAccess.data.owner.full_name"
-                  :image="getUsersWithAccess.data.owner.user_image"
-                />
-                <div class="flex items-start flex-col justify-start">
-                  <span class="text-gray-900">{{
-                    getUsersWithAccess.data.owner.full_name
-                  }}</span>
-                  <span class="text-gray-700 text-sm">{{
-                    getUsersWithAccess.data.owner.email
-                  }}</span>
-                </div>
-                <span class="ml-auto flex items-center gap-1 text-gray-600">
-                  Owner
-                  <Diamond class="h-3.5" />
-                </span>
-              </div> -->
-
-              <!-- Users -->
+              <div v-if="!getUsersWithAccess.data?.length" class="ms-2">
+                <em>Yet to be shared.</em>
+              </div>
               <div
                 v-for="(user, idx) in getUsersWithAccess.data"
                 :key="user.name"
@@ -185,7 +203,7 @@
 
                 <div class="flex items-start flex-col justify-start">
                   <span class="text-gray-900">{{
-                    user.full_name ? user.full_name : user.user_name
+                    user.full_name || user.user_name || user.user
                   }}</span>
                   <span class="text-gray-700 text-sm">{{
                     user.full_name ? user.user_name : ""
@@ -201,11 +219,7 @@
                   v-else-if="user.user !== entity.owner"
                   class="text-gray-700 relative flex-shrink-0 ml-auto"
                   :access-obj="user"
-                  :user-access="
-                    getUsersWithAccess.data.find(
-                      (u) => u.user == $store.state.auth.user_id
-                    )
-                  "
+                  :user-access="entity"
                   @update-access="
                     (access) =>
                       updateAccess.submit({
@@ -270,6 +284,8 @@ import {
   Avatar,
   Dialog,
   FeatherIcon,
+  TextInput,
+  Autocomplete,
   Switch,
   LoadingIndicator,
   DatePicker,
@@ -301,6 +317,13 @@ const access = computed(() => ({
 }))
 const showSettings = ref(false)
 const usersWithAccess = ref([])
+const share = ref({
+  name: "hey@gmail.com",
+  access: [
+    { value: "read", label: "Read" },
+    { value: "comment", label: "Comment" },
+  ],
+})
 const openDialog = computed({
   get: () => {
     return props.modelValue === "s"

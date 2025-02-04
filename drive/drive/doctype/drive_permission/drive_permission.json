@@ -16,7 +16,7 @@
   "fields": [
     {
       "fieldname": "user",
-      "fieldtype": "Link",
+      "fieldtype": "Data",
       "label": "User",
       "options": "User"
     },
@@ -60,7 +60,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-01-27 15:44:50.143373",
+  "modified": "2025-02-03 15:17:40.804788",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Permission",
