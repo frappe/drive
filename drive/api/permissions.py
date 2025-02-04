@@ -60,7 +60,6 @@ def get_entity_with_permissions(entity_name):
         "Drive Entity", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
     )
     user_access = get_user_access(entity)
-
     if user_access.get("read") == 0:
         frappe.throw("Not found", frappe.NotFound)
 
@@ -101,9 +100,7 @@ def get_shared_with_list(entity_name):
         raise frappe.PermissionError
     permissions = frappe.db.get_all(
         "Drive Permission",
-        filters={
-            "entity": entity_name,
-        },
+        filters={"entity": entity_name, "user": ["!=", ""]},
         order_by="user",
         fields=["user", "read", "write", "comment", "share"],
     )
@@ -114,20 +111,6 @@ def get_shared_with_list(entity_name):
         )
         p.update(user_info)
     return permissions
-
-
-@frappe.whitelist()
-def get_shared_user_group_list(entity_name):
-    user_group_list = frappe.db.get_list(
-        "Drive DocShare",
-        filters={
-            "share_doctype": "Drive Entity",
-            "user_doctype": "User Group",
-            "share_name": ["like", f"%{entity_name}%"],
-        },
-        fields=["user_name", "user_doctype", "read", "write"],
-    )
-    return user_group_list
 
 
 @frappe.whitelist()
@@ -292,52 +275,19 @@ def get_shared_with_me(get_all=False, order_by="modified", is_active=1, limit=10
     return query.run(as_dict=True)
 
 
-@frappe.whitelist()
-def get_all_my_entities(fields=None):
-    """
-    Return file data with permissions
-
-    :return: DriveEntity with permissions
-    :rtype: frappe._dict
-    """
-
-    fields = fields or [
-        "name",
-        "title",
-        "is_group",
-        "owner",
-        "modified",
-        "file_size",
-        "mime_type",
-    ]
-    my_entities = frappe.db.get_list(
-        "Drive Entity",
-        filters={
-            "is_active": 1,
-            "owner": frappe.session.user,
-            "name": ["!=", get_user_directory().name],
-        },
-        fields=fields,
-    )
-
-    shared_entities = get_shared_with_me(get_all=True)
-
-    all_entities = shared_entities + my_entities
-    return list({x["name"]: x for x in all_entities}.values())
-
-
 def get_valid_breadcrumbs(entity, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
     file_path = generate_upward_path(entity.name)
     accessible_path = []
-    # If team/admin of this entity, then entire
+    # If team/admin of this entity, then entire path
     if user_access.get("type") in ["admin", "team"]:
         return file_path[::-1]
 
+    # Otherwise, slice where they lose read access.
     for k in file_path:
-        if not k["read"] and user_access.get("type") != "team":
+        if not k["read"]:
             break
         accessible_path.append(k)
     return accessible_path[::-1]
@@ -395,7 +345,7 @@ def get_user_access(entity, user=None):
     if frappe.session.user == "Guest":
         public_access = frappe.db.get_value(
             "Drive Permission",
-            {"entity": entity.name, "user": None},
+            {"entity": entity.name, "user": ""},
             fields,
             as_dict=1,
         )

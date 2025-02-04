@@ -61,85 +61,63 @@
           <div
             class="grid grid-flow-col-dense grid-cols-10 items-start justify-start mb-8 px-4 sm:px-6"
           >
+            {{ console.log(generalAccess.access.value) }}
             <GeneralAccess
               size="lg"
               class="col-span-1 justify-self-start row-start-1 row-end-1"
-              :general-access="access.type"
+              :access-type="generalAccess.access.value"
             />
-            <Popover
-              v-slot="{ open, close }"
-              class="text-gray-700 relative flex-shrink-0 justify-self-start col-span-6 mb-1"
-            >
-              <PopoverButton
-                class="flex gap-1 px-2 focus:outline-none bg-gray-100 rounded h-7 items-center text-base w-auto justify-between"
-              >
-                {{ access.type === "public" ? "Public" : "Restricted" }}
-                <FeatherIcon
-                  :class="{ '[transform:rotateX(180deg)]': open }"
-                  name="chevron-down"
-                  class="w-3.5"
-                />
-              </PopoverButton>
-              <PopoverPanel
-                class="z-10 bg-white p-1 shadow-2xl rounded mt-1 absolute min-w-28 w-full"
-                ><ul>
-                  <li
-                    class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="updateGeneralAccess(1), close()"
-                  >
-                    Organization
-                    <Check v-if="generalAccess.everyone" class="h-3" />
-                  </li>
-                  <li
-                    class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="updateGeneralAccess(2), close()"
-                  >
-                    Public
-                    <Check v-if="access.type === 'public'" class="h-3" />
-                  </li>
-                  <li
-                    class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="updateGeneralAccess(0), close()"
-                  >
-                    Restricted
-                    <Check v-if="access.type !== 'public'" class="h-3" />
-                  </li></ul
-              ></PopoverPanel>
-            </Popover>
-            <Popover
-              v-if="access.type === 'public'"
-              v-slot="{ open, close }"
-              class="text-gray-700 relative flex-shrink-0 col-span-3 justify-self-end row-start-1 row-end-1"
-            >
-              <PopoverButton
-                class="flex gap-1 px-2 focus:outline-none bg-gray-100 rounded h-7 items-center text-base justify-self-end"
-              >
-                {{ access.write ? "Can Edit" : "Can View" }}
-                <FeatherIcon
-                  :class="{ '[transform:rotateX(180deg)]': open }"
-                  name="chevron-down"
-                  class="w-3.5"
-                />
-              </PopoverButton>
-              <PopoverPanel
-                class="z-10 bg-white p-1 shadow-2xl rounded mt-1 absolute w-full"
-                ><ul>
-                  <li
-                    class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="updateGeneralAccessLvl(1), close()"
-                  >
-                    Can View
-                    <Check v-if="access.read && !access.write" class="h-3" />
-                  </li>
-                  <li
-                    class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                    @click="updateGeneralAccessLvl(2), close()"
-                  >
-                    Can Edit
-                    <Check v-if="access.read && access.write" class="h-3" />
-                  </li></ul
-              ></PopoverPanel>
-            </Popover>
+            <div class="col-span-10 mb-2 flex justify-between">
+              <Autocomplete
+                v-model="generalAccess.access"
+                :options="[
+                  { label: 'Restricted', value: 'restricted' },
+                  { label: 'Public', value: 'public' },
+                ]"
+                :hideSearch="true"
+                @update:model-value="
+                  (v) =>
+                    v.value === 'public'
+                      ? updateAccess.submit({
+                          entity_name: entity.name,
+                          user: '',
+                          ...generalAccess.type.reduce((acc, { value }) => {
+                            acc[value] = 1
+                            return acc
+                          }, {}),
+                        })
+                      : updateAccess.submit({
+                          entity_name: entity.name,
+                          user: '',
+                          method: 'unshare',
+                        })
+                "
+              />
+              <Autocomplete
+                v-if="generalAccess.access.value === 'public'"
+                class="float-right"
+                :options="[
+                  { value: 'read', label: 'Read' },
+                  { value: 'comment', label: 'Comment' },
+                  { value: 'share', label: 'Share' },
+                  { value: 'write', label: 'Write' },
+                ]"
+                v-model="generalAccess.type"
+                :multiple="true"
+                :hideSearch="true"
+                @update:model-value="
+                  updateAccess.submit({
+                    entity_name: entity.name,
+                    user: '',
+                    ...generalAccess.type.reduce((acc, { value }) => {
+                      acc[value] = 1
+                      return acc
+                    }, {}),
+                  })
+                "
+              ></Autocomplete>
+            </div>
+
             <span
               class="pl-0.5 text-xs text-gray-700 row-start-2 row-end-2 col-span-6 col-start-2"
             >
@@ -170,7 +148,12 @@
                 placeholder="share with..."
               />
               <Button
-                :disabled="share.name.length === 0"
+                :disabled="
+                  share.name.length === 0 ||
+                  getUsersWithAccess.data
+                    .map((k) => k.user)
+                    .includes(share.name)
+                "
                 class="ms-3"
                 @click="
                   updateAccess.submit({
@@ -180,7 +163,8 @@
                       acc[value] = 1
                       return acc
                     }, {}),
-                  })
+                  }),
+                    Object.assign(share, { name: '', access: [] })
                 "
               >
                 Share
@@ -206,7 +190,7 @@
                     user.full_name || user.user_name || user.user
                   }}</span>
                   <span class="text-gray-700 text-sm">{{
-                    user.full_name ? user.user_name : ""
+                    user.full_name ? user.user_name || user.email : ""
                   }}</span>
                 </div>
                 <span
@@ -278,7 +262,7 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 import {
   Avatar,
@@ -316,9 +300,12 @@ const access = computed(() => ({
   type: entity.value.type,
 }))
 const showSettings = ref(false)
-const usersWithAccess = ref([])
+const generalAccess = ref({
+  access: { value: "restricted", label: "Restricted" },
+  type: [{ value: "read", label: "Read" }],
+})
 const share = ref({
-  name: "hey@gmail.com",
+  name: "",
   access: [
     { value: "read", label: "Read" },
     { value: "comment", label: "Comment" },
@@ -334,128 +321,14 @@ const openDialog = computed({
 })
 
 const accessMessage = computed(() => {
-  if (access.value.public) {
-    return access.value.write
-      ? "Everyone with a link to this file can edit"
-      : "Everyone with a link to this file can view"
-  }
-  if (access.value.everyone) {
-    return access.value.write
-      ? `Members of ${this.$resources.getOrgName.data?.org_name} can edit`
-      : `Members of ${this.$resources.getOrgName.data?.org_name} can view`
-  } else {
-    return "Only people with access can view or edit"
-  }
+  if (generalAccess.value.access.value === "restricted")
+    return "Limited to people with access."
+  let modifiers = generalAccess.value.type.map((k) => k.value)
+  let modifier =
+    (modifiers.length === 1
+      ? modifiers[0]
+      : modifiers.slice(0, -1).join(", ") +
+        ` and ${modifiers[modifiers.length - 1]}`) + " this file."
+  return "Anyone on this planet can " + modifier
 })
-
-function updateGeneralAccess(access) {
-  let pub = access.value["public"]
-  let org = access.value["everyone"]
-  switch (access) {
-    case 1:
-      pub = 0
-      org = 1
-      break
-    case 2:
-      pub = 1
-      org = 0
-      break
-    default:
-      pub = 0
-      org = 0
-      access.value.read = 0
-      access.value.write = 0
-  }
-  access.value.public = pub
-  access.value.everyone = org
-}
-function updateGeneralAccessLvl(level) {
-  let read = access.value["read"]
-  let write = access.value["write"]
-  switch (level) {
-    case 2:
-      write = 1
-      read = 1
-      break
-    case 1:
-      write = 0
-      read = 1
-      break
-    default:
-      write = 0
-      read = 0
-  }
-  access.value.read = read
-  access.value.write = write
-}
-function updateUsers(data) {
-  const { read, write } = data.access
-  const processUser = (user) => {
-    const userInfo = {
-      user_name: user.user_name,
-      read,
-      write,
-      share: 0,
-      user_type: user.user_type,
-    }
-    if (user.user_type === "User") {
-      userInfo.user_image = user.user_image
-      userInfo.full_name = user.full_name
-      usersWithAccess.value.push(userInfo)
-      this.userAccessUpdated = true
-      const index = this.rmUsersWithAccess.findIndex(
-        (user) => user.user_name === userInfo.user_name
-      )
-      if (index !== -1) {
-        this.rmUsersWithAccess.splice(index, 1)
-      }
-    } else {
-      this.groupAccessUpdated = true
-      this.groupsWithAccess.push(userInfo)
-      const index = this.rmGroupsWithAccess.findIndex(
-        (user) => user.user_name === userInfo.user_name
-      )
-      if (index !== -1) {
-        this.rmGroupsWithAccess.splice(index, 1)
-      }
-    }
-  }
-  data.users.forEach(processUser)
-}
-function getUpdatedOrNewEntries(oldList, newList) {
-  const updatedOrNewEntries = []
-  newList.forEach((newUser) => {
-    const oldUser = oldList.find(
-      (oldUser) => oldUser.user_name === newUser.user_name
-    )
-    if (
-      !oldUser ||
-      oldUser.read !== newUser.read ||
-      oldUser.write !== newUser.write ||
-      oldUser.share !== newUser.share ||
-      oldUser.full_name !== newUser.full_name
-    ) {
-      updatedOrNewEntries.push(newUser)
-    }
-  })
-
-  return updatedOrNewEntries
-}
-function removeUser(user, idx) {
-  const isUser = user.user_type === "User"
-  const listToUpdate = isUser ? this.usersWithAccess : this.groupsWithAccess
-  const resourceKey = isUser
-    ? this.$resources.getUsersWithAccess.data.users
-    : this.$resources.getGroupsWithAccess.data
-  const targetList = isUser ? this.rmUsersWithAccess : this.rmGroupsWithAccess
-  listToUpdate.splice(idx, 1)
-  const exists = resourceKey.some((item) => item.user_name === user.user_name)
-  if (exists) {
-    targetList.push({
-      entity_name: this.entityName,
-      user_name: user.user_name,
-      user_type: user.user_type,
-    })
-  }
-}
 </script>
