@@ -79,20 +79,18 @@ class DriveEntity(Document):
             return
 
         permissions = frappe.get_all(
-            "Drive DocShare",
+            "Drive Permission",
             fields=[
                 "name",
-                "user_doctype",
-                "user_name",
+                "user",
                 "read",
                 "write",
+                "comment",
                 "share",
-                "everyone",
-                "public",
                 "owner",
                 "creation",
             ],
-            filters=dict(share_doctype=self.doctype, share_name=self.parent_entity),
+            filters=dict(entity=self.parent_entity),
         )
 
         parent_folder = frappe.db.get_value(
@@ -108,31 +106,21 @@ class DriveEntity(Document):
             # the subsequent for loop still creates a docShare for this uploaded entity as a side effect
             # It just lingers around and is wiped on delete (find a way to avoid the side effect if possible)
             self.share(
-                share_name=self.name,
                 user=parent_folder.owner,
-                user_type="User",
                 read=1,
                 write=1,
+                comment=1,
                 share=1,
-                notify=0,
-                protected=1,
             )
 
         for permission in permissions:
             self.share(
-                share_name=self.name,
                 user=permission.user_name,
-                user_type=permission.user_doctype,
                 read=permission.read,
+                comment=permission.read,
                 write=permission.write,
                 share=permission.share,
-                everyone=permission.everyone,
-                public=permission.public,
-                notify=0,
-                protected=1,
             )
-        self.allow_comments = parent_folder.allow_comments
-        self.allow_download = parent_folder.allow_download
         self.save()
 
     def get_children(self):
@@ -357,7 +345,7 @@ class DriveEntity(Document):
         )
 
     @frappe.whitelist()
-    def set_general_access(self, read, write, everyone, public, share, share_name=None):
+    def set_general_access(self, read, write, comment):
         """
         Set general sharing access for entity
 
@@ -367,16 +355,13 @@ class DriveEntity(Document):
         if read:
             if frappe.session.user == self.owner:
                 self.share(
-                    share_name=share_name,
                     read=read,
                     write=write,
+                    comment=comment,
                     share=0,
-                    everyone=everyone,
-                    public=public,
                 )
 
         else:
-            flags = {"ignore_permissions": True} if frappe.session.user == self.owner else None
             self.unshare(user=None, user_type=None)
 
     @frappe.whitelist()

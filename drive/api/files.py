@@ -248,7 +248,6 @@ def create_drive_entity(team, title, parent, file_size, mime_type, last_modified
             "mime_type": mime_type,
         }
     )
-
     drive_entity.flags.file_created = True
     drive_entity.insert()
     drive_entity.path = entity_path(drive_entity.name)
