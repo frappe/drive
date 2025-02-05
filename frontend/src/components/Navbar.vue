@@ -19,7 +19,7 @@
           <Button
             v-if="$store.state.activeEntity?.share"
             :variant="'solid'"
-            class="bg-gray-200 rounded flex justify-center items-center px-1"
+            class="me-4 bg-gray-200 rounded flex justify-center items-center px-1"
             @click="emitter.emit('showShareDialog')"
           >
             <template #prefix>
