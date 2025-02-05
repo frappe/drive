@@ -172,7 +172,6 @@ export default {
         )
           return
 
-        e.preventDefault()
         for (const key in DOUBLE_KEY_MAPS) {
           if (e.key === key) {
             if (tapped === key) {
@@ -184,7 +183,7 @@ export default {
             }
           }
         }
-
+        console.log(e)
         for (let [keys, action] of KEY_MAPS) {
           if (keys(e)) action()
         }
