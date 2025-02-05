@@ -262,28 +262,20 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed, watch } from "vue"
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
+import { ref, computed } from "vue"
 import {
   Avatar,
   Dialog,
   FeatherIcon,
   TextInput,
   Autocomplete,
-  Switch,
   LoadingIndicator,
-  DatePicker,
 } from "frappe-ui"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
 import GeneralAccess from "@/components/GeneralAccess.vue"
-import UserSearch from "@/components/ShareDialog/UserSearch.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
-import Check from "@/components/EspressoIcons/Check.vue"
-import { capture } from "@/telemetry"
-import { formatDate } from "@/utils/format"
-import { useDateFormat } from "@vueuse/core"
 import { getUsersWithAccess, updateAccess } from "@/resources/permissions"
 import { useStore } from "vuex"
 const props = defineProps({ modelValue: String, entityName: String })
@@ -292,13 +284,6 @@ const store = useStore()
 getUsersWithAccess.fetch({ entity_name: props.entityName })
 
 const entity = computed(() => store.state.activeEntity)
-const access = computed(() => ({
-  read: entity.value.read,
-  share: entity.value.share,
-  comment: entity.value.comment,
-  write: entity.value.write,
-  type: entity.value.type,
-}))
 const showSettings = ref(false)
 const generalAccess = ref({
   access: { value: "restricted", label: "Restricted" },
