@@ -1,11 +1,13 @@
 import { toast } from "@/utils/toasts.js"
+import router from "../router.js"
 
 export async function getLink(entity) {
+  const team = router.currentRoute.value.params.team
   const link = entity.is_group
-    ? `${window.location.origin}/drive/folder/${entity.name}`
+    ? `${window.location.origin}/drive/${team}/folder/${entity.name}`
     : entity.document
-    ? `${window.location.origin}/drive/document/${entity.name}`
-    : `${window.location.origin}/drive/file/${entity.name}`
+    ? `${window.location.origin}/drive/${team}/document/${entity.name}`
+    : `${window.location.origin}/drive/${team}/file/${entity.name}`
 
   try {
     await copyToClipboard(link)

@@ -65,7 +65,7 @@
     }
   ],
   "links": [],
-  "modified": "2024-07-01 10:37:16.098705",
+  "modified": "2025-02-06 13:02:34.025709",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Notification",
@@ -92,19 +92,7 @@
       "print": 1,
       "read": 1,
       "report": 1,
-      "role": "Drive Admin",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Drive User",
+      "role": "All",
       "share": 1,
       "write": 1
     }

@@ -26,7 +26,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2024-10-11 18:14:59.135297",
+  "modified": "2025-02-06 13:03:04.690165",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive User Storage Quota",
@@ -52,27 +52,9 @@
       "print": 1,
       "read": 1,
       "report": 1,
-      "role": "Drive Admin",
+      "role": "All",
       "share": 1,
       "write": 1
-    },
-    {
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Drive User",
-      "share": 1
-    },
-    {
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Drive Guest",
-      "share": 1
     }
   ],
   "sort_field": "creation",

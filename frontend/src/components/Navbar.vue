@@ -17,9 +17,12 @@
         </div>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
-            v-if="$store.state.activeEntity?.share"
+            v-if="
+              ($route.name == 'File' || $route.name == 'Folder') &&
+              $store.state.activeEntity?.share
+            "
             :variant="'solid'"
-            class="me-4 bg-gray-200 rounded flex justify-center items-center px-1"
+            class="bg-gray-200 rounded flex justify-center items-center px-1"
             @click="emitter.emit('showShareDialog')"
           >
             <template #prefix>

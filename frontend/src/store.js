@@ -35,7 +35,7 @@ const store = createStore({
       field: "title",
       ascending: true,
     },
-    view: JSON.parse(localStorage.getItem("view")) || "grid",
+    view: JSON.parse(localStorage.getItem("view")) || "list",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     elementExists: false,
     activeFilters: [],
