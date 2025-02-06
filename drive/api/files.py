@@ -51,14 +51,10 @@ def get_home_folder_id():
 
 
 @frappe.whitelist()
-def create_document_entity(title, content, parent=None):
-    try:
-        user_directory = get_user_directory()
-    except FileNotFoundError:
-        user_directory = create_user_directory()
-    new_title = get_new_title(title, parent, document=True)
-
-    parent = frappe.form_dict.parent or user_directory.name
+def create_document_entity(title, personal, team, content, parent=None):
+    home_directory = get_home_folder(team)
+    parent = parent or home_directory.name
+    new_title = get_new_title(title, parent)
 
     if not frappe.has_permission(
         doctype="Drive Entity",
@@ -74,56 +70,13 @@ def create_document_entity(title, content, parent=None):
     drive_doc.title = new_title
     drive_doc.content = content
     drive_doc.version = 2
+
+    entity = create_drive_entity(
+        team, personal, new_title, parent, 0, "frappe_doc", None, lambda x: ""
+    )
+    drive_doc.entity = entity.name
     drive_doc.save()
-
-    drive_entity = frappe.new_doc("Drive Entity")
-    drive_entity.title = new_title
-    drive_entity.name = uuid.uuid4().hex
-    drive_entity.parent_drive_entity = parent
-    drive_entity.mime_type = "frappe_doc"
-    drive_entity.document = drive_doc
-    drive_entity.file_size = 0
-    drive_entity.flags.file_created = True
-    drive_entity.save()
-    return drive_entity
-
-
-@frappe.whitelist()
-def create_whiteboard_entity(title, content, parent=None):
-    try:
-        user_directory = get_user_directory()
-    except FileNotFoundError:
-        user_directory = create_user_directory()
-    new_title = get_new_title(title, parent, document=True)
-
-    parent = frappe.form_dict.parent or user_directory.name
-
-    if not frappe.has_permission(
-        doctype="Drive Entity",
-        doc=parent,
-        ptype="write",
-        user=frappe.session.user,
-    ):
-        frappe.throw(
-            "Cannot access folder due to insufficient permissions",
-            frappe.PermissionError,
-        )
-    drive_doc = frappe.new_doc("Drive Document")
-    drive_doc.title = new_title
-    drive_doc.content = content
-    drive_doc.version = 2
-    drive_doc.save()
-
-    drive_entity = frappe.new_doc("Drive Entity")
-    drive_entity.title = new_title
-    drive_entity.name = uuid.uuid4().hex
-    drive_entity.parent_drive_entity = parent
-    drive_entity.mime_type = "frappe_whiteboard"
-    drive_entity.document = drive_doc
-    drive_entity.file_size = 0
-    drive_entity.flags.file_created = True
-    drive_entity.save()
-    return drive_entity
+    return entity
 
 
 def create_uploads_directory(user=None):
@@ -306,38 +259,39 @@ def create_folder(team, title, parent=None):
     return drive_entity
 
 
-def get_doc_content(drive_document_name):
-    drive_document = frappe.db.get_value(
-        "Drive Document",
-        drive_document_name,
-        ["content", "raw_content", "settings", "version"],
-        as_dict=1,
+def get_doc_content(entity):
+    docs = frappe.db.get_list(
+        "drive document",
+        filters={"entity": entity},
+        fields=["content", "raw_content", "settings", "version"],
     )
-    return drive_document
+    if not docs:
+        return {}
+    return docs[0] or {}
 
 
 @frappe.whitelist()
 def passive_rename(entity_name, new_title):
-    frappe.db.set_value("Drive Entity", entity_name, "title", new_title)
+    frappe.db.set_value("drive entity", entity_name, "title", new_title)
     return new_title
 
 
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
     if not frappe.has_permission(
-        doctype="Drive Entity",
+        doctype="drive entity",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
     ):
-        raise frappe.PermissionError("You do not have permission to view this file")
+        raise frappe.permissionerror("you do not have permission to view this file")
     if settings:
-        frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
+        frappe.db.set_value("drive document", doc_name, "settings", json.dumps(settings))
     file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
-    frappe.db.set_value("Drive Document", doc_name, "content", content)
-    frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
-    frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
-    frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
+    frappe.db.set_value("drive document", doc_name, "content", content)
+    frappe.db.set_value("drive document", doc_name, "raw_content", raw_content)
+    frappe.db.set_value("drive document", doc_name, "mentions", json.dumps(mentions))
+    frappe.db.set_value("drive entity", entity_name, "file_size", file_size)
     if json.dumps(mentions):
         frappe.enqueue(
             notify_mentions,
@@ -356,29 +310,29 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
 @frappe.whitelist()
 def save_whiteboard(entity_name, doc_name, content):
     if not frappe.has_permission(
-        doctype="Drive Entity",
+        doctype="drive entity",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
     ):
-        raise frappe.PermissionError("You do not have permission to view this file")
+        raise frappe.permissionerror("you do not have permission to view this file")
 
     file_size = len(content.encode("utf-8")) + len(content.encode("utf-8"))
-    frappe.db.set_value("Drive Document", doc_name, "content", content)
-    frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
+    frappe.db.set_value("drive document", doc_name, "content", content)
+    frappe.db.set_value("drive entity", entity_name, "file_size", file_size)
     return
 
 
 @frappe.whitelist()
 def create_doc_version(entity_name, doc_name, snapshot_data, snapshot_message):
     if not frappe.has_permission(
-        doctype="Drive Entity",
+        doctype="drive entity",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
     ):
-        raise frappe.PermissionError("You do not have permission to view this file")
-    new_version = frappe.new_doc("Drive Document Version")
+        raise frappe.permissionerror("you do not have permission to view this file")
+    new_version = frappe.new_doc("drive document version")
     new_version.snapshot_data = snapshot_data
     new_version.parent_entity = entity_name
     new_version.snapshot_message = snapshot_message

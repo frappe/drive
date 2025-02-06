@@ -170,8 +170,8 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
-import { groupByFolder } from "@/utils/files"
-import { openEntity } from "@/utils/files"
+import { groupByFolder, openEntity } from "@/utils/files"
+import { createDocument } from "@/resources/files"
 import emitter from "@/event-bus.js"
 
 const props = defineProps({
@@ -183,6 +183,7 @@ const props = defineProps({
   getEntities: Object,
 })
 const route = useRoute()
+const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
@@ -214,6 +215,21 @@ function handleContextMenu(event) {
   event.preventDefault()
 }
 
+const newDocument = async () => {
+  let data = await createDocument.submit({
+    title: "Untitled Document",
+    team: route.params.team,
+    personal: route.name === "My Space" ? 1 : 0,
+    content: null,
+    parent: store.state.currentFolderID,
+  })
+  window.open(
+    router.resolve({
+      name: "Document",
+      params: { team: route.params.team, entityName: data.name },
+    }).href
+  )
+}
 // Action Items
 const defaultActionItems = computed(() => {
   return [
@@ -235,14 +251,7 @@ const defaultActionItems = computed(() => {
     {
       label: "New Document",
       icon: NewFile,
-      // BROKEN
-      handler: () => this.newDocument(),
-    },
-    {
-      label: "New Whiteboard",
-      icon: NewFile,
-      // BROKEN
-      handler: () => this.newWhiteboard(),
+      handler: newDocument,
     },
   ]
 })

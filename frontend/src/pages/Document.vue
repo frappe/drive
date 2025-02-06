@@ -134,6 +134,7 @@ const getDocument = createResource({
 
     title.value = data.title
     oldTitle.value = data.title
+    console.log(data)
     yjsContent.value = toUint8Array(data.content)
     rawContent.value = data.raw_content
     isWritable.value = data.owner === userId.value || !!data.write
@@ -217,35 +218,5 @@ onBeforeUnmount(() => {
   if (intervalId.value !== null) {
     clearInterval(intervalId.value)
   }
-})
-
-let fetchAllUsers = createResource({
-  url: "drive.utils.users.get_users_with_drive_user_role_and_groups",
-  method: "GET",
-  auto: userId.value !== "Guest",
-  onSuccess(data) {
-    data.forEach(function (item) {
-      if (item.name) {
-        item.value = item.name
-        item.label = item.name
-        item.type = "User Group"
-        delete item.name
-        return
-      }
-      item.value = item.email
-      item.label = item.full_name.trimEnd()
-      item.type = "User"
-      delete item.email
-      delete item.full_name
-    })
-    allUsers.value = data
-  },
-  onError(error) {
-    if (error.messages) {
-      errorMessage.value = error.messages.join("\n")
-    } else {
-      errorMessage.value = error.message
-    }
-  },
 })
 </script>

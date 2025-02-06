@@ -2,11 +2,7 @@
   <Dialog v-model="open" :options="{ title: 'Delete Forever?', size: 'sm' }">
     <template #body-content>
       <p class="text-gray-600">
-        {{
-          entities.length === 1
-            ? `${entities.length} item`
-            : `${entities.length} items`
-        }}
+        {{ entities.length === 1 ? `An item` : `${entities.length} items` }}
         will be deleted forever. This is an irreversible process.
       </p>
       <div class="flex mt-5">
