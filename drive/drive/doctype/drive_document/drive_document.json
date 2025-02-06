@@ -8,6 +8,7 @@
   "editable_grid": 1,
   "engine": "InnoDB",
   "field_order": [
+    "entity",
     "title",
     "content",
     "settings",
@@ -17,13 +18,6 @@
     "version"
   ],
   "fields": [
-    {
-      "fieldname": "title",
-      "fieldtype": "Text",
-      "in_list_view": 1,
-      "label": "Title",
-      "reqd": 1
-    },
     {
       "default": "AAA=",
       "fieldname": "content",
@@ -55,10 +49,26 @@
       "fieldname": "version",
       "fieldtype": "Int",
       "label": "Version"
+    },
+    {
+      "fieldname": "entity",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Entity",
+      "options": "Drive Entity",
+      "reqd": 1
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Title",
+      "options": "Drive Entity",
+      "reqd": 1
     }
   ],
   "links": [],
-  "modified": "2025-02-06 13:02:20.322254",
+  "modified": "2025-02-06 16:59:58.742623",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",

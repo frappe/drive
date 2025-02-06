@@ -169,3 +169,9 @@ export const rename = createResource({
     store.state.passiveRename = false
   },
 })
+
+export const createDocument = createResource({
+  method: "POST",
+  url: "drive.api.files.create_document_entity",
+  makeParams: (params) => params,
+})

@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New Folder', size: 'xs' }">
+  <Dialog v-model="open" :options="{ title: 'Create a Folder', size: 'xs' }">
     <template #body-content>
       <Input
         ref="input"
         v-model="folderName"
-        placeholder="New folder"
+        placeholder="folder name..."
         type="text"
         @keyup.enter="submit"
       />

@@ -10,20 +10,12 @@ export const openEntity = (team, entity) => {
       params: { team, entityName: entity.name },
     })
   } else if (entity.mime_type === "frappe_doc") {
-    if (this.$store.state.editorNewTab) {
-      window.open(
-        router.resolve({
-          name: "Document",
-          params: { entityName: entity.name },
-        }).href,
-        "_blank"
-      )
-    } else {
-      router.push({
+    window.open(
+      router.resolve({
         name: "Document",
         params: { entityName: entity.name },
-      })
-    }
+      }).href
+    )
   } else if (entity.mime_type === "frappe_whiteboard") {
     router.push({
       name: "Whiteboard",

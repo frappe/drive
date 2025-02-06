@@ -5,7 +5,6 @@ from pypika import Order, Case, functions as fn
 from drive.utils.users import mark_as_viewed
 from drive.api.files import (
     generate_upward_path,
-    get_user_directory,
     get_doc_content,
 )
 
@@ -79,10 +78,8 @@ def get_entity_with_permissions(entity_name):
     mark_as_viewed(entity)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
 
-    if entity.document:
-        entity_doc_content = get_doc_content(entity.document)
-        return_obj = return_obj | entity_doc_content
-    return return_obj
+    entity_doc_content = get_doc_content(entity.name)
+    return return_obj | entity_doc_content
 
 
 @frappe.whitelist()

@@ -13,7 +13,7 @@
           :icon-left="dialogData.buttonIcon"
           :theme="dialogData.theme"
           class="w-full"
-          :loading="$resources.method.loading"
+          :loading="$resources.method?.loading"
           @click="$resources.method.submit()"
         >
           {{ dialogData.buttonMessage }}
@@ -59,9 +59,7 @@ export default {
   computed: {
     dialogData() {
       const items =
-        this.entities.length === 1
-          ? `${this.entities.length} item`
-          : `${this.entities.length} items`
+        this.entities.length === 1 ? `An item` : `${this.entities.length} items`
       switch (this.for) {
         case "unshare":
           return {

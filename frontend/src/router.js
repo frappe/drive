@@ -102,15 +102,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/whiteboard/:entityName",
-    name: "Whiteboard",
-    meta: { documentPage: false, isHybridRoute: true },
-    component: () => import("@/pages/Whiteboard.vue"),
-    props: true,
-    beforeEnter: [clearStore],
-  },
-  {
-    path: "/document/:entityName",
+    path: "/:team/document/:entityName",
     name: "Document",
     meta: { sidebar: false, documentPage: true, isHybridRoute: true },
     component: () => import("@/pages/Document.vue"),
@@ -124,16 +116,16 @@ const routes = [
       window.location.href = "/login"
     },
   },
-  // {
-  //   path: "/:pathMatch(.*)*/",
-  //   name: "Error",
-  //   component: () => import("@/pages/Error.vue"),
-  //   beforeEnter: [redir404, clearStore],
-  //   meta: {
-  //     errorPage: true,
-  //   },
-  //   props: true,
-  // },
+  {
+    path: "/:pathMatch(.*)*/",
+    name: "Error",
+    component: () => import("@/pages/Error.vue"),
+    beforeEnter: [redir404, clearStore],
+    meta: {
+      errorPage: true,
+    },
+    props: true,
+  },
 ]
 
 let router = createRouter({
