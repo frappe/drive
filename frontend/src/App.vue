@@ -48,7 +48,6 @@
         <router-view v-else />
       </div>
     </div>
-    <FileUploader v-if="isLoggedIn" />
     <Transition
       enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
       enter-from-class="translate-y-1 opacity-0"
@@ -73,7 +72,6 @@ import { Toasts } from "@/utils/toasts.js"
 import FilePicker from "./components/FilePicker.vue"
 import MoveDialog from "./components/MoveDialog.vue"
 import SearchPopup from "./components/SearchPopup.vue"
-import FileUploader from "./components/FileUploader.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { init as initTelemetry } from "@/telemetry"
 
@@ -91,7 +89,6 @@ export default {
     FilePicker,
     MoveDialog,
     SearchPopup,
-    FileUploader,
     BottomBar,
   },
   data() {

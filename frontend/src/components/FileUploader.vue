@@ -10,6 +10,7 @@ import { capture } from "@/telemetry"
 
 const store = useStore()
 const route = useRoute()
+const emit = defineEmits(["success"])
 
 const dropzone = ref()
 const computedFullPath = ref("")
@@ -194,6 +195,7 @@ onMounted(() => {
     })
   })
   dropzone.value.on("success", function (file, response) {
+    emit("success")
     uploadResponse.value = response.message
     store.commit("updateUpload", {
       uuid: file.upload.uuid,

@@ -24,20 +24,20 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import get_storage_allowed
 
 
-def if_folder_exists(folder_name, parent):
+def if_folder_exists(team, folder_name, parent):
     values = {
         "title": folder_name,
         "is_group": 1,
         "is_active": 1,
         "owner": frappe.session.user,
-        "parent_drive_entity": parent,
+        "parent_entity": parent,
     }
     existing_folder = frappe.db.get_value(
         "Drive Entity", values, ["name", "title", "is_group", "is_active"], as_dict=1
     )
     if existing_folder:
         return existing_folder.name
-    new_folder = create_folder(folder_name, parent)
+    new_folder = create_folder(team, folder_name, parent)
     return new_folder.name
 
 
@@ -163,7 +163,7 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
-            parent = if_folder_exists(i, parent)
+            parent = if_folder_exists(team, i, parent)
     if not frappe.has_permission(
         doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
     ):
@@ -269,6 +269,7 @@ def create_folder(team, title, parent=None):
     :raises FileExistsError: If a folder with the same name already exists in the specified parent folder
     :return: DriveEntity doc of the new folder
     """
+    print(team, title)
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
 
@@ -1205,7 +1206,7 @@ def remove_recents(entity_names=[], clear_all=False):
 @frappe.whitelist()
 def get_children_count(drive_entity):
     children_count = frappe.db.count(
-        "Drive Entity", {"parent_drive_entity": drive_entity, "is_active": 1}
+        "Drive Entity", {"parent_entity": drive_entity, "is_active": 1}
     )
     return children_count
 
