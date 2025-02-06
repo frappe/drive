@@ -72,7 +72,6 @@ let currentFolder = createResource({
     ]
     const root_item = data.breadcrumbs[0]
     if (root_item.parent_entity === null) {
-      console.log(route.name)
       breadcrumbs = [
         {
           label: "Home",
