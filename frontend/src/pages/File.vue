@@ -147,7 +147,7 @@ let file = createResource({
         {
           label: file.data.is_private ? "My Space" : "Home",
           route:
-            `/${route.params.team}` + file.data.is_private ? "/personal" : "",
+            `/${route.params.team}` + (file.data.is_private ? "/personal" : ""),
         },
       ]
       data.breadcrumbs.shift()

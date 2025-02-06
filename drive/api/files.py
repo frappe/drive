@@ -1348,6 +1348,7 @@ def generate_upward_path(entity_name):
     Stops when parent_drive_entity IS NULL
     """
     entity = frappe.db.escape(entity_name)
+    user = frappe.db.escape(frappe.session.user)
     result = frappe.db.sql(
         f"""WITH RECURSIVE
             generated_path as (
@@ -1385,10 +1386,11 @@ def generate_upward_path(entity_name):
         FROM
             generated_path  as gp
         LEFT JOIN `tabDrive Permission` as p
-        ON gp.name = p.entity;
+        ON gp.name = p.entity AND p.user = {user};
     """,
         as_dict=1,
     )
+    print(result)
     return result
 
 

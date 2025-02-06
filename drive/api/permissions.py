@@ -355,30 +355,32 @@ def get_user_access(entity, user=None):
         return NO_ACCESS
 
     # If logged in, first get Permission
-    user_access = frappe.db.get_value(
-        "Drive Permission",
-        {
-            "entity": entity.name,
-            "user": user,
-        },
-        fields,
-        as_dict=1,
+    user_access = (
+        frappe.db.get_value(
+            "Drive Permission",
+            {
+                "entity": entity.name,
+                "user": user,
+            },
+            fields,
+            as_dict=1,
+        )
+        or {}
     )
-
-    if user_access:
-        return user_access
 
     # Otherwise, check team/admin/owner
     teams = get_teams(user)
+    other_access = {}
     if user == entity.owner:
-        return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
+        other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
     if entity.team in teams:
         # Allow write access for uploading to home folder
         if entity.parent_entity == None:
-            return {"read": 1, "comment": 1, "share": 0, "write": 1, "type": "team"}
-        return {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
+            other_access = {"read": 1, "comment": 1, "share": 0, "write": 1, "type": "team"}
+        else:
+            other_access = {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
 
-    return NO_ACCESS
+    return {**other_access, **user_access}
 
 
 def user_group_entity_access(entity_name=None, user=None):
