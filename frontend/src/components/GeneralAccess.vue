@@ -44,7 +44,7 @@ const colorClasses = computed(() => {
   } else if (props.accessType === "public") {
     return "bg-red-100 text-red-500"
   }
-  return "text-gray-600 bg-gray-100"
+  return "text-gray-700 bg-gray-300"
 })
 
 const sizeClasses = computed(() => {

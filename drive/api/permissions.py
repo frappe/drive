@@ -60,7 +60,7 @@ def get_entity_with_permissions(entity_name):
     entity = frappe.db.get_value(
         "Drive Entity", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
     )
-    user_access = get_user_access(entity)
+    user_access = get_user_access(entity, frappe.session.user)
     if user_access.get("read") == 0:
         frappe.throw("Not found", frappe.NotFound)
 
@@ -294,36 +294,7 @@ def get_valid_breadcrumbs(entity, user_access):
     return accessible_path[::-1]
 
 
-@frappe.whitelist()
-def get_general_access(entity_name):
-    """
-    Return the general access permissions for the given entity
-
-    :param entity_name: Document-name of the entity whose permissions are to be fetched
-    :return: Dict of general access permissions (read, write)
-    :rtype: frappe._dict or None
-    """
-    DriveDocShare = frappe.qb.DocType("Drive DocShare")
-    fields = [
-        DriveDocShare.name,
-        DriveDocShare.read,
-        DriveDocShare.write,
-        DriveDocShare.share,
-        DriveDocShare.everyone,
-        DriveDocShare.public,
-    ]
-    query = (
-        frappe.qb.from_(DriveDocShare)
-        .select(*fields)
-        .where(
-            (DriveDocShare.share_name == entity_name)
-            & ((DriveDocShare.everyone == True) | (DriveDocShare.public == True))
-        )
-        .groupby(DriveDocShare.name)
-    )
-    return query.run(as_dict=True)
-
-
+@frappe.whitelist(allow_guest=True)
 def get_user_access(entity, user=None):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
@@ -332,6 +303,9 @@ def get_user_access(entity, user=None):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
+    if isinstance(entity, str):
+        entity = frappe.get_doc("Drive Entity", entity)
+
     fields = ["read", "comment", "write", "share", "name as permission_name", "valid_until"]
     NO_ACCESS = {
         "read": 0,
@@ -339,11 +313,9 @@ def get_user_access(entity, user=None):
         "share": 0,
         "write": 0,
     }
-    if not user:
-        user = frappe.session.user
 
     # If unauthorized
-    if frappe.session.user == "Guest":
+    if not user or user == "Guest":
         public_access = frappe.db.get_value(
             "Drive Permission",
             {"entity": entity.name, "user": ""},
