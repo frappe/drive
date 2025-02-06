@@ -145,8 +145,9 @@ let file = createResource({
     if (root_item.parent_entity === null) {
       breadcrumbs = [
         {
-          label: "Home",
-          route: `/${route.params.team}`,
+          label: file.data.is_private ? "My Space" : "Home",
+          route:
+            `/${route.params.team}` + file.data.is_private ? "/personal" : "",
         },
       ]
       data.breadcrumbs.shift()

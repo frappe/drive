@@ -76,6 +76,12 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
+    path: "/:team/personal",
+    name: "My Space",
+    component: () => import("@/pages/Personal.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
     path: "/:team/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
