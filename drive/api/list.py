@@ -28,6 +28,7 @@ def files(
     recents_only=0,
     tag_list=[],
     mime_type_list=[],
+    personal=0,
 ):
     teams = get_teams()
     if team not in teams:
@@ -89,7 +90,8 @@ def files(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
-
+    if not favourites_only and not recents_only:
+        query = query.where(Entity.is_private == personal)
     query = query.select(Recents.last_interaction.as_("accessed"))
 
     if tag_list:

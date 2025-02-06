@@ -45,6 +45,11 @@
                         height="16"
                         class="stroke-amber-500 fill-amber-500"
                       />
+                      <MyDrive
+                        v-else-if="row.is_private && route.name !== 'My Space'"
+                        width="16"
+                        height="16"
+                      />
                       <FeatherIcon
                         v-else-if="row.accessed && route.name !== 'Recents'"
                         name="clock"
@@ -136,6 +141,7 @@ import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref } from "vue"
 import Folder from "./MimeIcons/Folder.vue"
+import MyDrive from "./EspressoIcons/MyDrive.vue"
 import { openEntity } from "@/utils/files"
 
 const store = useStore()
@@ -214,6 +220,7 @@ const setActive = (entity) => {
 }
 
 const handleAction = (selectedItems, action) => {
+  console.log(selectedItems, action.onClick)
   action.onClick(selectedItems)
 }
 

@@ -22,6 +22,7 @@ ENTITY_FIELDS = [
     "document",
     "owner",
     "parent_entity",
+    "is_private",
 ]
 
 

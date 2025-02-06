@@ -80,6 +80,7 @@ import { ArrowLeftFromLine } from "lucide-vue-next"
 import Search from "./EspressoIcons/Search.vue"
 import Recent from "./EspressoIcons/Recent.vue"
 import Star from "./EspressoIcons/Star.vue"
+import MyDrive from "./EspressoIcons/MyDrive.vue"
 import Users from "./EspressoIcons/Users.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
@@ -89,6 +90,7 @@ import {
   getHome,
   getRecents,
   getFavourites,
+  getPersonal,
   getTrash,
   getShared,
 } from "@/resources/files"
@@ -143,6 +145,14 @@ export default {
           icon: Recent,
           preload: getRecents,
           highlight: this.$store.state.breadcrumbs[0].label === "Recents",
+        },
+        {
+          enabled: true,
+          label: "My Space",
+          route: `/${this.$route.params.team}/personal`,
+          icon: MyDrive,
+          preload: getPersonal,
+          highlight: this.$store.state.breadcrumbs[0].label === "My Space",
         },
         {
           enabled: true,

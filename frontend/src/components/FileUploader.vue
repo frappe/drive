@@ -127,6 +127,7 @@ onMounted(() => {
     },
     sending: function (file, xhr, formData) {
       formData.append("team", route.params.team)
+      formData.append("personal", route.name == "My Space" ? 1 : 0)
       if (file.lastModified) formData.append("last_modified", file.lastModified)
       if (file.parent) formData.append("parent", file.parent)
       const path = file.newFullPath || file.webkitRelativePath || file.fullPath
@@ -206,10 +207,6 @@ onMounted(() => {
     })
     capture("new_file_uploaded")
   })
-  /*   emitter.on("directUpload", (file) => {
-    dropzone.value.addFile(file)
-    return directUplodEntityName.value
-  }); */
   emitter.on("uploadFile", () => {
     if (dropzone.value.hiddenFileInput) {
       dropzone.value.hiddenFileInput.removeAttribute("webkitdirectory")

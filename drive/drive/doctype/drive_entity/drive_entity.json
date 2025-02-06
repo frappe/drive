@@ -18,7 +18,8 @@
     "tags",
     "is_active",
     "document",
-    "kind"
+    "kind",
+    "is_private"
   ],
   "fields": [
     {
@@ -90,10 +91,16 @@
       "fieldtype": "Data",
       "label": "MIME Type",
       "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "is_private",
+      "fieldtype": "Check",
+      "label": "Is Private"
     }
   ],
   "links": [],
-  "modified": "2025-02-04 14:41:31.492718",
+  "modified": "2025-02-06 10:42:33.898390",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity",

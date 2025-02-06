@@ -57,6 +57,15 @@ export const getRecents = createResource({
   },
 })
 
+export const getPersonal = createResource({
+  ...COMMON_OPTIONS,
+  url: "drive.api.list.files",
+  cache: "personal-folder-contents",
+  makeParams: (params) => {
+    return { ...params, personal: 1 }
+  },
+})
+
 export const getFavourites = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",

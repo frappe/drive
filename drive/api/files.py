@@ -9,22 +9,17 @@ from werkzeug.utils import secure_filename, send_file
 import uuid
 import mimetypes
 import hashlib
-import json
 from drive.utils.files import (
     get_home_folder,
     get_user_directory,
     create_user_directory,
     get_new_title,
-    get_team_thumbnails_directory,
-    create_user_thumbnails_directory,
     create_thumbnail,
 )
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
 import magic
 from datetime import datetime
-import urllib.parse
-from frappe.utils import cint
 from drive.api.notifications import notify_mentions
 from drive.api.storage import get_storage_allowed
 
@@ -151,7 +146,7 @@ def get_user_uploads_directory(team_name):
 
 
 @frappe.whitelist()
-def upload_file(team, fullpath=None, parent=None, last_modified=None):
+def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -212,6 +207,7 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
             mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
         drive_entity = create_drive_entity(
             team,
+            personal,
             title,
             parent,
             file_size,
@@ -237,11 +233,14 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None):
         return drive_entity
 
 
-def create_drive_entity(team, title, parent, file_size, mime_type, last_modified, entity_path):
+def create_drive_entity(
+    team, personal, title, parent, file_size, mime_type, last_modified, entity_path
+):
     drive_entity = frappe.get_doc(
         {
             "doctype": "Drive Entity",
             "team": team,
+            "is_private": personal,
             "title": title,
             "parent_entity": parent,
             "file_size": file_size,
@@ -1050,7 +1049,7 @@ def set_favourite(entities=None, clear_all=False):
 
 
 @frappe.whitelist()
-def remove_or_restore(entity_names, move=False):
+def remove_or_restore(entity_names):
     """
     To move entities to or restore entities from the trash
 
@@ -1064,39 +1063,18 @@ def remove_or_restore(entity_names, move=False):
 
     def depth_zero_toggle_is_active(doc):
         if doc.is_active:
-            frappe.db.delete("Drive DocShare", {"share_name": doc.name})
             doc.is_active = 0
         else:
             doc.is_active = 1
-            doc.inherit_permissions()
-
-        frappe.db.set_value("Drive Entity", doc.name, "is_active", doc.is_active)
+        doc.save()
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
-        if doc.owner != frappe.session.user:
+        if not frappe.has_permission(
+            doctype="Drive Entity", user=frappe.session.user, doc=doc, ptype="write"
+        ):
             raise frappe.PermissionError("You do not have permission to remove this file")
-        if doc.is_active:
-            entity_ancestors = get_ancestors_of(entity)
-            if entity_ancestors:
-                doc.parent_before_trash = entity_ancestors[0]
-                doc.save()
-            else:
-                doc.parent_before_trash = get_user_directory()
-                doc.save()
-            if move:
-                doc.move()
-
-        else:
-            parent_is_active = frappe.db.get_value(
-                "Drive Entity", doc.parent_before_trash, "is_active"
-            )
-            if parent_is_active:
-                doc.move(doc.parent_before_trash)
-            else:
-                doc.move()
         depth_zero_toggle_is_active(doc)
-        # frappe.enqueue(toggle_is_active,queue="default",timeout=None,doc=doc)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -1377,6 +1355,7 @@ def generate_upward_path(entity_name):
                     `tabDrive Entity`.title,
                     `tabDrive Entity`.name,
                     `tabDrive Entity`.parent_entity,
+                    `tabDrive Entity`.is_private,
                     `tabDrive Entity`.owner
                 FROM
                     `tabDrive Entity`
@@ -1387,6 +1366,7 @@ def generate_upward_path(entity_name):
                     t.title,
                     t.name,
                     t.parent_entity,
+                    t.is_private,
                     t.owner
                 FROM
                     generated_path as gp
@@ -1396,6 +1376,7 @@ def generate_upward_path(entity_name):
             gp.title,
             gp.name,
             gp.parent_entity,
+            gp.is_private,
             gp.owner,
             p.read,
             p.write,
