@@ -90,8 +90,15 @@ def files(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
-    if not favourites_only and not recents_only:
-        query = query.where(Entity.is_private == personal)
+    if personal:
+        query = query.where(
+            (Entity.is_private == personal) & (Entity.owner == frappe.session.user)
+        )
+    elif favourites_only or recents_only or not is_active:
+        query = query.where((Entity.is_private == 0) | (Entity.owner == frappe.session.user))
+    else:
+        query = query.where(Entity.is_private == 0)
+
     query = query.select(Recents.last_interaction.as_("accessed"))
 
     if tag_list:

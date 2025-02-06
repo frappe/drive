@@ -140,19 +140,19 @@ export default {
         },
         {
           enabled: true,
-          label: "Recents",
-          route: `/${this.$route.params.team}/recents`,
-          icon: Recent,
-          preload: getRecents,
-          highlight: this.$store.state.breadcrumbs[0].label === "Recents",
-        },
-        {
-          enabled: true,
           label: "My Space",
           route: `/${this.$route.params.team}/personal`,
           icon: MyDrive,
           preload: getPersonal,
           highlight: this.$store.state.breadcrumbs[0].label === "My Space",
+        },
+        {
+          enabled: true,
+          label: "Recents",
+          route: `/${this.$route.params.team}/recents`,
+          icon: Recent,
+          preload: getRecents,
+          highlight: this.$store.state.breadcrumbs[0].label === "Recents",
         },
         {
           enabled: true,

@@ -156,7 +156,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
     """
     from drive.api.permissions import get_user_access
 
-    user_access = get_user_access(entity.name, entity.team, to_user)
+    user_access = get_user_access(entity.name, to_user)
     if user_access.get("read") == 0:
         return
     entity_type = "Document" if entity.document else "Folder" if entity.is_group else "File"

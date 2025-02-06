@@ -24,7 +24,7 @@ function groupByTime(entities) {
     "Older than a year": [],
   }
   entities.forEach((file) => {
-    const modifiedDate = new Date(file.modified)
+    const modifiedDate = new Date(file.accessed)
     const yearDiff = today.getFullYear() - modifiedDate.getFullYear()
     const monthDiff = today.getMonth() - modifiedDate.getMonth() + yearDiff * 12 // Adjust for year difference
     const dayDiff = Math.floor((today - modifiedDate) / (1000 * 60 * 60 * 24))

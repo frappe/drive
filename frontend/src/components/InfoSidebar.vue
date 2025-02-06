@@ -43,42 +43,43 @@
         <div class="space-y-6.5">
           <div v-if="entity.owner === 'You'">
             <div class="text-base font-medium mb-4">Access</div>
-            <div class="flex items-center justify-start">
-              <Avatar
-                size="md"
-                :label="entity.owner"
-                :image="entity.user_image"
-              />
-              <div class="border-l h-6 mx-1.5"></div>
-              <GeneralAccess
-                v-if="
-                  !generalAccess.loading &&
-                  (!!generalAccess.data?.length || !sharedWithList?.length)
-                "
-                size="md"
-                class="-mr-[3px] outline outline-white"
-                :general-access="generalAccess?.data?.[0]"
-              />
-              <div
-                v-if="sharedWithList?.length && !sharedWithList.loading"
-                class="flex items-center justify-start"
-              >
-                <Avatar
-                  v-for="user in sharedWithList.slice(0, 3)"
-                  :key="user?.user_name"
+            <div class="flex items-center justify-between">
+              <div class="flex">
+                <GeneralAccess
                   size="md"
-                  :label="user?.full_name ? user?.full_name : user?.user_name"
-                  :image="user?.user_image"
                   class="-mr-[3px] outline outline-white"
+                  :access-type="
+                    generalAccess?.data?.read === 1 ? 'public' : 'restricted'
+                  "
                 />
-
-                <Avatar
-                  v-if="sharedWithList.slice(3).length"
-                  size="md"
-                  :label="sharedWithList.slice(3).length.toString()"
-                  class="-mr-[3px] outline outline-white"
-                />
+                <div
+                  v-if="userList.data?.length"
+                  class="flex items-center justify-start ms-3"
+                >
+                  <Avatar
+                    v-for="user in userList.data.slice(0, 3)"
+                    :key="user?.user_name"
+                    size="sm"
+                    :label="user.full_name || user.user"
+                    :image="user?.user_image"
+                    class="-mr-[3px] outline outline-white"
+                  />
+                  <span
+                    class="text-base text-gray-700 ms-1"
+                    v-if="userList.data.slice(3).length"
+                  >
+                    +{{ userList.data.slice(3).length }}
+                  </span>
+                </div>
               </div>
+              <Button
+                v-if="$store.state.activeEntity?.share"
+                :variant="'subtle'"
+                class="rounded flex justify-center items-center"
+                @click="emitter.emit('showShareDialog')"
+              >
+                Manage
+              </Button>
             </div>
           </div>
           <div v-if="userId !== 'Guest'">
@@ -268,11 +269,9 @@ const formattedMimeType = computed(() => {
   const kind = formatMimeType(entity.value.mime_type)
   return kind.charAt(0).toUpperCase() + kind.slice(1)
 })
+
 const entity = computed(() => {
   return store.state.activeEntity
-})
-const sharedWithList = computed(() => {
-  return userList.data?.users.concat(groupList.data)
 })
 
 function switchTab(val) {
@@ -309,9 +308,8 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
     if (newShowInfoSidebar == true) {
       thumbnailUrl()
       comments.fetch({ entity_name: newEntity.name })
-      generalAccess.fetch({ entity_name: newEntity.name })
+      generalAccess.fetch({ entity: newEntity.name })
       userList.fetch({ entity_name: newEntity.name })
-      groupList.fetch({ entity_name: newEntity.name })
     }
   }
 })
@@ -350,17 +348,12 @@ let comments = createResource({
 })
 
 const generalAccess = createResource({
-  url: "drive.api.permissions.get_general_access",
+  url: "drive.api.permissions.get_user_access",
   auto: false,
 })
 
 const userList = createResource({
   url: "drive.api.permissions.get_shared_with_list",
-  auto: false,
-})
-
-const groupList = createResource({
-  url: "drive.api.permissions.get_shared_user_group_list",
   auto: false,
 })
 

@@ -184,10 +184,11 @@ export default {
           }
         }
         for (let [keys, action] of KEY_MAPS) {
-          if (keys(e)) action()
+          if (keys(e)) {
+            action()
+            document.activeElement.blur()
+          }
         }
-
-        document.activeElement.blur()
       })
     },
   },
