@@ -130,6 +130,10 @@
         }
       "
     />
+    <FileUploader
+      v-if="$store.state.auth.user_id"
+      @success="getEntities.fetch()"
+    />
   </div>
 </template>
 <script setup>
@@ -150,6 +154,7 @@ import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
+import FileUploader from "@/components/FileUploader.vue"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
@@ -178,7 +183,6 @@ const props = defineProps({
   getEntities: Object,
 })
 const route = useRoute()
-const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
