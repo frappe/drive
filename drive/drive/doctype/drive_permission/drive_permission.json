@@ -60,7 +60,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-02-03 15:17:40.804788",
+  "modified": "2025-02-06 13:01:38.177448",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Permission",
@@ -76,6 +76,18 @@
       "read": 1,
       "report": 1,
       "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "All",
       "share": 1,
       "write": 1
     }

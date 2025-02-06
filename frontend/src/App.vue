@@ -183,7 +183,6 @@ export default {
             }
           }
         }
-        console.log(e)
         for (let [keys, action] of KEY_MAPS) {
           if (keys(e)) action()
         }
