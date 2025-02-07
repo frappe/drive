@@ -171,7 +171,7 @@ import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { groupByFolder, openEntity } from "@/utils/files"
-import { createDocument } from "@/resources/files"
+import { createDocument, togglePersonal } from "@/resources/files"
 import emitter from "@/event-bus.js"
 
 const props = defineProps({
@@ -323,6 +323,14 @@ const actionItems = computed(() => {
         icon: Info,
         onClick: () => store.commit("setShowInfo", false),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
+      },
+      {
+        label: "Move to Home",
+        icon: Info,
+        onClick: ([e]) => togglePersonal.submit({ entity_name: e.name }),
+        isEnabled: () => route.name == "My Space",
+        multi: true,
+        important: true,
       },
       {
         label: "Favourite",

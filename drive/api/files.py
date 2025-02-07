@@ -222,7 +222,6 @@ def create_folder(team, title, parent=None):
     :raises FileExistsError: If a folder with the same name already exists in the specified parent folder
     :return: DriveEntity doc of the new folder
     """
-    print(team, title)
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
 
@@ -326,7 +325,7 @@ def save_whiteboard(entity_name, doc_name, content):
 @frappe.whitelist()
 def create_doc_version(entity_name, doc_name, snapshot_data, snapshot_message):
     if not frappe.has_permission(
-        doctype="drive entity",
+        doctype="Drive Entity",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
@@ -1380,3 +1379,9 @@ def get_ancestors_of(entity_name):
     flattened_list = [item for sublist in result for item in sublist]
     flattened_list.pop(0)
     return flattened_list
+
+
+@frappe.whitelist()
+def toggle_personal(entity_name, personal=0):
+    frappe.db.set_value("Drive Entity", entity_name, "is_private", personal)
+    return entity_name
