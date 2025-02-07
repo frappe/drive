@@ -482,31 +482,19 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
             frappe.throw("Specified entity is not a folder", NotADirectoryError)
         if not parent_is_active:
             frappe.throw("Specified folder has been trashed by the owner")
-    is_public = False
-    if frappe.db.exists(
-        {
-            "doctype": "Drive DocShare",
-            "share_doctype": "Drive Entity",
-            "share_name": entity_name,
-            "public": 1,
-        }
+    if not frappe.has_permission(
+        doctype="drive entity",
+        doc=entity_name,
+        ptype="read",
+        user=frappe.session.user,
     ):
-        is_public = True
-    if not is_public:
-        if not frappe.has_permission(
-            doctype="Drive Entity",
-            doc=entity_name,
-            ptype="read",
-            user=frappe.session.user,
-        ):
-            frappe.throw(
-                "Cannot access folder due to insufficient permissions",
-                frappe.PermissionError,
-            )
-    general_access_val = "public" if is_public else "everyone"
+        frappe.throw(
+            "cannot access folder due to insufficient permissions",
+            frappe.permissionerror,
+        )
     DriveEntity = frappe.qb.DocType("Drive Entity")
     DriveFavourite = frappe.qb.DocType("Drive Favourite")
-    DriveDocShare = frappe.qb.DocType("Drive DocShare")
+    DrivePermission = frappe.qb.DocType("Drive Permission")
     DriveUser = frappe.qb.DocType("User")
     UserGroupMember = frappe.qb.DocType("User Group Member")
     selectedFields = [
@@ -519,29 +507,21 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
         DriveEntity.modified,
         DriveEntity.creation,
         DriveEntity.file_size,
-        DriveEntity.file_ext,
         DriveEntity.color,
-        DriveEntity.document,
         DriveEntity.mime_type,
-        DriveEntity.parent_drive_entity,
-        DriveEntity.allow_download,
+        DriveEntity.parent_entity,
         DriveEntity.is_active,
-        DriveEntity.allow_comments,
-        DriveDocShare.read,
-        DriveDocShare.user_name,
-        fn.Max(DriveDocShare.write).as_("write"),
-        DriveDocShare.public,
-        DriveDocShare.everyone,
-        DriveDocShare.share,
+        DrivePermission.read,
+        DrivePermission.user,
+        fn.Max(DrivePermission.write).as_("write"),
+        DrivePermission.share,
         DriveFavourite.entity.as_("is_favourite"),
     ]
 
     query = (
         frappe.qb.from_(DriveEntity)
-        .left_join(DriveDocShare)
-        .on((DriveDocShare.share_name == DriveEntity.name))
-        .left_join(UserGroupMember)
-        .on((UserGroupMember.parent == DriveDocShare.user_name))
+        .left_join(DrivePermission)
+        .on((DrivePermission.entity == DriveEntity.name))
         .left_join(DriveFavourite)
         .on(
             (DriveFavourite.entity == DriveEntity.name)
@@ -553,20 +533,16 @@ def list_folder_contents(entity_name=None, order_by="modified", is_active=1, lim
         .limit(limit)
         .select(*selectedFields)
         .where(
-            (DriveEntity.parent_drive_entity == entity_name)
+            (DriveEntity.parent_entity == entity_name)
             & (DriveEntity.is_active == 1)
             & (
-                (UserGroupMember.user == frappe.session.user)
-                | (
-                    (DriveDocShare.user_name == frappe.session.user)
-                    | (DriveDocShare[general_access_val] == 1)
-                    | (DriveEntity.owner == frappe.session.user)
-                )
+                (DrivePermission.user == frappe.session.user)
+                | (DriveEntity.owner == frappe.session.user)
             )
         )
         .groupby(DriveEntity.name)
         .orderby(
-            Case().when(DriveEntity.is_group == True, 1).else_(2),
+            Case().when(DriveEntity.is_group == 1, 1).else_(2),
             Order.desc,
         )
         .orderby(

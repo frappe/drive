@@ -20,11 +20,14 @@
       :folder-contents="getEntities.data && grouper(getEntities.data)"
       :entities="getEntities.data"
       :action-items="actionItems"
+      v-model="selections"
       @update-offset="() => (page_offset += page_length)"
     />
     <EmptyEntityContextMenu
       v-if="
-        ($route.name === 'Home' || $route.name === 'Folder') &&
+        ($route.name === 'My Space' ||
+          $route.name === 'Home' ||
+          $route.name === 'Folder') &&
         defaultContextTriggered
       "
       v-on-outside-click="() => (defaultContextTriggered = false)"
@@ -49,11 +52,10 @@
       :entity="activeEntity"
       @trigger="mutate"
     />
-    <!-- BROKEN - multiple allowing? -->
     <GeneralDialog
       v-if="dialog === 'remove'"
       v-model="dialog"
-      :entities="[activeEntity]"
+      :entities="selections"
       :for="'remove'"
       @success="
         () => {
@@ -65,7 +67,7 @@
     <GeneralDialog
       v-if="dialog === 'unshare'"
       v-model="dialog"
-      :entities="[activeEntity]"
+      :entities="selections"
       :for="'unshare'"
       @success="
         () => {
@@ -77,7 +79,7 @@
     <GeneralDialog
       v-if="dialog === 'restore'"
       v-model="dialog"
-      :entities="[activeEntity]"
+      :entities="selections"
       :for="'restore'"
       @success="
         () => {
@@ -156,6 +158,7 @@ import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
+import Home from "./EspressoIcons/Home.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import Share from "./EspressoIcons/Share.vue"
@@ -194,6 +197,8 @@ const sortOrder = ref({
   ascending: true,
 })
 const activeEntity = computed(() => store.state.activeEntity)
+const selections = ref([])
+watch(activeEntity, () => (selections.value = [activeEntity]))
 watch(
   sortOrder,
   () => {
@@ -274,6 +279,14 @@ const actionItems = computed(() => {
   } else {
     return [
       {
+        label: "Move to Home",
+        icon: Home,
+        onClick: ([e]) => togglePersonal.submit({ entity_name: e.name }),
+        isEnabled: () => route.name == "My Space",
+        multi: true,
+        important: true,
+      },
+      {
         label: "Preview",
         icon: Preview,
         onClick: ([entity]) => openEntity(route.params.team, entity),
@@ -323,14 +336,6 @@ const actionItems = computed(() => {
         icon: Info,
         onClick: () => store.commit("setShowInfo", false),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
-      },
-      {
-        label: "Move to Home",
-        icon: Info,
-        onClick: ([e]) => togglePersonal.submit({ entity_name: e.name }),
-        isEnabled: () => route.name == "My Space",
-        multi: true,
-        important: true,
       },
       {
         label: "Favourite",

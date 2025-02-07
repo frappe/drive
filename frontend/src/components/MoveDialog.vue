@@ -167,7 +167,6 @@ const props = defineProps({
     default: null,
   },
 })
-console.log(props.entity)
 
 const open = computed({
   get() {
@@ -193,7 +192,6 @@ const evalPermission = computed(() => {
   return false
 })
 
-// BROKEN - multi move
 const DialogTitle = computed(() => {
   if (store.state.entityInfo.length > 1) {
     return `Moving ${store.state.entityInfo.length} items`

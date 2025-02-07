@@ -142,6 +142,7 @@ let file = createResource({
       },
     ]
     const root_item = data.breadcrumbs[0]
+    console.log(data.breadcrumbs)
     if (root_item.parent_entity === null) {
       breadcrumbs = [
         {

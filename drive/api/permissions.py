@@ -302,7 +302,6 @@ def get_user_access(entity, user=None):
     """
     if isinstance(entity, str):
         entity = frappe.get_doc("Drive Entity", entity)
-
     fields = ["read", "comment", "write", "share", "name as permission_name", "valid_until"]
     NO_ACCESS = {
         "read": 0,
@@ -336,6 +335,7 @@ def get_user_access(entity, user=None):
         )
         or {}
     )
+    print(user_access)
 
     # Otherwise, check team/admin/owner
     teams = get_teams(user)

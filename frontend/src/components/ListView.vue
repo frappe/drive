@@ -219,6 +219,7 @@ const setActive = (entity) => {
 }
 
 const handleAction = (selectedItems, action) => {
+  selections.value = selectedItems
   action.onClick(selectedItems)
 }
 
@@ -228,8 +229,12 @@ const dropdownActionItems = (row) => {
     .map((a) => ({
       ...a,
       onClick: () => {
+        selectedRow.value = row.name
+        store.commit("setActiveEntity", row)
         a.onClick([row])
       },
     }))
 }
+
+const selections = defineModel()
 </script>
