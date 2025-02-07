@@ -34,7 +34,7 @@ import {
   defineAsyncComponent,
   onBeforeUnmount,
 } from "vue"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
 import { createResource } from "frappe-ui"
@@ -48,6 +48,7 @@ const ShareDialog = defineAsyncComponent(() =>
 )
 
 const store = useStore()
+const route = useRoute()
 const router = useRouter()
 const emitter = inject("emitter")
 
@@ -134,7 +135,6 @@ const getDocument = createResource({
 
     title.value = data.title
     oldTitle.value = data.title
-    console.log(data)
     yjsContent.value = toUint8Array(data.content)
     rawContent.value = data.raw_content
     isWritable.value = data.owner === userId.value || !!data.write
@@ -150,11 +150,11 @@ const getDocument = createResource({
       },
     ]
     const root_item = data.breadcrumbs[0]
-    if (root_item.name === store.state.homeFolderID) {
+    if (root_item.parent_entity === null) {
       breadcrumbs = [
         {
           label: "Home",
-          route: "/home",
+          route: `/${route.params.team}/`,
         },
       ]
       data.breadcrumbs.shift()

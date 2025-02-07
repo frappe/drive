@@ -122,7 +122,6 @@
 </template>
 <script setup>
 import {
-  Avatar,
   Button,
   FeatherIcon,
   ListSelectBanner,
@@ -220,7 +219,6 @@ const setActive = (entity) => {
 }
 
 const handleAction = (selectedItems, action) => {
-  console.log(selectedItems, action.onClick)
   action.onClick(selectedItems)
 }
 

@@ -175,3 +175,14 @@ export const createDocument = createResource({
   url: "drive.api.files.create_document_entity",
   makeParams: (params) => params,
 })
+
+export const togglePersonal = createResource({
+  method: "POST",
+  url: "drive.api.files.toggle_personal",
+  makeParams: (params) => params,
+  onSuccess: (e) => {
+    let index = getPersonal.data.findIndex((k) => k.name === e)
+    getHome.data.push(getPersonal.data[index])
+    getPersonal.data.splice(index)
+  },
+})
