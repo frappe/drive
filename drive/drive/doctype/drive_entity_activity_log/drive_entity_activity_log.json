@@ -54,7 +54,7 @@
     }
   ],
   "links": [],
-  "modified": "2024-10-11 18:15:12.227560",
+  "modified": "2025-02-07 12:03:09.004189",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity Activity Log",
@@ -80,29 +80,7 @@
       "print": 1,
       "read": 1,
       "report": 1,
-      "role": "Drive Admin",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Drive User",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Drive Guest",
+      "role": "All",
       "share": 1,
       "write": 1
     }

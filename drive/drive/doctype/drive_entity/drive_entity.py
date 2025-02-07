@@ -142,7 +142,7 @@ class DriveEntity(Document):
         """
 
         new_parent = new_parent or get_user_directory(self.owner).name
-        if new_parent == self.parent_drive_entity:
+        if new_parent == self.parent_entity:
             return self
 
         is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
@@ -155,7 +155,7 @@ class DriveEntity(Document):
                     frappe.PermissionError,
                 )
                 return
-        self.parent_drive_entity = new_parent
+        self.parent_entity = new_parent
         title = get_new_title(self.title, new_parent)
         if title != self.title:
             self.rename(title)
@@ -215,7 +215,7 @@ class DriveEntity(Document):
                     "name": name,
                     "title": title,
                     "is_group": 1,
-                    "parent_drive_entity": new_parent,
+                    "parent_entity": new_parent,
                     "color": self.color,
                 }
             )
@@ -225,7 +225,7 @@ class DriveEntity(Document):
                 child.copy(name, parent_user_directory)
 
         elif self.document is not None:
-            drive_doc_content = frappe.db.get_value("Drive Document", self.document, "content")
+            drive_doc_content = frappe.db.get_list("Drive Document", self.document, "content")
 
             new_drive_doc = frappe.new_doc("Drive Document")
             new_drive_doc.title = title
@@ -238,7 +238,7 @@ class DriveEntity(Document):
                     "name": name,
                     "title": title,
                     "mime_type": self.mime_type,
-                    "parent_drive_entity": new_parent,
+                    "parent_entity": new_parent,
                     "document": new_drive_doc,
                 }
             )
@@ -258,7 +258,7 @@ class DriveEntity(Document):
                     "doctype": "Drive Entity",
                     "name": name,
                     "title": title,
-                    "parent_drive_entity": new_parent,
+                    "parent_entity": new_parent,
                     "path": path,
                     "file_size": self.file_size,
                     "file_ext": self.file_ext,
@@ -302,7 +302,7 @@ class DriveEntity(Document):
         entity_exists = frappe.db.exists(
             {
                 "doctype": "Drive Entity",
-                "parent_drive_entity": self.parent_drive_entity,
+                "parent_entity": self.parent_entity,
                 "title": new_title,
                 "mime_type": self.mime_type,
                 "is_group": self.is_group,
@@ -310,7 +310,7 @@ class DriveEntity(Document):
         )
         if entity_exists:
             suggested_name = get_new_title(
-                new_title, self.parent_drive_entity, document=self.document, folder=self.is_group
+                new_title, self.parent_entity, document=self.document, folder=self.is_group
             )
             frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{suggested_name}' ",
