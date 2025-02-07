@@ -18,7 +18,7 @@
       >
         <FrappeDriveLogo class="w-8 h-8 rounded" />
         <div
-          class="flex flex-1 flex-col text-left duration-300 ease-in-out"
+          class="flex flex-1 flex-col text-left duration-300 text-nowrap ease-in-out"
           :class="
             isExpanded
               ? 'ml-2 w-auto opacity-100'
