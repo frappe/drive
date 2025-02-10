@@ -16,10 +16,10 @@ import { createResource } from "frappe-ui"
 import { useRouter, useRoute } from "vue-router"
 import { formatDate } from "@/utils/format"
 import { getFolderContents } from "@/resources/files"
+import { setBreadCrumbs, prettyData } from "../utils/files"
 
 const store = useStore()
 const router = useRouter()
-const route = useRoute()
 const realtime = inject("realtime")
 
 const props = defineProps({
@@ -59,34 +59,15 @@ onBeforeUnmount(() => {
 let currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
-  onSuccess(data) {
-    store.commit("setCurrentFolder", [data])
+  transform(entity) {
+    store.commit("setCurrentFolder", [entity])
     store.commit("setCurrentFolderID", props.entityName)
+    entity = prettyData([entity])
+  },
+  onSuccess(data) {
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
-    let breadcrumbs = [
-      {
-        label: "Shared",
-        route: "/shared",
-      },
-    ]
-    const root_item = data.breadcrumbs[0]
-    if (root_item.parent_entity === null) {
-      breadcrumbs = [
-        {
-          label: "Home",
-          route: `/${route.params.team}/`,
-        },
-      ]
-      data.breadcrumbs.shift()
-    }
-    data.breadcrumbs.forEach((item) => {
-      breadcrumbs.push({
-        label: item.title,
-        route: "/folder/" + item.name,
-      })
-    })
-    store.commit("setBreadcrumbs", breadcrumbs)
+    setBreadCrumbs(data.breadcrumbs, data.is_private, false)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

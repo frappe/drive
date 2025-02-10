@@ -46,3 +46,31 @@ export const prettyData = (entities) => {
     return entity
   })
 }
+export const setBreadCrumbs = (breadcrumbs, is_private, file = true) => {
+  const route = router.currentRoute.value
+  let res = [
+    {
+      label: "Shared",
+      route: "/shared",
+    },
+  ]
+  if (breadcrumbs[0].parent_entity === null) {
+    res = [
+      {
+        label: is_private ? "My Space" : "Home",
+        route: `/${route.params.team}` + (is_private ? "/personal" : ""),
+      },
+    ]
+    breadcrumbs.shift()
+  }
+  breadcrumbs.forEach((item, idx) => {
+    res.push({
+      label: item.title,
+      route:
+        `/${route.params.team}/${
+          idx === breadcrumbs.length - 1 ? (file ? "file" : "doc") : "folder"
+        }/` + item.name,
+    })
+  })
+  store.commit("setBreadcrumbs", res)
+}

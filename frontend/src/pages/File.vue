@@ -52,14 +52,13 @@ import {
 import { Button } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
-import { useRouter, useRoute } from "vue-router"
+import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import { prettyData } from "@/utils/files"
+import { prettyData, setBreadCrumbs } from "@/utils/files"
 
 const router = useRouter()
-const route = useRoute()
 const store = useStore()
 const emitter = inject("emitter")
 const realtime = inject("realtime")
@@ -135,38 +134,7 @@ let file = createResource({
   },
   onSuccess(data) {
     store.commit("setActiveEntity", data)
-    let breadcrumbs = [
-      {
-        label: "Shared",
-        route: "/shared",
-      },
-    ]
-    const root_item = data.breadcrumbs[0]
-    console.log(data.breadcrumbs)
-    if (root_item.parent_entity === null) {
-      breadcrumbs = [
-        {
-          label: file.data.is_private ? "My Space" : "Home",
-          route:
-            `/${route.params.team}` + (file.data.is_private ? "/personal" : ""),
-        },
-      ]
-      data.breadcrumbs.shift()
-    }
-    data.breadcrumbs.forEach((item, idx) => {
-      if (idx === data.breadcrumbs.length - 1) {
-        breadcrumbs.push({
-          label: item.title,
-          route: `/${route.params.team}/file/` + item.name,
-        })
-      } else {
-        breadcrumbs.push({
-          label: item.title,
-          route: `/${route.params.team}/folder/` + item.name,
-        })
-      }
-    })
-    store.commit("setBreadcrumbs", breadcrumbs)
+    setBreadCrumbs(data.breadcrumbs, data.is_private)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

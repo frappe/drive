@@ -39,6 +39,7 @@ import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
 import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
+import { setBreadCrumbs } from "../utils/files"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -110,7 +111,7 @@ const saveDocument = () => {
   }
 }
 
-const getDocument = createResource({
+createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   method: "GET",
   auto: true,
@@ -143,36 +144,7 @@ const getDocument = createResource({
     entity.value = data
     lastSaved.value = Date.now()
     contentLoaded.value = true
-    let breadcrumbs = [
-      {
-        label: "Shared",
-        route: "/shared",
-      },
-    ]
-    const root_item = data.breadcrumbs[0]
-    if (root_item.parent_entity === null) {
-      breadcrumbs = [
-        {
-          label: "Home",
-          route: `/${route.params.team}/`,
-        },
-      ]
-      data.breadcrumbs.shift()
-    }
-    data.breadcrumbs.forEach((item, idx) => {
-      if (idx === data.breadcrumbs.length - 1) {
-        breadcrumbs.push({
-          label: item.title,
-          route: "/document/" + item.name,
-        })
-      } else {
-        breadcrumbs.push({
-          label: item.title,
-          route: "/folder/" + item.name,
-        })
-      }
-    })
-    store.commit("setBreadcrumbs", breadcrumbs)
+    setBreadCrumbs(data.breadcrumbs, data.is_private, false)
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
