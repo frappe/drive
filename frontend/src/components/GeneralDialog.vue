@@ -59,7 +59,7 @@ export default {
   computed: {
     dialogData() {
       const items =
-        this.entities.length === 1 ? `An item` : `${this.entities.length} items`
+        this.entities.length === 1 ? `an item` : `${this.entities.length} items`
       switch (this.for) {
         case "unshare":
           return {

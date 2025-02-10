@@ -5,7 +5,6 @@ from pypika import Order, Case, functions as fn
 from drive.utils.users import mark_as_viewed
 from drive.api.files import (
     generate_upward_path,
-    get_doc_content,
 )
 
 
@@ -63,8 +62,8 @@ def get_entity_with_permissions(entity_name):
     if user_access.get("read") == 0:
         frappe.throw("Not found", frappe.NotFound)
 
-    owner_info = frappe.db.get_value(
-        "User", entity.owner, ["user_image", "full_name"], as_dict=True
+    owner_info = (
+        frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     )
     breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
     favourite = frappe.db.get_value(
@@ -77,8 +76,16 @@ def get_entity_with_permissions(entity_name):
     )
     mark_as_viewed(entity)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
-
-    entity_doc_content = get_doc_content(entity.name)
+    print(entity.document)
+    entity_doc_content = (
+        frappe.db.get_value(
+            "Drive Document",
+            entity.document,
+            ["content", "raw_content", "settings", "version"],
+            as_dict=1,
+        )
+        or {}
+    )
     return return_obj | entity_doc_content
 
 

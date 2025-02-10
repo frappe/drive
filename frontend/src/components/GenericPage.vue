@@ -57,12 +57,7 @@
       v-model="dialog"
       :entities="selections"
       :for="'remove'"
-      @success="
-        () => {
-          handleListMutate({ delete: true, data: { name: activeEntity.name } })
-          dialog = null
-        }
-      "
+      @success="mutate({ delete: true, data: selections })"
     />
     <GeneralDialog
       v-if="dialog === 'unshare'"
@@ -198,7 +193,7 @@ const sortOrder = ref({
 })
 const activeEntity = computed(() => store.state.activeEntity)
 const selections = ref([])
-watch(activeEntity, () => (selections.value = [activeEntity]))
+watch(activeEntity, () => (selections.value = [activeEntity.value]))
 watch(
   sortOrder,
   () => {
@@ -418,7 +413,7 @@ emitter.on("showShareDialog", () => (dialog.value = "s"))
 
 const resetDialog = () => (dialog.value = null)
 const mutate = (data) => {
-  handleListMutate({ data })
+  data.data.map((k) => handleListMutate({ ...data, data: k }))
   resetDialog()
 }
 
