@@ -1,14 +1,13 @@
 {
   "actions": [],
   "allow_rename": 1,
-  "autoname": "hash",
+  "autoname": "UUID",
   "creation": "2023-04-05 11:32:23.940763",
   "default_view": "List",
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
   "field_order": [
-    "entity",
     "title",
     "content",
     "settings",
@@ -51,14 +50,6 @@
       "label": "Version"
     },
     {
-      "fieldname": "entity",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "Entity",
-      "options": "Drive Entity",
-      "reqd": 1
-    },
-    {
       "fieldname": "title",
       "fieldtype": "Data",
       "in_list_view": 1,
@@ -68,11 +59,11 @@
     }
   ],
   "links": [],
-  "modified": "2025-02-06 16:59:58.742623",
+  "modified": "2025-02-10 12:13:23.687021",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
-  "naming_rule": "Random",
+  "naming_rule": "UUID",
   "owner": "Administrator",
   "permissions": [
     {
@@ -95,5 +86,6 @@
   ],
   "sort_field": "modified",
   "sort_order": "DESC",
-  "states": []
+  "states": [],
+  "title_field": "title"
 }

@@ -70,12 +70,19 @@ def create_document_entity(title, personal, team, content, parent=None):
     drive_doc.title = new_title
     drive_doc.content = content
     drive_doc.version = 2
+    drive_doc.save()
 
     entity = create_drive_entity(
-        team, personal, new_title, parent, 0, "frappe_doc", None, lambda x: ""
+        team,
+        personal,
+        new_title,
+        parent,
+        0,
+        "frappe_doc",
+        None,
+        lambda x: "",
+        document=drive_doc.name,
     )
-    drive_doc.entity = entity.name
-    drive_doc.save()
     return entity
 
 
@@ -187,7 +194,7 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
 
 
 def create_drive_entity(
-    team, personal, title, parent, file_size, mime_type, last_modified, entity_path
+    team, personal, title, parent, file_size, mime_type, last_modified, entity_path, document=None
 ):
     drive_entity = frappe.get_doc(
         {
@@ -198,6 +205,7 @@ def create_drive_entity(
             "parent_entity": parent,
             "file_size": file_size,
             "mime_type": mime_type,
+            "document": document,
         }
     )
     drive_entity.flags.file_created = True
@@ -258,17 +266,6 @@ def create_folder(team, title, parent=None):
     return drive_entity
 
 
-def get_doc_content(entity):
-    docs = frappe.db.get_list(
-        "drive document",
-        filters={"entity": entity},
-        fields=["content", "raw_content", "settings", "version"],
-    )
-    if not docs:
-        return {}
-    return docs[0] or {}
-
-
 @frappe.whitelist()
 def passive_rename(entity_name, new_title):
     frappe.db.set_value("drive entity", entity_name, "title", new_title)
@@ -278,7 +275,7 @@ def passive_rename(entity_name, new_title):
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
     if not frappe.has_permission(
-        doctype="drive entity",
+        doctype="Drive Entity",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
@@ -287,10 +284,10 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
     if settings:
         frappe.db.set_value("drive document", doc_name, "settings", json.dumps(settings))
     file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
-    frappe.db.set_value("drive document", doc_name, "content", content)
-    frappe.db.set_value("drive document", doc_name, "raw_content", raw_content)
-    frappe.db.set_value("drive document", doc_name, "mentions", json.dumps(mentions))
-    frappe.db.set_value("drive entity", entity_name, "file_size", file_size)
+    frappe.db.set_value("Drive Document", doc_name, "content", content)
+    frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
+    frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
+    frappe.db.set_value("Drive Entity", entity_name, "file_size", file_size)
     if json.dumps(mentions):
         frappe.enqueue(
             notify_mentions,
@@ -309,7 +306,7 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
 @frappe.whitelist()
 def save_whiteboard(entity_name, doc_name, content):
     if not frappe.has_permission(
-        doctype="drive entity",
+        doctype="Drive Entity",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
