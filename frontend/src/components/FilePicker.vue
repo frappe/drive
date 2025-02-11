@@ -338,7 +338,7 @@ function openEntity(value) {
     currentFolder.value = value.name
     folderPermissions.fetch({
       entity_name: value.name,
-      fields: "title,is_group,allow_comments,allow_download,owner",
+      fields: "title,is_group,allow_download,owner",
     })
     breadcrumbs.value.push({ name: value.name, title: value.title })
     fetchFolderContents.fetch({

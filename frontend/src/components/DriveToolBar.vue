@@ -170,7 +170,7 @@ import Image from "./MimeIcons/Image.vue"
 import Video from "./MimeIcons/Video.vue"
 import PDF from "./MimeIcons/PDF.vue"
 import Unknown from "./MimeIcons/Unknown.vue"
-import { computed, onMounted, watch } from "vue"
+import { computed, onMounted } from "vue"
 import { useStore } from "vuex"
 
 const store = useStore()

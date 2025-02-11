@@ -3,7 +3,10 @@
     class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
     @contextmenu="handleContextMenu"
   >
-    <DriveToolBar v-model="sortOrder" :column-headers="columnHeaders" />
+    <DriveToolBar
+      v-model="sortOrder"
+      :column-headers="$route.name === 'Recents' ? null : columnHeaders"
+    />
 
     <!-- This sucks, redo it -->
     <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />

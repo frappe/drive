@@ -4,8 +4,9 @@ import frappe
 from pathlib import Path
 from pypika import functions as fn
 
+DriveEntity = frappe.qb.DocType("Drive Entity")
 
-@frappe.whitelist()
+
 def get_max_storage():
     """
     Retrieves the maximum storage limit for the user's plan.
@@ -55,7 +56,6 @@ def get_owned_files_by_storage():
         order_by="file_size desc",
         fields=["name", "title", "owner", "file_size", "file_kind", "mime_type"],
     )
-    DriveEntity = frappe.qb.DocType("Drive Entity")
     query = (
         frappe.qb.from_(DriveEntity)
         .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("file_size"))
@@ -67,16 +67,18 @@ def get_owned_files_by_storage():
 
 
 @frappe.whitelist()
-def total_storage_used():
-    DriveEntity = frappe.qb.DocType("Drive Entity")
-    query = frappe.qb.from_(DriveEntity).select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+def total_storage_used(team):
+    query = (
+        frappe.qb.from_(DriveEntity)
+        .where(DriveEntity.team == team)
+        .select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+    )
     result = query.run(as_dict=True)
-    return result
+    return {**result[0], **get_max_storage()}
 
 
 @frappe.whitelist()
 def total_storage_used_by_user():
-    DriveEntity = frappe.qb.DocType("Drive Entity")
     query = (
         frappe.qb.from_(DriveEntity)
         .where(DriveEntity.owner == frappe.session.user)
@@ -88,7 +90,6 @@ def total_storage_used_by_user():
 
 @frappe.whitelist()
 def total_storage_used_by_file_kind():
-    DriveEntity = frappe.qb.DocType("Drive Entity")
     query = (
         frappe.qb.from_(DriveEntity)
         .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("total_size"))

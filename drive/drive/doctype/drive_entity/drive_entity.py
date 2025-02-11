@@ -365,18 +365,6 @@ class DriveEntity(Document):
             self.unshare(user=None, user_type=None)
 
     @frappe.whitelist()
-    def toggle_allow_comments(self, new_value):
-        """
-        Toggle allow comments for entity
-
-        """
-        self.allow_comments = new_value
-        if self.is_group:
-            for child in self.get_children():
-                child.toggle_allow_comments(new_value)
-        self.save()
-
-    @frappe.whitelist()
     def toggle_allow_download(self, new_value):
         """
         Toggle allow download for entity
