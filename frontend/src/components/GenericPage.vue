@@ -64,24 +64,14 @@
       v-model="dialog"
       :entities="selections"
       :for="'unshare'"
-      @success="
-        () => {
-          handleListMutation()
-          dialog = null
-        }
-      "
+      @success="mutate({ delete: true, data: selections })"
     />
     <GeneralDialog
       v-if="dialog === 'restore'"
       v-model="dialog"
       :entities="selections"
       :for="'restore'"
-      @success="
-        () => {
-          handleListMutate({ delete: true, data: { name: activeEntity.name } })
-          dialog = null
-        }
-      "
+      @success="mutate({ delete: true, data: selections })"
     />
     <ShareDialog
       v-if="dialog === 's'"
@@ -91,13 +81,8 @@
     <MoveDialog
       v-if="dialog === 'm'"
       v-model="dialog"
-      :entity="activeEntity"
-      @success="
-        () => {
-          handleListMutate({ delete: true, data: { name: activeEntity.name } })
-          dialog = null
-        }
-      "
+      :entities="selections"
+      @success="getEntities.fetch(), resetDialog()"
     />
     <DeleteDialog
       v-if="dialog === 'd'"

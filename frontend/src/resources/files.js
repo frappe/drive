@@ -44,7 +44,11 @@ export const getFolderContents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   makeParams: (params) => {
-    return { ...getFolderContents.params, ...params }
+    return {
+      ...getFolderContents.params,
+      ...params,
+      personal: store.state.breadcrumbs[0].label == "My Space" ? 1 : 0,
+    }
   },
 })
 

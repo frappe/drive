@@ -181,4 +181,3 @@ def create_thumbnail(entity_name, path, mime_type, team):
                     retry_count += 1
             else:
                 print("Failed to create thumbnail after maximum retries.")
-

@@ -6,13 +6,11 @@ from pypika import Order, Case, functions as fn
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
-import uuid
 import mimetypes
 import hashlib
 from drive.utils.files import (
     get_home_folder,
     get_user_directory,
-    create_user_directory,
     get_new_title,
     create_thumbnail,
 )
@@ -220,7 +218,7 @@ def create_drive_entity(
 
 
 @frappe.whitelist()
-def create_folder(team, title, parent=None):
+def create_folder(team, title, personal=False, parent=None):
     """
     Create a new folder.
 
@@ -259,6 +257,7 @@ def create_folder(team, title, parent=None):
             "is_group": 1,
             "parent_entity": parent,
             "color": "#525252",
+            "is_private": personal,
         }
     )
     drive_entity.insert()
@@ -1209,16 +1208,8 @@ def move(entity_names, new_parent=None):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
-
     for entity in entity_names:
         doc = frappe.get_doc("Drive Entity", entity)
-        new_parent = new_parent or get_user_directory(doc.owner).name
-
-        if new_parent == doc.parent_drive_entity:
-            return doc
-        is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
-        if not is_group:
-            raise NotADirectoryError()
         doc.move(new_parent)
         doc.save()
 
@@ -1317,7 +1308,6 @@ def generate_upward_path(entity_name):
     """,
         as_dict=1,
     )
-    print(result)
     return result
 
 

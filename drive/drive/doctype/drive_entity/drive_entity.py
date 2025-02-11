@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 import uuid
 from drive.utils.files import (
+    get_home_folder,
     get_user_directory,
     create_user_directory,
     get_new_title,
@@ -77,7 +78,6 @@ class DriveEntity(Document):
         """Cascade parent permissions to new child entity"""
         if self.parent_entity is None:
             return
-
         permissions = frappe.get_all(
             "Drive Permission",
             fields=[
@@ -141,13 +141,14 @@ class DriveEntity(Document):
         :return: DriveEntity doc once file is moved
         """
 
-        new_parent = new_parent or get_user_directory(self.owner).name
+        new_parent = new_parent or get_home_folder(self.team).name
         if new_parent == self.parent_entity:
             return self
 
         is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
         if not is_group:
             raise NotADirectoryError()
+
         for child in self.get_children():
             if child.name == self.name or child.name == new_parent:
                 frappe.throw(
@@ -454,7 +455,6 @@ class DriveEntity(Document):
         :param user_type:
         """
         absolute_path = generate_upward_path(self.name)
-        print(absolute_path)
         for i in absolute_path:
             if i.owner == user:
                 frappe.throw("User owns parent folder", frappe.PermissionError)
