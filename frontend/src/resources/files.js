@@ -29,6 +29,7 @@ export const getHome = createResource({
   cache: "home-folder-contents",
 })
 
+// BROKEN - this is never called (hence, refreshed)
 export const getTeams = createResource({
   url: "/api/method/drive.api.permissions.get_teams",
   params: {
@@ -36,7 +37,6 @@ export const getTeams = createResource({
   },
   method: "GET",
   cache: "teams",
-  auto: true,
 })
 
 // Separate for cache purposes

@@ -1,12 +1,12 @@
 <template>
   <div
-    v-if="!maxStorage.loading && !storageUsed.loading"
+    v-if="!totalStorage.loading"
     class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
     @click="emitter.emit('showSettings', 3)"
   >
     <SidebarItem
-      :label="isExpanded ? 'Storage' : '3.5GB used out of 50GB'"
-      :is-collapsed="!isExpanded"
+      :label="props.isExpanded ? 'Storage' : '3.5GB used out of 50GB'"
+      :is-collapsed="!props.isExpanded"
     >
       <template #icon>
         <Cloud class="w-4" />
@@ -37,20 +37,20 @@
 </template>
 
 <script setup>
-import { ref, computed, inject } from "vue"
-import { useStore } from "vuex"
+import { ref, computed, inject, onMounted, watch } from "vue"
 import { createResource } from "frappe-ui"
+import { useRoute } from "vue-router"
 import SidebarItem from "./SidebarItem.vue"
 import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
 const emitter = inject("emitter")
+
+const route = useRoute()
+
 const usedStorage = ref(0)
 const storageMax = ref(5368709120)
-const usageUrl = ref("drive.api.storage.total_storage_used")
-const store = useStore()
-const isExpanded = computed(() => {
-  return store.state.IsSidebarExpanded
-})
+
+const props = defineProps(["isExpanded"])
 
 const formatedString = computed(() => {
   return (
@@ -69,41 +69,19 @@ const calculatePercent = computed(() => {
   }).format(num / 100)
 })
 
-let maxStorage = createResource({
-  url: "drive.api.storage.get_max_storage",
+let totalStorage = createResource({
+  url: "drive.api.storage.total_storage_used",
   method: "GET",
-  cache: "max_storage",
+  cache: "total_storage",
   onSuccess(data) {
-    if (!data) data = 0
-    if (data.quota) {
-      storageMax.value = data.quota
-      usageUrl.value = "drive.api.storage.total_storage_used_by_user"
-      storageUsed.fetch()
-    } else {
-      storageMax.value = data.limit
-      storageUsed.fetch()
-    }
+    usedStorage.value = data.total_size
+    // BROKEN: implement quotas
+    storageMax.value = data.quota
+    storageMax.value = data.limit
   },
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
-  auto: true,
 })
-
-let storageUsed = createResource({
-  url: usageUrl.value,
-  onSuccess(data) {
-    data = data[0].total_size
-    if (!data) data = 0
-    usedStorage.value = data
-  },
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
-  auto: false,
-})
+const team = computed(() => route.params.team)
+const get = () => totalStorage.fetch({ team: route.params.team })
+watch(team, get)
+if (team.value) get()
 </script>

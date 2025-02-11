@@ -499,84 +499,6 @@ def delete_entities(entity_names=None, clear_all=None):
 
 
 @frappe.whitelist()
-def list_favourites(order_by="modified", limit=100, offset=0):
-    """
-    Return list of DriveEntity records present in this folder
-
-    :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
-    :return: List of DriveEntity records
-    :rtype: list
-    """
-
-    DriveFavourite = frappe.qb.DocType("Drive Favourite")
-    DriveEntity = frappe.qb.DocType("Drive Entity")
-    DriveDocShare = frappe.qb.DocType("Drive DocShare")
-    DriveUser = frappe.qb.DocType("User")
-    UserGroupMember = frappe.qb.DocType("User Group Member")
-    selectedFields = [
-        DriveEntity.name,
-        DriveEntity.title,
-        DriveEntity.is_group,
-        DriveEntity.owner,
-        DriveUser.full_name,
-        DriveEntity.owner,
-        DriveEntity.modified,
-        DriveEntity.creation,
-        DriveEntity.file_size,
-        DriveEntity.mime_type,
-        DriveEntity.color,
-        DriveEntity.document,
-        DriveEntity.parent_drive_entity,
-        DriveEntity.allow_comments,
-        DriveDocShare.read,
-        fn.Max(DriveDocShare.write).as_("write"),
-        DriveDocShare.share,
-        DriveDocShare.everyone,
-        DriveFavourite.entity.as_("is_favourite"),
-    ]
-    query = (
-        frappe.qb.from_(DriveEntity)
-        .right_join(DriveFavourite)
-        .on(
-            (DriveFavourite.entity == DriveEntity.name)
-            & (DriveFavourite.user == frappe.session.user)
-        )
-        .left_join(DriveDocShare)
-        .on((DriveDocShare.share_name == DriveEntity.name))
-        .left_join(UserGroupMember)
-        .on(
-            (
-                (UserGroupMember.parent == DriveDocShare.user_name)
-                & (UserGroupMember.user == frappe.session.user)
-            )
-            | (
-                (DriveDocShare.user_name == frappe.session.user)
-                | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
-            )
-        )
-        .left_join(DriveUser)
-        .on((DriveEntity.owner == DriveUser.email))
-        .offset(offset)
-        .limit(limit)
-        .select(*selectedFields)
-        .where(
-            (DriveEntity.is_active == 1)
-            & ((DriveEntity.owner == frappe.session.user) | (DriveDocShare.read == 1))
-        )
-        .groupby(DriveEntity.name)
-        .orderby(
-            Case().when(DriveEntity.is_group == True, 1).else_(2),
-            Order.desc,
-        )
-        .orderby(
-            order_by.split()[0],
-            order=Order.desc if order_by.endswith("desc") else Order.asc,
-        )
-    )
-    return query.run(as_dict=True)
-
-
-@frappe.whitelist()
 def set_favourite(entities=None, clear_all=False):
     """
     Favouite or unfavourite DriveEntities for specified user
@@ -671,83 +593,6 @@ def call_controller_method(entity_name, method):
 
 
 @frappe.whitelist()
-def list_recents(order_by="last_interaction", limit=100, offset=0):
-    """
-    Return list of DriveEntity records present in this folder
-
-    :param order_by: Sort the list of results according to the specified field (eg: 'modified desc'). Defaults to 'title'
-    :return: List of DriveEntity records
-    :rtype: list
-    """
-
-    DriveFavourite = frappe.qb.DocType("Drive Favourite")
-    DriveEntity = frappe.qb.DocType("Drive Entity")
-    DriveDocShare = frappe.qb.DocType("Drive DocShare")
-    DriveRecent = frappe.qb.DocType("Drive Entity Log")
-    DriveUser = frappe.qb.DocType("User")
-    UserGroupMember = frappe.qb.DocType("User Group Member")
-    selectedFields = [
-        DriveEntity.name,
-        DriveEntity.title,
-        DriveUser.full_name,
-        DriveUser.user_image,
-        DriveEntity.owner,
-        DriveEntity.is_group,
-        DriveEntity.file_size,
-        DriveEntity.mime_type,
-        DriveEntity.allow_comments,
-        DriveEntity.allow_download,
-        DriveEntity.creation,
-        DriveEntity.document,
-        DriveFavourite.entity.as_("is_favourite"),
-        DriveDocShare.user_name,
-        DriveDocShare.read,
-        fn.Max(DriveDocShare.write).as_("write"),
-        DriveDocShare.share,
-        DriveDocShare.everyone,
-        DriveRecent.last_interaction.as_("modified"),
-    ]
-    query = (
-        frappe.qb.from_(DriveRecent)
-        .left_join(DriveEntity)
-        .on(
-            (DriveRecent.entity_name == DriveEntity.name)
-            & (DriveRecent.user == frappe.session.user)
-        )
-        .left_join(DriveFavourite)
-        .on(
-            (DriveFavourite.entity == DriveEntity.name)
-            & (DriveFavourite.user == frappe.session.user)
-        )
-        .left_join(DriveDocShare)
-        .on((DriveDocShare.share_name == DriveEntity.name))
-        .left_join(UserGroupMember)
-        .on(
-            (
-                (UserGroupMember.parent == DriveDocShare.user_name)
-                & (UserGroupMember.user == frappe.session.user)
-            )
-            | (
-                (DriveDocShare.user_name == frappe.session.user)
-                | ((DriveDocShare.everyone == 1) | (DriveDocShare.public == 1))
-            )
-        )
-        .left_join(DriveUser)
-        .on((DriveEntity.owner == DriveUser.email))
-        .offset(offset)
-        .limit(limit)
-        .select(*selectedFields)
-        .where(
-            (DriveEntity.is_active == 1)
-            & ((DriveEntity.owner == frappe.session.user) | (DriveDocShare.read == 1))
-        )
-        .groupby(DriveEntity.name)
-        .orderby(DriveRecent.last_interaction, order=Order.desc)
-    )
-    return query.run(as_dict=True)
-
-
-@frappe.whitelist()
 def remove_recents(entity_names=[], clear_all=False):
     """
     Clear recent DriveEntities for specified user
@@ -799,19 +644,6 @@ def auto_delete_from_trash():
         fields=["name"],
     )
     delete_entities(result)
-
-
-@frappe.whitelist()
-def toggle_allow_comments(entity_name, new_value):
-    """
-    Toggle allow comments for entity without updating modified
-
-    """
-
-    frappe.db.set_value(
-        "Drive Entity", entity_name, "allow_comments", new_value, update_modified=False
-    )
-    return
 
 
 @frappe.whitelist()
