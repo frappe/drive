@@ -1,6 +1,5 @@
 import frappe
 import os
-import mimetypes
 from pathlib import Path
 import hashlib
 from PIL import Image, ImageOps
@@ -181,3 +180,73 @@ def create_thumbnail(entity_name, path, mime_type, team):
                     retry_count += 1
             else:
                 print("Failed to create thumbnail after maximum retries.")
+
+
+@frappe.whitelist()
+def generate_upward_path(entity_name):
+    """
+    Given an ID traverse upwards till the root node
+    Stops when parent_drive_entity IS NULL
+    """
+    entity = frappe.db.escape(entity_name)
+    user = frappe.db.escape(frappe.session.user)
+    result = frappe.db.sql(
+        f"""WITH RECURSIVE
+            generated_path as (
+                SELECT
+                    `tabDrive Entity`.title,
+                    `tabDrive Entity`.name,
+                    `tabDrive Entity`.parent_entity,
+                    `tabDrive Entity`.is_private,
+                    `tabDrive Entity`.owner
+                FROM
+                    `tabDrive Entity`
+                WHERE
+                    `tabDrive Entity`.name = {entity}
+                UNION ALL
+                SELECT
+                    t.title,
+                    t.name,
+                    t.parent_entity,
+                    t.is_private,
+                    t.owner
+                FROM
+                    generated_path as gp
+                    JOIN `tabDrive Entity` as t ON t.name = gp.parent_entity
+            )
+        SELECT
+            gp.title,
+            gp.name,
+            gp.parent_entity,
+            gp.is_private,
+            gp.owner,
+            p.read,
+            p.write,
+            p.comment,
+            p.share
+        FROM
+            generated_path  as gp
+        LEFT JOIN `tabDrive Permission` as p
+        ON gp.name = p.entity AND p.user = {user};
+    """,
+        as_dict=1,
+    )
+    return result
+
+
+def get_valid_breadcrumbs(entity, user_access):
+    """
+    Determine user access and generate upward path (breadcrumbs).
+    """
+    file_path = generate_upward_path(entity.name)
+    accessible_path = []
+    # If team/admin of this entity, then entire path
+    if user_access.get("type") in ["admin", "team"]:
+        return file_path[::-1]
+
+    # Otherwise, slice where they lose read access.
+    for k in file_path:
+        if not k["read"]:
+            break
+        accessible_path.append(k)
+    return accessible_path[::-1]

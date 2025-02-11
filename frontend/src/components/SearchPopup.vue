@@ -246,7 +246,7 @@ export default {
       return {
         auto: false,
         method: "POST",
-        url: "drive.api.files.generate_upward_path",
+        url: "drive.utils.files.generate_upward_path",
       }
     },
   },

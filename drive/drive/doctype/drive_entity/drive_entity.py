@@ -11,9 +11,8 @@ from drive.utils.files import (
     get_team_thumbnails_directory,
     create_thumbnail,
 )
-from frappe.utils import cint
 from drive.api.files import get_ancestors_of
-from drive.api.files import generate_upward_path
+from drive.utils.files import generate_upward_path
 from drive.api.activity import create_new_activity_log
 
 

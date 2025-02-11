@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 import frappe
-from frappe.utils.telemetry import capture
 
 no_cache = 1
 
@@ -13,8 +12,6 @@ def get_context():
     context.boot.csrf_token = csrf_token
     context.csrf_token = csrf_token
     context.site_name = frappe.local.site
-    if frappe.session.user != "Guest":
-        capture("active_site", "drive")
     return context
 
 

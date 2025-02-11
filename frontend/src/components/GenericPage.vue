@@ -155,7 +155,7 @@ import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { groupByFolder, openEntity } from "@/utils/files"
 import { createDocument, togglePersonal } from "@/resources/files"
-import emitter from "@/event-bus.js"
+import emitter from "@/emitter.js"
 
 const props = defineProps({
   grouper: { type: Function, default: groupByFolder },

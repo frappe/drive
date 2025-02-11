@@ -22,7 +22,7 @@ import Video from "../../icons/Video.vue"
 import PageBreak from "../../icons/PageBreak.vue"
 import CommandsList from "../../components/suggestionList.vue"
 import Mention from "../../icons/Mention.vue"
-import emitter from "../../../../event-bus"
+import emitter from "@/emitter"
 
 export default {
   items: ({ query }) => {

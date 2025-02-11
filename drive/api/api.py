@@ -1,5 +1,4 @@
 import frappe
-from frappe.utils import validate_email_address, split_emails
 
 
 @frappe.whitelist(allow_guest=True)
@@ -38,8 +37,3 @@ def oauth_providers():
                 }
             )
     return out
-
-
-@frappe.whitelist(allow_guest=True)
-def get_server_timezone():
-    return frappe.db.get_single_value("System Settings", "time_zone")

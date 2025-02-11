@@ -949,7 +949,11 @@ export default {
   resources: {
     rename() {
       return {
-        url: "drive.api.files.passive_rename",
+        url: "drive.api.files.call_controller_method",
+        makeParams: (params) => ({
+          method: "rename",
+          ...params,
+        }),
         debounce: 500,
       }
     },

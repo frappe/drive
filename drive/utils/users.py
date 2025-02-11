@@ -1,18 +1,11 @@
 import frappe
-import os
-from pathlib import Path
-import hashlib
-from drive.locks.distributed_lock import DistributedLock
-import json
 from frappe.rate_limiter import rate_limit
 from frappe.utils import now, split_emails, validate_email_address
 
 
 @frappe.whitelist()
 def get_users_with_drive_user_role_and_groups(txt=""):
-    role_filters = ["Drive User", "Drive Admin", "Drive Guest"]
     try:
-        drive_groups = frappe.get_all("User Group")
         drive_users = frappe.get_all(
             doctype="User",
             filters=[
@@ -26,7 +19,7 @@ def get_users_with_drive_user_role_and_groups(txt=""):
                 "user_image",
             ],
         )
-        return drive_users + drive_groups
+        return drive_users
 
     except Exception as e:
         frappe.log_error("Error in fetching Drive Users: {0}".format(e))

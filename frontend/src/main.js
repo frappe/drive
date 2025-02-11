@@ -5,12 +5,11 @@ import {
   onOutsideClickDirective,
   setConfig,
   frappeRequest,
-  resourcesPlugin,
 } from "frappe-ui"
 import store from "./store"
 import router from "./router"
 import App from "./App.vue"
-import emitter from "./event-bus"
+import emitter from "@/emitter"
 import "./index.css"
 import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
