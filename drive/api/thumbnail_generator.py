@@ -1,6 +1,5 @@
 import frappe
 from pathlib import Path
-from PIL import Image, ImageOps
 from io import BytesIO
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file

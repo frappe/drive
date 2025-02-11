@@ -31,19 +31,16 @@ export function base2BlockSize(bytes, decimals = 2, current = 0) {
 }
 
 export function formatDate(date) {
-  const serverTimeZone = store.state.serverTZ
   const dateObj = new Date(date)
-
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const zonedDate = fromZonedTime(dateObj, serverTimeZone)
   const hourCycle = navigator.language || "en-US"
 
-  const formattedDate = format(zonedDate, "MM/dd/yy", { timeZone })
+  const formattedDate = format(dateObj, "MM/dd/yy", { timeZone })
   let formattedTime
   if (hourCycle === "en-US") {
-    formattedTime = format(zonedDate, "hh:mm a", { timeZone })
+    formattedTime = format(dateObj, "hh:mm a", { timeZone })
   } else {
-    formattedTime = format(zonedDate, "HH:mm", { timeZone })
+    formattedTime = format(dateObj, "HH:mm", { timeZone })
   }
   return `${formattedDate}, ${formattedTime}`
 }

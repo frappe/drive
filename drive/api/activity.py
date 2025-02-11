@@ -1,5 +1,5 @@
 import frappe
-from pypika import Query, Order, Table
+from pypika import Order
 
 
 def create_new_activity_log(

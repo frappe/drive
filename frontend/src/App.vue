@@ -73,7 +73,6 @@ import FilePicker from "./components/FilePicker.vue"
 import MoveDialog from "./components/MoveDialog.vue"
 import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
-import { init as initTelemetry } from "@/telemetry"
 
 export default {
   name: "App",
@@ -122,13 +121,11 @@ export default {
     },
   },
   async mounted() {
-    this.$store.dispatch.getServerTZ
     this.addKeyboardShortcuts()
     this.emitter.on("showSearchPopup", (data) => {
       this.showSearchPopup = data
     })
     if (!this.isLoggedIn) return
-    await initTelemetry()
   },
   methods: {
     async currentPageEmitTrigger() {
@@ -187,16 +184,6 @@ export default {
           }
         }
       })
-    },
-  },
-  resources: {
-    getServerTZ: {
-      url: "drive.api.api.get_server_timezone",
-      auto: true,
-      method: "GET",
-      onSuccess(data) {
-        this.$store.state.serverTZ = data
-      },
     },
   },
 }

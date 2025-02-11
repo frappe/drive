@@ -121,9 +121,7 @@ function get_file_content(entity_name) {
 }
 
 function get_children(entity_name) {
-  const url =
-    "/api/method/" +
-    `drive.api.files.list_folder_contents?entity_name=${entity_name}`
+  const url = "/api/method/" + `drive.api.list.files?entity_name=${entity_name}`
   return fetch(url, {
     method: "GET",
     headers: {
