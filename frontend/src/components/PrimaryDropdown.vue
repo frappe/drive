@@ -10,7 +10,6 @@
             : isExpanded
             ? 'hover:bg-gray-200'
             : 'bg-transparent hover:bg-transparent shadow-none',
-          //open && isExpanded ? 'hover:bg-transparent' : 'bg-transparent hover:bg-transparent',
         ]"
         :style="{
           width: isExpanded ? '204px' : 'auto',
@@ -25,13 +24,23 @@
               : 'ml-0 w-0 opacity-0 overflow-hidden'
           "
         >
-          <div class="text-base font-medium leading-none text-gray-900">
+          <div
+            v-if="teamName"
+            class="text-base font-medium leading-none text-gray-900"
+          >
             {{ teamName }}
           </div>
           <div
-            class="line-clamp-1 overflow-hidden mt-1 text-sm leading-none text-gray-700"
+            class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
+            :class="teamName ? 'mt-1' : 'mb-1'"
           >
             {{ fullName }}
+          </div>
+          <div
+            v-if="$route.name === 'Shared'"
+            class="font-medium text-base leading-none"
+          >
+            Shared
           </div>
         </div>
         <div
@@ -63,6 +72,7 @@ import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Docs from "@/components/EspressoIcons/Docs.vue"
+import Users from "@/components/EspressoIcons/Users.vue"
 import AppSwitcher from "@/components/AppSwitcher.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
@@ -98,6 +108,11 @@ const settingsItems = computed(() => {
         },
         {
           component: markRaw(AppSwitcher),
+        },
+        {
+          icon: Users,
+          label: "Shared",
+          onClick: () => router.push({ name: "Shared" }),
         },
         {
           icon: Docs,

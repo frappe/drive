@@ -64,6 +64,12 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
+    path: "/shared",
+    name: "Shared",
+    component: () => import("@/pages/Shared.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
     path: "/:team/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),

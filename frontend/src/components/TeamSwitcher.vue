@@ -10,7 +10,9 @@
       >
         <div class="flex gap-2">
           <FeatherIcon name="user" class="size-4 text-gray-600" />
-          <span class="whitespace-nowrap">Change Team</span>
+          <span class="whitespace-nowrap"
+            >{{ $route.params.team ? "Change" : "Go to" }} Team</span
+          >
         </div>
         <FeatherIcon name="chevron-right" class="size-4 text-gray-600" />
       </button>
@@ -20,8 +22,8 @@
         class="mx-3 p-1 rounded-lg border border-gray-100 bg-white shadow-xl"
       >
         <div
-          v-if="Object.keys(getTeams.data).length > 1"
-          v-for="team in getTeams.data"
+          v-if="Object.keys(getTeams.data).length > 1 || !$route.params.team"
+          v-for="team in Object.values(getTeams.data)"
           :key="team.name"
         >
           <a

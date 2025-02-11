@@ -15,19 +15,13 @@ import { useStore } from "vuex"
 import { getShared } from "@/resources/files"
 
 const store = useStore()
+const shareView = computed(() => store.state.shareView)
 
-const sharedURL = computed(() => {
-  let suffix
-  if (store.state.user.role === "Drive Guest")
-    suffix = store.state.shareView === "with" ? "with_guest" : "by_guest"
-  else suffix = store.state.shareView === "with" ? "with_user" : "by_user"
-  return `drive.api.list.shared_${suffix}`
-})
-
-watch(sharedURL, () => {
-  getShared.update({
-    url: sharedURL,
-  })
-  getShared.fetch()
-})
+watch(
+  shareView,
+  (val) => {
+    getShared.fetch({ by: val === "with" ? 0 : 1 })
+  },
+  { immediate: true }
+)
 </script>
