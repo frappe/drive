@@ -164,14 +164,6 @@ export default {
         },
         {
           enabled: true,
-          label: "Shared",
-          route: `/${this.$route.params.team}/shared`,
-          preload: getShared,
-          icon: Users,
-          highlight: this.$store.state.breadcrumbs[0].label === "Shared",
-        },
-        {
-          enabled: true,
           label: "Trash",
           route: `/${this.$route.params.team}/trash`,
           preload: getTrash,
