@@ -29,6 +29,8 @@ def files(
     tag_list=[],
     mime_type_list=[],
     personal=0,
+    folders=0,
+    all=0,
 ):
     teams = get_teams()
     if team not in teams:
@@ -45,7 +47,6 @@ def files(
     # Get all the children entities
     query = (
         frappe.qb.from_(Entity)
-        .where(Entity.parent_entity == entity_name)
         .where(Entity.is_active == is_active)
         .left_join(DrivePermission)
         .on(
@@ -65,6 +66,11 @@ def files(
         )
         .where(fn.Coalesce(DrivePermission.read, 1).as_("read") == 1)
     )
+
+    if all:
+        query = query.where(Entity.team == team)
+    else:
+        query = query.where(Entity.parent_entity == entity_name)
 
     # Get favourites data (only that, if applicable)
     if favourites_only:
@@ -112,7 +118,8 @@ def files(
         query = query.where(
             Criterion.any(DriveEntity.mime_type == mime_type for mime_type in mime_type_list)
         )
-
+    if folders:
+        query = query.where(DriveEntity.is_group == 1)
     return query.run(as_dict=True)
 
 

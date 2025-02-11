@@ -126,9 +126,12 @@ onMounted(() => {
         done()
       }
     },
-    sending: function (file, xhr, formData) {
+    sending: function (file, _, formData) {
       formData.append("team", route.params.team)
-      formData.append("personal", route.name == "My Space" ? 1 : 0)
+      formData.append(
+        "personal",
+        store.state.breadcrumbs[0].label == "My Space" ? 1 : 0
+      )
       if (file.lastModified) formData.append("last_modified", file.lastModified)
       if (file.parent) formData.append("parent", file.parent)
       const path = file.newFullPath || file.webkitRelativePath || file.fullPath

@@ -14,11 +14,6 @@ export const openEntity = (team, entity) => {
       name: "Document",
       params: { entityName: entity.name },
     })
-  } else if (entity.mime_type === "frappe_whiteboard") {
-    router.push({
-      name: "Whiteboard",
-      params: { entityName: entity.name },
-    })
   } else {
     router.push({
       name: "File",

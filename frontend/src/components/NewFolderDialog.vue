@@ -24,6 +24,7 @@
 
 <script setup>
 import { ref, computed } from "vue"
+import store from "@/store"
 import { Dialog, Input, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
 const route = useRoute()
@@ -41,6 +42,7 @@ const createFolder = createResource({
       title,
       team: route.params.team,
       parent: props.parent,
+      personal: store.state.breadcrumbs[0].label == "My Space" ? 1 : 0,
     }
   },
   validate(params) {

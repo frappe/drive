@@ -54,7 +54,6 @@ const store = createStore({
     hasWriteAccess: false,
     // Default to empty string to upload to user Home folder
     currentFolderID: "",
-    homeFolderID: localStorage.getItem("homeFolderID"),
     breadcrumbs: JSON.parse(localStorage.getItem("breadcrumbs")) || [
       { label: "Home", route: "/home" },
     ],

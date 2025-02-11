@@ -46,7 +46,10 @@
                         class="stroke-amber-500 fill-amber-500"
                       />
                       <MyDrive
-                        v-else-if="row.is_private && route.name !== 'My Space'"
+                        v-else-if="
+                          row.is_private &&
+                          store.state.breadcrumbs[0].label != 'My Space'
+                        "
                         width="16"
                         height="16"
                       />
