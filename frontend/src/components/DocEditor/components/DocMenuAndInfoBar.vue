@@ -1289,7 +1289,7 @@ export default {
       this.editor.commands.setContent(prosemirrorJSON, true)
       this.$realtime.emit(
         "document_version_change_emit",
-        "Drive Entity",
+        "Drive File",
         this.entity.name,
         this.currentUserName,
         this.currentUserImage,

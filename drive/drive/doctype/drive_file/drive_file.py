@@ -16,7 +16,7 @@ from drive.utils.files import generate_upward_path
 from drive.api.activity import create_new_activity_log
 
 
-class DriveEntity(Document):
+class DriveFile(Document):
     def after_insert(self):
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
         message = f"{full_name} created {self.title}"
@@ -31,14 +31,14 @@ class DriveEntity(Document):
 
     def on_trash(self):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
-        frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
+        frappe.db.delete("Drive File Log", {"entity_name": self.name})
         frappe.db.delete("Drive Permission", {"entity": self.name})
         frappe.db.delete("Drive Notification", {"notif_doctype_name": self.name})
-        frappe.db.delete("Drive Entity Activity Log", {"entity": self.name})
+        frappe.db.delete("Drive File Activity Log", {"entity": self.name})
         if self.is_group or self.document:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
-                    doctype="Drive Entity",
+                    doctype="Drive File",
                     doc=self,
                     ptype="write",
                     user=frappe.session.user,
@@ -93,7 +93,7 @@ class DriveEntity(Document):
         )
 
         parent_folder = frappe.db.get_value(
-            "Drive Entity",
+            "Drive File",
             self.parent_entity,
             ["name", "owner"],
             as_dict=1,
@@ -144,7 +144,7 @@ class DriveEntity(Document):
         if new_parent == self.parent_entity:
             return self
 
-        is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
+        is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
         if not is_group:
             raise NotADirectoryError()
 
@@ -177,7 +177,7 @@ class DriveEntity(Document):
 
         if not parent_user_directory:
             parent_owner = (
-                frappe.db.get_value("Drive Entity", new_parent, "owner")
+                frappe.db.get_value("Drive File", new_parent, "owner")
                 if new_parent
                 else frappe.session.user
             )
@@ -186,11 +186,11 @@ class DriveEntity(Document):
             except FileNotFoundError:
                 parent_user_directory = create_user_directory()
             new_parent = new_parent or parent_user_directory.name
-            parent_is_group = frappe.db.get_value("Drive Entity", new_parent, "is_group")
+            parent_is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
             if not parent_is_group:
                 raise NotADirectoryError()
             if not frappe.has_permission(
-                doctype="Drive Entity",
+                doctype="Drive File",
                 doc=new_parent,
                 ptype="write",
                 user=frappe.session.user,
@@ -199,9 +199,7 @@ class DriveEntity(Document):
                     "Cannot paste to this folder due to insufficient permissions",
                     frappe.PermissionError,
                 )
-            if self.name == new_parent or self.name in get_ancestors_of(
-                "Drive Entity", new_parent
-            ):
+            if self.name == new_parent or self.name in get_ancestors_of("Drive File", new_parent):
                 frappe.throw("You cannot copy a folder into itself")
 
             title = get_new_title(title, new_parent)
@@ -211,7 +209,7 @@ class DriveEntity(Document):
         if self.is_group:
             drive_entity = frappe.get_doc(
                 {
-                    "doctype": "Drive Entity",
+                    "doctype": "Drive File",
                     "name": name,
                     "title": title,
                     "is_group": 1,
@@ -234,7 +232,7 @@ class DriveEntity(Document):
 
             drive_entity = frappe.get_doc(
                 {
-                    "doctype": "Drive Entity",
+                    "doctype": "Drive File",
                     "name": name,
                     "title": title,
                     "mime_type": self.mime_type,
@@ -255,7 +253,7 @@ class DriveEntity(Document):
             save_path.rename(path)
             drive_entity = frappe.get_doc(
                 {
-                    "doctype": "Drive Entity",
+                    "doctype": "Drive File",
                     "name": name,
                     "title": title,
                     "parent_entity": new_parent,
@@ -301,7 +299,7 @@ class DriveEntity(Document):
 
         entity_exists = frappe.db.exists(
             {
-                "doctype": "Drive Entity",
+                "doctype": "Drive File",
                 "parent_entity": self.parent_entity,
                 "title": new_title,
                 "mime_type": self.mime_type,
@@ -341,7 +339,7 @@ class DriveEntity(Document):
         :return: DriveEntity doc once it's updated
         """
         return frappe.db.set_value(
-            "Drive Entity", self.name, "color", new_color, update_modified=False
+            "Drive File", self.name, "color", new_color, update_modified=False
         )
 
     @frappe.whitelist()
@@ -397,14 +395,14 @@ class DriveEntity(Document):
         """
         if frappe.session.user != self.owner:
             if not frappe.has_permission(
-                doctype="Drive Entity",
+                doctype="Drive File",
                 doc=self,
                 ptype="share",
                 user=frappe.session.user,
             ):
                 for owner in get_ancestors_of(self.name):
                     if frappe.session.user == frappe.get_value(
-                        "Drive Entity", {"name": owner}, ["owner"]
+                        "Drive File", {"name": owner}, ["owner"]
                     ):
                         continue
                     else:
@@ -462,4 +460,4 @@ class DriveEntity(Document):
 
 
 def on_doctype_update():
-    frappe.db.add_index("Drive Entity", ["title"])
+    frappe.db.add_index("Drive File", ["title"])

@@ -28,7 +28,7 @@ def create_new_activity_log(
 @frappe.whitelist()
 def get_entity_activity_log(entity_name):
     """
-    Warning: Assumes `Drive Entity` only
+    Warning: Assumes `Drive File` only
     """
     Activity = frappe.qb.DocType("Drive Entity Activity Log")
     User = frappe.qb.DocType("User")

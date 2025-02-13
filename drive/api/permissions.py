@@ -31,7 +31,7 @@ def get_user_access(entity, user=None):
     :rtype: frappe._dict or None
     """
     if isinstance(entity, str):
-        entity = frappe.get_doc("Drive Entity", entity)
+        entity = frappe.get_doc("Drive File", entity)
     fields = ["read", "comment", "write", "share", "name as permission_name", "valid_until"]
     NO_ACCESS = {
         "read": 0,
@@ -113,7 +113,7 @@ def get_entity_with_permissions(entity_name):
     :rtype: frappe._dict
     """
     entity = frappe.db.get_value(
-        "Drive Entity", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
+        "Drive File", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
     )
     user_access = get_user_access(entity, frappe.session.user)
     if user_access.get("read") == 0:
@@ -156,7 +156,7 @@ def get_shared_with_list(entity_name):
     :rtype: list[frappe._dict]
     """
     if not frappe.has_permission(
-        doctype="Drive Entity", doc=entity_name, ptype="share", user=frappe.session.user
+        doctype="Drive File", doc=entity_name, ptype="share", user=frappe.session.user
     ):
         raise frappe.PermissionError
     permissions = frappe.db.get_all(
@@ -179,7 +179,7 @@ def get_shared_with_list(entity_name):
 def update_document_invalidation(entity_name, invalidation_date):
     x = frappe.get_list(
         "Drive DocShare",
-        filters={"share_name": entity_name, "share_doctype": "Drive Entity"},
+        filters={"share_name": entity_name, "share_doctype": "Drive File"},
         order_by="creation desc",
         fields=["name", "valid_until", "share_parent"],
     )
@@ -208,3 +208,11 @@ def auto_delete_expired_docshares():
 
         frappe.enqueue(batch_delete_perms, docs=expired_documents)
     return
+
+
+def user_has_permission(doc, ptype, user):
+    if doc.owner == user or user == "Administrator":
+        return True
+    access = get_user_access(doc, user)
+    if ptype in access:
+        return access[ptype]

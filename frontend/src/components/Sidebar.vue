@@ -107,7 +107,7 @@ const sidebarItems = computed(() => [
     icon: Home,
   },
   {
-    label: "My Space",
+    label: "My Files",
     route: `/${route.params.team}/personal`,
     icon: MyDrive,
   },

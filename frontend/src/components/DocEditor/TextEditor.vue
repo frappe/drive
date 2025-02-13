@@ -589,10 +589,10 @@ export default {
     this.provider.on("synced", (e) => {
       this.synced = e.synced
     })
-    this.$realtime.doc_subscribe("Drive Entity", this.entityName)
-    this.$realtime.doc_open("Drive Entity", this.entityName)
+    this.$realtime.doc_subscribe("Drive File", this.entityName)
+    this.$realtime.doc_open("Drive File", this.entityName)
     this.$realtime.on("document_version_change_recv", (data) => {
-      const { doctype, document, author, author_image, author_id } = data
+      const { author, author_image, author_id } = data
       if (author_id === this.$realtime.socket.id) {
         toast({
           title: "You changed the document version",
@@ -620,8 +620,8 @@ export default {
     this.emitter.off("forceHideBubbleMenu")
     this.emitter.off("importDocFromWord")
     this.$realtime.off("document_version_change_recv")
-    this.$realtime.doc_close("Drive Entity", this.entityName)
-    this.$realtime.doc_unsubscribe("Drive Entity", this.entityName)
+    this.$realtime.doc_close("Drive File", this.entityName)
+    this.$realtime.doc_unsubscribe("Drive File", this.entityName)
     this.updateConnectedUsers(this.editor)
     this.$store.state.passiveRename = false
     document.removeEventListener("keydown", this.saveDoc)

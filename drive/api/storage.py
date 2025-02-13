@@ -4,7 +4,7 @@ import frappe
 from pathlib import Path
 from pypika import functions as fn
 
-DriveEntity = frappe.qb.DocType("Drive Entity")
+DriveFile = frappe.qb.DocType("Drive File")
 
 
 def get_max_storage():
@@ -51,16 +51,16 @@ def validate_quota():
 @frappe.whitelist()
 def get_owned_files_by_storage():
     entities = frappe.db.get_list(
-        "Drive Entity",
+        "Drive File",
         filters={"owner": frappe.session.user, "is_group": False},
         order_by="file_size desc",
         fields=["name", "title", "owner", "file_size", "file_kind", "mime_type"],
     )
     query = (
-        frappe.qb.from_(DriveEntity)
-        .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("file_size"))
-        .where((DriveEntity.is_group == 0) & (DriveEntity.owner == frappe.session.user))
-        .groupby(DriveEntity.file_kind)
+        frappe.qb.from_(DriveFile)
+        .select(DriveFile.file_kind, fn.Sum(DriveFile.file_size).as_("file_size"))
+        .where((DriveFile.is_group == 0) & (DriveFile.owner == frappe.session.user))
+        .groupby(DriveFile.file_kind)
     )
     total = query.run(as_dict=True)
     return {"entities": entities, "total": total}
@@ -69,9 +69,9 @@ def get_owned_files_by_storage():
 @frappe.whitelist()
 def total_storage_used(team):
     query = (
-        frappe.qb.from_(DriveEntity)
-        .where(DriveEntity.team == team)
-        .select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+        frappe.qb.from_(DriveFile)
+        .where(DriveFile.team == team)
+        .select(fn.Sum(DriveFile.file_size).as_("total_size"))
     )
     result = query.run(as_dict=True)
     result[0].update(get_max_storage())
@@ -81,9 +81,9 @@ def total_storage_used(team):
 @frappe.whitelist()
 def total_storage_used_by_user():
     query = (
-        frappe.qb.from_(DriveEntity)
-        .where(DriveEntity.owner == frappe.session.user)
-        .select(fn.Sum(DriveEntity.file_size).as_("total_size"))
+        frappe.qb.from_(DriveFile)
+        .where(DriveFile.owner == frappe.session.user)
+        .select(fn.Sum(DriveFile.file_size).as_("total_size"))
     )
     result = query.run(as_dict=True)
     return result
@@ -92,10 +92,10 @@ def total_storage_used_by_user():
 @frappe.whitelist()
 def total_storage_used_by_file_kind():
     query = (
-        frappe.qb.from_(DriveEntity)
-        .select(DriveEntity.file_kind, fn.Sum(DriveEntity.file_size).as_("total_size"))
-        .where(DriveEntity.is_group == 0)
-        .groupby(DriveEntity.file_kind)
+        frappe.qb.from_(DriveFile)
+        .select(DriveFile.file_kind, fn.Sum(DriveFile.file_size).as_("total_size"))
+        .where(DriveFile.is_group == 0)
+        .groupby(DriveFile.file_kind)
     )
     return query.run(as_dict=True)
 

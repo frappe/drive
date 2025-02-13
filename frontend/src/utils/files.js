@@ -52,7 +52,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private, file = true) => {
   if (breadcrumbs[0].parent_entity === null) {
     res = [
       {
-        label: is_private ? "My Space" : "Home",
+        label: is_private ? "My Files" : "Home",
         route: `/${route.params.team}` + (is_private ? "/personal" : ""),
       },
     ]

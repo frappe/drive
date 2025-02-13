@@ -28,7 +28,7 @@
     />
     <EmptyEntityContextMenu
       v-if="
-        ($route.name === 'My Space' ||
+        ($route.name === 'My Files' ||
           $route.name === 'Home' ||
           $route.name === 'Folder') &&
         defaultContextTriggered
@@ -207,7 +207,7 @@ const newDocument = async () => {
   let data = await createDocument.submit({
     title: "Untitled Document",
     team: route.params.team,
-    personal: route.name === "My Space" ? 1 : 0,
+    personal: route.name === "My Files" ? 1 : 0,
     content: null,
     parent: store.state.currentFolderID,
   })
@@ -265,7 +265,7 @@ const actionItems = computed(() => {
         label: "Move to Home",
         icon: Home,
         onClick: ([e]) => togglePersonal.submit({ entity_name: e.name }),
-        isEnabled: () => route.name == "My Space",
+        isEnabled: () => route.name == "My Files",
         multi: true,
         important: true,
       },

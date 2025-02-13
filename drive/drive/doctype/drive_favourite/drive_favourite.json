@@ -18,13 +18,13 @@
       "fieldname": "entity",
       "fieldtype": "Link",
       "in_list_view": 1,
-      "label": "Drive Entity",
-      "options": "Drive Entity",
+      "label": "Drive File",
+      "options": "Drive File",
       "reqd": 1
     }
   ],
   "links": [],
-  "modified": "2025-02-06 13:01:58.163382",
+  "modified": "2025-02-13 15:11:38.610661",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Favourite",

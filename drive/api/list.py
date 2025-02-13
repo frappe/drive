@@ -6,9 +6,8 @@ from pypika import Order, Criterion, functions as fn
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
-DriveEntity = frappe.qb.DocType("Drive Entity")
+DriveFile = frappe.qb.DocType("Drive File")
 DrivePermission = frappe.qb.DocType("Drive Permission")
-Entity = frappe.qb.DocType("Drive Entity")
 Team = frappe.qb.DocType("Drive Team")
 TeamMember = frappe.qb.DocType("Drive Team Member")
 DriveFavourite = frappe.qb.DocType("Drive Favourite")
@@ -41,16 +40,19 @@ def files(
         entity_name = get_home_folder(team)["name"]
     else:
         # Verify that entity exists and is part of the team
-        if not frappe.qb.from_(Entity).where((Entity.name == entity_name) & (Entity.team == team)):
+        if not frappe.qb.from_(DriveFile).where(
+            (DriveFile.name == entity_name) & (DriveFile.team == team)
+        ):
             frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
 
     # Get all the children entities
     query = (
-        frappe.qb.from_(Entity)
-        .where(Entity.is_active == is_active)
+        frappe.qb.from_(DriveFile)
+        .where(DriveFile.is_active == is_active)
         .left_join(DrivePermission)
         .on(
-            (DrivePermission.entity == Entity.name) & (DrivePermission.user == frappe.session.user)
+            (DrivePermission.entity == DriveFile.name)
+            & (DrivePermission.user == frappe.session.user)
         )
         .limit(limit)
         # Give defaults as a team member
@@ -59,7 +61,7 @@ def files(
             fn.Coalesce(DrivePermission.read, 1).as_("read"),
             fn.Coalesce(DrivePermission.comment, 1).as_("comment"),
             fn.Coalesce(DrivePermission.share, 1).as_("share"),
-            fn.Coalesce(DrivePermission.write, DriveEntity.owner == frappe.session.user).as_(
+            fn.Coalesce(DrivePermission.write, DriveFile.owner == frappe.session.user).as_(
                 "write"
             ),
         )
@@ -67,9 +69,9 @@ def files(
     )
 
     if all:
-        query = query.where(Entity.team == team)
+        query = query.where(DriveFile.team == team)
     else:
-        query = query.where(Entity.parent_entity == entity_name)
+        query = query.where(DriveFile.parent_entity == entity_name)
 
     # Get favourites data (only that, if applicable)
     if favourites_only:
@@ -77,19 +79,19 @@ def files(
     else:
         query = query.left_join(DriveFavourite)
     query = query.on(
-        (DriveFavourite.entity == Entity.name) & (DriveFavourite.user == frappe.session.user)
+        (DriveFavourite.entity == DriveFile.name) & (DriveFavourite.user == frappe.session.user)
     ).select(DriveFavourite.name.as_("is_favourite"))
 
     if recents_only:
         query = (
             query.right_join(Recents)
-            .on((Recents.entity_name == Entity.name) & (Recents.user == frappe.session.user))
+            .on((Recents.entity_name == DriveFile.name) & (Recents.user == frappe.session.user))
             .orderby(Recents.last_interaction, order=Order.desc)
         )
     else:
         query = (
             query.left_join(Recents).on(
-                (Recents.entity_name == Entity.name) & (Recents.user == frappe.session.user)
+                (Recents.entity_name == DriveFile.name) & (Recents.user == frappe.session.user)
             )
         ).orderby(
             order_by.split()[0],
@@ -97,28 +99,28 @@ def files(
         )
     if personal:
         query = query.where(
-            (Entity.is_private == personal) & (Entity.owner == frappe.session.user)
+            (DriveFile.is_private == personal) & (DriveFile.owner == frappe.session.user)
         )
     elif favourites_only or recents_only or not is_active:
-        query = query.where((Entity.is_private == 0) | (Entity.owner == frappe.session.user))
+        query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
     else:
-        query = query.where(Entity.is_private == 0)
+        query = query.where(DriveFile.is_private == 0)
 
     query = query.select(Recents.last_interaction.as_("accessed"))
 
     if tag_list:
         tag_list = json.loads(tag_list)
-        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
+        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
         tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
         query = query.where(Criterion.any(tag_list_criterion))
 
     if mime_type_list:
         mime_type_list = json.loads(mime_type_list)
         query = query.where(
-            Criterion.any(Entity.mime_type == mime_type for mime_type in mime_type_list)
+            Criterion.any(DriveFile.mime_type == mime_type for mime_type in mime_type_list)
         )
     if folders:
-        query = query.where(Entity.is_group == 1)
+        query = query.where(DriveFile.is_group == 1)
     return query.run(as_dict=True)
 
 
@@ -134,20 +136,20 @@ def shared(
     Returns the highest level of shared items shared with/by the current user, group or org
 
     :param entity_name: Document-name of the folder whose contents are to be listed.
-    :raises NotADirectoryError: If this DriveEntity doc is not a folder
+    :raises NotADirectoryError: If this DriveFile doc is not a folder
     :return: List of DriveEntities with permissions
     :rtype: list[frappe._dict]
     """
     by = int(by)
     query = (
-        frappe.qb.from_(Entity)
+        frappe.qb.from_(DriveFile)
         .right_join(DrivePermission)
         .on(
-            (DrivePermission.entity == Entity.name)
+            (DrivePermission.entity == DriveFile.name)
             & ((DrivePermission.owner if by else DrivePermission.user) == frappe.session.user)
         )
         .limit(limit)
-        .where((DrivePermission.read == 1) & (Entity.is_active == 1))
+        .where((DrivePermission.read == 1) & (DriveFile.is_active == 1))
         .select(*ENTITY_FIELDS, DrivePermission.user, DrivePermission.owner.as_("sharer"))
     )
 
@@ -158,13 +160,13 @@ def shared(
 
     if tag_list:
         tag_list = json.loads(tag_list)
-        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveEntity.name)
+        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
         tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
         query = query.where(Criterion.any(tag_list_criterion))
 
     if mime_type_list:
         mime_type_list = json.loads(mime_type_list)
         query = query.where(
-            Criterion.any(Entity.mime_type == mime_type for mime_type in mime_type_list)
+            Criterion.any(DriveFile.mime_type == mime_type for mime_type in mime_type_list)
         )
     return query.run(as_dict=True)

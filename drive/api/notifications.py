@@ -74,7 +74,7 @@ def notify_mentions(entity_name, document_name):
     :param entity_name: ID of entity
     :param document_name: ID of document containing mentions
     """
-    entity = frappe.get_doc("Drive Entity", entity_name)
+    entity = frappe.get_doc("Drive File", entity_name)
     document = frappe.get_doc("Drive Document", document_name)
     if not document.mentions:
         return
@@ -105,7 +105,7 @@ def notify_share(entity_name, docshare_name):
     :param entity_name: ID of entity
     :param document_name: ID of docshare containing share info
     """
-    entity = frappe.get_doc("Drive Entity", entity_name)
+    entity = frappe.get_doc("Drive File", entity_name)
     docshare = frappe.get_doc("Drive DocShare", docshare_name)
 
     author_full_name = frappe.db.get_value("User", {"name": docshare.owner}, ["full_name"])
@@ -151,7 +151,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
     :param from_user: notification owner user email
     :param to_user: notification receiver user email
     :param type: subject of notification
-    :param entity: drive_entity name
+    :param entity: drive_file name
     :param message: notification message
     """
     from drive.api.permissions import get_user_access
@@ -167,7 +167,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
             "to_user": to_user,
             "type": type,
             "entity_type": entity_type,
-            "notif_doctype": "Drive Entity",
+            "notif_doctype": "Drive File",
             "notif_doctype_name": entity.name,
             "message": message,
         }

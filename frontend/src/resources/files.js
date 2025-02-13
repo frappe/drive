@@ -47,7 +47,7 @@ export const getFolderContents = createResource({
     return {
       ...getFolderContents.params,
       ...params,
-      personal: store.state.breadcrumbs[0].label == "My Space" ? 1 : 0,
+      personal: store.state.breadcrumbs[0].label == "My Files" ? 1 : 0,
     }
   },
 })

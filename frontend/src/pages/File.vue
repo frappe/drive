@@ -156,8 +156,8 @@ function scrollEntity(negative = false) {
 
 onMounted(() => {
   fetchFile(props.entityName)
-  realtime.doc_subscribe("Drive Entity", props.entityName)
-  realtime.doc_open("Drive Entity", props.entityName)
+  realtime.doc_subscribe("Drive File", props.entityName)
+  realtime.doc_open("Drive File", props.entityName)
   realtime.on("doc_viewers", (data) => {
     store.state.connectedUsers = data.users
     userInfo.submit({ users: JSON.stringify(data.users) })
@@ -173,8 +173,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   realtime.off("doc_viewers")
   store.state.connectedUsers = []
-  realtime.doc_close("Drive Entity", file.data?.name)
-  realtime.doc_unsubscribe("Drive Entity", file.data?.name)
+  realtime.doc_close("Drive File", file.data?.name)
+  realtime.doc_unsubscribe("Drive File", file.data?.name)
   store.commit("setEntityInfo", [])
 })
 

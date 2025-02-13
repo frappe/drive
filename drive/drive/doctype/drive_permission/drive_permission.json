@@ -17,15 +17,14 @@
     {
       "fieldname": "user",
       "fieldtype": "Data",
-      "label": "User",
-      "options": "User"
+      "label": "User"
     },
     {
       "fieldname": "entity",
       "fieldtype": "Link",
       "in_list_view": 1,
       "label": "Entity",
-      "options": "Drive Entity",
+      "options": "Drive File",
       "reqd": 1
     },
     {
@@ -60,7 +59,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-02-06 13:01:38.177448",
+  "modified": "2025-02-13 15:05:53.189646",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Permission",
