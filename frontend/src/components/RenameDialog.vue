@@ -33,10 +33,12 @@ import { useStore } from "vuex"
 import { rename } from "@/resources/files"
 
 const props = defineProps({ modelValue: String })
-const emit = defineEmits(["update:modelValue", "success", "mutate"])
-const newName = ref("")
+const emit = defineEmits(["update:modelValue", "success"])
 const store = useStore()
+
 const entity = computed(() => store.state.activeEntity)
+const newName = ref("")
+const ext = ref("")
 
 if (entity.value.is_group || entity.value.document) {
   newName.value = entity.value.title
@@ -44,7 +46,13 @@ if (entity.value.is_group || entity.value.document) {
     store.state.activeEntity.title = newName.value
   }
 } else {
-  newName.value = entity.value.title.split(".").slice(0, -1).join(".").trim()
+  const parts = entity.value.title.split(".")
+  if (parts.length > 1) {
+    newName.value = parts.slice(0, -1).join(".").trim()
+    ext.value = parts[parts.length - 1]
+  } else {
+    newName.value = parts[0]
+  }
 }
 
 const open = computed({
@@ -58,17 +66,13 @@ const open = computed({
 })
 
 const submit = () => {
-  emit("trigger", {
+  emit("success", {
     name: entity.value.name,
-    title: entity.value.file_ext
-      ? newName.value + entity.value.file_ext
-      : newName.value,
+    title: newName.value + ext.value,
   })
   rename.submit({
     entity_name: entity.value.name,
-    new_title: entity.value.file_ext
-      ? newName.value + entity.value.file_ext
-      : newName.value,
+    new_title: newName.value + ext.value,
   })
 }
 </script>

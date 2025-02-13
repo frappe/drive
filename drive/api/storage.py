@@ -74,7 +74,8 @@ def total_storage_used(team):
         .select(fn.Sum(DriveEntity.file_size).as_("total_size"))
     )
     result = query.run(as_dict=True)
-    return {**result[0], **get_max_storage()}
+    result[0].update(get_max_storage())
+    return result[0]
 
 
 @frappe.whitelist()
@@ -99,10 +100,10 @@ def total_storage_used_by_file_kind():
     return query.run(as_dict=True)
 
 
-def get_storage_allowed():
+def get_storage_allowed(team):
     limit = get_max_storage()
     total_limit = int(limit.get("limit"))
-    total_usage = int(total_storage_used()[0].total_size or 0)
+    total_usage = int(total_storage_used(team).total_size or 0)
     total_rem = total_limit - total_usage
     if limit.get("quota") is not None:
         quota_limit = int(limit.get("quota"))

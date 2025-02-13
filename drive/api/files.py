@@ -117,7 +117,7 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
         get_uploads_directory(home_folder["name"]) / f"{upload_session}_{secure_filename(title)}"
     )
 
-    if get_storage_allowed() < int(frappe.form_dict.total_file_size):
+    if get_storage_allowed(team) < int(frappe.form_dict.total_file_size):
         frappe.throw("Out of allocated storage", ValueError)
 
     with temp_path.open("ab") as f:
