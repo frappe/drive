@@ -2,9 +2,7 @@ import frappe
 
 
 def execute():
-    all_entities = frappe.db.get_list(
-        "Drive Entity", fields=["name", "title", "owner", "creation"]
-    )
+    all_entities = frappe.db.get_list("Drive File", fields=["name", "title", "owner", "creation"])
 
     for i in all_entities:
         doc = frappe.new_doc("Drive Entity Activity Log")

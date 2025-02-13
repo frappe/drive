@@ -42,7 +42,7 @@ const createFolder = createResource({
       title,
       team: route.params.team,
       parent: props.parent,
-      personal: store.state.breadcrumbs[0].label == "My Space" ? 1 : 0,
+      personal: store.state.breadcrumbs[0].label == "My Files" ? 1 : 0,
     }
   },
   validate(params) {

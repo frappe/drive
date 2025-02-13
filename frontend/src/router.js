@@ -77,7 +77,7 @@ const routes = [
   },
   {
     path: "/:team/personal",
-    name: "My Space",
+    name: "My Files",
     component: () => import("@/pages/Personal.vue"),
     beforeEnter: [setRootBreadCrumb],
   },

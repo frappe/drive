@@ -243,12 +243,12 @@ def add_comment(
     reference_name: str, content: str, comment_email: str, comment_by: str
 ) -> "Comment":
     """Allow logged user with permission to read document to add a comment"""
-    entity = frappe.get_doc("Drive Entity", reference_name)
+    entity = frappe.get_doc("Drive File", reference_name)
     comment = frappe.new_doc("Comment")
     comment.update(
         {
             "comment_type": "Comment",
-            "reference_doctype": "Drive Entity",
+            "reference_doctype": "Drive File",
             "reference_name": entity,
             "comment_email": comment_email,
             "comment_by": comment_by,

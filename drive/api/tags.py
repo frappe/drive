@@ -35,8 +35,7 @@ def add_tag(entity, tag):
     :param entity: Entity name
     :param tag: Tag name
     """
-
-    doc = frappe.get_doc("Drive Entity", entity)
+    doc = frappe.get_doc("Drive File", entity)
     doc.append("tags", {"tag": tag})
     doc.save()
 
@@ -49,7 +48,7 @@ def get_entity_tags(entity):
     :param entity: Entity name
     """
 
-    entity = frappe.get_doc("Drive Entity", entity)
+    entity = frappe.get_doc("Drive File", entity)
 
     return map(
         lambda x: frappe.db.get_value("Drive Tag", x.tag, ["name", "title", "color"], as_dict=1),
@@ -105,7 +104,7 @@ def remove_tag(entity, tag=None, all=False):
     :param tag: Tag name
     """
 
-    entity_doc = frappe.get_doc("Drive Entity", entity)
+    entity_doc = frappe.get_doc("Drive File", entity)
     for tag_doc in entity_doc.tags:
         if (tag_doc.tag == tag or all) and tag_doc.owner == frappe.session.user:
             tag_doc.delete(ignore_permissions=True)
@@ -118,10 +117,10 @@ def delete_tag(tag):
 
     :param tag: Tag name
     """
-    EntityTag = frappe.qb.DocType("Drive Entity Tag")
+    EntityTag = frappe.qb.DocType("Drive File Tag")
     query = frappe.qb.from_(EntityTag).select(EntityTag.name).where(EntityTag.tag == tag)
     result = query.run(as_dict=True)
     for i in result:
-        frappe.delete_doc("Drive Entity Tag", i.name)
+        frappe.delete_doc("Drive File Tag", i.name)
     frappe.delete_doc("Drive Tag", tag)
     return result

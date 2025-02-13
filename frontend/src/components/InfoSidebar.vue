@@ -318,7 +318,7 @@ async function postComment() {
   if (newComment.value.length) {
     try {
       await call("drive.utils.users.add_comment", {
-        reference_doctype: "Drive Entity",
+        reference_doctype: "Drive File",
         reference_name: entity.value.name,
         content: newComment.value,
         comment_email: userId.value,

@@ -6,7 +6,7 @@ from PIL import Image, ImageOps
 from drive.locks.distributed_lock import DistributedLock
 import cv2
 
-Entity = frappe.qb.DocType("Drive Entity")
+DriveFile = frappe.qb.DocType("Drive File")
 
 
 def create_user_directory():
@@ -31,7 +31,7 @@ def create_user_directory():
     full_name = frappe.get_value("User", frappe.session.user, "full_name")
     user_directory = frappe.get_doc(
         {
-            "doctype": "Drive Entity",
+            "doctype": "Drive File",
             "name": user_directory_name,
             "title": f"{full_name}'s Drive",
             "is_group": 1,
@@ -52,9 +52,9 @@ def create_user_directory():
 
 def get_home_folder(team):
     return (
-        frappe.qb.from_(Entity)
-        .where(((Entity.team == team) & Entity.parent_entity.isnull()))
-        .select(Entity.name, Entity.path)
+        frappe.qb.from_(DriveFile)
+        .where(((DriveFile.team == team) & DriveFile.parent_entity.isnull()))
+        .select(DriveFile.name, DriveFile.path)
         .run(as_dict=True)
     )[0]
 
@@ -71,7 +71,7 @@ def get_user_directory(user=None):
 
     user_directory_name = _get_user_directory_name(user)
     user_directory = frappe.db.get_value(
-        "Drive Entity", user_directory_name, ["name", "path"], as_dict=1
+        "Drive File", user_directory_name, ["name", "path"], as_dict=1
     )
     if user_directory is None:
         user_directory = create_user_directory()
@@ -106,7 +106,7 @@ def get_new_title(title, parent_name, folder=False):
         filters["is_group"] = 1
 
     sibling_entity_titles = frappe.db.get_list(
-        "Drive Entity",
+        "Drive File",
         filters=filters,
         pluck="title",
     )
@@ -186,7 +186,7 @@ def create_thumbnail(entity_name, path, mime_type, team):
 def generate_upward_path(entity_name):
     """
     Given an ID traverse upwards till the root node
-    Stops when parent_drive_entity IS NULL
+    Stops when parent_drive_file IS NULL
     """
     entity = frappe.db.escape(entity_name)
     user = frappe.db.escape(frappe.session.user)
@@ -194,15 +194,15 @@ def generate_upward_path(entity_name):
         f"""WITH RECURSIVE
             generated_path as (
                 SELECT
-                    `tabDrive Entity`.title,
-                    `tabDrive Entity`.name,
-                    `tabDrive Entity`.parent_entity,
-                    `tabDrive Entity`.is_private,
-                    `tabDrive Entity`.owner
+                    `tabDrive File`.title,
+                    `tabDrive File`.name,
+                    `tabDrive File`.parent_entity,
+                    `tabDrive File`.is_private,
+                    `tabDrive File`.owner
                 FROM
-                    `tabDrive Entity`
+                    `tabDrive File`
                 WHERE
-                    `tabDrive Entity`.name = {entity}
+                    `tabDrive File`.name = {entity}
                 UNION ALL
                 SELECT
                     t.title,
@@ -212,7 +212,7 @@ def generate_upward_path(entity_name):
                     t.owner
                 FROM
                     generated_path as gp
-                    JOIN `tabDrive Entity` as t ON t.name = gp.parent_entity
+                    JOIN `tabDrive File` as t ON t.name = gp.parent_entity
             )
         SELECT
             gp.title,

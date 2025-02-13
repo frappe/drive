@@ -48,7 +48,7 @@
                       <MyDrive
                         v-else-if="
                           row.is_private &&
-                          store.state.breadcrumbs[0].label != 'My Space'
+                          store.state.breadcrumbs[0].label != 'My Files'
                         "
                         width="16"
                         height="16"

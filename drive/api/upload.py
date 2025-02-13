@@ -12,7 +12,7 @@ from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename
 from drive.api.files import (
     get_user_directory,
-    create_drive_entity,
+    create_drive_file,
 )
 from drive.utils.files import create_thumbnail
 
@@ -97,7 +97,7 @@ def handle_tus_request(fileID=None):
         """
         write to file based on offset header
         read magic bytes to validate type
-        create drive_entity
+        create drive_file
         create thumbnail if video/image
         """
 
@@ -138,7 +138,7 @@ def handle_tus_request(fileID=None):
                 parent = get_user_directory().name
             save_path = Path(get_user_directory().path) / f"{secure_filename(file_name)}"
             os.rename(temp_path, save_path)
-            create_drive_entity(
+            create_drive_file(
                 name, title, parent, save_path, file_size, file_ext, mime_type, last_modified
             )
             if mime_type.startswith(("image", "video")):

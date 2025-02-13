@@ -1,7 +1,7 @@
 {
   "actions": [],
-  "autoname": "UUID",
-  "creation": "2021-12-30 11:21:16.076483",
+  "autoname": "hash",
+  "creation": "2025-02-13 15:03:22.655245",
   "default_view": "List",
   "doctype": "DocType",
   "editable_grid": 1,
@@ -18,56 +18,15 @@
     "tags",
     "is_active",
     "document",
-    "kind",
     "is_private"
   ],
   "fields": [
-    {
-      "fieldname": "color",
-      "fieldtype": "Data",
-      "label": "Color"
-    },
-    {
-      "default": "0",
-      "fieldname": "is_group",
-      "fieldtype": "Check",
-      "label": "Is Group"
-    },
-    {
-      "fieldname": "path",
-      "fieldtype": "Text",
-      "label": "Path"
-    },
     {
       "fieldname": "title",
       "fieldtype": "Data",
       "in_list_view": 1,
       "label": "Title",
       "reqd": 1
-    },
-    {
-      "default": "1",
-      "fieldname": "is_active",
-      "fieldtype": "Int",
-      "label": "Is Active"
-    },
-    {
-      "fieldname": "tags",
-      "fieldtype": "Table",
-      "label": "Tags",
-      "options": "Drive Entity Tag"
-    },
-    {
-      "fieldname": "document",
-      "fieldtype": "Link",
-      "label": "Document",
-      "options": "Drive Document"
-    },
-    {
-      "fieldname": "parent_entity",
-      "fieldtype": "Link",
-      "label": "Parent Entity",
-      "options": "Drive Entity"
     },
     {
       "fieldname": "team",
@@ -77,20 +36,55 @@
       "reqd": 1
     },
     {
-      "fieldname": "file_size",
-      "fieldtype": "Int",
-      "label": "File Size"
+      "default": "0",
+      "fieldname": "is_group",
+      "fieldtype": "Check",
+      "label": "Is Group"
     },
     {
-      "fieldname": "kind",
-      "fieldtype": "Small Text",
-      "label": "Kind"
+      "fieldname": "parent_entity",
+      "fieldtype": "Link",
+      "label": "Parent Entity",
+      "options": "Drive File"
+    },
+    {
+      "fieldname": "path",
+      "fieldtype": "Text",
+      "label": "Path"
+    },
+    {
+      "fieldname": "color",
+      "fieldtype": "Data",
+      "label": "Color"
     },
     {
       "fieldname": "mime_type",
       "fieldtype": "Data",
       "label": "MIME Type",
       "read_only": 1
+    },
+    {
+      "fieldname": "file_size",
+      "fieldtype": "Int",
+      "label": "File Size"
+    },
+    {
+      "fieldname": "tags",
+      "fieldtype": "Table",
+      "label": "Tags",
+      "options": "Drive Entity Tag"
+    },
+    {
+      "default": "1",
+      "fieldname": "is_active",
+      "fieldtype": "Int",
+      "label": "Is Active"
+    },
+    {
+      "fieldname": "document",
+      "fieldtype": "Link",
+      "label": "Document",
+      "options": "Drive Document"
     },
     {
       "default": "0",
@@ -100,11 +94,11 @@
     }
   ],
   "links": [],
-  "modified": "2025-02-06 10:42:33.898390",
+  "modified": "2025-02-13 15:03:56.317224",
   "modified_by": "Administrator",
   "module": "Drive",
-  "name": "Drive Entity",
-  "naming_rule": "UUID",
+  "name": "Drive File",
+  "naming_rule": "Random",
   "owner": "Administrator",
   "permissions": [
     {

@@ -37,7 +37,7 @@ def create_activity_log(share):
 
 
 def update_activity_log(log, share):
-    title = frappe.db.get_value("Drive Entity", share.share_name, ["title"])
+    title = frappe.db.get_value("Drive File", share.share_name, ["title"])
     owner_fullname = get_fullname(share.owner)
     if share.everyone:
         log.document_field = "everyone"
