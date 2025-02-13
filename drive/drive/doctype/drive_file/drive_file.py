@@ -18,6 +18,7 @@ from drive.api.activity import create_new_activity_log
 
 class DriveFile(Document):
     def after_insert(self):
+        return
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
         message = f"{full_name} created {self.title}"
         create_new_activity_log(
