@@ -31,10 +31,10 @@ class DriveFile(Document):
 
     def on_trash(self):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
-        frappe.db.delete("Drive File Log", {"entity_name": self.name})
+        frappe.db.delete("Drive Entity Log", {"entity_name": self.name})
         frappe.db.delete("Drive Permission", {"entity": self.name})
         frappe.db.delete("Drive Notification", {"notif_doctype_name": self.name})
-        frappe.db.delete("Drive File Activity Log", {"entity": self.name})
+        frappe.db.delete("Drive Entity Activity Log", {"entity": self.name})
         if self.is_group or self.document:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(

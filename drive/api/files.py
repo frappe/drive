@@ -603,7 +603,7 @@ def remove_recents(entity_names=[], clear_all=False):
     """
 
     if clear_all:
-        return frappe.db.delete("Drive File Log", {"user": frappe.session.user})
+        return frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
 
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
@@ -611,13 +611,13 @@ def remove_recents(entity_names=[], clear_all=False):
     for entity in entity_names:
         existing_doc = frappe.db.exists(
             {
-                "doctype": "Drive File Log",
+                "doctype": "Drive Entity Log",
                 "entity_name": entity,
                 "user": frappe.session.user,
             }
         )
         if existing_doc:
-            frappe.delete_doc("Drive File Log", existing_doc)
+            frappe.delete_doc("Drive Entity Log", existing_doc)
 
 
 @frappe.whitelist()
