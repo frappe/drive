@@ -53,7 +53,7 @@
       v-if="dialog === 'rn'"
       v-model="dialog"
       :entity="activeEntity"
-      @trigger="mutate"
+      @success="((data) => handleListMutate({ data }), resetDialog())"
     />
     <GeneralDialog
       v-if="dialog === 'remove'"
