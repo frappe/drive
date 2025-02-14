@@ -33,9 +33,9 @@ def execute():
                 doc.path = "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
                 try:
-                    p.rename(home_folder + "/" +  doc.path)
+                    p.rename(Path(frappe.get_site_path("private/files")) /( home_folder + "/" +  doc.path))
                 except:
-                    print('Moving failed for', doc.path)
+                    print('Moving failed for', doc.path, '-', Path(frappe.get_site_path("private/files")) /( home_folder + "/" +  doc.path))
             doc.insert()
 
             translate[k["old_name"]] = doc.name
