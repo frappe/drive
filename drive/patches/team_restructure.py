@@ -32,9 +32,12 @@ def execute():
                 path_els = k["path"].split("/")
                 doc.path = "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
-                p.rename(home_folder + "/" +  doc.path)
-
+                try:
+                    p.rename(home_folder + "/" +  doc.path)
+                except:
+                    print('Moving failed for', doc.path)
             doc.insert()
+
             translate[k["old_name"]] = doc.name
         except Exception as e:
             print(f"{k['title']} failed, with:", e)
