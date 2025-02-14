@@ -1,5 +1,6 @@
 import frappe
 from pathlib import Path
+import shutil
 
 
 def execute():
@@ -33,9 +34,9 @@ def execute():
                 doc.path =  home_folder + "/"  + "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
                 try:
-                    p.rename(Path(frappe.get_site_path("private/files")) /doc.path)
+                    shutil.copy(str(p), str(Path(frappe.get_site_path("private/files")) /doc.path))
                 except:
-                    print('Moving failed for', doc.path, '-', Path(frappe.get_site_path("private/files")) /(  doc.path))
+                    print('Moving failed for', str(p), '->', Path(frappe.get_site_path("private/files")) /(  doc.path))
             doc.insert()
 
             translate[k["old_name"]] = doc.name
