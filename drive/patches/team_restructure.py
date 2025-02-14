@@ -92,3 +92,23 @@ def execute():
                     "valid_until": s["valid_until"],
                 }
             ).insert()
+
+    RENAME_MAP = {
+        "Drive Notification": "notif_doctype_name",
+        "Drive Favourite": "entity",
+        "Drive Document Version": "parent_entity",
+        "Drive Entity Activity Log": "entity",
+        "Drive Entity Log": "entity_name",
+    }
+
+    for doctype, field in RENAME_MAP.items():
+        for k in frappe.get_list(doctype, fields=["name", field]):
+            if not k[field] in translate:
+                continue
+            frappe.db.set_value(
+                doctype,
+                k["name"],
+                field,
+                translate[k[field]],
+                update_modified=False,
+            )
