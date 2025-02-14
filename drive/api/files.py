@@ -367,7 +367,8 @@ def stream_file_content(drive_file, range_header):
     :param entity_name: Document-name of the file whose content is to be streamed
     :param drive_file: Drive File record object
     """
-    size = os.path.getsize(drive_file.path)
+    path = Path(frappe.get_site_path("private/files")) / drive_file.path
+    size = os.path.getsize(path)
     byte1, byte2 = 0, None
 
     m = re.search("(\d+)-(\d*)", range_header)
@@ -388,12 +389,12 @@ def stream_file_content(drive_file, range_header):
         length = byte2 - byte1
 
     data = None
-    with open(drive_file.path, "rb") as f:
+    with open(path, "rb") as f:
         f.seek(byte1)
         data = f.read(length)
 
     res = Response(
-        data, 206, mimetype=mimetypes.guess_type(drive_file.path)[0], direct_passthrough=True
+        data, 206, mimetype=mimetypes.guess_type(path)[0], direct_passthrough=True
     )
     res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
     return res
