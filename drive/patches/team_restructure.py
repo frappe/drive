@@ -30,9 +30,9 @@ def execute():
             )
             if k["path"]:
                 path_els = k["path"].split("/")
-                doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
+                doc.path = "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
-                p.rename(Path(frappe.get_site_path("private/files"), doc.path))
+                p.rename(home_folder + "/" +  doc.path)
 
             doc.insert()
             translate[k["old_name"]] = doc.name
