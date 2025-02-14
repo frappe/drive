@@ -139,6 +139,7 @@ export default {
           k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
           h: () => this.$router.push({ name: "Home" }),
           n: () => this.$router.push({ name: "Notifications" }),
+          m: () => this.$router.push({ name: "My Space" }),
           f: () => this.$router.push({ name: "Favourites" }),
           r: () => this.$router.push({ name: "Recents" }),
           s: () => this.$router.push({ name: "Shared" }),
@@ -147,11 +148,11 @@ export default {
 
         const KEY_MAPS = [
           [
-            (e) => e.metaKey && e.key == "ArrowRight",
+            (e) => e.metaKey && e.shiftKey && e.key == "ArrowRight",
             () => this.$store.commit("setIsSidebarExpanded", true),
           ],
           [
-            (e) => e.metaKey && e.key == "ArrowLeft",
+            (e) => e.metaKey && e.shiftKey && e.key == "ArrowLeft",
             () => this.$store.commit("setIsSidebarExpanded", false),
           ],
           [

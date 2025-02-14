@@ -4,12 +4,20 @@
 import frappe
 from frappe.model.document import Document
 from pathlib import Path
-from drive.api.files import get_home_folder
+from drive.utils.files import get_home_folder
 
 
 class DriveTeam(Document):
     def on_update(self):
         """Creates the file on disk"""
+        DriveFile = frappe.qb.DocType("Drive File")
+        if (
+            frappe.qb.from_(DriveFile)
+            .where(((DriveFile.team == self.name) & DriveFile.parent_entity.isnull()))
+            .select(DriveFile.name, DriveFile.path)
+            .run(as_dict=True)
+        ):
+            return
         d = frappe.get_doc(
             {
                 "doctype": "Drive File",
@@ -22,12 +30,18 @@ class DriveTeam(Document):
 
         user_directory_path = Path(frappe.get_site_path("private/files"), d.name)
         user_directory_path.mkdir()
+        (user_directory_path / "uploads").mkdir()
+        (user_directory_path / "embeds").mkdir()
+        (user_directory_path / "thumbnails").mkdir()
         d.path = d.name
         d.save()
 
     def on_trash(self):
-        # BROKEN
+        try:
+            d = get_home_folder(self.name)
+            user_directory_path = Path(frappe.get_site_path("private/files"), d.path)
+            user_directory_path.rmdir()
+        except FileNotFoundError:
+            pass
         frappe.db.delete("Drive File", {"team": self.name})
-        d = get_home_folder(self.name)
-        user_directory_path = Path(frappe.get_site_path("private/files"), d.path)
-        user_directory_path.rmdir()
+        frappe.db.commit()

@@ -308,9 +308,7 @@ class DriveFile(Document):
             }
         )
         if entity_exists:
-            suggested_name = get_new_title(
-                new_title, self.parent_entity, document=self.document, folder=self.is_group
-            )
+            suggested_name = get_new_title(new_title, self.parent_entity, folder=self.is_group)
             frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{suggested_name}' ",
                 FileExistsError,
@@ -364,15 +362,16 @@ class DriveFile(Document):
             self.unshare(user=None, user_type=None)
 
     @frappe.whitelist()
-    def toggle_allow_download(self, new_value):
+    def toggle_personal(self, new_value):
         """
-        Toggle allow download for entity
-
+        Toggle is private for file
         """
-        self.allow_download = new_value
+        # BROKEN: don't allow personal unless whole breadcrumb is personal
+        # BROKEN: moving file across privates should autotoggle
+        self.is_private = new_value
         if self.is_group:
             for child in self.get_children():
-                child.toggle_allow_download(new_value)
+                child.toggle_personal(new_value)
         self.save()
 
     @frappe.whitelist()

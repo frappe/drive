@@ -93,6 +93,7 @@ import { notifCount } from "@/resources/permissions"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
+import { getTeams } from "@/resources/files"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
@@ -100,33 +101,37 @@ const route = useRoute()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 
-const sidebarItems = computed(() => [
-  {
-    label: "Home",
-    route: `/${route.params.team}/`,
-    icon: Home,
-  },
-  {
-    label: "My Files",
-    route: `/${route.params.team}/personal`,
-    icon: MyDrive,
-  },
-  {
-    label: "Recents",
-    route: `/${route.params.team}/recents`,
-    icon: Recent,
-  },
-  {
-    label: "Favourites",
-    route: `/${route.params.team}/favourites`,
-    icon: Star,
-  },
-  {
-    label: "Trash",
-    route: `/${route.params.team}/trash`,
-    icon: Trash,
-  },
-])
+const sidebarItems = computed(() => {
+  let team = route.params.team
+  if (!team) team = Object.keys(getTeams.data)[0]
+  return [
+    {
+      label: "Home",
+      route: `/${team}/`,
+      icon: Home,
+    },
+    {
+      label: "My Files",
+      route: `/${team}/personal`,
+      icon: MyDrive,
+    },
+    {
+      label: "Recents",
+      route: `/${team}/recents`,
+      icon: Recent,
+    },
+    {
+      label: "Favourites",
+      route: `/${team}/favourites`,
+      icon: Star,
+    },
+    {
+      label: "Trash",
+      route: `/${team}/trash`,
+      icon: Trash,
+    },
+  ]
+})
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)
 </script>

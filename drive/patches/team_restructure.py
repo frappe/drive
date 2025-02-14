@@ -1,4 +1,5 @@
 import frappe
+from pathlib import Path
 
 
 def execute():
@@ -20,18 +21,22 @@ def execute():
     for k in entities:
         try:
             if not k["parent_drive_entity"]:
-                homes.append(doc.name)
+                homes.append(k["name"])
                 continue
             k["old_name"] = k.pop("name")
-            doc = frappe.get_doc({"doctype": "Drive File", **k, "team": team.name})
+            doc = frappe.get_doc(
+                {"doctype": "Drive File", **k, "team": team.name, "is_private": 1}
+            )
             if k["path"]:
                 path_els = k["path"].split("/")
                 doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
+                p = Path(k["path"])
+                p.rename(doc.path)
+
             doc.insert()
             translate[k["old_name"]] = doc.name
         except Exception as e:
             print(f"{k["title"]} failed, with:", e)
-
     frappe.db.commit()
 
     for k in entities:
@@ -57,20 +62,29 @@ def execute():
                 "Drive File",
                 name,
                 "parent_entity",
-                k["parent_drive_entity"],
+                translate[k["parent_drive_entity"]],
                 update_modified=False,
             )
 
     shares = frappe.get_list("Drive DocShare", fields=["*"])
     for s in shares:
-        if s["everyone"] or not s["share_name"] in translate:
+        entity = translate.get(s["share_name"])
+        if not entity:
             continue
+        elif s["everyone"]:
+            frappe.db.set_value(
+                "Drive File",
+                entity,
+                "is_private",
+                0,
+                update_modified=False,
+            )
         else:
             frappe.get_doc(
                 {
                     "doctype": "Drive Permission",
                     "user": "" if s.public else s.user_name,
-                    "entity": translate[s["share_name"]],
+                    "entity": entity,
                     "read": s["read"],
                     "share": s["share"],
                     "write": s["share"],

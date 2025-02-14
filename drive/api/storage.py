@@ -114,20 +114,6 @@ def get_storage_allowed(team):
         return total_rem
 
 
-def total_disk_storage_used():
-    try:
-        from drive.utils.files import get_user_directory
-
-        user_directory = get_user_directory()
-        # -sb doesnt work on macos
-        cmd = f"du -sb {Path(user_directory.path)} | cut -f1"
-        result = os.popen(cmd)
-        size = result.read().strip()
-    except:
-        size = "0M"
-    return size
-
-
 def add_new_site_config_key(key, val):
     site_path = frappe.get_site_path()
     site_config_path = os.path.join(site_path, "site_config.json")
