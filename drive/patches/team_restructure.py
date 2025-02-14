@@ -36,7 +36,7 @@ def execute():
             doc.insert()
             translate[k["old_name"]] = doc.name
         except Exception as e:
-            print(f"{k["title"]} failed, with:", e)
+            print(f"{k['title']} failed, with:", e)
     frappe.db.commit()
 
     for k in entities:
