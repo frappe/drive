@@ -769,5 +769,5 @@ def get_ancestors_of(entity_name):
 
 @frappe.whitelist()
 def toggle_personal(entity_name, personal=0):
-    frappe.db.set_value("Drive File", entity_name, "is_private", personal)
+
     return entity_name

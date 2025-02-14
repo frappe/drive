@@ -57,6 +57,8 @@ def get_home_folder(team):
         .select(DriveFile.name, DriveFile.path)
         .run(as_dict=True)
     )
+    if not ls:
+        raise FileNotFoundError()
     return ls[0]
 
 

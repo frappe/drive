@@ -8,7 +8,7 @@ import { prettyData } from "../utils/files"
 // GETTERS
 const COMMON_OPTIONS = {
   method: "GET",
-  debounce: 500,
+  // debounce: 500,
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
       store.commit("setError", {
@@ -182,8 +182,8 @@ export const createDocument = createResource({
 
 export const togglePersonal = createResource({
   method: "POST",
-  url: "drive.api.files.toggle_personal",
-  makeParams: (params) => params,
+  url: "drive.api.files.call_controller_method",
+  makeParams: (params) => ({ ...params, method: "toggle_personal" }),
   onSuccess: (e) => {
     let index = getPersonal.data.findIndex((k) => k.name === e)
     getHome.data.push(getPersonal.data[index])

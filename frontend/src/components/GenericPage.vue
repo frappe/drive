@@ -192,7 +192,7 @@ watch(
         : sortOrder.value.field + " desc",
     })
   },
-  { immediate: true }
+  { immediate: route.name !== "Shared" }
 )
 
 const clickEvent = ref(null)

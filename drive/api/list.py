@@ -22,7 +22,7 @@ def files(
     entity_name=None,
     order_by="title",
     is_active=1,
-    limit=100,
+    limit=1000,
     favourites_only=0,
     recents_only=0,
     tag_list=[],
@@ -97,9 +97,9 @@ def files(
             order_by.split()[0],
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
-    if personal:
+    if int(personal):
         query = query.where(
-            (DriveFile.is_private == personal) & (DriveFile.owner == frappe.session.user)
+            (DriveFile.is_private == int(personal)) & (DriveFile.owner == frappe.session.user)
         )
     elif favourites_only or recents_only or not is_active:
         query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
@@ -121,14 +121,14 @@ def files(
         )
     if folders:
         query = query.where(DriveFile.is_group == 1)
-    return query.run(as_dict=True)
+    return query.run(as_dict=True, debug=True)
 
 
 @frappe.whitelist()
 def shared(
     by=0,
     order_by="modified",
-    limit=100,
+    limit=1000,
     tag_list=[],
     mime_type_list=[],
 ):
@@ -150,7 +150,15 @@ def shared(
         )
         .limit(limit)
         .where((DrivePermission.read == 1) & (DriveFile.is_active == 1))
-        .select(*ENTITY_FIELDS, DrivePermission.user, DrivePermission.owner.as_("sharer"))
+        .select(
+            *ENTITY_FIELDS,
+            DrivePermission.user,
+            DrivePermission.owner.as_("sharer"),
+            DrivePermission.read,
+            DrivePermission.share,
+            DrivePermission.comment,
+            DrivePermission.write,
+        )
     )
 
     query = query.orderby(

@@ -12,67 +12,69 @@
     <ListHeader />
     <Loader v-if="!entities || entities.loading" />
     <template v-else>
-      <div v-for="group in formattedRows" :key="group.group">
-        <ListGroupHeader :group="group">
-          <slot
-            v-if="$slots['group-header']"
-            name="group-header"
-            v-bind="{ group }"
-          />
-        </ListGroupHeader>
-        <ListGroupRows :group="group">
-          <template v-for="row in group.rows" :key="row.name">
-            <ListRow
-              :class="selectedRow === row.name ? '!bg-surface-gray-2' : ''"
-              :row="row"
-              class="hover:bg-surface-menu-bar"
-              @click="setActive(row)"
-              @dblclick="() => openEntity(route.params.team, row)"
-            >
-              <template #default="{ idx, column, item }">
-                <ListRowItem
-                  :column="column"
-                  :row="row"
-                  :item="item"
-                  :align="column.align"
-                >
-                  <template v-if="idx === 0" #suffix>
-                    <div class="grow justify-items-end">
-                      <FeatherIcon
-                        v-if="row.is_favourite && route.name !== 'Favourites'"
-                        name="star"
-                        width="16"
-                        height="16"
-                        class="stroke-amber-500 fill-amber-500"
-                      />
-                      <MyDrive
-                        v-else-if="
-                          row.is_private &&
-                          store.state.breadcrumbs[0].label != 'My Files'
-                        "
-                        width="16"
-                        height="16"
-                      />
-                      <FeatherIcon
-                        v-else-if="row.accessed && route.name !== 'Recents'"
-                        name="clock"
-                        width="16"
-                        height="16"
-                      />
-                    </div>
-                  </template>
-                  <template v-if="column.key === 'options'">
-                    <Dropdown :options="dropdownActionItems(row)">
-                      <Button class="bg-white">
-                        <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-                      </Button>
-                    </Dropdown>
-                  </template>
-                </ListRowItem>
-              </template>
-            </ListRow>
-          </template>
-        </ListGroupRows>
+      <div class="h-full overflow-y-auto">
+        <div v-for="group in formattedRows" :key="group.group">
+          <ListGroupHeader :group="group">
+            <slot
+              v-if="$slots['group-header']"
+              name="group-header"
+              v-bind="{ group }"
+            />
+          </ListGroupHeader>
+          <ListGroupRows :group="group">
+            <template v-for="row in group.rows" :key="row.name">
+              <ListRow
+                :class="selectedRow === row.name ? '!bg-surface-gray-2' : ''"
+                :row="row"
+                class="hover:bg-surface-menu-bar cursor-pointer"
+                @click="setActive(row)"
+                @dblclick="() => openEntity(route.params.team, row)"
+              >
+                <template #default="{ idx, column, item }">
+                  <ListRowItem
+                    :column="column"
+                    :row="row"
+                    :item="item"
+                    :align="column.align"
+                  >
+                    <template v-if="idx === 0" #suffix>
+                      <div class="grow justify-items-end">
+                        <FeatherIcon
+                          v-if="row.is_favourite && route.name !== 'Favourites'"
+                          name="star"
+                          width="16"
+                          height="16"
+                          class="stroke-amber-500 fill-amber-500"
+                        />
+                        <MyDrive
+                          v-else-if="
+                            row.is_private &&
+                            store.state.breadcrumbs[0].label != 'My Files'
+                          "
+                          width="16"
+                          height="16"
+                        />
+                        <FeatherIcon
+                          v-else-if="row.accessed && route.name !== 'Recents'"
+                          name="clock"
+                          width="16"
+                          height="16"
+                        />
+                      </div>
+                    </template>
+                    <template v-if="column.key === 'options'">
+                      <Dropdown :options="dropdownActionItems(row)">
+                        <Button class="bg-white">
+                          <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+                        </Button>
+                      </Dropdown>
+                    </template>
+                  </ListRowItem>
+                </template>
+              </ListRow>
+            </template>
+          </ListGroupRows>
+        </div>
       </div>
     </template>
     <ListSelectBanner>
@@ -169,8 +171,8 @@ const selectedColumns = [
   {
     label: "Name",
     key: "title",
-    getLabel: ({ row: { title } }) =>
-      title.lastIndexOf(".") === -1
+    getLabel: ({ row: { title, is_group } }) =>
+      title.lastIndexOf(".") === -1 || is_group
         ? title
         : title.slice(0, title.lastIndexOf(".")),
     prefix: ({ row }) =>
