@@ -8,6 +8,7 @@ def execute():
     frappe.reload_doc("Drive", "doctype", "Drive File")
     frappe.reload_doc("Drive", "doctype", "Drive Permission")
 
+    frappe.db.delete("Drive Team")
     frappe.db.delete("Drive File")
     frappe.db.delete("Drive Permission")
     team = frappe.get_doc({"doctype": "Drive Team", "title": "Frappe"})
@@ -31,7 +32,7 @@ def execute():
                 path_els = k["path"].split("/")
                 doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
-                p.rename(doc.path)
+                p.rename(Path(frappe.get_site_path("private/files"), doc.path))
 
             doc.insert()
             translate[k["old_name"]] = doc.name
