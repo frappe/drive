@@ -164,7 +164,7 @@ Install bench and set up a `frappe-bench` directory by following the [installati
 **Step 2**: Provided bench is all set up you can proceed to install Frappe Drive
 
 ```sh
-bench get-app drive --branch main
+bench get-app https://github.com/bvisible/drive.git --resolve-deps
 ```
 
 **Step 3**: Install some Drive specific system packages
