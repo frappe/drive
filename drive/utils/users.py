@@ -4,29 +4,21 @@ from frappe.utils import now, split_emails, validate_email_address
 
 
 @frappe.whitelist()
-def get_users_with_drive_user_role_and_groups(txt=""):
-    try:
-        drive_users = frappe.get_all(
-            doctype="User",
-            filters=[
-                ["Has Role", "role", "in", role_filters],
-                ["full_name", "not like", "Administrator"],
-                ["full_name", "not like", "Guest"],
-            ],
-            fields=[
-                "email",
-                "full_name",
-                "user_image",
-            ],
-        )
-        return drive_users
-
-    except Exception as e:
-        frappe.log_error("Error in fetching Drive Users: {0}".format(e))
-        return {
-            "status": "error",
-            "message": "An error occurred while fetching Drive Users",
-        }
+def get_all_users(team):
+    users = [k.user for k in frappe.get_doc("Drive Team", team).users]
+    print(users)
+    drive_users = frappe.get_all(
+        doctype="User",
+        filters=[
+            ["name", "in", users],
+        ],
+        fields=[
+            "email",
+            "full_name",
+            "user_image",
+        ],
+    )
+    return drive_users
 
 
 @frappe.whitelist()
@@ -43,9 +35,7 @@ def get_users_with_drive_user_role(txt="", get_roles=False):
                 ["full_name", "like", f"%{txt}%"],
             ],
             fields=[
-                "email",
-                "full_name",
-                "user_image",
+                "*",
             ],
         )
         if get_roles == "true":

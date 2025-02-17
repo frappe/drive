@@ -63,7 +63,7 @@
       <SidebarItem
         :label="!isExpanded ? 'Expand' : 'Collapse'"
         :is-collapsed="!isExpanded"
-        class="mt-auto"
+        class="mt-auto py-4"
         @click="toggleExpanded"
       >
         <template #icon>
@@ -84,7 +84,7 @@ import { ArrowLeftFromLine } from "lucide-vue-next"
 import Search from "./EspressoIcons/Search.vue"
 import Recent from "./EspressoIcons/Recent.vue"
 import Star from "./EspressoIcons/Star.vue"
-import MyDrive from "./EspressoIcons/MyDrive.vue"
+import Lock from "./EspressoIcons/Lock.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
 import Home from "./EspressoIcons/Home.vue"
@@ -94,6 +94,7 @@ import { computed } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { getTeams } from "@/resources/files"
+import Users from "./EspressoIcons/Users.vue"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
@@ -103,6 +104,7 @@ const isExpanded = computed(() => store.state.IsSidebarExpanded)
 
 const sidebarItems = computed(() => {
   let team = route.params.team
+  if (!getTeams.data) return []
   if (!team) team = Object.keys(getTeams.data)[0]
   return [
     {
@@ -113,7 +115,7 @@ const sidebarItems = computed(() => {
     {
       label: "My Files",
       route: `/${team}/personal`,
-      icon: MyDrive,
+      icon: Lock,
     },
     {
       label: "Recents",
@@ -124,6 +126,11 @@ const sidebarItems = computed(() => {
       label: "Favourites",
       route: `/${team}/favourites`,
       icon: Star,
+    },
+    {
+      label: "Shared",
+      route: `/shared/`,
+      icon: Users,
     },
     {
       label: "Trash",

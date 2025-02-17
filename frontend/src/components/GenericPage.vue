@@ -106,7 +106,6 @@
     <CTADeleteDialog
       v-if="dialog === 'cta'"
       v-model="dialog"
-      :clear-all="clearAll"
       @success="
         () => {
           getEntities.setData([])
@@ -173,12 +172,7 @@ const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
-const clearAll = ref(false)
-const sortOrder = ref({
-  label: "Name",
-  field: "title",
-  ascending: true,
-})
+const sortOrder = ref(store.state.sortOrder)
 const activeEntity = computed(() => store.state.activeEntity)
 const selections = ref([])
 watch(activeEntity, () => (selections.value = [activeEntity.value]))
@@ -264,7 +258,8 @@ const actionItems = computed(() => {
       {
         label: "Move to Home",
         icon: Home,
-        onClick: ([e]) => togglePersonal.submit({ entity_name: e.name }),
+        onClick: ([e]) =>
+          togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
         isEnabled: () => route.name == "My Files",
         multi: true,
         important: true,
@@ -393,10 +388,7 @@ function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
 }
 
 // emitter handling
-emitter.on("showCTADelete", () => {
-  clearAll.value = true
-  dialog.value = "cta"
-})
+emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 
 const resetDialog = () => (dialog.value = null)

@@ -1,4 +1,5 @@
 import { createResource } from "frappe-ui"
+import router from "@/router.js"
 
 export const getUsersWithAccess = createResource({
   url: "drive.api.permissions.get_shared_with_list",
@@ -15,4 +16,25 @@ export const notifCount = createResource({
   method: "GET",
   cache: "notif-count",
   auto: true,
+})
+
+export const generalAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  auto: false,
+})
+
+export const userList = createResource({
+  url: "drive.api.permissions.get_shared_with_list",
+  auto: false,
+})
+
+export const allUsers = createResource({
+  url: "drive.utils.users.get_all_users",
+  method: "GET",
+  transform: (data) => {
+    data.map((item) => {
+      item.value = item.email
+      item.label = item.full_name.trimEnd()
+    })
+  },
 })

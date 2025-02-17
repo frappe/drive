@@ -31,9 +31,9 @@ const store = createStore({
     uploads: [],
     connectedUsers: [],
     sortOrder: JSON.parse(localStorage.getItem("sortOrder")) || {
-      label: "Name",
-      field: "title",
-      ascending: true,
+      label: "Modified",
+      field: "modified",
+      ascending: false,
     },
     view: JSON.parse(localStorage.getItem("view")) || "list",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
@@ -176,6 +176,7 @@ const store = createStore({
     },
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))
+      window.title = payload[payload.length - 1].label
       state.breadcrumbs = payload
     },
     setIsSidebarExpanded(state, payload) {

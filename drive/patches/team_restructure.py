@@ -1,13 +1,22 @@
 import frappe
 from pathlib import Path
+import shutil
+import time
 
 
 def execute():
+    print(
+        "This migration to an alpha release might CORRUPT your data. Do NOT run this before taking a complete backup. You have one minute left to cancel this deployment. "
+    )
+    time.sleep(60)
     frappe.reload_doc("Drive", "doctype", "Drive Team Member")
     frappe.reload_doc("Drive", "doctype", "Drive Team")
     frappe.reload_doc("Drive", "doctype", "Drive File")
     frappe.reload_doc("Drive", "doctype", "Drive Permission")
+    if frappe.db.get_list("Drive Team"):
+        return
 
+    frappe.db.delete("Drive Team")
     frappe.db.delete("Drive File")
     frappe.db.delete("Drive Permission")
     team = frappe.get_doc({"doctype": "Drive Team", "title": "Frappe"})
@@ -31,9 +40,19 @@ def execute():
                 path_els = k["path"].split("/")
                 doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
-                p.rename(doc.path)
-
+                try:
+                    shutil.copy(
+                        str(p), str(Path(frappe.get_site_path("private/files")) / doc.path)
+                    )
+                except:
+                    print(
+                        "Moving failed for",
+                        str(p),
+                        "->",
+                        Path(frappe.get_site_path("private/files")) / (doc.path),
+                    )
             doc.insert()
+
             translate[k["old_name"]] = doc.name
         except Exception as e:
             print(f"{k['title']} failed, with:", e)

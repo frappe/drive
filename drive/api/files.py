@@ -250,9 +250,9 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
         ptype="write",
         user=frappe.session.user,
     ):
-        raise frappe.permissionerror("you do not have permission to view this file")
+        raise frappe.PermissionError("You do not have permission to view this file")
     if settings:
-        frappe.db.set_value("drive document", doc_name, "settings", json.dumps(settings))
+        frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
     file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
     frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
@@ -367,7 +367,8 @@ def stream_file_content(drive_file, range_header):
     :param entity_name: Document-name of the file whose content is to be streamed
     :param drive_file: Drive File record object
     """
-    size = os.path.getsize(drive_file.path)
+    path = Path(frappe.get_site_path("private/files")) / drive_file.path
+    size = os.path.getsize(path)
     byte1, byte2 = 0, None
 
     m = re.search("(\d+)-(\d*)", range_header)
@@ -388,13 +389,11 @@ def stream_file_content(drive_file, range_header):
         length = byte2 - byte1
 
     data = None
-    with open(drive_file.path, "rb") as f:
+    with open(path, "rb") as f:
         f.seek(byte1)
         data = f.read(length)
 
-    res = Response(
-        data, 206, mimetype=mimetypes.guess_type(drive_file.path)[0], direct_passthrough=True
-    )
+    res = Response(data, 206, mimetype=mimetypes.guess_type(path)[0], direct_passthrough=True)
     res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
     return res
 
@@ -767,7 +766,73 @@ def get_ancestors_of(entity_name):
     return flattened_list
 
 
-@frappe.whitelist()
-def toggle_personal(entity_name, personal=0):
+@frappe.whitelist(allow_guest=True)
+def upload_chunked_file(team=None, personal=0, parent=None, last_modified=None):
+    """
+    Accept chunked file contents via a multipart upload, store the file on
+    disk, and insert a corresponding DriveEntity doc.
 
-    return entity_name
+    :param fullpath: Full path of the uploaded file
+    :param parent: Document-name of the parent folder. Defaults to the user directory
+    :raises PermissionError: If the user does not have write access to the specified parent folder
+    :raises FileExistsError: If a file with the same name already exists in the specified parent folder
+    :raises ValueError: If the size of the stored file does not match the specified filesize
+    :return: DriveEntity doc once the entire file has been uploaded
+    """
+
+    parent = frappe.form_dict.parent
+    drive_entity = frappe.get_value(
+        "Drive File",
+        parent,
+        ["document", "title", "mime_type", "file_size", "owner", "team"],
+        as_dict=1,
+    )
+    home_directory = get_home_folder(drive_entity.team)
+    embed_directory = Path(
+        frappe.get_site_path("private/files"),
+        home_directory.name,
+        "embeds",
+    )
+    if not frappe.has_permission(
+        doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
+    ):
+        frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
+
+    file = frappe.request.files["file"]
+
+    name = frappe.form_dict.uuid
+    title, file_ext = os.path.splitext(frappe.form_dict.file_name)
+    mime_type = frappe.form_dict.mime_type
+    current_chunk = int(frappe.form_dict.chunk_index)
+    total_chunks = int(frappe.form_dict.total_chunk_count)
+    file_size = int(frappe.form_dict.total_file_size)
+    save_path = Path(embed_directory) / f"{secure_filename(name+file_ext)}"
+    if current_chunk == 0 and save_path.exists():
+        frappe.throw(f"File '{title}' already exists", FileExistsError)
+
+    if not mime_type:
+        mime_type = magic.from_buffer(open(save_path, "rb").read(2048), mime=True)
+
+    with save_path.open("ab") as f:
+        f.seek(int(frappe.form_dict.chunk_byte_offset))
+        f.write(file.stream.read())
+
+    if current_chunk + 1 == total_chunks:
+        file_size = save_path.stat().st_size
+
+    if file_size != int(frappe.form_dict.total_file_size):
+        save_path.unlink()
+        frappe.throw("Size on disk does not match specified filesize", ValueError)
+    drive_file = create_drive_file(
+        drive_entity.team,
+        personal,
+        title,
+        parent,
+        file_size,
+        mime_type,
+        last_modified,
+        lambda n: Path(home_directory["name"]) / "embeds" / f"{n}{save_path.suffix}",
+    )
+    os.rename(save_path, frappe.get_site_path("private/files") / drive_file.path)
+
+    return drive_file.name + save_path.suffix

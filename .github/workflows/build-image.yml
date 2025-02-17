@@ -4,20 +4,19 @@ on:
   push:
     branches:
       - main
-      - develop
     tags:
       - "*"
 
 jobs:
   build:
     name: Build
-    
+
     permissions:
-      contents: read      
-      packages: write 
-    
+      contents: read
+      packages: write
+
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         arch: [amd64, arm64]

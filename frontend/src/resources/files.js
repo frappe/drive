@@ -101,6 +101,8 @@ export const getTrash = createResource({
 export const toggleFav = createResource({
   url: "drive.api.files.set_favourite",
   makeParams(data) {
+    console.log(data)
+    if (!data) return { clear_all: true }
     const entity_names = data.entities.map(({ name }) => name)
     if (data.entities[0].is_favourite)
       getFavourites.setData((data) =>
@@ -110,13 +112,12 @@ export const toggleFav = createResource({
       getFavourites.setData((data) =>
         data.filter((n) => entity_names.includes(n))
       )
-    return data
-      ? {
-          entities: data.entities,
-        }
-      : { clear_all: true }
+    return {
+      entities: data.entities,
+    }
   },
   onSuccess() {
+    if (!toggleFav.params.entities) toast("All favourites cleared")
     if (toggleFav.params.entities.length === 1) return
     if (toggleFav.params.entities[0].is_favourite === false)
       toast(`${toggleFav.params.entities.length} items unfavourited`)

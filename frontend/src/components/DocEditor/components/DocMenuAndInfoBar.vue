@@ -33,14 +33,9 @@
               ></Avatar>
               <div class="border-l h-6 mx-1.5"></div>
               <GeneralAccess
-                v-if="
-                  !$resources.generalAccess.loading &&
-                  (!!$resources.generalAccess.data?.length ||
-                    !sharedWithList?.length)
-                "
-                size="md"
-                class="-mr-[3px] outline outline-white"
-                :general-access="$resources.generalAccess?.data?.[0]"
+                size="lg"
+                class="col-span-1 justify-self-start row-start-1 row-end-1"
+                :access-type="generalAccess?.access?.value"
               />
               <div
                 v-if="sharedWithList?.length"
@@ -74,7 +69,7 @@
             <div class="text-base font-medium mb-4">Properties</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">Type</span>
-              <span class="col-span-1">{{ formattedMimeType }}</span>
+              <span class="col-span-1">Frappe Doc</span>
               <span class="col-span-1 text-gray-600">Size</span>
               <span class="col-span-1">{{ entity.file_size }}</span>
               <span class="col-span-1 text-gray-600">Modified</span>
@@ -849,7 +844,6 @@ import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
 import Info from "@/components/EspressoIcons/Info.vue"
 import Comment from "@/components/EspressoIcons/Comment.vue"
-
 import {
   Plus,
   Minus,
@@ -898,6 +892,7 @@ import { formatDate } from "../../../utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
 import Clock from "../../EspressoIcons/Clock.vue"
 import ActivityTree from "../../ActivityTree.vue"
+import { generalAccess, userList } from "../../../resources/permissions"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -983,6 +978,8 @@ export default {
   },
   data() {
     return {
+      generalAccess: generalAccess.data,
+      sharedWithList: userList.data,
       tab: this.entity?.write ? 0 : 4,
       docFont: this.settings.docFont,
       tabs: [
@@ -1110,16 +1107,6 @@ export default {
       } else {
         return false
       }
-    },
-    sharedWithList() {
-      return this.$resources.userList.data?.users.concat(
-        this.$resources.groupList.data
-      )
-    },
-    formattedMimeType() {
-      if (this.entity.is_group) return "Folder"
-      const file = this.entity.file_kind
-      return file?.charAt(0).toUpperCase() + file?.slice(1)
     },
     showActivity() {
       if (this.userId === "Guest") return
@@ -1355,27 +1342,6 @@ export default {
             element.snapshot_data = toUint8Array(element.snapshot_data)
           })
         },
-      }
-    },
-    userList() {
-      return {
-        url: "drive.api.permissions.get_shared_with_list",
-        params: { entity_name: this.entity.name },
-        auto: this.entity.owner === "You",
-      }
-    },
-    groupList() {
-      return {
-        url: "drive.api.permissions.get_shared_user_group_list",
-        params: { entity_name: this.entity.name },
-        auto: this.entity.owner === "You",
-      }
-    },
-    generalAccess() {
-      return {
-        url: "drive.api.permissions.get_general_access",
-        params: { entity_name: this.entity.name },
-        auto: this.entity.owner === "You",
       }
     },
     userTags() {

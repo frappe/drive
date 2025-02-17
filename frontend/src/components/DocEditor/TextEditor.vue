@@ -348,6 +348,7 @@ export default {
     },
   },
   mounted() {
+    console.log(this.userList)
     if (window.matchMedia("(max-width: 1500px)").matches) {
       this.$store.commit("setIsSidebarExpanded", false)
     }
@@ -635,7 +636,7 @@ export default {
   methods: {
     updateAnnotationStatus() {
       const temp = new Set()
-      this.editor.state.doc.descendants((node, pos) => {
+      this.editor.state.doc.descendants((node) => {
         const { marks } = node
         marks.forEach((mark) => {
           if (mark.type.name === "annotation") {
