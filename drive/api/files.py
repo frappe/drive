@@ -259,7 +259,6 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
     frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
     frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
     if json.dumps(mentions):
-        notify_mentions(entity_name=entity_name, document_name=doc_name)
         frappe.enqueue(
             notify_mentions,
             queue="long",

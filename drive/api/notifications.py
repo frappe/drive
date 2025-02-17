@@ -85,50 +85,20 @@ def notify_mentions(entity_name, document_name):
         create_notification(mention["author"], mention["id"], "Mention", entity, message)
 
 
-def notify_share(entity_name, docshare_name):
+def notify_share(entity_name, docperm_name):
     """
     Create a share notification for each user
     :param entity_name: ID of entity
     :param document_name: ID of docshare containing share info
     """
     entity = frappe.get_doc("Drive File", entity_name)
-    docshare = frappe.get_doc("Drive DocShare", docshare_name)
+    docshare = frappe.get_doc("Drive Permission", docperm_name)
 
     author_full_name = frappe.db.get_value("User", {"name": docshare.owner}, ["full_name"])
     entity_type = "document" if entity.document else "folder" if entity.is_group else "file"
 
-    message = f'{author_full_name} shared {entity_type} "{entity.title}" with you'
-
-    if docshare.user_doctype == "User":
-        create_notification(docshare.owner, docshare.user_name, "Share", entity, message)
-
-    if docshare.user_doctype == "User Group":
-        group_users = frappe.get_all(
-            "User Group Member", filters={"parent": docshare.user_name}, fields="user"
-        )
-        for user in group_users:
-            if user.user == frappe.session.user:
-                continue
-            create_notification(docshare.owner, user.user, "Share", entity, message)
-
-    if docshare.everyone:
-        drive_users = frappe.get_all(
-            doctype="User",
-            order_by="full_name",
-            filters=[
-                ["Has Role", "role", "=", "Drive User"],
-                ["full_name", "not like", "Administrator"],
-                ["full_name", "not like", "Guest"],
-            ],
-            fields=[
-                "email",
-            ],
-        )
-        for user in drive_users:
-            if user.email == frappe.session.user:
-                continue
-            create_notification(docshare.owner, user.email, "Share", entity, message)
-        return
+    message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
+    create_notification(docshare.owner, docshare.user, "Share", entity, message)
 
 
 def create_notification(from_user, to_user, type, entity, message=None):
