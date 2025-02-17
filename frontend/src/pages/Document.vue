@@ -6,7 +6,7 @@
       v-model:rawContent="rawContent"
       v-model:lastSaved="lastSaved"
       v-model:settings="settings"
-      :user-list="allUsers"
+      :user-list="allUsers.data || []"
       :fixed-menu="true"
       :bubble-menu="true"
       :timeout="timeout"
@@ -39,7 +39,8 @@ import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
 import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
-import { setBreadCrumbs } from "../utils/files"
+import { setBreadCrumbs } from "@/utils/files"
+import { allUsers } from "@/resources/permissions"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -49,8 +50,8 @@ const ShareDialog = defineAsyncComponent(() =>
 )
 
 const store = useStore()
-const route = useRoute()
 const router = useRouter()
+const route = useRoute()
 const emitter = inject("emitter")
 
 const props = defineProps({
@@ -70,7 +71,6 @@ const rawContent = ref(null)
 const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
-const allUsers = ref([])
 const mentionedUsers = ref()
 const showShareDialog = ref(false)
 const timeout = ref(1000 + Math.floor(Math.random() * 5000))
@@ -79,7 +79,6 @@ const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
-const errorMessage = ref("")
 let intervalId = ref(null)
 
 setTimeout(() => {
@@ -173,6 +172,7 @@ const updateDocument = createResource({
 })
 
 onMounted(() => {
+  allUsers.fetch({ team: route.params?.team })
   emitter.on("showShareDialog", () => {
     showShareDialog.value = true
   })

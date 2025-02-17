@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
+import { nextTick } from "vue"
 import { getTeams } from "./resources/files"
 
 function redir404(to, from, next) {
@@ -158,6 +159,13 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to) => {
+  setTimeout(
+    () =>
+      (document.title =
+        store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
+        to.name),
+    40
+  )
   sessionStorage.setItem("currentRoute", to.href)
 })
 

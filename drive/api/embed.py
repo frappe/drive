@@ -26,7 +26,7 @@ def get_file_content(embed_name, parent_entity_name, trigger_download=0):
     """
 
     if not frappe.has_permission(
-        doctype="Drive Entity",
+        doctype="Drive File",
         doc=parent_entity_name,
         ptype="read",
         user=frappe.session.user,
