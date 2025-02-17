@@ -8,6 +8,8 @@ def execute():
     frappe.reload_doc("Drive", "doctype", "Drive Team")
     frappe.reload_doc("Drive", "doctype", "Drive File")
     frappe.reload_doc("Drive", "doctype", "Drive Permission")
+    if frappe.db.get_list("Drive Team"):
+        return
 
     frappe.db.delete("Drive Team")
     frappe.db.delete("Drive File")
@@ -31,12 +33,19 @@ def execute():
             )
             if k["path"]:
                 path_els = k["path"].split("/")
-                doc.path =  home_folder + "/"  + "/".join(path_els[path_els.index("files") + 2 :])
+                doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
                 p = Path(k["path"])
                 try:
-                    shutil.copy(str(p), str(Path(frappe.get_site_path("private/files")) /doc.path))
+                    shutil.copy(
+                        str(p), str(Path(frappe.get_site_path("private/files")) / doc.path)
+                    )
                 except:
-                    print('Moving failed for', str(p), '->', Path(frappe.get_site_path("private/files")) /(  doc.path))
+                    print(
+                        "Moving failed for",
+                        str(p),
+                        "->",
+                        Path(frappe.get_site_path("private/files")) / (doc.path),
+                    )
             doc.insert()
 
             translate[k["old_name"]] = doc.name

@@ -252,6 +252,7 @@ import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
+import { generalAccess, userList } from "@/resources/permissions"
 
 const store = useStore()
 const tab = ref(0)
@@ -344,16 +345,6 @@ let comments = createResource({
       console.log(error.messages)
     }
   },
-  auto: false,
-})
-
-const generalAccess = createResource({
-  url: "drive.api.permissions.get_user_access",
-  auto: false,
-})
-
-const userList = createResource({
-  url: "drive.api.permissions.get_shared_with_list",
   auto: false,
 })
 

@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid"
+import store from "@/store"
 
 /* Simple function to chunk upload a file instead of dropzone JS 
    Currently only used in documents
@@ -61,9 +62,11 @@ async function uploadChunk(
   formData.append("chunk_size", chunkSize)
   formData.append("file", CurrentChunk)
   formData.append("parent", parent_entity_name)
+  formData.append("personal", store.state.breadcrumbs[0].label == "My Files")
+
   formData.append("uuid", fileUuid)
   const response = await fetch(
-    window.location.origin + "/api/method/drive.api.embed.upload_chunked_file",
+    window.location.origin + "/api/method/drive.api.files.upload_chunked_file",
     {
       method: "POST",
       body: formData,

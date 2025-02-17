@@ -16,3 +16,13 @@ export const notifCount = createResource({
   cache: "notif-count",
   auto: true,
 })
+
+export const generalAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  auto: false,
+})
+
+export const userList = createResource({
+  url: "drive.api.permissions.get_shared_with_list",
+  auto: false,
+})
