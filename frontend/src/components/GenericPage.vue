@@ -258,7 +258,8 @@ const actionItems = computed(() => {
       {
         label: "Move to Home",
         icon: Home,
-        onClick: ([e]) => togglePersonal.submit({ entity_name: e.name }),
+        onClick: ([e]) =>
+          togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
         isEnabled: () => route.name == "My Files",
         multi: true,
         important: true,
