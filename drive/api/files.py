@@ -148,7 +148,7 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
             file_size,
             mime_type,
             last_modified,
-            lambda n: Path(home_folder["name"]) / f"{n}{temp_path.suffix}",
+            lambda n: str(Path(home_folder["name"]) / f"{n}{temp_path.suffix}"),
         )
         os.rename(temp_path, Path(site_folder) / drive_file.path)
 
@@ -831,7 +831,7 @@ def upload_chunked_file(team=None, personal=0, parent=None, last_modified=None):
         file_size,
         mime_type,
         last_modified,
-        lambda n: Path(home_directory["name"]) / "embeds" / f"{n}{save_path.suffix}",
+        lambda n: str(Path(home_directory["name"]) / "embeds" / f"{n}{save_path.suffix}"),
     )
     os.rename(save_path, frappe.get_site_path("private/files") / drive_file.path)
 
