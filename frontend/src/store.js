@@ -31,9 +31,9 @@ const store = createStore({
     uploads: [],
     connectedUsers: [],
     sortOrder: JSON.parse(localStorage.getItem("sortOrder")) || {
-      label: "Name",
-      field: "title",
-      ascending: true,
+      label: "Modified",
+      field: "modified",
+      ascending: false,
     },
     view: JSON.parse(localStorage.getItem("view")) || "list",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",

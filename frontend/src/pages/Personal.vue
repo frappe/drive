@@ -1,7 +1,7 @@
 <template>
   <GenericPage
     :getEntities="getPersonal"
-    :icon="MyDrive"
+    :icon="Lock"
     :primaryMessage="'No personal files'"
     :secondaryMessage="''"
   />
@@ -9,6 +9,6 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import MyDrive from "../components/EspressoIcons/MyDrive.vue"
+import Lock from "../components/EspressoIcons/Lock.vue"
 import { getPersonal } from "@/resources/files"
 </script>

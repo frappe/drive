@@ -110,7 +110,7 @@
               @click.stop="toggleAscending"
             >
               <DownArrow
-                :class="{ '[transform:rotateX(180deg)]': !sortOrder.ascending }"
+                :class="{ '[transform:rotateX(180deg)]': sortOrder.ascending }"
                 class="h-3.5"
               />
             </Button>
@@ -170,7 +170,7 @@ import Image from "./MimeIcons/Image.vue"
 import Video from "./MimeIcons/Video.vue"
 import PDF from "./MimeIcons/PDF.vue"
 import Unknown from "./MimeIcons/Unknown.vue"
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useStore } from "vuex"
 
 const store = useStore()
@@ -178,7 +178,9 @@ const props = defineProps({
   columnHeaders: Array,
 })
 const sortOrder = defineModel()
-
+watch(sortOrder, (val) => {
+  store.commit("setSortOrder", val)
+})
 const activeFilters = computed(() => store.state.activeFilters)
 const activeTags = computed(() => store.state.activeTags)
 const orderByItems = computed(() => {

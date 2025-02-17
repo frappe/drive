@@ -20,7 +20,7 @@ DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 def files(
     team,
     entity_name=None,
-    order_by="title",
+    order_by="modified asc",
     is_active=1,
     limit=1000,
     favourites_only=0,
