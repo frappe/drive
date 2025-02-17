@@ -348,6 +348,7 @@ export default {
     },
   },
   mounted() {
+    console.log(this.userList)
     if (window.matchMedia("(max-width: 1500px)").matches) {
       this.$store.commit("setIsSidebarExpanded", false)
     }

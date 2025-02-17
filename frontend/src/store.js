@@ -176,6 +176,7 @@ const store = createStore({
     },
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))
+      window.title = payload[payload.length - 1].label
       state.breadcrumbs = payload
     },
     setIsSidebarExpanded(state, payload) {
