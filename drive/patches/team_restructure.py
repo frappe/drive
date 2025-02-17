@@ -1,9 +1,14 @@
 import frappe
 from pathlib import Path
 import shutil
+import time
 
 
 def execute():
+    print(
+        "This migration to an alpha release might CORRUPT your data. Do NOT run this before taking a complete backup. You have one minute left to cancel this deployment. "
+    )
+    time.sleep(60)
     frappe.reload_doc("Drive", "doctype", "Drive Team Member")
     frappe.reload_doc("Drive", "doctype", "Drive Team")
     frappe.reload_doc("Drive", "doctype", "Drive File")

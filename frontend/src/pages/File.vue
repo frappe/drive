@@ -21,9 +21,6 @@
       <Button :variant="'ghost'" @click="enterFullScreen">
         <Scan class="w-4" />
       </Button>
-      <!--  <Button :variant="'ghost'">
-      <FileSignature class="w-4"/>
-    </Button> -->
       <Button
         :disabled="!nextEntity?.name"
         :variant="'ghost'"
@@ -69,7 +66,6 @@ const props = defineProps({
   },
 })
 
-const entity = ref(null)
 const showShareDialog = ref(false)
 const currentEntity = ref(props.entityName)
 
@@ -102,6 +98,15 @@ function fetchFile(currentEntity) {
 
 function enterFullScreen() {
   let elem = document.getElementById("renderContainer")
+  const methods = [
+    elem.requestFullscreen,
+    elem.mozRequestFullScreen,
+    elem.webkitRequestFullScreen,
+    elem.msRequestFullScreen,
+  ]
+  // console.log(methods.find((k) => k))
+  // methods.find((k) => k)()
+  // return
   if (elem.requestFullscreen) {
     elem.requestFullscreen()
   } else if (elem.mozRequestFullScreen) {

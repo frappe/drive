@@ -80,7 +80,6 @@ export function formatMimeType(mimeType) {
         icon = "zip"
         break
     }
-  console.log(icon)
   return icon
 }
 

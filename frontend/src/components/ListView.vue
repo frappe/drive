@@ -46,7 +46,7 @@
                           height="16"
                           class="stroke-amber-500 fill-amber-500"
                         />
-                        <MyDrive
+                        <Lock
                           v-else-if="
                             row.is_private &&
                             store.state.breadcrumbs[0].label != 'My Files'
@@ -145,7 +145,7 @@ import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref } from "vue"
 import Folder from "./MimeIcons/Folder.vue"
-import MyDrive from "./EspressoIcons/MyDrive.vue"
+import Lock from "./EspressoIcons/Lock.vue"
 import { openEntity } from "@/utils/files"
 
 const store = useStore()

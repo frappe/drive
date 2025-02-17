@@ -11,7 +11,7 @@
           icon-left="trash-2"
           class="w-full"
           :loading="current.resource.loading"
-          @click="current.resource.submit() && emit('success')"
+          @click="current.resource.submit(null) && emit('success')"
         >
           {{ current.buttonText }}
         </Button>
@@ -27,7 +27,6 @@ import { toggleFav, clearRecent, clearTrash } from "@/resources/files"
 
 const props = defineProps({
   modelValue: String,
-  clearAll: Boolean,
   entities: Array,
 })
 const emit = defineEmits(["update:modelValue", "success"])
