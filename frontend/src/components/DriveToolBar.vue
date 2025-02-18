@@ -30,7 +30,7 @@
           ]"
           @click="$store.commit('toggleShareView', 'with')"
         >
-          Shared with You
+          With you
         </Button>
         <Button
           variant="ghost"
@@ -42,7 +42,7 @@
           ]"
           @click="$store.commit('toggleShareView', 'by')"
         >
-          Shared by You
+          By you
         </Button>
       </div>
       <div class="flex flex-wrap items-start justify-start gap-1">

@@ -8,7 +8,7 @@ import { prettyData } from "../utils/files"
 // GETTERS
 const COMMON_OPTIONS = {
   method: "GET",
-  // debounce: 500,
+  debounce: 500,
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
       store.commit("setError", {
@@ -101,7 +101,6 @@ export const getTrash = createResource({
 export const toggleFav = createResource({
   url: "drive.api.files.set_favourite",
   makeParams(data) {
-    console.log(data)
     if (!data) return { clear_all: true }
     const entity_names = data.entities.map(({ name }) => name)
     if (data.entities[0].is_favourite)

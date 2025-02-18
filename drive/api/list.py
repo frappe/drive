@@ -152,6 +152,7 @@ def shared(
         .where((DrivePermission.read == 1) & (DriveFile.is_active == 1))
         .select(
             *ENTITY_FIELDS,
+            DriveFile.team,
             DrivePermission.user,
             DrivePermission.owner.as_("sharer"),
             DrivePermission.read,

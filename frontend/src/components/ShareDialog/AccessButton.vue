@@ -24,8 +24,7 @@
         <div v-if="open">
           <ul>
             <li
-              v-for="(access, idx) in filtered_access_levels"
-              :key="idx"
+              v-for="access in accessLevels"
               class="flex items-center justify-between px-1 text-base text-gray-700 line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
               @click="
                 ;(accessObj[access] = !accessObj[access]),
@@ -37,7 +36,7 @@
               <Check v-if="accessObj[access]" class="h-3" />
             </li>
             <li
-              v-if="userAccess.write"
+              v-if="accessLevels.find((k) => k === 'write')"
               class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer text-red-500"
               @click="$emit('removeAccess'), close()"
             >
@@ -57,10 +56,8 @@ import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 import disableScroll from "../../utils/disable-scroll"
 import { ref } from "vue"
 
-const props = defineProps({ userAccess: Object, accessObj: Object })
+const props = defineProps({ accessLevels: Object, accessObj: Object })
 const accessObj = ref(props.accessObj)
+console.log(props.accessLevels)
 defineEmits(["updateAccess", "removeAccess"])
-
-const ACCESS_LEVELS = ["read", "comment", "share", "write"]
-const filtered_access_levels = ACCESS_LEVELS.filter((l) => props.userAccess[l])
 </script>

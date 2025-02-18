@@ -71,9 +71,9 @@ def get_user_access(entity, user=None):
     other_access = {}
     if user == entity.owner:
         other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
-    if entity.team in teams:
+    elif entity.team in teams:
         # Allow write access for uploading to home folder
-        if entity.parent_entity == None:
+        if not entity.parent_entity:
             other_access = {"read": 1, "comment": 1, "share": 0, "write": 1, "type": "team"}
         else:
             other_access = {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
