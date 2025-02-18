@@ -3,7 +3,8 @@ import store from "@/store"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 
-export const openEntity = (team, entity) => {
+export const openEntity = (team = null, entity) => {
+  if (!team) team = "shared"
   if (entity.is_group) {
     router.push({
       name: "Folder",
@@ -12,12 +13,12 @@ export const openEntity = (team, entity) => {
   } else if (entity.mime_type === "frappe_doc") {
     router.push({
       name: "Document",
-      params: { entityName: entity.name },
+      params: { team, entityName: entity.name },
     })
   } else {
     router.push({
       name: "File",
-      params: { entityName: entity.name },
+      params: { team, entityName: entity.name },
     })
   }
 }
@@ -62,7 +63,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private, file = true) => {
     res.push({
       label: item.title,
       route:
-        `/${route.params.team}/${
+        `/${route.params?.team}/${
           idx === breadcrumbs.length - 1 ? (file ? "file" : "doc") : "folder"
         }/` + item.name,
     })

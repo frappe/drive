@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { nextTick } from "vue"
 import { getTeams } from "./resources/files"
 
 function redir404(to, from, next) {
