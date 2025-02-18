@@ -794,7 +794,7 @@ def upload_chunked_file(team=None, personal=0, parent=None, last_modified=None):
         "embeds",
     )
     if not frappe.has_permission(
-        doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
+        doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
