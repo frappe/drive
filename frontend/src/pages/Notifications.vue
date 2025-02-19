@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-y-auto mt-3.5 px-4 pb-5 w-full">
+  <div class="h-full overflow-y-auto mt-3.5 px-4 w-full">
     <div class="w-full h-7 mb-6 flex items-start justify-between">
       <div
         class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"

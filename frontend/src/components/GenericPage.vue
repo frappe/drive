@@ -1,11 +1,11 @@
 <template>
   <div
-    class="h-full w-full pt-3.5 px-4 pb-5 overflow-y-auto flex flex-col"
+    class="h-full w-full pt-3.5 px-4 overflow-y-auto flex flex-col"
     @contextmenu="handleContextMenu"
   >
     <DriveToolBar
-      v-model="sortOrder"
       :column-headers="$route.name === 'Recents' ? null : columnHeaders"
+      :get-entities="getEntities"
     />
 
     <!-- This sucks, redo it -->
@@ -15,7 +15,9 @@
       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       :icon="icon"
       :primary-message="primaryMessage"
-      :secondary-message="secondaryMessage"
+      :secondary-message="
+        activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
+      "
     />
     <ListView
       v-else-if="$store.state.view === 'list'"
@@ -155,7 +157,7 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
-import { groupByFolder, openEntity } from "@/utils/files"
+import { groupByFolder, openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createDocument, togglePersonal } from "@/resources/files"
 import emitter from "@/emitter.js"
 
@@ -172,7 +174,8 @@ const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
-const sortOrder = ref(store.state.sortOrder)
+const sortOrder = computed(() => store.state.sortOrder)
+const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
 const selections = ref([])
 watch(activeEntity, () => (selections.value = [activeEntity.value]))
@@ -188,6 +191,32 @@ watch(
   },
   { immediate: route.name !== "Shared" }
 )
+watch(activeFilters.value, async (val) => {
+  let mime_type_list = JSON.stringify(
+    val.reduce((acc, k) => [...acc, ...(MIME_LIST_MAP[k.label] || [])], [])
+  )
+  props.getEntities.fetch({ team: route.params.team, mime_type_list })
+  if (val.find((k) => k.label === "Folder")) {
+    setTimeout(() =>
+      props.getEntities.fetch(
+        {
+          team: route.params.team,
+          folders: 1,
+        },
+        600
+      )
+    )
+
+    setTimeout(
+      () =>
+        (props.getEntities.data = [
+          ...props.getEntities.previousData,
+          ...props.getEntities.data,
+        ]),
+      1000
+    )
+  }
+})
 
 const clickEvent = ref(null)
 const defaultContextTriggered = ref(false)
