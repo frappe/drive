@@ -312,7 +312,6 @@ def get_valid_breadcrumbs(entity, user_access):
     Determine user access and generate upward path (breadcrumbs).
     """
     file_path = generate_upward_path(entity.name)
-    print(file_path)
     accessible_path = []
     # If team/admin of this entity, then entire path
     if user_access.get("type") in ["admin", "team"]:

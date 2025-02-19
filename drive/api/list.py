@@ -1,3 +1,4 @@
+from os import write
 import frappe
 import json
 from drive.utils.files import get_home_folder
@@ -31,9 +32,11 @@ def files(
     folders=0,
     all=0,
 ):
+    home = get_home_folder(team)["name"]
+
     if not entity_name:
         # If not specified, get home folder
-        entity_name = get_home_folder(team)["name"]
+        entity_name = home
     entity = frappe.get_doc("Drive File", entity_name)
 
     # Verify that entity exists and is part of the team
@@ -43,10 +46,10 @@ def files(
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
     user_access = get_user_access(entity)
-    print(user_access)
     if not user_access["read"]:
         frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
-
+    if team == home:
+        user_access["write"] = entity.owner == frappe.session.user
     # Get all the children entities
     query = (
         frappe.qb.from_(DriveFile)
@@ -69,7 +72,7 @@ def files(
         query = query.where(DriveFile.team == team)
     else:
         query = query.where(DriveFile.parent_entity == entity_name)
-        # print(query.run(debug=True, as_dict=1))
+
     # Get favourites data (only that, if applicable)
     if favourites_only:
         query = query.right_join(DriveFavourite)

@@ -111,7 +111,6 @@ class DriveFile(Document):
                 comment=1,
                 share=1,
             )
-        print("die", permissions)
         for permission in permissions:
             self.share(
                 user=permission.user,
