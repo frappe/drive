@@ -16,7 +16,7 @@ Recents = frappe.qb.DocType("Drive Entity Log")
 DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def files(
     team,
     entity_name=None,
@@ -31,10 +31,6 @@ def files(
     folders=0,
     all=0,
 ):
-    teams = get_teams()
-    if team not in teams:
-        frappe.throw("Team doesn't exist", frappe.exceptions.PageDoesNotExistError)
-
     if not entity_name:
         # If not specified, get home folder
         entity_name = get_home_folder(team)["name"]
@@ -45,27 +41,39 @@ def files(
         ):
             frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
 
+    # Verify that folder is public or that they have access
+    user = frappe.session.user if frappe.session.user != "Guest" else ""
+    is_team_member = team in get_teams(user)
+    print("ha", is_team_member)
+    if not is_team_member:
+        query = (
+            frappe.qb.from_(DriveFile)
+            .left_join(DrivePermission)
+            .on(DrivePermission.entity == DriveFile.name)
+            .where((DriveFile.name == entity_name) & (DrivePermission.user == user))
+            .select(*ENTITY_FIELDS)
+        )
+        if not query.run():
+            frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
+
     # Get all the children entities
     query = (
         frappe.qb.from_(DriveFile)
         .where(DriveFile.is_active == is_active)
         .left_join(DrivePermission)
-        .on(
-            (DrivePermission.entity == DriveFile.name)
-            & (DrivePermission.user == frappe.session.user)
-        )
+        .on((DrivePermission.entity == DriveFile.name) & (DrivePermission.user == user))
         .limit(limit)
         # Give defaults as a team member
         .select(
             *ENTITY_FIELDS,
-            fn.Coalesce(DrivePermission.read, 1).as_("read"),
-            fn.Coalesce(DrivePermission.comment, 1).as_("comment"),
-            fn.Coalesce(DrivePermission.share, 1).as_("share"),
+            fn.Coalesce(DrivePermission.read, int(is_team_member)).as_("read"),
+            fn.Coalesce(DrivePermission.comment, int(is_team_member)).as_("comment"),
+            fn.Coalesce(DrivePermission.share, int(is_team_member)).as_("share"),
             fn.Coalesce(DrivePermission.write, DriveFile.owner == frappe.session.user).as_(
                 "write"
             ),
         )
-        .where(fn.Coalesce(DrivePermission.read, 1).as_("read") == 1)
+        .where(fn.Coalesce(DrivePermission.read, int(is_team_member)).as_("read") == 1)
     )
 
     if all:

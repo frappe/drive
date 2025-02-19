@@ -15,7 +15,6 @@ export const notifCount = createResource({
   url: "/api/method/drive.api.notifications.get_unread_count",
   method: "GET",
   cache: "notif-count",
-  auto: true,
 })
 
 export const generalAccess = createResource({
