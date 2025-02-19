@@ -7,7 +7,7 @@ from drive.locks.distributed_lock import DistributedLock
 from drive.utils.files import get_team_thumbnails_directory
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def create_image_thumbnail(entity_name):
     drive_file = frappe.get_value(
         "Drive File",
@@ -39,7 +39,7 @@ def create_image_thumbnail(entity_name):
         return response
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def create_video_thumbnail(entity_name):
     drive_file = frappe.get_value(
         "Drive File",

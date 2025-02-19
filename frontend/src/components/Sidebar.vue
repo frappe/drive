@@ -99,6 +99,7 @@ import Users from "./EspressoIcons/Users.vue"
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const route = useRoute()
+notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 

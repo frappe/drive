@@ -2,9 +2,7 @@ from drive.utils.files import get_home_folder
 import frappe
 import os
 import re
-import magic
 import mimetypes
-from werkzeug.utils import secure_filename
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from drive.locks.distributed_lock import DistributedLock
@@ -12,8 +10,8 @@ from pathlib import Path
 from io import BytesIO
 
 
-@frappe.whitelist(allow_guest=True)
-def get_file_content(embed_name, parent_entity_name, trigger_download=0):
+@frappe.whitelist()
+def get_file_content(embed_name, parent_entity_name):
     """
     Stream file content and optionally trigger download
 

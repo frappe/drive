@@ -47,7 +47,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private, file = true) => {
   let res = [
     {
       label: "Shared",
-      route: "/shared",
+      route: store.getters.isLoggedIn && "/shared",
     },
   ]
   if (breadcrumbs[0].parent_entity === null) {
