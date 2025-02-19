@@ -38,7 +38,7 @@ const store = createStore({
     view: JSON.parse(localStorage.getItem("view")) || "list",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     elementExists: false,
-    activeFilters: [],
+    activeFilters: JSON.parse(localStorage.getItem("activeFilters")) || [],
     activeTags: [],
     activeEntity: null,
     notifCount: 0,
@@ -141,6 +141,11 @@ const store = createStore({
     },
     setActiveEntity(state, payload) {
       state.activeEntity = payload
+    },
+    setActiveFilters(state, payload) {
+      // BROKEN
+      // localStorage.setItem("activeFilters", JSON.stringify(payload))
+      state.activeFilters = payload
     },
     setCurrentFolder(state, payload) {
       localStorage.setItem("currentFolder", JSON.stringify(payload))
