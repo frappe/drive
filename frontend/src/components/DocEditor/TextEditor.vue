@@ -954,6 +954,9 @@ export default {
           method: "rename",
           ...params,
         }),
+        onSuccess: () => {
+          this.$emit("rename")
+        },
         debounce: 500,
       }
     },

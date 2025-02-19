@@ -111,10 +111,10 @@ class DriveFile(Document):
                 comment=1,
                 share=1,
             )
-
+        print("die", permissions)
         for permission in permissions:
             self.share(
-                user=permission.user_name,
+                user=permission.user,
                 read=permission.read,
                 comment=permission.read,
                 write=permission.write,

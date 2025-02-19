@@ -215,10 +215,20 @@ def create_folder(team, title, personal=False, parent=None):
             "Cannot create folder due to insufficient permissions",
             frappe.PermissionError,
         )
-
-    entity_exists = frappe.db.exists(
-        {"doctype": "Drive File", "parent_entity": parent, "title": title}
-    )
+    if not personal:
+        entity_exists = frappe.db.exists(
+            {"doctype": "Drive File", "parent_entity": parent, "title": title}
+        )
+    else:
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "title": title,
+                "owner": frappe.session.user,
+                "is_private": 1,
+            }
+        )
     if entity_exists:
         suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(

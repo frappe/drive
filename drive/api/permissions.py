@@ -22,7 +22,7 @@ ENTITY_FIELDS = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user=None):
+def get_user_access(entity, user=frappe.session.user):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
