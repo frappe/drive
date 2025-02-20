@@ -48,8 +48,11 @@ def files(
     user_access = get_user_access(entity)
     if not user_access["read"]:
         frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
-    if team == home:
+
+    # Do not bubble down write access from home folder
+    if entity_name == home:
         user_access["write"] = entity.owner == frappe.session.user
+
     # Get all the children entities
     query = (
         frappe.qb.from_(DriveFile)
@@ -98,8 +101,10 @@ def files(
             order=Order.desc if order_by.endswith("desc") else Order.asc,
         )
 
-    if favourites_only or recents_only or not is_active:
+    if favourites_only or recents_only:
         query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
+    elif not is_active:
+        query = query.where(DriveFile.owner == frappe.session.user)
     elif personal is None:
         query = query.where(DriveFile.is_private == entity.is_private)
     elif int(personal):

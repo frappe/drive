@@ -274,12 +274,16 @@ const actionItems = computed(() => {
         label: "Restore",
         icon: RotateCcw,
         onClick: () => (dialog.value = "restore"),
+        multi: true,
+        important: true,
       },
       {
         label: "Delete forever",
         icon: Trash,
         onClick: () => (dialog.value = "d"),
         isEnabled: () => route.name === "Trash",
+        multi: true,
+        important: true,
       },
     ].filter((a) => !a.isEnabled || a.isEnabled())
   } else {
