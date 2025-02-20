@@ -41,13 +41,19 @@ def files(
 
     # Verify that entity exists and is part of the team
     if not entity or entity.team != team:
-        frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
+        frappe.throw(
+            f"Not found - entity {entity_name} has team {team} ",
+            frappe.exceptions.PageDoesNotExistError,
+        )
 
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
-    user_access = get_user_access(entity)
+    user_access = get_user_access(entity, user)
     if not user_access["read"]:
-        frappe.throw("Not found", frappe.exceptions.PageDoesNotExistError)
+        frappe.throw(
+            f"Not found - {user} doesn't have access to file ({user_access})",
+            frappe.exceptions.PageDoesNotExistError,
+        )
 
     # Do not bubble down write access from home folder
     if entity_name == home:
