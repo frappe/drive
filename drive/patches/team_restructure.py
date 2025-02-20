@@ -1,18 +1,21 @@
 import frappe
 from pathlib import Path
 import shutil
+import time
 
 
 def execute():
     print(
-        "This migration to an alpha release might CORRUPT your data. Do NOT run this before taking a complete backup. You have one minute left to cancel this deployment. "
+        "This migration to an alpha release might CORRUPT your data. Do NOT run this before taking a complete backup. You have two minutes left to cancel this deployment. "
     )
-    input("Are you sure you want to proceed? (Click enter) ")
+    time.sleep(120)
 
     frappe.reload_doc("Drive", "doctype", "Drive Team Member")
     frappe.reload_doc("Drive", "doctype", "Drive Team")
     frappe.reload_doc("Drive", "doctype", "Drive File")
     frappe.reload_doc("Drive", "doctype", "Drive Permission")
+    frappe.reload_doc("Drive", "doctype", "Drive Entity Activity Log")
+
     if frappe.db.get_list("Drive Team"):
         print("A Drive Team already exists, going ahead might corrupt your database.")
         return
@@ -20,7 +23,7 @@ def execute():
     frappe.db.delete("Drive Team")
     frappe.db.delete("Drive File")
     frappe.db.delete("Drive Permission")
-    team = frappe.get_doc({"doctype": "Drive Team", "title": "Frappe"})
+    team = frappe.get_doc({"doctype": "Drive Team", "title": "Drive"})
     team.insert()
 
     home_folder = frappe.db.get_list("Drive File", {"team": team.name})[0].name
