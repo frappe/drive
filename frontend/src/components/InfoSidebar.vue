@@ -104,9 +104,9 @@
               <span class="col-span-1">{{ entity.creation }}</span>
               <span class="col-span-1 text-gray-600">Owner</span>
               <span class="col-span-1">{{
-                entity.owner === "You"
-                  ? $store.state.auth.user_id + " (you)"
-                  : entity.owner
+                entity.owner + entity.owner === $store.state.auth.user_id
+                  ? " (you)"
+                  : ""
               }}</span>
             </div>
           </div>

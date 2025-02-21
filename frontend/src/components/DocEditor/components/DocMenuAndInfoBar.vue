@@ -1014,7 +1014,8 @@ export default {
           write: false,
           disabled:
             this.$store.state.entityInfo[0].allow_comments === 0 ||
-            this.$store.state.entityInfo[0].owner !== "You",
+            this.$store.state.entityInfo[0].owner !==
+              this.$store.state.auth.userId,
         },
         {
           name: "Versions",

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-full w-full pt-3.5 px-4 overflow-y-auto flex flex-col"
+    class="h-full w-full px-2 overflow-y-auto flex flex-col"
     @contextmenu="handleContextMenu"
   >
     <DriveToolBar
@@ -30,7 +30,7 @@
     />
     <EmptyEntityContextMenu
       v-if="
-        ($route.name === 'My Files' ||
+        ($route.name === 'Team' ||
           $route.name === 'Home' ||
           $route.name === 'Folder') &&
         defaultContextTriggered
@@ -138,11 +138,12 @@ import FolderContentsError from "@/components/FolderContentsError.vue"
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
+import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
-import Home from "./EspressoIcons/Home.vue"
+import Team from "./EspressoIcons/Organization.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import Share from "./EspressoIcons/Share.vue"
@@ -153,6 +154,7 @@ import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
+import Star from "./EspressoIcons/Star.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
@@ -225,6 +227,7 @@ function handleContextMenu(event) {
   defaultContextTriggered.value = true
   event.preventDefault()
 }
+allUsers.fetch({ team: route.params.team })
 
 const newDocument = async () => {
   let data = await createDocument.submit({
@@ -289,8 +292,8 @@ const actionItems = computed(() => {
   } else {
     return [
       {
-        label: "Move to Home",
-        icon: Home,
+        label: "Move to Team",
+        icon: Team,
         onClick: ([e]) =>
           togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
         isEnabled: () => route.name == "My Files",
@@ -350,7 +353,7 @@ const actionItems = computed(() => {
       },
       {
         label: "Favourite",
-        icon: "star",
+        icon: Star,
         onClick: (entities) => {
           entities = entities.map((e) => ({
             name: e.name,

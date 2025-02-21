@@ -591,7 +591,7 @@ def call_controller_method(entity_name, method):
     :raises ValueError: If the entity does not exist
     :return: The result of the controller method
     """
-
+    # broken
     drive_file = frappe.get_doc("Drive File", frappe.local.form_dict.pop("entity_name"))
     if not drive_file:
         frappe.throw("Entity does not exist", ValueError)

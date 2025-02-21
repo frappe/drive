@@ -84,10 +84,10 @@ import { ArrowLeftFromLine } from "lucide-vue-next"
 import Search from "./EspressoIcons/Search.vue"
 import Recent from "./EspressoIcons/Recent.vue"
 import Star from "./EspressoIcons/Star.vue"
-import Lock from "./EspressoIcons/Lock.vue"
+import Home from "./EspressoIcons/Home.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
-import Home from "./EspressoIcons/Home.vue"
+import Team from "./EspressoIcons/Organization.vue"
 import StorageBar from "./StorageBar.vue"
 import { notifCount } from "@/resources/permissions"
 import { computed } from "vue"
@@ -110,13 +110,13 @@ const sidebarItems = computed(() => {
   return [
     {
       label: "Home",
-      route: `/${team}/`,
+      route: `/${team}/personal`,
       icon: Home,
     },
     {
-      label: "My Files",
-      route: `/${team}/personal`,
-      icon: Lock,
+      label: "Team",
+      route: `/${team}/`,
+      icon: Team,
     },
     {
       label: "Recents",

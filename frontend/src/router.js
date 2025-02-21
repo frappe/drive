@@ -53,7 +53,7 @@ const routes = [
   },
   {
     path: "/:team",
-    name: "Home",
+    name: "Team",
     component: () => import("@/pages/Home.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
@@ -77,7 +77,7 @@ const routes = [
   },
   {
     path: "/:team/personal",
-    name: "My Files",
+    name: "Home",
     component: () => import("@/pages/Personal.vue"),
     beforeEnter: [setRootBreadCrumb],
   },

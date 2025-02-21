@@ -12,6 +12,7 @@ def get_all_users(team):
             ["name", "in", users],
         ],
         fields=[
+            "name",
             "email",
             "full_name",
             "user_image",

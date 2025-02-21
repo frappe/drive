@@ -37,12 +37,11 @@ export const prettyData = (entities) => {
     if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
     entity.modified = formatDate(entity.modified)
     entity.creation = formatDate(entity.creation)
-    entity.owner =
-      entity.owner === store.state.auth.user_id ? "You" : entity.owner
+
     return entity
   })
 }
-export const setBreadCrumbs = (breadcrumbs, is_private, file = true) => {
+export const setBreadCrumbs = (breadcrumbs, is_private) => {
   const route = router.currentRoute.value
   let res = [
     {
@@ -53,21 +52,23 @@ export const setBreadCrumbs = (breadcrumbs, is_private, file = true) => {
   if (breadcrumbs[0].parent_entity === null) {
     res = [
       {
-        label: is_private ? "My Files" : "Home",
+        label: is_private ? "Home" : "Team",
         route: `/${route.params.team}` + (is_private ? "/personal" : ""),
       },
     ]
     breadcrumbs.shift()
   }
   breadcrumbs.forEach((item, idx) => {
+    console.log(item, idx, breadcrumbs.length)
     res.push({
       label: item.title,
       route:
-        `/${route.params?.team}/${
-          idx === breadcrumbs.length - 1 ? (file ? "file" : "doc") : "folder"
-        }/` + item.name,
+        idx !== breadcrumbs.length - 1
+          ? `/${route.params?.team}/folder/` + item.name
+          : null,
     })
   })
+  console.log(res)
   store.commit("setBreadcrumbs", res)
 }
 

@@ -21,14 +21,14 @@
           <Sidebar v-if="isLoggedIn" class="hidden sm:block" />
           <div id="dropTarget" class="h-full w-full overflow-hidden">
             <Navbar
+              v-if="$route.name == 'File' || $route.name == 'Document'"
               :mobile-sidebar-is-open="showMobileSidebar"
               @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar"
             />
             <div class="flex w-full h-full overflow-hidden">
               <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
-              <div
-                class="flex w-full h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)] overflow-hidden"
-              >
+              <!-- what on mars is he talking about? -->
+              <div class="flex w-full h-full overflow-hidden">
                 <router-view :key="$route.fullPath" v-slot="{ Component }">
                   <component
                     :is="Component"
@@ -139,11 +139,10 @@ export default {
           k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
           h: () => this.$router.push({ name: "Home" }),
           n: () => this.$router.push({ name: "Notifications" }),
-          m: () => this.$router.push({ name: "My Space" }),
+          t: () => this.$router.push({ name: "Team" }),
           f: () => this.$router.push({ name: "Favourites" }),
           r: () => this.$router.push({ name: "Recents" }),
           s: () => this.$router.push({ name: "Shared" }),
-          t: () => this.$router.push({ name: "Trash" }),
         }
 
         const KEY_MAPS = [
