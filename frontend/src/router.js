@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { nextTick } from "vue"
 import { getTeams } from "./resources/files"
 
 function redir404(to, from, next) {
@@ -92,7 +91,7 @@ const routes = [
     path: "/:team/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
-    meta: { sidebar: true, isHybridRoute: true, filePage: true },
+    meta: { isHybridRoute: true, filePage: true },
     props: true,
   },
   {

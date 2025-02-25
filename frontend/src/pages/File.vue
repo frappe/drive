@@ -98,15 +98,6 @@ function fetchFile(currentEntity) {
 
 function enterFullScreen() {
   let elem = document.getElementById("renderContainer")
-  const methods = [
-    elem.requestFullscreen,
-    elem.mozRequestFullScreen,
-    elem.webkitRequestFullScreen,
-    elem.msRequestFullScreen,
-  ]
-  // console.log(methods.find((k) => k))
-  // methods.find((k) => k)()
-  // return
   if (elem.requestFullscreen) {
     elem.requestFullscreen()
   } else if (elem.mozRequestFullScreen) {

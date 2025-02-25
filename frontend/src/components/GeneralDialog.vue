@@ -87,7 +87,8 @@ export default {
           return {
             title: "Move to Trash",
             message:
-              items +
+              items[0].toUpperCase() +
+              items.slice(1) +
               " will be moved to Trash. Items in trash are deleted forever after 30 days. Other users will lose access to this.",
             buttonMessage: "Move to Trash",
             theme: "red",

@@ -99,13 +99,14 @@ import Users from "./EspressoIcons/Users.vue"
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const route = useRoute()
+notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 
 const sidebarItems = computed(() => {
   let team = route.params.team
   if (!getTeams.data) return []
-  if (!team) team = Object.keys(getTeams.data)[0]
+  if (!team || team === "shared") team = Object.keys(getTeams.data)[0]
   return [
     {
       label: "Home",

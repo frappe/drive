@@ -6,7 +6,6 @@ from frappe.utils import now, split_emails, validate_email_address
 @frappe.whitelist()
 def get_all_users(team):
     users = [k.user for k in frappe.get_doc("Drive Team", team).users]
-    print(users)
     drive_users = frappe.get_all(
         doctype="User",
         filters=[

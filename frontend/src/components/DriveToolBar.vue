@@ -30,7 +30,7 @@
           ]"
           @click="$store.commit('toggleShareView', 'with')"
         >
-          Shared with You
+          With you
         </Button>
         <Button
           variant="ghost"
@@ -42,21 +42,21 @@
           ]"
           @click="$store.commit('toggleShareView', 'by')"
         >
-          Shared by You
+          By you
         </Button>
       </div>
       <div class="flex flex-wrap items-start justify-start gap-1">
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
-            <component :is="item"></component>
-            <span class="text-sm ml-2">{{ item }}</span>
+            <component :is="item.icon"></component>
+            <span class="text-sm ml-2">{{ item.label }}</span>
 
             <Button
               variant="minimal"
               @click="
                 item.title
-                  ? $store.state.activeTags.splice(index, 1)
-                  : $store.state.activeFilters.splice(index, 1)
+                  ? activeTags.splice(index, 1)
+                  : activeFilters.splice(index, 1)
               "
             >
               <template #icon>
@@ -170,18 +170,19 @@ import Image from "./MimeIcons/Image.vue"
 import Video from "./MimeIcons/Video.vue"
 import PDF from "./MimeIcons/PDF.vue"
 import Unknown from "./MimeIcons/Unknown.vue"
-import { computed, onMounted, watch } from "vue"
+import { computed, onMounted, watch, ref } from "vue"
 import { useStore } from "vuex"
 
 const store = useStore()
 const props = defineProps({
   columnHeaders: Array,
+  getEntitities: Object,
 })
-const sortOrder = defineModel()
-watch(sortOrder, (val) => {
-  store.commit("setSortOrder", val)
-})
-const activeFilters = computed(() => store.state.activeFilters)
+const sortOrder = ref(store.state.sortOrder)
+watch(sortOrder, (val) => store.commit("setSortOrder", val))
+const activeFilters = ref(store.state.activeFilters)
+watch(activeFilters.value, (val) => store.commit("setActiveFilters", val))
+
 const activeTags = computed(() => store.state.activeTags)
 const orderByItems = computed(() => {
   return props.columnHeaders.map((header) => ({
@@ -190,7 +191,7 @@ const orderByItems = computed(() => {
       (sortOrder.value = {
         field: header.field,
         label: header.label,
-        ascending: sortOrder.value.ascending,
+        ascending: sortOrder.value?.ascending,
       }),
   }))
 })
@@ -237,7 +238,7 @@ const TYPES = [
   },
 ]
 TYPES.forEach((t) => {
-  t.onClick = () => store.state.activeFilters.push(t.label)
+  t.onClick = () => activeFilters.value.push(t)
 })
 const filterItems = computed(() => {
   return TYPES.filter((item) => !activeFilters.value.includes(item.label))

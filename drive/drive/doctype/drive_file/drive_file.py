@@ -111,10 +111,9 @@ class DriveFile(Document):
                 comment=1,
                 share=1,
             )
-
         for permission in permissions:
             self.share(
-                user=permission.user_name,
+                user=permission.user,
                 read=permission.read,
                 comment=permission.read,
                 write=permission.write,
@@ -284,7 +283,7 @@ class DriveFile(Document):
                     mime_type=drive_entity.mime_type,
                 )
 
-    @frappe.whitelist(allow_guest=True)
+    @frappe.whitelist()
     def rename(self, new_title):
         """
         Rename file or folder

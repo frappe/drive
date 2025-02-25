@@ -22,7 +22,7 @@ ENTITY_FIELDS = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user=None):
+def get_user_access(entity, user=frappe.session.user):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -71,10 +71,10 @@ def get_user_access(entity, user=None):
     other_access = {}
     if user == entity.owner:
         other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
-    if entity.team in teams:
+    elif entity.team in teams:
         # Allow write access for uploading to home folder
-        if entity.parent_entity == None:
-            other_access = {"read": 1, "comment": 1, "share": 0, "write": 1, "type": "team"}
+        if not entity.parent_entity:
+            other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "team"}
         else:
             other_access = {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
 

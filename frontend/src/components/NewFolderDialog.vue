@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Create a Folder', size: 'xs' }">
+  <Dialog v-model="open" :options="{ title: 'New Folder', size: 'xs' }">
     <template #body-content>
       <Input
         ref="input"
@@ -7,8 +7,15 @@
         placeholder="folder name..."
         type="text"
         @keyup.enter="submit"
+        @keydown="createFolder.error = null"
       />
-      <div class="flex mt-8">
+      <div
+        v-if="createFolder.error"
+        class="pt-4 text-base font-sm text-red-500"
+      >
+        This folder already exists.
+      </div>
+      <div class="flex" :class="createFolder.error ? 'mt-5' : 'mt-8'">
         <Button
           variant="solid"
           class="w-full"

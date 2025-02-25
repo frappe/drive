@@ -8,6 +8,76 @@ import cv2
 
 DriveFile = frappe.qb.DocType("Drive File")
 
+MIME_LIST_MAP = {
+    "Image": [
+        "image/png",
+        "image/jpeg",
+        "image/svg+xml",
+        "image/heic",
+        "image/heif",
+        "image/avif",
+        "image/webp",
+        "image/tiff",
+        "image/gif",
+    ],
+    "PDF": ["application/pdf"],
+    "Text": [
+        "text/plain",
+        "text/html",
+        "text/css",
+        "text/javascript",
+        "application/javascript",
+        "text/rich-text",
+        "text/x-shellscript",
+        "text/markdown",
+        "application/json",
+        "application/x-httpd-php",
+        "text/x-python",
+        "application/x-python-script",
+        "application/x-sql",
+        "text/x-perl",
+        "text/x-csrc",
+        "text/x-sh",
+    ],
+    "XML Data": ["application/xml"],
+    "Document": [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.oasis.opendocument.text",
+        "application/vnd.apple.pages",
+        "application/x-abiword",
+        "frappe_doc",
+    ],
+    "Spreadsheet": [
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "text/csv",
+        "application/vnd.apple.numbers",
+    ],
+    "Presentation": [
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.oasis.opendocument.presentation",
+        "application/vnd.apple.keynote",
+    ],
+    "Audio": ["audio/mpeg", "audio/wav", "audio/x-midi", "audio/ogg", "audio/mp4", "audio/mp3"],
+    "Video": ["video/mp4", "video/webm", "video/ogg", "video/quicktime", "video/x-matroska"],
+    "Book": ["application/epub+zip", "application/x-mobipocket-ebook"],
+    "Application": [
+        "application/octet-stream",
+        "application/x-sh",
+        "application/vnd.microsoft.portable-executable",
+    ],
+    "Archive": [
+        "application/zip",
+        "application/x-rar-compressed",
+        "application/x-tar",
+        "application/gzip",
+        "application/x-bzip2",
+    ],
+}
+
 
 def create_user_directory():
     """
@@ -192,7 +262,7 @@ def generate_upward_path(entity_name):
     Stops when parent_drive_file IS NULL
     """
     entity = frappe.db.escape(entity_name)
-    user = frappe.db.escape(frappe.session.user)
+    user = frappe.db.escape(frappe.session.user if frappe.session.user != "Guest" else "")
     result = frappe.db.sql(
         f"""WITH RECURSIVE
             generated_path as (
@@ -253,3 +323,10 @@ def get_valid_breadcrumbs(entity, user_access):
             break
         accessible_path.append(k)
     return accessible_path[::-1]
+
+
+def kind_to_mime(kinds):
+    res = []
+    for k in kind:
+        res.extend(MIME_LIST_MAP.get("k", []))
+    return res

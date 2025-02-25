@@ -64,7 +64,7 @@
                     </template>
                     <template v-if="column.key === 'options'">
                       <Dropdown :options="dropdownActionItems(row)">
-                        <Button class="bg-white">
+                        <Button class="bg-white me-3">
                           <FeatherIcon name="more-horizontal" class="h-4 w-4" />
                         </Button>
                       </Dropdown>

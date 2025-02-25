@@ -17,7 +17,7 @@ from drive.api.files import (
 from drive.utils.files import create_thumbnail
 
 
-@frappe.whitelist(allow_guest=True, methods=["PATCH", "HEAD", "POST", "GET" "OPTIONS", "GET"])
+@frappe.whitelist()
 def handle_tus_request(fileID=None):
     tus_version = "1.0.0"
     tus_checksum_algorithm = "md5,sha1,crc32"

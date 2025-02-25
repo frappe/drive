@@ -185,7 +185,7 @@ def create_drive_file(
     )
     drive_file.flags.file_created = True
     drive_file.insert()
-    drive_file.path = entity_path(drive_file.name)
+    drive_file.path = str(entity_path(drive_file.name))
     drive_file.save()
     if last_modified:
         dt_object = datetime.fromtimestamp(int(last_modified) / 1000.0)
@@ -215,10 +215,20 @@ def create_folder(team, title, personal=False, parent=None):
             "Cannot create folder due to insufficient permissions",
             frappe.PermissionError,
         )
-
-    entity_exists = frappe.db.exists(
-        {"doctype": "Drive File", "parent_entity": parent, "title": title}
-    )
+    if not personal:
+        entity_exists = frappe.db.exists(
+            {"doctype": "Drive File", "parent_entity": parent, "title": title}
+        )
+    else:
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "title": title,
+                "owner": frappe.session.user,
+                "is_private": 1,
+            }
+        )
     if entity_exists:
         suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(
@@ -642,19 +652,6 @@ def auto_delete_from_trash():
 
 
 @frappe.whitelist()
-def toggle_allow_download(entity_name, new_value):
-    """
-    Toggle allow download for entity without updating modified
-
-    """
-
-    frappe.db.set_value(
-        "Drive File", entity_name, "allow_download", new_value, update_modified=False
-    )
-    return
-
-
-@frappe.whitelist()
 def get_title(entity_name):
     """
     Toggle allow download for entity
@@ -767,7 +764,7 @@ def get_ancestors_of(entity_name):
 
 
 @frappe.whitelist(allow_guest=True)
-def upload_chunked_file(team=None, personal=0, parent=None, last_modified=None):
+def upload_chunked_file(personal=0, parent=None, last_modified=None):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -794,7 +791,7 @@ def upload_chunked_file(team=None, personal=0, parent=None, last_modified=None):
         "embeds",
     )
     if not frappe.has_permission(
-        doctype="Drive Entity", doc=parent, ptype="write", user=frappe.session.user
+        doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
@@ -836,3 +833,7 @@ def upload_chunked_file(team=None, personal=0, parent=None, last_modified=None):
     os.rename(save_path, frappe.get_site_path("private/files") / drive_file.path)
 
     return drive_file.name + save_path.suffix
+
+
+# def translate_from(old_name, team):
+#    k = Path(home_directory["name"]) / "embeds"
