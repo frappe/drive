@@ -1,24 +1,13 @@
 <template>
   <div
-    ondragstart="return false;"
-    ondrop="return false;"
-    class="flex gap-x-3 flex-wrap justify-start items-center w-full min-h-8 mb-6"
+    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-3"
   >
-    <div class="flex gap-3 w-full justify-start items-center flex-wrap">
-      <Dropdown :options="filterItems" placement="left">
-        <Button
-          >Filter
-          <template #prefix>
-            <Filter />
-          </template>
-          <template #suffix>
-            <ChevronDown />
-          </template>
-        </Button>
-      </Dropdown>
+    <div class="flex w-full justify-start items-center flex-wrap">
+      <Breadcrumbs :items="$store.state.breadcrumbs" />
+
       <div
         v-if="$route.name === 'Shared'"
-        class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
+        class="ml-5 bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
       >
         <Button
           variant="ghost"
@@ -45,7 +34,7 @@
           By you
         </Button>
       </div>
-      <div class="flex flex-wrap items-start justify-start gap-1">
+      <div class="flex flex-wrap items-start justify-end gap-1 ml-3">
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
             <component :is="item.icon"></component>
@@ -97,7 +86,8 @@
           </div>
         </div>
       </div>
-      <div class="ml-auto flex gap-x-1 items-center">
+
+      <div class="ml-auto flex gap-x-3 items-center">
         <Dropdown
           v-if="columnHeaders"
           :options="orderByItems"
@@ -118,6 +108,17 @@
               {{ sortOrder.label }}
             </Button>
           </div>
+        </Dropdown>
+        <Dropdown :options="filterItems" placement="right">
+          <Button
+            >Filter
+            <template #prefix>
+              <Filter />
+            </template>
+            <template #suffix>
+              <ChevronDown />
+            </template>
+          </Button>
         </Dropdown>
         <div
           v-if="false"
@@ -148,13 +149,34 @@
             <ViewList />
           </Button>
         </div>
+
+        <div v-if="!$store.getters.isLoggedIn" class="ml-2">
+          <Button variant="solid" @click="$router.push({ name: 'Login' })">
+            Sign In
+          </Button>
+        </div>
+        <template v-for="button of possibleButtons" :key="button.route">
+          <Button
+            v-if="$route.name === button.route"
+            class="line-clamp-1 truncate w-full"
+            :disabled="!button.entities.data.length"
+            variant="subtle"
+            :theme="button.theme || 'gray'"
+            @click="emitter.emit('showCTADelete')"
+          >
+            <template #prefix>
+              <FeatherIcon :name="button.icon" class="w-4" />
+            </template>
+            {{ button.label }}
+          </Button>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { FeatherIcon, Button, Dropdown } from "frappe-ui"
+import { FeatherIcon, Button, Dropdown, Breadcrumbs } from "frappe-ui"
 import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
 import DownArrow from "./EspressoIcons/DownArrow.vue"
@@ -172,6 +194,7 @@ import PDF from "./MimeIcons/PDF.vue"
 import Unknown from "./MimeIcons/Unknown.vue"
 import { computed, onMounted, watch, ref } from "vue"
 import { useStore } from "vuex"
+import { getRecents, getFavourites, getTrash } from "@/resources/files"
 
 const store = useStore()
 const props = defineProps({
@@ -255,4 +278,21 @@ const toggleAscending = () => {
     ascending: !sortOrder.value.ascending,
   }
 }
+
+const possibleButtons = [
+  { route: "Recents", label: "Clear", icon: "clock", entities: getRecents },
+  {
+    route: "Favourites",
+    label: "Clear",
+    icon: "star",
+    entities: getFavourites,
+  },
+  {
+    route: "Trash",
+    label: "Empty Trash",
+    icon: "trash",
+    entities: getTrash,
+    theme: "red",
+  },
+]
 </script>

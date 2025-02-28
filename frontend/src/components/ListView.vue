@@ -13,7 +13,11 @@
     <Loader v-if="!entities || entities.loading" />
     <template v-else>
       <div class="h-full overflow-y-auto">
-        <div v-for="group in formattedRows" :key="group.group">
+        <div
+          v-if="formattedRows[0].group"
+          v-for="group in formattedRows"
+          :key="group.group"
+        >
           <ListGroupHeader :group="group">
             <slot
               v-if="$slots['group-header']"
@@ -22,58 +26,27 @@
             />
           </ListGroupHeader>
           <ListGroupRows :group="group">
-            <template v-for="row in group.rows" :key="row.name">
-              <ListRow
-                :class="selectedRow === row.name ? '!bg-surface-gray-2' : ''"
-                :row="row"
-                class="hover:bg-surface-menu-bar cursor-pointer"
-                @click="setActive(row)"
-                @dblclick="() => openEntity(route.params.team, row)"
-              >
-                <template #default="{ idx, column, item }">
-                  <ListRowItem
-                    :column="column"
-                    :row="row"
-                    :item="item"
-                    :align="column.align"
-                  >
-                    <template v-if="idx === 0" #suffix>
-                      <div class="grow justify-items-end">
-                        <FeatherIcon
-                          v-if="row.is_favourite && route.name !== 'Favourites'"
-                          name="star"
-                          width="16"
-                          height="16"
-                          class="stroke-amber-500 fill-amber-500"
-                        />
-                        <Lock
-                          v-else-if="
-                            row.is_private &&
-                            store.state.breadcrumbs[0].label != 'My Files'
-                          "
-                          width="16"
-                          height="16"
-                        />
-                        <FeatherIcon
-                          v-else-if="row.accessed && route.name !== 'Recents'"
-                          name="clock"
-                          width="16"
-                          height="16"
-                        />
-                      </div>
-                    </template>
-                    <template v-if="column.key === 'options'">
-                      <Dropdown :options="dropdownActionItems(row)">
-                        <Button class="bg-white me-3">
-                          <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-                        </Button>
-                      </Dropdown>
-                    </template>
-                  </ListRowItem>
-                </template>
-              </ListRow>
-            </template>
+            <CustomListRow
+              :rows="group.rows"
+              :context-menu="contextMenu"
+              :set-active="setActive"
+              :selected="(row) => selectedRow?.name === row.name"
+              :hovered="(row) => hoveredRow === row.name"
+              @mouseenter="(row) => (hoveredRow = row.name)"
+              @mouseexit="hoveredRow = null"
+            />
           </ListGroupRows>
+        </div>
+        <div v-else>
+          <CustomListRow
+            :rows="formattedRows"
+            :context-menu="contextMenu"
+            :set-active="setActive"
+            :selected="(row) => selectedRow?.name === row.name"
+            :hovered="(row) => hoveredRow === row.name"
+            @mouseenter="(row) => (hoveredRow = row.name)"
+            @mouseexit="hoveredRow = null"
+          />
         </div>
       </div>
     </template>
@@ -103,19 +76,8 @@
                 )
             "
           >
-            <FeatherIcon
-              v-if="typeof item.icon === 'string'"
-              :name="item.icon"
-              class="h-4 w-4"
-              :class="
-                item.label === 'Unfavourite'
-                  ? 'stroke-yellow-500 fill-yellow-500'
-                  : ''
-              "
-            />
             <component
               :is="item.icon"
-              v-else
               class="h-4 w-auto text-gray-800"
               :class="item.danger ? 'text-red-500' : ''"
             />
@@ -124,19 +86,23 @@
       </template>
     </ListSelectBanner>
   </FrappeListView>
+  <EmptyEntityContextMenu
+    v-if="rowEvent && selectedRow"
+    :key="selectedRow.name"
+    v-on-outside-click="() => (rowEvent = false)"
+    :action-items="dropdownActionItems(selectedRow)"
+    :event="rowEvent"
+  />
 </template>
 <script setup>
 import {
   Button,
-  FeatherIcon,
   ListSelectBanner,
   ListHeader,
-  ListRowItem,
   ListGroupRows,
-  ListRow,
   ListGroupHeader,
   ListView as FrappeListView,
-  Dropdown,
+  Avatar,
 } from "frappe-ui"
 import Loader from "@/components/Loader.vue"
 import { formatMimeType } from "@/utils/format"
@@ -144,20 +110,27 @@ import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref } from "vue"
+import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
-import Lock from "./EspressoIcons/Lock.vue"
-import { openEntity } from "@/utils/files"
+import { allUsers } from "../resources/permissions"
+import CustomListRow from "./CustomListRow.vue"
 
 const store = useStore()
 const route = useRoute()
+const hoveredRow = ref(null)
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
   entities: Array,
 })
 const selectedRow = ref(null)
+const rowEvent = ref(null)
+const userData = computed(() =>
+  allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
+)
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
+  if (Array.isArray(props.folderContents)) return props.folderContents
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,
@@ -184,14 +157,18 @@ const selectedColumns = [
   {
     label: "Owner",
     key: "",
-    getLabel: ({ row }) => row.owner,
-    // prefix: ({ row }) =>
-    //   h(Avatar, {
-    //     shape: "circle",
-    //     image: row.user_image,
-    //     label: row.full_name,
-    //     size: "sm",
-    //   }),
+    getLabel: ({ row }) =>
+      row.owner === store.state.auth.userId
+        ? "You"
+        : userData.value[row.owner]?.full_name || row.owner,
+    prefix: ({ row }) => {
+      return h(Avatar, {
+        shape: "circle",
+        image: userData.value[row.owner]?.user_image,
+        label: userData.value[row.owner]?.full_name,
+        size: "sm",
+      })
+    },
   },
   {
     label: "Last Modified",
@@ -218,7 +195,7 @@ const setActive = (entity) => {
     selectedRow.value = null
     store.commit("setActiveEntity", null)
   } else {
-    selectedRow.value = entity.name
+    selectedRow.value = entity
     store.commit("setActiveEntity", entity)
   }
 }
@@ -229,12 +206,13 @@ const handleAction = (selectedItems, action) => {
 }
 
 const dropdownActionItems = (row) => {
+  if (!row) return []
   return props.actionItems
     .filter((a) => !a.isEnabled || a.isEnabled(row))
     .map((a) => ({
       ...a,
-      onClick: () => {
-        selectedRow.value = row.name
+      handler: () => {
+        rowEvent.value = false
         store.commit("setActiveEntity", row)
         a.onClick([row])
       },
@@ -242,4 +220,10 @@ const dropdownActionItems = (row) => {
 }
 
 const selections = defineModel()
+const contextMenu = (event, row) => {
+  selectedRow.value = row
+  rowEvent.value = event
+  event.stopPropagation()
+  event.preventDefault()
+}
 </script>

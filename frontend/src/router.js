@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { getTeams } from "./resources/files"
+import { getTeams, translate } from "./resources/files"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -45,6 +45,54 @@ const routes = [
     },
   },
   {
+    path: "/folder/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "Folder",
+        params: {
+          team: Object.keys(getTeams.data)[0],
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/document/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "Document",
+        params: {
+          team: Object.keys(getTeams.data)[0],
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/file/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "File",
+        params: {
+          team: Object.keys(getTeams.data)[0],
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
     path: "/:team/notifications",
     name: "Notifications",
     // Load a skeleton template directly?
@@ -53,7 +101,7 @@ const routes = [
   },
   {
     path: "/:team",
-    name: "Home",
+    name: "Team",
     component: () => import("@/pages/Home.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
@@ -77,7 +125,7 @@ const routes = [
   },
   {
     path: "/:team/personal",
-    name: "My Files",
+    name: "Home",
     component: () => import("@/pages/Personal.vue"),
     beforeEnter: [setRootBreadCrumb],
   },

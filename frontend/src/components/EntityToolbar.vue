@@ -96,7 +96,11 @@ function IsDownloadEnabled() {
     return false
   }
   const allEntitiesSatisfyCondition = selectedEntities.value.every((entity) => {
-    return entity.allow_download || entity.write || entity.owner === "You"
+    return (
+      entity.allow_download ||
+      entity.write ||
+      entity.owner === store.state.auth.user_id
+    )
   })
   return allEntitiesSatisfyCondition
 }

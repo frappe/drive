@@ -31,12 +31,21 @@
             {{ teamName }}
           </div>
           <div
+            class="text-gray-700 text-base leading-none font-medium"
+            v-else-if="$route.name !== 'Shared'"
+          >
+            <em>Loading...</em>
+          </div>
+          <div
             class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
             :class="teamName ? 'mt-1' : 'mb-1'"
           >
             {{ fullName }}
           </div>
-          <div v-if="!teamName" class="font-medium text-base leading-none">
+          <div
+            v-if="$route.name === 'Shared'"
+            class="font-medium text-base leading-none"
+          >
             Shared
           </div>
         </div>
@@ -81,7 +90,7 @@ const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
-const props = defineProps({
+defineProps({
   isExpanded: Boolean,
 })
 const showSettings = ref(false)

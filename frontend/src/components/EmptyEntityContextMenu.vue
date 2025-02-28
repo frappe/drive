@@ -23,9 +23,16 @@
         v-else
         class="h-6 px-2 hover:bg-gray-100 text-sm whitespace-nowrap cursor-pointer rounded flex justify-start items-center"
       >
+        <FeatherIcon
+          v-if="item.icon && typeof item.icon === 'string'"
+          :name="item.icon"
+          class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-6"
+          aria-hidden="true"
+        />
         <component
+          v-else
+          class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-6"
           :is="item.icon"
-          class="h-4 w-auto mr-2 stroke-[1.75] text-gray-800"
         />
         <div class="text-gray-800 mr-4">{{ item.label }}</div>
       </div>

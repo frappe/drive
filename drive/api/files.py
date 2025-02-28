@@ -591,7 +591,7 @@ def call_controller_method(entity_name, method):
     :raises ValueError: If the entity does not exist
     :return: The result of the controller method
     """
-
+    # broken
     drive_file = frappe.get_doc("Drive File", frappe.local.form_dict.pop("entity_name"))
     if not drive_file:
         frappe.throw("Entity does not exist", ValueError)
@@ -835,5 +835,6 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
     return drive_file.name + save_path.suffix
 
 
-# def translate_from(old_name, team):
-#    k = Path(home_directory["name"]) / "embeds"
+@frappe.whitelist()
+def get_translate():
+    return {}
