@@ -164,7 +164,7 @@ import { createDocument, togglePersonal } from "@/resources/files"
 import emitter from "@/emitter.js"
 
 const props = defineProps({
-  grouper: { type: Function, default: groupByFolder },
+  grouper: { type: Function, default: (d) => d },
   showSort: { type: Boolean, default: true },
   icon: Object,
   primaryMessage: String,
@@ -198,26 +198,6 @@ watch(activeFilters.value, async (val) => {
     val.reduce((acc, k) => [...acc, ...(MIME_LIST_MAP[k.label] || [])], [])
   )
   props.getEntities.fetch({ team: route.params.team, mime_type_list })
-  if (val.find((k) => k.label === "Folder")) {
-    setTimeout(() =>
-      props.getEntities.fetch(
-        {
-          team: route.params.team,
-          folders: 1,
-        },
-        600
-      )
-    )
-
-    setTimeout(
-      () =>
-        (props.getEntities.data = [
-          ...props.getEntities.previousData,
-          ...props.getEntities.data,
-        ]),
-      1000
-    )
-  }
 })
 
 const clickEvent = ref(null)
@@ -233,7 +213,7 @@ const newDocument = async () => {
   let data = await createDocument.submit({
     title: "Untitled Document",
     team: route.params.team,
-    personal: route.name === "My Files" ? 1 : 0,
+    personal: route.name === "Home" ? 1 : 0,
     content: null,
     parent: store.state.currentFolderID,
   })
@@ -296,7 +276,7 @@ const actionItems = computed(() => {
         icon: Team,
         onClick: ([e]) =>
           togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
-        isEnabled: () => route.name == "My Files",
+        isEnabled: () => route.name == "Home",
         multi: true,
         important: true,
       },

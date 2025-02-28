@@ -34,6 +34,7 @@ getFolderContents.update({
   params: {
     entity_name: props.entityName,
   },
+  cache: "folder-" + props.entityName,
 })
 
 onMounted(() => {

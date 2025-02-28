@@ -835,5 +835,6 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
     return drive_file.name + save_path.suffix
 
 
-# def translate_from(old_name, team):
-#    k = Path(home_directory["name"]) / "embeds"
+@frappe.whitelist()
+def get_translate():
+    return {}

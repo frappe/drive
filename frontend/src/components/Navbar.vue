@@ -40,12 +40,10 @@
 </template>
 <script setup>
 import UsersBar from "./UsersBar.vue"
-import { FeatherIcon, Button, Breadcrumbs } from "frappe-ui"
-// import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import { Button, Breadcrumbs } from "frappe-ui"
 import Share from "./EspressoIcons/Share.vue"
 import { useStore } from "vuex"
 import { computed } from "vue"
-import { getRecents, getFavourites, getTrash } from "@/resources/files"
 
 const store = useStore()
 const isLoggedIn = computed(() => store.getters.isLoggedIn)

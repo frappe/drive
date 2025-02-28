@@ -189,3 +189,10 @@ export const togglePersonal = createResource({
     getPersonal.data.splice(index)
   },
 })
+
+export const translate = createResource({
+  method: "GET",
+  url: "/api/method/drive.api.files.get_translate",
+  cache: "translate",
+  auto: true,
+})

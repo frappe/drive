@@ -128,7 +128,7 @@ def get_home_folder(team):
         .run(as_dict=True)
     )
     if not ls:
-        raise FileNotFoundError()
+        frappe.throw("Team doesn't exist - please create in Desk.")
     return ls[0]
 
 

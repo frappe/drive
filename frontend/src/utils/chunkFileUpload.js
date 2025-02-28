@@ -62,7 +62,7 @@ async function uploadChunk(
   formData.append("chunk_size", chunkSize)
   formData.append("file", CurrentChunk)
   formData.append("parent", parent_entity_name)
-  formData.append("personal", store.state.breadcrumbs[0].label == "My Files")
+  formData.append("personal", store.state.breadcrumbs[0].label == "Home")
 
   formData.append("uuid", fileUuid)
   const response = await fetch(

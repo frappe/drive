@@ -13,7 +13,11 @@
     <Loader v-if="!entities || entities.loading" />
     <template v-else>
       <div class="h-full overflow-y-auto">
-        <div v-for="group in formattedRows" :key="group.group">
+        <div
+          v-if="formattedRows[0].group"
+          v-for="group in formattedRows"
+          :key="group.group"
+        >
           <ListGroupHeader :group="group">
             <slot
               v-if="$slots['group-header']"
@@ -22,71 +26,27 @@
             />
           </ListGroupHeader>
           <ListGroupRows :group="group">
-            <ListRow
-              v-for="row in group.rows"
-              :class="
-                selectedRow?.name === row.name ? '!bg-surface-gray-2' : ''
-              "
-              :key="row.name"
-              :row="row"
-              class="hover:bg-surface-menu-bar cursor-pointer"
-              @click="setActive(row)"
-              @mouseenter="hoveredRow = row.name"
+            <CustomListRow
+              :rows="group.rows"
+              :context-menu="contextMenu"
+              :set-active="setActive"
+              :selected="(row) => selectedRow?.name === row.name"
+              :hovered="(row) => hoveredRow === row.name"
+              @mouseenter="(row) => (hoveredRow = row.name)"
               @mouseexit="hoveredRow = null"
-              @contextmenu="(e) => contextMenu(e, row)"
-              @dblclick="() => openEntity(route.params.team, row)"
-            >
-              <template #default="{ idx, column, item }">
-                <ListRowItem
-                  :column="column"
-                  :row="row"
-                  :item="item"
-                  :align="column.align"
-                >
-                  <template v-if="idx === 0" #suffix>
-                    <div class="flex flex-row grow justify-end gap-2">
-                      <div v-if="hoveredRow === row.name">
-                        <FeatherIcon
-                          name="link"
-                          class="stroke-1.5 w-4 h-4"
-                          @click="getLink(row)"
-                        />
-                      </div>
-                      <FeatherIcon
-                        v-if="row.is_favourite && route.name !== 'Favourites'"
-                        name="star"
-                        width="16"
-                        height="16"
-                        class="stroke-amber-500 fill-amber-500"
-                      />
-                      <Lock
-                        v-else-if="
-                          row.is_private &&
-                          store.state.breadcrumbs[0].label != 'My Files'
-                        "
-                        width="16"
-                        height="16"
-                      />
-                      <FeatherIcon
-                        v-else-if="row.accessed && route.name !== 'Recents'"
-                        name="clock"
-                        width="16"
-                        height="16"
-                      />
-                    </div>
-                  </template>
-                  <template v-if="column.key === 'options'">
-                    <Button
-                      class="bg-white me-3"
-                      @click="(e) => contextMenu(e, row)"
-                    >
-                      <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-                    </Button>
-                  </template>
-                </ListRowItem>
-              </template>
-            </ListRow>
+            />
           </ListGroupRows>
+        </div>
+        <div v-else>
+          <CustomListRow
+            :rows="formattedRows"
+            :context-menu="contextMenu"
+            :set-active="setActive"
+            :selected="(row) => selectedRow?.name === row.name"
+            :hovered="(row) => hoveredRow === row.name"
+            @mouseenter="(row) => (hoveredRow = row.name)"
+            @mouseexit="hoveredRow = null"
+          />
         </div>
       </div>
     </template>
@@ -137,12 +97,9 @@
 <script setup>
 import {
   Button,
-  FeatherIcon,
   ListSelectBanner,
   ListHeader,
-  ListRowItem,
   ListGroupRows,
-  ListRow,
   ListGroupHeader,
   ListView as FrappeListView,
   Avatar,
@@ -155,26 +112,25 @@ import { useRoute } from "vue-router"
 import { computed, h, ref } from "vue"
 import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
-import Lock from "./EspressoIcons/Lock.vue"
-import { openEntity } from "@/utils/files"
 import { allUsers } from "../resources/permissions"
-import { getLink } from "../utils/getLink"
+import CustomListRow from "./CustomListRow.vue"
 
 const store = useStore()
 const route = useRoute()
+const hoveredRow = ref(null)
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
   entities: Array,
 })
 const selectedRow = ref(null)
-const hoveredRow = ref(null)
 const rowEvent = ref(null)
 const userData = computed(() =>
   allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
 )
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
+  if (Array.isArray(props.folderContents)) return props.folderContents
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,

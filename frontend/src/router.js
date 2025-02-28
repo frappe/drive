@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { getTeams } from "./resources/files"
+import { getTeams, translate } from "./resources/files"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -42,6 +42,54 @@ const routes = [
         return "/" + Object.keys(getTeams.data)[0]
       }
       return "/login"
+    },
+  },
+  {
+    path: "/folder/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "Folder",
+        params: {
+          team: Object.keys(getTeams.data)[0],
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/document/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "Document",
+        params: {
+          team: Object.keys(getTeams.data)[0],
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
+    },
+  },
+  {
+    path: "/file/:entityName",
+    component: () => null,
+    beforeEnter: async (to) => {
+      await getTeams.fetch()
+      await translate.fetch()
+      return {
+        name: "File",
+        params: {
+          team: Object.keys(getTeams.data)[0],
+          entityName:
+            translate.data[to.params.entityName] || to.params.entityName,
+        },
+      }
     },
   },
   {
