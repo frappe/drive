@@ -45,12 +45,13 @@ def get_file_content(embed_name, parent_entity_name):
         )[0]
     if not drive_entity.document:
         raise ValueError
-    embed = frappe.get_doc("Drive File", embed_name)
-    if not embed:
+
+    try:
+        embed = frappe.get_doc("Drive File", embed_name)
+        embed_path = embed.path
+    except frappe.exceptions.DoesNotExistError:
         embed = frappe.db.get_list("Drive File", {"old_name": embed_name}, fields=["path"])[0]
         embed_path = embed["path"]
-    else:
-        embed_path = embed.path
 
     embed_path = Path(frappe.get_site_path("private/files"), embed_path)
 
