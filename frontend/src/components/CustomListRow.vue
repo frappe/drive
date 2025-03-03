@@ -8,7 +8,7 @@
     @click="setActive(row)"
     @contextmenu="(e) => contextMenu(e, row)"
     @mouseenter="$emit('mouseenter', row)"
-    @mouseexit="$emit('mouseexit')"
+    @mouseleave="$emit('mouseleave')"
     @dblclick="() => openEntity(route.params.team, row)"
   >
     <template #default="{ idx, column, item }">
@@ -74,7 +74,7 @@ defineProps({
   selected: Function,
   hovered: Function,
 })
-defineEmits(["mouseenter", "mouseexit"])
+defineEmits(["mouseenter", "mouseleave"])
 const hoveredRow = ref(null)
 const route = useRoute()
 const store = useStore()
