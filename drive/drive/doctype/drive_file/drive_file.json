@@ -96,12 +96,11 @@
     {
       "fieldname": "old_name",
       "fieldtype": "Data",
-      "hidden": 1,
       "label": "Old Name"
     }
   ],
   "links": [],
-  "modified": "2025-02-19 12:36:03.838738",
+  "modified": "2025-03-03 11:06:56.352107",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",

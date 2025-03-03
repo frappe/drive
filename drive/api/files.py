@@ -837,4 +837,8 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
 
 @frappe.whitelist()
 def get_translate():
-    return {}
+    return {
+        l["old_name"]: l["name"]
+        for l in frappe.get_list("Drive File", fields=["old_name", "name"])
+        if l["old_name"]
+    }
