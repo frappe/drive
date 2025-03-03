@@ -36,14 +36,23 @@ def get_file_content(embed_name, parent_entity_name):
         ["document", "title", "mime_type", "file_size", "owner", "path", "team"],
         as_dict=1,
     )
+    if not drive_entity:
+        drive_entity = frappe.get_list(
+            "Drive File",
+            {"old_name": parent_entity_name},
+            fields=["document", "title", "mime_type", "file_size", "owner", "path", "team"],
+            as_dict=1,
+        )[0]
     if not drive_entity.document:
         raise ValueError
-    embed_path = Path(
-        frappe.get_site_path("private/files"),
-        get_home_folder(drive_entity.team).name,
-        "embeds",
-        embed_name,
-    )
+    embed = frappe.get_doc("Drive File", embed_name)
+    if not embed:
+        embed = frappe.db.get_list("Drive File", {"old_name": embed_name}, fields=["path"])[0]
+        embed_path = embed["path"]
+    else:
+        embed_path = embed.path
+
+    embed_path = Path(frappe.get_site_path("private/files"), embed_path)
 
     with open(
         str(embed_path),

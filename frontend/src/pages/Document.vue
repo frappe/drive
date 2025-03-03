@@ -123,6 +123,7 @@ createResource({
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
     store.commit("setEntityInfo", [data])
+    store.commit("setActiveEntity", data)
     if (!data.settings) {
       data.settings =
         '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
