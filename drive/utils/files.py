@@ -324,9 +324,3 @@ def get_valid_breadcrumbs(entity, user_access):
         accessible_path.append(k)
     return accessible_path[::-1]
 
-
-def kind_to_mime(kinds):
-    res = []
-    for k in kind:
-        res.extend(MIME_LIST_MAP.get("k", []))
-    return res

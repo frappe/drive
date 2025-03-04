@@ -1,6 +1,4 @@
 import { format } from "date-fns"
-import { fromZonedTime } from "date-fns-tz"
-import store from "../store"
 
 export function formatSize(size, nDigits = 1) {
   if (size === 0) return "-"
@@ -96,4 +94,27 @@ export function getDateDiffInDays(date1, date2) {
     date2.getDate()
   )
   return Math.floor((date1UTC - date2UTC) / msPerDay)
+}
+
+export const formatPercent = (num) => {
+  return new Intl.NumberFormat("default", {
+    style: "percent",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(num / 100)
+}
+
+export const COLOR_MAP = {
+  Archive: "#C2A88D",
+  Application: "#f472b6",
+  Image: "#34BAE3",
+  Video: "#E86C13",
+  Audio: "#9C45E3",
+  Document: "#0073CA",
+  Spreadsheet: "#30A66D",
+  Presentation: "#F5BA14",
+  Text: "#E2E2E2",
+  PDF: "#E03636",
+  Book: "#E2E2E2",
+  Unknown: "#3f3f46",
 }

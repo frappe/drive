@@ -1,7 +1,6 @@
 import os, json
 
 import frappe
-from pathlib import Path
 from pypika import functions as fn
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -24,6 +23,7 @@ def get_max_storage():
         max_storage = int(max_storage)
     if not plan_limit:
         val = frappe.conf.get("max_storage")
+        print(val)
         if not val:
             add_new_site_config_key("max_storage", 5120)
         max_storage = frappe.conf.get("max_storage")
@@ -49,21 +49,46 @@ def validate_quota():
 
 
 @frappe.whitelist()
-def get_owned_files_by_storage():
+def storage_breakdown_owned(team):
+    storage = frappe.get_value("Drive Team", team, "quota")
     entities = frappe.db.get_list(
         "Drive File",
-        filters={"owner": frappe.session.user, "is_group": False},
+        filters={"owner": frappe.session.user, "team": team, "is_group": False, "is_active": 1},
         order_by="file_size desc",
-        fields=["name", "title", "owner", "file_size", "file_kind", "mime_type"],
+        fields=["name", "title", "owner", "file_size", "mime_type"],
     )
     query = (
         frappe.qb.from_(DriveFile)
-        .select(DriveFile.file_kind, fn.Sum(DriveFile.file_size).as_("file_size"))
-        .where((DriveFile.is_group == 0) & (DriveFile.owner == frappe.session.user))
-        .groupby(DriveFile.file_kind)
+        .select(DriveFile.mime_type, fn.Sum(DriveFile.file_size).as_("file_size"))
+        .where(
+            (DriveFile.is_group == 0)
+            & (DriveFile.is_active == 1)
+            & (DriveFile.owner == frappe.session.user)
+            & (DriveFile.team == team)
+        )
+        .groupby(DriveFile.mime_type)
     )
     total = query.run(as_dict=True)
-    return {"entities": entities, "total": total}
+    return {"entities": entities, "total": total, "limit": storage * 1024**2}
+
+
+@frappe.whitelist()
+def storage_breakdown_team(team):
+    storage = frappe.get_value("Drive Team", team, "storage")
+    entities = frappe.db.get_list(
+        "Drive File",
+        filters={"team": team, "is_group": False, "is_active": 1},
+        order_by="file_size desc",
+        fields=["name", "title", "owner", "file_size", "mime_type"],
+    )
+    query = (
+        frappe.qb.from_(DriveFile)
+        .select(DriveFile.mime_type, fn.Sum(DriveFile.file_size).as_("file_size"))
+        .where((DriveFile.is_group == 0) & (DriveFile.is_active == 1) & (DriveFile.team == team))
+        .groupby(DriveFile.mime_type)
+    )
+    total = query.run(as_dict=True)
+    return {"entities": entities, "total": total, "limit": storage * 1024**2}
 
 
 @frappe.whitelist()
@@ -87,17 +112,6 @@ def total_storage_used_by_user():
     )
     result = query.run(as_dict=True)
     return result
-
-
-@frappe.whitelist()
-def total_storage_used_by_file_kind():
-    query = (
-        frappe.qb.from_(DriveFile)
-        .select(DriveFile.file_kind, fn.Sum(DriveFile.file_size).as_("total_size"))
-        .where(DriveFile.is_group == 0)
-        .groupby(DriveFile.file_kind)
-    )
-    return query.run(as_dict=True)
 
 
 def get_storage_allowed(team):

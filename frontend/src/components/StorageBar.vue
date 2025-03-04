@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, watch } from "vue"
+import { ref, computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
 import SidebarItem from "./SidebarItem.vue"

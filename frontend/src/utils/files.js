@@ -59,7 +59,6 @@ export const setBreadCrumbs = (breadcrumbs, is_private) => {
     breadcrumbs.shift()
   }
   breadcrumbs.forEach((item, idx) => {
-    console.log(item, idx, breadcrumbs.length)
     res.push({
       label: item.title,
       route:
@@ -68,7 +67,6 @@ export const setBreadCrumbs = (breadcrumbs, is_private) => {
           : null,
     })
   })
-  console.log(res)
   store.commit("setBreadcrumbs", res)
 }
 
