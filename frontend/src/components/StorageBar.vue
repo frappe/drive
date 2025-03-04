@@ -70,13 +70,14 @@ const calculatePercent = computed(() => {
 })
 
 let totalStorage = createResource({
-  url: "drive.api.storage.total_storage_used",
+  url: "drive.api.storage.storage_bar_data",
+  params: {
+    team: route.params.team,
+  },
   method: "GET",
   cache: "total_storage",
   onSuccess(data) {
     usedStorage.value = data.total_size
-    // BROKEN: implement quotas
-    storageMax.value = data.quota
     storageMax.value = data.limit
   },
 })

@@ -43,7 +43,7 @@
     class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0 mb-4"
   >
     <Tooltip
-      v-for="[file_kind, i] in resource.data?.total"
+      v-for="[file_kind, i] in storageBreakdown.data?.total"
       :key="file_kind"
       :text="`${i.h_size} (${i.percentageFormat})`"
     >
@@ -59,7 +59,7 @@
   </div>
   <div class="flex items-start justify-between px-3 w-full">
     <div
-      v-for="[file_kind, i] in resource.data?.total"
+      v-for="[file_kind, i] in storageBreakdown.data?.total"
       :bind="file_kind"
       class="flex gap-2"
     >
@@ -82,7 +82,7 @@
     class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
   >
     <div
-      v-for="(i, index) in resource.data?.entities"
+      v-for="(i, index) in storageBreakdown.data?.entities"
       :key="i.name"
       class="w-full h-10 flex items-center justify-start py-3 gap-x-2"
       :class="index > 0 ? 'border-t' : ''"
@@ -114,7 +114,6 @@ import {
   COLOR_MAP,
   formatPercent,
 } from "@/utils/format"
-// import UserStorage from "./UserStorage.vue"
 import Cloud from "@/components/EspressoIcons/Cloud.vue"
 import FeatherIcon from "frappe-ui/src/components/FeatherIcon.vue"
 import { Tooltip } from "frappe-ui"
@@ -130,16 +129,9 @@ const usedSpace = ref(0)
 const spaceLimit = ref(0)
 const route = useRoute()
 
-watch(showFileStorage, (val) => {
-  if (val) resource.value = ownedStorage
-  else resource.value = teamStorage
-})
-
-const teamStorage = createResource({
-  url: "drive.api.storage.storage_breakdown_team",
-  params: {
-    team: route.params.team,
-  },
+const storageBreakdown = createResource({
+  url: "drive.api.storage.storage_breakdown",
+  makeParams: (p) => p,
   onSuccess(data) {
     let res = {}
     usedSpace.value = 0
@@ -166,37 +158,11 @@ const teamStorage = createResource({
   auto: false,
 })
 
-const ownedStorage = createResource({
-  url: "drive.api.storage.storage_breakdown_owned",
-  params: {
-    team: route.params.team,
-  },
-  onSuccess(data) {
-    spaceLimit.value = data.limit
-    let res = {}
-    usedSpace.value = 0
-    data.total.forEach((item) => {
-      let kind =
-        Object.entries(MIME_LIST_MAP).find(([type, list]) =>
-          list.includes(item.mime_type) ? type : false
-        )[0] || "Unknown"
-      res[kind] = res[kind] || { file_size: 0 }
-      res[kind].file_size += item.file_size
-      usedSpace.value += item.file_size
-    })
-    Object.keys(res).forEach((kind) => {
-      res[kind].color = COLOR_MAP[kind]
-      res[kind].percentageRaw = (100 * res[kind].file_size) / spaceLimit.value
-      res[kind].percentageFormat = formatPercent(res[kind].percentageRaw)
-      res[kind].h_size = formatSize(res[kind].file_size)
-    })
-    data.total = Object.entries(res).sort(
-      (a, b) => b[1].file_size - a[1].file_size
-    )
-  },
-})
-const resource = ref(ownedStorage)
-watch(resource, (v) => v.fetch(), { immediate: true })
+watch(
+  showFileStorage,
+  (val) => storageBreakdown.fetch({ team: route.params.team, owned_only: val }),
+  { immediate: true }
+)
 
 defineEmits(["close"])
 </script>

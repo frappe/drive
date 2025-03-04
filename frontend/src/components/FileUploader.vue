@@ -187,10 +187,11 @@ onMounted(() => {
   })
   dropzone.value.on("error", function (file, response) {
     let message
-    if (typeof response === Object) {
+    if (typeof response === "object") {
       message = JSON.parse(JSON.parse(response._server_messages)[0]).message
     }
-    message = message || response || "Upload failed"
+    message = message || "Upload failed"
+    console.log(response)
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       error: message,
