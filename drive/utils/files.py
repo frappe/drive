@@ -323,4 +323,3 @@ def get_valid_breadcrumbs(entity, user_access):
             break
         accessible_path.append(k)
     return accessible_path[::-1]
-
