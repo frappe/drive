@@ -41,6 +41,7 @@
 </template>
 <script>
 import disableScroll from "../utils/disable-scroll"
+import { FeatherIcon } from "frappe-ui"
 
 export default {
   name: "EmptyEntityContext",
@@ -60,6 +61,7 @@ export default {
   },
   data() {
     return {
+      FeatherIcon,
       parentWidth: null,
       parentHeight: null,
       childWidth: null,

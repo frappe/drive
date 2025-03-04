@@ -12,6 +12,10 @@
 
 </div>
 
+> [!Warning]  
+> Frappe Drive is in beta. It is advisable to avoid usage in production.
+>
+
 ## Frappe Drive
 
 Frappe Drive is a secure and open-source cloud storage platform with a modern user interface that makes storing, collaborating, and sharing files effortless. Create and manage documents, spreadsheets, and multimedia across teams to accelerate project completion.
@@ -203,7 +207,7 @@ There are many ways you can contribute even if you don't code:
 2. If you find any issues, even if it is a typo, you can [raise an issue](https://github.com/frappe/drive/issues/new) to inform us.
 
 > [!WARNING]  
-> If you're self hosting Frappe Drive. Do not use the app as the only way to store your files. Always have backup strategy for your files.
+> If you're self hosting Frappe Drive, do not use the app as the only way to store your files. Always have backup strategy for your files.
 >
 > Otherwise, consider our managed hosting on [Frappe Cloud](https://frappecloud.com/). It's the same exact code as from the `main` branch here, but with better support tooling and automated backups.
 

@@ -33,7 +33,7 @@
               :selected="(row) => selectedRow?.name === row.name"
               :hovered="(row) => hoveredRow === row.name"
               @mouseenter="(row) => (hoveredRow = row.name)"
-              @mouseexit="hoveredRow = null"
+              @mouseleave="() => (hoveredRow = null)"
             />
           </ListGroupRows>
         </div>
@@ -45,7 +45,7 @@
             :selected="(row) => selectedRow?.name === row.name"
             :hovered="(row) => hoveredRow === row.name"
             @mouseenter="(row) => (hoveredRow = row.name)"
-            @mouseexit="hoveredRow = null"
+            @mouseleave="hoveredRow = null"
           />
         </div>
       </div>
@@ -90,6 +90,7 @@
     v-if="rowEvent && selectedRow"
     :key="selectedRow.name"
     v-on-outside-click="() => (rowEvent = false)"
+    :close="() => (rowEvent = false)"
     :action-items="dropdownActionItems(selectedRow)"
     :event="rowEvent"
   />

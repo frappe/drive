@@ -92,18 +92,8 @@
     <DeleteDialog
       v-if="dialog === 'd'"
       v-model="dialog"
-      :entities="activeEntity || getEntities.data"
-      @success="
-        () => {
-          if (activeEntity)
-            handleListMutate({
-              delete: true,
-              data: { name: activeEntity.name },
-            })
-          else getEntities.setData([])
-          dialog = null
-        }
-      "
+      :entities="selections"
+      @success="mutate({ delete: true, data: selections })"
     />
     <CTADeleteDialog
       v-if="dialog === 'cta'"
@@ -159,7 +149,7 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
-import { groupByFolder, openEntity, MIME_LIST_MAP } from "@/utils/files"
+import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createDocument, togglePersonal } from "@/resources/files"
 import emitter from "@/emitter.js"
 

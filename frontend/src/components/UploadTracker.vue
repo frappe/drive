@@ -147,12 +147,12 @@
       v-if="showErrorDialog"
       v-model="showErrorDialog"
       :options="{
-        title: 'Upload Failed',
+        title: 'Upload failed',
         message: selectedUpload.error,
         size: 'sm',
         actions: [
           {
-            label: 'Confirm',
+            label: 'OK',
             onClick: () => {
               showErrorDialog = false
             },

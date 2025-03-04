@@ -17,7 +17,7 @@ from datetime import date, timedelta
 import magic
 from datetime import datetime
 from drive.api.notifications import notify_mentions
-from drive.api.storage import get_storage_allowed
+from drive.api.storage import storage_bar_data
 
 
 def if_folder_exists(team, folder_name, parent):
@@ -117,8 +117,11 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
         get_uploads_directory(home_folder["name"]) / f"{upload_session}_{secure_filename(title)}"
     )
 
-    if get_storage_allowed(team) < int(frappe.form_dict.total_file_size):
-        frappe.throw("Out of allocated storage", ValueError)
+    storage_data = storage_bar_data(team)
+    if (storage_data["limit"] - storage_data["total_size"]) < int(
+        frappe.form_dict.total_file_size
+    ):
+        frappe.throw("You're out of storage!", ValueError)
 
     with temp_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
@@ -132,7 +135,7 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
         file_size = temp_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
             temp_path.unlink()
-            frappe.throw("Size on disk does not match specified filesize", ValueError)
+            frappe.throw("Size on disk does not match specified filesize.", ValueError)
 
         mime_type, _ = mimetypes.guess_type(temp_path)
 
@@ -475,7 +478,7 @@ def delete_entities(entity_names=None, clear_all=None):
     """
     if clear_all:
         entity_names = frappe.db.get_list(
-            "Drive File", {"is_active": ["<", "1"], "owner": frappe.session.user}, pluck="name"
+            "Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name"
         )
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
@@ -553,13 +556,15 @@ def set_favourite(entities=None, clear_all=False):
 
 
 @frappe.whitelist()
-def remove_or_restore(entity_names):
+def remove_or_restore(entity_names, team):
     """
     To move entities to or restore entities from the trash
 
     :param entity_names: List of document-names
     :type entity_names: list[str]
     """
+    storage_data = storage_bar_data(team)
+
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
@@ -569,6 +574,8 @@ def remove_or_restore(entity_names):
         if doc.is_active:
             doc.is_active = 0
         else:
+            if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
+                frappe.throw("You're out of storage!", ValueError)
             doc.is_active = 1
         doc.save()
 
@@ -637,7 +644,7 @@ def get_children_count(drive_file):
 
 @frappe.whitelist()
 def does_entity_exist(name=None, parent_entity=None):
-    result = frappe.db.exists("Drive File", {"parent_drive_file": parent_entity, "title": name})
+    result = frappe.db.exists("Drive File", {"parent_entity": parent_entity, "title": name})
     return bool(result)
 
 
@@ -742,7 +749,7 @@ def get_ancestors_of(entity_name):
         WITH RECURSIVE generated_path as ( 
         SELECT 
             `tabDrive File`.name,
-            `tabDrive File`.parent_drive_file
+            `tabDrive File`.parent_entity
         FROM `tabDrive File` 
         WHERE `tabDrive File`.name = {entity_name}
 
@@ -750,9 +757,9 @@ def get_ancestors_of(entity_name):
 
         SELECT 
             t.name,
-            t.parent_drive_file
+            t.parent_entity
         FROM generated_path as gp
-        JOIN `tabDrive File` as t ON t.name = gp.parent_drive_file) 
+        JOIN `tabDrive File` as t ON t.name = gp.parent_entity) 
         SELECT name FROM generated_path;
     """,
         as_dict=0,
@@ -837,4 +844,8 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
 
 @frappe.whitelist()
 def get_translate():
-    return {}
+    return {
+        l["old_name"]: l["name"]
+        for l in frappe.get_list("Drive File", fields=["old_name", "name"])
+        if l["old_name"]
+    }

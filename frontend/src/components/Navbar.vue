@@ -17,7 +17,10 @@
         </div>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
-            v-if="$route.name == 'File' && $store.state.activeEntity?.share"
+            v-if="
+              ($route.name == 'File' || $route.name == 'Document') &&
+              $store.state.activeEntity?.share
+            "
             :variant="'solid'"
             class="bg-gray-200 rounded flex justify-center items-center px-1"
             @click="emitter.emit('showShareDialog')"
@@ -27,12 +30,11 @@
             </template>
             Share
           </Button>
-
-          <div v-else class="ml-auto">
-            <Button variant="solid" @click="$router.push({ name: 'Login' })">
-              Sign In
-            </Button>
-          </div>
+        </div>
+        <div v-else class="ml-auto">
+          <Button variant="solid" @click="$router.push({ name: 'Login' })">
+            Sign In
+          </Button>
         </div>
       </div>
     </div>

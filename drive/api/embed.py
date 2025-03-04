@@ -1,4 +1,3 @@
-from drive.utils.files import get_home_folder
 import frappe
 import os
 import re
@@ -23,6 +22,14 @@ def get_file_content(embed_name, parent_entity_name):
     :raises FileLockedError: If the file has been writer-locked
     """
 
+    old_parent_name = frappe.get_list(
+        "Drive File",
+        {"old_name": parent_entity_name},
+        ["name"],
+    )
+    if old_parent_name:
+        parent_entity_name = old_parent_name[0]["name"]
+
     if not frappe.has_permission(
         doctype="Drive File",
         doc=parent_entity_name,
@@ -30,20 +37,31 @@ def get_file_content(embed_name, parent_entity_name):
         user=frappe.session.user,
     ):
         raise frappe.PermissionError("You do not have permission to view this file")
+
     drive_entity = frappe.get_value(
         "Drive File",
         parent_entity_name,
         ["document", "title", "mime_type", "file_size", "owner", "path", "team"],
         as_dict=1,
     )
+    if not drive_entity:
+        drive_entity = frappe.get_list(
+            "Drive File",
+            {"old_name": parent_entity_name},
+            fields=["document", "title", "mime_type", "file_size", "owner", "path", "team"],
+        )[0]
+
     if not drive_entity.document:
         raise ValueError
-    embed_path = Path(
-        frappe.get_site_path("private/files"),
-        get_home_folder(drive_entity.team).name,
-        "embeds",
-        embed_name,
-    )
+
+    try:
+        embed = frappe.get_doc("Drive File", embed_name)
+        embed_path = embed.path
+    except frappe.exceptions.DoesNotExistError:
+        embed = frappe.db.get_list("Drive File", {"old_name": embed_name}, fields=["path"])[0]
+        embed_path = embed["path"]
+
+    embed_path = Path(frappe.get_site_path("private/files"), embed_path)
 
     with open(
         str(embed_path),

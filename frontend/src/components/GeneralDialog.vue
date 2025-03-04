@@ -6,7 +6,7 @@
           {{ dialogData.message }}
         </p>
       </div>
-      <ErrorMessage class="my-1" :message="errorMessage" />
+      <ErrorMessage class="my-1 text-center" :message="errorMessage" />
       <div class="flex mt-5">
         <Button
           :variant="dialogData.variant"
@@ -16,7 +16,7 @@
           :loading="$resources.method?.loading"
           @click="$resources.method.submit()"
         >
-          {{ dialogData.buttonMessage }}
+          {{ errorMessage ? "Try again" : dialogData.buttonMessage }}
         </Button>
       </div>
     </template>
@@ -59,7 +59,9 @@ export default {
   computed: {
     dialogData() {
       const items =
-        this.entities.length === 1 ? `an item` : `${this.entities.length} items`
+        this.entities.length === 1
+          ? `this item`
+          : `${this.entities.length} items`
       switch (this.for) {
         case "unshare":
           return {
@@ -89,7 +91,7 @@ export default {
             message:
               items[0].toUpperCase() +
               items.slice(1) +
-              " will be moved to Trash. Items in trash are deleted forever after 30 days. Other users will lose access to this.",
+              " will be moved to Trash. Items in trash are deleted forever after 30 days.",
             buttonMessage: "Move to Trash",
             theme: "red",
             variant: "subtle",
@@ -110,7 +112,6 @@ export default {
       },
     },
   },
-
   resources: {
     method() {
       return {
@@ -120,6 +121,7 @@ export default {
             typeof this.entities === "string"
               ? JSON.stringify([this.entities])
               : JSON.stringify(this.entities.map((entity) => entity.name)),
+          team: this.$route.params.team,
         },
         onSuccess(data) {
           this.$emit("success", data)

@@ -2,7 +2,7 @@
   <Dialog v-model="open" :options="{ title: 'Delete Forever?', size: 'sm' }">
     <template #body-content>
       <p class="text-gray-600">
-        {{ entities.length === 1 ? `An item` : `${entities.length} items` }}
+        {{ entities.length === 1 ? `This item` : `${entities.length} items` }}
         will be deleted forever. This is an irreversible process.
       </p>
       <div class="flex mt-5">
@@ -11,66 +11,51 @@
           theme="red"
           icon-left="trash-2"
           class="w-full"
-          :loading="$resources.delete.loading"
-          @click="$resources.delete.submit()"
+          :loading="deleteEntities.loading"
+          @click="deleteEntities.submit()"
         >
-          Delete Forever
+          Delete — forever.
         </Button>
       </div>
     </template>
   </Dialog>
 </template>
-<script>
-import { Dialog } from "frappe-ui"
+<script setup>
+import { createResource, Dialog } from "frappe-ui"
 import { del } from "idb-keyval"
+import { computed } from "vue"
 
-export default {
-  name: "DeleteDialog",
-  components: {
-    Dialog,
+const emit = defineEmits(["update:modelValue", "success"])
+const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true,
   },
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true,
-    },
-    entities: {
-      type: Array,
-      required: false,
-      default: null,
-    },
+  entities: {
+    type: Object,
+    required: false,
+    default: null,
   },
-  emits: ["update:modelValue", "success"],
-  computed: {
-    open: {
-      get() {
-        return this.modelValue
-      },
-      set(value) {
-        this.$emit("update:modelValue", value)
-      },
-    },
+})
+
+const open = computed({
+  get() {
+    return props.modelValue === "d"
   },
-  resources: {
-    delete() {
-      return {
-        url: "drive.api.files.delete_entities",
-        params: {
-          entity_names: JSON.stringify(
-            this.entities?.map((entity) => entity.name)
-          ),
-        },
-        onSuccess(data) {
-          this.entities.map((entity) => del(entity.name))
-          this.$emit("success", data)
-        },
-        onError(error) {
-          if (error.messages) {
-            console.log(error.messages)
-          }
-        },
-      }
-    },
+  set(newValue) {
+    emit("update:modelValue", newValue)
   },
-}
+})
+
+const deleteEntities = createResource({
+  url: "drive.api.files.delete_entities",
+  params: {
+    entity_names: JSON.stringify(props.entities?.map((entity) => entity.name)),
+  },
+  onSuccess(data) {
+    console.log(props.entities)
+    props.entities.map((entity) => del(entity.name))
+    emit("success", data)
+  },
+})
 </script>
