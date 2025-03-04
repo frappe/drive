@@ -4,7 +4,7 @@
   "creation": "2025-01-23 12:12:04.979723",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["title", "users"],
+  "field_order": ["title", "users", "storage", "quota"],
   "fields": [
     {
       "fieldname": "title",
@@ -16,11 +16,24 @@
       "fieldtype": "Table MultiSelect",
       "label": "Users",
       "options": "Drive Team Member"
+    },
+    {
+      "description": "In MB",
+      "fieldname": "storage",
+      "fieldtype": "Int",
+      "label": "Storage"
+    },
+    {
+      "default": "storage",
+      "description": "In MB",
+      "fieldname": "quota",
+      "fieldtype": "Int",
+      "label": "Quota"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-02-13 15:14:53.932622",
+  "modified": "2025-03-04 11:47:03.853440",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Team",

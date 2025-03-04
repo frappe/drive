@@ -33,7 +33,7 @@
               :selected="(row) => selectedRow?.name === row.name"
               :hovered="(row) => hoveredRow === row.name"
               @mouseenter="(row) => (hoveredRow = row.name)"
-              @mouseleave="() => console.log(he)"
+              @mouseleave="() => (hoveredRow = null)"
             />
           </ListGroupRows>
         </div>

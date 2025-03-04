@@ -29,7 +29,11 @@
           </div>
         </div>
         <div class="flex flex-1 flex-col p-12 overflow-y-auto">
-          <component :is="activeTab.component" v-if="activeTab" />
+          <component
+            :is="activeTab.component"
+            v-if="activeTab"
+            @close="$emit('update:modelValue', false)"
+          />
         </div>
         <Button
           class="my-3 mr-4 absolute right-0"
