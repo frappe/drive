@@ -90,6 +90,7 @@
     v-if="rowEvent && selectedRow"
     :key="selectedRow.name"
     v-on-outside-click="() => (rowEvent = false)"
+    :close="() => (rowEvent = false)"
     :action-items="dropdownActionItems(selectedRow)"
     :event="rowEvent"
   />

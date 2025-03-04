@@ -140,7 +140,7 @@ const storageBreakdown = createResource({
       let kind =
         Object.entries(MIME_LIST_MAP).find(([type, list]) =>
           list.includes(item.mime_type) ? type : false
-        )[0] || "Unknown"
+        )?.[0] || "Unknown"
       res[kind] = res[kind] || { file_size: 0 }
       res[kind].file_size += item.file_size
       usedSpace.value += item.file_size

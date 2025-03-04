@@ -59,7 +59,9 @@ export default {
   computed: {
     dialogData() {
       const items =
-        this.entities.length === 1 ? `an item` : `${this.entities.length} items`
+        this.entities.length === 1
+          ? `this item`
+          : `${this.entities.length} items`
       switch (this.for) {
         case "unshare":
           return {
@@ -89,7 +91,7 @@ export default {
             message:
               items[0].toUpperCase() +
               items.slice(1) +
-              " will be moved to Trash. Items in trash are deleted forever after 30 days. Other users will lose access to this.",
+              " will be moved to Trash. Items in trash are deleted forever after 30 days.",
             buttonMessage: "Move to Trash",
             theme: "red",
             variant: "subtle",

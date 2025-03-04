@@ -166,7 +166,6 @@ import Move from "./EspressoIcons/Move.vue"
 import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
 
-const store = useStore()
 const route = useRoute()
 const currentFolder = ref("")
 const emit = defineEmits(["update:modelValue", "success"])

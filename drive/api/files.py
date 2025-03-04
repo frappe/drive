@@ -478,7 +478,7 @@ def delete_entities(entity_names=None, clear_all=None):
     """
     if clear_all:
         entity_names = frappe.db.get_list(
-            "Drive File", {"is_active": ["<", "1"], "owner": frappe.session.user}, pluck="name"
+            "Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name"
         )
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
@@ -644,7 +644,7 @@ def get_children_count(drive_file):
 
 @frappe.whitelist()
 def does_entity_exist(name=None, parent_entity=None):
-    result = frappe.db.exists("Drive File", {"parent_drive_file": parent_entity, "title": name})
+    result = frappe.db.exists("Drive File", {"parent_entity": parent_entity, "title": name})
     return bool(result)
 
 
@@ -749,7 +749,7 @@ def get_ancestors_of(entity_name):
         WITH RECURSIVE generated_path as ( 
         SELECT 
             `tabDrive File`.name,
-            `tabDrive File`.parent_drive_file
+            `tabDrive File`.parent_entity
         FROM `tabDrive File` 
         WHERE `tabDrive File`.name = {entity_name}
 
@@ -757,9 +757,9 @@ def get_ancestors_of(entity_name):
 
         SELECT 
             t.name,
-            t.parent_drive_file
+            t.parent_entity
         FROM generated_path as gp
-        JOIN `tabDrive File` as t ON t.name = gp.parent_drive_file) 
+        JOIN `tabDrive File` as t ON t.name = gp.parent_entity) 
         SELECT name FROM generated_path;
     """,
         as_dict=0,

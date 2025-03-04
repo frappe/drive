@@ -92,18 +92,8 @@
     <DeleteDialog
       v-if="dialog === 'd'"
       v-model="dialog"
-      :entities="activeEntity || getEntities.data"
-      @success="
-        () => {
-          if (activeEntity)
-            handleListMutate({
-              delete: true,
-              data: { name: activeEntity.name },
-            })
-          else getEntities.setData([])
-          dialog = null
-        }
-      "
+      :entities="selections"
+      @success="mutate({ delete: true, data: selections })"
     />
     <CTADeleteDialog
       v-if="dialog === 'cta'"
