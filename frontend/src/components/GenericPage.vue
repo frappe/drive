@@ -163,6 +163,7 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref(null)
+const team = localStorage.getItem("recentTeam")
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
@@ -172,7 +173,7 @@ watch(
   sortOrder,
   () => {
     props.getEntities.fetch({
-      team: route.params.team,
+      team,
       order_by: sortOrder.value.ascending
         ? sortOrder.value.field
         : sortOrder.value.field + " desc",
@@ -184,7 +185,7 @@ watch(activeFilters.value, async (val) => {
   let mime_type_list = JSON.stringify(
     val.reduce((acc, k) => [...acc, ...(MIME_LIST_MAP[k.label] || [])], [])
   )
-  props.getEntities.fetch({ team: route.params.team, mime_type_list })
+  props.getEntities.fetch({ team: team, mime_type_list })
 })
 
 const clickEvent = ref(null)
@@ -194,7 +195,7 @@ function handleContextMenu(event) {
   defaultContextTriggered.value = true
   event.preventDefault()
 }
-allUsers.fetch({ team: route.params.team })
+allUsers.fetch({ team: team })
 // Action Items
 
 const actionItems = computed(() => {
@@ -230,7 +231,7 @@ const actionItems = computed(() => {
       {
         label: "Preview",
         icon: Preview,
-        onClick: ([entity]) => openEntity(route.params.team, entity),
+        onClick: ([entity]) => openEntity(team, entity),
       },
       {
         label: "Download",

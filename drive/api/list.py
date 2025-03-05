@@ -32,6 +32,7 @@ def files(
     folders=0,
     all=0,
 ):
+    return []
     home = get_home_folder(team)["name"]
 
     if not entity_name:

@@ -100,9 +100,9 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/:team",
+    path: "/:team/team",
     name: "Team",
-    component: () => import("@/pages/Home.vue"),
+    component: () => import("@/pages/Team.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
@@ -124,7 +124,7 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/:team/personal",
+    path: "/:team/",
     name: "Home",
     component: () => import("@/pages/Personal.vue"),
     beforeEnter: [setRootBreadCrumb],
@@ -183,6 +183,8 @@ let router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const redirect = sessionStorage.getItem("redirect")
+  if (from.params.team || to.params.team)
+    localStorage.setItem("recentTeam", from.params.team || to.params.team)
   switch (true) {
     case !store.getters.isLoggedIn && to.meta.isHybridRoute:
       sessionStorage.setItem("redirect", JSON.stringify(to.fullPath))

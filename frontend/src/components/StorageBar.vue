@@ -68,11 +68,12 @@ const calculatePercent = computed(() => {
     maximumFractionDigits: 1,
   }).format(num / 100)
 })
+const team = localStorage.getItem("recentTeam")
 
 let totalStorage = createResource({
   url: "drive.api.storage.storage_bar_data",
   params: {
-    team: route.params.team,
+    team,
   },
   method: "GET",
   cache: "total_storage",
@@ -81,8 +82,5 @@ let totalStorage = createResource({
     storageMax.value = data.limit
   },
 })
-const team = computed(() => route.params.team)
-const get = () => totalStorage.fetch({ team: route.params.team })
-watch(team, get)
-if (team.value) get()
+totalStorage.fetch({ team })
 </script>

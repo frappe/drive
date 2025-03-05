@@ -28,7 +28,9 @@
             <div class="flex w-full h-full overflow-hidden">
               <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
               <!-- what on mars is he talking about? -->
-              <div class="flex w-full h-full overflow-hidden">
+              <div
+                class="flex w-full h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)] overflow-hidden"
+              >
                 <router-view :key="$route.fullPath" v-slot="{ Component }">
                   <component
                     :is="Component"
@@ -135,13 +137,14 @@ export default {
       let tapped
 
       window.addEventListener("keydown", (e) => {
+        let params = { team: localStorage.getItem("recentTeam") }
         const DOUBLE_KEY_MAPS = {
           k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
-          h: () => this.$router.push({ name: "Home" }),
-          n: () => this.$router.push({ name: "Notifications" }),
-          t: () => this.$router.push({ name: "Team" }),
-          f: () => this.$router.push({ name: "Favourites" }),
-          r: () => this.$router.push({ name: "Recents" }),
+          h: () => this.$router.push({ name: "Home", params }),
+          n: () => this.$router.push({ name: "Notifications", params }),
+          t: () => this.$router.push({ name: "Team", params }),
+          f: () => this.$router.push({ name: "Favourites", params }),
+          r: () => this.$router.push({ name: "Recents", params }),
           s: () => this.$router.push({ name: "Shared" }),
         }
 
