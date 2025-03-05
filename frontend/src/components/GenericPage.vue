@@ -110,11 +110,13 @@
       v-if="$store.state.auth.user_id"
       @success="getEntities.fetch()"
     />
+    <NewButton />
   </div>
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"
 import GridView from "@/components/GridView.vue"
+import NewButton from "@/components/NewButton.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
@@ -132,10 +134,7 @@ import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
-import NewFolder from "./EspressoIcons/NewFolder.vue"
 import Team from "./EspressoIcons/Organization.vue"
-import FileUpload from "./EspressoIcons/File-upload.vue"
-import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import Share from "./EspressoIcons/Share.vue"
 import Download from "./EspressoIcons/Download.vue"
 import Link from "./EspressoIcons/Link.vue"
@@ -145,13 +144,12 @@ import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import Star from "./EspressoIcons/Star.vue"
-import NewFile from "./EspressoIcons/NewFile.vue"
 import { ref, computed, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
-import { createDocument, togglePersonal } from "@/resources/files"
-import emitter from "@/emitter.js"
+import { togglePersonal } from "@/resources/files"
+import emitter from "@/emitter"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -162,7 +160,6 @@ const props = defineProps({
   getEntities: Object,
 })
 const route = useRoute()
-const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
@@ -198,47 +195,7 @@ function handleContextMenu(event) {
   event.preventDefault()
 }
 allUsers.fetch({ team: route.params.team })
-
-const newDocument = async () => {
-  let data = await createDocument.submit({
-    title: "Untitled Document",
-    team: route.params.team,
-    personal: route.name === "Home" ? 1 : 0,
-    content: null,
-    parent: store.state.currentFolderID,
-  })
-  window.open(
-    router.resolve({
-      name: "Document",
-      params: { team: route.params.team, entityName: data.name },
-    }).href
-  )
-}
 // Action Items
-const defaultActionItems = computed(() => {
-  return [
-    {
-      label: "Upload File",
-      icon: FileUpload,
-      handler: () => emitter.emit("uploadFile"),
-    },
-    {
-      label: "Upload Folder",
-      icon: FolderUpload,
-      handler: () => emitter.emit("uploadFolder"),
-    },
-    {
-      label: "New Folder",
-      icon: NewFolder,
-      handler: () => (dialog.value = "f"),
-    },
-    {
-      label: "New Document",
-      icon: NewFile,
-      handler: newDocument,
-    },
-  ]
-})
 
 const actionItems = computed(() => {
   if (route.name === "Trash") {
@@ -396,6 +353,7 @@ function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
 // emitter handling
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
+emitter.on("newFolder", () => (dialog.value = "f"))
 
 const resetDialog = () => (dialog.value = null)
 const mutate = (data) => {

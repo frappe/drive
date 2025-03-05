@@ -210,7 +210,6 @@ onMounted(() => {
       uuid: file.upload.uuid,
       completed: true,
     })
-    capture("new_file_uploaded")
   })
   emitter.on("uploadFile", () => {
     if (dropzone.value.hiddenFileInput) {

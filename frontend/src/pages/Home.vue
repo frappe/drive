@@ -11,4 +11,9 @@
 import Home from "../components/EspressoIcons/Home.vue"
 import GenericPage from "@/components/GenericPage.vue"
 import { getHome } from "@/resources/files"
+import { useStore } from "vuex"
+
+const store = useStore()
+store.commit("setCurrentFolder", "")
+store.commit("setCurrentFolderID", "")
 </script>
