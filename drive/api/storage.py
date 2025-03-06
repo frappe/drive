@@ -31,6 +31,8 @@ def storage_breakdown(team, owned_only):
     )
     if owned_only:
         query = query.where(DriveFile.owner == frappe.session.user)
+    else:
+        query = query.where(DriveFile.is_private == 0)
 
     return {
         "limit": storage * MEGA_BYTE,

@@ -171,7 +171,7 @@ class DriveFile(Document):
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
-
+        # BROKEN
         title = self.title
 
         if not parent_user_directory:

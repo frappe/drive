@@ -59,7 +59,7 @@ def get_file_content(embed_name, parent_entity_name):
         embed_path = embed.path
     except frappe.exceptions.DoesNotExistError:
         embed = frappe.db.get_list(
-            "Drive File", filters={"old_name": embed_name}, fields=["path"]
+            "Drive File", filters={"old_name": embed_name.split(".")[0]}, fields=["path"]
         )[0]
         embed_path = embed["path"]
 

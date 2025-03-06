@@ -105,9 +105,6 @@ const store = createStore({
     setError(state, error) {
       Object.assign(state.error, error)
     },
-    setTeams(state, teams) {
-      Object.assign(state.teams, teams)
-    },
     setUploads(state, uploads) {
       state.uploads = uploads
     },

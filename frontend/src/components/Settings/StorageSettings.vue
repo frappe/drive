@@ -57,17 +57,17 @@
       ></div>
     </Tooltip>
   </div>
-  <div class="flex items-start justify-between px-3 w-full">
+  <div class="flex flex-wrap items-start justify-around gap-2 px-3 w-full">
     <div
       v-for="[file_kind, i] in storageBreakdown.data?.total"
       :bind="file_kind"
-      class="flex gap-2"
+      class="flex py-1"
     >
       <div
         class="w-4 h-4 rounded-sm"
         :style="{ backgroundColor: i.color }"
       ></div>
-      <span class="text-gray-800 text-sm">{{ file_kind }}</span>
+      <span class="text-gray-800 text-sm ps-1">{{ file_kind }}</span>
     </div>
   </div>
   <div

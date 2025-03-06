@@ -35,7 +35,6 @@
     "name": "Drive User",
     "notifications": 0,
     "restrict_to_domain": null,
-    "role_name": "Drive User",
     "search_bar": 0,
     "timeline": 0,
     "two_factor_auth": 0,

@@ -53,7 +53,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private) => {
     res = [
       {
         label: is_private ? "Home" : "Team",
-        route: `/${route.params.team}` + (is_private ? "/personal" : ""),
+        route: `/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
     breadcrumbs.shift()

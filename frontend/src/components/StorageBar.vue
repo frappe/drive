@@ -2,7 +2,7 @@
   <div
     v-if="!totalStorage.loading"
     class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
-    @click="emitter.emit('showSettings', 3)"
+    @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
       :label="props.isExpanded ? 'Storage' : '3.5GB used out of 50GB'"

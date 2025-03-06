@@ -26,7 +26,6 @@
       :entities="getEntities.data"
       :action-items="actionItems"
       v-model="selections"
-      @update-offset="() => (page_offset += page_length)"
     />
     <EmptyEntityContextMenu
       v-if="

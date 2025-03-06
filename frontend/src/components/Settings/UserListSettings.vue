@@ -2,10 +2,10 @@
   <div class="flex items-center mb-4">
     <h1 class="font-semibold">Users</h1>
     <Button
-      v-if="$store.state.user.role === 'Drive Admin'"
+      v-if="$resources.isAdmin?.data"
       variant="solid"
       icon-left="plus"
-      class="ml-auto"
+      class="ml-auto mr-4"
       @click="showInviteUserDialog = true"
     >
       Invite
@@ -13,10 +13,7 @@
   </div>
   <div class="flex flex-col items-stretch justify-start overflow-y-auto">
     <div class="flex items-center justify-between"></div>
-    <div
-      v-for="(user, index) in $resources.fetchAllUsers?.data"
-      :key="user.user_name"
-    >
+    <div v-for="(user, index) in allUsers?.data" :key="user.user_name">
       <div
         v-if="index > 0"
         class="w-[95%] mx-auto h-px border-t border-gray-200"
@@ -28,27 +25,29 @@
           <span class="text-xs text-gray-700">{{ user.user_name }}</span>
         </div>
         <Dropdown
-          v-if="$store.state.user.role === 'Drive Admin'"
-          v-slot="{ open }"
+          v-if="
+            $resources.isAdmin.data && user.name != $store.state.user.fullName
+          "
           :options="getRoleOptions(user)"
+          v-slot="{ open }"
           placement="right"
           class="ml-auto text-base text-gray-600"
         >
           <Button variant="ghost" @click="selectedUser = user"
-            >{{ user.role }}
+            >{{ user.role == "admin" ? "Manager" : "User" }}
             <template #suffix>
-              <ChevronDown />
+              <ChevronDown :class="{ '[transform:rotateX(180deg)]': open }" />
             </template>
           </Button>
         </Dropdown>
         <span v-else class="ml-auto text-base text-gray-600">{{
-          user.role
+          user.role == "admin" ? "Manager" : "User"
         }}</span>
       </div>
     </div>
   </div>
   <div
-    v-if="!$resources.fetchAllUsers?.data?.length"
+    v-if="!allUsers?.data?.length"
     class="h-1/2 w-full flex flex-col items-center justify-center my-auto"
   >
     <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
@@ -147,22 +146,23 @@
     v-if="showRemoveUserDialog"
     v-model="showRemoveUserDialog"
     :options="{
-      title: 'Remove User',
+      title: 'Are you sure?',
       size: 'md',
-      message: `Removing ${selectedUser.full_name} will revoke their access to Frappe Drive. All files and folders owned by them will remain intact. You can add them back using the same email address.
-`,
+      message: `Removing ${selectedUser.full_name} will completely revoke their access to your team. You can always add them back using the same email ID.`,
       actions: [
         {
           variant: 'solid',
           theme: 'red',
-          label: 'Remove',
-          loading: $resources.inviteUsers.loading,
+          label:
+            'I confirm that I want to remove ' + selectedUser.full_name + '.',
+          loading: $resources.removeUser.loading,
           onClick: () => {
-            $resources.inviteUsers.submit({
-              emails: emailsToInvite.join(','),
-              role: NewUserRole,
+            $resources.removeUser.submit({
+              user_id: selectedUser.name,
+              team,
             })
-            showInviteUserDialog = false
+            allUsers.data.splice(allUsers.data.indexOf(selectedUser), 1)
+            showRemoveUserDialog = false
           },
         },
       ],
@@ -177,11 +177,13 @@ import { Avatar, FeatherIcon, Dropdown, Dialog } from "frappe-ui"
 import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue"
 import NewRoleDialog from "./NewRoleDialog.vue"
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
-import { PlusIcon, SearchIcon, XIcon } from "lucide-vue-next"
+import { XIcon } from "lucide-vue-next"
 import Check from "@/components/EspressoIcons/Check.vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
-import disableScroll from "../../utils/disable-scroll"
+import { allUsers } from "@/resources/permissions"
+import { toast } from "@/utils/toasts.js"
 
+const team = localStorage.getItem("recentTeam")
 export default {
   name: "UserRoleSettings",
   components: {
@@ -200,6 +202,8 @@ export default {
   },
   data() {
     return {
+      allUsers,
+      team,
       RoleName: "",
       UsersInRole: [],
       NewUserRole: "Drive User",
@@ -224,46 +228,34 @@ export default {
     },
   },
   methods: {
-    getRoleOptions(user) {
+    getRoleOptions() {
       return [
         {
-          label: "Admin",
+          label: "Manager",
           onClick: () => {
-            this.selectedUser.role = "Admin"
+            this.selectedUser.role = "admin"
             this.$resources.updateUserRole.submit({
-              user_id: this.selectedUser?.user_name,
-              user_role: "Drive " + this.selectedUser?.role,
+              team,
+              user_id: this.selectedUser.name,
+              role: 1,
             })
           },
-          enabled: user.role !== "Admin",
         },
         {
           label: "User",
-          enabled: user.role !== "User",
           onClick: () => {
-            this.selectedUser.role = "User"
+            this.selectedUser.role = "user"
             this.$resources.updateUserRole.submit({
-              user_id: this.selectedUser?.user_name,
-              user_role: "Drive " + this.selectedUser?.role,
-            })
-          },
-        },
-        {
-          label: "Guest",
-          enabled: user.role !== "Guest",
-          onClick: () => {
-            this.selectedUser.role = "Guest"
-            this.$resources.updateUserRole.submit({
-              user_id: this.selectedUser?.user_name,
-              user_role: "Drive " + this.selectedUser?.role,
+              team,
+              user_id: this.selectedUser.name,
+              role: 0,
             })
           },
         },
         {
           label: "Remove",
           class: "text-red-500",
-          enabled: false,
-          component: (props) =>
+          component: () =>
             h(
               "button",
               {
@@ -274,16 +266,8 @@ export default {
               },
               "Remove"
             ),
-          onClick: () => {
-            console.log("User has been removed")
-          },
         },
-      ].filter((item) => item.enabled)
-    },
-    viewGroupDetails(value) {
-      this.activeGroup = value
-      this.RoleName = value
-      this.EditRoleDialog = !this.EditRoleDialog
+      ]
     },
     extractEmails(emails) {
       const lastChar = emails.slice(-1)
@@ -302,30 +286,10 @@ export default {
     },
   },
   resources: {
-    fetchAllUsers: {
-      url: "drive.utils.users.get_users_with_drive_user_role",
-      params: {
-        get_roles: true,
-      },
-      method: "GET",
+    isAdmin: {
+      url: "drive.utils.users.is_admin",
+      params: { team },
       auto: true,
-      onSuccess(data) {
-        // Update group key to filter
-        data.forEach(function (item) {
-          if (item.email) {
-            item.user_name = item.email
-            item.user_type = "User"
-            delete item.email
-          }
-        })
-      },
-      onError(error) {
-        if (error.messages) {
-          this.errorMessage = error.messages.join("\n")
-        } else {
-          this.errorMessage = error.message
-        }
-      },
     },
     inviteUsers: {
       url: "drive.utils.users.invite_users",
@@ -339,17 +303,11 @@ export default {
         }
       },
     },
+    removeUser: {
+      url: "drive.utils.users.remove_user",
+    },
     updateUserRole: {
-      url: "drive.utils.users.add_drive_user_role",
-      method: "POST",
-      auto: false,
-      onError(error) {
-        if (error.messages) {
-          this.errorMessage = error.messages.join("\n")
-        } else {
-          this.errorMessage = error.message
-        }
-      },
+      url: "drive.utils.users.set_role",
     },
   },
 }
