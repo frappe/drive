@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model="open" :options="{ title: 'Settings', size: '5xl' }">
     <template #body>
-      <div class="flex" :style="{ height: 'calc(100vh - 9rem)' }">
+      <div class="flex" :style="{ height: '80vh' }">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
           <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
             Settings
@@ -10,10 +10,10 @@
             <button
               v-for="tab in tabs"
               :key="tab.label"
-              class="flex h-7 w-full items-center gap-2 rounded px-2 py-1"
+              class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
               :class="[
                 activeTab?.label == tab.label
-                  ? 'bg-gray-200'
+                  ? 'bg-gray-300'
                   : 'hover:bg-gray-100',
               ]"
               @click="activeTab = tab"
@@ -48,7 +48,7 @@
 </template>
 <script setup>
 import { ref, defineProps, markRaw, computed } from "vue"
-import { Dialog, FeatherIcon, Button, createResource } from "frappe-ui"
+import { Dialog, FeatherIcon, Button } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import User from "@/components/EspressoIcons/User.vue"

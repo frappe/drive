@@ -2,11 +2,16 @@
   <div class="flex items-center mb-4">
     <h1 class="font-semibold">Users</h1>
     <Button
-      v-if="$resources.isAdmin?.data"
+      v-if="isAdmin?.data"
       variant="solid"
       icon-left="plus"
       class="ml-auto mr-4"
-      @click="showInviteUserDialog = true"
+      @click="
+        () => {
+          showInvite = true
+          emit('close')
+        }
+      "
     >
       Invite
     </Button>
@@ -25,10 +30,8 @@
           <span class="text-xs text-gray-700">{{ user.user_name }}</span>
         </div>
         <Dropdown
-          v-if="
-            $resources.isAdmin.data && user.name != $store.state.user.fullName
-          "
-          :options="getRoleOptions(user)"
+          v-if="isAdmin.data && user.name != $store.state.user.fullName"
+          :options="roleOptions"
           v-slot="{ open }"
           placement="right"
           class="ml-auto text-base text-gray-600"
@@ -54,22 +57,22 @@
     <span class="text-gray-800 text-sm mt-2">No Users</span>
   </div>
   <Dialog
-    v-model="showInviteUserDialog"
+    v-model="showInvite"
     :options="{
-      title: 'Invite User',
+      title: 'Invite people to your Team',
       size: 'lg',
       actions: [
         {
           label: 'Send Invitation',
           variant: 'solid',
-          disabled: !emailsToInvite.length,
-          loading: $resources.inviteUsers.loading,
+          disabled: !invited.length,
+          loading: inviteUsers.loading,
           onClick: () => {
-            $resources.inviteUsers.submit({
-              emails: emailsToInvite.join(','),
+            inviteUsers.submit({
+              emails: invited.join(','),
               role: NewUserRole,
             })
-            showInviteUserDialog = false
+            dialog = null
           },
         },
       ],
@@ -77,9 +80,9 @@
   >
     <template #body-content>
       <div class="flex items-start justify-start gap-4">
-        <div class="flex flex-wrap gap-1 rounded w-full bg-gray-100 p-0.5">
+        <div class="flex flex-wrap gap-1 rounded w-full bg-gray-100 p-2">
           <Button
-            v-for="(email, idx) in emailsToInvite"
+            v-for="(email, idx) in invited"
             :key="email"
             :label="email"
             variant="outline"
@@ -89,62 +92,28 @@
               <XIcon
                 class="h-4"
                 stroke-width="1.5"
-                @click.stop="() => emailsToInvite.splice(idx, 1)"
+                @click.stop="() => invited.splice(idx, 1)"
               />
             </template>
           </Button>
           <div class="min-w-[10rem] flex-1">
             <input
-              v-model="emailsTxt"
+              v-model="emailInput"
               type="text"
               autocomplete="off"
               placeholder="Enter email address"
               class="h-7 w-full rounded border-none bg-gray-100 py-1.5 pl-2 pr-2 text-base text-gray-800 placeholder-gray-500 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-              @keydown.enter.capture.stop="extractEmails(`${emailsTxt} `)"
+              @keydown.enter.capture.stop="extractEmails"
+              @keydown.space.prevent.stop="extractEmails"
             />
           </div>
-        </div>
-        <div>
-          <Popover
-            v-slot="{ open, close }"
-            class="text-gray-700 relative flex-shrink-0 col-span-3 justify-self-end row-start-1 row-end-1"
-          >
-            <PopoverButton
-              class="flex gap-1 px-2 focus:outline-none bg-gray-100 rounded h-8 items-center text-base justify-self-end min-w-20"
-            >
-              {{ NewUserRole.slice(NewUserRole.indexOf(" ") + 1) }}
-              <FeatherIcon
-                :class="{ '[transform:rotateX(180deg)]': open }"
-                name="chevron-down"
-                class="w-4 ml-auto"
-              />
-            </PopoverButton>
-            <PopoverPanel
-              class="z-10 bg-white p-1 shadow-2xl rounded mt-1 absolute"
-              ><ul>
-                <li
-                  class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                  @click=";(NewUserRole = 'Drive Guest'), close()"
-                >
-                  Guest
-                  <Check v-if="NewUserRole === 'Drive Guest'" class="h-3" />
-                </li>
-                <li
-                  class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-1 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-                  @click=";(NewUserRole = 'Drive User'), close()"
-                >
-                  User
-                  <Check v-if="NewUserRole === 'Drive User'" class="h-3" />
-                </li></ul
-            ></PopoverPanel>
-          </Popover>
         </div>
       </div>
     </template>
   </Dialog>
   <Dialog
-    v-if="showRemoveUserDialog"
-    v-model="showRemoveUserDialog"
+    v-if="showRemove"
+    v-model="showRemove"
     :options="{
       title: 'Are you sure?',
       size: 'md',
@@ -155,14 +124,14 @@
           theme: 'red',
           label:
             'I confirm that I want to remove ' + selectedUser.full_name + '.',
-          loading: $resources.removeUser.loading,
+          loading: removeUser.loading,
           onClick: () => {
-            $resources.removeUser.submit({
+            removeUser.submit({
               user_id: selectedUser.name,
               team,
             })
             allUsers.data.splice(allUsers.data.indexOf(selectedUser), 1)
-            showRemoveUserDialog = false
+            showRemove = false
           },
         },
       ],
@@ -171,144 +140,101 @@
   </Dialog>
 </template>
 
-<script>
+<script setup>
 import { h } from "vue"
-import { Avatar, FeatherIcon, Dropdown, Dialog } from "frappe-ui"
-import RoleDetailsDialog from "@/components/RoleDetailsDialog.vue"
-import NewRoleDialog from "./NewRoleDialog.vue"
+import {
+  Avatar,
+  FeatherIcon,
+  Dropdown,
+  Dialog,
+  createResource,
+} from "frappe-ui"
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import { XIcon } from "lucide-vue-next"
-import Check from "@/components/EspressoIcons/Check.vue"
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
 import { allUsers } from "@/resources/permissions"
-import { toast } from "@/utils/toasts.js"
-
+import { ref } from "vue"
 const team = localStorage.getItem("recentTeam")
-export default {
-  name: "UserRoleSettings",
-  components: {
-    Avatar,
-    RoleDetailsDialog,
-    NewRoleDialog,
-    FeatherIcon,
-    Dropdown,
-    Dialog,
-    XIcon,
-    Popover,
-    PopoverButton,
-    PopoverPanel,
-    Check,
-    ChevronDown,
-  },
-  data() {
-    return {
-      allUsers,
-      team,
-      RoleName: "",
-      UsersInRole: [],
-      NewUserRole: "Drive User",
-      CreateRoleDialog: false,
-      EditRoleDialog: false,
-      AllRoles: null,
-      errorMessage: "",
-      activeGroup: null,
-      showDeleteDialog: false,
-      showInviteUserDialog: false,
-      showRemoveUserDialog: false,
-      emailsToInvite: "",
-      emailsTxt: "",
-      selectedUser: null,
-    }
-  },
-  computed: {
-    memberEmails() {
-      let x = []
-      this.UsersInRole.forEach((user) => x.push(user.email))
-      return x
+const dialog = ref(null)
+const selectedUser = ref(null)
+const invited = ref("")
+const emailInput = ref("")
+const showInvite = ref(false)
+const showRemove = ref(false)
+
+const roleOptions = [
+  {
+    label: "Manager",
+    onClick: () => {
+      selectedUser.value.role = "admin"
+      updateUserRole.submit({
+        team,
+        user_id: selectedUser.value.name,
+        role: 1,
+      })
     },
   },
-  methods: {
-    getRoleOptions() {
-      return [
+  {
+    label: "User",
+    onClick: () => {
+      selectedUser.value.role = "user"
+      updateUserRole.submit({
+        team,
+        user_id: selectedUser.value.name,
+        role: 0,
+      })
+    },
+  },
+  {
+    label: "Remove",
+    class: "text-red-500",
+    component: () =>
+      h(
+        "button",
         {
-          label: "Manager",
-          onClick: () => {
-            this.selectedUser.role = "admin"
-            this.$resources.updateUserRole.submit({
-              team,
-              user_id: this.selectedUser.name,
-              role: 1,
-            })
-          },
+          class: [
+            "group flex w-full items-center text-red-500 rounded-md px-2 py-2 text-sm",
+          ],
+          onClick: () => (showRemove.value = true),
         },
-        {
-          label: "User",
-          onClick: () => {
-            this.selectedUser.role = "user"
-            this.$resources.updateUserRole.submit({
-              team,
-              user_id: this.selectedUser.name,
-              role: 0,
-            })
-          },
-        },
-        {
-          label: "Remove",
-          class: "text-red-500",
-          component: () =>
-            h(
-              "button",
-              {
-                class: [
-                  "group flex w-full items-center text-red-500 rounded-md px-2 py-2 text-sm",
-                ],
-                onClick: () => (this.showRemoveUserDialog = true),
-              },
-              "Remove"
-            ),
-        },
-      ]
-    },
-    extractEmails(emails) {
-      const lastChar = emails.slice(-1)
-      if (![" ", ","].includes(lastChar)) {
-        this.emailsTxt = emails
-        return
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      const newEmails = emails
-        .split(/,|\s/)
-        .filter((email) => email)
-        .filter((email) => emailRegex.test(email))
-        .filter((email) => !this.emailsToInvite.includes(email))
-      this.emailsToInvite = [...this.emailsToInvite, ...newEmails]
-      this.emailsTxt = ""
-    },
+        "Remove"
+      ),
   },
-  resources: {
-    isAdmin: {
-      url: "drive.utils.users.is_admin",
-      params: { team },
-      auto: true,
-    },
-    inviteUsers: {
-      url: "drive.utils.users.invite_users",
-      method: "POST",
-      auto: false,
-      onError(error) {
-        if (error.messages) {
-          this.errorMessage = error.messages.join("\n")
-        } else {
-          this.errorMessage = error.message
-        }
-      },
-    },
-    removeUser: {
-      url: "drive.utils.users.remove_user",
-    },
-    updateUserRole: {
-      url: "drive.utils.users.set_role",
-    },
-  },
+]
+
+function extractEmails() {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const newEmails = emailInput.value
+    .split(/,|\s/)
+    .filter((email) => email)
+    .filter((email) => emailRegex.test(email))
+    .filter((email) => !invited.value.includes(email))
+  invited.value = [...invited.value, ...newEmails]
+  emailInput.value = ""
 }
+
+const isAdmin = createResource({
+  url: "drive.utils.users.is_admin",
+  params: { team },
+  auto: true,
+})
+
+const inviteUsers = createResource({
+  url: "drive.utils.users.invite_users",
+  method: "POST",
+  auto: false,
+  // onError(error) {
+  //   if (error.messages) {
+  //     this.errorMessage = error.messages.join("\n")
+  //   } else {
+  //     this.errorMessage = error.message
+  //   }
+  // },
+})
+const removeUser = createResource({
+  url: "drive.utils.users.remove_user",
+})
+
+const updateUserRole = createResource({
+  url: "drive.utils.users.set_role",
+})
 </script>

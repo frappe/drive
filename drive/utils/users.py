@@ -23,6 +23,39 @@ def get_all_users(team):
     return users
 
 
+def signup_flow(doc, method=None):
+    # frappe.local.flags.redirect_location = "/drive/shared"
+    # raise frappe.Redirect
+    pass
+
+
+@frappe.whitelist()
+def invite_users(emails, role="Drive User"):
+    if not emails:
+        return
+
+    email_string = validate_email_address(emails, throw=False)
+    email_list = split_emails(email_string)
+    if not email_list:
+        return
+
+    existing_invites = frappe.db.get_list(
+        "Drive User Invitation",
+        filters={
+            "email": ["in", email_list],
+            "status": ["in", ["Pending", "Accepted"]],
+        },
+        pluck="email",
+    )
+
+    new_invites = list(set(email_list) - set(existing_invites))
+    for email in new_invites:
+        invite = frappe.new_doc("Drive User Invitation")
+        invite.email = email
+        invite.role = role
+        invite.insert(ignore_permissions=True)
+
+
 @frappe.whitelist()
 def set_role(team, user_id, role):
     if not is_admin(team):
@@ -90,33 +123,6 @@ def accept_invitation(key):
         frappe.local.login_manager.login_as(invitation.email)
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/drive"
-
-
-@frappe.whitelist()
-def invite_users(emails, role="Drive User"):
-    if not emails:
-        return
-
-    email_string = validate_email_address(emails, throw=False)
-    email_list = split_emails(email_string)
-    if not email_list:
-        return
-
-    existing_invites = frappe.db.get_list(
-        "Drive User Invitation",
-        filters={
-            "email": ["in", email_list],
-            "status": ["in", ["Pending", "Accepted"]],
-        },
-        pluck="email",
-    )
-
-    new_invites = list(set(email_list) - set(existing_invites))
-    for email in new_invites:
-        invite = frappe.new_doc("Drive User Invitation")
-        invite.email = email
-        invite.role = role
-        invite.insert(ignore_permissions=True)
 
 
 @frappe.whitelist(allow_guest=True)

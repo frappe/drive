@@ -4,15 +4,7 @@
   "creation": "2024-09-26 10:44:07.782927",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": [
-    "email",
-    "role",
-    "key",
-    "invited_by",
-    "status",
-    "sent_at",
-    "accepted_at"
-  ],
+  "field_order": ["email", "team"],
   "fields": [
     {
       "fieldname": "email",
@@ -20,42 +12,15 @@
       "label": "Email"
     },
     {
-      "fieldname": "key",
-      "fieldtype": "Data",
-      "label": "Key"
-    },
-    {
-      "fieldname": "invited_by",
+      "fieldname": "team",
       "fieldtype": "Link",
-      "label": "Invited By",
-      "options": "User"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Pending\nAccepted\nExpired"
-    },
-    {
-      "fieldname": "sent_at",
-      "fieldtype": "Datetime",
-      "label": "Email Sent At"
-    },
-    {
-      "fieldname": "accepted_at",
-      "fieldtype": "Datetime",
-      "label": "Accepted At"
-    },
-    {
-      "fieldname": "role",
-      "fieldtype": "Select",
-      "label": "Role",
-      "options": "Drive User\nDrive Guest"
+      "label": "Team",
+      "options": "Drive Team"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2024-10-10 13:22:29.733486",
+  "modified": "2025-03-06 15:37:15.708533",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive User Invitation",

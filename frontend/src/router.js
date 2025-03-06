@@ -99,6 +99,7 @@ const routes = [
     component: () => import("@/pages/Notifications.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
+
   {
     path: "/:team/team",
     name: "Team",
@@ -115,6 +116,12 @@ const routes = [
     path: "/shared",
     name: "Shared",
     component: () => import("@/pages/Shared.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+  },
+  {
+    path: "/signup",
+    name: "Team",
+    component: () => import("@/pages/SignUpView.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
