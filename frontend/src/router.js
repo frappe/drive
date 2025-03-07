@@ -119,12 +119,6 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/signup",
-    name: "Team",
-    component: () => import("@/pages/SignUpView.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
-  },
-  {
     path: "/:team/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),

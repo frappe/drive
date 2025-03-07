@@ -1,7 +1,7 @@
 from os import write
 import frappe
 import json
-from drive.utils.files import get_home_folder
+from drive.utils.files import get_home_folder, MIME_LIST_MAP
 from .permissions import get_teams, ENTITY_FIELDS, get_user_access
 from pypika import Order, Criterion, functions as fn
 
@@ -27,7 +27,7 @@ def files(
     favourites_only=0,
     recents_only=0,
     tag_list=[],
-    mime_type_list=[],
+    file_kinds=[],
     personal=None,
     folders=0,
     all=0,
@@ -131,13 +131,19 @@ def files(
         tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
         query = query.where(Criterion.any(tag_list_criterion))
 
-    if mime_type_list:
-        mime_type_list = json.loads(mime_type_list)
-        query = query.where(
-            Criterion.any(DriveFile.mime_type == mime_type for mime_type in mime_type_list)
-        )
+    file_kinds = json.loads(file_kinds) if not isinstance(file_kinds, list) else file_kinds
+    if file_kinds:
+        mime_types = []
+        for kind in file_kinds:
+            mime_types.extend(MIME_LIST_MAP.get(kind, []))
+        criterion = [DriveFile.mime_type == mime_type for mime_type in mime_types]
+        if "Folder" in file_kinds:
+            criterion.append(DriveFile.is_group == 1)
+        query = query.where(Criterion.any(criterion))
+
     if folders:
         query = query.where(DriveFile.is_group == 1)
+    print(query)
     return query.run(as_dict=True)
 
 

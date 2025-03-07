@@ -30,7 +30,7 @@ def signup_flow(doc, method=None):
 
 
 @frappe.whitelist()
-def invite_users(emails, role="Drive User"):
+def invite_users(team, emails):
     if not emails:
         return
 
@@ -41,10 +41,7 @@ def invite_users(emails, role="Drive User"):
 
     existing_invites = frappe.db.get_list(
         "Drive User Invitation",
-        filters={
-            "email": ["in", email_list],
-            "status": ["in", ["Pending", "Accepted"]],
-        },
+        filters={"email": ["in", email_list], "team": ""},
         pluck="email",
     )
 
@@ -52,8 +49,8 @@ def invite_users(emails, role="Drive User"):
     for email in new_invites:
         invite = frappe.new_doc("Drive User Invitation")
         invite.email = email
-        invite.role = role
-        invite.insert(ignore_permissions=True)
+        invite.team = team
+        invite.insert()
 
 
 @frappe.whitelist()

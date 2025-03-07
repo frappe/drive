@@ -1,5 +1,8 @@
 <template>
-  <div class="flex justify-center items-center absolute right-7 bottom-7">
+  <div
+    class="flex justify-center items-center absolute right-7 bottom-7"
+    v-on-outside-click="() => (expanded = false)"
+  >
     <transition name="fade">
       <label
         v-if="!expanded"

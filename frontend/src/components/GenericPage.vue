@@ -181,10 +181,10 @@ watch(
   { immediate: route.name !== "Shared" }
 )
 watch(activeFilters.value, async (val) => {
-  let mime_type_list = JSON.stringify(
-    val.reduce((acc, k) => [...acc, ...(MIME_LIST_MAP[k.label] || [])], [])
-  )
-  props.getEntities.fetch({ team: team, mime_type_list })
+  props.getEntities.fetch({
+    team: team,
+    file_kinds: JSON.stringify(val.map((k) => k.label)),
+  })
 })
 
 const clickEvent = ref(null)

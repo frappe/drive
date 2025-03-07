@@ -93,13 +93,14 @@ import { notifCount } from "@/resources/permissions"
 import { computed } from "vue"
 import { useStore } from "vuex"
 import Users from "./EspressoIcons/Users.vue"
+import { getTeams } from "@/resources/files"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
-const team = localStorage.getItem("recentTeam")
+const team = localStorage.getItem("recentTeam") || getTeams.data[0]
 
 const sidebarItems = [
   {

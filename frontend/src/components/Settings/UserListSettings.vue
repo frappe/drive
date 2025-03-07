@@ -9,7 +9,6 @@
       @click="
         () => {
           showInvite = true
-          emit('close')
         }
       "
     >
@@ -59,7 +58,7 @@
   <Dialog
     v-model="showInvite"
     :options="{
-      title: 'Invite people to your Team',
+      title: 'Invite people to ' + getTeams.data[team].title,
       size: 'lg',
       actions: [
         {
@@ -70,7 +69,7 @@
           onClick: () => {
             inviteUsers.submit({
               emails: invited.join(','),
-              role: NewUserRole,
+              team,
             })
             dialog = null
           },
@@ -142,6 +141,7 @@
 
 <script setup>
 import { h } from "vue"
+import { getTeams } from "@/resources/files"
 import {
   Avatar,
   FeatherIcon,
@@ -152,8 +152,10 @@ import {
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import { XIcon } from "lucide-vue-next"
 import { allUsers } from "@/resources/permissions"
-import { ref } from "vue"
+import { ref, computed } from "vue"
+
 const team = localStorage.getItem("recentTeam")
+
 const dialog = ref(null)
 const selectedUser = ref(null)
 const invited = ref("")
@@ -220,8 +222,6 @@ const isAdmin = createResource({
 
 const inviteUsers = createResource({
   url: "drive.utils.users.invite_users",
-  method: "POST",
-  auto: false,
   // onError(error) {
   //   if (error.messages) {
   //     this.errorMessage = error.messages.join("\n")

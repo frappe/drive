@@ -29,7 +29,12 @@
               <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
               <!-- what on mars is he talking about? -->
               <div
-                class="flex w-full h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)] overflow-hidden"
+                class="flex w-full overflow-hidden"
+                :class="
+                  $route.name == 'File' || $route.name == 'Document'
+                    ? 'h-[calc(100dvh-105px)] sm:h-[calc(100dvh-52px)]'
+                    : 'h-full sm:h-full'
+                "
               >
                 <router-view :key="$route.fullPath" v-slot="{ Component }">
                   <component
