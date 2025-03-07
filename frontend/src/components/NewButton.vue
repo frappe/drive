@@ -68,7 +68,7 @@ const newDocument = async () => {
   let data = await createDocument.submit({
     title: "Untitled Document",
     team: route.params.team,
-    personal: route.name === "Home" ? 1 : 0,
+    personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
     content: null,
     parent: store.state.currentFolderID,
   })

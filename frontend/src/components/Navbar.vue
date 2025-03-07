@@ -17,6 +17,22 @@
         </div>
         <div v-if="isLoggedIn" class="block sm:flex">
           <Button
+            v-if="docStatus.length"
+            variant="ghost"
+            :class="'px-5 text-sm'"
+          >
+            <template #prefix>
+              <FeatherIcon
+                :name="
+                  docStatus === 'Saved' ? 'cloud-lightning' : 'upload-cloud'
+                "
+                class="size-4"
+              />
+            </template>
+            <template v-if="docStatus === 'Saved'">{{ docStatus }}</template>
+            <i v-else>{{ docStatus }}</i>
+          </Button>
+          <Button
             v-if="
               ($route.name == 'File' || $route.name == 'Document') &&
               $store.state.activeEntity?.share
@@ -44,10 +60,22 @@
 import UsersBar from "./UsersBar.vue"
 import { Button, Breadcrumbs } from "frappe-ui"
 import Share from "./EspressoIcons/Share.vue"
+import { FeatherIcon } from "frappe-ui"
 import { useStore } from "vuex"
-import { computed } from "vue"
+import { computed, ref, inject } from "vue"
 
 const store = useStore()
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const connectedUsers = computed(() => store.state.connectedUsers)
+
+const docStatus = ref("")
+const emitter = inject("emitter")
+
+emitter.on("docSaving", () => {
+  docStatus.value = "saving..."
+})
+emitter.on("docSaved", () => {
+  docStatus.value = "Saved"
+  setTimeout(() => (docStatus.value = ""), 1500)
+})
 </script>
