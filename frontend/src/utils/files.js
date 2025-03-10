@@ -2,9 +2,12 @@ import router from "@/router"
 import store from "@/store"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
+import { mutate, getRecents } from "@/resources/files"
 
 export const openEntity = (team = null, entity) => {
   if (!team) team = "shared"
+  getRecents.setData((data) => [...data, entity])
+  mutate([entity], (e) => (e.accessed = true))
   if (entity.is_group) {
     router.push({
       name: "Folder",

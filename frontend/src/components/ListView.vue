@@ -131,7 +131,8 @@ const userData = computed(() =>
 )
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
-  if (Array.isArray(props.folderContents)) return props.folderContents
+  if (Array.isArray(props.folderContents))
+    return props.folderContents.filter((k) => k)
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,

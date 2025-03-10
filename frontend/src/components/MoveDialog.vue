@@ -335,7 +335,7 @@ const fetchAllFolders = createResource({
     team: route.params.team,
     is_active: 1,
     folders: 1,
-    all: 1,
+    only_parent: 0,
   },
   transform: (d) =>
     d.map((k) => ({

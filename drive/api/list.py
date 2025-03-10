@@ -30,9 +30,12 @@ def files(
     file_kinds=[],
     personal=None,
     folders=0,
-    all=0,
+    only_parent=1,
 ):
     home = get_home_folder(team)["name"]
+    is_active = int(is_active)
+    only_parent = int(is_active)
+    folders = int(folders)
 
     if not entity_name:
         # If not specified, get home folder
@@ -80,9 +83,9 @@ def files(
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
 
-    if all:
+    if not is_active or favourites_only or recents_only:
         query = query.where(DriveFile.team == team)
-    else:
+    elif only_parent:
         query = query.where(DriveFile.parent_entity == entity_name)
 
     # Get favourites data (only that, if applicable)

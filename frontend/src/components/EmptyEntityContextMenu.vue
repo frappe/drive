@@ -39,75 +39,57 @@
     </div>
   </div>
 </template>
-<script>
-import disableScroll from "../utils/disable-scroll"
+<script setup>
+import { onBeforeMount, onMounted, onUpdated, ref } from "vue"
+import disableScroll from "@/utils/disable-scroll"
 import { FeatherIcon } from "frappe-ui"
 
-export default {
-  name: "EmptyEntityContext",
-  props: {
-    actionItems: {
-      type: Array,
-      default: null,
-    },
-    event: {
-      type: Object,
-      default: null,
-    },
-    close: {
-      type: Function,
-      default: null,
-    },
-  },
-  data() {
-    return {
-      FeatherIcon,
-      parentWidth: null,
-      parentHeight: null,
-      childWidth: null,
-      childHeight: null,
-    }
-  },
-  mounted() {
-    this.parentWidth = this.$refs.emptyContextMenu.parentElement.clientWidth
-    this.parentHeight = this.$refs.emptyContextMenu.parentElement.clientHeight
-    this.childWidth = this.$refs.emptyContextMenu.clientWidth
-    this.childHeight = this.$refs.emptyContextMenu.clientHeight
-    this.calculateY()
-    this.calculateX()
-    disableScroll.on()
-  },
-  updated() {
-    this.calculateY()
-    this.calculateX()
-  },
-  beforeUnmount() {
-    disableScroll.off()
-  },
-  methods: {
-    disableScroll() {
-      document.querySelector("#currentPage").classList.add("disable-scroll")
-    },
-    enableScroll() {
-      document.querySelector("#currentPage").classList.remove("disable-scroll")
-    },
-    calculateY() {
-      if (this.event.y >= this.parentHeight - this.childHeight) {
-        return (this.$refs.emptyContextMenu.style.top =
-          this.event.y - this.childHeight + "px")
-      } else {
-        return (this.$refs.emptyContextMenu.style.top = this.event.y + "px")
-      }
-    },
-    calculateX() {
-      if (this.event.x >= this.parentWidth - this.childWidth) {
-        return (this.$refs.emptyContextMenu.style.left =
-          this.event.x - this.childWidth + "px")
-      } else {
-        return (this.$refs.emptyContextMenu.style.left = this.event.x + "px")
-      }
-    },
-  },
+const props = defineProps({
+  actionItems: Array,
+  event: Object,
+  close: Function,
+})
+
+const emptyContextMenu = ref(null)
+const parentWidth = ref(null)
+const parentHeight = ref(null)
+const childWidth = ref(null)
+const childHeight = ref(null)
+
+onMounted(() => {
+  parentWidth.value = emptyContextMenu.value.parentElement.clientWidth
+  parentHeight.value = emptyContextMenu.value.parentElement.clientHeight
+  childWidth.value = emptyContextMenu.value.clientWidth
+  childHeight.value = emptyContextMenu.value.clientHeight
+  calculateY()
+  calculateX()
+  disableScroll.on()
+})
+
+onUpdated(() => {
+  calculateY()
+  calculateX()
+})
+
+onBeforeMount(() => {
+  disableScroll.off()
+})
+
+function calculateY() {
+  if (props.event.y >= parentHeight.value - childHeight.value) {
+    return (emptyContextMenu.value.style.top =
+      props.event.y - childHeight.value + "px")
+  } else {
+    return (emptyContextMenu.value.style.top = props.event.y + "px")
+  }
+}
+function calculateX() {
+  if (props.event.x >= parentWidth.value - childWidth.value) {
+    return (emptyContextMenu.value.style.left =
+      props.event.x - childWidth.value + "px")
+  } else {
+    return (emptyContextMenu.value.style.left = props.event.x + "px")
+  }
 }
 </script>
 <style>

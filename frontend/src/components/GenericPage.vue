@@ -11,7 +11,7 @@
     <!-- This sucks, redo it -->
     <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />
     <NoFilesSection
-      v-else-if="getEntities.data?.length === 0"
+      v-else-if="rows?.length === 0"
       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       :icon="icon"
       :primary-message="primaryMessage"
@@ -22,22 +22,10 @@
     <ListView
       v-else-if="$store.state.view === 'list'"
       ref="view"
-      :folder-contents="getEntities.data && grouper(getEntities.data)"
-      :entities="getEntities.data"
+      :folder-contents="rows && grouper(rows)"
+      :entities="rows"
       :action-items="actionItems"
       v-model="selections"
-    />
-    <EmptyEntityContextMenu
-      v-if="
-        ($route.name === 'Team' ||
-          $route.name === 'Home' ||
-          $route.name === 'Folder') &&
-        defaultContextTriggered
-      "
-      v-on-outside-click="() => (defaultContextTriggered = false)"
-      :close="() => (defaultContextTriggered = false)"
-      :action-items="defaultActionItems"
-      :event="clickEvent"
     />
     <NewFolderDialog
       v-if="dialog === 'f'"
@@ -61,21 +49,21 @@
       v-model="dialog"
       :entities="selections"
       :for="'remove'"
-      @success="mutate({ delete: true, data: selections })"
+      @success="resetDialog"
     />
+    <!-- BROKEN -->
     <GeneralDialog
       v-if="dialog === 'unshare'"
       v-model="dialog"
       :entities="selections"
       :for="'unshare'"
-      @success="mutate({ delete: true, data: selections })"
     />
     <GeneralDialog
       v-if="dialog === 'restore'"
       v-model="dialog"
       :entities="selections"
       :for="'restore'"
-      @success="mutate({ delete: true, data: selections })"
+      @success="resetDialog"
     />
     <ShareDialog
       v-if="dialog === 's'"
@@ -97,13 +85,7 @@
     <CTADeleteDialog
       v-if="dialog === 'cta'"
       v-model="dialog"
-      @success="
-        () => {
-          getEntities.setData([])
-          handleListMutate({ delete: true, all: true })
-          dialog = null
-        }
-      "
+      @success="resetDialog"
     />
     <FileUploader
       v-if="$store.state.auth.user_id"
@@ -126,7 +108,6 @@ import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "../components/MoveDialog.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
-import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
@@ -166,6 +147,9 @@ const team = localStorage.getItem("recentTeam")
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
+const rows = computed(() =>
+  props.getEntities.data?.filter?.((k) => k.is_active != 0)
+)
 const selections = ref([])
 watch(activeEntity, () => (selections.value = [activeEntity.value]))
 watch(
@@ -283,7 +267,7 @@ const actionItems = computed(() => {
         icon: Star,
         onClick: (entities) => {
           entities = entities.map((e) => ({
-            name: e.name,
+            ...e,
             is_favourite: true,
           }))
           toggleFav.submit({ entities })
@@ -298,7 +282,7 @@ const actionItems = computed(() => {
         icon: "star",
         onClick: (entities) => {
           entities = entities.map((e) => ({
-            name: e.name,
+            ...e,
             is_favourite: false,
           }))
           toggleFav.submit({ entities })
@@ -315,7 +299,7 @@ const actionItems = computed(() => {
           clearRecent.submit({
             entities,
           }),
-        isEnabled: () => route.name === "Recents",
+        isEnabled: (e) => e.accessed,
         important: true,
         multi: true,
       },
