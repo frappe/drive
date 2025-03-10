@@ -41,7 +41,11 @@ export const prettyData = (entities) => {
     return entity
   })
 }
-export const setBreadCrumbs = (breadcrumbs, is_private) => {
+export const setBreadCrumbs = (
+  breadcrumbs,
+  is_private,
+  final_func = () => {}
+) => {
   const route = router.currentRoute.value
   let res = [
     {
@@ -61,6 +65,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private) => {
   breadcrumbs.forEach((item, idx) => {
     res.push({
       label: item.title,
+      onClick: final_func,
       route:
         idx !== breadcrumbs.length - 1
           ? `/${route.params?.team}/folder/` + item.name

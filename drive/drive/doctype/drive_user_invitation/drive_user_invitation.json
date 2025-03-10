@@ -4,7 +4,7 @@
   "creation": "2024-09-26 10:44:07.782927",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["email", "team"],
+  "field_order": ["email", "team", "status", "accepted_on"],
   "fields": [
     {
       "fieldname": "email",
@@ -16,11 +16,22 @@
       "fieldtype": "Link",
       "label": "Team",
       "options": "Drive Team"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Expired\nPending\nAccepted"
+    },
+    {
+      "fieldname": "accepted_on",
+      "fieldtype": "Datetime",
+      "label": "Accepted On"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-03-06 15:37:15.708533",
+  "modified": "2025-03-07 14:58:04.924375",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive User Invitation",

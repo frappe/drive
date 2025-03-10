@@ -1,5 +1,34 @@
-<h2>You have been invited to use Frappe Drive</h2>
+<div style="text-align: center; font-family: Arial, sans-serif; padding: 20px">
+  <h2 style="margin-bottom: 10px">
+    You've been invited to join <br />
+    {{ team_name }} on Frappe Drive!
+  </h2>
 
-<p>
-  <a class="btn btn-primary" href="{{ invite_link }}">Accept Invitation</a>
-</p>
+  <p
+    style="font-size: 14px; color: #444; max-width: 400px; margin: 0 auto 20px"
+  >
+    {{ user }} has invited to you to join <strong>{{ team_name }}</strong> on
+    Frappe Drive. Click below to get started.
+  </p>
+
+  <p>
+    <a
+      href="{{ invite_link }}"
+      style="
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 14px;
+        color: #fff;
+        background-color: #007bff;
+        text-decoration: none;
+        border-radius: 6px;
+      "
+    >
+      Accept Invitation
+    </a>
+  </p>
+
+  <p style="font-size: 12px; color: #888; margin-top: 15px">
+    If you didn’t request this, feel free to ignore this email.
+  </p>
+</div>

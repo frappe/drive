@@ -23,10 +23,16 @@ def get_all_users(team):
     return users
 
 
-def signup_flow(doc, method=None):
-    # frappe.local.flags.redirect_location = "/drive/shared"
-    # raise frappe.Redirect
-    pass
+def check_invites(doc, method=None):
+    invites = frappe.db.get_list(
+        "Drive User Invitation",
+        filters={"email": doc.email, "status": "Pending"},
+        pluck="name",
+        ignore_permissions=True,
+    )
+    for invite_name in invites:
+        invite = frappe.get_doc("Drive User Invitation", invite_name)
+        invite.accept()
 
 
 @frappe.whitelist()
@@ -41,7 +47,7 @@ def invite_users(team, emails):
 
     existing_invites = frappe.db.get_list(
         "Drive User Invitation",
-        filters={"email": ["in", email_list], "team": ""},
+        filters={"email": ["in", email_list], "team": team},
         pluck="email",
     )
 
@@ -104,22 +110,12 @@ def mark_as_viewed(entity):
 
 @frappe.whitelist(allow_guest=True)
 def accept_invitation(key):
-    if not key:
+    try:
+        invitation = frappe.get_doc("Drive User Invitation", key)
+    except:
         frappe.throw("Invalid or expired key")
 
-    invitation_name = frappe.db.exists("Drive User Invitation", {"key": key})
-    if not invitation_name:
-        frappe.throw("Invalid or expired key")
-
-    invitation = frappe.get_doc("Drive User Invitation", invitation_name)
-    invitation.accept()
-    invitation.reload()
-
-    if invitation.status == "Accepted":
-        add_drive_user_role(invitation.email)
-        frappe.local.login_manager.login_as(invitation.email)
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/drive"
+    return invitation.accept()
 
 
 @frappe.whitelist(allow_guest=True)

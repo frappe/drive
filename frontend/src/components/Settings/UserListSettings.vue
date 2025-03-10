@@ -64,9 +64,10 @@
         {
           label: 'Send Invitation',
           variant: 'solid',
-          disabled: !invited.length,
+          disabled: !emailTest().length && !invited.length,
           loading: inviteUsers.loading,
           onClick: () => {
+            extractEmails()
             inviteUsers.submit({
               emails: invited.join(','),
               team,
@@ -102,6 +103,8 @@
               autocomplete="off"
               placeholder="Enter email address"
               class="h-7 w-full rounded border-none bg-gray-100 py-1.5 pl-2 pr-2 text-base text-gray-800 placeholder-gray-500 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+              @keydown="isValidEmail"
+              v-on-outside-click="(d) => console.log(d)"
               @keydown.enter.capture.stop="extractEmails"
               @keydown.space.prevent.stop="extractEmails"
             />
@@ -152,8 +155,8 @@ import {
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import { XIcon } from "lucide-vue-next"
 import { allUsers } from "@/resources/permissions"
-import { ref, computed } from "vue"
-
+import { ref } from "vue"
+import { toast } from "@/utils/toasts"
 const team = localStorage.getItem("recentTeam")
 
 const dialog = ref(null)
@@ -203,14 +206,17 @@ const roleOptions = [
   },
 ]
 
-function extractEmails() {
+function emailTest() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  const newEmails = emailInput.value
+  return emailInput.value
     .split(/,|\s/)
     .filter((email) => email)
     .filter((email) => emailRegex.test(email))
     .filter((email) => !invited.value.includes(email))
-  invited.value = [...invited.value, ...newEmails]
+}
+
+function extractEmails() {
+  invited.value = [...invited.value, ...emailTest()]
   emailInput.value = ""
 }
 
@@ -222,13 +228,10 @@ const isAdmin = createResource({
 
 const inviteUsers = createResource({
   url: "drive.utils.users.invite_users",
-  // onError(error) {
-  //   if (error.messages) {
-  //     this.errorMessage = error.messages.join("\n")
-  //   } else {
-  //     this.errorMessage = error.message
-  //   }
-  // },
+  onSuccess: () => {
+    showInvite.value = false
+    toast("Invite sent!")
+  },
 })
 const removeUser = createResource({
   url: "drive.utils.users.remove_user",

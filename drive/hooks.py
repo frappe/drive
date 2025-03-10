@@ -195,6 +195,8 @@ scheduler_events = {
 doc_events = {
     "User": {
         # will run after any DocType record is inserted into database
-        "before_save": "drive.utils.users.signup_flow"
+        "after_insert": "drive.utils.users.check_invites"
     },
 }
+
+signup_form_template = "templates/signup.html"

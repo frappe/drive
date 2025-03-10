@@ -195,8 +195,8 @@ function handleContextMenu(event) {
   event.preventDefault()
 }
 allUsers.fetch({ team: team })
-// Action Items
 
+// Action Items
 const actionItems = computed(() => {
   if (route.name === "Trash") {
     return [

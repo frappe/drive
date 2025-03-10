@@ -50,7 +50,7 @@ def storage_bar_data(team):
             & (DriveFile.owner == frappe.session.user)
             & (DriveFile.is_active == 1)
         )
-        .select(fn.Sum(DriveFile.file_size).as_("total_size"))
+        .select(fn.Coalesce(fn.Sum(DriveFile.file_size), 0).as_("total_size"))
     )
     result = query.run(as_dict=True)[0]
     result["limit"] = frappe.get_value("Drive Team", team, "quota") * MEGA_BYTE

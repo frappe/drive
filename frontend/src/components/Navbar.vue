@@ -71,7 +71,7 @@ const connectedUsers = computed(() => store.state.connectedUsers)
 const docStatus = ref("")
 const emitter = inject("emitter")
 
-emitter.on("docSaving", () => {
+emitter.on("docSaving", (val) => {
   docStatus.value = "saving..."
 })
 emitter.on("docSaved", () => {

@@ -72,12 +72,17 @@
   </div>
   <div
     v-if="!usedSpace"
-    class="h-full w-full flex flex-col items-center justify-center my-auto"
+    class="w-full flex flex-col items-center justify-center my-10"
   >
     <Cloud class="h-7 stroke-1 text-gray-600" />
     <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
   </div>
-  <div class="mt-5 text-gray-800 text-base py-2 border-b">Large Files:</div>
+  <div
+    class="mt-5 text-gray-800 text-base py-2"
+    :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
+  >
+    Large Files:
+  </div>
   <div
     class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
   >
@@ -103,6 +108,12 @@
         </div>
         {{ formatSize(i.file_size) }}
       </div>
+    </div>
+    <div
+      v-if="!storageBreakdown.data?.entities?.length"
+      class="py-4 text-center w-full text-sm text-italic"
+    >
+      No files found.
     </div>
   </div>
 </template>
