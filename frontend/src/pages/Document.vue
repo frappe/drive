@@ -140,7 +140,12 @@ createResource({
     entity.value = data
     lastSaved.value = Date.now()
     contentLoaded.value = true
-    setBreadCrumbs(data.breadcrumbs, data.is_private, false)
+    setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
+      const selection = window.getSelection()
+      selection.empty()
+      const h3 = document.querySelector("h3")
+      selection.setBaseAndExtent(h3, 0, h3, 1)
+    })
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
