@@ -357,7 +357,7 @@ def get_file_content(entity_name, trigger_download=0):  #
         ],
         as_dict=1,
     )
-    if not drive_file or drive_file.is_group:
+    if not drive_file or drive_file.is_group or drive_file.is_active != 1:
         frappe.throw("Not found", frappe.NotFound)
 
     path = Path(frappe.get_site_path("private/files")) / drive_file.path

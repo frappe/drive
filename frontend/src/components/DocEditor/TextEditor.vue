@@ -364,8 +364,7 @@ export default {
     Y.applyUpdate(doc, this.yjsContent)
     const webrtcProvider = new WebrtcProvider(
       "fdoc-" + JSON.stringify(this.entityName),
-      doc,
-      { signaling: ["wss://network.arjunchoudhary.com"] }
+      doc
     )
     ymap.observe(() => {
       this.$emit("update:lastSaved", ymap.get("lastsaved"))
@@ -712,8 +711,8 @@ export default {
                 <style>${editorStyle}</style>
               </head>
               <body>
-                <div class="Prosemirror espresso-prose">
-                ${this.editor.getHTML()}
+                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                  ${this.editor.getHTML()}
                 </div>
               </body>
             </html>
@@ -750,13 +749,13 @@ export default {
                 frameWindow.print()
               }
               frameWindow.close()
-            }, 10)
+            }, 500)
           } catch (err) {
             console.error(err)
           }
 
           setTimeout(function () {
-            document.body.removeChild(iframe)
+            // document.body.removeChild(iframe)
           }, 100)
         }
       }

@@ -15,15 +15,7 @@
     <span class="text-base text-center text-gray-700">
       {{ error }}
     </span>
-    <Button
-      v-if="
-        $store.state.entityInfo[0].allow_download ||
-        $store.state.entityInfo[0].owner === 'You'
-      "
-      class="mt-4 w-full"
-      variant="solid"
-      @click="download"
-    >
+    <Button class="mt-4 w-full" variant="solid" @click="download">
       Download
     </Button>
   </div>
