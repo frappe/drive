@@ -48,7 +48,7 @@ class DriveUserInvitation(Document):
         frappe.local.response["type"] = "redirect"
         if not frappe.db.exists("User", self.email):
             frappe.local.response["location"] = (
-                f"/login?email={self.email}&invite={frappe.db.get_value("Drive Team", self.team, 'title')}#signup"
+                f"/login?email={self.email}&invite={frappe.db.get_value('Drive Team', self.team, 'title')}#signup"
             )
             return
         team = frappe.get_doc("Drive Team", self.team)

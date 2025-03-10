@@ -30,9 +30,24 @@ def check_invites(doc, method=None):
         pluck="name",
         ignore_permissions=True,
     )
-    for invite_name in invites:
-        invite = frappe.get_doc("Drive User Invitation", invite_name)
-        invite.accept()
+    if not invites:
+        # Create team for this user
+        frappe.local.login_manager.login_as(doc.email)
+        team = frappe.get_doc(
+            {
+                "doctype": "Drive Team",
+                "title": "Personal",
+            },
+        )
+        team.insert(ignore_permissions=True)
+        team.append("users", {"user": doc.email})
+        team.save()
+        frappe.local.response["location"] = "/drive/" + team.name
+    else:
+        for invite_name in invites:
+            invite = frappe.get_doc("Drive User Invitation", invite_name)
+
+            invite.accept()
 
 
 @frappe.whitelist()
