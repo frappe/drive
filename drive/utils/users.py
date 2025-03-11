@@ -40,7 +40,7 @@ def check_invites(doc, method=None):
             },
         )
         team.insert(ignore_permissions=True)
-        team.append("users", {"user": doc.email})
+        team.append("users", {"user": doc.email, "is_admin": 1})
         team.save()
         frappe.local.response["location"] = "/drive/" + team.name
     else:
