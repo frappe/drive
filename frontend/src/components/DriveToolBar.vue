@@ -170,6 +170,15 @@
             {{ button.label }}
           </Button>
         </template>
+        <Dropdown
+          :options="newEntityOptions"
+          placement="left"
+          class="basis-5/12 lg:basis-auto"
+        >
+          <Button variant="solid">
+            <FeatherIcon name="upload" class="w-4" />
+          </Button>
+        </Dropdown>
       </div>
     </div>
   </div>
@@ -192,6 +201,12 @@ import Image from "./MimeIcons/Image.vue"
 import Video from "./MimeIcons/Video.vue"
 import PDF from "./MimeIcons/PDF.vue"
 import Unknown from "./MimeIcons/Unknown.vue"
+import NewFolder from "./EspressoIcons/NewFolder.vue"
+import Link from "./EspressoIcons/Link.vue"
+import FileUpload from "./EspressoIcons/File-upload.vue"
+import FolderUpload from "./EspressoIcons/Folder-upload.vue"
+import NewFile from "./EspressoIcons/NewFile.vue"
+import emitter from "@/emitter"
 import { computed, onMounted, watch, ref } from "vue"
 import { useStore } from "vuex"
 import { getRecents, getFavourites, getTrash } from "@/resources/files"
@@ -293,6 +308,60 @@ const possibleButtons = [
     icon: "trash",
     entities: getTrash,
     theme: "red",
+  },
+]
+
+const newDocument = async () => {
+  let data = await createDocument.submit({
+    title: "Untitled Document",
+    team: route.params.team,
+    personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
+    content: null,
+    parent: store.state.currentFolderID,
+  })
+  window.open(
+    router.resolve({
+      name: "Document",
+      params: { team: route.params.team, entityName: data.name },
+    }).href
+  )
+}
+const newEntityOptions = [
+  {
+    group: "Upload",
+    items: [
+      {
+        label: "Upload File",
+        icon: FileUpload,
+        onClick: () => emitter.emit("uploadFile"),
+      },
+      {
+        label: "Upload Folder",
+        icon: FolderUpload,
+        onClick: () => emitter.emit("uploadFolder"),
+      },
+    ],
+  },
+  {
+    group: "New...",
+    items: [
+      {
+        label: "Document",
+        icon: NewFile,
+        onClick: newDocument,
+      },
+      {
+        label: "Folder",
+        icon: NewFolder,
+        onClick: () => emitter.emit("newFolder"),
+      },
+
+      {
+        label: "New Link",
+        icon: Link,
+        onClick: () => emitter.emit("newLink"),
+      },
+    ],
   },
 ]
 </script>

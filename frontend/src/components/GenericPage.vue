@@ -105,13 +105,11 @@
       v-if="$store.state.auth.user_id"
       @success="getEntities.fetch()"
     />
-    <NewButton />
   </div>
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"
 import GridView from "@/components/GridView.vue"
-import NewButton from "@/components/NewButton.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
@@ -137,6 +135,7 @@ import Rename from "./EspressoIcons/Rename.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
+import Open from "./EspressoIcons/Open.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import Star from "./EspressoIcons/Star.vue"
 import { ref, computed, watch } from "vue"
@@ -220,22 +219,21 @@ const actionItems = computed(() => {
   } else {
     return [
       {
-        label: "Move to Team",
-        icon: Team,
-        onClick: ([e]) =>
-          togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
-        isEnabled: () => route.name == "Home",
-        multi: true,
-        important: true,
-      },
-      {
         label: "Preview",
         icon: Preview,
         onClick: ([entity]) => openEntity(team, entity),
+        isEnabled: (e) => !e.is_link,
+      },
+      {
+        label: "Open",
+        icon: "external-link",
+        onClick: ([entity]) => openEntity(team, entity),
+        isEnabled: (e) => e.is_link,
       },
       {
         label: "Download",
         icon: Download,
+        isEnabled: (e) => !e.is_link,
         onClick: entitiesDownload,
         multi: true,
         important: true,
@@ -264,6 +262,15 @@ const actionItems = computed(() => {
         icon: Move,
         onClick: () => (dialog.value = "m"),
         isEnabled: (e) => e.write,
+        multi: true,
+        important: true,
+      },
+      {
+        label: "Move to Team",
+        icon: Team,
+        onClick: ([e]) =>
+          togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
+        isEnabled: () => route.name == "Home",
         multi: true,
         important: true,
       },
