@@ -533,8 +533,12 @@ def set_favourite(entities=None, clear_all=False):
                 "user": frappe.session.user,
             }
         )
+        print(entity)
         if not entity.get("is_favourite"):
             entity["is_favourite"] = not existing_doc
+
+        if not isinstance(entity["is_favourite"], bool):
+            entity["is_favourite"] = json.loads(entity["is_favourite"])
 
         if not entity["is_favourite"] and existing_doc:
             frappe.delete_doc("Drive Favourite", existing_doc)
