@@ -13,6 +13,11 @@ export const openEntity = (team = null, entity) => {
       name: "Folder",
       params: { team, entityName: entity.name },
     })
+  } else if (entity.is_link) {
+    const origin = new URL(entity.path).origin
+    confirm(
+      `This will open an external link to ${origin} - are you sure you want to open?`
+    ) && window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe_doc") {
     router.push({
       name: "Document",

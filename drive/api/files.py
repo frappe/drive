@@ -220,7 +220,14 @@ def create_folder(team, title, personal=False, parent=None):
         )
     if not personal:
         entity_exists = frappe.db.exists(
-            {"doctype": "Drive File", "parent_entity": parent, "title": title}
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "is_group": 1,
+                "title": title,
+                "is_active": 1,
+                "is_private": 0,
+            }
         )
     else:
         entity_exists = frappe.db.exists(
@@ -228,10 +235,13 @@ def create_folder(team, title, personal=False, parent=None):
                 "doctype": "Drive File",
                 "parent_entity": parent,
                 "title": title,
+                "is_group": 1,
+                "is_active": 1,
                 "owner": frappe.session.user,
                 "is_private": 1,
             }
         )
+    print(title, entity_exists)
     if entity_exists:
         suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(
@@ -247,6 +257,64 @@ def create_folder(team, title, personal=False, parent=None):
             "is_group": 1,
             "parent_entity": parent,
             "color": "#525252",
+            "is_private": personal,
+        }
+    )
+    drive_file.insert()
+
+    return drive_file
+
+
+@frappe.whitelist()
+def create_link(team, title, link, personal=False, parent=None):
+    home_folder = get_home_folder(team)
+    parent = parent or home_folder.name
+
+    if not frappe.has_permission(
+        doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
+    ):
+        frappe.throw(
+            "Cannot create folder due to insufficient permissions",
+            frappe.PermissionError,
+        )
+    if not personal:
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "title": title,
+                "is_active": 1,
+                "is_link": 1,
+            }
+        )
+    else:
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "title": title,
+                "is_link": 1,
+                "is_active": 1,
+                "owner": frappe.session.user,
+                "is_private": 1,
+            }
+        )
+    if entity_exists:
+        suggested_name = get_new_title(title, parent, folder=True)
+        frappe.throw(
+            f"File '{title}' already exists.\n Suggested: {suggested_name}",
+            FileExistsError,
+        )
+
+    drive_file = frappe.get_doc(
+        {
+            "doctype": "Drive File",
+            "title": title,
+            "team": team,
+            "path": link,
+            "is_link": 1,
+            "mime_type": "link/unknown",
+            "parent_entity": parent,
             "is_private": personal,
         }
     )

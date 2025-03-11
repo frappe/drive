@@ -50,6 +50,7 @@ MIME_LIST_MAP = {
     ],
     "Spreadsheet": [
         "application/vnd.ms-excel",
+        "link/googlesheets",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "application/vnd.oasis.opendocument.spreadsheet",
         "text/csv",
