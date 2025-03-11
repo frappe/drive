@@ -32,7 +32,7 @@ def oauth_providers():
                 {
                     "name": provider.name,
                     "provider_name": provider.provider_name,
-                    "auth_url": get_oauth2_authorize_url(provider.name, "/drive/home"),
+                    "auth_url": get_oauth2_authorize_url(provider.name, "/drive/"),
                     "icon": icon,
                 }
             )
