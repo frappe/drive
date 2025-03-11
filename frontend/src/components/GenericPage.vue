@@ -42,6 +42,7 @@
     <NewLinkDialog
       v-if="dialog === 'l'"
       v-model="dialog"
+      :link="link"
       :parent="$route.params.entityName"
       @success="
         (data) => {
@@ -143,6 +144,7 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { togglePersonal } from "@/resources/files"
+import { toast } from "@/utils/toasts"
 import emitter from "@/emitter"
 
 const props = defineProps({
@@ -157,6 +159,7 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref(null)
+const link = ref(null)
 const team = localStorage.getItem("recentTeam")
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
@@ -382,4 +385,37 @@ const columnHeaders = [
     field: "mime_type",
   },
 ]
+
+async function newLink() {
+  const text = await navigator.clipboard.readText()
+  if (localStorage.getItem("prevClip") === text) return
+
+  try {
+    new URL(text)
+    localStorage.setItem("prevClip", text)
+    toast({
+      title: "Link detected",
+      text,
+      buttons: [
+        {
+          label: "Add",
+          action: () => {
+            dialog.value = "l"
+            link.value = text
+          },
+        },
+      ],
+    })
+  } catch (_) {}
+}
+
+// Hacky but performant way to track links - when the user loads page, copies on page, or comes to page
+// JS doesn't allow direct reading of clipboard
+newLink()
+addEventListener("copy", () => document.getElementById("popovers").click())
+document.getElementById("popovers").addEventListener("click", newLink)
+document.addEventListener("visibilitychange", () => {
+  window.focus()
+  !document.hidden && setTimeout(newLink, 100)
+})
 </script>

@@ -29,9 +29,15 @@
           <p v-if="text" class="text-sm text-gray-600">
             {{ text }}
           </p>
+          <Button
+            v-for="button in buttons"
+            class="mt-2"
+            @click="button.action(), $emit('close')"
+            >{{ button.label }}</Button
+          >
         </slot>
       </div>
-      <div class="ml-auto pl-2">
+      <div class="ml-auto mb-auto pl-2">
         <slot name="actions">
           <button
             class="grid h-5 w-5 place-items-center rounded hover:bg-gray-100"
@@ -45,8 +51,7 @@
   </div>
 </template>
 <script>
-import { StepResult } from "@tiptap/pm/transform"
-import { FeatherIcon } from "frappe-ui"
+import { FeatherIcon, Button } from "frappe-ui"
 import Avatar from "frappe-ui/src/components/Avatar.vue"
 
 export default {
@@ -59,6 +64,9 @@ export default {
     background: {
       type: String,
       default: "bg-white",
+    },
+    buttons: {
+      type: Array,
     },
     position: {
       type: String,
