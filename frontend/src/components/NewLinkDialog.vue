@@ -44,11 +44,12 @@ const route = useRoute()
 const props = defineProps({
   modelValue: String,
   parent: String,
+  link: String,
 })
 const emit = defineEmits(["update:modelValue", "success"])
 
 const title = ref("")
-const link = ref("")
+const link = ref(props.link)
 
 const createLink = createResource({
   url: "drive.api.files.create_link",
