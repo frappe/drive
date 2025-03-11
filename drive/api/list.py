@@ -2,7 +2,7 @@ from os import write
 import frappe
 import json
 from drive.utils.files import get_home_folder, MIME_LIST_MAP
-from .permissions import get_teams, ENTITY_FIELDS, get_user_access
+from .permissions import ENTITY_FIELDS, get_user_access
 from pypika import Order, Criterion, functions as fn
 
 DriveUser = frappe.qb.DocType("User")

@@ -52,6 +52,7 @@
 import { FeatherIcon } from "frappe-ui"
 import { ref } from "vue"
 import NewFolder from "./EspressoIcons/NewFolder.vue"
+import Link from "./EspressoIcons/Link.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
@@ -101,6 +102,11 @@ const defaultActionItems = [
     label: "New Document",
     icon: NewFile,
     handler: newDocument,
+  },
+  {
+    label: "New Link",
+    icon: Link,
+    handler: () => emitter.emit("newLink"),
   },
 ]
 </script>

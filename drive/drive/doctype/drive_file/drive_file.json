@@ -10,6 +10,7 @@
     "title",
     "team",
     "is_group",
+    "is_link",
     "parent_entity",
     "path",
     "color",
@@ -61,8 +62,7 @@
     {
       "fieldname": "mime_type",
       "fieldtype": "Data",
-      "label": "MIME Type",
-      "read_only": 1
+      "label": "MIME Type"
     },
     {
       "fieldname": "file_size",
@@ -97,10 +97,16 @@
       "fieldname": "old_name",
       "fieldtype": "Data",
       "label": "Old Name"
+    },
+    {
+      "default": "0",
+      "fieldname": "is_link",
+      "fieldtype": "Check",
+      "label": "Is Link"
     }
   ],
   "links": [],
-  "modified": "2025-03-03 11:06:56.352107",
+  "modified": "2025-03-11 10:37:37.468587",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",

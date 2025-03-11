@@ -50,6 +50,7 @@ export function formatMimeType(mimeType) {
   const specific = mimeType.split("/")[1]
   if (["image", "video", "audio"].includes(generic)) icon = generic
   else if (generic === "frappe_doc") icon = "Frappe Doc"
+  else if (generic === "link") icon = "Link"
   else if (generic === "frappe_whiteboard") icon = "Frappe Whiteboard"
   else
     switch (specific) {

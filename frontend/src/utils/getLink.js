@@ -3,11 +3,15 @@ import router from "../router.js"
 
 export async function getLink(entity) {
   const team = router.currentRoute.value.params.team
-  const link = entity.is_group
-    ? `${window.location.origin}/drive/${team}/folder/${entity.name}`
-    : entity.document
-    ? `${window.location.origin}/drive/${team}/document/${entity.name}`
-    : `${window.location.origin}/drive/${team}/file/${entity.name}`
+  let link = entity.is_link
+    ? entity.path
+    : `${window.location.origin}/drive/${team}/${
+        {
+          true: "file",
+          [entity.is_group]: "folder",
+          [entity.document]: "document",
+        }[true]
+      }/${entity.name}`
 
   try {
     await copyToClipboard(link)

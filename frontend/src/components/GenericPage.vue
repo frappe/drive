@@ -34,6 +34,19 @@
       @success="
         (data) => {
           handleListMutate({ new: true, data })
+          getEntities.fetch()
+          resetDialog()
+        }
+      "
+    />
+    <NewLinkDialog
+      v-if="dialog === 'l'"
+      v-model="dialog"
+      :parent="$route.params.entityName"
+      @success="
+        (data) => {
+          handleListMutate({ new: true, data })
+          getEntities.fetch()
           resetDialog()
         }
       "
@@ -74,13 +87,13 @@
       v-if="dialog === 'm'"
       v-model="dialog"
       :entities="selections"
-      @success="getEntities.fetch(), resetDialog()"
+      @success="resetDialog(), getEntities.fetch()"
     />
     <DeleteDialog
       v-if="dialog === 'd'"
       v-model="dialog"
       :entities="selections"
-      @success="mutate({ delete: true, data: selections })"
+      @success="resetDialog(), mutate({ delete: true, data: selections })"
     />
     <CTADeleteDialog
       v-if="dialog === 'cta'"
@@ -101,6 +114,7 @@ import NewButton from "@/components/NewButton.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
+import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import GeneralDialog from "@/components/GeneralDialog.vue"
@@ -279,7 +293,7 @@ const actionItems = computed(() => {
       },
       {
         label: "Unfavourite",
-        icon: "star",
+        icon: Star,
         onClick: (entities) => {
           entities = entities.map((e) => ({
             ...e,
@@ -338,6 +352,7 @@ function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => (dialog.value = "f"))
+emitter.on("newLink", () => (dialog.value = "l"))
 
 const resetDialog = () => (dialog.value = null)
 const mutate = (data) => {

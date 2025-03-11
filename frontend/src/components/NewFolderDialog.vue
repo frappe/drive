@@ -57,6 +57,7 @@ const createFolder = createResource({
       return "Folder name is required"
     }
   },
+  onError(data) {},
   onSuccess(data) {
     folderName.value = ""
     emit("success", data)
