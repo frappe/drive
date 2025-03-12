@@ -15,8 +15,8 @@
         v-if="$resources.entities.data?.length"
         class="flex flex-col py-4 px-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
       >
-        <span class="mb-1 pl-2 text-base text-gray-600"
-          >Search results for <strong>"{{ search }}"</strong></span
+        <span class="mb-2 pl-1 text-base text-gray-600"
+          >Search results for <strong>{{ search }}:</strong></span
         >
         <div
           v-for="entity in $resources.entities.data"
@@ -59,11 +59,13 @@
           >
             <Avatar
               :image="entity.user_image"
-              :label="entity.full_name"
+              :label="entity.full_name || entity.user_name"
               class="relative mr-2"
               size="xs"
             />
-            <span class="text-base text-gray-800">{{ entity.full_name }}</span>
+            <span class="text-base text-gray-800">{{
+              entity.full_name || entity.user_name
+            }}</span>
           </div>
         </div>
       </div>
@@ -200,7 +202,7 @@ export default {
           this.search = value
           this.$resources.entities.submit({
             query: value,
-            home_dir: this.$store.state.homeFolderID,
+            team: localStorage.getItem("recentTeam"),
           })
         } else {
           this.$resources.entities.reset()
