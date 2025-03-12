@@ -138,7 +138,6 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
             return
         else:
             pass
-    print(title, personal)
     if current_chunk == total_chunks - 1:
         file_size = temp_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
@@ -250,7 +249,6 @@ def create_folder(team, title, personal=False, parent=None):
                 "is_private": 1,
             }
         )
-    print(title, entity_exists)
     if entity_exists:
         suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(
@@ -610,7 +608,6 @@ def set_favourite(entities=None, clear_all=False):
                 "user": frappe.session.user,
             }
         )
-        print(entity)
         if not entity.get("is_favourite"):
             entity["is_favourite"] = not existing_doc
 
@@ -776,38 +773,30 @@ def move(entity_names, new_parent=None):
 
 
 @frappe.whitelist()
-def search(query, home_dir):
+def search(query, team):
     """
     Placeholder search implementation
     """
     text = frappe.db.escape(query + "*")
     user = frappe.db.escape(frappe.session.user)
-    omit = frappe.db.escape(home_dir)
+    team = frappe.db.escape(team)
     try:
         result = frappe.db.sql(
             f"""
         SELECT  `tabDrive File`.name,
                 `tabDrive File`.title, 
-                `tabDrive File`.owner,
-                `tabDrive File`.mime_type,
                 `tabDrive File`.is_group,
+                `tabDrive File`.is_link,
                 `tabDrive File`.document,
                 `tabDrive File`.color,
+                `tabUser`.name AS user_name,
                 `tabUser`.user_image,
                 `tabUser`.full_name
         FROM `tabDrive File`
-        LEFT JOIN `tabDrive DocShare`
-        ON `tabDrive DocShare`.`share_name` = `tabDrive File`.`name`
-        LEFT JOIN `tabUser Group Member`
-        ON `tabUser Group Member`.`parent` = `tabDrive DocShare`.`user_name`
-        LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`email`
-        WHERE (`tabUser Group Member`.`user` = {user} 
-                OR `tabDrive DocShare`.`user_name` = {user} 
-                OR `tabDrive DocShare`.`everyone` = 1 
-                OR `tabDrive File`.`owner` = {user})
+        LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
+        WHERE `tabDrive File`.team = {team}
             AND `tabDrive File`.`is_active` = 1
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
-            AND NOT `tabDrive File`.`name` LIKE {omit}
         GROUP  BY `tabDrive File`.`name` 
         """,
             as_dict=1,

@@ -7,6 +7,7 @@
       selectable: true,
       showTooltip: true,
       resizeColumn: true,
+      selectionWord: (v) => (v === 1 ? 'item' : 'items'),
     }"
   >
     <ListHeader />
@@ -154,7 +155,7 @@ const selectedColumns = [
       row.is_group
         ? h(Folder)
         : h("img", { src: getIconUrl(formatMimeType(row.mime_type)) }),
-    width: 2.5,
+    width: 2,
   },
   {
     label: "Owner",

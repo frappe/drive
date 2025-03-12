@@ -56,7 +56,6 @@ class DriveUserInvitation(Document):
         team.save(ignore_permissions=True)
         self.status = "Accepted"
         self.accepted_at = frappe.utils.now()
-        print(frappe.utils.now(), self.accepted_at)
         self.save(ignore_permissions=True)
         frappe.local.login_manager.login_as(self.email)
         frappe.local.response["location"] = "/drive/" + self.team

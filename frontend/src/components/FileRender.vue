@@ -162,8 +162,8 @@ export default {
       if (!isSupportedType) {
         this.error = "Previews are not supported for this file type"
         if (
-          this.$store.state.entityInfo[0].allow_download ||
-          this.$store.state.entityInfo[0].owner === "You"
+          this.$store.state.entityInfo[0].owner ===
+          this.$store.state.auth.user_id
         ) {
           this.error =
             "Previews are not supported for this file type. Would you like to download it instead?"

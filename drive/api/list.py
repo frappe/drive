@@ -83,7 +83,6 @@ def files(
         )
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
-    print(only_parent, bool(only_parent))
     if only_parent:
         query = query.where(DriveFile.parent_entity == entity_name)
     else:
@@ -123,7 +122,6 @@ def files(
     elif personal == 1:
         query = query.where((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
     query = query.select(Recents.last_interaction.as_("accessed"))
-    print(query)
     if tag_list:
         tag_list = json.loads(tag_list)
         query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
