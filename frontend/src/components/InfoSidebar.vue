@@ -41,7 +41,7 @@
           <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
         </div>
         <div class="space-y-6.5">
-          <div v-if="entity.owner === 'You'">
+          <div v-if="entity.owner === $store.state.auth.user_id">
             <div class="text-base font-medium mb-4">Access</div>
             <div class="flex items-center justify-between">
               <div class="flex">
@@ -104,9 +104,8 @@
               <span class="col-span-1">{{ entity.creation }}</span>
               <span class="col-span-1 text-gray-600">Owner</span>
               <span class="col-span-1">{{
-                entity.owner + entity.owner === $store.state.auth.user_id
-                  ? " (you)"
-                  : ""
+                entity.owner +
+                (entity.owner === $store.state.auth.user_id ? " (you)" : "")
               }}</span>
             </div>
           </div>
@@ -157,7 +156,7 @@
             >
               <textarea
                 v-model="newComment"
-                class="w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
+                class="disabled w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
                 placeholder="Add a comment"
                 @input="resize($event)"
                 @keypress.enter.stop.prevent="postComment"
@@ -182,7 +181,7 @@
         >
           Activity
         </span>
-        <ActivityTree v-if="entity.write" />
+        <ActivityTree v-if="entity.write" :entity="entity" />
       </div>
     </div>
     <div
@@ -271,9 +270,7 @@ const formattedMimeType = computed(() => {
   return kind.charAt(0).toUpperCase() + kind.slice(1)
 })
 
-const entity = computed(() => {
-  return store.state.activeEntity
-})
+const entity = computed(() => store.state.activeEntity)
 
 function switchTab(val) {
   if (store.state.showInfo == false) {
