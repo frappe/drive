@@ -268,8 +268,15 @@ const actionItems = computed(() => {
       {
         label: "Move to Team",
         icon: Team,
-        onClick: ([e]) =>
-          togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
+        onClick: (entities) =>
+          confirm(
+            `Are you sure you want to move ${entities.length} ${
+              entities.length === 1 ? "item" : "items"
+            } to the team?`
+          ) &&
+          entities.map((e) =>
+            togglePersonal.submit({ entity_name: e.name, new_value: 0 })
+          ),
         isEnabled: () => route.name == "Home",
         multi: true,
         important: true,
@@ -394,6 +401,7 @@ const columnHeaders = [
 ]
 
 async function newLink() {
+  if (!document.hasFocus()) return
   const text = await navigator.clipboard.readText()
   if (localStorage.getItem("prevClip") === text) return
 

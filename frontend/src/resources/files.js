@@ -215,8 +215,15 @@ export const togglePersonal = createResource({
   makeParams: (params) => ({ ...params, method: "toggle_personal" }),
   onSuccess: (e) => {
     let index = getPersonal.data.findIndex((k) => k.name === e)
-    getHome.data.push(getPersonal.data[index])
-    getPersonal.data.splice(index)
+    getHome.setData((data) => {
+      data.push(getPersonal.data[index])
+      return data
+    })
+
+    getPersonal.setData((data) => {
+      data.splice(index, 1)
+      return data
+    })
   },
 })
 

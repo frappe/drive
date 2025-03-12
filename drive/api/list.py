@@ -28,13 +28,14 @@ def files(
     recents_only=0,
     tag_list=[],
     file_kinds=[],
-    personal=None,
+    personal=0,
     folders=0,
     only_parent=1,
 ):
     home = get_home_folder(team)["name"]
     is_active = int(is_active)
-    only_parent = int(is_active)
+    only_parent = int(only_parent)
+    personal = int(personal)
     folders = int(folders)
 
     if not entity_name:
@@ -82,11 +83,11 @@ def files(
         )
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
-
-    if not is_active or favourites_only or recents_only:
-        query = query.where(DriveFile.team == team)
-    elif only_parent:
+    print(only_parent, bool(only_parent))
+    if only_parent:
         query = query.where(DriveFile.parent_entity == entity_name)
+    else:
+        query = query.where((DriveFile.team == team) & (DriveFile.parent_entity != ""))
 
     # Get favourites data (only that, if applicable)
     if favourites_only:
@@ -117,17 +118,12 @@ def files(
         query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
     elif not is_active:
         query = query.where(DriveFile.owner == frappe.session.user)
-    elif personal is None:
-        query = query.where(DriveFile.is_private == entity.is_private)
-    elif int(personal):
-        query = query.where(
-            (DriveFile.is_private == int(personal)) & (DriveFile.owner == frappe.session.user)
-        )
-    else:
+    elif personal == 0:
         query = query.where(DriveFile.is_private == 0)
-
+    elif personal == 1:
+        query = query.where((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
     query = query.select(Recents.last_interaction.as_("accessed"))
-
+    print(query)
     if tag_list:
         tag_list = json.loads(tag_list)
         query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
