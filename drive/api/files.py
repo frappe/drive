@@ -1,7 +1,8 @@
 import os, re, json, mimetypes
 
 import frappe
-from pypika import Order, functions
+from pypika import Order
+from .permissions import get_teams
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -20,20 +21,22 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 
 
-def if_folder_exists(team, folder_name, parent):
+def if_folder_exists(team, folder_name, parent, personal):
     values = {
         "title": folder_name,
         "is_group": 1,
         "is_active": 1,
         "owner": frappe.session.user,
+        "is_private": personal,
         "parent_entity": parent,
     }
     existing_folder = frappe.db.get_value(
         "Drive File", values, ["name", "title", "is_group", "is_active"], as_dict=1
     )
+
     if existing_folder:
         return existing_folder.name
-    new_folder = create_folder(team, folder_name, parent)
+    new_folder = create_folder(team, folder_name, personal, parent)
     return new_folder.name
 
 
@@ -96,11 +99,16 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
+    if isinstance(personal, str):
+        personal = int(personal)
+
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
-            parent = if_folder_exists(team, i, parent)
-    if not frappe.has_permission(
+            parent = if_folder_exists(team, i, parent, personal)
+
+    is_team_member = team in get_teams() and not personal
+    if not is_team_member and not frappe.has_permission(
         doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
@@ -130,7 +138,7 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
             return
         else:
             pass
-
+    print(title, personal)
     if current_chunk == total_chunks - 1:
         file_size = temp_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
@@ -218,6 +226,7 @@ def create_folder(team, title, personal=False, parent=None):
             "Cannot create folder due to insufficient permissions",
             frappe.PermissionError,
         )
+
     if not personal:
         entity_exists = frappe.db.exists(
             {
