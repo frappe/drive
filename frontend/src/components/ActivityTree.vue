@@ -70,67 +70,40 @@ import { ArrowRight } from "lucide-vue-next"
 import { formatDate } from "../utils/format"
 import ActivityTreeItem from "./ActivityTreeItem.vue"
 import ActivityTreeShare from "./ActivityTreeShare.vue"
-import GeneralAccess from "./GeneralAccess.vue"
 
 const store = useStore()
+const props = defineProps({ entity: Object })
 
-const entity = computed(() => {
-  if (store.state.entityInfo && store.state.entityInfo.length > 1) {
-    return store.state.entityInfo.length
-  } else if (store.state.entityInfo?.length) {
-    return store.state.entityInfo[0]
-  } else if (store.state.currentFolder?.length) {
-    return store.state.currentFolder[0]
-  } else {
-    return false
-  }
-})
+const entity = computed(() => props.entity)
 
-// update watcher if this is changed
-const groupedActivityLog = ref({
-  Today: [],
-  Yesterday: [],
-  "This week": [],
-  "Last week": [],
-  "This month": [],
-  "This year": [],
-  "Older than a year": [],
+const activityLog = createResource({
+  url: "drive.api.activity.get_entity_activity_log",
+  params: { entity_name: entity.value.name },
+  onSuccess: groupAndTransform,
 })
-
-const showInfoSidebar = computed(() => {
-  return store.state.showInfo
-})
+const groupedActivityLog = ref()
+watch(
+  entity,
+  () => {
+    groupedActivityLog.value = {
+      Today: [],
+      Yesterday: [],
+      "This week": [],
+      "Last week": [],
+      "This month": [],
+      "This year": [],
+      "Older than a year": [],
+    }
+    activityLog.fetch({ entity_name: entity.value.name })
+  },
+  { immediate: true }
+)
 
 const entityText = computed(() => {
   if (entity.value.is_group) {
     return "folder"
   }
   return "file"
-})
-
-const currentUserEmail = computed(() => {
-  return store.state.auth.user_id
-})
-
-watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
-  if (
-    newEntity &&
-    typeof newEntity !== "number" &&
-    typeof newEntity !== "undefined"
-  ) {
-    if (newShowInfoSidebar == true) {
-      groupedActivityLog.value = {
-        Today: [],
-        Yesterday: [],
-        "This week": [],
-        "Last week": [],
-        "This month": [],
-        "This year": [],
-        "Older than a year": [],
-      }
-      activityLog.fetch({ entity_name: newEntity.name })
-    }
-  }
 })
 
 function generateMessage(activity) {
@@ -191,7 +164,7 @@ function groupAndTransform(activities) {
       }
     }
     activity.full_name =
-      activity.owner === currentUserEmail.value ? "You" : activity.full_name
+      activity.owner === store.state.auth.user_id ? "You" : activity.full_name
     activity.message = generateMessage(activity)
     activity.creation = formatDate(activity.creation)
   }
@@ -227,21 +200,4 @@ function groupAndTransform(activities) {
     }
   })
 }
-
-const activityLog = createResource({
-  url: "drive.api.activity.get_entity_activity_log",
-  params: { entity_name: entity.value.name },
-  onSuccess(data) {
-    groupAndTransform(data)
-  },
-  onError(error) {
-    if (error.messages) {
-      console.log(error.messages)
-    }
-  },
-  reset() {
-    groupedActivityLog.value = []
-  },
-  auto: entity.value,
-})
 </script>

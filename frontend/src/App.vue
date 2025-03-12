@@ -167,10 +167,11 @@ export default {
             () => (this.showSearchPopup = true),
           ],
         ]
-
+        console.log(e.target.tagName)
         if (
           e.target.classList.contains("ProseMirror") ||
-          e.target.tagName === "INPUT"
+          e.target.tagName === "INPUT" ||
+          e.target.tagName === "TEXTAREA"
         )
           return
 
