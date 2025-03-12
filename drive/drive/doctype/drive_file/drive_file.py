@@ -27,7 +27,6 @@ class DriveFile(Document):
             document_field="title",
             field_new_value=self.title,
         )
-        self.inherit_permissions()
 
     def on_trash(self):
         frappe.db.delete("Drive Favourite", {"entity": self.name})
@@ -73,54 +72,6 @@ class DriveFile(Document):
         if self.flags.file_created:
             shutil.rmtree(self.path) if self.is_group else self.path.unlink()
 
-    def inherit_permissions(self):
-        """Cascade parent permissions to new child entity"""
-        if self.parent_entity is None:
-            return
-        permissions = frappe.get_all(
-            "Drive Permission",
-            fields=[
-                "name",
-                "user",
-                "read",
-                "write",
-                "comment",
-                "share",
-                "owner",
-                "creation",
-            ],
-            filters=dict(entity=self.parent_entity),
-        )
-
-        parent_folder = frappe.db.get_value(
-            "Drive File",
-            self.parent_entity,
-            ["name", "owner"],
-            as_dict=1,
-        )
-
-        if parent_folder.owner != frappe.session.user:
-            # Allow the owner of the folder to access the entity
-            # Defaults to write since its obvious that the current user has write access to the parent
-            # the subsequent for loop still creates a docShare for this uploaded entity as a side effect
-            # It just lingers around and is wiped on delete (find a way to avoid the side effect if possible)
-            self.share(
-                user=parent_folder.owner,
-                read=1,
-                write=1,
-                comment=1,
-                share=1,
-            )
-        for permission in permissions:
-            self.share(
-                user=permission.user,
-                read=permission.read,
-                comment=permission.read,
-                write=permission.write,
-                share=permission.share,
-            )
-        self.save()
-
     def get_children(self):
         """Return a generator that yields child Documents."""
         child_names = frappe.get_list(
@@ -138,10 +89,14 @@ class DriveFile(Document):
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         :return: DriveEntity doc once file is moved
         """
-
         new_parent = new_parent or get_home_folder(self.team).name
         if new_parent == self.parent_entity:
             return self
+        if new_parent == self.name:
+            frappe.throw(
+                "Cannot move into itself",
+                frappe.PermissionError,
+            )
 
         is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
         if not is_group:
@@ -154,11 +109,12 @@ class DriveFile(Document):
                     frappe.PermissionError,
                 )
                 return
+
         self.parent_entity = new_parent
+        self.is_private = frappe.db.get_value("Drive File", new_parent, "is_private")
         title = get_new_title(self.title, new_parent)
         if title != self.title:
             self.rename(title)
-        self.inherit_permissions()
         self.save()
         return self
 
@@ -340,37 +296,19 @@ class DriveFile(Document):
         )
 
     @frappe.whitelist()
-    def set_general_access(self, read, write, comment):
-        """
-        Set general sharing access for entity
-
-        :param new_access: Dict with new read and write value
-        """
-
-        if read:
-            if frappe.session.user == self.owner:
-                self.share(
-                    read=read,
-                    write=write,
-                    comment=comment,
-                    share=0,
-                )
-
-        else:
-            self.unshare(user=None, user_type=None)
-
-    @frappe.whitelist()
-    def toggle_personal(self, new_value):
+    def toggle_personal(self, new_value, move_root=True):
         """
         Toggle is private for file
         """
         # BROKEN: don't allow personal unless whole breadcrumb is personal
-        # BROKEN: moving file across privates should autotoggle
         self.is_private = new_value
+        if not new_value and move_root:
+            self.move()
         if self.is_group:
             for child in self.get_children():
-                child.toggle_personal(new_value)
+                child.toggle_personal(new_value, False)
         self.save()
+        return self.name
 
     @frappe.whitelist()
     def share(
