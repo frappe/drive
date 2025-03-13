@@ -20,7 +20,7 @@
       "
     />
     <ListView
-      v-else-if="$store.state.view === 'list'"
+      v-else
       ref="view"
       :folder-contents="rows && grouper(rows)"
       :entities="rows"
