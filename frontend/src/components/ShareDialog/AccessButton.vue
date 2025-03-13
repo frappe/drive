@@ -58,6 +58,5 @@ import { ref } from "vue"
 
 const props = defineProps({ accessLevels: Object, accessObj: Object })
 const accessObj = ref(props.accessObj)
-console.log(props.accessLevels)
 defineEmits(["updateAccess", "removeAccess"])
 </script>

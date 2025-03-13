@@ -209,7 +209,13 @@ import NewFile from "./EspressoIcons/NewFile.vue"
 import emitter from "@/emitter"
 import { computed, onMounted, watch, ref } from "vue"
 import { useStore } from "vuex"
-import { getRecents, getFavourites, getTrash } from "@/resources/files"
+import {
+  getRecents,
+  getFavourites,
+  getTrash,
+  createDocument,
+} from "@/resources/files"
+import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
 const props = defineProps({
@@ -220,6 +226,8 @@ const sortOrder = ref(store.state.sortOrder)
 watch(sortOrder, (val) => store.commit("setSortOrder", val))
 const activeFilters = ref(store.state.activeFilters)
 watch(activeFilters.value, (val) => store.commit("setActiveFilters", val))
+const route = useRoute()
+const router = useRouter()
 
 const activeTags = computed(() => store.state.activeTags)
 const orderByItems = computed(() => {

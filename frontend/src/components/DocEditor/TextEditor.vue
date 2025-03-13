@@ -675,7 +675,6 @@ export default {
             .catch(function (error) {
               console.error(error)
             })
-          //.then((x) => console.log("docx: finished"));
         }
       } else {
         toast({

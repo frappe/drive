@@ -252,7 +252,6 @@ function setCache(t, cache) {
       t.data = data
     }
     await set(getCacheKey(cache), JSON.stringify(t.data))
-    // console.log("set:", await get(getCacheKey(cache)))
   }
 }
 
