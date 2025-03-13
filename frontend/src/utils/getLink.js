@@ -3,13 +3,14 @@ import router from "../router.js"
 
 export async function getLink(entity) {
   const team = router.currentRoute.value.params.team
+  console.log(entity.is_group)
   let link = entity.is_link
     ? entity.path
     : `${window.location.origin}/drive/${team}/${
         {
           true: "file",
-          [entity.is_group]: "folder",
-          [entity.document]: "document",
+          [new Boolean(entity.is_group)]: "folder",
+          [new Boolean(entity.document)]: "document",
         }[true]
       }/${entity.name}`
 
