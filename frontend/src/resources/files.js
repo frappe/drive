@@ -3,7 +3,8 @@ import { toast } from "@/utils/toasts"
 
 import store from "@/store"
 import router from "@/router"
-import { prettyData } from "../utils/files"
+import { prettyData } from "@/utils/files"
+import { set } from "idb-keyval"
 
 // GETTERS
 const COMMON_OPTIONS = {
@@ -23,13 +24,13 @@ const COMMON_OPTIONS = {
     return prettyData(data)
   },
 }
+
 export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   cache: "home-folder-contents",
 })
 
-// BROKEN - this is never called (hence, refreshed)
 export const getTeams = createResource({
   url: "/api/method/drive.api.permissions.get_teams",
   params: {
@@ -54,7 +55,7 @@ export const getFolderContents = createResource({
 export const getRecents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
-  cache: "recent-folder-contents",
+  cache: "recents-folder-contents",
   makeParams: (params) => {
     return { ...params, recents_only: true }
   },
@@ -92,24 +93,44 @@ export const getTrash = createResource({
   url: "drive.api.list.files",
   cache: "trash-folder-contents",
   makeParams: (params) => {
-    return { ...params, is_active: false }
+    return { ...params, is_active: 0 }
   },
 })
 
 // SETTERS
+const LISTS = [getPersonal, getHome, getRecents, getShared, getFavourites]
+export const mutate = (entities, func) => {
+  LISTS.forEach((l) =>
+    l.setData((d) => {
+      entities.forEach(({ name, ...params }) => {
+        let el = d.find((k) => k.name === name)
+        if (el) {
+          func(el, params)
+        }
+      })
+      return d
+    })
+  )
+}
+
 export const toggleFav = createResource({
   url: "drive.api.files.set_favourite",
   makeParams(data) {
-    if (!data) return { clear_all: true }
+    if (!data) {
+      getFavourites.setData([])
+      mutate(getFavourites.data, (el) => (el.is_favourite = false))
+      return { clear_all: true }
+    }
     const entity_names = data.entities.map(({ name }) => name)
-    if (data.entities[0].is_favourite)
-      getFavourites.setData((data) =>
-        data.filter((n) => !entity_names.includes(n))
-      )
-    else
-      getFavourites.setData((data) =>
-        data.filter((n) => entity_names.includes(n))
-      )
+    getFavourites.setData((d) => {
+      return data.entities[0].is_favourite
+        ? [...d, ...data.entities]
+        : d.filter(({ name }) => !entity_names.includes(name))
+    })
+    mutate(
+      data.entities,
+      (el, { is_favourite }) => (el.is_favourite = is_favourite)
+    )
     return {
       entities: data.entities,
     }
@@ -125,12 +146,21 @@ export const toggleFav = createResource({
 
 export const clearRecent = createResource({
   url: "drive.api.files.remove_recents",
-  makeParams: (data) =>
-    data
-      ? {
-          entity_names: data.entities.map((e) => e.name),
-        }
-      : { clear_all: true },
+  makeParams: (data) => {
+    getRecents.setData([])
+    mutate(getRecents.data, (el) => (el.accessed = false))
+    if (!data) {
+      return { clear_all: true }
+    }
+    const entity_names = data.entities.map(({ name }) => name)
+    getRecents.setData((d) =>
+      d.filter(({ name }) => !entity_names.includes(name))
+    )
+    mutate(data.entities, (el) => (el.accessed = false))
+    return {
+      entity_names,
+    }
+  },
   onSuccess: () =>
     getRecents.previousData > 1
       ? toast(`Cleared  ${getRecents.previousData.length} files from Recents`)
@@ -185,8 +215,15 @@ export const togglePersonal = createResource({
   makeParams: (params) => ({ ...params, method: "toggle_personal" }),
   onSuccess: (e) => {
     let index = getPersonal.data.findIndex((k) => k.name === e)
-    getHome.data.push(getPersonal.data[index])
-    getPersonal.data.splice(index)
+    getHome.setData((data) => {
+      data.push(getPersonal.data[index])
+      return data
+    })
+
+    getPersonal.setData((data) => {
+      data.splice(index, 1)
+      return data
+    })
   },
 })
 
@@ -196,3 +233,32 @@ export const translate = createResource({
   cache: "translate",
   auto: true,
 })
+
+// Synced cache - ensure all setters are reflected in the app
+function getCacheKey(cacheKey) {
+  if (!cacheKey) {
+    return null
+  }
+  if (typeof cacheKey === "string") {
+    cacheKey = [cacheKey]
+  }
+  return JSON.stringify(cacheKey)
+}
+function setCache(t, cache) {
+  t.setData = async (data) => {
+    if (typeof data === "function") {
+      t.data = data(t.data)
+    } else {
+      t.data = data
+    }
+    await set(getCacheKey(cache), JSON.stringify(t.data))
+    // console.log("set:", await get(getCacheKey(cache)))
+  }
+}
+
+setCache(getHome, "home-folder-contents")
+setCache(getShared, "shared-folder-contents")
+setCache(getRecents, "recents-folder-contents")
+setCache(getFavourites, "favourite-folder-contents")
+setCache(getPersonal, "personal-folder-contents")
+setCache(getTrash, "trash-folder-contents")

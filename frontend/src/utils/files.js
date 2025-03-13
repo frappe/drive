@@ -2,14 +2,22 @@ import router from "@/router"
 import store from "@/store"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
+import { mutate, getRecents } from "@/resources/files"
 
 export const openEntity = (team = null, entity) => {
   if (!team) team = "shared"
+  getRecents.setData((data) => [...data, entity])
+  mutate([entity], (e) => (e.accessed = true))
   if (entity.is_group) {
     router.push({
       name: "Folder",
       params: { team, entityName: entity.name },
     })
+  } else if (entity.is_link) {
+    const origin = new URL(entity.path).origin
+    confirm(
+      `This will open an external link to ${origin} - are you sure you want to open?`
+    ) && window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe_doc") {
     router.push({
       name: "Document",
@@ -41,7 +49,11 @@ export const prettyData = (entities) => {
     return entity
   })
 }
-export const setBreadCrumbs = (breadcrumbs, is_private) => {
+export const setBreadCrumbs = (
+  breadcrumbs,
+  is_private,
+  final_func = () => {}
+) => {
   const route = router.currentRoute.value
   let res = [
     {
@@ -53,7 +65,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private) => {
     res = [
       {
         label: is_private ? "Home" : "Team",
-        route: `/${route.params.team}` + (is_private ? "/personal" : ""),
+        route: `/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
     breadcrumbs.shift()
@@ -61,6 +73,7 @@ export const setBreadCrumbs = (breadcrumbs, is_private) => {
   breadcrumbs.forEach((item, idx) => {
     res.push({
       label: item.title,
+      onClick: final_func,
       route:
         idx !== breadcrumbs.length - 1
           ? `/${route.params?.team}/folder/` + item.name

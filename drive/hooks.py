@@ -191,3 +191,12 @@ scheduler_events = {
 # auth_hooks = [
 # 	"drive.auth.validate"
 # ]
+
+doc_events = {
+    "User": {
+        # will run after any DocType record is inserted into database
+        "after_insert": "drive.utils.users.check_invites"
+    },
+}
+
+signup_form_template = "templates/signup.html"

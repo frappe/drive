@@ -11,7 +11,7 @@
     <!-- This sucks, redo it -->
     <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />
     <NoFilesSection
-      v-else-if="getEntities.data?.length === 0"
+      v-else-if="rows?.length === 0"
       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       :icon="icon"
       :primary-message="primaryMessage"
@@ -22,23 +22,10 @@
     <ListView
       v-else-if="$store.state.view === 'list'"
       ref="view"
-      :folder-contents="getEntities.data && grouper(getEntities.data)"
-      :entities="getEntities.data"
+      :folder-contents="rows && grouper(rows)"
+      :entities="rows"
       :action-items="actionItems"
       v-model="selections"
-      @update-offset="() => (page_offset += page_length)"
-    />
-    <EmptyEntityContextMenu
-      v-if="
-        ($route.name === 'Team' ||
-          $route.name === 'Home' ||
-          $route.name === 'Folder') &&
-        defaultContextTriggered
-      "
-      v-on-outside-click="() => (defaultContextTriggered = false)"
-      :close="() => (defaultContextTriggered = false)"
-      :action-items="defaultActionItems"
-      :event="clickEvent"
     />
     <NewFolderDialog
       v-if="dialog === 'f'"
@@ -47,6 +34,20 @@
       @success="
         (data) => {
           handleListMutate({ new: true, data })
+          getEntities.fetch()
+          resetDialog()
+        }
+      "
+    />
+    <NewLinkDialog
+      v-if="dialog === 'l'"
+      v-model="dialog"
+      :link="link"
+      :parent="$route.params.entityName"
+      @success="
+        (data) => {
+          handleListMutate({ new: true, data })
+          getEntities.fetch()
           resetDialog()
         }
       "
@@ -62,21 +63,21 @@
       v-model="dialog"
       :entities="selections"
       :for="'remove'"
-      @success="mutate({ delete: true, data: selections })"
+      @success="resetDialog"
     />
+    <!-- BROKEN -->
     <GeneralDialog
       v-if="dialog === 'unshare'"
       v-model="dialog"
       :entities="selections"
       :for="'unshare'"
-      @success="mutate({ delete: true, data: selections })"
     />
     <GeneralDialog
       v-if="dialog === 'restore'"
       v-model="dialog"
       :entities="selections"
       :for="'restore'"
-      @success="mutate({ delete: true, data: selections })"
+      @success="resetDialog"
     />
     <ShareDialog
       v-if="dialog === 's'"
@@ -87,24 +88,18 @@
       v-if="dialog === 'm'"
       v-model="dialog"
       :entities="selections"
-      @success="getEntities.fetch(), resetDialog()"
+      @success="resetDialog(), getEntities.fetch()"
     />
     <DeleteDialog
       v-if="dialog === 'd'"
       v-model="dialog"
       :entities="selections"
-      @success="mutate({ delete: true, data: selections })"
+      @success="resetDialog(), mutate({ delete: true, data: selections })"
     />
     <CTADeleteDialog
       v-if="dialog === 'cta'"
       v-model="dialog"
-      @success="
-        () => {
-          getEntities.setData([])
-          handleListMutate({ delete: true, all: true })
-          dialog = null
-        }
-      "
+      @success="resetDialog"
     />
     <FileUploader
       v-if="$store.state.auth.user_id"
@@ -118,6 +113,7 @@ import GridView from "@/components/GridView.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
+import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import GeneralDialog from "@/components/GeneralDialog.vue"
@@ -125,17 +121,13 @@ import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "../components/MoveDialog.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
-import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
-import NewFolder from "./EspressoIcons/NewFolder.vue"
 import Team from "./EspressoIcons/Organization.vue"
-import FileUpload from "./EspressoIcons/File-upload.vue"
-import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import Share from "./EspressoIcons/Share.vue"
 import Download from "./EspressoIcons/Download.vue"
 import Link from "./EspressoIcons/Link.vue"
@@ -143,15 +135,16 @@ import Rename from "./EspressoIcons/Rename.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
+import Open from "./EspressoIcons/Open.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import Star from "./EspressoIcons/Star.vue"
-import NewFile from "./EspressoIcons/NewFile.vue"
 import { ref, computed, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
-import { createDocument, togglePersonal } from "@/resources/files"
-import emitter from "@/emitter.js"
+import { togglePersonal } from "@/resources/files"
+import { toast } from "@/utils/toasts"
+import emitter from "@/emitter"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -162,20 +155,24 @@ const props = defineProps({
   getEntities: Object,
 })
 const route = useRoute()
-const router = useRouter()
 const store = useStore()
 
 const dialog = ref(null)
+const link = ref(null)
+const team = localStorage.getItem("recentTeam")
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
+const rows = computed(() =>
+  props.getEntities.data?.filter?.((k) => k.is_active != 0)
+)
 const selections = ref([])
 watch(activeEntity, () => (selections.value = [activeEntity.value]))
 watch(
   sortOrder,
   () => {
     props.getEntities.fetch({
-      team: route.params.team,
+      team,
       order_by: sortOrder.value.ascending
         ? sortOrder.value.field
         : sortOrder.value.field + " desc",
@@ -184,10 +181,10 @@ watch(
   { immediate: route.name !== "Shared" }
 )
 watch(activeFilters.value, async (val) => {
-  let mime_type_list = JSON.stringify(
-    val.reduce((acc, k) => [...acc, ...(MIME_LIST_MAP[k.label] || [])], [])
-  )
-  props.getEntities.fetch({ team: route.params.team, mime_type_list })
+  props.getEntities.fetch({
+    team: team,
+    file_kinds: JSON.stringify(val.map((k) => k.label)),
+  })
 })
 
 const clickEvent = ref(null)
@@ -197,49 +194,9 @@ function handleContextMenu(event) {
   defaultContextTriggered.value = true
   event.preventDefault()
 }
-allUsers.fetch({ team: route.params.team })
+allUsers.fetch({ team: team })
 
-const newDocument = async () => {
-  let data = await createDocument.submit({
-    title: "Untitled Document",
-    team: route.params.team,
-    personal: route.name === "Home" ? 1 : 0,
-    content: null,
-    parent: store.state.currentFolderID,
-  })
-  window.open(
-    router.resolve({
-      name: "Document",
-      params: { team: route.params.team, entityName: data.name },
-    }).href
-  )
-}
 // Action Items
-const defaultActionItems = computed(() => {
-  return [
-    {
-      label: "Upload File",
-      icon: FileUpload,
-      handler: () => emitter.emit("uploadFile"),
-    },
-    {
-      label: "Upload Folder",
-      icon: FolderUpload,
-      handler: () => emitter.emit("uploadFolder"),
-    },
-    {
-      label: "New Folder",
-      icon: NewFolder,
-      handler: () => (dialog.value = "f"),
-    },
-    {
-      label: "New Document",
-      icon: NewFile,
-      handler: newDocument,
-    },
-  ]
-})
-
 const actionItems = computed(() => {
   if (route.name === "Trash") {
     return [
@@ -262,22 +219,21 @@ const actionItems = computed(() => {
   } else {
     return [
       {
-        label: "Move to Team",
-        icon: Team,
-        onClick: ([e]) =>
-          togglePersonal.submit({ entity_name: e.name, new_value: 0 }),
-        isEnabled: () => route.name == "Home",
-        multi: true,
-        important: true,
-      },
-      {
         label: "Preview",
         icon: Preview,
-        onClick: ([entity]) => openEntity(route.params.team, entity),
+        onClick: ([entity]) => openEntity(team, entity),
+        isEnabled: (e) => !e.is_link,
+      },
+      {
+        label: "Open",
+        icon: "external-link",
+        onClick: ([entity]) => openEntity(team, entity),
+        isEnabled: (e) => e.is_link,
       },
       {
         label: "Download",
         icon: Download,
+        isEnabled: (e) => !e.is_link,
         onClick: entitiesDownload,
         multi: true,
         important: true,
@@ -310,6 +266,22 @@ const actionItems = computed(() => {
         important: true,
       },
       {
+        label: "Move to Team",
+        icon: Team,
+        onClick: (entities) =>
+          confirm(
+            `Are you sure you want to move ${entities.length} ${
+              entities.length === 1 ? "item" : "items"
+            } to the team?`
+          ) &&
+          entities.map((e) =>
+            togglePersonal.submit({ entity_name: e.name, new_value: 0 })
+          ),
+        isEnabled: () => route.name == "Home",
+        multi: true,
+        important: true,
+      },
+      {
         label: "Show Info",
         icon: Info,
         onClick: () => store.commit("setShowInfo", true),
@@ -326,7 +298,7 @@ const actionItems = computed(() => {
         icon: Star,
         onClick: (entities) => {
           entities = entities.map((e) => ({
-            name: e.name,
+            ...e,
             is_favourite: true,
           }))
           toggleFav.submit({ entities })
@@ -338,10 +310,10 @@ const actionItems = computed(() => {
       },
       {
         label: "Unfavourite",
-        icon: "star",
+        icon: Star,
         onClick: (entities) => {
           entities = entities.map((e) => ({
-            name: e.name,
+            ...e,
             is_favourite: false,
           }))
           toggleFav.submit({ entities })
@@ -358,7 +330,7 @@ const actionItems = computed(() => {
           clearRecent.submit({
             entities,
           }),
-        isEnabled: () => route.name === "Recents",
+        isEnabled: (e) => e.accessed,
         important: true,
         multi: true,
       },
@@ -396,6 +368,8 @@ function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
 // emitter handling
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
+emitter.on("newFolder", () => (dialog.value = "f"))
+emitter.on("newLink", () => (dialog.value = "l"))
 
 const resetDialog = () => (dialog.value = null)
 const mutate = (data) => {
@@ -425,4 +399,38 @@ const columnHeaders = [
     field: "mime_type",
   },
 ]
+
+async function newLink() {
+  if (!document.hasFocus()) return
+  const text = await navigator.clipboard.readText()
+  if (localStorage.getItem("prevClip") === text) return
+
+  try {
+    new URL(text)
+    localStorage.setItem("prevClip", text)
+    toast({
+      title: "Link detected",
+      text,
+      buttons: [
+        {
+          label: "Add",
+          action: () => {
+            dialog.value = "l"
+            link.value = text
+          },
+        },
+      ],
+    })
+  } catch (_) {}
+}
+
+// Hacky but performant way to track links - when the user loads page, copies on page, or comes to page
+// JS doesn't allow direct reading of clipboard
+newLink()
+addEventListener("copy", () => document.getElementById("popovers").click())
+document.getElementById("popovers").addEventListener("click", newLink)
+document.addEventListener("visibilitychange", () => {
+  window.focus()
+  !document.hidden && setTimeout(newLink, 100)
+})
 </script>

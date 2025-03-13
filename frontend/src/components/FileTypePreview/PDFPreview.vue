@@ -60,7 +60,7 @@
 <script setup>
 import { LoadingIndicator } from "frappe-ui"
 import { onMounted, onUnmounted, ref, watch, inject } from "vue"
-import { containsProp, useObjectUrl } from "@vueuse/core"
+import { useObjectUrl } from "@vueuse/core"
 import { Button, Input } from "frappe-ui"
 import { VuePDF, usePDF } from "@tato30/vue-pdf"
 import "@tato30/vue-pdf/style.css"

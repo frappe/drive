@@ -35,7 +35,7 @@
         icon="inbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
-        :to="'/' + $route.params.team + '/notifications'"
+        :to="'/' + team + '/notifications'"
       >
         <template #right>
           <div
@@ -91,55 +91,50 @@ import Team from "./EspressoIcons/Organization.vue"
 import StorageBar from "./StorageBar.vue"
 import { notifCount } from "@/resources/permissions"
 import { computed } from "vue"
-import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { getTeams } from "@/resources/files"
 import Users from "./EspressoIcons/Users.vue"
+import { getTeams } from "@/resources/files"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
-const route = useRoute()
 notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
+const team = localStorage.getItem("recentTeam") || getTeams.data[0]
 
-const sidebarItems = computed(() => {
-  let team = route.params.team
-  if (!getTeams.data) return []
-  if (!team || team === "shared") team = Object.keys(getTeams.data)[0]
-  return [
-    {
-      label: "Home",
-      route: `/${team}/personal`,
-      icon: Home,
-    },
-    {
-      label: "Team",
-      route: `/${team}/`,
-      icon: Team,
-    },
-    {
-      label: "Recents",
-      route: `/${team}/recents`,
-      icon: Recent,
-    },
-    {
-      label: "Favourites",
-      route: `/${team}/favourites`,
-      icon: Star,
-    },
-    {
-      label: "Shared",
-      route: `/shared/`,
-      icon: Users,
-    },
-    {
-      label: "Trash",
-      route: `/${team}/trash`,
-      icon: Trash,
-    },
-  ]
-})
+const sidebarItems = [
+  {
+    label: "Home",
+    route: `/${team}/`,
+    icon: Home,
+  },
+  {
+    label: "Team",
+    route: `/${team}/team`,
+    icon: Team,
+  },
+  {
+    label: "Recents",
+    route: `/${team}/recents`,
+    icon: Recent,
+  },
+  {
+    label: "Favourites",
+    route: `/${team}/favourites`,
+    icon: Star,
+  },
+  {
+    label: "Shared",
+    route: `/shared/`,
+    icon: Users,
+  },
+  {
+    label: "Trash",
+    route: `/${team}/trash`,
+    icon: Trash,
+  },
+]
+
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)
 </script>

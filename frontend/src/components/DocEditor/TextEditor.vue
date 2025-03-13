@@ -123,8 +123,6 @@ import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 import { DiffMarkExtension } from "./extensions/createDiffMark"
 import editorStyle from "./editor.css?inline"
 import globalStyle from "../../index.css?inline"
-import { formatDate } from "../../utils/format"
-import { Paragraph } from "./extensions/paragraph"
 
 export default {
   name: "TextEditor",
@@ -288,16 +286,6 @@ export default {
         }
       },
     },
-    isNewDocument: {
-      handler(val) {
-        if (val) {
-          this.$store.state.passiveRename = true
-        } else {
-          this.$store.state.passiveRename = false
-        }
-      },
-      immediate: true,
-    },
     lastSaved(newVal) {
       const ymap = this.document.getMap("docinfo")
       const lastSaved = ymap.get("lastsaved")
@@ -376,8 +364,7 @@ export default {
     Y.applyUpdate(doc, this.yjsContent)
     const webrtcProvider = new WebrtcProvider(
       "fdoc-" + JSON.stringify(this.entityName),
-      doc,
-      { signaling: ["wss://network.arjunchoudhary.com"] }
+      doc
     )
     ymap.observe(() => {
       this.$emit("update:lastSaved", ymap.get("lastsaved"))
@@ -417,6 +404,12 @@ export default {
         //componentContext.updateConnectedUsers(componentContext.editor)
         //componentContext.findCommentsAndStoreValues()
         componentContext.setCurrentComment()
+        if (
+          componentContext.$props.rawContent ===
+          componentContext.editor.getHTML()
+        )
+          return
+        componentContext.emitter.emit("docSaving")
         componentContext.$emit(
           "update:rawContent",
           componentContext.editor.getHTML()
@@ -611,9 +604,7 @@ export default {
     })
   },
   updated() {
-    if (this.isNewDocument) {
-      this.evalImplicitTitle()
-    }
+    this.evalImplicitTitle()
   },
   beforeUnmount() {
     this.emitter.off("printFile")
@@ -623,7 +614,6 @@ export default {
     this.$realtime.doc_close("Drive File", this.entityName)
     this.$realtime.doc_unsubscribe("Drive File", this.entityName)
     this.updateConnectedUsers(this.editor)
-    this.$store.state.passiveRename = false
     document.removeEventListener("keydown", this.saveDoc)
     this.editor.destroy()
     this.document.destroy()
@@ -647,10 +637,7 @@ export default {
       this.activeAnchorAnnotations = temp
     },
     handleEnterKey() {
-      if (this.$store.state.passiveRename) {
-        if (!this.implicitTitle.length) return
-        this.isNewDocument = false
-      }
+      if (!this.implicitTitle.length) return
     },
     updateConnectedUsers(editor) {
       this.$store.commit(
@@ -713,8 +700,6 @@ export default {
       }
       toast({
         title: "Document saved",
-        position: "bottom-right",
-        timeout: 2,
       })
     },
     printHtml() {
@@ -726,8 +711,8 @@ export default {
                 <style>${editorStyle}</style>
               </head>
               <body>
-                <div class="Prosemirror espresso-prose">
-                ${this.editor.getHTML()}
+                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                  ${this.editor.getHTML()}
                 </div>
               </body>
             </html>
@@ -764,13 +749,13 @@ export default {
                 frameWindow.print()
               }
               frameWindow.close()
-            }, 10)
+            }, 500)
           } catch (err) {
             console.error(err)
           }
 
           setTimeout(function () {
-            document.body.removeChild(iframe)
+            // document.body.removeChild(iframe)
           }, 100)
         }
       }
@@ -932,12 +917,17 @@ export default {
       return uniqueMentions
     },
     evalImplicitTitle() {
-      this.implicitTitle = this.editor.state.doc.textContent.trim().slice(0, 35)
-      this.implicitTitle = this.implicitTitle.trim()
-      if (this.implicitTitle.charAt(0) === "@") {
+      this.implicitTitle = this.editor.state.doc.firstChild.textContent
+        .replaceAll("#", "")
+        .replaceAll("@", "")
+        .slice(0, 35)
+        .trim()
+      if (
+        this.implicitTitle.length === 0 ||
+        this.entity.title === this.implicitTitle
+      )
         return
-      }
-      if (this.implicitTitle.length && this.$store.state.passiveRename) {
+      if (this.implicitTitle.length) {
         this.$store.state.entityInfo[0].title = this.implicitTitle
         this.$resources.rename.submit({
           entity_name: this.entityName,
@@ -955,7 +945,9 @@ export default {
           ...params,
         }),
         onSuccess: () => {
-          this.$emit("rename")
+          this.$store.state.breadcrumbs[
+            this.$store.state.breadcrumbs.length - 1
+          ].label = this.implicitTitle
         },
         debounce: 500,
       }

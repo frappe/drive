@@ -1,7 +1,8 @@
 import os, re, json, mimetypes
 
 import frappe
-from pypika import Order, functions
+from pypika import Order
+from .permissions import get_teams
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -20,20 +21,22 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 
 
-def if_folder_exists(team, folder_name, parent):
+def if_folder_exists(team, folder_name, parent, personal):
     values = {
         "title": folder_name,
         "is_group": 1,
         "is_active": 1,
         "owner": frappe.session.user,
+        "is_private": personal,
         "parent_entity": parent,
     }
     existing_folder = frappe.db.get_value(
         "Drive File", values, ["name", "title", "is_group", "is_active"], as_dict=1
     )
+
     if existing_folder:
         return existing_folder.name
-    new_folder = create_folder(team, folder_name, parent)
+    new_folder = create_folder(team, folder_name, personal, parent)
     return new_folder.name
 
 
@@ -96,11 +99,16 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
+    if isinstance(personal, str):
+        personal = int(personal)
+
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
-            parent = if_folder_exists(team, i, parent)
-    if not frappe.has_permission(
+            parent = if_folder_exists(team, i, parent, personal)
+
+    is_team_member = team in get_teams() and not personal
+    if not is_team_member and not frappe.has_permission(
         doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
@@ -130,7 +138,6 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
             return
         else:
             pass
-
     if current_chunk == total_chunks - 1:
         file_size = temp_path.stat().st_size
         if file_size != int(frappe.form_dict.total_file_size):
@@ -218,9 +225,17 @@ def create_folder(team, title, personal=False, parent=None):
             "Cannot create folder due to insufficient permissions",
             frappe.PermissionError,
         )
+
     if not personal:
         entity_exists = frappe.db.exists(
-            {"doctype": "Drive File", "parent_entity": parent, "title": title}
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "is_group": 1,
+                "title": title,
+                "is_active": 1,
+                "is_private": 0,
+            }
         )
     else:
         entity_exists = frappe.db.exists(
@@ -228,6 +243,8 @@ def create_folder(team, title, personal=False, parent=None):
                 "doctype": "Drive File",
                 "parent_entity": parent,
                 "title": title,
+                "is_group": 1,
+                "is_active": 1,
                 "owner": frappe.session.user,
                 "is_private": 1,
             }
@@ -247,6 +264,64 @@ def create_folder(team, title, personal=False, parent=None):
             "is_group": 1,
             "parent_entity": parent,
             "color": "#525252",
+            "is_private": personal,
+        }
+    )
+    drive_file.insert()
+
+    return drive_file
+
+
+@frappe.whitelist()
+def create_link(team, title, link, personal=False, parent=None):
+    home_folder = get_home_folder(team)
+    parent = parent or home_folder.name
+
+    if not frappe.has_permission(
+        doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
+    ):
+        frappe.throw(
+            "Cannot create folder due to insufficient permissions",
+            frappe.PermissionError,
+        )
+    if not personal:
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "title": title,
+                "is_active": 1,
+                "is_link": 1,
+            }
+        )
+    else:
+        entity_exists = frappe.db.exists(
+            {
+                "doctype": "Drive File",
+                "parent_entity": parent,
+                "title": title,
+                "is_link": 1,
+                "is_active": 1,
+                "owner": frappe.session.user,
+                "is_private": 1,
+            }
+        )
+    if entity_exists:
+        suggested_name = get_new_title(title, parent, folder=True)
+        frappe.throw(
+            f"File '{title}' already exists.\n Suggested: {suggested_name}",
+            FileExistsError,
+        )
+
+    drive_file = frappe.get_doc(
+        {
+            "doctype": "Drive File",
+            "title": title,
+            "team": team,
+            "path": link,
+            "is_link": 1,
+            "mime_type": "link/unknown",
+            "parent_entity": parent,
             "is_private": personal,
         }
     )
@@ -357,7 +432,7 @@ def get_file_content(entity_name, trigger_download=0):  #
         ],
         as_dict=1,
     )
-    if not drive_file or drive_file.is_group:
+    if not drive_file or drive_file.is_group or drive_file.is_active != 1:
         frappe.throw("Not found", frappe.NotFound)
 
     path = Path(frappe.get_site_path("private/files")) / drive_file.path
@@ -536,6 +611,9 @@ def set_favourite(entities=None, clear_all=False):
         if not entity.get("is_favourite"):
             entity["is_favourite"] = not existing_doc
 
+        if not isinstance(entity["is_favourite"], bool):
+            entity["is_favourite"] = json.loads(entity["is_favourite"])
+
         if not entity["is_favourite"] and existing_doc:
             frappe.delete_doc("Drive Favourite", existing_doc)
         elif entity["is_favourite"] and not existing_doc:
@@ -695,38 +773,30 @@ def move(entity_names, new_parent=None):
 
 
 @frappe.whitelist()
-def search(query, home_dir):
+def search(query, team):
     """
     Placeholder search implementation
     """
     text = frappe.db.escape(query + "*")
     user = frappe.db.escape(frappe.session.user)
-    omit = frappe.db.escape(home_dir)
+    team = frappe.db.escape(team)
     try:
         result = frappe.db.sql(
             f"""
         SELECT  `tabDrive File`.name,
                 `tabDrive File`.title, 
-                `tabDrive File`.owner,
-                `tabDrive File`.mime_type,
                 `tabDrive File`.is_group,
+                `tabDrive File`.is_link,
                 `tabDrive File`.document,
                 `tabDrive File`.color,
+                `tabUser`.name AS user_name,
                 `tabUser`.user_image,
                 `tabUser`.full_name
         FROM `tabDrive File`
-        LEFT JOIN `tabDrive DocShare`
-        ON `tabDrive DocShare`.`share_name` = `tabDrive File`.`name`
-        LEFT JOIN `tabUser Group Member`
-        ON `tabUser Group Member`.`parent` = `tabDrive DocShare`.`user_name`
-        LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`email`
-        WHERE (`tabUser Group Member`.`user` = {user} 
-                OR `tabDrive DocShare`.`user_name` = {user} 
-                OR `tabDrive DocShare`.`everyone` = 1 
-                OR `tabDrive File`.`owner` = {user})
+        LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
+        WHERE `tabDrive File`.team = {team}
             AND `tabDrive File`.`is_active` = 1
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
-            AND NOT `tabDrive File`.`name` LIKE {omit}
         GROUP  BY `tabDrive File`.`name` 
         """,
             as_dict=1,

@@ -13,70 +13,7 @@
           )
         "
       ></Autocomplete>
-      <Tabs v-model="tabIndex" :tabs="tabs" tablist-class="!pl-0">
-        <div
-          v-if="folderContents.data?.length"
-          class="flex flex-col justify-items-start h-[45vh] overflow-y-auto justify-start my-2"
-        >
-          <div
-            v-for="(item, index) in folderContents.data"
-            :id="item.name"
-            :key="item.name"
-            class=""
-          >
-            <div
-              v-show="index > 0"
-              class="border-t w-full mx-auto max-w-[96%]"
-            ></div>
-            <div
-              class="px-3 grid items-center rounded h-9 group select-none"
-              :class="
-                !item.write
-                  ? 'cursor-not-allowed opacity-75'
-                  : 'cursor-pointer hover:bg-gray-100'
-              "
-              :draggable="false"
-              @click="item.write ? openEntity(item) : null"
-              @dragenter.prevent
-              @dragover.prevent
-              @mousedown.stop
-            >
-              <div
-                class="flex items-center text-gray-800 text-base font-medium truncate"
-                :draggable="false"
-              >
-                <svg
-                  v-if="item.is_group"
-                  :style="{ fill: item.color }"
-                  :draggable="false"
-                  class="h-4.5 mr-2"
-                  viewBox="0 0 30 30"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
-                  />
-                </svg>
-                <img
-                  v-else
-                  :src="getIconUrl(formatMimeType(item.mime_type))"
-                  :draggable="false"
-                  class="h-[20px] mr-3"
-                />
-                {{ item.title }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          v-else
-          class="flex flex-col items-center justify-center h-[45vh] my-2"
-        >
-          <Folder class="text-gray-600 h-10 w-auto" />
-          <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
-        </div>
-      </Tabs>
-      <div class="flex items-center justify-between max-h-7">
+      <div class="flex items-center justify-between max-h-7 my-4">
         <div class="flex items-center my-2 justify-start">
           <Dropdown
             v-if="dropDownItems.length"
@@ -144,6 +81,73 @@
           Move
         </Button>
       </div>
+      <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+        <template #tab-panel="{ tab }">
+          <div class="py-1">
+            <div
+              v-if="folderContents.data?.length"
+              class="flex flex-col justify-items-start h-[45vh] overflow-y-auto justify-start my-2"
+            >
+              <div
+                v-for="(item, index) in folderContents.data"
+                :id="item.name"
+                :key="item.name"
+                class=""
+              >
+                <div
+                  v-show="index > 0"
+                  class="border-t w-full mx-auto max-w-[96%]"
+                ></div>
+                <div
+                  class="px-3 grid items-center rounded h-9 group select-none"
+                  :class="
+                    !item.write
+                      ? 'cursor-not-allowed opacity-75'
+                      : 'cursor-pointer hover:bg-gray-100'
+                  "
+                  :draggable="false"
+                  @click="item.write ? openEntity(item) : null"
+                  @dragenter.prevent
+                  @dragover.prevent
+                  @mousedown.stop
+                >
+                  <div
+                    class="flex items-center text-gray-800 text-base font-medium truncate"
+                    :draggable="false"
+                  >
+                    <svg
+                      v-if="item.is_group"
+                      :style="{ fill: item.color }"
+                      :draggable="false"
+                      class="h-4.5 mr-2"
+                      viewBox="0 0 30 30"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
+                      />
+                    </svg>
+                    <img
+                      v-else
+                      :src="getIconUrl(formatMimeType(item.mime_type))"
+                      :draggable="false"
+                      class="h-[20px] mr-3"
+                    />
+                    {{ item.title }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-else
+              class="flex flex-col items-center justify-center h-[45vh] my-2"
+            >
+              <Folder class="text-gray-600 h-10 w-auto" />
+              <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
+            </div>
+          </div>
+        </template>
+      </Tabs>
     </template>
   </Dialog>
 </template>
@@ -158,10 +162,9 @@ import {
   Autocomplete,
 } from "frappe-ui"
 import { formatMimeType } from "@/utils/format"
-import { useStore } from "vuex"
 import Home from "./EspressoIcons/Home.vue"
+import Team from "./EspressoIcons/Organization.vue"
 import Star from "./EspressoIcons/Star.vue"
-import Users from "./EspressoIcons/Users.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
@@ -223,13 +226,13 @@ const tabs = [
     icon: h(Home, { class: "w-4 h-4" }),
   },
   {
-    label: "Favourites",
-    icon: h(Star, { class: "w-4 h-4" }),
+    label: "Team",
+    icon: h(Team, { class: "w-4 h-4" }),
   },
-  {
-    label: "Shared",
-    icon: h(Users, { class: "w-4 h-4" }),
-  },
+  // {
+  //   label: "Favourites",
+  //   icon: h(Star, { class: "w-4 h-4" }),
+  // },
 ]
 
 const tabIndex = ref(0)
@@ -241,55 +244,55 @@ const folderPermissions = createResource({
   params: {
     entity_name: currentFolder.value,
   },
+  onSuccess: (data) => {
+    let first = [{ name: "", title: "Home" }]
+    breadcrumbs.value = first.concat(data.breadcrumbs.slice(1))
+  },
 })
 
-watch(tabIndex, (newValue) => {
-  switch (newValue) {
-    case 0:
-      breadcrumbs.value = [{ name: "", title: "Home" }]
-      currentFolder.value = ""
-      folderContents.fetch({
-        entity_name: currentFolder.value,
-        is_folder: 1,
-      })
-      break
-    case 1:
-      breadcrumbs.value = [{ name: "", title: "Favourites" }]
-      currentFolder.value = null
-      folderContents.fetch({
-        entity_name: "",
-        is_active: 1,
-        recents_only: false,
-        favourites_only: true,
-        file_kind_list: JSON.stringify(["Folder"]),
-      })
-      break
-    case 2:
-      breadcrumbs.value = [{ name: "", title: "Shared" }]
-      currentFolder.value = null
-      sharedWithMe.fetch({
-        is_active: 1,
-        recents_only: false,
-        favourites_only: false,
-        file_kind_list: JSON.stringify(["Folder"]),
-      })
-      break
-    default:
-      breadcrumbs.value = []
-      folderContents.value = []
-      break
-  }
+const folderContents = createResource({
+  method: "GET",
+  url: "drive.api.list.files",
+  makeParams: (params) => ({
+    team: route.params.team,
+    is_active: 1,
+    folders: 1,
+    ...params,
+  }),
 })
+
+watch(
+  tabIndex,
+  (newValue) => {
+    switch (newValue) {
+      case 0:
+        folderContents.fetch({
+          entity_name: currentFolder.value,
+          personal: 1,
+        })
+        break
+      case 1:
+        folderContents.fetch({
+          entity_name: currentFolder.value,
+          is_folder: 1,
+        })
+        break
+      case 2:
+        folderContents.fetch({
+          entity_name: "",
+          favourites_only: true,
+        })
+        break
+    }
+  },
+  { immediate: true }
+)
 watch(folderSearch, openEntity)
 
 function openEntity(value) {
   currentFolder.value = value.name || value.value
   folderPermissions.fetch({
     entity_name: currentFolder.value,
-  })
-  breadcrumbs.value.push({
-    name: value.name || value.value,
-    title: value.title || value.label,
   })
   folderContents.fetch({
     entity_name: currentFolder.value,
@@ -305,27 +308,6 @@ function closeEntity(name) {
   }
 }
 
-const folderContents = createResource({
-  method: "GET",
-  url: "drive.api.list.files",
-  auto: true,
-  makeParams: (params) => ({
-    team: route.params.team,
-    is_active: 1,
-    folders: 1,
-    ...params,
-  }),
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      this.$store.commit("setError", {
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-      this.$router.replace({ name: "Error" })
-    }
-  },
-})
-
 const fetchAllFolders = createResource({
   method: "GET",
   url: "drive.api.list.files",
@@ -335,7 +317,8 @@ const fetchAllFolders = createResource({
     team: route.params.team,
     is_active: 1,
     folders: 1,
-    all: 1,
+    personal: -1,
+    only_parent: 0,
   },
   transform: (d) =>
     d.map((k) => ({

@@ -25,16 +25,15 @@
 <script>
 import { Dialog, ErrorMessage } from "frappe-ui"
 import { del } from "idb-keyval"
-import { toast } from "../utils/toasts.js"
+import { toast } from "@/utils/toasts.js"
+import { mutate, getTrash } from "@/resources/files.js"
 
 export default {
   name: "GeneralDialog",
-
   components: {
     Dialog,
     ErrorMessage,
   },
-
   props: {
     modelValue: {
       type: Boolean,
@@ -80,6 +79,8 @@ export default {
             message:
               "Selected items will be restored to their original locations.",
             buttonMessage: "Restore",
+            onSuccess: (e) =>
+              getTrash.setData((d) => d.filter((k) => !e.includes(k.name))),
             variant: "solid",
             buttonIcon: "refresh-ccw",
             methodName: "drive.api.files.remove_or_restore",
@@ -93,6 +94,7 @@ export default {
               items.slice(1) +
               " will be moved to Trash. Items in trash are deleted forever after 30 days.",
             buttonMessage: "Move to Trash",
+            mutate: (el) => (el.is_active = 0),
             theme: "red",
             variant: "subtle",
             buttonIcon: "trash-2",
@@ -127,6 +129,12 @@ export default {
           this.$emit("success", data)
           this.$resources.method.reset()
           this.entities.map((entity) => del(entity.name))
+          if (this.dialogData.mutate)
+            mutate(this.entities, this.dialogData.mutate)
+          if (this.dialogData.onSuccess)
+            this.dialogData.onSuccess(
+              this.entities.map((entity) => entity.name)
+            )
           toast({
             title: this.dialogData.toastMessage,
             position: "bottom-right",

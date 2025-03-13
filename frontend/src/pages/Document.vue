@@ -73,7 +73,7 @@ const isWritable = ref(false)
 const entity = ref(null)
 const mentionedUsers = ref()
 const showShareDialog = ref(false)
-const timeout = ref(1000 + Math.floor(Math.random() * 5000))
+const timeout = ref(1000 + Math.floor(Math.random() * 1000))
 const saveCount = ref(0)
 const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
@@ -82,16 +82,11 @@ const userId = computed(() => store.state.auth.user_id)
 let intervalId = ref(null)
 
 setTimeout(() => {
-  watchDebounced(
-    rawContent,
-    () => {
-      const now = Date.now()
-      if (now - lastSaved.value >= timeout.value) {
-        saveDocument()
-      }
-    },
-    { debounce: timeout.value, maxWait: 30000 }
-  )
+  watchDebounced(rawContent, saveDocument, {
+    debounce: timeout.value,
+    maxWait: 30000,
+    immediate: true,
+  })
 }, 1500)
 
 const saveDocument = () => {
@@ -107,6 +102,7 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
+    emitter.emit("docSaved")
   }
 }
 
@@ -144,7 +140,12 @@ createResource({
     entity.value = data
     lastSaved.value = Date.now()
     contentLoaded.value = true
-    setBreadCrumbs(data.breadcrumbs, data.is_private, false)
+    setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
+      const selection = window.getSelection()
+      selection.empty()
+      const h3 = document.querySelector("h3")
+      selection.setBaseAndExtent(h3, 0, h3, 1)
+    })
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {

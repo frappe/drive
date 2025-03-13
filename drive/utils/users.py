@@ -5,11 +5,11 @@ from frappe.utils import now, split_emails, validate_email_address
 
 @frappe.whitelist()
 def get_all_users(team):
-    users = [k.user for k in frappe.get_doc("Drive Team", team).users]
-    drive_users = frappe.get_all(
+    team_users = {k.user: k.is_admin for k in frappe.get_doc("Drive Team", team).users}
+    users = frappe.get_all(
         doctype="User",
         filters=[
-            ["name", "in", users],
+            ["name", "in", list(team_users.keys())],
         ],
         fields=[
             "name",
@@ -18,123 +18,83 @@ def get_all_users(team):
             "user_image",
         ],
     )
-    return drive_users
+    for u in users:
+        u["role"] = "admin" if team_users[u["name"]] else "user"
+    return users
 
 
-@frappe.whitelist()
-def get_users_with_drive_user_role(txt="", get_roles=False):
-    role_filters = ["Drive User", "Drive Admin", "Drive Guest"]
-    try:
-        drive_users = frappe.get_all(
-            doctype="User",
-            order_by="full_name",
-            filters=[
-                ["Has Role", "role", "in", role_filters],
-                ["full_name", "not like", "Administrator"],
-                ["full_name", "not like", "Guest"],
-                ["full_name", "like", f"%{txt}%"],
-            ],
-            fields=[
-                "*",
-            ],
+def check_invites(doc, method=None):
+    invites = frappe.db.get_list(
+        "Drive User Invitation",
+        filters={"email": doc.email, "status": "Pending"},
+        pluck="name",
+        ignore_permissions=True,
+    )
+    if not invites:
+        # Create team for this user
+        frappe.local.login_manager.login_as(doc.email)
+        team = frappe.get_doc(
+            {
+                "doctype": "Drive Team",
+                "title": "Personal",
+            },
         )
-        if get_roles == "true":
-            for user in drive_users:
-                if frappe.db.exists("Has Role", {"parent": user.email, "role": "Drive Admin"}):
-                    user["role"] = "Admin"
-                elif frappe.db.exists("Has Role", {"parent": user.email, "role": "Drive User"}):
-                    user["role"] = "User"
-                elif frappe.db.exists("Has Role", {"parent": user.email, "role": "Drive Guest"}):
-                    user["role"] = "Guest"
+        team.insert(ignore_permissions=True)
+        team.append("users", {"user": doc.email, "is_admin": 1})
+        team.save()
+        frappe.local.response["location"] = "/drive/" + team.name
+    else:
+        for invite_name in invites:
+            invite = frappe.get_doc("Drive User Invitation", invite_name)
 
-        return drive_users
-
-    except Exception as e:
-        frappe.log_error("Error in fetching Drive Users: {0}".format(e))
-        return {
-            "status": "error",
-            "message": "An error occurred while fetching Drive Users",
-        }
+            invite.accept()
 
 
 @frappe.whitelist()
-def add_drive_user_role(user_id, user_role):
-    allowed_roles = {"Drive User", "Drive Admin", "Drive Guest"}
+def invite_users(team, emails):
+    if not emails:
+        return
 
-    if user_role not in allowed_roles:
-        frappe.throw("Invalid Role")
+    email_string = validate_email_address(emails, throw=False)
+    email_list = split_emails(email_string)
+    if not email_list:
+        return
 
-    if not frappe.has_permission(
-        doctype="User",
-        doc=user_id,
-        ptype="write",
-        user=frappe.session.user,
-    ):
-        raise frappe.PermissionError("You do not have permission to edit roles")
+    existing_invites = frappe.db.get_list(
+        "Drive User Invitation",
+        filters={"email": ["in", email_list], "team": team},
+        pluck="email",
+    )
 
-    drive_user = frappe.db.exists("User", {"name": ("like", f"%{user_id}%")})
-
-    if not drive_user:
-        frappe.throw("User does not exist")
-
-    usr = frappe.get_doc("User", user_id)
-
-    for role in allowed_roles:
-        user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": role})
-        if user_role_exists is not None:
-            # just wipe all for now to prevent multiple drive roles
-            usr.remove_roles(role)
-    usr.add_roles(user_role)
-    return
+    new_invites = list(set(email_list) - set(existing_invites))
+    for email in new_invites:
+        invite = frappe.new_doc("Drive User Invitation")
+        invite.email = email
+        invite.team = team
+        invite.insert()
 
 
 @frappe.whitelist()
-def remove_drive_user_role(user_id, user_role):
-    allowed_roles = {"Drive User", "Drive Admin", "Drive Guest"}
-
-    if user_role not in allowed_roles:
-        frappe.throw("Invalid Role")
-
-    if not frappe.has_permission(
-        doctype="User",
-        doc=user_id,
-        ptype="write",
-        user=frappe.session.user,
-    ):
-        raise frappe.PermissionError("You do not have permission to edit roles")
-
-    drive_user = frappe.db.exists("User", {"name": ("like", f"%{user_id}%")})
-
-    if not drive_user:
-        frappe.throw("User does not exist")
-
-    usr = frappe.get_doc("User", user_id)
-    for role in allowed_roles:
-        user_role_exists = frappe.db.exists("Has Role", {"parent": user_id, "role": role})
-        if user_role_exists is not None:
-            usr.remove_roles(role)
-    return
+def set_role(team, user_id, role):
+    if not is_admin(team):
+        frappe.throw("You don't have the permissions for this action.")
+    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
+    drive_team[user_id].is_admin = role
+    drive_team[user_id].save()
 
 
-def has_read_write_access_to_doctype(user_id, doctype_name):
-    """
-    Check if a user has both read and write access to a DocType.
+@frappe.whitelist()
+def is_admin(team):
+    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
+    return drive_team[frappe.session.user].is_admin
 
-    Args:
-        user_id (str): The name of the user to check.
-        doctype_name (str): The name of the DocType to check access for.
 
-    Returns:
-        bool: True if the user has both read and write access to the DocType, False otherwise.
-    """
-    try:
-        if frappe.has_permission(doctype_name, user=user_id, ptype="read"):
-            if frappe.has_permission(doctype_name, user=user_id, ptype="write"):
-                return True
-    except frappe.PermissionError:
-        pass
-
-    return False
+@frappe.whitelist()
+def remove_user(team, user_id):
+    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
+    if frappe.session.user not in drive_team:
+        frappe.throw("User doesn't belong to team")
+    frappe.delete_doc("Drive Team Member", drive_team[user_id].name)
 
 
 def mark_as_viewed(entity):
@@ -163,83 +123,29 @@ def mark_as_viewed(entity):
     return doc
 
 
-@frappe.whitelist()
-def drive_user_level():
-    user = frappe.session.user
-    if user == "Administrator":
-        return "Drive Admin"
-
-    if user != "Guest":
-        if frappe.db.exists("Has Role", {"parent": user, "role": "Drive Admin"}):
-            return "Drive Admin"
-        if frappe.db.exists("Has Role", {"parent": user, "role": "Drive User"}):
-            return "Drive User"
-        if frappe.db.exists("Has Role", {"parent": user, "role": "Drive Guest"}):
-            return "Drive Guest"
-        return "Guest"
-    raise frappe.PermissionError("Unauthorized", frappe.PermissionError)
-
-
 @frappe.whitelist(allow_guest=True)
 def accept_invitation(key):
-    if not key:
+    try:
+        invitation = frappe.get_doc("Drive User Invitation", key)
+    except:
         frappe.throw("Invalid or expired key")
 
-    invitation_name = frappe.db.exists("Drive User Invitation", {"key": key})
-    if not invitation_name:
-        frappe.throw("Invalid or expired key")
-
-    invitation = frappe.get_doc("Drive User Invitation", invitation_name)
-    invitation.accept()
-    invitation.reload()
-
-    if invitation.status == "Accepted":
-        add_drive_user_role(invitation.email)
-        frappe.local.login_manager.login_as(invitation.email)
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/drive"
-
-
-@frappe.whitelist()
-def invite_users(emails, role="Drive User"):
-    if not emails:
-        return
-
-    email_string = validate_email_address(emails, throw=False)
-    email_list = split_emails(email_string)
-    if not email_list:
-        return
-
-    existing_invites = frappe.db.get_list(
-        "Drive User Invitation",
-        filters={
-            "email": ["in", email_list],
-            "status": ["in", ["Pending", "Accepted"]],
-        },
-        pluck="email",
-    )
-
-    new_invites = list(set(email_list) - set(existing_invites))
-    for email in new_invites:
-        invite = frappe.new_doc("Drive User Invitation")
-        invite.email = email
-        invite.role = role
-        invite.insert(ignore_permissions=True)
+    return invitation.accept()
 
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="reference_name", limit=10, seconds=60 * 60)
-def add_comment(
-    reference_name: str, content: str, comment_email: str, comment_by: str
-) -> "Comment":
+def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str):
     """Allow logged user with permission to read document to add a comment"""
-    entity = frappe.get_doc("Drive File", reference_name)
+    exists = frappe.db.exists("Drive File", reference_name)
+    if not exists:
+        frappe.throw("Entity does not exist", frappe.NotFound)
     comment = frappe.new_doc("Comment")
     comment.update(
         {
             "comment_type": "Comment",
             "reference_doctype": "Drive File",
-            "reference_name": entity,
+            "reference_name": reference_name,
             "comment_email": comment_email,
             "comment_by": comment_by,
             "content": content,

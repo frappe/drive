@@ -188,9 +188,10 @@ onMounted(() => {
   dropzone.value.on("error", function (file, response) {
     let message
     if (typeof response === "object") {
-      message = JSON.parse(JSON.parse(response._server_messages)[0]).message
+      let messages = JSON.parse(response._server_messages || "[]")
+      if (messages.length) message = JSON.parse(messages[0]).message
     }
-    message = message || "Upload failed"
+    message = message || "Please contact support."
     console.log(response)
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
@@ -210,7 +211,6 @@ onMounted(() => {
       uuid: file.upload.uuid,
       completed: true,
     })
-    capture("new_file_uploaded")
   })
   emitter.on("uploadFile", () => {
     if (dropzone.value.hiddenFileInput) {

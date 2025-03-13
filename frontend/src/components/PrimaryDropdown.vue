@@ -95,6 +95,9 @@ defineProps({
 })
 const showSettings = ref(false)
 const suggestedTab = ref(0)
+
+// Remove somehow
+getTeams.fetch()
 const teamName = computed(() => {
   if (!getTeams.data || !route.params.team) return
   const teams = getTeams.data.message || getTeams.data

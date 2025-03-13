@@ -29,11 +29,23 @@
       ></Button>
     </div>
     <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
+      v-if="dialog === 's'"
+      v-model="dialog"
       :entity-name="props.entityName"
     />
   </div>
+  <RenameDialog
+    v-if="dialog === 'rn'"
+    v-model="dialog"
+    @success="
+      (data) => {
+        console.log(data)
+        let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
+        l.label = data.title
+        dialog = null
+      }
+    "
+  />
 </template>
 
 <script setup>
@@ -48,6 +60,7 @@ import {
 } from "vue"
 import { Button } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
+import RenameDialog from "@/components/RenameDialog.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
@@ -66,7 +79,7 @@ const props = defineProps({
   },
 })
 
-const showShareDialog = ref(false)
+const dialog = ref("")
 const currentEntity = ref(props.entityName)
 
 const filteredEntities = computed(() => {
@@ -113,10 +126,12 @@ function enterFullScreen() {
 }
 
 onKeyStroke("ArrowLeft", (e) => {
+  if (!e.shiftKey) return
   e.preventDefault()
   scrollEntity(true)
 })
 onKeyStroke("ArrowRight", (e) => {
+  if (!e.shiftKey) return
   e.preventDefault()
   scrollEntity()
 })
@@ -130,7 +145,11 @@ let file = createResource({
   },
   onSuccess(data) {
     store.commit("setActiveEntity", data)
-    setBreadCrumbs(data.breadcrumbs, data.is_private)
+    setBreadCrumbs(
+      data.breadcrumbs,
+      data.is_private,
+      () => (dialog.value = "rn")
+    )
   },
   onError(error) {
     if (error && error.exc_type === "PermissionError") {
@@ -162,7 +181,7 @@ onMounted(() => {
     store.commit("setIsSidebarExpanded", false)
   }
   emitter.on("showShareDialog", () => {
-    showShareDialog.value = "s"
+    dialog.value = "s"
   })
 })
 

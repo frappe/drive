@@ -9,6 +9,8 @@ ENTITY_FIELDS = [
     "name",
     "title",
     "is_group",
+    "is_link",
+    "path",
     "modified",
     "creation",
     "file_size",

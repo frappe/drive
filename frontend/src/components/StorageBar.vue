@@ -2,7 +2,7 @@
   <div
     v-if="!totalStorage.loading"
     class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
-    @click="emitter.emit('showSettings', 3)"
+    @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
       :label="props.isExpanded ? 'Storage' : '3.5GB used out of 50GB'"
@@ -68,11 +68,12 @@ const calculatePercent = computed(() => {
     maximumFractionDigits: 1,
   }).format(num / 100)
 })
+const team = localStorage.getItem("recentTeam")
 
 let totalStorage = createResource({
   url: "drive.api.storage.storage_bar_data",
   params: {
-    team: route.params.team,
+    team,
   },
   method: "GET",
   cache: "total_storage",
@@ -81,8 +82,5 @@ let totalStorage = createResource({
     storageMax.value = data.limit
   },
 })
-const team = computed(() => route.params.team)
-const get = () => totalStorage.fetch({ team: route.params.team })
-watch(team, get)
-if (team.value) get()
+totalStorage.fetch({ team })
 </script>
