@@ -53,7 +53,6 @@ const route = useRoute()
 const teams = computed(() =>
   Object.keys(getTeams.data).filter((t) => t !== route.params.team)
 )
-console.log(teams.value, route.params.team)
 
 defineProps({
   active: Boolean,

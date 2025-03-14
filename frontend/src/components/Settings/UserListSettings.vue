@@ -104,7 +104,6 @@
               placeholder="Enter email address"
               class="h-7 w-full rounded border-none bg-gray-100 py-1.5 pl-2 pr-2 text-base text-gray-800 placeholder-gray-500 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               @keydown="isValidEmail"
-              v-on-outside-click="(d) => console.log(d)"
               @keydown.enter.capture.stop="extractEmails"
               @keydown.space.prevent.stop="extractEmails"
             />

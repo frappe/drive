@@ -53,7 +53,6 @@ const deleteEntities = createResource({
     entity_names: JSON.stringify(props.entities?.map((entity) => entity.name)),
   },
   onSuccess(data) {
-    console.log(props.entities)
     props.entities.map((entity) => del(entity.name))
     emit("success", data)
   },

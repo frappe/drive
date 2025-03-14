@@ -114,7 +114,6 @@ export default {
   },
   methods: {
     toggleExpanded() {
-      console.log("test")
       return this.$store.commit(
         "setIsSidebarExpanded",
         this.isExpanded ? false : true

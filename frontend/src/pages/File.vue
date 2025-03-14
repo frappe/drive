@@ -39,7 +39,6 @@
     v-model="dialog"
     @success="
       (data) => {
-        console.log(data)
         let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
         l.label = data.title
         dialog = null
