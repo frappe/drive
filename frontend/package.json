@@ -21,7 +21,7 @@
     "@headlessui-float/vue": "^0.13.3",
     "@headlessui/vue": "^1.7.8",
     "@hocuspocus/transformer": "^2.13.5",
-    "@tato30/vue-pdf": "^1.11.3",
+    "@tato30/vue-pdf": "^1.9.0",
     "@tiptap/core": "2.6.6",
     "@tiptap/extension-link": "2.6.6",
     "@tiptap/extension-table": "2.6.6",
