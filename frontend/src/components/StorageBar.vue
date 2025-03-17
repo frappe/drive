@@ -37,15 +37,13 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, watch } from "vue"
+import { ref, computed, inject } from "vue"
 import { createResource } from "frappe-ui"
-import { useRoute } from "vue-router"
 import SidebarItem from "./SidebarItem.vue"
 import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
-const emitter = inject("emitter")
 
-const route = useRoute()
+const emitter = inject("emitter")
 
 const usedStorage = ref(0)
 const storageMax = ref(5368709120)
@@ -68,12 +66,12 @@ const calculatePercent = computed(() => {
     maximumFractionDigits: 1,
   }).format(num / 100)
 })
-const team = localStorage.getItem("recentTeam")
+const team = computed(() => localStorage.getItem("recentTeam"))
 
 let totalStorage = createResource({
   url: "drive.api.storage.storage_bar_data",
   params: {
-    team,
+    team: team.value,
   },
   method: "GET",
   cache: "total_storage",
@@ -82,5 +80,5 @@ let totalStorage = createResource({
     storageMax.value = data.limit
   },
 })
-totalStorage.fetch({ team })
+totalStorage.fetch()
 </script>

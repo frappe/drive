@@ -270,9 +270,11 @@ def generate_upward_path(entity_name):
                 SELECT
                     `tabDrive File`.title,
                     `tabDrive File`.name,
+                    `tabDrive File`.team,
                     `tabDrive File`.parent_entity,
                     `tabDrive File`.is_private,
-                    `tabDrive File`.owner
+                    `tabDrive File`.owner,
+                    0 AS level
                 FROM
                     `tabDrive File`
                 WHERE
@@ -281,9 +283,11 @@ def generate_upward_path(entity_name):
                 SELECT
                     t.title,
                     t.name,
+                    t.team,
                     t.parent_entity,
                     t.is_private,
-                    t.owner
+                    t.owner,
+                    gp.level + 1
                 FROM
                     generated_path as gp
                     JOIN `tabDrive File` as t ON t.name = gp.parent_entity
@@ -293,7 +297,7 @@ def generate_upward_path(entity_name):
             gp.name,
             gp.parent_entity,
             gp.is_private,
-            gp.owner,
+            gp.team,
             p.read,
             p.write,
             p.comment,
@@ -301,7 +305,8 @@ def generate_upward_path(entity_name):
         FROM
             generated_path  as gp
         LEFT JOIN `tabDrive Permission` as p
-        ON gp.name = p.entity AND p.user = {user};
+        ON gp.name = p.entity AND p.user = {user}
+        ORDER BY gp.level DESC;
     """,
         as_dict=1,
     )
@@ -312,14 +317,15 @@ def get_valid_breadcrumbs(entity, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
+    # BROKEN: doesn't bubble access
     file_path = generate_upward_path(entity.name)
     accessible_path = []
     # If team/admin of this entity, then entire path
     if user_access.get("type") in ["admin", "team"]:
-        return file_path[::-1]
+        return file_path[1:]
 
     # Otherwise, slice where they lose read access.
-    for k in file_path:
+    for k in file_path[::-1]:
         if not k["read"]:
             break
         accessible_path.append(k)

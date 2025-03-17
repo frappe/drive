@@ -39,6 +39,7 @@ const routes = [
     beforeEnter: async () => {
       if (store.getters.isLoggedIn) {
         await getTeams.fetch()
+        localStorage.setItem("recentTeam", Object.keys(getTeams.data)[0])
         return "/" + Object.keys(getTeams.data)[0]
       }
       return "/login"
@@ -184,8 +185,13 @@ let router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const redirect = sessionStorage.getItem("redirect")
-  if (from.params.team || to.params.team)
-    localStorage.setItem("recentTeam", from.params.team || to.params.team)
+  const team = from.params.team || to.params.team
+  if (localStorage.getItem("recentTeam")?.length !== 10) {
+    localStorage.removeItem("recentTeam")
+  }
+  if (team && team.length === 10) {
+    localStorage.setItem("recentTeam", team)
+  }
   switch (true) {
     case !store.getters.isLoggedIn && to.meta.isHybridRoute:
       sessionStorage.setItem("redirect", JSON.stringify(to.fullPath))

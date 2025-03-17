@@ -116,6 +116,7 @@ import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
+import { openEntity } from "@/utils/files"
 
 const store = useStore()
 const route = useRoute()
@@ -168,7 +169,9 @@ const selectedColumns = [
       return h(Avatar, {
         shape: "circle",
         image: userData.value[row.owner]?.user_image,
-        label: userData.value[row.owner]?.full_name,
+        label:
+          userData.value[row.owner]?.full_name ||
+          userData.value[row.owner]?.email,
         size: "sm",
       })
     },
@@ -224,6 +227,8 @@ const dropdownActionItems = (row) => {
 
 const selections = defineModel()
 const contextMenu = (event, row) => {
+  console.log(row)
+  if (event.ctrlKey) openEntity(localStorage.getItem("recentTeam"), row, true)
   selectedRow.value = row
   rowEvent.value = event
   event.stopPropagation()

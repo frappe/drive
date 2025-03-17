@@ -16,7 +16,7 @@ import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { formatDate } from "@/utils/format"
 import { getFolderContents } from "@/resources/files"
-import { setBreadCrumbs, prettyData } from "../utils/files"
+import { setBreadCrumbs, prettyData } from "@/utils/files"
 
 const store = useStore()
 const router = useRouter()
