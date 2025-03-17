@@ -327,7 +327,6 @@ class DriveFile(Document):
         :param user: User with whom this is to be shared
         :param write: 1 if write permission is to be granted. Defaults to 0
         :param share: 1 if share permission is to be granted. Defaults to 0
-        :param notify: 1 if the user should be notified. Defaults to 1
         """
         if frappe.session.user != self.owner:
             if not frappe.has_permission(
@@ -363,7 +362,7 @@ class DriveFile(Document):
                 "user": user,
                 "entity": self.name,
             }
-            | {l[0]: l[1] for l in levels if l[1] != None}
+            | {l[0]: l[1] for l in levels if l[1] is not None}
         )
 
         permission.save(ignore_permissions=True)
@@ -389,10 +388,6 @@ class DriveFile(Document):
         )
         if perm_name:
             frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
-
-        if self.is_group:
-            for child in self.get_children():
-                child.unshare(user)
 
 
 def on_doctype_update():

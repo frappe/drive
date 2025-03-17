@@ -9,7 +9,6 @@ from drive.api.notifications import notify_share
 class DrivePermission(Document):
     def after_insert(self):
         if self.user:
-            notify_share(entity_name=self.entity, docperm_name=self.name)
             frappe.enqueue(
                 notify_share,
                 queue="long",

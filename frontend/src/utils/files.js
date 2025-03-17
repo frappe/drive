@@ -3,11 +3,15 @@ import store from "@/store"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
+import { getLink } from "./getLink"
 
-export const openEntity = (team = null, entity) => {
-  if (!team) team = "shared"
+export const openEntity = (team = null, entity, new_tab = false) => {
+  if (!team) team = localStorage.getItem("recentTeam")
   getRecents.setData((data) => [...data, entity])
   mutate([entity], (e) => (e.accessed = true))
+  if (new_tab) {
+    return window.open(getLink(entity), "_blank")
+  }
   if (entity.is_group) {
     router.push({
       name: "Folder",
@@ -61,14 +65,13 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  if (breadcrumbs[0].parent_entity === null) {
+  if (breadcrumbs[0].team === route.params.team) {
     res = [
       {
         label: is_private ? "Home" : "Team",
         route: `/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
-    breadcrumbs.shift()
   }
   breadcrumbs.forEach((item, idx) => {
     res.push({
@@ -76,7 +79,7 @@ export const setBreadCrumbs = (
       onClick: final_func,
       route:
         idx !== breadcrumbs.length - 1
-          ? `/${route.params?.team}/folder/` + item.name
+          ? `/${item.team}/folder/` + item.name
           : null,
     })
   })
