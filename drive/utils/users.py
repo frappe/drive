@@ -24,6 +24,9 @@ def get_all_users(team):
 
 
 def check_invites(doc, method=None):
+    if doc.get("user_type") == "Website User":
+        return
+
     invites = frappe.db.get_list(
         "Drive User Invitation",
         filters={"email": doc.email, "status": "Pending"},
