@@ -1,4 +1,3 @@
-from os import write
 import frappe
 import json
 from drive.utils.files import get_home_folder, MIME_LIST_MAP
@@ -28,14 +27,13 @@ def files(
     recents_only=0,
     tag_list=[],
     file_kinds=[],
-    personal=0,
+    personal=None,
     folders=0,
     only_parent=1,
 ):
     home = get_home_folder(team)["name"]
     is_active = int(is_active)
     only_parent = int(only_parent)
-    personal = int(personal)
     folders = int(folders)
 
     if not entity_name:
@@ -117,10 +115,12 @@ def files(
         query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
     elif not is_active:
         query = query.where(DriveFile.owner == frappe.session.user)
-    elif personal == 0:
+
+    if personal == 0 or personal == "0":
         query = query.where(DriveFile.is_private == 0)
-    elif personal == 1:
+    elif personal == 1 or personal == "1":
         query = query.where((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
+
     query = query.select(Recents.last_interaction.as_("accessed"))
     if tag_list:
         tag_list = json.loads(tag_list)
@@ -197,4 +197,6 @@ def shared(
         query = query.where(
             Criterion.any(DriveFile.mime_type == mime_type for mime_type in mime_type_list)
         )
-    return query.run(as_dict=True)
+    res = query.run(as_dict=True)
+    parents = {r["name"] for r in res}
+    return [r for r in res if r["parent_entity"] not in parents]

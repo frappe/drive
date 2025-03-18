@@ -5,7 +5,7 @@
     :key="row.name"
     :row="row"
     class="hover:bg-surface-menu-bar cursor-pointer"
-    @click="(e) => (console.log(e) ? alert('hey') : setActive(row))"
+    @click="setActive(row)"
     @contextmenu="(e) => contextMenu(e, row)"
     @mouseenter="$emit('mouseenter', row)"
     @mouseleave="$emit('mouseleave')"

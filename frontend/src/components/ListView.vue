@@ -227,7 +227,6 @@ const dropdownActionItems = (row) => {
 
 const selections = defineModel()
 const contextMenu = (event, row) => {
-  console.log(row)
   if (event.ctrlKey) openEntity(localStorage.getItem("recentTeam"), row, true)
   selectedRow.value = row
   rowEvent.value = event

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { getTeams, translate } from "./resources/files"
+import { get } from "@vueuse/core"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -11,18 +12,9 @@ function redir404(to, from, next) {
 }
 
 function clearStore(to, from) {
-  if (from.name === "Document" || to.name === "Document") {
-    store.commit("setShowInfo", false)
-    return
-  }
-  if (from.name === "Whiteboard" || to.name === "Whiteboard") {
-    store.commit("setShowInfo", false)
-    return
-  } else {
-    store.commit("setEntityInfo", [])
-    store.commit("setCurrentFolder", [])
-    store.commit("setCurrentEntitites", [])
-  }
+  store.commit("setEntityInfo", [])
+  store.commit("setCurrentFolder", [])
+  store.commit("setCurrentEntitites", [])
 }
 
 function setRootBreadCrumb(to) {
@@ -37,9 +29,8 @@ const routes = [
     path: "/",
     component: () => null,
     beforeEnter: async () => {
+      await getTeams.fetch()
       if (store.getters.isLoggedIn) {
-        await getTeams.fetch()
-        localStorage.setItem("recentTeam", Object.keys(getTeams.data)[0])
         return "/" + Object.keys(getTeams.data)[0]
       }
       return "/login"
@@ -185,13 +176,12 @@ let router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const redirect = sessionStorage.getItem("redirect")
-  const team = from.params.team || to.params.team
-  if (localStorage.getItem("recentTeam")?.length !== 10) {
-    localStorage.removeItem("recentTeam")
-  }
-  if (team && team.length === 10) {
+  const team = to.params.team || from.params.team
+  const teams = Object.keys(getTeams.data || {})
+  if (team !== "shared") {
     localStorage.setItem("recentTeam", team)
   }
+
   switch (true) {
     case !store.getters.isLoggedIn && to.meta.isHybridRoute:
       sessionStorage.setItem("redirect", JSON.stringify(to.fullPath))

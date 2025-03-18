@@ -28,6 +28,10 @@ const COMMON_OPTIONS = {
 export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
+  makeParams: (params) => {
+    return { ...params, personal: 0 }
+  },
+
   cache: "home-folder-contents",
 })
 
@@ -36,7 +40,12 @@ export const getTeams = createResource({
   params: {
     details: 1,
   },
+  auto: true,
   method: "GET",
+  onSuccess(data) {
+    if (!localStorage.getItem("recentTeam"))
+      localStorage.setItem("recentTeam", Object.keys(data.message)[0])
+  },
   cache: "teams",
 })
 
@@ -93,7 +102,7 @@ export const getTrash = createResource({
   url: "drive.api.list.files",
   cache: "trash-folder-contents",
   makeParams: (params) => {
-    return { ...params, is_active: 0 }
+    return { ...params, is_active: 0, only_parent: 0 }
   },
 })
 

@@ -10,6 +10,7 @@ from drive.utils.files import (
     get_new_title,
     get_team_thumbnails_directory,
     create_thumbnail,
+    update_file_size,
 )
 from drive.api.files import get_ancestors_of
 from drive.utils.files import generate_upward_path
@@ -34,6 +35,7 @@ class DriveFile(Document):
         frappe.db.delete("Drive Permission", {"entity": self.name})
         frappe.db.delete("Drive Notification", {"notif_doctype_name": self.name})
         frappe.db.delete("Drive Entity Activity Log", {"entity": self.name})
+
         if self.is_group or self.document:
             for child in self.get_children():
                 has_write_access = frappe.has_permission(
@@ -109,9 +111,12 @@ class DriveFile(Document):
                     frappe.PermissionError,
                 )
                 return
+        update_file_size(self.parent_entity, -self.file_size)
+        update_file_size(new_parent, +self.file_size)
 
         self.parent_entity = new_parent
         self.is_private = frappe.db.get_value("Drive File", new_parent, "is_private")
+
         title = get_new_title(self.title, new_parent)
         if title != self.title:
             self.rename(title)
