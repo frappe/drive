@@ -176,9 +176,6 @@ onMounted(() => {
     store.state.connectedUsers = data.users
     userInfo.submit({ users: JSON.stringify(data.users) })
   })
-  if (window.matchMedia("(max-width: 1500px)").matches) {
-    store.commit("setIsSidebarExpanded", false)
-  }
   emitter.on("showShareDialog", () => {
     dialog.value = "s"
   })

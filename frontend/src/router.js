@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { getTeams, translate } from "./resources/files"
-import { get } from "@vueuse/core"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -11,7 +10,7 @@ function redir404(to, from, next) {
   }
 }
 
-function clearStore(to, from) {
+function clearStore() {
   store.commit("setEntityInfo", [])
   store.commit("setCurrentFolder", [])
   store.commit("setCurrentEntitites", [])
@@ -210,7 +209,7 @@ router.afterEach((to) => {
       (document.title =
         store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
         to.name),
-    40
+    100
   )
   sessionStorage.setItem("currentRoute", to.href)
 })
