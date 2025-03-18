@@ -93,14 +93,21 @@ import { notifCount } from "@/resources/permissions"
 import { computed } from "vue"
 import { useStore } from "vuex"
 import Users from "./EspressoIcons/Users.vue"
+import { useRoute } from "vue-router"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
+const route = useRoute()
 notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
-const team = computed(() => localStorage.getItem("recentTeam"))
-const sidebarItems = [
+const team = computed(() =>
+  route.params?.team?.length === 10
+    ? route.params.team
+    : localStorage.getItem("recentTeam")
+)
+
+const sidebarItems = computed(() => [
   {
     label: "Home",
     route: `/${team.value}/`,
@@ -131,7 +138,7 @@ const sidebarItems = [
     route: `/${team.value}/trash`,
     icon: Trash,
   },
-]
+])
 
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)

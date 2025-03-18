@@ -330,3 +330,15 @@ def get_valid_breadcrumbs(entity, user_access):
             break
         accessible_path.append(k)
     return accessible_path[::-1]
+
+
+def update_file_size(entity, delta):
+    doc = frappe.get_doc("Drive File", entity)
+    while doc.parent_entity:
+        doc.file_size += delta
+        print(doc, doc.file_size)
+        doc.save()
+        doc = frappe.get_doc("Drive File", doc.parent_entity)
+    # Update root
+    doc.file_size += delta
+    doc.save()

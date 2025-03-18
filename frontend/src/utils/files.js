@@ -6,11 +6,11 @@ import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
-  if (!team) team = localStorage.getItem("recentTeam")
+  if (!team) team = entity.team
   getRecents.setData((data) => [...data, entity])
   mutate([entity], (e) => (e.accessed = true))
   if (new_tab) {
-    return window.open(getLink(entity), "_blank")
+    return window.open(getLink(entity, false), "_blank")
   }
   if (entity.is_group) {
     router.push({
@@ -65,7 +65,7 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  if (breadcrumbs[0].team === route.params.team) {
+  if (breadcrumbs[0].team === localStorage.getItem("recentTeam")) {
     res = [
       {
         label: is_private ? "Home" : "Team",

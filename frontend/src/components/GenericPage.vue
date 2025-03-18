@@ -159,7 +159,7 @@ const store = useStore()
 
 const dialog = ref(null)
 const link = ref(null)
-const team = localStorage.getItem("recentTeam")
+const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)

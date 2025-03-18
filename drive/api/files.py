@@ -12,6 +12,7 @@ from drive.utils.files import (
     get_user_directory,
     get_new_title,
     create_thumbnail,
+    update_file_size,
 )
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
@@ -162,6 +163,8 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
         )
         os.rename(temp_path, Path(site_folder) / drive_file.path)
 
+        # Update folder size
+        update_file_size(parent, file_size)
         if mime_type.startswith(("image", "video")):
             frappe.enqueue(
                 create_thumbnail,
@@ -649,12 +652,23 @@ def remove_or_restore(entity_names, team):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
 
     def depth_zero_toggle_is_active(doc):
+        folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
+
         if doc.is_active:
-            doc.is_active = 0
+            flag = 0
         else:
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
-            doc.is_active = 1
+            flag = 1
+
+        doc.is_active = flag
+        frappe.db.set_value(
+            "Drive File",
+            doc.parent_entity,
+            "file_size",
+            folder_size + doc.file_size * (1 if flag else -1),
+        )
+
         doc.save()
 
     for entity in entity_names:
