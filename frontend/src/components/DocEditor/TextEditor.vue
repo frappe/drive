@@ -336,9 +336,6 @@ export default {
     },
   },
   mounted() {
-    if (window.matchMedia("(max-width: 1500px)").matches) {
-      this.$store.commit("setIsSidebarExpanded", false)
-    }
     this.emitter.on("printFile", () => {
       if (this.editor) {
         this.printEditorContent()

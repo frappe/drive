@@ -1,7 +1,7 @@
 import { format } from "date-fns"
 
 export function formatSize(size, nDigits = 1) {
-  if (size === 0) return "-"
+  if (size === 0) return ""
   const k = 1000 // Change base to 1000 for decimal prefixes
   const digits = nDigits < 0 ? 0 : nDigits
   const sizes = [" B", " KB", " MB", " GB", " TB", " PB"] // Adjusted for decimal prefixes
