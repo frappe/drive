@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineEmits, defineProps, onBeforeUnmount } from "vue"
+import { ref, computed, defineProps } from "vue"
 import { Dialog, Button, Input } from "frappe-ui"
 
 defineOptions({
