@@ -16,9 +16,6 @@
           <UsersBar />
         </div>
         <div v-if="isLoggedIn" class="block sm:flex">
-          <Button v-if="docStatus.length" variant="ghost" class="px-5 text-sm">
-            {{ docStatus }}
-          </Button>
           <Button
             v-if="
               ($route.name == 'File' || $route.name == 'Document') &&
@@ -53,17 +50,9 @@ import Dialogs from "./Dialogs.vue"
 import { Button, Breadcrumbs } from "frappe-ui"
 import Share from "./EspressoIcons/Share.vue"
 import { useStore } from "vuex"
-import { computed, ref, inject } from "vue"
+import { computed } from "vue"
 
 const store = useStore()
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const connectedUsers = computed(() => store.state.connectedUsers)
-
-const docStatus = ref("")
-const emitter = inject("emitter")
-
-emitter.on("docSaving", () => {
-  docStatus.value = "saving..."
-})
-emitter.on("docSaved", () => (docStatus.value = ""))
 </script>

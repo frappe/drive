@@ -406,7 +406,6 @@ export default {
           componentContext.editor.getHTML()
         )
           return
-        componentContext.emitter.emit("docSaving")
         componentContext.$emit(
           "update:rawContent",
           componentContext.editor.getHTML()

@@ -102,7 +102,6 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
-    emitter.emit("docSaved")
   }
 }
 
