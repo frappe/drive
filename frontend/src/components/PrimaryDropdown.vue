@@ -25,16 +25,10 @@
           "
         >
           <div
-            v-if="teamName"
+            v-if="$route.name !== 'Shared'"
             class="text-base font-medium leading-none text-gray-900"
           >
             {{ teamName }}
-          </div>
-          <div
-            class="text-gray-700 text-base leading-none font-medium"
-            v-else-if="$route.name !== 'Shared'"
-          >
-            <em>Loading...</em>
           </div>
           <div
             class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
@@ -84,9 +78,8 @@ import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
-import { useRouter, useRoute } from "vue-router"
+import { useRouter } from "vue-router"
 
-const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
@@ -96,12 +89,10 @@ defineProps({
 const showSettings = ref(false)
 const suggestedTab = ref(0)
 
-// Remove somehow
-getTeams.fetch()
 const teamName = computed(() => {
-  if (!getTeams.data || !route.params.team) return
+  if (!getTeams.data) return "loading..."
   const teams = getTeams.data.message || getTeams.data
-  return teams[route.params.team]?.title
+  return teams[localStorage.getItem("recentTeam")]?.title
 })
 const fullName = computed(() => store.state.user.fullName)
 

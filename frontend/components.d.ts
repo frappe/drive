@@ -46,6 +46,7 @@ declare module 'vue' {
     Delete: typeof import('./src/components/DocEditor/icons/delete.vue')['default']
     DeleteDialog: typeof import('./src/components/DeleteDialog.vue')['default']
     Details: typeof import('./src/components/DocEditor/icons/Details.vue')['default']
+    Dialogs: typeof import('./src/components/Dialogs.vue')['default']
     Diamond: typeof import('./src/components/EspressoIcons/Diamond.vue')['default']
     DocMenuAndInfoBar: typeof import('./src/components/DocEditor/components/DocMenuAndInfoBar.vue')['default']
     DocPreview: typeof import('./src/components/FileTypePreview/DocPreview.vue')['default']

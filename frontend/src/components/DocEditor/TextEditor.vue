@@ -913,6 +913,7 @@ export default {
       return uniqueMentions
     },
     evalImplicitTitle() {
+      if (this.editor.state.doc.firstChild.type.name !== "heading") return
       this.implicitTitle = this.editor.state.doc.firstChild.textContent
         .replaceAll("#", "")
         .replaceAll("@", "")

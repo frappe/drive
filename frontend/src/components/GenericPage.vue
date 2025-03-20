@@ -27,79 +27,12 @@
       :action-items="actionItems"
       v-model="selections"
     />
-    <NewFolderDialog
-      v-if="dialog === 'f'"
+    <Dialogs
+      :selections="selections"
+      :active-entity="activeEntity"
+      :get-entities="getEntities"
+      :handle-list-mutate="handleListMutate"
       v-model="dialog"
-      :parent="$route.params.entityName"
-      @success="
-        (data) => {
-          handleListMutate({ new: true, data })
-          getEntities.fetch()
-          resetDialog()
-        }
-      "
-    />
-    <NewLinkDialog
-      v-if="dialog === 'l'"
-      v-model="dialog"
-      :link="link"
-      :parent="$route.params.entityName"
-      @success="
-        (data) => {
-          handleListMutate({ new: true, data })
-          getEntities.fetch()
-          resetDialog()
-        }
-      "
-    />
-    <RenameDialog
-      v-if="dialog === 'rn'"
-      v-model="dialog"
-      :entity="activeEntity"
-      @success="((data) => handleListMutate({ data }), resetDialog())"
-    />
-    <GeneralDialog
-      v-if="dialog === 'remove'"
-      v-model="dialog"
-      :entities="selections"
-      :for="'remove'"
-      @success="resetDialog"
-    />
-    <!-- BROKEN -->
-    <GeneralDialog
-      v-if="dialog === 'unshare'"
-      v-model="dialog"
-      :entities="selections"
-      :for="'unshare'"
-    />
-    <GeneralDialog
-      v-if="dialog === 'restore'"
-      v-model="dialog"
-      :entities="selections"
-      :for="'restore'"
-      @success="resetDialog"
-    />
-    <ShareDialog
-      v-if="dialog === 's'"
-      v-model="dialog"
-      :entity-name="activeEntity.name"
-    />
-    <MoveDialog
-      v-if="dialog === 'm'"
-      v-model="dialog"
-      :entities="selections"
-      @success="resetDialog(), getEntities.fetch()"
-    />
-    <DeleteDialog
-      v-if="dialog === 'd'"
-      v-model="dialog"
-      :entities="selections"
-      @success="resetDialog(), mutate({ delete: true, data: selections })"
-    />
-    <CTADeleteDialog
-      v-if="dialog === 'cta'"
-      v-model="dialog"
-      @success="resetDialog"
     />
     <FileUploader
       v-if="$store.state.auth.user_id"
@@ -112,14 +45,7 @@ import ListView from "@/components/ListView.vue"
 import GridView from "@/components/GridView.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
-import NewFolderDialog from "@/components/NewFolderDialog.vue"
-import NewLinkDialog from "@/components/NewLinkDialog.vue"
-import RenameDialog from "@/components/RenameDialog.vue"
-import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import GeneralDialog from "@/components/GeneralDialog.vue"
-import DeleteDialog from "@/components/DeleteDialog.vue"
-import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
-import MoveDialog from "../components/MoveDialog.vue"
+import Dialogs from "@/components/Dialogs.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
@@ -135,16 +61,14 @@ import Rename from "./EspressoIcons/Rename.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
-import Open from "./EspressoIcons/Open.vue"
 import Trash from "./EspressoIcons/Trash.vue"
 import Star from "./EspressoIcons/Star.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { openEntity, MIME_LIST_MAP } from "@/utils/files"
+import { openEntity } from "@/utils/files"
 import { togglePersonal } from "@/resources/files"
 import { toast } from "@/utils/toasts"
-import emitter from "@/emitter"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -363,18 +287,6 @@ function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
     else data.splice(index, 1, { ...data[index], ...newData })
     return data
   })
-}
-
-// emitter handling
-emitter.on("showCTADelete", () => (dialog.value = "cta"))
-emitter.on("showShareDialog", () => (dialog.value = "s"))
-emitter.on("newFolder", () => (dialog.value = "f"))
-emitter.on("newLink", () => (dialog.value = "l"))
-
-const resetDialog = () => (dialog.value = null)
-const mutate = (data) => {
-  data.data.map((k) => handleListMutate({ ...data, data: k }))
-  resetDialog()
 }
 
 const columnHeaders = [

@@ -173,12 +173,16 @@ let router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const redirect = sessionStorage.getItem("redirect")
   const team = to.params.team || from.params.team
-  const teams = Object.keys(getTeams.data || {})
-  if (team !== "shared") {
+  await getTeams.fetch()
+  const teams = Object.keys(getTeams.data)
+  if (teams.includes(team)) {
     localStorage.setItem("recentTeam", team)
+  } else {
+    const val = localStorage.getItem("recentTeam")
+    if (!teams.includes(val)) localStorage.setItem("recentTeam", teams[0])
   }
 
   switch (true) {

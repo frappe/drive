@@ -55,7 +55,7 @@ def get_file_content(embed_name, parent_entity_name):
         raise ValueError
 
     try:
-        embed = frappe.get_doc("Drive File", embed_name)
+        embed = frappe.get_doc("Drive File", embed_name.split(".")[0])
         embed_path = embed.path
     except frappe.exceptions.DoesNotExistError:
         embed = frappe.db.get_list(
