@@ -42,9 +42,16 @@ def storage_breakdown(team, owned_only):
 
 
 @frappe.whitelist()
-def storage_bar_data(team, owned_only=True):
-    size = frappe.db.sql(
-        f"SELECT file_size FROM `tabDrive File` WHERE team={frappe.db.escape(team)} AND parent_entity is null;"
-    )[0][0]
-    limit = frappe.get_value("Drive Team", team, "quota" if owned_only else "storage") * MEGA_BYTE
-    return {"total_size": size, "limit": limit}
+def storage_bar_data(team):
+    query = (
+        frappe.qb.from_(DriveFile)
+        .where(
+            (DriveFile.team == team)
+            & (DriveFile.owner == frappe.session.user)
+            & (DriveFile.is_active == 1)
+        )
+        .select(fn.Coalesce(fn.Sum(DriveFile.file_size), 0).as_("total_size"))
+    )
+    result = query.run(as_dict=True)[0]
+    result["limit"] = frappe.get_value("Drive Team", team, "quota") * MEGA_BYTE
+    return result
