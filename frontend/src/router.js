@@ -22,16 +22,15 @@ function setRootBreadCrumb(to) {
     store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
 }
-
 const routes = [
   {
     path: "/",
     component: () => null,
     beforeEnter: async () => {
+      if (!store.getters.isLoggedIn) return
       await getTeams.fetch()
-      if (store.getters.isLoggedIn) {
-        return "/" + Object.keys(getTeams.data)[0]
-      }
+      if (store.getters.isLoggedIn)
+        return "/t/" + Object.keys(getTeams.data.message || getTeams.data)[0]
       return "/login"
     },
   },
@@ -84,7 +83,7 @@ const routes = [
     },
   },
   {
-    path: "/:team/notifications",
+    path: "/t/:team/notifications",
     name: "Notifications",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
@@ -92,57 +91,51 @@ const routes = [
   },
 
   {
-    path: "/:team/team",
+    path: "/t/:team/team",
     name: "Team",
     component: () => import("@/pages/Team.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/:team/recents",
+    path: "/t/:team/recents",
     name: "Recents",
     component: () => import("@/pages/Recents.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/shared",
-    name: "Shared",
-    component: () => import("@/pages/Shared.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
-  },
-  {
-    path: "/:team/favourites",
+    path: "/t/:team/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/:team/",
+    path: "/t/:team/",
     name: "Home",
     component: () => import("@/pages/Personal.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/:team/trash",
+    path: "/t/:team/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
-    path: "/:team/file/:entityName",
+    path: "/t/:team/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { isHybridRoute: true, filePage: true },
     props: true,
   },
   {
-    path: "/:team/folder/:entityName",
+    path: "/t/:team/folder/:entityName",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { sidebar: true, isHybridRoute: true },
     props: true,
   },
   {
-    path: "/:team/document/:entityName",
+    path: "/t/:team/document/:entityName",
     name: "Document",
     meta: { sidebar: false, documentPage: true, isHybridRoute: true },
     component: () => import("@/pages/Document.vue"),
@@ -150,11 +143,23 @@ const routes = [
     beforeEnter: [clearStore],
   },
   {
+    path: "/signup",
+    name: "Signup",
+    component: () => import("@/pages/LoginSignup.vue"),
+    meta: { allowGuest: true },
+  },
+  {
     path: "/login",
     name: "Login",
-    redirect: () => {
-      window.location.href = "/login"
-    },
+    component: () => import("@/pages/LoginSignup.vue"),
+    meta: { allowGuest: true },
+  },
+  {
+    path: "/shared",
+    name: "Shared",
+    component: () => import("@/pages/Shared.vue"),
+    beforeEnter: [setRootBreadCrumb, clearStore],
+    meta: { allowGuest: true },
   },
   {
     path: "/:pathMatch(.*)*/",
@@ -173,33 +178,19 @@ let router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  const redirect = sessionStorage.getItem("redirect")
-  const team = to.params.team || from.params.team
-  const teams = Object.keys(getTeams.data || {})
-  if (team !== "shared") {
-    localStorage.setItem("recentTeam", team)
-  }
-
-  switch (true) {
-    case !store.getters.isLoggedIn && to.meta.isHybridRoute:
-      sessionStorage.setItem("redirect", JSON.stringify(to.fullPath))
-      next()
-      break
-    case !store.getters.isLoggedIn:
-      next("/login")
-      break
-    case store.getters.isLoggedIn:
-      if (redirect) {
-        next(JSON.parse(redirect))
-        sessionStorage.removeItem("redirect")
-      } else {
-        next()
-      }
-      break
-    default:
-      next("/login")
-      break
+router.beforeEach(async (to, from, next) => {
+  if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
+    next("/login")
+  } else if (!to.meta.allowGuest) {
+    const team = to.params.team || from.params.team
+    await getTeams.fetch()
+    const teams = Object.keys(getTeams.data.message || getTeams.data)
+    if (teams.includes(team)) {
+      localStorage.setItem("recentTeam", team)
+    }
+    next()
+  } else {
+    next()
   }
 })
 
@@ -209,7 +200,7 @@ router.afterEach((to) => {
       (document.title =
         store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
         to.name),
-    100
+    150
   )
   sessionStorage.setItem("currentRoute", to.href)
 })

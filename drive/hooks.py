@@ -195,7 +195,7 @@ scheduler_events = {
 doc_events = {
     "User": {
         # will run after any DocType record is inserted into database
-        "after_insert": "drive.utils.users.check_invites"
+        "after_insert": "drive.api.product.check_invites"
     },
 }
 

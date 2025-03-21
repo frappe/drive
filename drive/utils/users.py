@@ -1,6 +1,8 @@
 import frappe
 from frappe.rate_limiter import rate_limit
 from frappe.utils import now, split_emails, validate_email_address
+import requests
+import os
 
 
 @frappe.whitelist()
@@ -21,33 +23,6 @@ def get_all_users(team):
     for u in users:
         u["role"] = "admin" if team_users[u["name"]] else "user"
     return users
-
-
-def check_invites(doc, method=None):
-    invites = frappe.db.get_list(
-        "Drive User Invitation",
-        filters={"email": doc.email, "status": "Pending"},
-        pluck="name",
-        ignore_permissions=True,
-    )
-    if not invites:
-        # Create team for this user
-        frappe.local.login_manager.login_as(doc.email)
-        team = frappe.get_doc(
-            {
-                "doctype": "Drive Team",
-                "title": "Personal",
-            },
-        )
-        team.insert(ignore_permissions=True)
-        team.append("users", {"user": doc.email, "is_admin": 1})
-        team.save()
-        frappe.local.response["location"] = "/drive/" + team.name
-    else:
-        for invite_name in invites:
-            invite = frappe.get_doc("Drive User Invitation", invite_name)
-
-            invite.accept()
 
 
 @frappe.whitelist()
@@ -153,3 +128,54 @@ def add_comment(reference_name: str, content: str, comment_email: str, comment_b
     )
     comment.insert(ignore_permissions=True)
     return comment
+
+
+def generate_otp():
+    """Generates a cryptographically secure random OTP"""
+
+    return int.from_bytes(os.urandom(5), byteorder="big") % 900000 + 100000
+
+
+def get_country_info():
+    ip = frappe.local.request_ip
+
+    def _get_country_info():
+        fields = [
+            "status",
+            "message",
+            "continent",
+            "continentCode",
+            "country",
+            "countryCode",
+            "region",
+            "regionName",
+            "city",
+            "district",
+            "zip",
+            "lat",
+            "lon",
+            "timezone",
+            "offset",
+            "currency",
+            "isp",
+            "org",
+            "as",
+            "asname",
+            "reverse",
+            "mobile",
+            "proxy",
+            "hosting",
+            "query",
+        ]
+
+        res = requests.get(f"https://pro.ip-api.com/json/{ip}?fields={",".join(fields)}")
+        try:
+            data = res.json()
+            if data.get("status") != "fail":
+                return data
+        except Exception:
+            pass
+
+        return {}
+
+    return frappe.cache().hget("ip_country_map", ip, generator=_get_country_info)

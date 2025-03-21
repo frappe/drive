@@ -15,7 +15,7 @@ import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { formatDate } from "@/utils/format"
-import { getFolderContents } from "@/resources/files"
+import { COMMON_OPTIONS } from "@/resources/files"
 import { setBreadCrumbs, prettyData } from "@/utils/files"
 
 const store = useStore()
@@ -29,12 +29,15 @@ const props = defineProps({
     default: "",
   },
 })
-getFolderContents.reset()
-getFolderContents.update({
-  params: {
+
+const getFolderContents = createResource({
+  ...COMMON_OPTIONS,
+  url: "drive.api.list.files",
+  makeParams: (params) => ({
     entity_name: props.entityName,
     personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
-  },
+    ...params,
+  }),
   cache: ["folder", props.entityName],
 })
 

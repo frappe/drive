@@ -146,6 +146,7 @@ declare module 'vue' {
     RoleDetailsDialog: typeof import('./src/components/RoleDetailsDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SaasLoginBox: typeof import('./src/components/SaasLoginBox.vue')['default']
     Search: typeof import('./src/components/EspressoIcons/Search.vue')['default']
     SearchPopup: typeof import('./src/components/SearchPopup.vue')['default']
     SettingsDialog: typeof import('./src/components/Settings/SettingsDialog.vue')['default']

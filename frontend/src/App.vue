@@ -52,7 +52,9 @@
             class="fixed bottom-0 w-full sm:hidden"
           />
         </div>
-        <router-view v-else />
+        <router-view v-else :key="$route.fullPath" v-slot="{ Component }">
+          <component :is="Component" id="currentPage" ref="currentPage" />
+        </router-view>
       </div>
     </div>
     <Transition
@@ -140,7 +142,6 @@ export default {
     },
     addKeyboardShortcuts() {
       let tapped
-
       window.addEventListener("keydown", (e) => {
         let params = { team: localStorage.getItem("recentTeam") }
         const DOUBLE_KEY_MAPS = {

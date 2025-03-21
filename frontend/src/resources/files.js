@@ -7,7 +7,7 @@ import { prettyData } from "@/utils/files"
 import { set } from "idb-keyval"
 
 // GETTERS
-const COMMON_OPTIONS = {
+export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
   onError(error) {
@@ -40,12 +40,7 @@ export const getTeams = createResource({
   params: {
     details: 1,
   },
-  auto: true,
   method: "GET",
-  onSuccess(data) {
-    if (!localStorage.getItem("recentTeam"))
-      localStorage.setItem("recentTeam", Object.keys(data.message)[0])
-  },
   cache: "teams",
 })
 
@@ -240,7 +235,6 @@ export const translate = createResource({
   method: "GET",
   url: "/api/method/drive.api.files.get_translate",
   cache: "translate",
-  auto: true,
 })
 
 // Synced cache - ensure all setters are reflected in the app

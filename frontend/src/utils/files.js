@@ -69,7 +69,7 @@ export const setBreadCrumbs = (
     res = [
       {
         label: is_private ? "Home" : "Team",
-        route: `/${route.params.team}` + (is_private ? "/" : "/team"),
+        route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
   }
@@ -79,7 +79,7 @@ export const setBreadCrumbs = (
       onClick: final_func,
       route:
         idx !== breadcrumbs.length - 1
-          ? `/${item.team}/folder/` + item.name
+          ? `/t/${item.team}/folder/` + item.name
           : null,
     })
   })
