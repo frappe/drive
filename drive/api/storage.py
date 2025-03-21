@@ -47,6 +47,7 @@ def storage_bar_data(team):
         frappe.qb.from_(DriveFile)
         .where(
             (DriveFile.team == team)
+            & (DriveFile.is_group == 0)
             & (DriveFile.owner == frappe.session.user)
             & (DriveFile.is_active == 1)
         )

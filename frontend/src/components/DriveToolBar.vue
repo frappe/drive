@@ -159,7 +159,7 @@
           <Button
             v-if="$route.name === button.route"
             class="line-clamp-1 truncate w-full"
-            :disabled="!button.entities.data.length"
+            :disabled="!button.entities.data?.length"
             variant="subtle"
             :theme="button.theme || 'gray'"
             @click="emitter.emit('showCTADelete')"
@@ -171,6 +171,7 @@
           </Button>
         </template>
         <Dropdown
+          v-if="['Folder', 'Home', 'Team'].includes($route.name)"
           :options="newEntityOptions"
           placement="left"
           class="basis-5/12 lg:basis-auto"

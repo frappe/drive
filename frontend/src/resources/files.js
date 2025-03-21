@@ -106,6 +106,7 @@ const LISTS = [getPersonal, getHome, getRecents, getShared, getFavourites]
 export const mutate = (entities, func) => {
   LISTS.forEach((l) =>
     l.setData((d) => {
+      if (!d) return
       entities.forEach(({ name, ...params }) => {
         let el = d.find((k) => k.name === name)
         if (el) {

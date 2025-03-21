@@ -250,10 +250,12 @@ const actionItems = computed(() => {
       {
         label: "Remove from Recents",
         icon: "clock",
-        onClick: (entities) =>
+        onClick: (entities) => {
           clearRecent.submit({
             entities,
-          }),
+          })
+          entities.map((data) => handleListMutate({ data }))
+        },
         isEnabled: (e) => e.accessed,
         important: true,
         multi: true,

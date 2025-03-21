@@ -88,8 +88,10 @@ defineProps({
 })
 const showSettings = ref(false)
 const suggestedTab = ref(0)
+const updated = ref(false)
 
 const teamName = computed(() => {
+  let updated
   if (!getTeams.data) return "loading..."
   const teams = getTeams.data.message || getTeams.data
   return teams[localStorage.getItem("recentTeam")]?.title
