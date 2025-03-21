@@ -187,6 +187,9 @@ router.beforeEach(async (to, from, next) => {
     const teams = Object.keys(getTeams.data.message || getTeams.data)
     if (teams.includes(team)) {
       localStorage.setItem("recentTeam", team)
+    } else {
+      const val = localStorage.getItem("recentTeam")
+      if (!teams.includes(val)) localStorage.setItem("recentTeam", teams[0])
     }
     next()
   } else {

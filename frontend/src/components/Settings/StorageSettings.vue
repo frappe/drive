@@ -4,8 +4,8 @@
   <div class="flex items-center justify-between w-full mb-2">
     <span class="text-base font-medium text-gray-900"
       >{{ showFileStorage ? "You have" : "The team has" }} used
-      {{ formatSize(usedSpace) }} out of {{ showFileStorage ? "your" : "" }}
-      {{ base2BlockSize(spaceLimit) }} ({{
+      {{ formatSize(usedSpace) ? formatSize(usedSpace) + " out" : "none" }} of
+      {{ showFileStorage ? "your" : "" }} {{ base2BlockSize(spaceLimit) }} ({{
         formatPercent((usedSpace / spaceLimit) * 100)
       }})</span
     >

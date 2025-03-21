@@ -71,7 +71,7 @@ const rawContent = ref(null)
 const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
-const mentionedUsers = ref()
+const mentionedUsers = ref([])
 const showShareDialog = ref(false)
 const timeout = ref(1000 + Math.floor(Math.random() * 1000))
 const saveCount = ref(0)
@@ -102,7 +102,6 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
-    emitter.emit("docSaved")
   }
 }
 

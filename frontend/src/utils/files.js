@@ -4,6 +4,7 @@ import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
+import { getTeams } from "../resources/files"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
   if (!team) team = entity.team
@@ -65,7 +66,7 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  if (breadcrumbs[0].team === localStorage.getItem("recentTeam")) {
+  if (Object.keys(getTeams.data).includes(breadcrumbs[0].team)) {
     res = [
       {
         label: is_private ? "Home" : "Team",

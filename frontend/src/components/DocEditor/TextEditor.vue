@@ -406,7 +406,6 @@ export default {
           componentContext.editor.getHTML()
         )
           return
-        componentContext.emitter.emit("docSaving")
         componentContext.$emit(
           "update:rawContent",
           componentContext.editor.getHTML()
@@ -913,6 +912,7 @@ export default {
       return uniqueMentions
     },
     evalImplicitTitle() {
+      if (this.editor.state.doc.firstChild.type.name !== "heading") return
       this.implicitTitle = this.editor.state.doc.firstChild.textContent
         .replaceAll("#", "")
         .replaceAll("@", "")

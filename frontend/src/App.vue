@@ -20,11 +20,7 @@
         >
           <Sidebar v-if="isLoggedIn" class="hidden sm:block" />
           <div id="dropTarget" class="h-full w-full overflow-hidden">
-            <Navbar
-              v-if="$route.name == 'File' || $route.name == 'Document'"
-              :mobile-sidebar-is-open="showMobileSidebar"
-              @toggle-mobile-sidebar="showMobileSidebar = !showMobileSidebar"
-            />
+            <Navbar v-if="$route.name == 'File' || $route.name == 'Document'" />
             <div class="flex w-full h-full overflow-hidden">
               <!-- Find a better way to handle the height overflow here (52px is the Navbar) -->
               <!-- what on mars is he talking about? -->

@@ -921,7 +921,7 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
         last_modified,
         lambda n: Path(home_directory["name"]) / "embeds" / f"{n}{save_path.suffix}",
     )
-    os.rename(save_path, frappe.get_site_path("private/files") / drive_file.path)
+    os.rename(save_path, Path(frappe.get_site_path("private/files")) / drive_file.path)
 
     return drive_file.name + save_path.suffix
 
