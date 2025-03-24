@@ -84,18 +84,20 @@ import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 import emitter from "@/emitter"
-import { useStore } from "vuex"
+import { computed } from "vue"
 
 const dialog = defineModel()
-const store = useStore()
 
-defineProps({
+const props = defineProps({
   getEntities: Object,
   handleListMutate: { type: Function, default: () => {} },
   activeEntity: Object,
-  selections: Array,
+  selections: Set,
 })
 
+const selections = computed(() =>
+  props.selections.size ? Array.from(props.selections) : [props.activeEntity]
+)
 const resetDialog = () => (dialog.value = null)
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))

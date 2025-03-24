@@ -33,27 +33,25 @@
     >
       <div v-if="pages > 100" class="m-4">
         <!-- Paginate -->
-        <em>disabled temporarily</em>
-        <!-- <VuePDF
+        <VuePDF
           id="pdf"
           ref="pdfComponent"
           :pdf="pdf"
           :page="currentPage"
           :text-layer="true"
           :fit-parent="true"
-        /> -->
+        />
       </div>
       <!-- Scroll -->
       <div v-for="page in pages" v-else :key="page" class="m-4">
-        <em>disabled temporarily</em>
-        <!-- <VuePDF
+        <VuePDF
           id="pdf"
           ref="pdfComponent"
           :pdf="pdf"
           :page="page"
           :text-layer="true"
           :fit-parent="true"
-        /> -->
+        />
       </div>
     </div>
   </div>
@@ -64,8 +62,8 @@ import { LoadingIndicator } from "frappe-ui"
 import { onMounted, onUnmounted, ref, watch, inject } from "vue"
 import { useObjectUrl } from "@vueuse/core"
 import { Button, Input } from "frappe-ui"
-// import { VuePDF, usePDF } from "@tato30/vue-pdf"
-// import "@tato30/vue-pdf/style.css"
+import { VuePDF, usePDF } from "@tato30/vue-pdf"
+import "@tato30/vue-pdf/style.css"
 
 const props = defineProps({
   previewEntity: {
@@ -78,8 +76,7 @@ const blob = ref(null)
 const previewURL = useObjectUrl(blob)
 const emitter = inject("emitter")
 const currentPage = ref(1)
-// const { pdf, pages, print } = usePDF(previewURL)
-const pages = ref(1)
+const { pdf, pages, print } = usePDF(previewURL)
 
 async function fetchContent() {
   loading.value = true

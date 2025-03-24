@@ -3,6 +3,7 @@
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
+    @update:selections="(s) => (selections = s)"
     :options="{
       selectable: true,
       showTooltip: true,
@@ -51,41 +52,6 @@
         </div>
       </div>
     </template>
-    <ListSelectBanner>
-      <template #actions="{ selections }">
-        <div class="flex gap-3">
-          <Button
-            v-for="(item, index) in actionItems
-              .filter(
-                (i) => i.important && ([...selections].length === 1 || i.multi)
-              )
-              .filter(
-                (i) =>
-                  !i.isEnabled ||
-                  [...selections]
-                    .map((n) => entities.find((e) => e.name === n))
-                    .every((e) => i.isEnabled(e, [...selections].length !== 1))
-              )"
-            :key="index"
-            @click="
-              () =>
-                handleAction(
-                  [...selections].map((n) =>
-                    entities.find((e) => e.name === n)
-                  ),
-                  item
-                )
-            "
-          >
-            <component
-              :is="item.icon"
-              class="h-4 w-auto text-gray-800"
-              :class="item.danger ? 'text-red-500' : ''"
-            />
-          </Button>
-        </div>
-      </template>
-    </ListSelectBanner>
   </FrappeListView>
   <EmptyEntityContextMenu
     v-if="rowEvent && selectedRow"
@@ -98,8 +64,6 @@
 </template>
 <script setup>
 import {
-  Button,
-  ListSelectBanner,
   ListHeader,
   ListGroupRows,
   ListGroupHeader,
@@ -126,6 +90,7 @@ const props = defineProps({
   actionItems: Array,
   entities: Array,
 })
+const selections = defineModel()
 const selectedRow = ref(null)
 const rowEvent = ref(null)
 const userData = computed(() =>
@@ -206,11 +171,6 @@ const setActive = (entity) => {
   }
 }
 
-const handleAction = (selectedItems, action) => {
-  selections.value = selectedItems
-  action.onClick(selectedItems)
-}
-
 const dropdownActionItems = (row) => {
   if (!row) return []
   return props.actionItems
@@ -225,7 +185,6 @@ const dropdownActionItems = (row) => {
     }))
 }
 
-const selections = defineModel()
 const contextMenu = (event, row) => {
   if (event.ctrlKey) openEntity(localStorage.getItem("recentTeam"), row, true)
   selectedRow.value = row

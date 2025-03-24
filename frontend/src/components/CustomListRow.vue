@@ -7,7 +7,7 @@
       $route.name === 'Trash' ? '' : 'cursor-pointer',
     ]"
     :row="row"
-    class="hover:bg-surface-menu-bar"
+    class="rounded hover:bg-surface-menu-bar"
     @click="$route.name !== 'Trash' && setActive(row)"
     @contextmenu="(e) => contextMenu(e, row)"
     @mouseenter="$emit('mouseenter', row)"
@@ -68,7 +68,6 @@ import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
 import Lock from "./EspressoIcons/Lock.vue"
 import { openEntity } from "@/utils/files"
 import { getLink } from "@/utils/getLink"
-import { ref } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 
@@ -80,7 +79,6 @@ defineProps({
   hovered: Function,
 })
 defineEmits(["mouseenter", "mouseleave"])
-const hoveredRow = ref(null)
 const route = useRoute()
 const store = useStore()
 </script>
