@@ -16,12 +16,24 @@
           >
             <div class="mb-7.5 text-center">
               <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
-                {{ isLogin ? "Log in to Drive" : "Create a new account" }}
+                {{
+                  isLogin
+                    ? "Log in to Drive"
+                    : params.get("t")
+                    ? "Join " + params.get("t")
+                    : "Create a new account"
+                }}
               </p>
               <p
                 class="break-words text-base font-normal leading-[21px] text-gray-700"
               >
-                {{ !isLogin ? "5 GB free - forever." : "Welcome back!" }}
+                {{
+                  !isLogin
+                    ? params.get("t")
+                      ? "Powered by Frappe Drive."
+                      : "5 GB free - forever."
+                    : "Welcome back!"
+                }}
               </p>
             </div>
             <form class="flex flex-col">
@@ -84,8 +96,17 @@
                   type="text"
                   class="mt-4"
                   placeholder="123456"
+                  :disabled="verifyOTP.loading"
                   maxlength="6"
                   v-model="otp"
+                  @keyup="
+                    (e) =>
+                      e.target.value.length === 6 &&
+                      verifyOTP.submit({
+                        account_request,
+                        otp,
+                      })
+                  "
                   required
                 />
                 <ErrorMessage
@@ -127,7 +148,30 @@
                   variant="solid"
                   @click="sendOTP.submit({ email })"
                 >
-                  {{ isLogin ? "Login" : "Sign up" }} - Verify
+                  {{ isLogin ? "Login" : "Sign up" }}
+                </Button>
+                <div class="mt-6 border-t text-center">
+                  <div class="-translate-y-1/2 transform">
+                    <span
+                      class="relative bg-white px-2 text-sm font-medium leading-8 text-gray-800"
+                    >
+                      or
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  class="mb-2"
+                  v-for="provider in oAuthProviders.data"
+                  :key="provider.name"
+                  :loading="oAuth.loading"
+                  :link="provider.auth_url"
+                >
+                  <div class="flex items-center">
+                    <div v-html="provider.icon"></div>
+                    <span class="ml-2"
+                      >Continue with {{ provider.provider_name }}</span
+                    >
+                  </div>
                 </Button>
               </template>
             </form>
@@ -163,7 +207,8 @@ import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
 const route = useRoute()
 
-const email = ref("")
+const params = new URLSearchParams(new URL(window.location.href).search)
+const email = ref(params.get("e") || "")
 const first_name = ref("")
 const last_name = ref("")
 const team_name = ref("")
@@ -172,10 +217,10 @@ const terms_accepted = ref(false)
 
 const isGoogleOAuthEnabled = true
 const otpRequested = ref(false)
-const otpValidated = ref(false)
+const otpValidated = ref(true)
 const otp = ref("")
 const otpResendCountdown = ref(0)
-const account_request = ref("")
+const account_request = ref(params.get("r") || "")
 const isLogin = computed(() => route.name === "Login")
 
 onMounted(() => {
@@ -183,15 +228,7 @@ onMounted(() => {
     if (otpResendCountdown.value > 0) otpResendCountdown.value -= 1
   }, 1000)
 })
-// saasProduct() {
-//       return this.$resources.signupSettings.data?.product_trial
-//     },
-//     countries() {
-//       return this.$resources.signupSettings.data?.countries || []
-//     },
-//     isGoogleOAuthEnabled() {
-//       return true
-//     },
+
 const getReferrerIfAny = () => {
   const params = location.search
   const searchParams = new URLSearchParams(params)
@@ -225,8 +262,13 @@ const signup = createResource({
   },
 })
 
-const signupOAuth = createResource({
-  url: "drive.api.product.login_google",
+const oAuthProviders = createResource({
+  url: "drive.api.product.oauth_providers",
+  auto: true,
+})
+
+const oAuth = createResource({
+  url: "drive.api.product.google_login",
   onSuccess(url) {
     window.location.href = url
   },

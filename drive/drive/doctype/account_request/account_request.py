@@ -19,7 +19,8 @@ class AccountRequest(Document):
         # if not is_valid_email_address(self.email):
         #     frappe.throw(f"{self.email} is not a valid email address")
         self.request_key = random_string(32)
-        self.set_otp()
+        if not self.invite:
+            self.set_otp()
 
         self.ip_address = frappe.local.request_ip
         geo_location = get_country_info() or {}
@@ -30,7 +31,8 @@ class AccountRequest(Document):
         self.email = self.email.strip()
 
     def after_insert(self):
-        self.send_otp()
+        if not self.invite:
+            self.send_otp()
         # Telemetry: Only capture if it's not a saas signup or invited by parent team. Also don't capture if user already have a team
         # if not (
         #     frappe.db.exists("Team", {"user": self.email})
