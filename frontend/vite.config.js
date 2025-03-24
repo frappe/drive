@@ -5,7 +5,18 @@ import frappeui from "frappe-ui/vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), frappeui()],
+  plugins: [
+    frappeui({
+      frappeProxy: true, // Setup proxy to Frappe backend
+      lucideIcons: true, // Configure Lucide icons
+      jinjaBootData: true, // Inject server-side boot data
+      // Production build config for asset paths and HTML output
+      buildConfig: {
+        indexHtmlPath: "../drive/www/drive.html",
+      },
+    }),
+    vue(),
+  ],
   define: {
     "process.env.IS_PREACT": JSON.stringify("true"),
   },
