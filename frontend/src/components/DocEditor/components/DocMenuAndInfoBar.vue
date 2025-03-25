@@ -1013,7 +1013,7 @@ export default {
           icon: markRaw(Comment),
           write: false,
           disabled:
-            this.$store.state.entityInfo[0].allow_comments === 0 ||
+            this.$store.state.entityInfo[0].comment === 0 ||
             this.$store.state.entityInfo[0].owner !==
               this.$store.state.auth.userId,
         },
@@ -1103,7 +1103,7 @@ export default {
         return true
       } else if (this.entity.write) {
         return true
-      } else if (this.entity.allow_comments) {
+      } else if (this.entity.comment) {
         return true
       } else {
         return false
