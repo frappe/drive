@@ -335,13 +335,13 @@ def create_link(team, title, link, personal=False, parent=None):
 
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
-    write_perms = not frappe.has_permission(
+    write_perms = frappe.has_permission(
         doctype="Drive File",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
     )
-    comment_perms = not frappe.has_permission(
+    comment_perms = frappe.has_permission(
         doctype="Drive File",
         doc=entity_name,
         ptype="comment",

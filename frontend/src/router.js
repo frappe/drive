@@ -192,16 +192,16 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
     meta: { allowGuest: true },
   },
-  // {
-  //   path: "/:pathMatch(.*)*/",
-  //   name: "Error",
-  //   component: () => import("@/pages/Error.vue"),
-  //   beforeEnter: [redir404, clearStore],
-  //   meta: {
-  //     errorPage: true,
-  //   },
-  //   props: true,
-  // },
+  {
+    path: "/:pathMatch(.*)*/",
+    name: "Error",
+    component: () => import("@/pages/Error.vue"),
+    beforeEnter: [redir404, clearStore],
+    meta: {
+      errorPage: true,
+    },
+    props: true,
+  },
 ]
 
 let router = createRouter({
