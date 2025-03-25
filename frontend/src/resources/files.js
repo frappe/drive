@@ -7,7 +7,7 @@ import { prettyData } from "@/utils/files"
 import { set } from "idb-keyval"
 
 // GETTERS
-const COMMON_OPTIONS = {
+export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
   onError(error) {
@@ -106,6 +106,7 @@ const LISTS = [getPersonal, getHome, getRecents, getShared, getFavourites]
 export const mutate = (entities, func) => {
   LISTS.forEach((l) =>
     l.setData((d) => {
+      if (!d) return
       entities.forEach(({ name, ...params }) => {
         let el = d.find((k) => k.name === name)
         if (el) {

@@ -5,7 +5,9 @@
   >
     <DriveToolBar
       :column-headers="$route.name === 'Recents' ? null : columnHeaders"
-      :get-entities="getEntities"
+      :selections
+      :entities="rows"
+      :action-items="actionItems"
     />
 
     <!-- This sucks, redo it -->
@@ -22,13 +24,13 @@
     <ListView
       v-else
       ref="view"
-      :folder-contents="rows && grouper(rows)"
-      :entities="rows"
-      :action-items="actionItems"
       v-model="selections"
+      :folder-contents="rows && grouper(rows)"
+      :action-items="actionItems"
+      :entities="rows"
     />
     <Dialogs
-      :selections="selections"
+      :selections
       :active-entity="activeEntity"
       :get-entities="getEntities"
       :handle-list-mutate="handleListMutate"
@@ -88,10 +90,11 @@ const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = computed(() =>
-  props.getEntities.data?.filter?.((k) => k.is_active != 0)
+  props.getEntities.data?.filter?.(
+    (k) => k.is_active != 0 && k.title[0] !== "."
+  )
 )
-const selections = ref([])
-watch(activeEntity, () => (selections.value = [activeEntity.value]))
+const selections = ref(new Set())
 watch(
   sortOrder,
   () => {
@@ -106,7 +109,7 @@ watch(
 )
 watch(activeFilters.value, async (val) => {
   props.getEntities.fetch({
-    team: team,
+    team,
     file_kinds: JSON.stringify(val.map((k) => k.label)),
   })
 })
@@ -118,7 +121,7 @@ function handleContextMenu(event) {
   defaultContextTriggered.value = true
   event.preventDefault()
 }
-allUsers.fetch({ team: team })
+allUsers.fetch({ team })
 
 // Action Items
 const actionItems = computed(() => {
@@ -219,7 +222,7 @@ const actionItems = computed(() => {
       },
       {
         label: "Favourite",
-        icon: Star,
+        icon: "star",
         onClick: (entities) => {
           entities = entities.map((e) => ({
             ...e,
@@ -234,7 +237,8 @@ const actionItems = computed(() => {
       },
       {
         label: "Unfavourite",
-        icon: Star,
+        icon: "star",
+        class: "stroke-amber-500 fill-amber-500",
         onClick: (entities) => {
           entities = entities.map((e) => ({
             ...e,
@@ -250,10 +254,12 @@ const actionItems = computed(() => {
       {
         label: "Remove from Recents",
         icon: "clock",
-        onClick: (entities) =>
+        onClick: (entities) => {
           clearRecent.submit({
             entities,
-          }),
+          })
+          entities.map((data) => handleListMutate({ data }))
+        },
         isEnabled: (e) => e.accessed,
         important: true,
         multi: true,
@@ -273,6 +279,7 @@ const actionItems = computed(() => {
         isEnabled: (e) => e.write,
         important: true,
         multi: true,
+        danger: true,
       },
     ]
   }

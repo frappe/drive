@@ -6,9 +6,10 @@ export function initSocket(options = {}) {
   let siteName = import.meta.env.DEV ? host : window.site_name
   let port = window.location.port ? `:${socketio_port}` : ""
   let protocol = port ? "http" : "https"
-  let url = `${protocol}://${host}${port}/${siteName}`
+  let url = `${protocol}://${host}${port}/`
   // add exponential backoff
   let socket = io(url, {
+    path: `${siteName}`,
     withCredentials: true,
     reconnectionAttempts: 5,
     transports: ["websocket", "polling"],

@@ -152,7 +152,7 @@
   </Dialog>
 </template>
 <script setup>
-import { watch, defineEmits, computed, h, ref } from "vue"
+import { watch, computed, h, ref } from "vue"
 import {
   createResource,
   Dialog,

@@ -1,15 +1,20 @@
 <template>
   <ListRow
     v-for="row in rows"
-    :class="selected(row) ? '!bg-surface-gray-2' : ''"
     :key="row.name"
+    :class="[
+      selected(row) ? '!bg-surface-gray-2' : '',
+      $route.name === 'Trash' ? '' : 'cursor-pointer',
+    ]"
     :row="row"
-    class="hover:bg-surface-menu-bar cursor-pointer"
-    @click="setActive(row)"
+    class="rounded hover:bg-surface-menu-bar"
+    @click="$route.name !== 'Trash' && setActive(row)"
     @contextmenu="(e) => contextMenu(e, row)"
     @mouseenter="$emit('mouseenter', row)"
     @mouseleave="$emit('mouseleave')"
-    @dblclick="() => openEntity(route.params.team, row)"
+    @dblclick="
+      () => $route.name !== 'Trash' && openEntity(route.params.team, row)
+    "
   >
     <template #default="{ idx, column, item }">
       <ListRowItem
@@ -63,7 +68,6 @@ import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
 import Lock from "./EspressoIcons/Lock.vue"
 import { openEntity } from "@/utils/files"
 import { getLink } from "@/utils/getLink"
-import { ref } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 
@@ -75,7 +79,6 @@ defineProps({
   hovered: Function,
 })
 defineEmits(["mouseenter", "mouseleave"])
-const hoveredRow = ref(null)
 const route = useRoute()
 const store = useStore()
 </script>

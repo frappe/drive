@@ -4,7 +4,7 @@
   "creation": "2025-01-23 12:12:04.979723",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["title", "users", "storage", "quota"],
+  "field_order": ["title", "users", "storage", "quota", "single_user"],
   "fields": [
     {
       "fieldname": "title",
@@ -30,11 +30,17 @@
       "fieldname": "quota",
       "fieldtype": "Int",
       "label": "Quota"
+    },
+    {
+      "default": "0",
+      "fieldname": "single_user",
+      "fieldtype": "Check",
+      "label": "Single User"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-03-06 12:47:37.119613",
+  "modified": "2025-03-18 14:35:47.060636",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Team",

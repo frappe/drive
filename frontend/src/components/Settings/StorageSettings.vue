@@ -3,7 +3,7 @@
 
   <div class="flex items-center justify-between w-full mb-2">
     <span class="text-base font-medium text-gray-900"
-      >{{ showFileStorage ? "You have" : "The team has" }} used
+      >{{ showFileStorage ? "You have" : "Your team has" }} used
       {{ formatSize(usedSpace) ? formatSize(usedSpace) + " out" : "none" }} of
       {{ showFileStorage ? "your" : "" }} {{ base2BlockSize(spaceLimit) }} ({{
         formatPercent((usedSpace / spaceLimit) * 100)
@@ -45,7 +45,7 @@
     <Tooltip
       v-for="[file_kind, i] in storageBreakdown.data?.total"
       :key="file_kind"
-      :text="`${i.h_size} (${i.percentageFormat})`"
+      :text="`${i.kind} <br/>${i.h_size} (${i.percentageFormat})`"
     >
       <div
         class="h-7"
@@ -57,19 +57,6 @@
       ></div>
     </Tooltip>
   </div>
-  <div class="flex flex-wrap items-start justify-around gap-2 px-3 w-full">
-    <div
-      v-for="[file_kind, i] in storageBreakdown.data?.total"
-      :bind="file_kind"
-      class="flex py-1"
-    >
-      <div
-        class="w-4 h-4 rounded-sm"
-        :style="{ backgroundColor: i.color }"
-      ></div>
-      <span class="text-gray-800 text-sm ps-1">{{ file_kind }}</span>
-    </div>
-  </div>
   <div
     v-if="!usedSpace"
     class="w-full flex flex-col items-center justify-center my-10"
@@ -78,7 +65,7 @@
     <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
   </div>
   <div
-    class="mt-5 text-gray-800 text-base py-2"
+    class="mt-1 text-gray-800 text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
     Large Files:
@@ -158,6 +145,7 @@ const storageBreakdown = createResource({
     })
     Object.keys(res).forEach((kind) => {
       res[kind].color = COLOR_MAP[kind]
+      res[kind].kind = kind
       res[kind].percentageRaw = (100 * res[kind].file_size) / spaceLimit.value
       res[kind].percentageFormat = formatPercent(res[kind].percentageRaw)
       res[kind].h_size = formatSize(res[kind].file_size)

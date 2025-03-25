@@ -3,8 +3,51 @@
     class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-3"
   >
     <div class="flex w-full justify-start items-center flex-wrap">
-      <Breadcrumbs :items="$store.state.breadcrumbs" />
-
+      <div class="flex flex-col">
+        <Breadcrumbs :items="$store.state.breadcrumbs" :class="'h-[12px]'" />
+        <p v-if="selections.length" class="text-sm text-gray-800 px-0.5 pt-0.5">
+          {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
+          selected
+        </p>
+      </div>
+      <div class="flex gap-3 ml-4" v-if="selections.length">
+        <Button
+          v-for="(item, index) in actionItems
+            .filter((i) => i.important && (selections.length === 1 || i.multi))
+            .filter(
+              (i) =>
+                !i.isEnabled ||
+                selections.every((e) => i.isEnabled(e, selections.length !== 1))
+            )"
+          :variant="index < 2 ? 'solid' : 'outline'"
+          :key="index"
+          @click="() => item.onClick(selections)"
+        >
+          <div class="flex">
+            <FeatherIcon
+              v-if="typeof item.icon === 'string'"
+              :name="item.icon"
+              class="w-4 h-4"
+              :class="[
+                item.class,
+                index < 2 ? 'text-white-800' : 'text-gray-800',
+                item.danger ? 'text-red-500' : '',
+              ]"
+            />
+            <component
+              v-else
+              :is="item.icon"
+              class="h-4 w-4"
+              :class="[
+                item.class,
+                index < 2 ? 'text-white-800' : 'text-gray-800',
+                item.danger ? 'text-red-500' : '',
+              ]"
+            />
+            <div v-if="index < 2" class="ml-2 text-sm">{{ item.label }}</div>
+          </div>
+        </Button>
+      </div>
       <div
         v-if="$route.name === 'Shared'"
         class="ml-5 bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
@@ -39,7 +82,6 @@
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
             <component :is="item.icon"></component>
             <span class="text-sm ml-2">{{ item.label }}</span>
-
             <Button
               variant="minimal"
               @click="
@@ -155,11 +197,12 @@
             Sign In
           </Button>
         </div>
+
         <template v-for="button of possibleButtons" :key="button.route">
           <Button
             v-if="$route.name === button.route"
             class="line-clamp-1 truncate w-full"
-            :disabled="!button.entities.data.length"
+            :disabled="!button.entities.data?.length"
             variant="subtle"
             :theme="button.theme || 'gray'"
             @click="emitter.emit('showCTADelete')"
@@ -171,6 +214,7 @@
           </Button>
         </template>
         <Dropdown
+          v-if="['Folder', 'Home', 'Team'].includes($route.name)"
           :options="newEntityOptions"
           placement="left"
           class="basis-5/12 lg:basis-auto"
@@ -219,9 +263,16 @@ import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
 const props = defineProps({
+  selections: Set,
+  entities: Array,
+  actionItems: Array,
   columnHeaders: Array,
-  getEntitities: Object,
 })
+const selections = computed(() =>
+  Array.from(props.selections).map((n) =>
+    props.entities.find((e) => e.name === n)
+  )
+)
 const sortOrder = ref(store.state.sortOrder)
 watch(sortOrder, (val) => store.commit("setSortOrder", val))
 const activeFilters = ref(store.state.activeFilters)

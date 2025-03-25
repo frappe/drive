@@ -792,7 +792,6 @@ def search(query, team):
     Placeholder search implementation
     """
     text = frappe.db.escape(query + "*")
-    user = frappe.db.escape(frappe.session.user)
     team = frappe.db.escape(team)
     try:
         result = frappe.db.sql(
@@ -801,6 +800,7 @@ def search(query, team):
                 `tabDrive File`.title, 
                 `tabDrive File`.is_group,
                 `tabDrive File`.is_link,
+                `tabDrive File`.mime_type,
                 `tabDrive File`.document,
                 `tabDrive File`.color,
                 `tabUser`.name AS user_name,

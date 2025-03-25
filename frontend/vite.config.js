@@ -26,6 +26,15 @@ export default defineConfig({
       "tailwind.config.js": path.resolve(__dirname, "tailwind.config.js"),
     },
   },
+  build: {
+    sourcemap: true,
+    outDir: `../${path.basename(path.resolve(".."))}/public/frontend`,
+    emptyOutDir: true,
+    target: "esnext",
+    commonjsOptions: {
+      include: [/tailwind.config.js/, /node_modules/],
+    },
+  },
   server: {
     allowedHosts: ["drive.localhost"],
   },

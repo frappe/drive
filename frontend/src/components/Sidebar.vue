@@ -35,7 +35,7 @@
         icon="inbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
-        :to="'/' + team + '/notifications'"
+        :to="'/t/' + team + '/notifications'"
       >
         <template #right>
           <div
@@ -102,30 +102,28 @@ notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 const team = computed(() =>
-  route.params?.team?.length === 10
-    ? route.params.team
-    : localStorage.getItem("recentTeam")
+  route.params.team ? route.params.team : localStorage.getItem("recentTeam")
 )
 
 const sidebarItems = computed(() => [
   {
     label: "Home",
-    route: `/${team.value}/`,
+    route: `/t/${team.value}/`,
     icon: Home,
   },
   {
     label: "Team",
-    route: `/${team.value}/team`,
+    route: `/t/${team.value}/team`,
     icon: Team,
   },
   {
     label: "Recents",
-    route: `/${team.value}/recents`,
+    route: `/t/${team.value}/recents`,
     icon: Recent,
   },
   {
     label: "Favourites",
-    route: `/${team.value}/favourites`,
+    route: `/t/${team.value}/favourites`,
     icon: Star,
   },
   {
@@ -135,7 +133,7 @@ const sidebarItems = computed(() => [
   },
   {
     label: "Trash",
-    route: `/${team.value}/trash`,
+    route: `/t/${team.value}/trash`,
     icon: Trash,
   },
 ])

@@ -5,7 +5,7 @@ export function getLink(entity, copy = true) {
   const team = router.currentRoute.value.params.team
   let link = entity.is_link
     ? entity.path
-    : `${window.location.origin}/drive/${team}/${
+    : `${window.location.origin}/drive/t/${team}/${
         {
           true: "file",
           [new Boolean(entity.is_group)]: "folder",

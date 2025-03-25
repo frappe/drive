@@ -65,7 +65,7 @@
           label: 'Send Invitation',
           variant: 'solid',
           disabled: !emailTest().length && !invited.length,
-          loading: inviteUsers.loading,
+          loading: () => inviteUsers.loading,
           onClick: () => {
             extractEmails()
             inviteUsers.submit({
@@ -220,23 +220,23 @@ function extractEmails() {
 }
 
 const isAdmin = createResource({
-  url: "drive.utils.users.is_admin",
+  url: "drive.api.product.is_admin",
   params: { team },
   auto: true,
 })
 
 const inviteUsers = createResource({
-  url: "drive.utils.users.invite_users",
+  url: "drive.api.product.invite_users",
   onSuccess: () => {
     showInvite.value = false
     toast("Invite sent!")
   },
 })
 const removeUser = createResource({
-  url: "drive.utils.users.remove_user",
+  url: "drive.api.product.remove_user",
 })
 
 const updateUserRole = createResource({
-  url: "drive.utils.users.set_role",
+  url: "drive.api.product.set_role",
 })
 </script>
