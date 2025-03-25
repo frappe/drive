@@ -214,8 +214,8 @@ def auto_delete_expired_docshares():
 
 
 def user_has_permission(doc, ptype, user):
-    # if doc.owner == user or user == "Administrator":
-    #     return True
+    if doc.owner == user or user == "Administrator":
+        return True
     access = get_user_access(doc, user)
     if ptype in access:
         return access[ptype]
