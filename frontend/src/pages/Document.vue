@@ -90,8 +90,7 @@ setInterval(() => {
 }, 1500)
 
 const saveDocument = () => {
-  console.log("in")
-  if (isWritable.value) {
+  if (isWritable.value || entity.value.comment) {
     updateDocument.submit({
       entity_name: props.entityName,
       doc_name: entity.value.document,
@@ -103,12 +102,7 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
-  } else if (entity.value.comment) {
-    updateDocument.submit({
-      comments: comments.value,
-    })
   }
-  entity.value.comment
 }
 
 createResource({
