@@ -2,7 +2,7 @@ import os, re, json, mimetypes
 
 import frappe
 from pypika import Order
-from .permissions import get_teams
+from .permissions import get_teams, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -335,17 +335,11 @@ def create_link(team, title, link, personal=False, parent=None):
 
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
-    write_perms = frappe.has_permission(
-        doctype="Drive File",
-        doc=entity_name,
-        ptype="write",
-        user=frappe.session.user,
+    write_perms = user_has_permission(
+        frappe.get_doc("Drive File", entity_name), "write", frappe.session.user
     )
-    comment_perms = frappe.has_permission(
-        doctype="Drive File",
-        doc=entity_name,
-        ptype="comment",
-        user=frappe.session.user,
+    comment_perms = user_has_permission(
+        frappe.get_doc("Drive File", entity_name), "comment", frappe.session.user
     )
     # BROKEN - comment access is write access
     if not write_perms and not comment_perms:
