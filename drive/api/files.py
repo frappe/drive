@@ -335,12 +335,20 @@ def create_link(team, title, link, personal=False, parent=None):
 
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
-    if not frappe.has_permission(
+    write_perms = not frappe.has_permission(
         doctype="Drive File",
         doc=entity_name,
         ptype="write",
         user=frappe.session.user,
-    ):
+    )
+    comment_perms = not frappe.has_permission(
+        doctype="Drive File",
+        doc=entity_name,
+        ptype="comment",
+        user=frappe.session.user,
+    )
+    # BROKEN - comment access is write access
+    if not write_perms and not comment_perms:
         raise frappe.PermissionError("You do not have permission to view this file")
     if settings:
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))

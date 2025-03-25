@@ -109,6 +109,13 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
+    path: "/:team/",
+    redirect: (to) => ({
+      name: "Home",
+      team: to.params.team,
+    }),
+  },
+  {
     path: "/t/:team/",
     name: "Home",
     component: () => import("@/pages/Personal.vue"),
@@ -121,6 +128,14 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
   },
   {
+    path: "/:team/file/:entityName",
+    redirect: (to) => ({
+      name: "File",
+      team: to.params.team,
+      entityName: to.params.entityName,
+    }),
+  },
+  {
     path: "/t/:team/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
@@ -128,11 +143,27 @@ const routes = [
     props: true,
   },
   {
+    path: "/:team/folder/:entityName",
+    redirect: (to) => ({
+      name: "Folder",
+      team: to.params.team,
+      entityName: to.params.entityName,
+    }),
+  },
+  {
     path: "/t/:team/folder/:entityName",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { sidebar: true, isHybridRoute: true },
     props: true,
+  },
+  {
+    path: "/:team/document/:entityName",
+    redirect: (to) => ({
+      name: "Document",
+      team: to.params.team,
+      entityName: to.params.entityName,
+    }),
   },
   {
     path: "/t/:team/document/:entityName",
@@ -161,16 +192,16 @@ const routes = [
     beforeEnter: [setRootBreadCrumb, clearStore],
     meta: { allowGuest: true },
   },
-  {
-    path: "/:pathMatch(.*)*/",
-    name: "Error",
-    component: () => import("@/pages/Error.vue"),
-    beforeEnter: [redir404, clearStore],
-    meta: {
-      errorPage: true,
-    },
-    props: true,
-  },
+  // {
+  //   path: "/:pathMatch(.*)*/",
+  //   name: "Error",
+  //   component: () => import("@/pages/Error.vue"),
+  //   beforeEnter: [redir404, clearStore],
+  //   meta: {
+  //     errorPage: true,
+  //   },
+  //   props: true,
+  // },
 ]
 
 let router = createRouter({
