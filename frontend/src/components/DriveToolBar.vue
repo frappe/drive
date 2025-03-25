@@ -220,7 +220,9 @@
           class="basis-5/12 lg:basis-auto"
         >
           <Button variant="solid">
-            <FeatherIcon name="upload" class="w-4" />
+            <div class="flex">
+              <FeatherIcon name="plus" class="w-4 h-4" />
+            </div>
           </Button>
         </Dropdown>
       </div>
@@ -260,6 +262,7 @@ import {
   createDocument,
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
+import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 
 const store = useStore()
 const props = defineProps({

@@ -35,7 +35,7 @@ def get_notifications(only_unread):
     ]
     query = (
         frappe.qb.from_(Notification)
-        .inner_join(User)
+        .left_join(User)
         .on(Notification.from_user == User.name)
         .select(*fields)
         .orderby(Notification.creation, order=Order.desc)

@@ -143,7 +143,7 @@ const settingsItems = computed(() => {
 
 emitter.on("showSettings", (val) => {
   showSettings.value = true
-  suggestedTab.value = val
+  suggestedTab.value = val || 0
 })
 
 function logout() {

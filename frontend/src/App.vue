@@ -18,7 +18,10 @@
           v-if="isLoggedIn || $route.meta.isHybridRoute"
           class="flex flex-col h-full overflow-hidden sm:flex-row"
         >
-          <Sidebar v-if="isLoggedIn" class="hidden sm:block" />
+          <Sidebar
+            v-if="isLoggedIn && $route.name !== 'Teams'"
+            class="hidden sm:block"
+          />
           <div id="dropTarget" class="h-full w-full overflow-hidden">
             <Navbar v-if="$route.name == 'File' || $route.name == 'Document'" />
             <div class="flex w-full h-full overflow-hidden">

@@ -38,16 +38,9 @@ export default defineConfig({
   server: {
     allowedHosts: ["drive.localhost"],
   },
+
   optimizeDeps: {
     esbuildOptions: { target: "esnext" },
-    include: [
-      "frappe-ui",
-      "feather-icons",
-      "showdown",
-      "prosemirror",
-      "tiptap",
-      "engine.io-client",
-      "tailwind.config.js",
-    ],
+    include: ["feather-icons", "showdown", "tailwind.config.js"],
   },
 })

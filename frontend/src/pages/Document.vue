@@ -81,12 +81,18 @@ const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
 let intervalId = ref(null)
 
-setInterval(() => {
-  watchDebounced([rawContent, comments], saveDocument, {
-    debounce: timeout.value,
-    maxWait: 30000,
-    immediate: true,
-  })
+setTimeout(() => {
+  watchDebounced(
+    [rawContent, comments],
+    () => {
+      saveDocument()
+    },
+    {
+      debounce: timeout.value,
+      maxWait: 30000,
+      immediate: true,
+    }
+  )
 }, 1500)
 
 const saveDocument = () => {

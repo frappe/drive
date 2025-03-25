@@ -54,7 +54,7 @@ class AccountRequest(Document):
     def set_otp(self):
         self.otp = generate_otp()
         self.otp_generated_at = frappe.utils.now_datetime()
-        self.save(ignore_permissions=True)
+        # self.save(ignore_permissions=True)
 
     def send_otp(self):
         frappe.sendmail(

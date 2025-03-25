@@ -79,7 +79,8 @@ def get_user_access(entity, user=frappe.session.user):
             other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "team"}
         else:
             other_access = {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
-
+    else:
+        other_access = NO_ACCESS
     return {**other_access, **user_access}
 
 
@@ -213,8 +214,8 @@ def auto_delete_expired_docshares():
 
 
 def user_has_permission(doc, ptype, user):
-    if doc.owner == user or user == "Administrator":
-        return True
+    # if doc.owner == user or user == "Administrator":
+    #     return True
     access = get_user_access(doc, user)
     if ptype in access:
         return access[ptype]

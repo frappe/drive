@@ -13,7 +13,6 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   if (new_tab) {
     return window.open(getLink(entity, false), "_blank")
   }
-  console.log(entity)
   if (entity.is_group) {
     router.push({
       name: "Folder",

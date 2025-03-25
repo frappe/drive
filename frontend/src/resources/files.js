@@ -31,7 +31,6 @@ export const getHome = createResource({
   makeParams: (params) => {
     return { ...params, personal: 0 }
   },
-
   cache: "home-folder-contents",
 })
 

@@ -113,8 +113,8 @@ const selectedColumns = [
   {
     label: "Name",
     key: "title",
-    getLabel: ({ row: { title, is_group } }) =>
-      title.lastIndexOf(".") === -1 || is_group
+    getLabel: ({ row: { title, is_group, document } }) =>
+      title.lastIndexOf(".") === -1 || is_group || document
         ? title
         : title.slice(0, title.lastIndexOf(".")),
     prefix: ({ row }) =>

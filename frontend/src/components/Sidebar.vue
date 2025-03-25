@@ -39,11 +39,11 @@
       >
         <template #right>
           <div
-            v-if="isExpanded && notifCount.data?.message > 0"
+            v-if="isExpanded && notifCount.data > 0"
             class="flex items-center justify-start w-full duration-300 ease-in-out ml-2"
           >
             <span class="text-sm text-gray-500 ease-in ml-auto">
-              {{ notifCount.data.message }}
+              {{ notifCount.data }}
             </span>
           </div>
         </template>

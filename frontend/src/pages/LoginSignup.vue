@@ -36,7 +36,38 @@
                 }}
               </p>
             </div>
-            <form class="flex flex-col">
+            <template v-if="domainTeams.length">
+              <div class="flex flex-col ms-3 text-md gap-2">
+                <p>
+                  Welcome to Frappe Drive! We noticed that you are on a
+                  <strong>corporate domain</strong>.
+                </p>
+                <p>
+                  Do you want to create a personal account, or request to join
+                  the team (<strong>{{ domainTeams[0] }}</strong
+                  >) associated with your domain?
+                </p>
+                <div class="flex justify-between mt-3">
+                  <Button
+                    variant="subtle"
+                    class="w-100"
+                    @click="createPersonalTeam.submit()"
+                    >Create Personal</Button
+                  >
+                  <Button
+                    variant="solid"
+                    @click="
+                      requestInvite.submit({
+                        team: domainTeams[0],
+                      }),
+                        $router.go('/drive/teams')
+                    "
+                    >Join {{ domainTeams[0] }}</Button
+                  >
+                </div>
+              </div>
+            </template>
+            <form v-else class="flex flex-col">
               <FormControl
                 label="Email"
                 v-model="email"
@@ -148,7 +179,7 @@
                   variant="solid"
                   @click="sendOTP.submit({ email })"
                 >
-                  {{ isLogin ? "Login" : "Sign up" }}
+                  {{ isLogin ? "Login" : "Join" }}
                 </Button>
                 <div class="mt-6 border-t text-center">
                   <div class="-translate-y-1/2 transform">
@@ -176,7 +207,7 @@
               </template>
             </form>
 
-            <div class="mt-6 text-center">
+            <div class="mt-6 text-center" v-if="!domainTeams.length">
               <router-link
                 class="text-center text-base font-medium text-gray-900 hover:text-gray-700"
                 :to="{
@@ -215,9 +246,9 @@ const team_name = ref("")
 
 const terms_accepted = ref(false)
 
-const isGoogleOAuthEnabled = true
 const otpRequested = ref(false)
-const otpValidated = ref(true)
+const otpValidated = ref(false)
+const domainTeams = ref([])
 const otp = ref("")
 const otpResendCountdown = ref(0)
 const account_request = ref(params.get("r") || "")
@@ -252,6 +283,7 @@ const signup = createResource({
   onSuccess(data) {
     otpValidated.value = true
     if (data.location) window.location.replace(data.location)
+    if (data.message) domainTeams.value = data.message
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
@@ -295,5 +327,13 @@ const verifyOTP = createResource({
       window.location.replace(data.location)
     }
   },
+})
+
+const createPersonalTeam = createResource({
+  url: "drive.api.product.create_personal_team",
+})
+
+const requestInvite = createResource({
+  url: "drive.api.product.request_invite",
 })
 </script>

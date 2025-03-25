@@ -129,7 +129,18 @@ def get_home_folder(team):
         .run(as_dict=True)
     )
     if not ls:
-        frappe.throw("Team doesn't exist - please create in Desk.")
+        error_msg = "Team doesn't exist - please create in Desk."
+        team_names = frappe.get_all(
+            "Drive Team Member",
+            pluck="parent",
+            filters=[
+                ["parenttype", "=", "Drive Team"],
+                ["user", "=", frappe.session.user],
+            ],
+        )
+        if team_names:
+            error_msg += f"<br /><br />Or maybe you want <a class='text-black' href='/drive/t/{team_names[0]}'>{frappe.db.get_value('Drive Team', team_names[0], 'title')}</a>?"
+        frappe.throw(error_msg)
     return ls[0]
 
 

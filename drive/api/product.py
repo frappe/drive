@@ -8,6 +8,59 @@ from .google import google_oauth_flow
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
 
+@frappe.whitelist()
+def get_domain_teams(domain):
+    return frappe.db.get_all("Drive Team", {"team_domain": ["like", "%" + domain]}, pluck="name")
+
+
+@frappe.whitelist()
+def create_personal_team(user):
+    team = frappe.get_doc(
+        {
+            "doctype": "Drive Team",
+            "title": "Your Drive",
+        },
+    ).insert(ignore_permissions=True)
+    team.append("users", {"user": user.email, "is_admin": 1})
+    team.save()
+    team = team.name
+
+
+@frappe.whitelist()
+def request_invite(team, email=frappe.session.user):
+    invite = frappe.new_doc("Drive User Invitation")
+    invite.email = email
+    invite.team = team
+    invite.status = "Proposed"
+    invite.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+
+@frappe.whitelist()
+def get_invites(email):
+    invites = frappe.db.get_list(
+        "Drive User Invitation",
+        fields=["creation", "status", "team", "name"],
+        filters={"email": email, "status": ("in", ("Proposed", "Pending"))},
+    )
+    for i in invites:
+        i["team_name"] = frappe.db.get_value("Drive Team", i["team"], "title")
+    return invites
+
+
+@frappe.whitelist()
+def get_team_invites(team):
+    print(team)
+    invites = frappe.db.get_list(
+        "Drive User Invitation",
+        fields=["creation", "status", "email", "name"],
+        filters={"team": team, "status": ("in", ("Proposed", "Pending"))},
+    )
+    for i in invites:
+        i["user_name"] = frappe.db.get_value("User", i["email"], "full_name")
+    return invites
+
+
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None, referrer=None):
     account_request = frappe.get_doc("Account Request", account_request)
@@ -40,38 +93,22 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
         # Add to that team
         team = frappe.get_doc("Drive Team", invite.team)
         team.append("users", {"user": account_request.email})
-        team.save()
-        frappe.local.response["location"] = "/drive/" + team.name
+        team.save(ignore_permissions=True)
         team = invite.team
+
     account_request.save(ignore_permissions=True)
     frappe.local.login_manager.login_as(user.email)
 
     # Check invites for this user
     if not team:
         # Create team for this user
-        team = frappe.get_doc(
-            {
-                "doctype": "Drive Team",
-                "title": "Your Drive",
-            },
-        ).insert(ignore_permissions=True)
-        team.append("users", {"user": user.email, "is_admin": 1})
-        team.save()
-        team = team.name
+        domain = user.email.split("@")[-1]
+        if domain in CORPORATE_DOMAINS:
+            team = create_personal_team()
+        else:
+            return get_domain_teams(domain)
 
     return {"location": "/drive/t/" + team}
-
-
-# @frappe.whitelist(allow_guest=True)
-# def google_login(product=None):
-#     flow = google_oauth_flow()
-#     authorization_url, state = flow.authorization_url()
-#     minutes = 5
-#     payload = {"state": state}
-#     if product:
-#         payload["product"] = product
-#     frappe.cache().set_value(f"google_oauth_flow:{state}", payload, expires_in_sec=minutes * 60)
-#     return authorization_url
 
 
 @frappe.whitelist(allow_guest=True)
@@ -148,6 +185,8 @@ def verify_otp(account_request, otp):
     if req.signed_up:
         frappe.local.login_manager.login_as(req.email)
         return {"location": "/drive"}
+    req.signed_up = 1
+    req.save(ignore_permissions=True)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -155,13 +194,7 @@ def verify_otp(account_request, otp):
 def resend_otp(email):
     account_request = frappe.db.get_value("Account Request", {"email": email}, "name")
     if not account_request:
-        frappe.get_doc(
-            {
-                "doctype": "Account Request",
-                "email": email,
-                "send_email": True,
-            }
-        )
+        frappe.throw("OTP was never requested.")
 
     account_request = frappe.get_doc("Account Request", account_request)
 
@@ -245,10 +278,21 @@ def get_all_users(team):
 
 
 @frappe.whitelist(allow_guest=True)
-def accept_invitation(key):
+def accept_invite(key, redirect=True):
     try:
         invitation = frappe.get_doc("Drive User Invitation", key)
     except:
         frappe.throw("Invalid or expired key")
 
-    return invitation.accept()
+    return invitation.accept(redirect)
+
+
+@frappe.whitelist()
+def reject_invite(key):
+    try:
+        invitation = frappe.get_doc("Drive User Invitation", key)
+    except:
+        frappe.throw("Invalid or expired key")
+
+    invitation.status = "Expired"
+    invitation.save(ignore_permissions=True)
