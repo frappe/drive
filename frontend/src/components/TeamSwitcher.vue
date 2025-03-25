@@ -47,10 +47,7 @@
 import { Popover } from "frappe-ui"
 import { FeatherIcon } from "frappe-ui"
 import { getTeams } from "@/resources/files"
-import { computed, ref, watch } from "vue"
-
-const storage = ref(window.localStorage)
-watch(storage, console.log)
+import { computed } from "vue"
 
 getTeams.fetch()
 const teams = computed(() =>

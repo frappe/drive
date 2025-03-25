@@ -892,7 +892,7 @@ import { formatDate } from "../../../utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
 import Clock from "../../EspressoIcons/Clock.vue"
 import ActivityTree from "../../ActivityTree.vue"
-import { generalAccess, userList } from "../../../resources/permissions"
+import { generalAccess, userList } from "@/resources/permissions"
 
 export default {
   name: "DocMenuAndInfoBar",

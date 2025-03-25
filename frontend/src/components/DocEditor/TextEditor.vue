@@ -257,7 +257,7 @@ export default {
           "Link"
         )
       }
-      if (this.entity.owner == "You") {
+      if (this.entity.owner == "You" || this.entity.comment) {
         buttons.push("Separator", "NewAnnotation")
       }
       return buttons.map(createEditorButton)

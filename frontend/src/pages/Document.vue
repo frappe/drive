@@ -81,8 +81,8 @@ const comments = computed(() => store.state.allComments)
 const userId = computed(() => store.state.auth.user_id)
 let intervalId = ref(null)
 
-setTimeout(() => {
-  watchDebounced(rawContent, saveDocument, {
+setInterval(() => {
+  watchDebounced([rawContent, comments], saveDocument, {
     debounce: timeout.value,
     maxWait: 30000,
     immediate: true,
@@ -90,6 +90,7 @@ setTimeout(() => {
 }, 1500)
 
 const saveDocument = () => {
+  console.log("in")
   if (isWritable.value) {
     updateDocument.submit({
       entity_name: props.entityName,
@@ -102,7 +103,12 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
+  } else if (entity.value.comment) {
+    updateDocument.submit({
+      comments: comments.value,
+    })
   }
+  entity.value.comment
 }
 
 createResource({

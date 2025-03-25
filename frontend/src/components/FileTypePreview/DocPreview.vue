@@ -62,7 +62,6 @@ emitter.on("printFile", () => {
   const printFrame = document.createElement("iframe")
   document.body.appendChild(printFrame)
   const docxContainer = document.getElementById("DocxContainer")
-  console.log(docxContainer)
   const content = docxContainer ? docxContainer.innerHTML : ""
   printFrame.contentWindow.document.open()
   printFrame.contentWindow.document.write(`
