@@ -45,7 +45,6 @@ def if_folder_exists(team, folder_name, parent, personal):
 def create_document_entity(title, personal, team, content, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
-    new_title = get_new_title(title, parent)
 
     if not frappe.has_permission(
         doctype="Drive File",
@@ -58,7 +57,7 @@ def create_document_entity(title, personal, team, content, parent=None):
             frappe.PermissionError,
         )
     drive_doc = frappe.new_doc("Drive Document")
-    drive_doc.title = new_title
+    drive_doc.title = title
     drive_doc.content = content
     drive_doc.version = 2
     drive_doc.save()
@@ -66,7 +65,7 @@ def create_document_entity(title, personal, team, content, parent=None):
     entity = create_drive_file(
         team,
         personal,
-        new_title,
+        title,
         parent,
         0,
         "frappe_doc",
@@ -347,10 +346,15 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
     if settings:
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
     file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
+    update_modifed = comment_perms and not write_perms
     frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
     frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
-    frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
+    if (
+        frappe.db.get_value("Drive File", entity_name, "file_size") != int(file_size)
+        and write_perms
+    ):
+        frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
     if json.dumps(mentions):
         frappe.enqueue(
             notify_mentions,

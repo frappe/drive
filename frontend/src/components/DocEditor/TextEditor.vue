@@ -599,9 +599,6 @@ export default {
       })
     })
   },
-  updated() {
-    this.evalImplicitTitle()
-  },
   beforeUnmount() {
     this.emitter.off("printFile")
     this.emitter.off("forceHideBubbleMenu")
@@ -633,7 +630,7 @@ export default {
       this.activeAnchorAnnotations = temp
     },
     handleEnterKey() {
-      if (!this.implicitTitle.length) return
+      if (this.entity.title === "Untitled Document") this.evalImplicitTitle()
     },
     updateConnectedUsers(editor) {
       this.$store.commit(
@@ -912,7 +909,6 @@ export default {
       return uniqueMentions
     },
     evalImplicitTitle() {
-      if (this.editor.state.doc.firstChild.type.name !== "heading") return
       this.implicitTitle = this.editor.state.doc.firstChild.textContent
         .replaceAll("#", "")
         .replaceAll("@", "")

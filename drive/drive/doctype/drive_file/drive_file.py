@@ -266,7 +266,9 @@ class DriveFile(Document):
                 "is_group": self.is_group,
             }
         )
-        if entity_exists:
+
+        # Only exception
+        if entity_exists and new_title != "Untitled Document":
             suggested_name = get_new_title(new_title, self.parent_entity, folder=self.is_group)
             frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{suggested_name}' ",

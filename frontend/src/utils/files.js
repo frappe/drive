@@ -8,8 +8,10 @@ import { getTeams } from "../resources/files"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
   if (!team) team = entity.team
-  getRecents.setData((data) => [...data, entity])
-  mutate([entity], (e) => (e.accessed = true))
+  if (!entity.is_group) {
+    getRecents.setData((data) => [...data, entity])
+    mutate([entity], (e) => (e.accessed = true))
+  }
   if (new_tab) {
     return window.open(getLink(entity, false), "_blank")
   }

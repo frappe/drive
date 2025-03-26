@@ -146,10 +146,7 @@ createResource({
     lastSaved.value = Date.now()
     contentLoaded.value = true
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
-      const selection = window.getSelection()
-      selection.empty()
-      const h3 = document.querySelector("h3")
-      selection.setBaseAndExtent(h3, 0, h3, 1)
+      emitter.emit("rename")
     })
   },
   onError(error) {

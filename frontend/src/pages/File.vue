@@ -34,17 +34,6 @@
       :entity-name="props.entityName"
     />
   </div>
-  <RenameDialog
-    v-if="dialog === 'rn'"
-    v-model="dialog"
-    @success="
-      (data) => {
-        let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
-        l.label = data.title
-        dialog = null
-      }
-    "
-  />
 </template>
 
 <script setup>
@@ -59,7 +48,6 @@ import {
 } from "vue"
 import { Button } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
-import RenameDialog from "@/components/RenameDialog.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
@@ -144,10 +132,8 @@ let file = createResource({
   },
   onSuccess(data) {
     store.commit("setActiveEntity", data)
-    setBreadCrumbs(
-      data.breadcrumbs,
-      data.is_private,
-      () => (dialog.value = "rn")
+    setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
+      emitter.emit("rename")
     )
   },
   onError(error) {

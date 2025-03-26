@@ -28,7 +28,14 @@
     v-if="dialog === 'rn'"
     v-model="dialog"
     :entity="activeEntity"
-    @success="((data) => handleListMutate({ data }), resetDialog())"
+    @success="
+      (data) => {
+        let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
+        handleListMutate({ data })
+        l.label = data.title
+        resetDialog()
+      }
+    "
   />
   <GeneralDialog
     v-if="dialog === 'remove'"
@@ -85,8 +92,10 @@ import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 import emitter from "@/emitter"
 import { computed } from "vue"
+import { useStore } from "vuex"
 
 const dialog = defineModel()
+const store = useStore()
 
 const props = defineProps({
   getEntities: Object,
@@ -103,6 +112,7 @@ const resetDialog = () => (dialog.value = null)
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => (dialog.value = "f"))
+emitter.on("rename", () => (dialog.value = "rn"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 const mutate = (data) => {
