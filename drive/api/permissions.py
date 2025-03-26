@@ -90,6 +90,10 @@ def get_user_access(entity, user=frappe.session.user):
         if v:
             default_access[access] = 1
 
+    for access, v in public_access.items():
+        if v:
+            default_access[access] = 1
+
     return default_access
 
 
