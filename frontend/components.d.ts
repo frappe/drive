@@ -108,6 +108,7 @@ declare module 'vue' {
     LucideCheck: typeof import('~icons/lucide/check')['default']
     LucideCross: typeof import('~icons/lucide/cross')['default']
     LucideHome: typeof import('~icons/lucide/home')['default']
+    LucidePackageOpen: typeof import('~icons/lucide/package-open')['default']
     LucideSquareArrowOutUpRight: typeof import('~icons/lucide/square-arrow-out-up-right')['default']
     LucideTrash: typeof import('~icons/lucide/trash')['default']
     LucideX: typeof import('~icons/lucide/x')['default']

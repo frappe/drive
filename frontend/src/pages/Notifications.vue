@@ -74,7 +74,7 @@ const options = {
     params: { entityName: row.notif_doctype_name },
   }),
   onRowClick: (row) => {
-    emitter.emit("showSettings", 1)
+    if (row.type === "Team") emitter.emit("showSettings", 1)
     if (onlyUnread.value) {
       markAsRead.submit({ name: row.name })
       store.state.notifCount = store.state.notifCount - 1

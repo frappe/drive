@@ -14,7 +14,7 @@
           <div
             class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
-            <p class="font-bold text-lg mb-1">Teams</p>
+            <p class="font-bold text-lg mb-2">Teams</p>
             <p
               class="text-center text-sm"
               v-if="!getTeams.data || !Object.values(getTeams.data).length"
@@ -23,7 +23,7 @@
             </p>
             <ul v-else class="ms-1">
               <li
-                class="mb-2"
+                class="mb-3"
                 v-for="team in Object.values(getTeams?.data)"
                 :key="team.id"
               >
@@ -35,12 +35,12 @@
                   <router-link
                     class="my-auto"
                     :to="{ name: 'Team', params: { team: team.name } }"
-                    ><LucideSquareArrowOutUpRight class="w-4 h-4"
+                    ><LucideFolderOpenDot class="w-4 h-4"
                   /></router-link>
                 </div>
               </li>
             </ul>
-            <p class="font-bold mt-10 text-lg mb-1">Invites</p>
+            <p class="font-bold mt-6 text-lg mb-2">Invites</p>
             <p class="text-center text-sm" v-if="!getInvites?.data?.length">
               No invites found.
             </p>
@@ -101,6 +101,7 @@ import { Badge, Tooltip } from "frappe-ui"
 import { getInvites, rejectInvite, acceptInvite } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
+import { LucideFolderOpenDot } from "lucide-vue-next"
 
 const store = useStore()
 getTeams.fetch()

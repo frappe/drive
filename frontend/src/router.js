@@ -30,7 +30,7 @@ const routes = [
       if (!store.getters.isLoggedIn) return
       await getTeams.fetch()
       if (store.getters.isLoggedIn)
-        if ((getTeams.data.message || getTeams.data).length)
+        if (Object.keys(getTeams.data.message || getTeams.data).length)
           return "/t/" + Object.keys(getTeams.data.message || getTeams.data)[0]
         else return "/teams"
 

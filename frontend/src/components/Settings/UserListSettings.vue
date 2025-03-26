@@ -56,6 +56,12 @@
     <span class="text-gray-800 text-sm mt-2">No Users</span>
   </div>
   <h3 class="my-4 text-base font-medium">Invites</h3>
+  <div
+    class="text-center text-sm"
+    v-if="!invites?.data || !invites.data.length"
+  >
+    No invites found.
+  </div>
   <div v-for="(invite, index) in invites?.data" :key="invite.name">
     <div
       v-if="index > 0"
