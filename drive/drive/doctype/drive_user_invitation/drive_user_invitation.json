@@ -21,7 +21,7 @@
       "fieldname": "status",
       "fieldtype": "Select",
       "label": "Status",
-      "options": "Expired\nPending\nAccepted"
+      "options": "Expired\nPending\nAccepted\nProposed"
     },
     {
       "fieldname": "accepted_on",
@@ -31,7 +31,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-03-07 14:58:04.924375",
+  "modified": "2025-03-25 15:08:40.401406",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive User Invitation",
@@ -52,15 +52,13 @@
     },
     {
       "create": 1,
-      "delete": 1,
       "email": 1,
       "export": 1,
       "print": 1,
       "read": 1,
       "report": 1,
-      "role": "Drive Admin",
-      "share": 1,
-      "write": 1
+      "role": "All",
+      "share": 1
     }
   ],
   "sort_field": "creation",

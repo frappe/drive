@@ -3,6 +3,13 @@ import json
 from pypika import Order
 
 
+def get_link(entity):
+    type_ = {True: "file", bool(entity.is_group): "folder", bool(entity.document): "document"}
+    return (
+        entity.path if entity.is_link else f"/drive/{entity.team}/{type_.get(True)}/{entity.name}/"
+    )
+
+
 @frappe.whitelist()
 def get_notifications(only_unread):
     """
@@ -28,7 +35,7 @@ def get_notifications(only_unread):
     ]
     query = (
         frappe.qb.from_(Notification)
-        .inner_join(User)
+        .left_join(User)
         .on(Notification.from_user == User.name)
         .select(*fields)
         .orderby(Notification.creation, order=Order.desc)
@@ -99,6 +106,7 @@ def notify_share(entity_name, docperm_name):
 
     message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
     create_notification(docshare.owner, docshare.user, "Share", entity, message)
+    send_share_email(docshare.user, message, get_link(entity), entity.team, entity_type)
 
 
 def create_notification(from_user, to_user, type, entity, message=None):
@@ -132,3 +140,18 @@ def create_notification(from_user, to_user, type, entity, message=None):
         notif.insert()
     except frappe.exceptions.ValidationError as e:
         print(f"Error inserting document: {e}")
+
+
+def send_share_email(to, message, link, team, type_):
+    frappe.sendmail(
+        recipients=to,
+        subject=f"Frappe Drive - {type_.capitalize()} Shared",
+        template="drive_share",
+        args={
+            "message": message,
+            "type": type_,
+            "link": link,
+            "team_name": frappe.db.get_value("Drive Team", team, "title"),
+        },
+        now=True,
+    )

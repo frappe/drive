@@ -35,15 +35,15 @@
         icon="inbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
-        :to="'/' + team + '/notifications'"
+        :to="'/t/' + team + '/notifications'"
       >
         <template #right>
           <div
-            v-if="isExpanded && notifCount.data?.message > 0"
+            v-if="isExpanded && notifCount.data > 0"
             class="flex items-center justify-start w-full duration-300 ease-in-out ml-2"
           >
             <span class="text-sm text-gray-500 ease-in ml-auto">
-              {{ notifCount.data.message }}
+              {{ notifCount.data }}
             </span>
           </div>
         </template>
@@ -93,34 +93,37 @@ import { notifCount } from "@/resources/permissions"
 import { computed } from "vue"
 import { useStore } from "vuex"
 import Users from "./EspressoIcons/Users.vue"
-import { getTeams } from "@/resources/files"
+import { useRoute } from "vue-router"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
+const route = useRoute()
 notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
-const team = localStorage.getItem("recentTeam") || getTeams.data[0]
+const team = computed(() =>
+  route.params.team ? route.params.team : localStorage.getItem("recentTeam")
+)
 
-const sidebarItems = [
+const sidebarItems = computed(() => [
   {
     label: "Home",
-    route: `/${team}/`,
+    route: `/t/${team.value}/`,
     icon: Home,
   },
   {
     label: "Team",
-    route: `/${team}/team`,
+    route: `/t/${team.value}/team`,
     icon: Team,
   },
   {
     label: "Recents",
-    route: `/${team}/recents`,
+    route: `/t/${team.value}/recents`,
     icon: Recent,
   },
   {
     label: "Favourites",
-    route: `/${team}/favourites`,
+    route: `/t/${team.value}/favourites`,
     icon: Star,
   },
   {
@@ -130,10 +133,10 @@ const sidebarItems = [
   },
   {
     label: "Trash",
-    route: `/${team}/trash`,
+    route: `/t/${team.value}/trash`,
     icon: Trash,
   },
-]
+])
 
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)

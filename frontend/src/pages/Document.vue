@@ -71,7 +71,7 @@ const rawContent = ref(null)
 const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
-const mentionedUsers = ref()
+const mentionedUsers = ref([])
 const showShareDialog = ref(false)
 const timeout = ref(1000 + Math.floor(Math.random() * 1000))
 const saveCount = ref(0)
@@ -82,15 +82,21 @@ const userId = computed(() => store.state.auth.user_id)
 let intervalId = ref(null)
 
 setTimeout(() => {
-  watchDebounced(rawContent, saveDocument, {
-    debounce: timeout.value,
-    maxWait: 30000,
-    immediate: true,
-  })
+  watchDebounced(
+    [rawContent, comments],
+    () => {
+      saveDocument()
+    },
+    {
+      debounce: timeout.value,
+      maxWait: 30000,
+      immediate: true,
+    }
+  )
 }, 1500)
 
 const saveDocument = () => {
-  if (isWritable.value) {
+  if (isWritable.value || entity.value.comment) {
     updateDocument.submit({
       entity_name: props.entityName,
       doc_name: entity.value.document,
@@ -102,7 +108,6 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
-    emitter.emit("docSaved")
   }
 }
 
@@ -141,10 +146,7 @@ createResource({
     lastSaved.value = Date.now()
     contentLoaded.value = true
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
-      const selection = window.getSelection()
-      selection.empty()
-      const h3 = document.querySelector("h3")
-      selection.setBaseAndExtent(h3, 0, h3, 1)
+      emitter.emit("rename")
     })
   },
   onError(error) {

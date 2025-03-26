@@ -67,7 +67,8 @@
     {
       "fieldname": "file_size",
       "fieldtype": "Int",
-      "label": "File Size"
+      "label": "File Size",
+      "length": 12
     },
     {
       "fieldname": "tags",
@@ -106,7 +107,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-03-11 10:37:37.468587",
+  "modified": "2025-03-20 15:36:58.945585",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",

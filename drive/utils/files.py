@@ -129,7 +129,18 @@ def get_home_folder(team):
         .run(as_dict=True)
     )
     if not ls:
-        frappe.throw("Team doesn't exist - please create in Desk.")
+        error_msg = "Team doesn't exist - please create in Desk."
+        team_names = frappe.get_all(
+            "Drive Team Member",
+            pluck="parent",
+            filters=[
+                ["parenttype", "=", "Drive Team"],
+                ["user", "=", frappe.session.user],
+            ],
+        )
+        if team_names:
+            error_msg += f"<br /><br />Or maybe you want <a class='text-black' href='/drive/t/{team_names[0]}'>{frappe.db.get_value('Drive Team', team_names[0], 'title')}</a>?"
+        frappe.throw(error_msg)
     return ls[0]
 
 
@@ -270,9 +281,11 @@ def generate_upward_path(entity_name):
                 SELECT
                     `tabDrive File`.title,
                     `tabDrive File`.name,
+                    `tabDrive File`.team,
                     `tabDrive File`.parent_entity,
                     `tabDrive File`.is_private,
-                    `tabDrive File`.owner
+                    `tabDrive File`.owner,
+                    0 AS level
                 FROM
                     `tabDrive File`
                 WHERE
@@ -281,9 +294,11 @@ def generate_upward_path(entity_name):
                 SELECT
                     t.title,
                     t.name,
+                    t.team,
                     t.parent_entity,
                     t.is_private,
-                    t.owner
+                    t.owner,
+                    gp.level + 1
                 FROM
                     generated_path as gp
                     JOIN `tabDrive File` as t ON t.name = gp.parent_entity
@@ -293,7 +308,7 @@ def generate_upward_path(entity_name):
             gp.name,
             gp.parent_entity,
             gp.is_private,
-            gp.owner,
+            gp.team,
             p.read,
             p.write,
             p.comment,
@@ -301,7 +316,8 @@ def generate_upward_path(entity_name):
         FROM
             generated_path  as gp
         LEFT JOIN `tabDrive Permission` as p
-        ON gp.name = p.entity AND p.user = {user};
+        ON gp.name = p.entity AND p.user = {user}
+        ORDER BY gp.level DESC;
     """,
         as_dict=1,
     )
@@ -312,15 +328,28 @@ def get_valid_breadcrumbs(entity, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
+    # BROKEN: doesn't bubble access
     file_path = generate_upward_path(entity.name)
     accessible_path = []
+    # BROKEN: temporarily disabled
     # If team/admin of this entity, then entire path
-    if user_access.get("type") in ["admin", "team"]:
-        return file_path[::-1]
+    # if user_access.get("type") in ["admin", "team"]:
+    return file_path[1:]
 
     # Otherwise, slice where they lose read access.
-    for k in file_path:
+    for k in file_path[::-1]:
         if not k["read"]:
             break
         accessible_path.append(k)
     return accessible_path[::-1]
+
+
+def update_file_size(entity, delta):
+    doc = frappe.get_doc("Drive File", entity)
+    while doc.parent_entity:
+        doc.file_size += delta
+        doc.save(ignore_permissions=True)
+        doc = frappe.get_doc("Drive File", doc.parent_entity)
+    # Update root
+    doc.file_size += delta
+    doc.save(ignore_permissions=True)

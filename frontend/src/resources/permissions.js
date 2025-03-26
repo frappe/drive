@@ -1,5 +1,5 @@
 import { createResource } from "frappe-ui"
-import router from "@/router.js"
+import { toast } from "@/utils/toasts"
 
 export const getUsersWithAccess = createResource({
   url: "drive.api.permissions.get_shared_with_list",
@@ -28,7 +28,7 @@ export const userList = createResource({
 })
 
 export const allUsers = createResource({
-  url: "drive.utils.users.get_all_users",
+  url: "drive.api.product.get_all_users",
   method: "GET",
   transform: (data) => {
     data.map((item) => {
@@ -36,4 +36,18 @@ export const allUsers = createResource({
       item.label = item.full_name.trimEnd()
     })
   },
+})
+
+export const getInvites = createResource({
+  url: "drive.api.product.get_invites",
+})
+
+export const acceptInvite = createResource({
+  url: "drive.api.product.accept_invite",
+  onSuccess: (data) => window.location.replace(data),
+})
+
+export const rejectInvite = createResource({
+  url: "drive.api.product.reject_invite",
+  onSuccess: () => toast("Removed invite"),
 })

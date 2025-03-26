@@ -7,7 +7,7 @@ import { prettyData } from "@/utils/files"
 import { set } from "idb-keyval"
 
 // GETTERS
-const COMMON_OPTIONS = {
+export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
   onError(error) {
@@ -28,6 +28,9 @@ const COMMON_OPTIONS = {
 export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
+  makeParams: (params) => {
+    return { ...params, personal: 0 }
+  },
   cache: "home-folder-contents",
 })
 
@@ -93,7 +96,7 @@ export const getTrash = createResource({
   url: "drive.api.list.files",
   cache: "trash-folder-contents",
   makeParams: (params) => {
-    return { ...params, is_active: 0 }
+    return { ...params, is_active: 0, only_parent: 0 }
   },
 })
 
@@ -102,6 +105,7 @@ const LISTS = [getPersonal, getHome, getRecents, getShared, getFavourites]
 export const mutate = (entities, func) => {
   LISTS.forEach((l) =>
     l.setData((d) => {
+      if (!d) return
       entities.forEach(({ name, ...params }) => {
         let el = d.find((k) => k.name === name)
         if (el) {
@@ -231,7 +235,6 @@ export const translate = createResource({
   method: "GET",
   url: "/api/method/drive.api.files.get_translate",
   cache: "translate",
-  auto: true,
 })
 
 // Synced cache - ensure all setters are reflected in the app

@@ -34,27 +34,45 @@ def get_user_access(entity, user=frappe.session.user):
     """
     if isinstance(entity, str):
         entity = frappe.get_doc("Drive File", entity)
+
+    if user == entity.owner:
+        return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
+
     fields = ["read", "comment", "write", "share", "name as permission_name", "valid_until"]
-    NO_ACCESS = {
+    default_access = {
         "read": 0,
         "comment": 0,
         "share": 0,
         "write": 0,
     }
 
-    # If unauthorized
-    if not user or user == "Guest":
-        public_access = frappe.db.get_value(
+    # By default, the public has no access
+    # Broken - right now, this is treated as a team in the frontend, but is in reality PUBLIC.
+    public_access = (
+        frappe.db.get_value(
             "Drive Permission",
             {"entity": entity.name, "user": ""},
             fields,
             as_dict=1,
         )
-        if public_access:
-            return public_access
-        return NO_ACCESS
+        or default_access
+    )
+    if not user or user == "Guest":
+        return public_access
 
-    # If logged in, first get Permission
+    # Get general permission
+    teams = get_teams(user)
+    if entity.team in teams:
+        # Everyone can upload to folders
+        default_access = {
+            "read": 1,
+            "comment": 1,
+            "share": 1,
+            "write": 1 if entity.is_group else 0,
+            "type": "team",
+        }
+
+    # Get specific permission
     user_access = (
         frappe.db.get_value(
             "Drive Permission",
@@ -68,19 +86,15 @@ def get_user_access(entity, user=frappe.session.user):
         or {}
     )
 
-    # Otherwise, check team/admin/owner
-    teams = get_teams(user)
-    other_access = {}
-    if user == entity.owner:
-        other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
-    elif entity.team in teams:
-        # Allow write access for uploading to home folder
-        if not entity.parent_entity:
-            other_access = {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "team"}
-        else:
-            other_access = {"read": 1, "comment": 1, "share": 1, "write": 0, "type": "team"}
+    for access, v in user_access.items():
+        if v:
+            default_access[access] = 1
 
-    return {**other_access, **user_access}
+    for access, v in public_access.items():
+        if v:
+            default_access[access] = 1
+
+    return default_access
 
 
 @frappe.whitelist()

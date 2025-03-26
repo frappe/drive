@@ -7,7 +7,11 @@
       { 'opacity-50 cursor-not-allowed': props.disabled },
     ]"
   >
-    <Globe
+    <!-- <Globe
+      v-if="accessType === 'public'"
+      :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
+    /> -->
+    <Team
       v-if="accessType === 'public'"
       :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />
@@ -21,6 +25,7 @@
 <script setup>
 import Lock from "@/components/EspressoIcons/Lock.vue"
 import Globe from "./EspressoIcons/Globe.vue"
+import Team from "./EspressoIcons/Organization.vue"
 import { computed } from "vue"
 
 const props = defineProps({
@@ -42,7 +47,7 @@ const colorClasses = computed(() => {
   if (props.disabled) {
     return "bg-gray-300 text-gray-500"
   } else if (props.accessType === "public") {
-    return "bg-red-100 text-red-500"
+    return "bg-blue-100 text-blue-500"
   }
   return "text-gray-700 bg-gray-300"
 })

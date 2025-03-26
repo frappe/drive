@@ -1,35 +1,31 @@
 <template>
-  <!-- FIX: ugly as shit -->
-  <div
-    class="relative h-full p-5 flex flex-col lg:flex-row justify-center items-center text-center bg-neutral-50 rounded-lg"
-  >
-    <div class="w-8 h-8 p-1.5 m-4 rounded-full bg-red-100">
-      <FeatherIcon name="x" class="text-red-500" />
+  <div class="flex flex-col items-center h-screen p-6 text-center pt-20">
+    <div
+      class="bg-red-100 text-red-600 p-4 rounded-full flex items-center justify-center w-16 h-16"
+    >
+      <LucideAxe />
     </div>
-    <p class="text-2xl font-semibold">
-      {{ error.messages?.join?.("\n") || error }}
-    </p>
-    <Button
-      class="absolute left-0 top-0 m-4 focus:ring-0 focus:ring-offset-0 bg-gray-200 hover:bg-gray-300"
-      icon="chevron-left"
-      @click="$router.go(-1)"
-    />
+    <h1 class="text-3xl font-bold text-gray-800 mt-4">Something went wrong</h1>
+    <p
+      class="text-lg text-gray-600 mt-2"
+      v-html="error.messages?.join?.('\n') || error"
+    ></p>
+    <div class="w-50 flex gap-15 my-10">
+      <Button @click="$router.go(-1)" variant="subtle" size="lg"
+        ><div class="flex gap-2">
+          <LucideArrowBigLeft class="w-4 h-4" />Go Back
+        </div>
+      </Button>
+      <Button @click="$router.go(-1)" variant="solid" size="lg"
+        ><div class="flex gap-2">
+          <LucideHome class="w-4 h-4" />Go Home
+        </div></Button
+      >
+    </div>
   </div>
 </template>
 
-<script>
-import { FeatherIcon, Button } from "frappe-ui"
-export default {
-  name: "FolderContentsError",
-  components: {
-    FeatherIcon,
-    Button,
-  },
-  props: {
-    error: {
-      type: Object,
-      required: true,
-    },
-  },
-}
+<script setup>
+import { Button } from "frappe-ui"
+defineProps({ error: Object })
 </script>

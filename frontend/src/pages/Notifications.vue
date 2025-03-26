@@ -63,7 +63,8 @@ import { ref, h, watch } from "vue"
 import { formatTimeAgo } from "@vueuse/core"
 import { createResource, Avatar, ListView, FeatherIcon } from "frappe-ui"
 import { useStore } from "vuex"
-import { formatDate } from "../utils/format"
+import { formatDate } from "@/utils/format"
+import emitter from "@/emitter"
 
 const store = useStore()
 const onlyUnread = ref(true)
@@ -73,6 +74,7 @@ const options = {
     params: { entityName: row.notif_doctype_name },
   }),
   onRowClick: (row) => {
+    if (row.type === "Team") emitter.emit("showSettings", 1)
     if (onlyUnread.value) {
       markAsRead.submit({ name: row.name })
       store.state.notifCount = store.state.notifCount - 1
@@ -96,12 +98,13 @@ const columns = [
     width: 4,
     getLabel: ({ row }) => row.message,
     prefix: ({ row }) => {
-      return h(Avatar, {
-        shape: "circle",
-        label: row.from_user,
-        image: row.user_image,
-        size: "sm",
-      })
+      if (row.from_user)
+        return h(Avatar, {
+          shape: "circle",
+          label: row.from_user,
+          image: row.user_image,
+          size: "sm",
+        })
     },
   },
   {

@@ -2,7 +2,7 @@ import os, re, json, mimetypes
 
 import frappe
 from pypika import Order
-from .permissions import get_teams
+from .permissions import get_teams, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -12,6 +12,7 @@ from drive.utils.files import (
     get_user_directory,
     get_new_title,
     create_thumbnail,
+    update_file_size,
 )
 from drive.locks.distributed_lock import DistributedLock
 from datetime import date, timedelta
@@ -44,7 +45,6 @@ def if_folder_exists(team, folder_name, parent, personal):
 def create_document_entity(title, personal, team, content, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
-    new_title = get_new_title(title, parent)
 
     if not frappe.has_permission(
         doctype="Drive File",
@@ -57,7 +57,7 @@ def create_document_entity(title, personal, team, content, parent=None):
             frappe.PermissionError,
         )
     drive_doc = frappe.new_doc("Drive Document")
-    drive_doc.title = new_title
+    drive_doc.title = title
     drive_doc.content = content
     drive_doc.version = 2
     drive_doc.save()
@@ -65,7 +65,7 @@ def create_document_entity(title, personal, team, content, parent=None):
     entity = create_drive_file(
         team,
         personal,
-        new_title,
+        title,
         parent,
         0,
         "frappe_doc",
@@ -162,6 +162,8 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
         )
         os.rename(temp_path, Path(site_folder) / drive_file.path)
 
+        # Update folder size
+        update_file_size(parent, file_size)
         if mime_type.startswith(("image", "video")):
             frappe.enqueue(
                 create_thumbnail,
@@ -332,20 +334,27 @@ def create_link(team, title, link, personal=False, parent=None):
 
 @frappe.whitelist()
 def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
-    if not frappe.has_permission(
-        doctype="Drive File",
-        doc=entity_name,
-        ptype="write",
-        user=frappe.session.user,
-    ):
+    write_perms = user_has_permission(
+        frappe.get_doc("Drive File", entity_name), "write", frappe.session.user
+    )
+    comment_perms = user_has_permission(
+        frappe.get_doc("Drive File", entity_name), "comment", frappe.session.user
+    )
+    # BROKEN - comment access is write access
+    if not write_perms and not comment_perms:
         raise frappe.PermissionError("You do not have permission to view this file")
     if settings:
         frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
     file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
+    update_modifed = comment_perms and not write_perms
     frappe.db.set_value("Drive Document", doc_name, "content", content)
     frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
     frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
-    frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
+    if (
+        frappe.db.get_value("Drive File", entity_name, "file_size") != int(file_size)
+        and write_perms
+    ):
+        frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
     if json.dumps(mentions):
         frappe.enqueue(
             notify_mentions,
@@ -649,12 +658,23 @@ def remove_or_restore(entity_names, team):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
 
     def depth_zero_toggle_is_active(doc):
+        folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
+
         if doc.is_active:
-            doc.is_active = 0
+            flag = 0
         else:
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
-            doc.is_active = 1
+            flag = 1
+
+        doc.is_active = flag
+        frappe.db.set_value(
+            "Drive File",
+            doc.parent_entity,
+            "file_size",
+            folder_size + doc.file_size * (1 if flag else -1),
+        )
+
         doc.save()
 
     for entity in entity_names:
@@ -778,7 +798,6 @@ def search(query, team):
     Placeholder search implementation
     """
     text = frappe.db.escape(query + "*")
-    user = frappe.db.escape(frappe.session.user)
     team = frappe.db.escape(team)
     try:
         result = frappe.db.sql(
@@ -787,6 +806,7 @@ def search(query, team):
                 `tabDrive File`.title, 
                 `tabDrive File`.is_group,
                 `tabDrive File`.is_link,
+                `tabDrive File`.mime_type,
                 `tabDrive File`.document,
                 `tabDrive File`.color,
                 `tabUser`.name AS user_name,
@@ -907,7 +927,7 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
         last_modified,
         lambda n: Path(home_directory["name"]) / "embeds" / f"{n}{save_path.suffix}",
     )
-    os.rename(save_path, frappe.get_site_path("private/files") / drive_file.path)
+    os.rename(save_path, Path(frappe.get_site_path("private/files")) / drive_file.path)
 
     return drive_file.name + save_path.suffix
 

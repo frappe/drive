@@ -27,7 +27,7 @@ def execute():
     team.insert()
 
     home_folder = frappe.db.get_list("Drive File", {"team": team.name})[0].name
-    entities = frappe.db.get_all("Drive Entity", fields=["*"])
+    entities = frappe.db.sql("select * from `tabDrive Entity`", as_dict=True)
     homes = []
     translate = {}
 
@@ -42,16 +42,24 @@ def execute():
             )
             if k["path"]:
                 path_els = k["path"].split("/")
-                doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
+                if "files" in path_els:
+                    doc.path = (
+                        home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
+                    )
+                else:
+                    doc.path = (
+                        home_folder + "/" + "/".join(path_els[path_els.index("private") + 2 :])
+                    )
                 p = Path(k["path"])
+                old_path = frappe.get_site_path("/".join(str(p).split("/")[1:]))
                 try:
                     shutil.copy(
-                        str(p), str(Path(frappe.get_site_path("private/files")) / doc.path)
+                        old_path, str(Path(frappe.get_site_path("private/files")) / doc.path)
                     )
                 except:
                     print(
                         "Moving failed for",
-                        str(p),
+                        old_path,
                         "->",
                         Path(frappe.get_site_path("private/files")) / (doc.path),
                     )
@@ -89,7 +97,7 @@ def execute():
                 update_modified=False,
             )
 
-    shares = frappe.get_list("Drive DocShare", fields=["*"])
+    shares = frappe.db.sql("select * from `tabDrive DocShare`", as_dict=True)
     for s in shares:
         entity = translate.get(s["share_name"])
         if not entity:

@@ -52,7 +52,6 @@
         </div>
 
         <div v-else-if="!getUsersWithAccess.loading">
-          <!-- General Access -->
           <div class="overflow-y-auto max-h-96 px-4 sm:px-6">
             <div class="mb-3 font-medium text-base">Share:</div>
             <div class="flex mt-3">
@@ -170,7 +169,8 @@
                 v-model="generalAccess.access"
                 :options="[
                   { label: 'Restricted', value: 'restricted' },
-                  { label: 'Public', value: 'public' },
+                  // BROKEN: this is actually public underneath.
+                  { label: 'Team', value: 'public' },
                 ]"
                 :hideSearch="true"
                 @update:model-value="
@@ -307,7 +307,7 @@ const accessMessage = computed(() => {
       ? modifiers[0]
       : modifiers.slice(0, -1).join(", ") +
         ` and ${modifiers[modifiers.length - 1]}`) + " this file."
-  return "Anyone on this planet can " + modifier
+  return "Anyone on this team can " + modifier
 })
 function addShare() {
   let r = {

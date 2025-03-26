@@ -1,22 +1,20 @@
 import { toast } from "@/utils/toasts.js"
 import router from "../router.js"
 
-export async function getLink(entity) {
+export function getLink(entity, copy = true) {
   const team = router.currentRoute.value.params.team
-  console.log(entity.is_group)
   let link = entity.is_link
     ? entity.path
-    : `${window.location.origin}/drive/${team}/${
+    : `${window.location.origin}/drive/t/${team}/${
         {
           true: "file",
           [new Boolean(entity.is_group)]: "folder",
           [new Boolean(entity.document)]: "document",
         }[true]
       }/${entity.name}`
-
+  if (!copy) return link
   try {
-    await copyToClipboard(link)
-    toast("Copied link")
+    copyToClipboard(link).then(() => toast("Copied link"))
   } catch (err) {
     if (err.name === "NotAllowedError") {
       toast({

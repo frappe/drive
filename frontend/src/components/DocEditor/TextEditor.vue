@@ -257,7 +257,7 @@ export default {
           "Link"
         )
       }
-      if (this.entity.owner == "You") {
+      if (this.entity.owner == "You" || this.entity.comment) {
         buttons.push("Separator", "NewAnnotation")
       }
       return buttons.map(createEditorButton)
@@ -336,9 +336,6 @@ export default {
     },
   },
   mounted() {
-    if (window.matchMedia("(max-width: 1500px)").matches) {
-      this.$store.commit("setIsSidebarExpanded", false)
-    }
     this.emitter.on("printFile", () => {
       if (this.editor) {
         this.printEditorContent()
@@ -409,7 +406,6 @@ export default {
           componentContext.editor.getHTML()
         )
           return
-        componentContext.emitter.emit("docSaving")
         componentContext.$emit(
           "update:rawContent",
           componentContext.editor.getHTML()
@@ -603,9 +599,6 @@ export default {
       })
     })
   },
-  updated() {
-    this.evalImplicitTitle()
-  },
   beforeUnmount() {
     this.emitter.off("printFile")
     this.emitter.off("forceHideBubbleMenu")
@@ -637,7 +630,7 @@ export default {
       this.activeAnchorAnnotations = temp
     },
     handleEnterKey() {
-      if (!this.implicitTitle.length) return
+      if (this.entity.title === "Untitled Document") this.evalImplicitTitle()
     },
     updateConnectedUsers(editor) {
       this.$store.commit(
