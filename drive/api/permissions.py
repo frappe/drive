@@ -43,15 +43,17 @@ def get_user_access(entity, user=frappe.session.user):
     }
 
     # If unauthorized
+
+    public_access = frappe.db.get_value(
+        "Drive Permission",
+        {"entity": entity.name, "user": ""},
+        fields,
+        as_dict=1,
+    )
+    if public_access:
+        return public_access
+
     if not user or user == "Guest":
-        public_access = frappe.db.get_value(
-            "Drive Permission",
-            {"entity": entity.name, "user": ""},
-            fields,
-            as_dict=1,
-        )
-        if public_access:
-            return public_access
         return NO_ACCESS
 
     # If logged in, first get Permission
