@@ -331,9 +331,10 @@ def get_valid_breadcrumbs(entity, user_access):
     # BROKEN: doesn't bubble access
     file_path = generate_upward_path(entity.name)
     accessible_path = []
+    # BROKEN: temporarily disabled
     # If team/admin of this entity, then entire path
-    if user_access.get("type") in ["admin", "team"]:
-        return file_path[1:]
+    # if user_access.get("type") in ["admin", "team"]:
+    return file_path[1:]
 
     # Otherwise, slice where they lose read access.
     for k in file_path[::-1]:
