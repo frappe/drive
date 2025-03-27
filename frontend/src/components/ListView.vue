@@ -9,6 +9,7 @@
       showTooltip: true,
       resizeColumn: true,
       selectionWord: (v) => (v === 1 ? 'item' : 'items'),
+      getRowRoute: (getLinkStem) => '',
     }"
   >
     <ListHeader />
@@ -80,7 +81,7 @@ import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
-import { openEntity } from "@/utils/files"
+import { getLinkStem } from "@/utils/getLink"
 
 const store = useStore()
 const route = useRoute()
@@ -156,7 +157,7 @@ const selectedColumns = [
   {
     label: "Size",
     key: "",
-    getLabel: ({ row }) => row.file_size_pretty,
+    getLabel: ({ row }) => row.file_size_pretty, // || "<em>empty</em>",
   },
   { label: "", key: "options", align: "right", width: "10px" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))

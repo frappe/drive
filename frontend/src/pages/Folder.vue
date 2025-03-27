@@ -67,6 +67,7 @@ let currentFolder = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
+    document.title = "Folder - " + data.title
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
     setBreadCrumbs(data.breadcrumbs, data.is_private, false)

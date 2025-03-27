@@ -119,6 +119,7 @@ createResource({
     entity_name: props.entityName,
   },
   onSuccess(data) {
+    document.title = data.title
     data.size_in_bytes = data.file_size
     data.file_size = formatSize(data.file_size)
     data.modified = formatDate(data.modified)
@@ -146,7 +147,7 @@ createResource({
     lastSaved.value = Date.now()
     contentLoaded.value = true
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
-      emitter.emit("rename")
+      data.write && emitter.emit("rename")
     })
   },
   onError(error) {
@@ -177,6 +178,7 @@ const updateDocument = createResource({
 
 onMounted(() => {
   allUsers.fetch({ team: route.params?.team })
+  console.log(props)
   emitter.on("showShareDialog", () => {
     showShareDialog.value = true
   })

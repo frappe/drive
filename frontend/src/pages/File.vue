@@ -131,6 +131,7 @@ let file = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
+    document.title = data.title
     store.commit("setActiveEntity", data)
     setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
       emitter.emit("rename")

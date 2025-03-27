@@ -71,7 +71,8 @@ export const setBreadCrumbs = (
   if (Object.keys(getTeams.data).includes(breadcrumbs[0].team)) {
     res = [
       {
-        label: is_private ? "Home" : "Team",
+        label: is_private ? "Home" : getTeams.data[breadcrumbs[0].team].title,
+        name: is_private ? "Home" : "Team",
         route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]

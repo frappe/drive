@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-3"
+    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-[10px]"
   >
     <div class="flex w-full justify-start items-center flex-wrap">
       <div class="flex flex-col">
@@ -152,15 +152,11 @@
           </div>
         </Dropdown>
         <Dropdown :options="filterItems" placement="right">
-          <Button
-            >Filter
-            <template #prefix>
+          <Tooltip text="Filter">
+            <Button>
               <Filter />
-            </template>
-            <template #suffix>
-              <ChevronDown />
-            </template>
-          </Button>
+            </Button>
+          </Tooltip>
         </Dropdown>
         <div
           v-if="false"
@@ -219,11 +215,13 @@
           placement="left"
           class="basis-5/12 lg:basis-auto"
         >
-          <Button variant="solid">
-            <div class="flex">
-              <FeatherIcon name="plus" class="w-4 h-4" />
-            </div>
-          </Button>
+          <Tooltip text="Add or upload">
+            <Button variant="solid">
+              <div class="flex">
+                <FeatherIcon name="plus" class="w-4 h-4" />
+              </div>
+            </Button>
+          </Tooltip>
         </Dropdown>
       </div>
     </div>

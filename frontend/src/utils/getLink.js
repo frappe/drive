@@ -1,17 +1,22 @@
 import { toast } from "@/utils/toasts.js"
 import router from "../router.js"
 
+export function getLinkStem(entity) {
+  return `${
+    {
+      true: "file",
+      [new Boolean(entity.is_group)]: "folder",
+      [new Boolean(entity.document)]: "document",
+    }[true]
+  }/${entity.name}`
+}
+
 export function getLink(entity, copy = true) {
   const team = router.currentRoute.value.params.team
   let link = entity.is_link
     ? entity.path
-    : `${window.location.origin}/drive/t/${team}/${
-        {
-          true: "file",
-          [new Boolean(entity.is_group)]: "folder",
-          [new Boolean(entity.document)]: "document",
-        }[true]
-      }/${entity.name}`
+    : `${window.location.origin}/drive/t/${team}/${getLinkStem(entity)}`
+
   if (!copy) return link
   try {
     copyToClipboard(link).then(() => toast("Copied link"))

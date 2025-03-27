@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { getTeams, translate } from "./resources/files"
+import { nextTick } from "vue"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -22,6 +23,7 @@ function setRootBreadCrumb(to) {
     store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
 }
+
 const routes = [
   {
     path: "/",
@@ -237,13 +239,12 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach((to) => {
-  setTimeout(
-    () =>
-      (document.title =
-        store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
-        to.name),
-    150
-  )
+  // nextTick(
+  //   () =>
+  //     (document.title =
+  //       store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
+  //       to.name)
+  // )
   sessionStorage.setItem("currentRoute", to.href)
 })
 

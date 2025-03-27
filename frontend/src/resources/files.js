@@ -196,14 +196,14 @@ export const rename = createResource({
       ...data,
     }
   },
-  onSuccess(data) {
+  onError(error) {
     toast({
-      title: `Renamed ${store.state.activeEntity.title} to ${rename.params.new_title}`,
+      title: JSON.stringify(error).includes("FileExistsError")
+        ? "There is already a file with this name!"
+        : "There was an error",
       position: "bottom-right",
       timeout: 2,
     })
-    store.state.activeEntity.title = data.title
-    store.state.passiveRename = false
   },
 })
 

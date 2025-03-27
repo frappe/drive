@@ -1,19 +1,26 @@
 <template>
   <GenericPage
     :get-entities="getHome"
-    :icon="Home"
-    :primary-message="'Home is empty'"
-    :secondary-message="'Add files by dropping them here'"
+    :icon="Team"
+    :primary-message="'Team is empty'"
+    :secondary-message="'Add files by dropping them here.'"
   />
 </template>
 
 <script setup>
-import Home from "../components/EspressoIcons/Home.vue"
+import Team from "../components/EspressoIcons/Organization.vue"
 import GenericPage from "@/components/GenericPage.vue"
-import { getHome } from "@/resources/files"
+import { getHome, getTeams } from "@/resources/files"
 import { useStore } from "vuex"
+import { useRoute } from "vue-router"
 
 const store = useStore()
 store.commit("setCurrentFolder", "")
 store.commit("setCurrentFolderID", "")
+store.commit("setBreadcrumbs", [
+  {
+    label: getTeams.data[useRoute().params.team].title,
+    name: "Team",
+  },
+])
 </script>
