@@ -57,7 +57,7 @@ def get_user_access(entity, user=frappe.session.user):
         )
         or default_access
     )
-    if not user or user == "Guest":
+    if not user or user == "Guest" or entity.is_private:
         return public_access
 
     # Get general permission

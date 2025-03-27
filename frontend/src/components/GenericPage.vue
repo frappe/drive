@@ -167,7 +167,7 @@ const actionItems = computed(() => {
         label: "Download",
         icon: Download,
         isEnabled: (e) => !e.is_link,
-        onClick: entitiesDownload,
+        onClick: (entities) => entitiesDownload(team, entities),
         multi: true,
         important: true,
       },
@@ -237,7 +237,7 @@ const actionItems = computed(() => {
           toggleFav.submit({ entities })
           entities.map((data) => handleListMutate({ data }))
         },
-        isEnabled: (e, multi) => !e.is_favourite || multi,
+        isEnabled: (e, multi) => !e.is_favourite,
         important: true,
         multi: true,
       },

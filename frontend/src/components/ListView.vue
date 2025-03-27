@@ -33,6 +33,7 @@
               :rows="group.rows"
               :context-menu="contextMenu"
               :set-active="setActive"
+              :items-selected="selections.size > 0"
               :selected="(row) => selectedRow?.name === row.name"
               :hovered="(row) => hoveredRow === row.name"
               @mouseenter="(row) => (hoveredRow = row.name)"
@@ -43,6 +44,7 @@
         <div v-else>
           <CustomListRow
             :rows="formattedRows"
+            :items-selected="selections.size > 0"
             :context-menu="contextMenu"
             :set-active="setActive"
             :selected="(row) => selectedRow?.name === row.name"
@@ -187,6 +189,7 @@ const dropdownActionItems = (row) => {
 }
 
 const contextMenu = (event, row) => {
+  if (selections.value.size > 0) return
   if (event.ctrlKey) openEntity(localStorage.getItem("recentTeam"), row, true)
   selectedRow.value = row
   rowEvent.value = event

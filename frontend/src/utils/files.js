@@ -68,7 +68,10 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  if (Object.keys(getTeams.data).includes(breadcrumbs[0].team)) {
+  if (
+    Object.keys(getTeams.data).includes(breadcrumbs[0].team) &&
+    !breadcrumbs[0].is_private
+  ) {
     res = [
       {
         label: is_private ? "Home" : getTeams.data[breadcrumbs[0].team].title,

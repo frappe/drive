@@ -10,16 +10,28 @@
           >
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
+
           <!-- card -->
           <div
             class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
+            <div class="flex mb-4">
+              <h2 class="grow font-bold text-xl text-center">
+                Welcome, {{ $store.state.user.fullName }}
+              </h2>
+              <Button
+                class="text-sm my-auto flex gap-1"
+                @click="$store.dispatch('logout')"
+              >
+                <LucideLogOut class="w-3 h-3 my-auto" />Log out
+              </Button>
+            </div>
             <p class="font-bold text-lg mb-2">Teams</p>
             <p
               class="text-center text-sm"
               v-if="!getTeams.data || !Object.values(getTeams.data).length"
             >
-              No teams found.
+              You haven't joined any teams yet!
             </p>
             <ul v-else class="ms-1">
               <li

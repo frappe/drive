@@ -68,7 +68,7 @@ let currentFolder = createResource({
     document.title = "Folder - " + data.title
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
-    setBreadCrumbs(data.breadcrumbs, data.is_private, false)
+    setBreadCrumbs(data.breadcrumbs, data.is_private)
   },
   onError(error) {
     console.log(error)

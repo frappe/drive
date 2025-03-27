@@ -180,12 +180,11 @@ def verify_otp(account_request, otp):
     req = frappe.get_doc("Account Request", account_request)
     if req.otp != otp:
         frappe.throw("Invalid OTP")
-    req.login_count += 1
-    req.save(ignore_permissions=True)
     if req.signed_up:
+        req.login_count += 1
+        req.save(ignore_permissions=True)
         frappe.local.login_manager.login_as(req.email)
         return {"location": "/drive"}
-    req.signed_up = 1
     req.save(ignore_permissions=True)
 
 

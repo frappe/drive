@@ -1,4 +1,5 @@
 <template>
+  {{ console.log(itemsSelected) }}
   <ListRow
     v-for="row in rows"
     :key="row.name"
@@ -6,7 +7,9 @@
       selected(row)
         ? '!bg-surface-gray-3 !hover:bg-surface-gray-3'
         : 'hover:bg-surface-menu-bar',
-      $route.name === 'Trash' ? '' : 'cursor-pointer',
+      $route.name === 'Trash' || itemsSelected
+        ? 'cursor-default'
+        : 'cursor-pointer',
     ]"
     :row="row"
     class="rounded"
@@ -88,6 +91,7 @@ defineProps({
   contextMenu: Function,
   setActive: Function,
   selected: Function,
+  itemsSelected: Boolean,
   hovered: Function,
 })
 defineEmits(["mouseenter", "mouseleave"])

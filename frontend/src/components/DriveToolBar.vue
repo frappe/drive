@@ -10,7 +10,10 @@
           selected
         </p>
       </div>
-      <div class="flex gap-3 ml-4" v-if="selections.length">
+      <div
+        class="flex gap-3 ml-4 w-[30%] overflow-scroll md:w-fit"
+        v-if="selections.length"
+      >
         <Button
           v-for="(item, index) in actionItems
             .filter((i) => i.important && (selections.length === 1 || i.multi))
@@ -77,7 +80,10 @@
           By you
         </Button>
       </div>
-      <div class="flex flex-wrap items-start justify-end gap-1 ml-3">
+      <div
+        v-if="activeFilters.length"
+        class="flex flex-wrap items-start justify-end gap-1 ml-3"
+      >
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
             <component :is="item.icon"></component>
@@ -234,7 +240,6 @@ import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
 import DownArrow from "./EspressoIcons/DownArrow.vue"
 import Filter from "./EspressoIcons/Filter.vue"
-import ChevronDown from "./EspressoIcons/ChevronDown.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import Archive from "./MimeIcons/Archive.vue"
 import Document from "./MimeIcons/Document.vue"

@@ -1,5 +1,5 @@
 <template>
-  <FolderContentsError v-if="verify.error" :error="file.error" />
+  <FolderContentsError v-if="file.error" :error="file.error" />
   <div
     v-else
     class="h-full w-full overflow-hidden flex flex-col items-center justify-start"

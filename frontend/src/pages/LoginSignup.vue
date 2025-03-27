@@ -288,7 +288,7 @@ const signup = createResource({
   onSuccess(data) {
     otpValidated.value = true
     if (data.location) window.location.replace(data.location)
-    if (data.message) domainTeams.value = data.message
+    if (data.message || data) domainTeams.value = data.message || data
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
