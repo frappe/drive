@@ -11,10 +11,12 @@
     />
 
     <!-- This sucks, redo it -->
-    <FolderContentsError v-if="getEntities.error" :error="getEntities.error" />
+    <FolderContentsError
+      v-if="verify?.error || getEntities.error"
+      :error="verify?.error || getEntities.error"
+    />
     <NoFilesSection
       v-else-if="rows?.length === 0"
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       :icon="icon"
       :primary-message="primaryMessage"
       :secondary-message="
@@ -74,6 +76,7 @@ import { toast } from "@/utils/toasts"
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
   showSort: { type: Boolean, default: true },
+  verify: { Object, default: null },
   icon: Object,
   primaryMessage: String,
   secondaryMessage: { type: String, default: "" },
@@ -94,18 +97,22 @@ const rows = computed(() =>
   )
 )
 const selections = ref(new Set())
-watch(
-  sortOrder,
-  () => {
-    props.getEntities.fetch({
-      team,
-      order_by: sortOrder.value.ascending
-        ? sortOrder.value.field
-        : sortOrder.value.field + " desc",
-    })
-  },
-  { immediate: route.name !== "Shared" }
-)
+const fetchEntitites = () => {
+  props.getEntities.fetch({
+    team,
+    order_by: sortOrder.value.ascending
+      ? sortOrder.value.field
+      : sortOrder.value.field + " desc",
+  })
+}
+watch(sortOrder, fetchEntitites, {
+  immediate: route.name !== "Shared" && !props.verify,
+})
+const verifyAccess = computed(() => props.verify?.data)
+watch(verifyAccess, (data) => {
+  if (data) fetchEntitites()
+})
+
 watch(activeFilters.value, async (val) => {
   props.getEntities.fetch({
     team,

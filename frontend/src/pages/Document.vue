@@ -1,5 +1,6 @@
 <template>
-  <div class="flex w-full">
+  <FolderContentsError v-if="document.error" :error="document.error" />
+  <div v-else class="flex w-full">
     <TextEditor
       v-if="contentLoaded"
       v-model:yjsContent="yjsContent"
@@ -111,7 +112,7 @@ const saveDocument = () => {
   }
 }
 
-createResource({
+const document = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   method: "GET",
   auto: true,
@@ -149,17 +150,6 @@ createResource({
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
       data.write && emitter.emit("rename")
     })
-  },
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      store.commit("setError", {
-        iconName: "alert-triangle",
-        iconClass: "fill-amber-500 stroke-white",
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-    }
-    router.replace({ name: "Error" })
   },
 })
 
