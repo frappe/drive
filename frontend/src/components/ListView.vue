@@ -1,5 +1,6 @@
 <template>
   <FrappeListView
+    class="select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -83,7 +84,7 @@ import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
-import { getLinkStem } from "@/utils/getLink"
+import { openEntity } from "@/utils/files"
 
 const store = useStore()
 const route = useRoute()
@@ -190,7 +191,7 @@ const dropdownActionItems = (row) => {
 
 const contextMenu = (event, row) => {
   if (selections.value.size > 0) return
-  if (event.ctrlKey) openEntity(localStorage.getItem("recentTeam"), row, true)
+  if (event.ctrlKey) openEntity(route.params.team, row, true)
   selectedRow.value = row
   rowEvent.value = event
   event.stopPropagation()

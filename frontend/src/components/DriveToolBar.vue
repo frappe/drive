@@ -4,7 +4,10 @@
   >
     <div class="flex w-full justify-start items-center flex-wrap">
       <div class="flex flex-col">
-        <Breadcrumbs :items="$store.state.breadcrumbs" :class="'h-[12px]'" />
+        <Breadcrumbs
+          :items="$store.state.breadcrumbs"
+          :class="'select-none h-[12px]'"
+        />
         <p v-if="selections.length" class="text-sm text-gray-800 px-0.5 pt-0.5">
           {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
           selected

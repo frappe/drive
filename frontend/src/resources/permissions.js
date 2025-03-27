@@ -44,7 +44,10 @@ export const getInvites = createResource({
 
 export const acceptInvite = createResource({
   url: "drive.api.product.accept_invite",
-  onSuccess: (data) => window.location.replace(data),
+  onSuccess: (data) => {
+    if (data) window.location.replace(data)
+    else toast("Added to the team")
+  },
 })
 
 export const rejectInvite = createResource({

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { getTeams, translate } from "./resources/files"
-import { nextTick } from "vue"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -222,18 +221,8 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
     next("/login")
-  } else if (!to.meta.allowGuest) {
-    const team = to.params.team || from.params.team
-    await getTeams.fetch()
-    const teams = Object.keys(getTeams.data.message || getTeams.data)
-    if (teams.includes(team)) {
-      localStorage.setItem("recentTeam", team)
-    } else {
-      const val = localStorage.getItem("recentTeam")
-      if (!teams.includes(val)) localStorage.setItem("recentTeam", teams[0])
-    }
-    next()
   } else {
+    if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
     next()
   }
 })

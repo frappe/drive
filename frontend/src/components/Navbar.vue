@@ -7,7 +7,7 @@
     <div
       class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between"
     >
-      <Breadcrumbs :items="$store.state.breadcrumbs" />
+      <Breadcrumbs :items="$store.state.breadcrumbs" class="select-none" />
       <div class="flex gap-1">
         <div
           v-if="connectedUsers.length > 1 && isLoggedIn"

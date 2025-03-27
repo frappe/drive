@@ -10,20 +10,22 @@ CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
 @frappe.whitelist()
 def get_domain_teams(domain):
-    return frappe.db.get_all("Drive Team", {"team_domain": ["like", "%" + domain]}, pluck="name")
+    return frappe.db.get_all(
+        "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
+    )
 
 
 @frappe.whitelist()
-def create_personal_team(user):
+def create_personal_team(email=frappe.session.user):
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
             "title": "Your Drive",
         },
     ).insert(ignore_permissions=True)
-    team.append("users", {"user": user.email, "is_admin": 1})
+    team.append("users", {"user": email, "is_admin": 1})
     team.save()
-    team = team.name
+    return team.name
 
 
 @frappe.whitelist()
@@ -50,7 +52,6 @@ def get_invites(email):
 
 @frappe.whitelist()
 def get_team_invites(team):
-    print(team)
     invites = frappe.db.get_list(
         "Drive User Invitation",
         fields=["creation", "status", "email", "name"],
@@ -104,7 +105,7 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
         # Create team for this user
         domain = user.email.split("@")[-1]
         if domain in CORPORATE_DOMAINS:
-            team = create_personal_team()
+            team = create_personal_team(user.email)
         else:
             return get_domain_teams(domain)
 
@@ -180,9 +181,9 @@ def verify_otp(account_request, otp):
     req = frappe.get_doc("Account Request", account_request)
     if req.otp != otp:
         frappe.throw("Invalid OTP")
+    req.login_count += 1
+    req.save(ignore_permissions=True)
     if req.signed_up:
-        req.login_count += 1
-        req.save(ignore_permissions=True)
         frappe.local.login_manager.login_as(req.email)
         return {"location": "/drive"}
     req.save(ignore_permissions=True)

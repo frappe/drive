@@ -24,10 +24,7 @@
               : 'ml-0 w-0 opacity-0 overflow-hidden'
           "
         >
-          <div
-            v-if="$route.name !== 'Shared'"
-            class="text-base font-medium leading-none text-gray-900"
-          >
+          <div class="text-base font-medium leading-none text-gray-900">
             {{ teamName }}
           </div>
           <div
@@ -35,12 +32,6 @@
             :class="teamName ? 'mt-1' : 'mb-1'"
           >
             {{ fullName }}
-          </div>
-          <div
-            v-if="$route.name === 'Shared'"
-            class="font-medium text-base leading-none"
-          >
-            Shared
           </div>
         </div>
         <div
@@ -67,7 +58,7 @@
 </template>
 
 <script setup>
-import { markRaw } from "vue"
+import { markRaw, onMounted } from "vue"
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
@@ -76,11 +67,22 @@ import AppSwitcher from "@/components/AppSwitcher.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 
 const router = useRouter()
+const route = useRoute()
+const team = computed(() => route.params?.team)
+watch(
+  team,
+  async (v) => {
+    if (!v) return
+    if (!getTeams.data) await getTeams.fetch()
+    teamName.value = getTeams.data[v]?.title
+  },
+  { immediate: true }
+)
 const store = useStore()
 
 defineProps({
@@ -88,14 +90,8 @@ defineProps({
 })
 const showSettings = ref(false)
 const suggestedTab = ref(0)
-const updated = ref(false)
 
-const teamName = computed(() => {
-  let updated
-  if (!getTeams.data) return "loading..."
-  const teams = getTeams.data.message || getTeams.data
-  return teams[localStorage.getItem("recentTeam")]?.title
-})
+const teamName = ref("loading...")
 const fullName = computed(() => store.state.user.fullName)
 
 const settingsItems = computed(() => {

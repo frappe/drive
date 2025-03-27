@@ -101,8 +101,8 @@ const route = useRoute()
 notifCount.fetch()
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
-const team = computed(() =>
-  route.params.team ? route.params.team : localStorage.getItem("recentTeam")
+const team = computed(
+  () => route.params.team || localStorage.getItem("recentTeam")
 )
 
 const sidebarItems = computed(() => [

@@ -159,7 +159,11 @@ const storageBreakdown = createResource({
 
 watch(
   showFileStorage,
-  (val) => storageBreakdown.fetch({ team: route.params.team, owned_only: val }),
+  (val) =>
+    storageBreakdown.fetch({
+      team: route.params.team || localStorage.getItem("recentTeam"),
+      owned_only: val,
+    }),
   { immediate: true }
 )
 

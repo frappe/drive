@@ -129,7 +129,7 @@ def get_home_folder(team):
         .run(as_dict=True)
     )
     if not ls:
-        error_msg = "Team doesn't exist - please create in Desk."
+        error_msg = "This team doesn't exist - please create in Desk."
         team_names = frappe.get_all(
             "Drive Team Member",
             pluck="parent",

@@ -103,7 +103,10 @@
               v-if="invite.status === 'Proposed'"
               class="my-auto"
               variant="outline"
-              @click="acceptInvite.submit({ key: invite.name, redirect: 0 })"
+              @click="
+                acceptInvite.submit({ key: invite.name, redirect: 0 }),
+                  invites.data.splice(index, 1)
+              "
             >
               <LucideCheck class="w-4 h-4" />
             </Button>
@@ -214,9 +217,13 @@ import {
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import { XIcon } from "lucide-vue-next"
 import { allUsers } from "@/resources/permissions"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"
-const team = localStorage.getItem("recentTeam")
+import { useRoute } from "vue-router"
+const route = useRoute()
+const team = computed(
+  () => route.params.team || localStorage.getItem("recentTeam")
+)
 
 const dialog = ref(null)
 const selectedUser = ref(null)
@@ -231,7 +238,7 @@ const roleOptions = [
     onClick: () => {
       selectedUser.value.role = "admin"
       updateUserRole.submit({
-        team,
+        team: team.value,
         user_id: selectedUser.value.name,
         role: 1,
       })
@@ -242,7 +249,7 @@ const roleOptions = [
     onClick: () => {
       selectedUser.value.role = "user"
       updateUserRole.submit({
-        team,
+        team: team.value,
         user_id: selectedUser.value.name,
         role: 0,
       })
@@ -264,7 +271,7 @@ const roleOptions = [
       ),
   },
 ]
-allUsers.fetch({ team })
+allUsers.fetch({ team: team.value })
 function emailTest() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailInput.value
@@ -281,7 +288,7 @@ function extractEmails() {
 
 const isAdmin = createResource({
   url: "drive.api.product.is_admin",
-  params: { team },
+  params: { team: team.value },
   auto: true,
 })
 
@@ -296,7 +303,7 @@ const inviteUsers = createResource({
 const invites = createResource({
   url: "drive.api.product.get_team_invites",
   auto: true,
-  params: { team },
+  params: { team: team.value },
 })
 
 const removeUser = createResource({

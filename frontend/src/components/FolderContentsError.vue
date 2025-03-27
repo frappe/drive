@@ -16,7 +16,7 @@
           <LucideArrowBigLeft class="w-4 h-4" />Go Back
         </div>
       </Button>
-      <Button @click="$router.go(-1)" variant="solid" size="lg"
+      <Button @click="$router.replace({ path: '/' })" variant="solid" size="lg"
         ><div class="flex gap-2">
           <LucideHome class="w-4 h-4" />Go Home
         </div></Button

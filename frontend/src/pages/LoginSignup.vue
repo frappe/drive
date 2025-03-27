@@ -16,35 +16,41 @@
           >
             <div class="mb-7.5 text-center">
               <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
-                {{
+                <template v-if="domainTeams.length">Welcome to Drive</template>
+                <template v-else>{{
                   isLogin
                     ? "Log in to Drive"
                     : params.get("t")
                     ? "Join " + params.get("t")
                     : "Create a new account"
-                }}
+                }}</template>
               </p>
               <p
                 class="break-words text-base font-normal leading-[21px] text-gray-700"
               >
-                {{
-                  !isLogin
-                    ? params.get("t")
-                      ? "Powered by Frappe Drive."
-                      : "5 GB free - forever."
-                    : "Welcome back!"
-                }}
+                <template v-if="domainTeams.length"
+                  >We're glad you're here.</template
+                >
+                <template v-else>
+                  {{
+                    !isLogin
+                      ? params.get("t")
+                        ? "Powered by Frappe Drive."
+                        : "5 GB free - forever."
+                      : "Welcome back!"
+                  }}
+                </template>
               </p>
             </div>
             <template v-if="domainTeams.length">
               <div class="flex flex-col ms-3 text-md gap-2">
                 <p>
-                  Welcome to Frappe Drive! We noticed that you are on a
+                  We noticed that you are on a
                   <strong>corporate domain</strong>.
                 </p>
                 <p>
                   Do you want to create a personal account, or request to join
-                  the team (<strong>{{ domainTeams[0] }}</strong
+                  the team (<strong>{{ domainTeams[0].title }}</strong
                   >) associated with your domain?
                 </p>
                 <div class="flex justify-between mt-3">
@@ -58,11 +64,11 @@
                     variant="solid"
                     @click="
                       requestInvite.submit({
-                        team: domainTeams[0],
+                        team: domainTeams[0].name,
                       }),
                         $router.go('/drive/teams')
                     "
-                    >Join {{ domainTeams[0] }}</Button
+                    >Join {{ domainTeams[0].title }}</Button
                   >
                 </div>
               </div>
