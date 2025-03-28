@@ -48,11 +48,23 @@
                   We noticed that you are on a
                   <strong>corporate domain</strong>.
                 </p>
-                <p>
+                <p v-if="domainTeams[0].title">
                   Do you want to create a personal account, or request to join
                   the team (<strong>{{ domainTeams[0].title }}</strong
                   >) associated with your domain?
                 </p>
+                <p v-else>
+                  Do you want to create a personal account, or create a team
+                  with your domain?
+                </p>
+                <FormControl
+                  v-if="typeof team_name === 'string'"
+                  label="Team Name"
+                  class="py-2"
+                  v-model="team_name"
+                  type="text"
+                  required
+                />
                 <div class="flex justify-between mt-3">
                   <Button
                     variant="subtle"
@@ -61,6 +73,7 @@
                     >Create Personal</Button
                   >
                   <Button
+                    v-if="domainTeams[0].title"
                     variant="solid"
                     @click="
                       requestInvite.submit({
@@ -68,8 +81,19 @@
                       }),
                         $router.go('/drive/teams')
                     "
-                    >Join {{ domainTeams[0].title }}</Button
                   >
+                    Join {{ domainTeams[0].title }}
+                  </Button>
+                  <Button
+                    v-else
+                    @click="
+                      typeof team_name === 'string'
+                        ? createPersonalTeam.submit({ team_name, email })
+                        : (team_name = '')
+                    "
+                  >
+                    Create Team
+                  </Button>
                 </div>
               </div>
             </template>
@@ -242,7 +266,6 @@
 
 <script setup>
 import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
-import GoogleIconSolid from "@/components/EspressoIcons/Home.vue"
 import { ref, onMounted, computed, watch } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
@@ -253,7 +276,7 @@ const params = new URLSearchParams(new URL(window.location.href).search)
 const email = ref(params.get("e") || "")
 const first_name = ref("")
 const last_name = ref("")
-const team_name = ref("")
+const team_name = ref(null)
 
 const terms_accepted = ref(false)
 
@@ -283,7 +306,6 @@ const signup = createResource({
     account_request: account_request.value,
     first_name: first_name.value,
     last_name: last_name.value,
-    team: team_name.value,
     referrer: getReferrerIfAny(),
   }),
   validate() {
@@ -294,7 +316,8 @@ const signup = createResource({
   onSuccess(data) {
     otpValidated.value = true
     if (data.location) window.location.replace(data.location)
-    if (data.message || data) domainTeams.value = data.message || data
+    if ((data.message || data)?.length) domainTeams.value = data.message || data
+    else domainTeams.value = [{ name: null, title: null }]
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
@@ -342,6 +365,10 @@ const verifyOTP = createResource({
 
 const createPersonalTeam = createResource({
   url: "drive.api.product.create_personal_team",
+  onSuccess: (data) => {
+    if (data) window.location.replace("/t/" + data)
+    window.reload()
+  },
 })
 
 const requestInvite = createResource({

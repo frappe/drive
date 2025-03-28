@@ -168,7 +168,6 @@ const updateDocument = createResource({
 
 onMounted(() => {
   allUsers.fetch({ team: route.params?.team })
-  console.log(props)
   emitter.on("showShareDialog", () => {
     showShareDialog.value = true
   })

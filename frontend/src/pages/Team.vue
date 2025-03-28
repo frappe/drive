@@ -17,10 +17,11 @@ import { useRoute } from "vue-router"
 const store = useStore()
 store.commit("setCurrentFolder", "")
 store.commit("setCurrentFolderID", "")
-store.commit("setBreadcrumbs", [
-  {
-    label: getTeams.data[useRoute().params.team].title,
-    name: "Team",
-  },
-])
+if (getTeams.data)
+  store.commit("setBreadcrumbs", [
+    {
+      label: getTeams.data[useRoute().params.team]?.title,
+      name: "Team",
+    },
+  ])
 </script>

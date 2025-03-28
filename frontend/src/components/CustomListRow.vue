@@ -1,5 +1,4 @@
 <template>
-  {{ console.log(itemsSelected) }}
   <ListRow
     v-for="row in rows"
     :key="row.name"

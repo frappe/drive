@@ -262,6 +262,7 @@ import {
   Autocomplete,
   DatePicker,
   LoadingIndicator,
+  createResource,
 } from "frappe-ui"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
@@ -282,6 +283,15 @@ const generalAccess = ref({
   access: { value: "restricted", label: "Restricted" },
   type: [{ value: "read", label: "Read" }],
 })
+const getPublicAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  makeParams: (params) => ({ ...params, user: "Guest" }),
+  onSuccess: (data) => {
+    // if (data[read] === 0) generalAccess.
+  },
+})
+getPublicAccess.fetch({ entity: props.entityName })
+
 const share = ref({
   name: "",
   access: [
