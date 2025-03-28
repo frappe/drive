@@ -68,10 +68,8 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  if (
-    Object.keys(getTeams.data).includes(breadcrumbs[0].team) &&
-    !breadcrumbs[0].is_private
-  ) {
+  // BROKEN: shared files within a team go to home folder
+  if (Object.keys(getTeams.data).includes(breadcrumbs[0].team)) {
     res = [
       {
         label: is_private ? "Home" : getTeams.data[breadcrumbs[0].team].title,
