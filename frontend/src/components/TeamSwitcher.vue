@@ -26,12 +26,15 @@
           v-for="team of teams"
           :key="getTeams.data[team].name"
         >
-          <a
-            :href="'/drive/' + getTeams.data[team].name"
+          <router-link
+            :to="{
+              name: 'Home',
+              params: { team: getTeams.data[team].name },
+            }"
             class="block w-100 rounded justify-center items-center p-1 text-sm text-gray-700 hover:bg-gray-100"
           >
             {{ getTeams.data[team].title }}
-          </a>
+          </router-link>
         </div>
         <div v-else class="w-100 text-center text-sm text-gray-700">
           <em>No other teams</em>
@@ -44,14 +47,13 @@
 import { Popover } from "frappe-ui"
 import { FeatherIcon } from "frappe-ui"
 import { getTeams } from "@/resources/files"
-import { computed, ref } from "vue"
+import { computed } from "vue"
 import { useRoute } from "vue-router"
 
 getTeams.fetch()
 const route = useRoute()
-
 const teams = computed(() =>
-  Object.keys(getTeams.data).filter((t) => t !== route.params.team)
+  Object.keys(getTeams.data).filter((k) => k !== route.params.team)
 )
 
 defineProps({

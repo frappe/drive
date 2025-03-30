@@ -75,6 +75,7 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  return store.state.breadcrumbs[0].label === props.label
+  const first = store.state.breadcrumbs[0]
+  return (first.name || first.label) === props.label
 })
 </script>

@@ -1,13 +1,16 @@
 <template>
   <FrappeListView
+    class="select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
+    @update:selections="(s) => (selections = s)"
     :options="{
       selectable: true,
       showTooltip: true,
       resizeColumn: true,
       selectionWord: (v) => (v === 1 ? 'item' : 'items'),
+      getRowRoute: (getLinkStem) => '',
     }"
   >
     <ListHeader />
@@ -31,6 +34,7 @@
               :rows="group.rows"
               :context-menu="contextMenu"
               :set-active="setActive"
+              :items-selected="selections.size > 0"
               :selected="(row) => selectedRow?.name === row.name"
               :hovered="(row) => hoveredRow === row.name"
               @mouseenter="(row) => (hoveredRow = row.name)"
@@ -41,6 +45,7 @@
         <div v-else>
           <CustomListRow
             :rows="formattedRows"
+            :items-selected="selections.size > 0"
             :context-menu="contextMenu"
             :set-active="setActive"
             :selected="(row) => selectedRow?.name === row.name"
@@ -51,41 +56,6 @@
         </div>
       </div>
     </template>
-    <ListSelectBanner>
-      <template #actions="{ selections }">
-        <div class="flex gap-3">
-          <Button
-            v-for="(item, index) in actionItems
-              .filter(
-                (i) => i.important && ([...selections].length === 1 || i.multi)
-              )
-              .filter(
-                (i) =>
-                  !i.isEnabled ||
-                  [...selections]
-                    .map((n) => entities.find((e) => e.name === n))
-                    .every((e) => i.isEnabled(e, [...selections].length !== 1))
-              )"
-            :key="index"
-            @click="
-              () =>
-                handleAction(
-                  [...selections].map((n) =>
-                    entities.find((e) => e.name === n)
-                  ),
-                  item
-                )
-            "
-          >
-            <component
-              :is="item.icon"
-              class="h-4 w-auto text-gray-800"
-              :class="item.danger ? 'text-red-500' : ''"
-            />
-          </Button>
-        </div>
-      </template>
-    </ListSelectBanner>
   </FrappeListView>
   <EmptyEntityContextMenu
     v-if="rowEvent && selectedRow"
@@ -98,8 +68,6 @@
 </template>
 <script setup>
 import {
-  Button,
-  ListSelectBanner,
   ListHeader,
   ListGroupRows,
   ListGroupHeader,
@@ -116,6 +84,7 @@ import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
+import { openEntity } from "@/utils/files"
 
 const store = useStore()
 const route = useRoute()
@@ -125,6 +94,7 @@ const props = defineProps({
   actionItems: Array,
   entities: Array,
 })
+const selections = defineModel()
 const selectedRow = ref(null)
 const rowEvent = ref(null)
 const userData = computed(() =>
@@ -147,8 +117,8 @@ const selectedColumns = [
   {
     label: "Name",
     key: "title",
-    getLabel: ({ row: { title, is_group } }) =>
-      title.lastIndexOf(".") === -1 || is_group
+    getLabel: ({ row: { title, is_group, document } }) =>
+      title.lastIndexOf(".") === -1 || is_group || document
         ? title
         : title.slice(0, title.lastIndexOf(".")),
     prefix: ({ row }) =>
@@ -168,7 +138,9 @@ const selectedColumns = [
       return h(Avatar, {
         shape: "circle",
         image: userData.value[row.owner]?.user_image,
-        label: userData.value[row.owner]?.full_name,
+        label:
+          userData.value[row.owner]?.full_name ||
+          userData.value[row.owner]?.email,
         size: "sm",
       })
     },
@@ -188,7 +160,7 @@ const selectedColumns = [
   {
     label: "Size",
     key: "",
-    getLabel: ({ row }) => row.file_size_pretty,
+    getLabel: ({ row }) => row.file_size_pretty, // || "<em>empty</em>",
   },
   { label: "", key: "options", align: "right", width: "10px" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
@@ -201,11 +173,6 @@ const setActive = (entity) => {
     selectedRow.value = entity
     store.commit("setActiveEntity", entity)
   }
-}
-
-const handleAction = (selectedItems, action) => {
-  selections.value = selectedItems
-  action.onClick(selectedItems)
 }
 
 const dropdownActionItems = (row) => {
@@ -222,8 +189,9 @@ const dropdownActionItems = (row) => {
     }))
 }
 
-const selections = defineModel()
 const contextMenu = (event, row) => {
+  if (selections.value.size > 0) return
+  if (event.ctrlKey) openEntity(route.params.team, row, true)
   selectedRow.value = row
   rowEvent.value = event
   event.stopPropagation()

@@ -1,10 +1,59 @@
 <template>
   <div
-    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-3"
+    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-[10px]"
   >
     <div class="flex w-full justify-start items-center flex-wrap">
-      <Breadcrumbs :items="$store.state.breadcrumbs" />
-
+      <div class="flex flex-col">
+        <Breadcrumbs
+          :items="$store.state.breadcrumbs"
+          :class="'select-none h-[12px]'"
+        />
+        <p v-if="selections.length" class="text-sm text-gray-800 px-0.5 pt-0.5">
+          {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
+          selected
+        </p>
+      </div>
+      <div
+        class="flex gap-3 ml-4 w-[30%] overflow-scroll md:w-fit"
+        v-if="selections.length"
+      >
+        <Button
+          v-for="(item, index) in actionItems
+            .filter((i) => i.important && (selections.length === 1 || i.multi))
+            .filter(
+              (i) =>
+                !i.isEnabled ||
+                selections.every((e) => i.isEnabled(e, selections.length !== 1))
+            )"
+          :variant="index < 2 ? 'solid' : 'outline'"
+          :key="index"
+          @click="() => item.onClick(selections)"
+        >
+          <div class="flex">
+            <FeatherIcon
+              v-if="typeof item.icon === 'string'"
+              :name="item.icon"
+              class="w-4 h-4"
+              :class="[
+                item.class,
+                index < 2 ? 'text-white-800' : 'text-gray-800',
+                item.danger ? 'text-red-500' : '',
+              ]"
+            />
+            <component
+              v-else
+              :is="item.icon"
+              class="h-4 w-4"
+              :class="[
+                item.class,
+                index < 2 ? 'text-white-800' : 'text-gray-800',
+                item.danger ? 'text-red-500' : '',
+              ]"
+            />
+            <div v-if="index < 2" class="ml-2 text-sm">{{ item.label }}</div>
+          </div>
+        </Button>
+      </div>
       <div
         v-if="$route.name === 'Shared'"
         class="ml-5 bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
@@ -34,12 +83,14 @@
           By you
         </Button>
       </div>
-      <div class="flex flex-wrap items-start justify-end gap-1 ml-3">
+      <div
+        v-if="activeFilters.length"
+        class="flex flex-wrap items-start justify-end gap-1 ml-3"
+      >
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
             <component :is="item.icon"></component>
             <span class="text-sm ml-2">{{ item.label }}</span>
-
             <Button
               variant="minimal"
               @click="
@@ -110,15 +161,11 @@
           </div>
         </Dropdown>
         <Dropdown :options="filterItems" placement="right">
-          <Button
-            >Filter
-            <template #prefix>
+          <Tooltip text="Filter">
+            <Button>
               <Filter />
-            </template>
-            <template #suffix>
-              <ChevronDown />
-            </template>
-          </Button>
+            </Button>
+          </Tooltip>
         </Dropdown>
         <div
           v-if="false"
@@ -155,11 +202,12 @@
             Sign In
           </Button>
         </div>
+
         <template v-for="button of possibleButtons" :key="button.route">
           <Button
             v-if="$route.name === button.route"
             class="line-clamp-1 truncate w-full"
-            :disabled="!button.entities.data.length"
+            :disabled="!button.entities.data?.length"
             variant="subtle"
             :theme="button.theme || 'gray'"
             @click="emitter.emit('showCTADelete')"
@@ -171,13 +219,18 @@
           </Button>
         </template>
         <Dropdown
+          v-if="['Folder', 'Home', 'Team'].includes($route.name)"
           :options="newEntityOptions"
           placement="left"
           class="basis-5/12 lg:basis-auto"
         >
-          <Button variant="solid">
-            <FeatherIcon name="upload" class="w-4" />
-          </Button>
+          <Tooltip text="Add or upload">
+            <Button variant="solid">
+              <div class="flex">
+                <FeatherIcon name="plus" class="w-4 h-4" />
+              </div>
+            </Button>
+          </Tooltip>
         </Dropdown>
       </div>
     </div>
@@ -190,7 +243,6 @@ import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
 import DownArrow from "./EspressoIcons/DownArrow.vue"
 import Filter from "./EspressoIcons/Filter.vue"
-import ChevronDown from "./EspressoIcons/ChevronDown.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import Archive from "./MimeIcons/Archive.vue"
 import Document from "./MimeIcons/Document.vue"
@@ -216,12 +268,20 @@ import {
   createDocument,
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
+import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 
 const store = useStore()
 const props = defineProps({
+  selections: Set,
+  entities: Array,
+  actionItems: Array,
   columnHeaders: Array,
-  getEntitities: Object,
 })
+const selections = computed(() =>
+  Array.from(props.selections).map((n) =>
+    props.entities.find((e) => e.name === n)
+  )
+)
 const sortOrder = ref(store.state.sortOrder)
 watch(sortOrder, (val) => store.commit("setSortOrder", val))
 const activeFilters = ref(store.state.activeFilters)

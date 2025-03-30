@@ -3,11 +3,18 @@ import store from "@/store"
 import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
+import { getLink } from "./getLink"
+import { getTeams } from "../resources/files"
 
-export const openEntity = (team = null, entity) => {
-  if (!team) team = "shared"
-  getRecents.setData((data) => [...data, entity])
-  mutate([entity], (e) => (e.accessed = true))
+export const openEntity = (team = null, entity, new_tab = false) => {
+  if (!team) team = entity.team
+  if (!entity.is_group) {
+    getRecents.setData((data) => [...data, entity])
+    mutate([entity], (e) => (e.accessed = true))
+  }
+  if (new_tab) {
+    return window.open(getLink(entity, false), "_blank")
+  }
   if (entity.is_group) {
     router.push({
       name: "Folder",
@@ -61,14 +68,15 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  if (breadcrumbs[0].parent_entity === null) {
+  // BROKEN: shared files within a team go to home folder
+  if (Object.keys(getTeams.data).includes(breadcrumbs[0].team)) {
     res = [
       {
-        label: is_private ? "Home" : "Team",
-        route: `/${route.params.team}` + (is_private ? "/" : "/team"),
+        label: is_private ? "Home" : getTeams.data[breadcrumbs[0].team].title,
+        name: is_private ? "Home" : "Team",
+        route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
-    breadcrumbs.shift()
   }
   breadcrumbs.forEach((item, idx) => {
     res.push({
@@ -76,7 +84,7 @@ export const setBreadCrumbs = (
       onClick: final_func,
       route:
         idx !== breadcrumbs.length - 1
-          ? `/${route.params?.team}/folder/` + item.name
+          ? `/t/${item.team}/folder/` + item.name
           : null,
     })
   })

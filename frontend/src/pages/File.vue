@@ -1,5 +1,7 @@
 <template>
+  <FolderContentsError v-if="file.error" :error="file.error" />
   <div
+    v-else
     class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
   >
     <div
@@ -34,17 +36,6 @@
       :entity-name="props.entityName"
     />
   </div>
-  <RenameDialog
-    v-if="dialog === 'rn'"
-    v-model="dialog"
-    @success="
-      (data) => {
-        let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
-        l.label = data.title
-        dialog = null
-      }
-    "
-  />
 </template>
 
 <script setup>
@@ -59,13 +50,13 @@ import {
 } from "vue"
 import { Button } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
-import RenameDialog from "@/components/RenameDialog.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import { prettyData, setBreadCrumbs } from "@/utils/files"
+import FolderContentsError from "@/components/FolderContentsError.vue"
 
 const router = useRouter()
 const store = useStore()
@@ -143,23 +134,11 @@ let file = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
+    document.title = data.title
     store.commit("setActiveEntity", data)
-    setBreadCrumbs(
-      data.breadcrumbs,
-      data.is_private,
-      () => (dialog.value = "rn")
+    setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
+      emitter.emit("rename")
     )
-  },
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      store.commit("setError", {
-        iconName: "alert-triangle",
-        iconClass: "fill-amber-500 stroke-white",
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-    }
-    router.replace({ name: "Error" })
   },
 })
 
@@ -176,9 +155,6 @@ onMounted(() => {
     store.state.connectedUsers = data.users
     userInfo.submit({ users: JSON.stringify(data.users) })
   })
-  if (window.matchMedia("(max-width: 1500px)").matches) {
-    store.commit("setIsSidebarExpanded", false)
-  }
   emitter.on("showShareDialog", () => {
     dialog.value = "s"
   })

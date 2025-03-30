@@ -1,0 +1,133 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2025-03-19 11:23:23.254783",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "core_section",
+    "request_key",
+    "email",
+    "login_count",
+    "signed_up",
+    "otp",
+    "otp_generated_at",
+    "invite",
+    "oauth_signup",
+    "referrer_data",
+    "ip_address",
+    "referral_source",
+    "url_args",
+    "referrer_id",
+    "geo_location"
+  ],
+  "fields": [
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email",
+      "search_index": 1
+    },
+    {
+      "fieldname": "request_key",
+      "fieldtype": "Data",
+      "label": "Request Key"
+    },
+    {
+      "fieldname": "ip_address",
+      "fieldtype": "Data",
+      "label": "IP Address"
+    },
+    {
+      "fieldname": "referral_source",
+      "fieldtype": "Data",
+      "label": "Referral Source"
+    },
+    {
+      "collapsible": 1,
+      "fieldname": "referrer_data",
+      "fieldtype": "Section Break",
+      "label": "Referrer Data"
+    },
+    {
+      "fieldname": "url_args",
+      "fieldtype": "Code",
+      "label": "URL Args",
+      "options": "JSON",
+      "read_only": 1
+    },
+    {
+      "fieldname": "referrer_id",
+      "fieldtype": "Data",
+      "label": "Referrer ID"
+    },
+    {
+      "fieldname": "geo_location",
+      "fieldtype": "Code",
+      "label": "Geo Location",
+      "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "oauth_signup",
+      "fieldtype": "Check",
+      "label": "OAuth Signup"
+    },
+    {
+      "fieldname": "otp",
+      "fieldtype": "Data",
+      "label": "OTP"
+    },
+    {
+      "fieldname": "otp_generated_at",
+      "fieldtype": "Datetime",
+      "label": "OTP Generated at"
+    },
+    {
+      "fieldname": "invite",
+      "fieldtype": "Link",
+      "label": "Invite",
+      "options": "Drive User Invitation"
+    },
+    {
+      "fieldname": "core_section",
+      "fieldtype": "Section Break",
+      "label": "Core"
+    },
+    {
+      "default": "0",
+      "fieldname": "signed_up",
+      "fieldtype": "Check",
+      "label": "Signed Up"
+    },
+    {
+      "fieldname": "login_count",
+      "fieldtype": "Int",
+      "label": "Login Count"
+    }
+  ],
+  "links": [],
+  "modified": "2025-03-21 13:16:18.815653",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Account Request",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
+}

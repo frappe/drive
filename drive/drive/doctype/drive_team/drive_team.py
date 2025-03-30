@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from pathlib import Path
+import shutil
 from drive.utils.files import get_home_folder
 
 
@@ -40,7 +41,7 @@ class DriveTeam(Document):
         try:
             d = get_home_folder(self.name)
             user_directory_path = Path(frappe.get_site_path("private/files"), d.path)
-            user_directory_path.rmdir()
+            shutil.rmtree(str(user_directory_path))
         except FileNotFoundError:
             pass
         frappe.db.delete("Drive File", {"team": self.name})

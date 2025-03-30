@@ -1,5 +1,6 @@
 <template>
-  <div class="flex w-full">
+  <FolderContentsError v-if="document.error" :error="document.error" />
+  <div v-else class="flex w-full">
     <TextEditor
       v-if="contentLoaded"
       v-model:yjsContent="yjsContent"
@@ -71,7 +72,7 @@ const rawContent = ref(null)
 const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
-const mentionedUsers = ref()
+const mentionedUsers = ref([])
 const showShareDialog = ref(false)
 const timeout = ref(1000 + Math.floor(Math.random() * 1000))
 const saveCount = ref(0)
@@ -82,15 +83,21 @@ const userId = computed(() => store.state.auth.user_id)
 let intervalId = ref(null)
 
 setTimeout(() => {
-  watchDebounced(rawContent, saveDocument, {
-    debounce: timeout.value,
-    maxWait: 30000,
-    immediate: true,
-  })
+  watchDebounced(
+    [rawContent, comments],
+    () => {
+      saveDocument()
+    },
+    {
+      debounce: timeout.value,
+      maxWait: 30000,
+      immediate: true,
+    }
+  )
 }, 1500)
 
 const saveDocument = () => {
-  if (isWritable.value) {
+  if (isWritable.value || entity.value.comment) {
     updateDocument.submit({
       entity_name: props.entityName,
       doc_name: entity.value.document,
@@ -102,11 +109,10 @@ const saveDocument = () => {
       mentions: mentionedUsers.value,
       file_size: fromUint8Array(yjsContent.value).length,
     })
-    emitter.emit("docSaved")
   }
 }
 
-createResource({
+const document = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   method: "GET",
   auto: true,
@@ -114,6 +120,7 @@ createResource({
     entity_name: props.entityName,
   },
   onSuccess(data) {
+    document.title = data.title
     data.size_in_bytes = data.file_size
     data.file_size = formatSize(data.file_size)
     data.modified = formatDate(data.modified)
@@ -141,22 +148,8 @@ createResource({
     lastSaved.value = Date.now()
     contentLoaded.value = true
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
-      const selection = window.getSelection()
-      selection.empty()
-      const h3 = document.querySelector("h3")
-      selection.setBaseAndExtent(h3, 0, h3, 1)
+      data.write && emitter.emit("rename")
     })
-  },
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      store.commit("setError", {
-        iconName: "alert-triangle",
-        iconClass: "fill-amber-500 stroke-white",
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-    }
-    router.replace({ name: "Error" })
   },
 })
 

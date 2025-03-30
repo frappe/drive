@@ -42,7 +42,8 @@
 <script setup>
 import { createResource, Avatar, Input } from "frappe-ui"
 import { defineEmits, computed, ref, onBeforeUnmount, onMounted } from "vue"
-import { get, set } from "idb-keyval"
+import { set } from "idb-keyval"
+import { useRoute } from "vue-router"
 
 const emit = defineEmits(["addNewUsers", "submit"])
 const props = defineProps({
@@ -122,19 +123,11 @@ onMounted(() => {
 })
 
 async function fetchData() {
-  const key = props.searchGroups ? "UsersGroups" : "Users"
-  const cachedData = await get(key)
-  if (cachedData) {
-    allUsers.value = JSON.parse(cachedData)
-  } else {
-    userList.fetch()
-  }
+  userList.fetch({ team: useRoute().params.team })
 }
 
 let userList = createResource({
-  url: props.searchGroups
-    ? "drive.utils.users.get_users_with_drive_user_role_and_groups"
-    : "drive.utils.users.get_users_with_drive_user_role",
+  url: "drive.api.product.get_all_users",
   method: "GET",
   auto: false,
   onSuccess(data) {

@@ -39,7 +39,7 @@
       "fieldname": "type",
       "fieldtype": "Select",
       "label": "Type",
-      "options": "Share\nMention"
+      "options": "Share\nMention\nTeam"
     },
     {
       "fieldname": "message",
@@ -65,7 +65,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-02-06 13:02:34.025709",
+  "modified": "2025-03-24 16:49:25.357164",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Notification",

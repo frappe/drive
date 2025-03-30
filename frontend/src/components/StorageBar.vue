@@ -5,7 +5,7 @@
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
-      :label="props.isExpanded ? 'Storage' : '3.5GB used out of 50GB'"
+      :label="props.isExpanded ? 'Storage' : '- used out of 5GB'"
       :is-collapsed="!props.isExpanded"
     >
       <template #icon>
@@ -39,13 +39,12 @@
 <script setup>
 import { ref, computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
-import { useRoute } from "vue-router"
 import SidebarItem from "./SidebarItem.vue"
 import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
-const emitter = inject("emitter")
+import { useRoute } from "vue-router"
 
-const route = useRoute()
+const emitter = inject("emitter")
 
 const usedStorage = ref(0)
 const storageMax = ref(5368709120)
@@ -54,7 +53,7 @@ const props = defineProps(["isExpanded"])
 
 const formatedString = computed(() => {
   return (
-    formatSize(usedStorage.value) +
+    (formatSize(usedStorage.value) || "-") +
     " used out of " +
     base2BlockSize(storageMax.value)
   )
@@ -68,13 +67,13 @@ const calculatePercent = computed(() => {
     maximumFractionDigits: 1,
   }).format(num / 100)
 })
-const team = localStorage.getItem("recentTeam")
+const route = useRoute()
+const team = computed(
+  () => route.params.team || localStorage.getItem("recentTeam")
+)
 
 let totalStorage = createResource({
   url: "drive.api.storage.storage_bar_data",
-  params: {
-    team,
-  },
   method: "GET",
   cache: "total_storage",
   onSuccess(data) {
@@ -82,5 +81,5 @@ let totalStorage = createResource({
     storageMax.value = data.limit
   },
 })
-totalStorage.fetch({ team })
+watch(team, () => totalStorage.fetch({ team: team.value }), { immediate: true })
 </script>

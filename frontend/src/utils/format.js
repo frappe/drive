@@ -1,7 +1,7 @@
 import { format } from "date-fns"
 
 export function formatSize(size, nDigits = 1) {
-  if (size === 0) return "-"
+  if (size === 0) return ""
   const k = 1000 // Change base to 1000 for decimal prefixes
   const digits = nDigits < 0 ? 0 : nDigits
   const sizes = [" B", " KB", " MB", " GB", " TB", " PB"] // Adjusted for decimal prefixes
@@ -15,17 +15,12 @@ export function formatSize(size, nDigits = 1) {
   return decSize + sizes[i]
 }
 
-export function base2BlockSize(bytes, decimals = 2, current = 0) {
-  if (bytes === 0) return "0 Bytes"
-
+export function base2BlockSize(bytes) {
+  if (bytes === 0) return "0 bytes"
   const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+  const sizes = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
   const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(k))
-
-  return (
-    parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i + current]
-  )
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
 }
 
 export function formatDate(date) {

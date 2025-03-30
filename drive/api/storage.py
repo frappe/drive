@@ -7,12 +7,12 @@ DriveFile = frappe.qb.DocType("Drive File")
 
 @frappe.whitelist()
 def storage_breakdown(team, owned_only):
-    storage = frappe.get_value("Drive Team", team, "quota" if owned_only else "storage")
+    limit = frappe.get_value("Drive Team", team, "quota" if owned_only else "storage") * MEGA_BYTE
     filters = {
         "team": team,
         "is_group": False,
         "is_active": 1,
-        "file_size": [">", storage / 200 * MEGA_BYTE],
+        "file_size": [">=", limit / 200 * MEGA_BYTE],
     }
     if owned_only:
         filters["owner"] = frappe.session.user
@@ -35,9 +35,9 @@ def storage_breakdown(team, owned_only):
         query = query.where(DriveFile.is_private == 0)
 
     return {
-        "limit": storage * MEGA_BYTE,
-        "entities": entities,
+        "limit": limit,
         "total": query.groupby(DriveFile.mime_type).run(as_dict=True),
+        "entities": entities,
     }
 
 
@@ -47,6 +47,7 @@ def storage_bar_data(team):
         frappe.qb.from_(DriveFile)
         .where(
             (DriveFile.team == team)
+            & (DriveFile.is_group == 0)
             & (DriveFile.owner == frappe.session.user)
             & (DriveFile.is_active == 1)
         )

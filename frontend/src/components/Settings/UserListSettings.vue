@@ -50,10 +50,70 @@
   </div>
   <div
     v-if="!allUsers?.data?.length"
-    class="h-1/2 w-full flex flex-col items-center justify-center my-auto"
+    class="flex flex-col items-center justify-center h-1/2"
   >
     <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
     <span class="text-gray-800 text-sm mt-2">No Users</span>
+  </div>
+  <h3 class="my-4 text-base font-medium">Invites</h3>
+  <div
+    class="text-center text-sm"
+    v-if="!invites?.data || !invites.data.length"
+  >
+    No invites found.
+  </div>
+  <div v-for="(invite, index) in invites?.data" :key="invite.name">
+    <div
+      v-if="index > 0"
+      class="w-[95%] mx-auto h-px border-t border-gray-200"
+    ></div>
+    <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
+      <div class="flex justify-between w-full">
+        <span class="text-base">{{ invite.email }}</span>
+        <div class="flex">
+          <Tooltip
+            :text="
+              invite.status === 'Proposed'
+                ? 'A person from your domain has joined Drive.'
+                : 'This invite was sent from your team.'
+            "
+          >
+            <Badge
+              :theme="invite.status === 'Pending' ? 'blue' : 'orange'"
+              variant="subtle"
+              class="my-auto mr-2"
+              size="sm"
+              >{{ invite.status }}</Badge
+            >
+          </Tooltip>
+          <div class="flex gap-2">
+            <Button
+              :variant="invite.status === 'Proposed' ? 'ghost' : 'outline'"
+              class="my-auto"
+              @click="
+                rejectInvite.submit({ key: invite.name }),
+                  invites.data.splice(index, 1)
+              "
+            >
+              <LucideX v-if="invite.status === 'Proposed'" class="w-4 h-4" />
+              <LucideTrash v-else class="w-4 h-4" />
+            </Button>
+
+            <Button
+              v-if="invite.status === 'Proposed'"
+              class="my-auto"
+              variant="outline"
+              @click="
+                acceptInvite.submit({ key: invite.name, redirect: 0 }),
+                  invites.data.splice(index, 1)
+              "
+            >
+              <LucideCheck class="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <Dialog
     v-model="showInvite"
@@ -65,7 +125,7 @@
           label: 'Send Invitation',
           variant: 'solid',
           disabled: !emailTest().length && !invited.length,
-          loading: inviteUsers.loading,
+          loading: () => inviteUsers.loading,
           onClick: () => {
             extractEmails()
             inviteUsers.submit({
@@ -144,19 +204,26 @@
 <script setup>
 import { h } from "vue"
 import { getTeams } from "@/resources/files"
+import { rejectInvite, acceptInvite } from "@/resources/permissions"
 import {
   Avatar,
   FeatherIcon,
   Dropdown,
   Dialog,
+  Badge,
+  Tooltip,
   createResource,
 } from "frappe-ui"
 import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
 import { XIcon } from "lucide-vue-next"
 import { allUsers } from "@/resources/permissions"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"
-const team = localStorage.getItem("recentTeam")
+import { useRoute } from "vue-router"
+const route = useRoute()
+const team = computed(
+  () => route.params.team || localStorage.getItem("recentTeam")
+)
 
 const dialog = ref(null)
 const selectedUser = ref(null)
@@ -171,7 +238,7 @@ const roleOptions = [
     onClick: () => {
       selectedUser.value.role = "admin"
       updateUserRole.submit({
-        team,
+        team: team.value,
         user_id: selectedUser.value.name,
         role: 1,
       })
@@ -182,7 +249,7 @@ const roleOptions = [
     onClick: () => {
       selectedUser.value.role = "user"
       updateUserRole.submit({
-        team,
+        team: team.value,
         user_id: selectedUser.value.name,
         role: 0,
       })
@@ -204,7 +271,7 @@ const roleOptions = [
       ),
   },
 ]
-
+allUsers.fetch({ team: team.value })
 function emailTest() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailInput.value
@@ -220,23 +287,30 @@ function extractEmails() {
 }
 
 const isAdmin = createResource({
-  url: "drive.utils.users.is_admin",
-  params: { team },
+  url: "drive.api.product.is_admin",
+  params: { team: team.value },
   auto: true,
 })
 
 const inviteUsers = createResource({
-  url: "drive.utils.users.invite_users",
+  url: "drive.api.product.invite_users",
   onSuccess: () => {
     showInvite.value = false
     toast("Invite sent!")
   },
 })
+
+const invites = createResource({
+  url: "drive.api.product.get_team_invites",
+  auto: true,
+  params: { team: team.value },
+})
+
 const removeUser = createResource({
-  url: "drive.utils.users.remove_user",
+  url: "drive.api.product.remove_user",
 })
 
 const updateUserRole = createResource({
-  url: "drive.utils.users.set_role",
+  url: "drive.api.product.set_role",
 })
 </script>

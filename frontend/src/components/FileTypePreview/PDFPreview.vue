@@ -76,7 +76,6 @@ const blob = ref(null)
 const previewURL = useObjectUrl(blob)
 const emitter = inject("emitter")
 const currentPage = ref(1)
-const pdfComponent = ref(null)
 const { pdf, pages, print } = usePDF(previewURL)
 
 async function fetchContent() {
