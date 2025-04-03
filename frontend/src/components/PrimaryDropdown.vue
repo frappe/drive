@@ -74,6 +74,7 @@ import { useRouter, useRoute } from "vue-router"
 const router = useRouter()
 const route = useRoute()
 const team = computed(() => route.params?.team)
+const teamName = ref("loading...")
 watch(
   team,
   async (v) => {
@@ -91,7 +92,6 @@ defineProps({
 const showSettings = ref(false)
 const suggestedTab = ref(0)
 
-const teamName = ref("loading...")
 const fullName = computed(() => store.state.user.fullName)
 
 const settingsItems = computed(() => {

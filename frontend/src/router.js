@@ -88,7 +88,7 @@ const routes = [
   },
   {
     path: "/t/:team/notifications",
-    name: "Notifications",
+    name: "Inbox",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],

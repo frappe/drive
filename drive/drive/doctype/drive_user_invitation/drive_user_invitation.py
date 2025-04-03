@@ -94,8 +94,10 @@ class DriveUserInvitation(Document):
         self.status = "Accepted"
         self.accepted_at = frappe.utils.now()
         self.save(ignore_permissions=True)
+        frappe.db.commit()
 
         if frappe.session.user == "Guest":
             frappe.local.login_manager.login_as(self.email)
-            frappe.local.response["location"] = "/drive/t/" + self.team
-            return "/drive/t/" + self.team
+
+        frappe.local.response["location"] = "/drive/t/" + self.team
+        return "/drive/t/" + self.team

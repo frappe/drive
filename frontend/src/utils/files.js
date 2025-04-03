@@ -78,7 +78,7 @@ export const setBreadCrumbs = (
       },
     ]
   }
-  breadcrumbs.forEach((item, idx) => {
+  breadcrumbs.slice(1).forEach((item, idx) => {
     res.push({
       label: item.title,
       onClick: final_func,

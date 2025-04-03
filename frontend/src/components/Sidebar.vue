@@ -11,15 +11,13 @@
       ondrop="return false;"
     >
       <SidebarItem
-        :label="'Search'"
-        class="mb-0.5"
+        label="Search"
+        class="mb-1"
         :is-collapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)"
       >
         <template #icon>
-          <Search
-            class="stroke-[1.5] h-4 w-4 text-gray-700 focus:outline-none"
-          />
+          <LucideSearch class="size-4" />
         </template>
         <template #right>
           <div
@@ -31,7 +29,14 @@
         </template>
       </SidebarItem>
       <SidebarItem
-        :label="'Notifications'"
+        :icon="sidebarItems[0].icon"
+        :label="sidebarItems[0].label"
+        :to="sidebarItems[0].route"
+        :is-collapsed="!isExpanded"
+        class="mb-0.5"
+      />
+      <SidebarItem
+        :label="'Inbox'"
         icon="inbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
@@ -49,7 +54,7 @@
         </template>
       </SidebarItem>
       <SidebarItem
-        v-for="item in sidebarItems"
+        v-for="item in sidebarItems.slice(1)"
         :key="item.label"
         :icon="item.icon"
         :label="item.label"
@@ -94,6 +99,7 @@ import { computed } from "vue"
 import { useStore } from "vuex"
 import Users from "./EspressoIcons/Users.vue"
 import { useRoute } from "vue-router"
+import { getTeams } from "../resources/files"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
@@ -105,38 +111,43 @@ const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
 
-const sidebarItems = computed(() => [
-  {
-    label: "Home",
-    route: `/t/${team.value}/`,
-    icon: Home,
-  },
-  {
-    label: "Team",
-    route: `/t/${team.value}/team`,
-    icon: Team,
-  },
-  {
-    label: "Recents",
-    route: `/t/${team.value}/recents`,
-    icon: Recent,
-  },
-  {
-    label: "Favourites",
-    route: `/t/${team.value}/favourites`,
-    icon: Star,
-  },
-  {
-    label: "Shared",
-    route: `/shared/`,
-    icon: Users,
-  },
-  {
-    label: "Trash",
-    route: `/t/${team.value}/trash`,
-    icon: Trash,
-  },
-])
+const sidebarItems = computed(() => {
+  const items = [
+    {
+      label: "Home",
+      route: `/t/${team.value}/`,
+      icon: Home,
+    },
+    {
+      label: "Team",
+      route: `/t/${team.value}/team`,
+      icon: Team,
+    },
+    {
+      label: "Recents",
+      route: `/t/${team.value}/recents`,
+      icon: Recent,
+    },
+    {
+      label: "Favourites",
+      route: `/t/${team.value}/favourites`,
+      icon: Star,
+    },
+    {
+      label: "Shared",
+      route: `/shared/`,
+      icon: Users,
+    },
+    {
+      label: "Trash",
+      route: `/t/${team.value}/trash`,
+      icon: Trash,
+    },
+  ]
+  if (getTeams.data && getTeams.data[team.value].title === "Your Drive")
+    items.splice(1, 1)
+  return items
+})
 
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)

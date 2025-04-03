@@ -122,7 +122,7 @@ export default {
       if (this.$route.meta.documentPage) {
         return false
       }
-      if (this.$route.name === "Notifications") {
+      if (this.$route.name === "Inbox") {
         return false
       }
       return true
@@ -146,7 +146,7 @@ export default {
         const DOUBLE_KEY_MAPS = {
           k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
           h: () => this.$router.push({ name: "Home", params }),
-          n: () => this.$router.push({ name: "Notifications", params }),
+          n: () => this.$router.push({ name: "Inbox", params }),
           t: () => this.$router.push({ name: "Team", params }),
           f: () => this.$router.push({ name: "Favourites", params }),
           r: () => this.$router.push({ name: "Recents", params }),
