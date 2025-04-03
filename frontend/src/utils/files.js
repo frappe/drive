@@ -68,7 +68,6 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  console.log(breadcrumbs)
   // BROKEN: shared files within a team go to home folder
   if (
     getTeams.data &&
@@ -93,7 +92,6 @@ export const setBreadCrumbs = (
           : null,
     })
   })
-  console.log(res)
   store.commit("setBreadcrumbs", res)
 }
 
