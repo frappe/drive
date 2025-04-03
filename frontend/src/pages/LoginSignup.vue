@@ -216,30 +216,31 @@
                   If this doesn't work, use
                   <a class="underline" href="/login">the old way</a>.
                 </p>
-
-                <div class="mt-6 border-t text-center">
-                  <div class="-translate-y-1/2 transform">
-                    <span
-                      class="relative bg-white px-2 text-sm font-medium leading-8 text-gray-800"
-                    >
-                      or
-                    </span>
+                <template v-if="isLogin">
+                  <div class="mt-6 border-t text-center">
+                    <div class="-translate-y-1/2 transform">
+                      <span
+                        class="relative bg-white px-2 text-sm font-medium leading-8 text-gray-800"
+                      >
+                        or
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <Button
-                  class="mb-2"
-                  v-for="provider in oAuthProviders.data"
-                  :key="provider.name"
-                  :loading="oAuth.loading"
-                  :link="provider.auth_url"
-                >
-                  <div class="flex items-center">
-                    <div v-html="provider.icon"></div>
-                    <span class="ml-2"
-                      >Continue with {{ provider.provider_name }}</span
-                    >
-                  </div>
-                </Button>
+                  <Button
+                    class="mb-2"
+                    v-for="provider in oAuthProviders.data"
+                    :key="provider.name"
+                    :loading="oAuth.loading"
+                    :link="provider.auth_url"
+                  >
+                    <div class="flex items-center">
+                      <div v-html="provider.icon"></div>
+                      <span class="ml-2"
+                        >Continue with {{ provider.provider_name }}</span
+                      >
+                    </div>
+                  </Button>
+                </template>
               </template>
             </form>
 

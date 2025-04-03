@@ -82,7 +82,7 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
             "user_type": "Website User",
         }
     )
-    user.flags.ignore_permissions = True
+    user.flags.no_welcome_mail = True
     user.flags.ignore_password_policy = True
     try:
         user.insert(ignore_permissions=True)
