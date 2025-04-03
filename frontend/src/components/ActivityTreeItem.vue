@@ -43,7 +43,7 @@
 import { getIconUrl } from "../utils/getIconUrl"
 import { formatMimeType } from "../utils/format"
 
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     default: "File",

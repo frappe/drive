@@ -327,10 +327,9 @@ const columnHeaders = [
 
 async function newLink() {
   if (!document.hasFocus()) return
-  const text = await navigator.clipboard.readText()
-  if (localStorage.getItem("prevClip") === text) return
-
   try {
+    const text = await navigator.clipboard.readText()
+    if (localStorage.getItem("prevClip") === text) return
     new URL(text)
     localStorage.setItem("prevClip", text)
     toast({
@@ -341,7 +340,6 @@ async function newLink() {
           label: "Add",
           action: () => {
             dialog.value = "l"
-            link.value = text
           },
         },
       ],

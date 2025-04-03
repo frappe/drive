@@ -43,7 +43,7 @@
               </p>
             </div>
             <template v-if="domainTeams.length">
-              <div class="flex flex-col ms-3 text-md gap-2">
+              <div class="flex flex-col text-md gap-2">
                 <p>
                   We noticed that you are on a
                   <strong>corporate domain</strong>.
@@ -79,12 +79,13 @@
                       requestInvite.submit({
                         team: domainTeams[0].name,
                       }),
-                        $router.go('/drive/teams')
+                        $router.replace({ path: '/drive/teams' })
                     "
                   >
                     Join {{ domainTeams[0].title }}
                   </Button>
                   <Button
+                    variant="solid"
                     v-else
                     @click="
                       typeof team_name === 'string'
@@ -207,7 +208,7 @@
                   class="mt-4"
                   :loading="sendOTP.loading"
                   variant="solid"
-                  @click="sendOTP.submit({ email })"
+                  @click="sendOTP.submit({ email, login: isLogin })"
                 >
                   {{ isLogin ? "Login" : "Join" }}
                 </Button>
@@ -315,8 +316,9 @@ const signup = createResource({
   },
   onSuccess(data) {
     otpValidated.value = true
-    if (data.location) window.location.replace(data.location)
-    if ((data.message || data)?.length) domainTeams.value = data.message || data
+    if (data?.location) window.location.replace(data.location)
+    if ((data?.message || data)?.length)
+      domainTeams.value = data.message || data
     else domainTeams.value = [{ name: null, title: null }]
   },
   onError(err) {
@@ -349,8 +351,9 @@ const sendOTP = createResource({
     toast("Verification code sent to your email")
   },
   onError(err) {
-    console.log(err)
-    toast("Failed to send verification code")
+    if (JSON.stringify(err).includes("not found"))
+      toast("Please sign up first!")
+    else toast("Failed to send verification code")
   },
 })
 const verifyOTP = createResource({
@@ -373,5 +376,6 @@ const createPersonalTeam = createResource({
 
 const requestInvite = createResource({
   url: "drive.api.product.request_invite",
+  onSuccess: () => window.location.replace("/drive/teams"),
 })
 </script>

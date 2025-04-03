@@ -4,7 +4,7 @@
       <Autocomplete
         v-if="fetchAllFolders.data"
         v-model="folderSearch"
-        placeholder="Go to..."
+        label="Go to..."
         :options="
           fetchAllFolders.data.filter((k) =>
             currentFolder === ''
@@ -14,54 +14,57 @@
         "
       ></Autocomplete>
       <div class="flex items-center justify-between max-h-7 my-4">
-        <div class="flex items-center my-2 justify-start">
-          <Dropdown
-            v-if="dropDownItems.length"
-            class="h-7"
-            :options="dropDownItems"
-          >
-            <Button variant="ghost">
-              <template #icon>
-                <svg
-                  class="w-4 text-gray-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="1" />
-                  <circle cx="19" cy="12" r="1" />
-                  <circle cx="5" cy="12" r="1" />
-                </svg>
-              </template>
-            </Button>
-          </Dropdown>
-          <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
-            {{ "/" }}
-          </span>
-          <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
-            <span
-              v-if="breadcrumbs.length > 1 && index > 0"
-              class="text-gray-600 mx-0.5"
+        <div class="flex flex-col">
+          <div class="flex items-center my-2 justify-start">
+            <p class="text-sm">Moving to:</p>
+            <Dropdown
+              v-if="dropDownItems.length"
+              class="h-7"
+              :options="dropDownItems"
             >
+              <Button variant="ghost">
+                <template #icon>
+                  <svg
+                    class="w-4 text-gray-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="19" cy="12" r="1" />
+                    <circle cx="5" cy="12" r="1" />
+                  </svg>
+                </template>
+              </Button>
+            </Dropdown>
+            <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
               {{ "/" }}
             </span>
-            <button
-              class="text-base cursor-pointer"
-              :class="
-                index === lastTwoBreadCrumbs.length - 1
-                  ? 'text-gray-900 text-base font-medium p-1'
-                  : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
-              "
-              @click="closeEntity(crumb.name)"
-            >
-              {{ crumb.title }}
-            </button>
+            <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
+              <span
+                v-if="breadcrumbs.length > 1 && index > 0"
+                class="text-gray-600 mx-0.5"
+              >
+                {{ "/" }}
+              </span>
+              <button
+                class="text-base cursor-pointer"
+                :class="
+                  index === lastTwoBreadCrumbs.length - 1
+                    ? 'text-gray-900 text-base font-medium p-1'
+                    : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
+                "
+                @click="closeEntity(crumb.name)"
+              >
+                {{ crumb.title }}
+              </button>
+            </div>
           </div>
         </div>
         <Button
@@ -153,6 +156,7 @@
 </template>
 <script setup>
 import { watch, computed, h, ref } from "vue"
+import { getIconUrl } from "@/utils/getIconUrl"
 import {
   createResource,
   Dialog,
@@ -164,7 +168,6 @@ import {
 import { formatMimeType } from "@/utils/format"
 import Home from "./EspressoIcons/Home.vue"
 import Team from "./EspressoIcons/Organization.vue"
-import Star from "./EspressoIcons/Star.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
@@ -245,7 +248,7 @@ const folderPermissions = createResource({
     entity_name: currentFolder.value,
   },
   onSuccess: (data) => {
-    let first = [{ name: "", title: "Home" }]
+    let first = [{ name: "", title: data.is_private ? "Home" : "Team" }]
     breadcrumbs.value = first.concat(data.breadcrumbs.slice(1))
   },
 })
@@ -266,15 +269,17 @@ watch(
   (newValue) => {
     switch (newValue) {
       case 0:
+        breadcrumbs.value = [{ name: "", title: "Home" }]
         folderContents.fetch({
-          entity_name: currentFolder.value,
+          entity_name: "",
           personal: 1,
         })
         break
       case 1:
+        breadcrumbs.value = [{ name: "", title: "Team" }]
         folderContents.fetch({
-          entity_name: currentFolder.value,
-          is_folder: 1,
+          entity_name: "",
+          personal: 0,
         })
         break
       case 2:
@@ -304,7 +309,10 @@ function closeEntity(name) {
   if (breadcrumbs.value.length > 1 && index !== breadcrumbs.value.length - 1) {
     breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
     currentFolder.value = breadcrumbs.value[breadcrumbs.value.length - 1].name
-    folderContents.fetch({ entity_name: currentFolder.value })
+    folderContents.fetch({
+      entity_name: currentFolder.value,
+      personal: currentFolder.value === "" ? 1 : -1,
+    })
   }
 }
 

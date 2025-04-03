@@ -24,7 +24,7 @@ def create_personal_team(email=frappe.session.user, team_name="Your Drive"):
         {
             "doctype": "Drive Team",
             "title": team_name,
-            "domain": email.split("@")[-1] if team_name != "Your Drive" else "",
+            "team_domain": email.split("@")[-1] if team_name != "Your Drive" else "",
         }
     ).insert(ignore_permissions=True)
     team.append("users", {"user": email, "is_admin": 1})
@@ -33,9 +33,9 @@ def create_personal_team(email=frappe.session.user, team_name="Your Drive"):
 
 
 @frappe.whitelist()
-def request_invite(team, email=frappe.session.user):
+def request_invite(team, email=None):
     invite = frappe.new_doc("Drive User Invitation")
-    invite.email = email
+    invite.email = email or frappe.session.user
     invite.team = team
     invite.status = "Proposed"
     invite.insert(ignore_permissions=True)
@@ -156,7 +156,7 @@ def oauth_providers():
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60)
-def send_otp(email):
+def send_otp(email, login):
     is_login = frappe.db.exists(
         "Account Request",
         {
@@ -165,6 +165,8 @@ def send_otp(email):
         },
     )
     if not is_login:
+        if login:
+            frappe.throw("Email account not found!")
         account_request = frappe.get_doc(
             {
                 "doctype": "Account Request",

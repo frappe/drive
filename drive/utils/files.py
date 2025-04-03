@@ -333,8 +333,8 @@ def get_valid_breadcrumbs(entity, user_access):
     accessible_path = []
     # BROKEN: temporarily disabled
     # If team/admin of this entity, then entire path
-    # if user_access.get("type") in ["admin", "team"]:
-    return file_path[1:]
+    if user_access.get("type") in ["admin", "team"]:
+        return file_path
 
     # Otherwise, slice where they lose read access.
     for k in file_path[::-1]:

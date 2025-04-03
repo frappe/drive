@@ -14,7 +14,6 @@
   <NewLinkDialog
     v-if="dialog === 'l'"
     v-model="dialog"
-    :link="link"
     :parent="$route.params.entityName"
     @success="
       (data) => {
