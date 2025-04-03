@@ -68,8 +68,12 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
+  console.log(breadcrumbs)
   // BROKEN: shared files within a team go to home folder
-  if (Object.keys(getTeams.data).includes(breadcrumbs[0].team)) {
+  if (
+    getTeams.data &&
+    Object.keys(getTeams.data).includes(breadcrumbs[0].team)
+  ) {
     res = [
       {
         label: is_private ? "Home" : getTeams.data[breadcrumbs[0].team].title,
@@ -77,8 +81,9 @@ export const setBreadCrumbs = (
         route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
+    breadcrumbs.splice(0, 1)
   }
-  breadcrumbs.slice(1).forEach((item, idx) => {
+  breadcrumbs.forEach((item, idx) => {
     res.push({
       label: item.title,
       onClick: final_func,
@@ -88,6 +93,7 @@ export const setBreadCrumbs = (
           : null,
     })
   })
+  console.log(res)
   store.commit("setBreadcrumbs", res)
 }
 

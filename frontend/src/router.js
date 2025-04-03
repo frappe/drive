@@ -143,7 +143,7 @@ const routes = [
     path: "/t/:team/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
-    meta: { isHybridRoute: true, filePage: true },
+    meta: { allowGuest: true, filePage: true },
     props: true,
   },
   {
@@ -158,7 +158,7 @@ const routes = [
     path: "/t/:team/folder/:entityName",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
-    meta: { sidebar: true, isHybridRoute: true },
+    meta: { sidebar: true, allowGuest: true },
     props: true,
   },
   {
@@ -172,7 +172,7 @@ const routes = [
   {
     path: "/t/:team/document/:entityName",
     name: "Document",
-    meta: { sidebar: false, documentPage: true, isHybridRoute: true },
+    meta: { sidebar: false, documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
     beforeEnter: [clearStore],
@@ -234,12 +234,6 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach((to) => {
-  // nextTick(
-  //   () =>
-  //     (document.title =
-  //       store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
-  //       to.name)
-  // )
   sessionStorage.setItem("currentRoute", to.href)
 })
 

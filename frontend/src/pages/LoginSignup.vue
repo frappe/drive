@@ -36,7 +36,7 @@
                     !isLogin
                       ? params.get("t")
                         ? "Powered by Frappe Drive."
-                        : "5 GB free - forever."
+                        : "Get 5 GB for free, no credit card required."
                       : "Welcome back!"
                   }}
                 </template>
@@ -267,7 +267,7 @@
 
 <script setup>
 import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
-import { ref, onMounted, computed, watch } from "vue"
+import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"

@@ -104,6 +104,8 @@ declare module 'vue' {
     Lock: typeof import('./src/components/EspressoIcons/Lock.vue')['default']
     LucideArrow: typeof import('~icons/lucide/arrow')['default']
     LucideArrowBigLeft: typeof import('~icons/lucide/arrow-big-left')['default']
+    LucideArrowOu: typeof import('~icons/lucide/arrow-ou')['default']
+    LucideArrowOutRight: typeof import('~icons/lucide/arrow-out-right')['default']
     LucideAxe: typeof import('~icons/lucide/axe')['default']
     LucideCheck: typeof import('~icons/lucide/check')['default']
     LucideCross: typeof import('~icons/lucide/cross')['default']

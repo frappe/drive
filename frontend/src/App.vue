@@ -9,13 +9,34 @@
     <!-- Main container no scroll -->
     <div class="flex w-screen h-screen antialiased overflow-hidden">
       <!-- Main container with scroll -->
+      <div
+        v-if="
+          !isLoggedIn && ['File', 'Folder', 'Document'].includes($route.name)
+        "
+        class="absolute flex gap-2 bottom-4 right-4 bg-white opacity-90 shadow-md text-gray-800 px-2 py-2 rounded-sm text-sm"
+      >
+        <FrappeDriveLogo class="w-8 h-8 rounded my-auto" />
+        <div>
+          Powered by
+          <span class="font-bold my-auto">Frappe Drive</span>
+          <br />
+          <Button
+            variant="outline"
+            size="sm"
+            class="mt-2"
+            @click="$router.push({ name: 'Signup' })"
+          >
+            Join now
+          </Button>
+        </div>
+      </div>
       <div class="h-full w-full flex flex-col">
         <SearchPopup
           v-if="isLoggedIn && showSearchPopup"
           v-model="showSearchPopup"
         />
         <div
-          v-if="isLoggedIn || $route.meta.isHybridRoute"
+          v-if="isLoggedIn || $route.meta.allowGuest"
           class="flex flex-col h-full overflow-hidden sm:flex-row"
         >
           <Sidebar
@@ -69,130 +90,96 @@
     <Toasts />
   </template>
 </template>
-<script>
+<script setup>
 import Navbar from "@/components/Navbar.vue"
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Sidebar from "@/components/Sidebar.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
-import MobileSidebar from "@/components/MobileSidebar.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
-import { Button, FeatherIcon } from "frappe-ui"
+import { Link } from "frappe-ui"
 import { Toasts } from "@/utils/toasts.js"
-import FilePicker from "./components/FilePicker.vue"
-import MoveDialog from "./components/MoveDialog.vue"
 import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
+import { useStore } from "vuex"
+import { onMounted, ref, computed } from "vue"
+import { useRoute } from "vue-router"
+import emitter from "@/emitter"
+import { LucideArrowUpRightFromSquare } from "lucide-vue-next"
+const store = useStore()
+const route = useRoute()
 
-export default {
-  name: "App",
-  components: {
-    Navbar,
-    Sidebar,
-    InfoSidebar,
-    MobileSidebar,
-    UploadTracker,
-    Button,
-    FeatherIcon,
-    Toasts,
-    FilePicker,
-    MoveDialog,
-    SearchPopup,
-    BottomBar,
-  },
-  data() {
-    return {
-      isOpen: false,
-      showMobileSidebar: false,
-      showSearchPopup: false,
+const showSearchPopup = ref(false)
+const isLoggedIn = computed(() => store.getters.isLoggedIn)
+const showUploadTracker = computed(
+  () => isLoggedIn.value && store.state.uploads.length > 0
+)
+const hideInfoSideBar = computed(() => {
+  if (route.meta.documentPage) {
+    return false
+  }
+  if (route.name === "Inbox") {
+    return false
+  }
+  return true
+})
+
+onMounted(() => {
+  addKeyboardShortcuts()
+  emitter.on("showSearchPopup", (data) => {
+    showSearchPopup.value = data
+  })
+  if (!isLoggedIn.value) return
+})
+
+function addKeyboardShortcuts() {
+  let tapped
+  window.addEventListener("keydown", (e) => {
+    let params = { team: localStorage.getItem("recentTeam") }
+    const DOUBLE_KEY_MAPS = {
+      k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
+      h: () => router.push({ name: "Home", params }),
+      n: () => router.push({ name: "Inbox", params }),
+      t: () => router.push({ name: "Team", params }),
+      f: () => router.push({ name: "Favourites", params }),
+      r: () => router.push({ name: "Recents", params }),
+      s: () => router.push({ name: "Shared" }),
     }
-  },
-  computed: {
-    isExpanded() {
-      return this.$store.state.IsSidebarExpanded
-    },
-    isLoggedIn() {
-      return this.$store.getters.isLoggedIn
-    },
-    isHybridRoute() {
-      return this.$route.meta.isHybridRoute
-    },
-    showUploadTracker() {
-      return this.isLoggedIn && this.$store.state.uploads.length > 0
-    },
-    hideInfoSideBar() {
-      if (this.$route.meta.documentPage) {
-        return false
-      }
-      if (this.$route.name === "Inbox") {
-        return false
-      }
-      return true
-    },
-  },
-  async mounted() {
-    this.addKeyboardShortcuts()
-    this.emitter.on("showSearchPopup", (data) => {
-      this.showSearchPopup = data
-    })
-    if (!this.isLoggedIn) return
-  },
-  methods: {
-    async currentPageEmitTrigger() {
-      this.emitter.emit("fetchFolderContents")
-    },
-    addKeyboardShortcuts() {
-      let tapped
-      window.addEventListener("keydown", (e) => {
-        let params = { team: localStorage.getItem("recentTeam") }
-        const DOUBLE_KEY_MAPS = {
-          k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
-          h: () => this.$router.push({ name: "Home", params }),
-          n: () => this.$router.push({ name: "Inbox", params }),
-          t: () => this.$router.push({ name: "Team", params }),
-          f: () => this.$router.push({ name: "Favourites", params }),
-          r: () => this.$router.push({ name: "Recents", params }),
-          s: () => this.$router.push({ name: "Shared" }),
-        }
 
-        const KEY_MAPS = [
-          [
-            (e) => e.metaKey && e.shiftKey && e.key == "ArrowRight",
-            () => this.$store.commit("setIsSidebarExpanded", true),
-          ],
-          [
-            (e) => e.metaKey && e.shiftKey && e.key == "ArrowLeft",
-            () => this.$store.commit("setIsSidebarExpanded", false),
-          ],
-          [
-            (e) => e.metaKey && e.key == "k",
-            () => (this.showSearchPopup = true),
-          ],
-        ]
-        if (
-          e.target.classList.contains("ProseMirror") ||
-          e.target.tagName === "INPUT" ||
-          e.target.tagName === "TEXTAREA"
-        )
-          return
+    const KEY_MAPS = [
+      [
+        (e) => e.metaKey && e.shiftKey && e.key == "ArrowRight",
+        () => this.$store.commit("setIsSidebarExpanded", true),
+      ],
+      [
+        (e) => e.metaKey && e.shiftKey && e.key == "ArrowLeft",
+        () => this.$store.commit("setIsSidebarExpanded", false),
+      ],
+      [(e) => e.metaKey && e.key == "k", () => (this.showSearchPopup = true)],
+    ]
+    if (
+      e.target.classList.contains("ProseMirror") ||
+      e.target.tagName === "INPUT" ||
+      e.target.tagName === "TEXTAREA"
+    )
+      return
 
-        for (const key in DOUBLE_KEY_MAPS) {
-          if (e.key === key) {
-            if (tapped === key) {
-              DOUBLE_KEY_MAPS[key]()
-              tapped = null
-            } else {
-              tapped = key
-              setTimeout(() => (tapped = null), 500)
-            }
-          }
+    for (const key in DOUBLE_KEY_MAPS) {
+      if (e.key === key) {
+        if (tapped === key) {
+          DOUBLE_KEY_MAPS[key]()
+          tapped = null
+        } else {
+          tapped = key
+          setTimeout(() => (tapped = null), 500)
         }
-        for (let [keys, action] of KEY_MAPS) {
-          if (keys(e)) {
-            action()
-            document.activeElement.blur()
-          }
-        }
-      })
-    },
-  },
+      }
+    }
+    for (let [keys, action] of KEY_MAPS) {
+      if (keys(e)) {
+        action()
+        document.activeElement.blur()
+      }
+    }
+  })
 }
 </script>
