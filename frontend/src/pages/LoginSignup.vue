@@ -212,10 +212,6 @@
                 >
                   {{ isLogin ? "Login" : "Join" }}
                 </Button>
-                <p class="text-center text-sm my-3">
-                  If this doesn't work, use
-                  <a class="underline" href="/login">the old way</a>.
-                </p>
                 <template v-if="isLogin">
                   <div class="mt-6 border-t text-center">
                     <div class="-translate-y-1/2 transform">
