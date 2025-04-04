@@ -104,9 +104,6 @@ const settingsItems = computed(() => {
           component: markRaw(TeamSwitcher),
         },
         {
-          component: markRaw(AppSwitcher),
-        },
-        {
           icon: Docs,
           label: "Documentation",
           onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
