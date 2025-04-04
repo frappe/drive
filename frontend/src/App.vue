@@ -31,6 +31,9 @@
         </div>
       </div>
       <div class="h-full w-full flex flex-col">
+        <div class="bg-black text-white text-sm text-center py-2 sm:hidden">
+          Drive works best on desktop.
+        </div>
         <SearchPopup
           v-if="isLoggedIn && showSearchPopup"
           v-model="showSearchPopup"

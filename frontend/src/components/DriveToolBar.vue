@@ -372,7 +372,7 @@ const possibleButtons = [
   },
   {
     route: "Trash",
-    label: "Empty Trash",
+    label: "Empty",
     icon: "trash",
     entities: getTrash,
     theme: "red",
