@@ -52,15 +52,9 @@ export default {
     isExpanded() {
       return this.$store.state.IsSidebarExpanded
     },
-    /* currentSideBarWidth: {
-        get() {
-          return this.currentSideBarWidth = this.$store.state.IsSidebarExpanded ? 280 : 60
-        },
-        set(val) {
-          console.log(val)
-          return this.currentSideBarWidth = val
-        }
-      }, */
+    team() {
+      return this.$route.params.team || localStorage.getItem("recentTeam")
+    },
     sidebarItems() {
       return [
         /*  {
@@ -71,7 +65,7 @@ export default {
           }, */
         {
           label: "Home",
-          route: "/home",
+          route: "/t/" + this.team,
           icon: "home",
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Home"
@@ -79,7 +73,7 @@ export default {
         },
         {
           label: "Recents",
-          route: "/recents",
+          route: "/t/" + this.team + "/recents",
           icon: "clock",
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Recents"
@@ -87,7 +81,7 @@ export default {
         },
         {
           label: "Favourites",
-          route: "/favourites",
+          route: "/t/" + this.team + "/favourites",
           icon: "star",
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Favourites"
@@ -103,7 +97,7 @@ export default {
         },
         {
           label: "Trash",
-          route: "/trash",
+          route: "/t/" + this.team + "/trash",
           icon: "trash-2",
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Trash"
