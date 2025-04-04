@@ -169,8 +169,7 @@
                 v-model="generalAccess.access"
                 :options="[
                   { label: 'Restricted', value: 'restricted' },
-                  // BROKEN: this is actually public underneath.
-                  { label: 'Team', value: 'public' },
+                  { label: 'Public', value: 'public' },
                 ]"
                 :hideSearch="true"
                 @update:model-value="
@@ -253,7 +252,7 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import {
   Avatar,
   Dialog,
@@ -262,6 +261,7 @@ import {
   Autocomplete,
   DatePicker,
   LoadingIndicator,
+  createResource,
 } from "frappe-ui"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
@@ -282,6 +282,21 @@ const generalAccess = ref({
   access: { value: "restricted", label: "Restricted" },
   type: [{ value: "read", label: "Read" }],
 })
+const getPublicAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  makeParams: (params) => ({ ...params, user: "Guest" }),
+  onSuccess: (data) => {
+    if (!data?.length) return
+    const res = Object.keys(data)
+      .filter((k) => data[k] === 1)
+      .map((k) => ({ value: k, label: k[0].toUpperCase() + k.slice(1) }))
+    console.log(res)
+    generalAccess.value.access = { value: "public", label: "Public" }
+    generalAccess.value.type = res
+  },
+})
+getPublicAccess.fetch({ entity: props.entityName })
+
 const share = ref({
   name: "",
   access: [
@@ -307,7 +322,7 @@ const accessMessage = computed(() => {
       ? modifiers[0]
       : modifiers.slice(0, -1).join(", ") +
         ` and ${modifiers[modifiers.length - 1]}`) + " this file."
-  return "Anyone on this team can " + modifier
+  return "Anyone on this planet can " + modifier
 })
 function addShare() {
   let r = {

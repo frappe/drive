@@ -1,5 +1,6 @@
 <template>
   <FrappeListView
+    class="select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -9,6 +10,7 @@
       showTooltip: true,
       resizeColumn: true,
       selectionWord: (v) => (v === 1 ? 'item' : 'items'),
+      getRowRoute: (getLinkStem) => '',
     }"
   >
     <ListHeader />
@@ -32,6 +34,7 @@
               :rows="group.rows"
               :context-menu="contextMenu"
               :set-active="setActive"
+              :items-selected="selections.size > 0"
               :selected="(row) => selectedRow?.name === row.name"
               :hovered="(row) => hoveredRow === row.name"
               @mouseenter="(row) => (hoveredRow = row.name)"
@@ -42,6 +45,7 @@
         <div v-else>
           <CustomListRow
             :rows="formattedRows"
+            :items-selected="selections.size > 0"
             :context-menu="contextMenu"
             :set-active="setActive"
             :selected="(row) => selectedRow?.name === row.name"
@@ -156,7 +160,7 @@ const selectedColumns = [
   {
     label: "Size",
     key: "",
-    getLabel: ({ row }) => row.file_size_pretty,
+    getLabel: ({ row }) => row.file_size_pretty, // || "<em>empty</em>",
   },
   { label: "", key: "options", align: "right", width: "10px" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
@@ -186,7 +190,8 @@ const dropdownActionItems = (row) => {
 }
 
 const contextMenu = (event, row) => {
-  if (event.ctrlKey) openEntity(localStorage.getItem("recentTeam"), row, true)
+  if (selections.value.size > 0) return
+  if (event.ctrlKey) openEntity(route.params.team, row, true)
   selectedRow.value = row
   rowEvent.value = event
   event.stopPropagation()

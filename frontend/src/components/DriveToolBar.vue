@@ -1,16 +1,22 @@
 <template>
   <div
-    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-3"
+    class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-[10px]"
   >
     <div class="flex w-full justify-start items-center flex-wrap">
       <div class="flex flex-col">
-        <Breadcrumbs :items="$store.state.breadcrumbs" :class="'h-[12px]'" />
+        <Breadcrumbs
+          :items="$store.state.breadcrumbs"
+          :class="'select-none h-[12px]'"
+        />
         <p v-if="selections.length" class="text-sm text-gray-800 px-0.5 pt-0.5">
           {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
           selected
         </p>
       </div>
-      <div class="flex gap-3 ml-4" v-if="selections.length">
+      <div
+        class="flex gap-3 ml-4 w-[30%] overflow-scroll md:w-fit"
+        v-if="selections.length"
+      >
         <Button
           v-for="(item, index) in actionItems
             .filter((i) => i.important && (selections.length === 1 || i.multi))
@@ -77,7 +83,10 @@
           By you
         </Button>
       </div>
-      <div class="flex flex-wrap items-start justify-end gap-1 ml-3">
+      <div
+        v-if="activeFilters.length"
+        class="flex flex-wrap items-start justify-end gap-1 ml-3"
+      >
         <div v-for="(item, index) in activeFilters" :key="index">
           <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
             <component :is="item.icon"></component>
@@ -152,15 +161,11 @@
           </div>
         </Dropdown>
         <Dropdown :options="filterItems" placement="right">
-          <Button
-            >Filter
-            <template #prefix>
+          <Tooltip text="Filter">
+            <Button>
               <Filter />
-            </template>
-            <template #suffix>
-              <ChevronDown />
-            </template>
-          </Button>
+            </Button>
+          </Tooltip>
         </Dropdown>
         <div
           v-if="false"
@@ -219,11 +224,13 @@
           placement="left"
           class="basis-5/12 lg:basis-auto"
         >
-          <Button variant="solid">
-            <div class="flex">
-              <FeatherIcon name="plus" class="w-4 h-4" />
-            </div>
-          </Button>
+          <Tooltip text="Add or upload">
+            <Button variant="solid">
+              <div class="flex">
+                <FeatherIcon name="plus" class="w-4 h-4" />
+              </div>
+            </Button>
+          </Tooltip>
         </Dropdown>
       </div>
     </div>
@@ -236,7 +243,6 @@ import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
 import DownArrow from "./EspressoIcons/DownArrow.vue"
 import Filter from "./EspressoIcons/Filter.vue"
-import ChevronDown from "./EspressoIcons/ChevronDown.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import Archive from "./MimeIcons/Archive.vue"
 import Document from "./MimeIcons/Document.vue"
@@ -366,7 +372,7 @@ const possibleButtons = [
   },
   {
     route: "Trash",
-    label: "Empty Trash",
+    label: "Empty",
     icon: "trash",
     entities: getTrash,
     theme: "red",

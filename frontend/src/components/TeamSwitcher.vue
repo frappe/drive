@@ -48,12 +48,12 @@ import { Popover } from "frappe-ui"
 import { FeatherIcon } from "frappe-ui"
 import { getTeams } from "@/resources/files"
 import { computed } from "vue"
+import { useRoute } from "vue-router"
 
 getTeams.fetch()
+const route = useRoute()
 const teams = computed(() =>
-  Object.keys(getTeams.data).filter(
-    (t) => t !== localStorage.getItem("recentTeam")
-  )
+  Object.keys(getTeams.data).filter((k) => k !== route.params.team)
 )
 
 defineProps({

@@ -1,10 +1,10 @@
 import JSZip from "jszip"
 import { toast } from "./toasts"
 
-export function entitiesDownload(entities) {
+export function entitiesDownload(team, entities) {
   if (entities.length === 1) {
     return entities[0].is_group
-      ? folderDownload(entities[0])
+      ? folderDownload(team, entities[0])
       : (window.location.href = `/api/method/drive.api.files.get_file_content?entity_name=${entities[0].name}&trigger_download=1`)
   }
   const t = toast("Preparing download...")
@@ -18,7 +18,7 @@ export function entitiesDownload(entities) {
   const processEntity = (entity, parentFolder) => {
     if (entity.is_group) {
       const folder = parentFolder.folder(entity.title)
-      return get_children(entity.name).then((children) => {
+      return get_children(team, entity.name).then((children) => {
         const promises = children.map((childEntity) =>
           processEntity(childEntity, folder)
         )
@@ -53,11 +53,11 @@ export function entitiesDownload(entities) {
     .catch(console.error)
 }
 
-export function folderDownload(root_entity) {
+export function folderDownload(team, root_entity) {
   const folderName = root_entity.title
   const zip = new JSZip()
 
-  temp(root_entity.name, zip)
+  temp(team, root_entity.name, zip)
     .then(() => {
       return zip.generateAsync({ type: "blob", streamFiles: true })
     })
@@ -75,14 +75,14 @@ export function folderDownload(root_entity) {
     })
 }
 
-function temp(entity_name, parentZip) {
+function temp(team, entity_name, parentZip) {
   return new Promise((resolve, reject) => {
-    get_children(entity_name)
+    get_children(team, entity_name)
       .then((result) => {
         const promises = result.map((entity) => {
           if (entity.is_group) {
             const folder = parentZip.folder(entity.title)
-            return temp(entity.name, folder)
+            return temp(team, entity.name, folder)
           } else {
             return get_file_content(entity.name).then((fileContent) => {
               parentZip.file(entity.title, fileContent)
@@ -120,8 +120,10 @@ function get_file_content(entity_name) {
   })
 }
 
-function get_children(entity_name) {
-  const url = "/api/method/" + `drive.api.list.files?entity_name=${entity_name}`
+function get_children(team, entity_name) {
+  const url =
+    "/api/method/" +
+    `drive.api.list.files?team=${team}&entity_name=${entity_name}`
   return fetch(url, {
     method: "GET",
     headers: {

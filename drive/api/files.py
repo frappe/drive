@@ -816,6 +816,7 @@ def search(query, team):
         LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
         WHERE `tabDrive File`.team = {team}
             AND `tabDrive File`.`is_active` = 1
+            AND `tabDrive File`.`parent_entity` <> ''
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
         GROUP  BY `tabDrive File`.`name` 
         """,

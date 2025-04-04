@@ -91,8 +91,8 @@ def get_country_info():
             "query",
         ]
 
-        res = requests.get(f"https://pro.ip-api.com/json/{ip}?fields={','.join(fields)}")
         try:
+            res = requests.get(f"https://pro.ip-api.com/json/{ip}?fields={','.join(fields)}")
             data = res.json()
             if data.get("status") != "fail":
                 return data

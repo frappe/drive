@@ -25,7 +25,7 @@
       "label": "Storage"
     },
     {
-      "default": "512",
+      "default": "5120",
       "description": "In MB",
       "fieldname": "quota",
       "fieldtype": "Int",
@@ -39,7 +39,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-03-24 16:32:22.697064",
+  "modified": "2025-04-03 16:00:19.919074",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Team",

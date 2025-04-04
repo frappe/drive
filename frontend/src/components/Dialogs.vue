@@ -14,7 +14,6 @@
   <NewLinkDialog
     v-if="dialog === 'l'"
     v-model="dialog"
-    :link="link"
     :parent="$route.params.entityName"
     @success="
       (data) => {
@@ -31,8 +30,11 @@
     @success="
       (data) => {
         let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
-        handleListMutate({ data })
         l.label = data.title
+        store.commit('setBreadcrumbs', store.state.breadcrumbs)
+        store.state.activeEntity.title = data.title
+        handleListMutate({ data })
+        setTitle(data.title)
         resetDialog()
       }
     "
@@ -119,4 +121,5 @@ const mutate = (data) => {
   data.data.map((k) => handleListMutate({ ...data, data: k }))
   resetDialog()
 }
+const setTitle = (title) => (window.document.title = title)
 </script>

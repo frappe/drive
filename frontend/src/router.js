@@ -22,6 +22,7 @@ function setRootBreadCrumb(to) {
     store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
 }
+
 const routes = [
   {
     path: "/",
@@ -87,7 +88,7 @@ const routes = [
   },
   {
     path: "/t/:team/notifications",
-    name: "Notifications",
+    name: "Inbox",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
     beforeEnter: [setRootBreadCrumb, clearStore],
@@ -142,7 +143,7 @@ const routes = [
     path: "/t/:team/file/:entityName",
     name: "File",
     component: () => import("@/pages/File.vue"),
-    meta: { isHybridRoute: true, filePage: true },
+    meta: { allowGuest: true, filePage: true },
     props: true,
   },
   {
@@ -157,7 +158,7 @@ const routes = [
     path: "/t/:team/folder/:entityName",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
-    meta: { sidebar: true, isHybridRoute: true },
+    meta: { sidebar: true, allowGuest: true },
     props: true,
   },
   {
@@ -171,7 +172,7 @@ const routes = [
   {
     path: "/t/:team/document/:entityName",
     name: "Document",
-    meta: { sidebar: false, documentPage: true, isHybridRoute: true },
+    meta: { sidebar: false, documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
     beforeEnter: [clearStore],
@@ -180,12 +181,18 @@ const routes = [
     path: "/signup",
     name: "Signup",
     component: () => import("@/pages/LoginSignup.vue"),
+    beforeEnter: () => {
+      if (store.getters.isLoggedIn) return "/"
+    },
     meta: { allowGuest: true },
   },
   {
     path: "/login",
     name: "Login",
     component: () => import("@/pages/LoginSignup.vue"),
+    beforeEnter: () => {
+      if (store.getters.isLoggedIn) return "/"
+    },
     meta: { allowGuest: true },
   },
   {
@@ -220,30 +227,13 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
     next("/login")
-  } else if (!to.meta.allowGuest) {
-    const team = to.params.team || from.params.team
-    await getTeams.fetch()
-    const teams = Object.keys(getTeams.data.message || getTeams.data)
-    if (teams.includes(team)) {
-      localStorage.setItem("recentTeam", team)
-    } else {
-      const val = localStorage.getItem("recentTeam")
-      if (!teams.includes(val)) localStorage.setItem("recentTeam", teams[0])
-    }
-    next()
   } else {
+    if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
     next()
   }
 })
 
 router.afterEach((to) => {
-  setTimeout(
-    () =>
-      (document.title =
-        store.state.breadcrumbs[store.state.breadcrumbs.length - 1].label ||
-        to.name),
-    150
-  )
   sessionStorage.setItem("currentRoute", to.href)
 })
 

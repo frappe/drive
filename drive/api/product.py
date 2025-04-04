@@ -10,26 +10,32 @@ CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
 @frappe.whitelist()
 def get_domain_teams(domain):
-    return frappe.db.get_all("Drive Team", {"team_domain": ["like", "%" + domain]}, pluck="name")
+    return frappe.db.get_all(
+        "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
+    )
 
 
 @frappe.whitelist()
-def create_personal_team(user):
+def create_personal_team(email=frappe.session.user, team_name="Your Drive"):
+    """
+    Used for creating teams, personal or not.
+    """
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
-            "title": "Your Drive",
-        },
+            "title": team_name,
+            "team_domain": email.split("@")[-1] if team_name != "Your Drive" else "",
+        }
     ).insert(ignore_permissions=True)
-    team.append("users", {"user": user.email, "is_admin": 1})
+    team.append("users", {"user": email, "is_admin": 1})
     team.save()
-    team = team.name
+    return team.name
 
 
 @frappe.whitelist()
-def request_invite(team, email=frappe.session.user):
+def request_invite(team, email=None):
     invite = frappe.new_doc("Drive User Invitation")
-    invite.email = email
+    invite.email = email or frappe.session.user
     invite.team = team
     invite.status = "Proposed"
     invite.insert(ignore_permissions=True)
@@ -50,7 +56,6 @@ def get_invites(email):
 
 @frappe.whitelist()
 def get_team_invites(team):
-    print(team)
     invites = frappe.db.get_list(
         "Drive User Invitation",
         fields=["creation", "status", "email", "name"],
@@ -77,7 +82,7 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
             "user_type": "Website User",
         }
     )
-    user.flags.ignore_permissions = True
+    user.flags.no_welcome_mail = True
     user.flags.ignore_password_policy = True
     try:
         user.insert(ignore_permissions=True)
@@ -104,7 +109,7 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
         # Create team for this user
         domain = user.email.split("@")[-1]
         if domain in CORPORATE_DOMAINS:
-            team = create_personal_team()
+            team = create_personal_team(user.email)
         else:
             return get_domain_teams(domain)
 
@@ -142,7 +147,7 @@ def oauth_providers():
                 {
                     "name": provider.name,
                     "provider_name": provider.provider_name,
-                    "auth_url": get_oauth2_authorize_url(provider.name, "/g"),
+                    "auth_url": get_oauth2_authorize_url(provider.name, "/drive"),
                     "icon": icon,
                 }
             )
@@ -151,7 +156,7 @@ def oauth_providers():
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60)
-def send_otp(email):
+def send_otp(email, login):
     is_login = frappe.db.exists(
         "Account Request",
         {
@@ -160,6 +165,8 @@ def send_otp(email):
         },
     )
     if not is_login:
+        if login:
+            frappe.throw("Email account not found!")
         account_request = frappe.get_doc(
             {
                 "doctype": "Account Request",
@@ -185,7 +192,6 @@ def verify_otp(account_request, otp):
     if req.signed_up:
         frappe.local.login_manager.login_as(req.email)
         return {"location": "/drive"}
-    req.signed_up = 1
     req.save(ignore_permissions=True)
 
 

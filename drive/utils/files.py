@@ -129,7 +129,7 @@ def get_home_folder(team):
         .run(as_dict=True)
     )
     if not ls:
-        error_msg = "Team doesn't exist - please create in Desk."
+        error_msg = "This team doesn't exist - please create in Desk."
         team_names = frappe.get_all(
             "Drive Team Member",
             pluck="parent",
@@ -140,7 +140,7 @@ def get_home_folder(team):
         )
         if team_names:
             error_msg += f"<br /><br />Or maybe you want <a class='text-black' href='/drive/t/{team_names[0]}'>{frappe.db.get_value('Drive Team', team_names[0], 'title')}</a>?"
-        frappe.throw(error_msg)
+        frappe.throw(error_msg, {"error": frappe.NotFound})
     return ls[0]
 
 
@@ -333,8 +333,8 @@ def get_valid_breadcrumbs(entity, user_access):
     accessible_path = []
     # BROKEN: temporarily disabled
     # If team/admin of this entity, then entire path
-    # if user_access.get("type") in ["admin", "team"]:
-    return file_path[1:]
+    if user_access.get("type") in ["admin", "team"]:
+        return file_path
 
     # Otherwise, slice where they lose read access.
     for k in file_path[::-1]:

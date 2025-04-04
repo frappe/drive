@@ -119,7 +119,9 @@ def files(
     if personal == 0 or personal == "0":
         query = query.where(DriveFile.is_private == 0)
     elif personal == 1 or personal == "1":
-        query = query.where((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
+        query = query.where(DriveFile.is_private == 1)
+        if entity_name == home:
+            query = query.where(DriveFile.owner == frappe.session.user)
 
     query = query.select(Recents.last_interaction.as_("accessed"))
     if tag_list:

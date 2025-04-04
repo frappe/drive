@@ -19,8 +19,6 @@ class AccountRequest(Document):
         # if not is_valid_email_address(self.email):
         #     frappe.throw(f"{self.email} is not a valid email address")
         self.request_key = random_string(32)
-        if not self.invite:
-            self.set_otp()
 
         self.ip_address = frappe.local.request_ip
         geo_location = get_country_info() or {}
@@ -32,6 +30,7 @@ class AccountRequest(Document):
 
     def after_insert(self):
         if not self.invite:
+            self.set_otp()
             self.send_otp()
         # Telemetry: Only capture if it's not a saas signup or invited by parent team. Also don't capture if user already have a team
         # if not (
@@ -54,7 +53,7 @@ class AccountRequest(Document):
     def set_otp(self):
         self.otp = generate_otp()
         self.otp_generated_at = frappe.utils.now_datetime()
-        # self.save(ignore_permissions=True)
+        self.save(ignore_permissions=True)
 
     def send_otp(self):
         frappe.sendmail(

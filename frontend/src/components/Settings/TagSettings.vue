@@ -1,12 +1,7 @@
 <template>
-  <div class="flex items-center mb-6">
+  <div class="flex items-center mb-6 mr-4">
     <h1 class="font-semibold">Tags</h1>
-    <Button
-      variant="solid"
-      icon-left="plus"
-      class="ml-auto"
-      @click="showNewTagDialog = true"
-    >
+    <Button variant="solid" icon-left="plus" @click="showNewTagDialog = true">
       New
     </Button>
   </div>

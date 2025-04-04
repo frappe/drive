@@ -1,5 +1,7 @@
 <template>
+  <FolderContentsError v-if="file.error" :error="file.error" />
   <div
+    v-else
     class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
   >
     <div
@@ -54,6 +56,7 @@ import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import { prettyData, setBreadCrumbs } from "@/utils/files"
+import FolderContentsError from "@/components/FolderContentsError.vue"
 
 const router = useRouter()
 const store = useStore()
@@ -131,21 +134,11 @@ let file = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
+    document.title = data.title
     store.commit("setActiveEntity", data)
     setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
       emitter.emit("rename")
     )
-  },
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      store.commit("setError", {
-        iconName: "alert-triangle",
-        iconClass: "fill-amber-500 stroke-white",
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-    }
-    router.replace({ name: "Error" })
   },
 })
 

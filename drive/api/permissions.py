@@ -131,9 +131,12 @@ def get_entity_with_permissions(entity_name):
     entity = frappe.db.get_value(
         "Drive File", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
     )
+    if not entity:
+        frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
+
     user_access = get_user_access(entity, frappe.session.user)
     if user_access.get("read") == 0:
-        frappe.throw("Not found", frappe.NotFound)
+        frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
 
     owner_info = (
         frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
