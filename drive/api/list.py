@@ -120,9 +120,15 @@ def files(
         query = query.where(DriveFile.is_private == 0)
     elif personal == 1 or personal == "1":
         query = query.where(DriveFile.is_private == 1)
+        # Temporary hack: the correct way would be to check permissions on all children
         if entity_name == home:
             query = query.where(DriveFile.owner == frappe.session.user)
-
+    else:
+        # Both team and personal files
+        query = query.where(
+            (DriveFile.is_private == 0)
+            | ((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
+        )
     query = query.select(Recents.last_interaction.as_("accessed"))
     if tag_list:
         tag_list = json.loads(tag_list)

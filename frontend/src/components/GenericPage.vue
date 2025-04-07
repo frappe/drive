@@ -10,7 +10,6 @@
       :action-items="actionItems"
     />
 
-    <!-- This sucks, redo it -->
     <FolderContentsError
       v-if="verify?.error || getEntities.error"
       :error="verify?.error || getEntities.error"
@@ -18,7 +17,9 @@
     <NoFilesSection
       v-else-if="rows?.length === 0"
       :icon="icon"
-      :primary-message="primaryMessage"
+      :primary-message="
+        activeFilters.length ? 'Nothing found.' : primaryMessage
+      "
       :secondary-message="
         activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
       "
@@ -86,7 +87,6 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref(null)
-const link = ref(null)
 const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)

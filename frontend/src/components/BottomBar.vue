@@ -3,7 +3,7 @@
     <div
       ondragstart="return false;"
       ondrop="return false;"
-      class="grid grid-cols-5 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
+      class="grid grid-cols-6 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
     >
       <router-link
         v-for="item in sidebarItems"
@@ -21,8 +21,8 @@
           :href="href"
           @click="navigate && $emit('toggleMobileSidebar')"
         >
-          <FeatherIcon
-            :name="item.icon"
+          <component
+            :is="item.icon"
             class="stroke-1.5 self-center w-auto h-5.5 text-gray-800"
           />
         </a>
@@ -38,6 +38,12 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui"
+import Recent from "./EspressoIcons/Recent.vue"
+import Star from "./EspressoIcons/Star.vue"
+import Home from "./EspressoIcons/Home.vue"
+import Trash from "./EspressoIcons/Trash.vue"
+import Team from "./EspressoIcons/Organization.vue"
+import Users from "./EspressoIcons/Users.vue"
 
 export default {
   name: "Sidebar",
@@ -57,16 +63,16 @@ export default {
     },
     sidebarItems() {
       return [
-        /*  {
-            label: "Search",
-            route: () => {},
-            icon: "search",
-            highlight: () => {},
-          }, */
+        // {
+        //   label: "Search",
+        //   route: () => {},
+        //   icon: "search",
+        //   highlight: () => {},
+        // },
         {
           label: "Home",
           route: "/t/" + this.team,
-          icon: "home",
+          icon: Home,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Home"
           },
@@ -74,7 +80,7 @@ export default {
         {
           label: "Recents",
           route: "/t/" + this.team + "/recents",
-          icon: "clock",
+          icon: Recent,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Recents"
           },
@@ -82,15 +88,23 @@ export default {
         {
           label: "Favourites",
           route: "/t/" + this.team + "/favourites",
-          icon: "star",
+          icon: Star,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Favourites"
           },
         },
         {
+          label: "Team",
+          route: "/t/" + this.team + "/team",
+          icon: Team,
+          highlight: () => {
+            return this.$store.state.breadcrumbs[0].name === "Team"
+          },
+        },
+        {
           label: "Shared",
           route: "/shared",
-          icon: "users",
+          icon: Users,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Shared"
           },
@@ -98,7 +112,7 @@ export default {
         {
           label: "Trash",
           route: "/t/" + this.team + "/trash",
-          icon: "trash-2",
+          icon: Trash,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Trash"
           },

@@ -86,7 +86,6 @@
 <script setup>
 import PrimaryDropDown from "./PrimaryDropdown.vue"
 import { ArrowLeftFromLine } from "lucide-vue-next"
-import Search from "./EspressoIcons/Search.vue"
 import Recent from "./EspressoIcons/Recent.vue"
 import Star from "./EspressoIcons/Star.vue"
 import Home from "./EspressoIcons/Home.vue"
@@ -119,11 +118,6 @@ const sidebarItems = computed(() => {
       icon: Home,
     },
     {
-      label: "Team",
-      route: `/t/${team.value}/team`,
-      icon: Team,
-    },
-    {
       label: "Recents",
       route: `/t/${team.value}/recents`,
       icon: Recent,
@@ -132,6 +126,11 @@ const sidebarItems = computed(() => {
       label: "Favourites",
       route: `/t/${team.value}/favourites`,
       icon: Star,
+    },
+    {
+      label: "Team",
+      route: `/t/${team.value}/team`,
+      icon: Team,
     },
     {
       label: "Shared",

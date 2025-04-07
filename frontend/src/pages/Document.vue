@@ -120,7 +120,6 @@ const document = createResource({
     entity_name: props.entityName,
   },
   onSuccess(data) {
-    document.title = data.title
     data.size_in_bytes = data.file_size
     data.file_size = formatSize(data.file_size)
     data.modified = formatDate(data.modified)
@@ -150,6 +149,7 @@ const document = createResource({
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
       data.write && emitter.emit("rename")
     })
+    document.title = data.title
   },
 })
 

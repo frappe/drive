@@ -6,6 +6,7 @@
     :show-sort="false"
     :icon="Recent"
     primary-message="No recent files"
+    secondary-message="Try opening something!"
   />
 </template>
 

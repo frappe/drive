@@ -75,6 +75,7 @@
             move.submit({
               entity_names: entities.map((obj) => obj.name),
               new_parent: currentFolder,
+              is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
             })
           "
         >
@@ -85,7 +86,7 @@
         </Button>
       </div>
       <Tabs as="div" v-model="tabIndex" :tabs="tabs">
-        <template #tab-panel="{ tab }">
+        <template #tab-panel>
           <div class="py-1">
             <div
               v-if="folderContents.data?.length"
@@ -239,7 +240,7 @@ const tabs = [
 ]
 
 const tabIndex = ref(0)
-const breadcrumbs = ref([{ name: "", title: "Home" }])
+const breadcrumbs = ref([{ name: "", title: "Home", is_private: 1 }])
 const folderSearch = ref({})
 
 const folderPermissions = createResource({
@@ -248,6 +249,7 @@ const folderPermissions = createResource({
     entity_name: currentFolder.value,
   },
   onSuccess: (data) => {
+    console.log(data)
     let first = [{ name: "", title: data.is_private ? "Home" : "Team" }]
     breadcrumbs.value = first.concat(data.breadcrumbs.slice(1))
   },
@@ -269,14 +271,14 @@ watch(
   (newValue) => {
     switch (newValue) {
       case 0:
-        breadcrumbs.value = [{ name: "", title: "Home" }]
+        breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }]
         folderContents.fetch({
           entity_name: "",
           personal: 1,
         })
         break
       case 1:
-        breadcrumbs.value = [{ name: "", title: "Team" }]
+        breadcrumbs.value = [{ name: "", title: "Team", is_private: 0 }]
         folderContents.fetch({
           entity_name: "",
           personal: 0,

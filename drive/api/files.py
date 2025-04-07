@@ -770,7 +770,7 @@ def get_title(entity_name):
 
 
 @frappe.whitelist()
-def move(entity_names, new_parent=None):
+def move(entity_names, new_parent=None, is_private=None):
     """
     Move file or folder to the new parent folder
 
@@ -787,6 +787,8 @@ def move(entity_names, new_parent=None):
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
         doc.move(new_parent)
+        if is_private is not None:
+            doc.is_private = int(is_private)
         doc.save()
 
     return
