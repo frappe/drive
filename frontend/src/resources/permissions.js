@@ -9,6 +9,7 @@ export const getUsersWithAccess = createResource({
 export const updateAccess = createResource({
   url: "drive.api.files.call_controller_method",
   makeParams: (params) => ({ ...params, method: params.method || "share" }),
+  onError: () => toast("You can't perform this action"),
 })
 
 export const notifCount = createResource({

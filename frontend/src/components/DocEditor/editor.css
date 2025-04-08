@@ -122,11 +122,6 @@ p.legacy {
   padding-inline-start: 1.55em;
 }
 
-.prose-sm ul {
-  list-style: disc;
-  margin: 1.25em 0px;
-}
-
 .prose-sm ul > li::marker {
   color: var(--tw-prose-bullets);
 }

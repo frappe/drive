@@ -69,9 +69,12 @@ export const setBreadCrumbs = (
     },
   ]
   // BROKEN: shared files within a team go to home folder
+  const lastEl = breadcrumbs[breadcrumbs.length - 1]
+  const partOfTeam =
+    getTeams.data && Object.keys(getTeams.data).includes(lastEl.team)
   if (
-    getTeams.data &&
-    Object.keys(getTeams.data).includes(breadcrumbs[0].team)
+    (partOfTeam && !lastEl.is_private) ||
+    lastEl.owner == store.state.auth.user_id
   ) {
     res = [
       {
@@ -80,7 +83,7 @@ export const setBreadCrumbs = (
         route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
       },
     ]
-    breadcrumbs.splice(0, 1)
+    if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
   }
   breadcrumbs.forEach((item, idx) => {
     res.push({
