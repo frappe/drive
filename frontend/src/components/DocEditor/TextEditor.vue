@@ -200,6 +200,7 @@ export default {
     "update:lastSaved",
   ],
   data() {
+    console.log(JSON.stringify(this.entity))
     return {
       docWidth: this.settings.docWidth,
       docSize: this.settings.docSize,

@@ -136,7 +136,6 @@ const document = createResource({
     if (!("docSpellcheck" in settings.value)) {
       settings.value.docSpellcheck = 1
     }
-
     title.value = data.title
     oldTitle.value = data.title
     yjsContent.value = toUint8Array(data.content)

@@ -143,7 +143,6 @@ def files(
 
     if folders:
         query = query.where(DriveFile.is_group == 1)
-    print(query, query.run(as_dict=True))
     return query.run(as_dict=True)
 
 

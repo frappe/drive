@@ -59,7 +59,7 @@ def get_user_access(entity, user=frappe.session.user):
 
     path = generate_upward_path(entity.name, user)
     # Including public access
-    user_access = path[-1]
+    user_access = {k: v for k, v in path[-1].items() if k in default_access.keys()}
     if user == "Guest":
         return user_access
 
@@ -124,6 +124,7 @@ def get_entity_with_permissions(entity_name):
         ["entity as is_favourite"],
     )
     mark_as_viewed(entity)
+    print(user_access)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
     entity_doc_content = (
         frappe.db.get_value(

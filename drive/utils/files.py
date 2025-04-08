@@ -341,7 +341,9 @@ def generate_upward_path(entity_name, user=None):
         as_dict=1,
     )
     for i, p in enumerate(result):
+        print(p, dribble_access(result[: i + 1]))
         result[i] = {**p, **dribble_access(result[: i + 1])}
+    print("final", result)
     return result
 
 
