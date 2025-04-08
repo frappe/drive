@@ -252,7 +252,7 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 import {
   Avatar,
   Dialog,
@@ -286,11 +286,10 @@ const getPublicAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({ ...params, user: "Guest" }),
   onSuccess: (data) => {
-    if (!data?.length) return
+    if (!data) return
     const res = Object.keys(data)
       .filter((k) => data[k] === 1)
       .map((k) => ({ value: k, label: k[0].toUpperCase() + k.slice(1) }))
-    console.log(res)
     generalAccess.value.access = { value: "public", label: "Public" }
     generalAccess.value.type = res
   },

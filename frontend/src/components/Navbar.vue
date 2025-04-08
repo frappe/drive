@@ -41,7 +41,7 @@
   </nav>
   <Dialogs
     :active-entity="store.state.activeEntity"
-    :selections="[store.state.activeEntity]"
+    :selections="new Set([store.state.activeEntity])"
   />
 </template>
 <script setup>
