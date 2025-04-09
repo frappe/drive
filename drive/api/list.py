@@ -120,6 +120,7 @@ def files(
         query = query.where(DriveFile.is_private == 0)
     elif personal == 1 or personal == "1":
         query = query.where(DriveFile.is_private == 1)
+        # Temporary hack: the correct way would be to check permissions on all children
         if entity_name == home:
             query = query.where(DriveFile.owner == frappe.session.user)
 

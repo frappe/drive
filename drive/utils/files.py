@@ -267,14 +267,32 @@ def create_thumbnail(entity_name, path, mime_type, team):
                 print("Failed to create thumbnail after maximum retries.")
 
 
+def dribble_access(path):
+    default_access = {
+        "read": 0,
+        "comment": 0,
+        "share": 0,
+        "write": 0,
+    }
+    result = {}
+    for k in path[::-1]:
+        for t in default_access.keys():
+            if k[t] and not result.get(t):
+                result[t] = k[t]
+    return {**default_access, **result}
+
+
 @frappe.whitelist()
-def generate_upward_path(entity_name):
+def generate_upward_path(entity_name, user=None):
     """
     Given an ID traverse upwards till the root node
     Stops when parent_drive_file IS NULL
     """
     entity = frappe.db.escape(entity_name)
-    user = frappe.db.escape(frappe.session.user if frappe.session.user != "Guest" else "")
+    if not user:
+        user = frappe.session.user
+    user = frappe.db.escape(user if user != "Guest" else "")
+
     result = frappe.db.sql(
         f"""WITH RECURSIVE
             generated_path as (
@@ -306,6 +324,7 @@ def generate_upward_path(entity_name):
         SELECT
             gp.title,
             gp.name,
+            gp.owner,
             gp.parent_entity,
             gp.is_private,
             gp.team,
@@ -321,6 +340,8 @@ def generate_upward_path(entity_name):
     """,
         as_dict=1,
     )
+    for i, p in enumerate(result):
+        result[i] = {**p, **dribble_access(result[: i + 1])}
     return result
 
 
@@ -328,20 +349,15 @@ def get_valid_breadcrumbs(entity, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
-    # BROKEN: doesn't bubble access
     file_path = generate_upward_path(entity.name)
-    accessible_path = []
-    # BROKEN: temporarily disabled
+
     # If team/admin of this entity, then entire path
     if user_access.get("type") in ["admin", "team"]:
         return file_path
 
     # Otherwise, slice where they lose read access.
-    for k in file_path[::-1]:
-        if not k["read"]:
-            break
-        accessible_path.append(k)
-    return accessible_path[::-1]
+    lose_access = next((i for i, k in enumerate(file_path[::-1]) if not k["read"]), 0)
+    return file_path[-lose_access:]
 
 
 def update_file_size(entity, delta):

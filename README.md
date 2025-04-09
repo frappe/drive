@@ -13,7 +13,7 @@
 </div>
 
 > [!Warning]  
-> Frappe Drive is in beta. It is advisable to avoid usage in production.
+> Frappe Drive is in beta. It is strongly advised to take backups in production use.
 >
 
 ## Frappe Drive

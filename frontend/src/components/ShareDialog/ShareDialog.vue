@@ -252,7 +252,7 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 import {
   Avatar,
   Dialog,
@@ -286,24 +286,24 @@ const getPublicAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({ ...params, user: "Guest" }),
   onSuccess: (data) => {
-    if (!data?.length) return
+    if (!data) return
     const res = Object.keys(data)
-      .filter((k) => data[k] === 1)
+      .filter((k) => ACCESS_LEVELS.includes(k) && data[k])
       .map((k) => ({ value: k, label: k[0].toUpperCase() + k.slice(1) }))
-    console.log(res)
+    if (!res.length) return
     generalAccess.value.access = { value: "public", label: "Public" }
     generalAccess.value.type = res
   },
 })
 getPublicAccess.fetch({ entity: props.entityName })
-
-const share = ref({
+const EMPTY_SHARE = {
   name: "",
   access: [
     { value: "read", label: "Read" },
     { value: "comment", label: "Comment" },
   ],
-})
+}
+const share = ref(EMPTY_SHARE)
 const openDialog = computed({
   get: () => {
     return props.modelValue === "s"
@@ -335,7 +335,8 @@ function addShare() {
   }
   updateAccess.submit(r)
   getUsersWithAccess.data.push(r)
-  Object.assign(share, { name: "", access: [] }), getLink(entity)
+  share.value.name = ""
+  share.value.access = EMPTY_SHARE.access
 }
 const ACCESS_LEVELS = ["read", "comment", "share", "write"]
 const filteredAccess = computed(() =>

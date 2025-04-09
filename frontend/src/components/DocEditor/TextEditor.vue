@@ -200,6 +200,7 @@ export default {
     "update:lastSaved",
   ],
   data() {
+    console.log(JSON.stringify(this.entity))
     return {
       docWidth: this.settings.docWidth,
       docSize: this.settings.docSize,
@@ -257,8 +258,10 @@ export default {
           "Link"
         )
       }
-      if (this.entity.owner == "You" || this.entity.comment) {
+      if (this.entity.owner == "You") {
         buttons.push("Separator", "NewAnnotation")
+      } else if (this.entity.comment) {
+        buttons.push("NewAnnotation")
       }
       return buttons.map(createEditorButton)
     },

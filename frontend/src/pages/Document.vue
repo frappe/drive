@@ -120,7 +120,7 @@ const document = createResource({
     entity_name: props.entityName,
   },
   onSuccess(data) {
-    document.title = data.title
+    window.document.title = data.title
     data.size_in_bytes = data.file_size
     data.file_size = formatSize(data.file_size)
     data.modified = formatDate(data.modified)
@@ -136,7 +136,6 @@ const document = createResource({
     if (!("docSpellcheck" in settings.value)) {
       settings.value.docSpellcheck = 1
     }
-
     title.value = data.title
     oldTitle.value = data.title
     yjsContent.value = toUint8Array(data.content)

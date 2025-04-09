@@ -140,8 +140,7 @@ const store = createStore({
       state.activeEntity = payload
     },
     setActiveFilters(state, payload) {
-      // BROKEN
-      // localStorage.setItem("activeFilters", JSON.stringify(payload))
+      localStorage.setItem("activeFilters", JSON.stringify(payload))
       state.activeFilters = payload
     },
     setCurrentFolder(state, payload) {

@@ -32,7 +32,7 @@
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-02-13 15:04:48.489691",
+  "modified": "2025-04-07 12:49:22.426383",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Entity Log",
@@ -56,11 +56,11 @@
       "delete": 1,
       "email": 1,
       "export": 1,
-      "permlevel": 1,
       "print": 1,
       "read": 1,
       "report": 1,
       "role": "All",
+      "select": 1,
       "share": 1,
       "write": 1
     }

@@ -106,9 +106,13 @@ const props = defineProps({
   selections: Set,
 })
 
-const selections = computed(() =>
-  props.selections.size ? Array.from(props.selections) : [props.activeEntity]
-)
+const selections = computed(() => {
+  return props.selections.size
+    ? Array.from(props.selections).map((n) =>
+        props.getEntities.data.find((l) => l.name === n)
+      )
+    : [props.activeEntity]
+})
 const resetDialog = () => (dialog.value = null)
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))

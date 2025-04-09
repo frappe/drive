@@ -2217,9 +2217,9 @@ camelcase-css@^2.0.1:
   integrity sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==
 
 caniuse-lite@^1.0.30001688, caniuse-lite@^1.0.30001702:
-  version "1.0.30001706"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001706.tgz"
-  integrity sha512-3ZczoTApMAZwPKYWmwVbQMFpXBDds3/0VciVoUwPUbldlYyVLmRVuRs/PcUZtHpbLRpzzDvrvnFuREsGt6lUug==
+  version "1.0.30001712"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001712.tgz#41ee150f12de11b5f57c5889d4f30deb451deedf"
+  integrity sha512-MBqPpGYYdQ7/hfKiet9SCI+nmN5/hp4ZzveOJubl5DTAMa5oggjAuoi0Z4onBpKPFI2ePGnQuQIzF3VxDjDJig==
 
 canvas-datagrid@^0.4.5:
   version "0.4.7"
@@ -3328,6 +3328,50 @@ fraction.js@^4.3.7:
   version "4.3.7"
   resolved "https://registry.npmjs.org/fraction.js/-/fraction.js-4.3.7.tgz"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
+
+frappe-ui@0.1.119:
+  version "0.1.119"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.119.tgz#e41ff3a7ea3ff21008587564c3cefcea86e8d244"
+  integrity sha512-qgJE3I+N+AxwTsJuTU8O1zDfSePxI8oKm+Cn6RmHTOp6SwdiRvgEu/btKXityAY6nZf6A7OAgqUI4cVHXsr7mQ==
+  dependencies:
+    "@headlessui/vue" "^1.7.14"
+    "@popperjs/core" "^2.11.2"
+    "@tailwindcss/forms" "^0.5.3"
+    "@tailwindcss/typography" "^0.5.16"
+    "@tiptap/extension-code-block-lowlight" "^2.11.5"
+    "@tiptap/extension-color" "^2.0.3"
+    "@tiptap/extension-highlight" "^2.0.3"
+    "@tiptap/extension-image" "^2.0.3"
+    "@tiptap/extension-link" "^2.0.3"
+    "@tiptap/extension-mention" "^2.0.3"
+    "@tiptap/extension-placeholder" "^2.0.3"
+    "@tiptap/extension-table" "^2.0.3"
+    "@tiptap/extension-table-cell" "^2.0.3"
+    "@tiptap/extension-table-header" "^2.0.3"
+    "@tiptap/extension-table-row" "^2.0.3"
+    "@tiptap/extension-text-align" "^2.0.3"
+    "@tiptap/extension-text-style" "^2.0.3"
+    "@tiptap/extension-typography" "^2.0.3"
+    "@tiptap/pm" "^2.0.3"
+    "@tiptap/starter-kit" "^2.0.3"
+    "@tiptap/suggestion" "^2.0.3"
+    "@tiptap/vue-3" "^2.0.3"
+    "@vueuse/core" "^10.4.1"
+    dayjs "^1.11.13"
+    feather-icons "^4.28.0"
+    idb-keyval "^6.2.0"
+    lowlight "^3.3.0"
+    lucide-static "^0.479.0"
+    ora "5.4.1"
+    prettier "^3.3.2"
+    radix-vue "^1.5.3"
+    reka-ui "^2.0.2"
+    showdown "^2.1.0"
+    socket.io-client "^4.5.1"
+    tippy.js "^6.3.7"
+    typescript "^5.0.2"
+    unplugin-icons "^22.1.0"
+    unplugin-vue-components "^28.4.1"
 
 fs-extra@^10.1.0:
   version "10.1.0"

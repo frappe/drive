@@ -2,7 +2,7 @@ import frappe
 from frappe.utils import getdate
 
 from drive.utils.users import mark_as_viewed
-from drive.utils.files import get_valid_breadcrumbs
+from drive.utils.files import get_valid_breadcrumbs, generate_upward_path
 
 
 ENTITY_FIELDS = [
@@ -38,63 +38,39 @@ def get_user_access(entity, user=frappe.session.user):
     if user == entity.owner:
         return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
 
-    fields = ["read", "comment", "write", "share", "name as permission_name", "valid_until"]
-    default_access = {
-        "read": 0,
-        "comment": 0,
-        "share": 0,
-        "write": 0,
-    }
-
-    # By default, the public has no access
-    # Broken - right now, this is treated as a team in the frontend, but is in reality PUBLIC.
-    public_access = (
-        frappe.db.get_value(
-            "Drive Permission",
-            {"entity": entity.name, "user": ""},
-            fields,
-            as_dict=1,
-        )
-        or default_access
-    )
-    if not user or user == "Guest":
-        return public_access
-
-    # Get general permission
+    # Default access based on public or team view
     teams = get_teams(user)
-    if entity.team in teams:
-        # Everyone can upload to folders
-        default_access = {
+    if entity.team in teams and not entity.is_private:
+        # Everyone can upload to team folders
+        access = {
             "read": 1,
             "comment": 1,
             "share": 1,
             "write": 1 if entity.is_group else 0,
             "type": "team",
         }
+    else:
+        access = {
+            "read": 0,
+            "comment": 0,
+            "share": 0,
+            "write": 0,
+        }
 
-    # Get specific permission
-    user_access = (
-        frappe.db.get_value(
-            "Drive Permission",
-            {
-                "entity": entity.name,
-                "user": user,
-            },
-            fields,
-            as_dict=1,
-        )
-        or {}
-    )
+    path = generate_upward_path(entity.name, user)
 
-    for access, v in user_access.items():
-        if v:
-            default_access[access] = 1
+    user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
+    if user == "Guest":
+        return user_access
 
-    for access, v in public_access.items():
-        if v:
-            default_access[access] = 1
+    public_path = generate_upward_path(entity.name, "Guest")
+    public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
+    for access_type in (user_access, public_access):
+        for type, v in access_type.items():
+            if v:
+                access[type] = 1
 
-    return default_access
+    return access
 
 
 @frappe.whitelist()
@@ -151,6 +127,7 @@ def get_entity_with_permissions(entity_name):
         ["entity as is_favourite"],
     )
     mark_as_viewed(entity)
+    print(user_access)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
     entity_doc_content = (
         frappe.db.get_value(

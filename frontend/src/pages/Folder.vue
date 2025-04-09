@@ -19,6 +19,7 @@ import { setBreadCrumbs, prettyData } from "@/utils/files"
 
 const store = useStore()
 const realtime = inject("realtime")
+const emitter = inject("emitter")
 
 const props = defineProps({
   entityName: {
@@ -33,7 +34,6 @@ const getFolderContents = createResource({
   url: "drive.api.list.files",
   makeParams: (params) => ({
     entity_name: props.entityName,
-    personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
     ...params,
   }),
   cache: ["folder", props.entityName],
@@ -68,7 +68,9 @@ let currentFolder = createResource({
     document.title = "Folder - " + data.title
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
-    setBreadCrumbs(data.breadcrumbs, data.is_private)
+    setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
+      emitter.emit("rename")
+    )
   },
   onError(error) {
     console.log(error)
