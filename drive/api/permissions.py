@@ -42,7 +42,7 @@ def get_user_access(entity, user=frappe.session.user):
     teams = get_teams(user)
     if entity.team in teams and not entity.is_private:
         # Everyone can upload to team folders
-        default_access = {
+        access = {
             "read": 1,
             "comment": 1,
             "share": 1,
@@ -50,7 +50,7 @@ def get_user_access(entity, user=frappe.session.user):
             "type": "team",
         }
     else:
-        default_access = {
+        access = {
             "read": 0,
             "comment": 0,
             "share": 0,
@@ -58,16 +58,19 @@ def get_user_access(entity, user=frappe.session.user):
         }
 
     path = generate_upward_path(entity.name, user)
-    # Including public access
-    user_access = {k: v for k, v in path[-1].items() if k in default_access.keys()}
+
+    user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if user == "Guest":
         return user_access
 
-    for access, v in user_access.items():
-        if v:
-            default_access[access] = 1
+    public_path = generate_upward_path(entity.name, "Guest")
+    public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
+    for access_type in (user_access, public_access):
+        for type, v in access_type.items():
+            if v:
+                access[type] = 1
 
-    return default_access
+    return access
 
 
 @frappe.whitelist()

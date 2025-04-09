@@ -418,7 +418,6 @@ def get_file_content(entity_name, trigger_download=0):  #
     :raises PermissionError: If the current user does not have permission to read the file
     :raises FileLockedError: If the file has been writer-locked
     """
-
     if not frappe.has_permission(
         doctype="Drive File",
         doc=entity_name,
