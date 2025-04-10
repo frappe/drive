@@ -4,7 +4,6 @@ import re
 import mimetypes
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from drive.locks.distributed_lock import DistributedLock
 from pathlib import Path
 from io import BytesIO
 

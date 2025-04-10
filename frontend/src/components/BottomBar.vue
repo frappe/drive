@@ -160,6 +160,7 @@ export default {
   resources: {
     getRootFolderSize() {
       return {
+        // BROKEN
         url: "drive.api.files.get_user_directory_size",
         onError(error) {
           console.log(error)
