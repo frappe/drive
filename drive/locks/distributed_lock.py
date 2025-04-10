@@ -48,7 +48,7 @@ class DistributedLock(object):
         return frappe.cache().set(key, value, ex=ttl, nx=True)
 
     def _increment(self, key, ttl):
-        """Atomic transaction to incremnet value. Returns False if current value cannot be incremented.
+        """Atomic transaction to increment value. Returns False if current value cannot be incremented.
         If the key does not exist, value is set to 1"""
         with frappe.cache().pipeline() as pipe:
             try:

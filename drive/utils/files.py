@@ -8,6 +8,8 @@ from pathlib import Path
 import os
 import boto3
 import frappe
+from io import BytesIO
+from .dev import timing
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -144,6 +146,27 @@ class FileManager:
         if self.s3_enabled:
             self.conn.upload_file(disk_path, self.bucket, str(save_path))
             disk_path.unlink()
+
+    @timing
+    def get_file(self, path):
+        """
+        Function to read file from a s3 file.
+
+        Temporary: if not found in S3, look at disk.
+        """
+        not_s3 = not self.s3_enabled
+        if self.s3_enabled:
+            try:
+                buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
+            except:
+                not_s3 = True
+
+        if not_s3:
+            with DistributedLock(path, exclusive=False):
+                with open(self.site_folder / path, "rb") as fh:
+                    buf = BytesIO(fh.read())
+
+        return buf
 
 
 def get_home_folder(team):

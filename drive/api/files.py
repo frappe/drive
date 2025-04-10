@@ -427,18 +427,17 @@ def get_file_content(entity_name, trigger_download=0):  #
     )
     if not drive_file or drive_file.is_group or drive_file.is_active != 1:
         frappe.throw("Not found", frappe.NotFound)
-
-    path = Path(frappe.get_site_path("private/files")) / drive_file.path
-    with DistributedLock(path, exclusive=False):
-        return send_file(
-            path,
-            mimetype=drive_file.mime_type,
-            as_attachment=trigger_download,
-            conditional=True,
-            max_age=3600,
-            download_name=drive_file.title,
-            environ=frappe.request.environ,
-        )
+    
+    manager = FileManager()
+    return send_file(
+        manager.get_file(drive_file.path),
+        mimetype=drive_file.mime_type,
+        as_attachment=trigger_download,
+        conditional=True,
+        max_age=3600,
+        download_name=drive_file.title,
+        environ=frappe.request.environ,
+    )
 
 
 def stream_file_content(drive_file, range_header):
