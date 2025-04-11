@@ -140,6 +140,9 @@ let file = createResource({
       emitter.emit("rename")
     )
   },
+  onError() {
+    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
+  },
 })
 
 function scrollEntity(negative = false) {

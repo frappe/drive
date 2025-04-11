@@ -35,7 +35,7 @@ import {
   defineAsyncComponent,
   onBeforeUnmount,
 } from "vue"
-import { useRouter, useRoute } from "vue-router"
+import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
 import { createResource } from "frappe-ui"
@@ -43,6 +43,7 @@ import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import { setMetaData } from "../utils/files"
+import router from "@/router"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -149,6 +150,9 @@ const document = createResource({
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
       data.write && emitter.emit("rename")
     })
+  },
+  onError() {
+    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
 

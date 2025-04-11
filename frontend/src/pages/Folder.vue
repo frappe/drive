@@ -17,6 +17,7 @@ import { formatDate } from "@/utils/format"
 import { COMMON_OPTIONS } from "@/resources/files"
 import { setBreadCrumbs, prettyData } from "@/utils/files"
 import { setMetaData } from "../utils/files"
+import router from "@/router"
 
 const store = useStore()
 const realtime = inject("realtime")
@@ -74,8 +75,8 @@ let currentFolder = createResource({
       emitter.emit("rename")
     )
   },
-  onError(error) {
-    console.log(error)
+  onError() {
+    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
   auto: true,
 })
@@ -95,6 +96,5 @@ let userInfo = createResource({
     })
     store.state.connectedUsers = data
   },
-  auto: false,
 })
 </script>
