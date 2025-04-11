@@ -55,7 +55,7 @@ import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import { prettyData, setBreadCrumbs } from "@/utils/files"
+import { prettyData, setBreadCrumbs, setMetaData } from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"
 
 const router = useRouter()
@@ -134,7 +134,7 @@ let file = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
-    document.title = data.title
+    setMetaData(data)
     store.commit("setActiveEntity", data)
     setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
       emitter.emit("rename")

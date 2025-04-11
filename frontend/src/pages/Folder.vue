@@ -16,6 +16,7 @@ import { createResource } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { COMMON_OPTIONS } from "@/resources/files"
 import { setBreadCrumbs, prettyData } from "@/utils/files"
+import { setMetaData } from "../utils/files"
 
 const store = useStore()
 const realtime = inject("realtime")
@@ -65,6 +66,7 @@ let currentFolder = createResource({
     entity = prettyData([entity])
   },
   onSuccess(data) {
+    setMetaData(data)
     document.title = "Folder - " + data.title
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)

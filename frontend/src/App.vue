@@ -4,7 +4,6 @@
       <component :is="Component" id="currentPage" ref="currentPage" />
     </router-view>
   </template>
-
   <template v-else>
     <!-- Main container no scroll -->
     <div class="flex w-screen h-screen antialiased overflow-hidden">

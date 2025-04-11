@@ -42,6 +42,7 @@ import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
+import { setMetaData } from "../utils/files"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -51,7 +52,6 @@ const ShareDialog = defineAsyncComponent(() =>
 )
 
 const store = useStore()
-const router = useRouter()
 const route = useRoute()
 const emitter = inject("emitter")
 
@@ -120,7 +120,7 @@ const document = createResource({
     entity_name: props.entityName,
   },
   onSuccess(data) {
-    window.document.title = data.title
+    setMetaData(data)
     data.size_in_bytes = data.file_size
     data.file_size = formatSize(data.file_size)
     data.modified = formatDate(data.modified)
