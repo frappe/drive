@@ -213,6 +213,11 @@ const routes = [
     component: () => import("@/pages/Teams.vue"),
   },
   {
+    path: "/setup",
+    name: "Setup",
+    component: () => import("@/pages/Setup.vue"),
+  },
+  {
     path: "/shared",
     name: "Shared",
     component: () => import("@/pages/Shared.vue"),

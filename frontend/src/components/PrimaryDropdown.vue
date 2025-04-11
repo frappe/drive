@@ -79,7 +79,7 @@ watch(
   team,
   async (v) => {
     if (!v) return
-    if (!getTeams.data) await getTeams.fetch()
+    await getTeams.fetch()
     teamName.value = getTeams.data[v]?.title
   },
   { immediate: true }
