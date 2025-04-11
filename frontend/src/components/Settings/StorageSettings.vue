@@ -45,8 +45,16 @@
     <Tooltip
       v-for="[file_kind, i] in storageBreakdown.data?.total"
       :key="file_kind"
-      :text="`${i.kind} <br/>${i.h_size} (${i.percentageFormat})`"
+      text="hahaha"
     >
+      <template #body>
+        <div
+          class="rounded bg-surface-gray-7 px-2 py-1 text-xs text-ink-white shadow-xl"
+        >
+          {{ i.kind }} <br />
+          {{ i.h_size }} ({{ i.percentageFormat }})
+        </div>
+      </template>
       <div
         class="h-7"
         :style="{
