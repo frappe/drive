@@ -16,15 +16,15 @@ def get_domain_teams(domain):
 
 
 @frappe.whitelist()
-def create_personal_team(email=frappe.session.user, team_name="Your Drive"):
+def create_personal_team(email=frappe.session.user, team_name=None):
     """
     Used for creating teams, personal or not.
     """
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
-            "title": team_name,
-            "team_domain": email.split("@")[-1] if team_name != "Your Drive" else "",
+            "title": team_name if team_name else "Your Drive",
+            "team_domain": email.split("@")[-1] if team_name else "",
         }
     ).insert(ignore_permissions=True)
     team.append("users", {"user": email, "is_admin": 1})

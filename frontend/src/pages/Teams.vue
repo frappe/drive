@@ -3,7 +3,6 @@
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
-          <!-- logo -->
           <div
             class="flex flex-col items-center"
             @dblclick="window.location.href = '/f-login'"
@@ -11,18 +10,22 @@
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
 
-          <!-- card -->
           <div
-            class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="relative mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
-            <h2 class="grow font-bold text-xl text-center mb-4">
+            <div class="text-sm absolute top-3 right-3 flex gap-1.5">
+              <LucideLogOut class="w-3 h-3 my-auto" />
+              <a href="#" @click="$store.dispatch('logout')">Log out</a>
+            </div>
+            <h2 class="grow font-bold font-xl text-center mb-4">
               Welcome, {{ $store.state.user.fullName }}
             </h2>
+
             <div class="py-3">
               <p class="font-bold text-lg mb-3">Teams</p>
               <p
-                class="text-center text-sm"
                 v-if="!getTeams.data || !Object.values(getTeams.data).length"
+                class="text-center text-sm flex flex-col gap-4"
               >
                 You haven't joined any teams yet.
               </p>
@@ -104,6 +107,25 @@
                 </div>
               </li>
             </div>
+            <div
+              v-if="
+                !getInvites?.data?.length &&
+                !Object.values(getTeams.data).length
+              "
+              class="text-sm font-semibold mt-2"
+            >
+              <hr />
+              <div class="flex gap-2 w-fit mx-auto mt-4">
+                <LucidePlaneTakeoff class="w-3 h-3 my-auto" />
+                <router-link
+                  :to="{
+                    name: 'Setup',
+                  }"
+                >
+                  Get started
+                </router-link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -116,7 +138,7 @@ import { Badge, Tooltip } from "frappe-ui"
 import { getInvites, rejectInvite, acceptInvite } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
-import { LucideFolderOpenDot } from "lucide-vue-next"
+import { LucideFolderOpenDot, LucidePlaneTakeoff } from "lucide-vue-next"
 import { computed } from "vue"
 
 const store = useStore()

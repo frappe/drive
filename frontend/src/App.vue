@@ -4,7 +4,6 @@
       <component :is="Component" id="currentPage" ref="currentPage" />
     </router-view>
   </template>
-
   <template v-else>
     <!-- Main container no scroll -->
     <div class="flex w-screen h-screen antialiased overflow-hidden">
@@ -43,7 +42,7 @@
           class="flex flex-col h-full overflow-hidden sm:flex-row"
         >
           <Sidebar
-            v-if="isLoggedIn && $route.name !== 'Teams'"
+            v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)"
             class="hidden sm:block"
           />
           <div id="dropTarget" class="h-full w-full overflow-hidden">

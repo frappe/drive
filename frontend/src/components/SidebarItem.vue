@@ -75,7 +75,6 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  const first = store.state.breadcrumbs[0]
-  return (first.name || first.label) === props.label
+  return router.currentRoute.value.name === props.label
 })
 </script>
