@@ -9,8 +9,7 @@
       selectable: true,
       showTooltip: true,
       resizeColumn: true,
-      selectionWord: (v) => (v === 1 ? 'item' : 'items'),
-      getRowRoute: (getLinkStem) => '',
+      getRowRoute: () => '',
     }"
   >
     <ListHeader />
@@ -30,29 +29,11 @@
             />
           </ListGroupHeader>
           <ListGroupRows :group="group">
-            <CustomListRow
-              :rows="group.rows"
-              :context-menu="contextMenu"
-              :set-active="setActive"
-              :items-selected="selections.size > 0"
-              :selected="(row) => selectedRow?.name === row.name"
-              :hovered="(row) => hoveredRow === row.name"
-              @mouseenter="(row) => (hoveredRow = row.name)"
-              @mouseleave="() => (hoveredRow = null)"
-            />
+            <CustomListRow :rows="group.rows" :context-menu="contextMenu" />
           </ListGroupRows>
         </div>
         <div v-else>
-          <CustomListRow
-            :rows="formattedRows"
-            :items-selected="selections.size > 0"
-            :context-menu="contextMenu"
-            :set-active="setActive"
-            :selected="(row) => selectedRow?.name === row.name"
-            :hovered="(row) => hoveredRow === row.name"
-            @mouseenter="(row) => (hoveredRow = row.name)"
-            @mouseleave="hoveredRow = null"
-          />
+          <CustomListRow :rows="formattedRows" :context-menu="contextMenu" />
         </div>
       </div>
     </template>
@@ -88,7 +69,6 @@ import { openEntity } from "@/utils/files"
 
 const store = useStore()
 const route = useRoute()
-const hoveredRow = ref(null)
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
@@ -125,7 +105,7 @@ const selectedColumns = [
       row.is_group
         ? h(Folder)
         : h("img", { src: getIconUrl(formatMimeType(row.mime_type)) }),
-    width: 2,
+    width: "30%",
   },
   {
     label: "Owner",
@@ -144,18 +124,21 @@ const selectedColumns = [
         size: "sm",
       })
     },
+    width: "20%",
   },
   {
     label: "Last Modified",
     getLabel: ({ row }) => row.relativeModified,
     key: "modified",
     isEnabled: (n) => n !== "Recents",
+    width: "15%",
   },
   {
     label: "Last Accessed",
     getLabel: ({ row }) => row.relativeAccessed,
     key: "modified",
     isEnabled: (n) => n === "Recents",
+    width: "15%",
   },
   {
     label: "Size",

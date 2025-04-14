@@ -379,7 +379,7 @@ def create_doc_version(entity_name, doc_name, snapshot_data, snapshot_message):
         user=frappe.session.user,
     ):
         raise frappe.permissionerror("you do not have permission to view this file")
-    new_version = frappe.new_doc("drive document version")
+    new_version = frappe.new_doc("Drive Document Version")
     new_version.snapshot_data = snapshot_data
     new_version.parent_entity = entity_name
     new_version.snapshot_message = snapshot_message
@@ -798,7 +798,8 @@ def search(query, team):
     """
     Placeholder search implementation
     """
-    text = frappe.db.escape(query + "*")
+    text = frappe.db.escape(" ".join(k + "*" for k in query.split()))
+    user = frappe.db.escape(frappe.session.user)
     team = frappe.db.escape(team)
     try:
         result = frappe.db.sql(
@@ -817,12 +818,14 @@ def search(query, team):
         LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
         WHERE `tabDrive File`.team = {team}
             AND `tabDrive File`.`is_active` = 1
+            AND (`tabDrive File`.`owner` = {user} OR `tabDrive File`.is_private = 0)
             AND `tabDrive File`.`parent_entity` <> ''
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
         GROUP  BY `tabDrive File`.`name` 
         """,
             as_dict=1,
         )
+        print(result)
         return result
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")

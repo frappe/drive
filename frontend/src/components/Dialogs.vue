@@ -69,7 +69,7 @@
     v-if="dialog === 'm'"
     v-model="dialog"
     :entities="selections"
-    @success="resetDialog(), getEntities?.fetch?.()"
+    @success="resetDialog(), mutate({ delete: true, data: selections })"
   />
   <DeleteDialog
     v-if="dialog === 'd'"
@@ -122,7 +122,7 @@ emitter.on("rename", () => (dialog.value = "rn"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 const mutate = (data) => {
-  data.data.map((k) => handleListMutate({ ...data, data: k }))
+  data.data.map((k) => props.handleListMutate({ ...data, data: k }))
   resetDialog()
 }
 const setTitle = (title) => (window.document.title = title)

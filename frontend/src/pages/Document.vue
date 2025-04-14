@@ -132,7 +132,6 @@ const onSuccess = (data) => {
   rawContent.value = data.raw_content
   isWritable.value = data.owner === userId.value || !!data.write
   store.commit("setHasWriteAccess", isWritable)
-  store.commit("setEntityInfo", [entity])
 
   data.owner = data.owner === userId.value ? "You" : data.owner
   entity.value = data
