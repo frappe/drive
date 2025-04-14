@@ -5,6 +5,7 @@
     :columns="selectedColumns"
     :rows="formattedRows"
     @update:selections="(s) => (selections = s)"
+    @update:active-row="setActive"
     :options="{
       selectable: true,
       showTooltip: true,
