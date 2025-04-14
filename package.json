@@ -9,5 +9,11 @@
     "dev": "cd frontend && yarn dev",
     "build": "cd frontend && yarn build"
   },
+<<<<<<< HEAD
   "dependencies": {}
+=======
+  "dependencies": {
+    "caniuse-lite": "^1.0.30001712"
+  }
+>>>>>>> 9d059dd (fix: frontend bug for deleted users showing as email)
 }

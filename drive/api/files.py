@@ -941,3 +941,76 @@ def get_translate():
         for l in frappe.get_list("Drive File", fields=["old_name", "name"])
         if l["old_name"]
     }
+
+@frappe.whitelist()
+def get_shared_with_list(entity_name):
+    """Modified to filter out deleted users"""
+    if not frappe.has_permission(
+        doctype="Drive File", doc=entity_name, ptype="share", user=frappe.session.user
+    ):
+        frappe.throw("Not permitted", frappe.PermissionError)
+    
+    # Get only active users
+    permissions = frappe.db.sql("""
+        SELECT dp.user, dp.read, dp.write, dp.comment, dp.share,
+               u.user_image, u.full_name, u.email
+        FROM `tabDrive Permission` dp
+        JOIN `tabUser` u ON dp.user = u.name
+        WHERE dp.entity = %s
+        AND dp.user != ''
+        AND u.enabled = 1
+        AND u.deleted = 0
+        ORDER BY dp.user
+    """, entity_name, as_dict=1)
+    
+    return permissions
+
+@frappe.whitelist()
+def rename(old_name, new_name):
+    """
+    Proper rename implementation with validation
+    """
+    # Validate inputs
+    if not new_name or not isinstance(new_name, str):
+        frappe.throw("Invalid file name")
+    
+    new_name = new_name.strip()
+    if not new_name:
+        frappe.throw("File name cannot be empty")
+    
+    # Get file doc and check permissions
+    file_doc = frappe.get_doc("Drive File", old_name)
+    if not file_doc:
+        frappe.throw("File not found")
+    
+    if not frappe.has_permission(
+        doctype="Drive File", 
+        doc=old_name, 
+        ptype="write", 
+        user=frappe.session.user
+    ):
+        frappe.throw("You don't have permission to rename this file")
+    
+    # Check for duplicates in same folder
+    if frappe.db.exists("Drive File", {
+        "parent_entity": file_doc.parent_entity,
+        "title": new_name,
+        "name": ("!=", old_name),
+        "is_active": 1
+    }):
+        frappe.throw(f"A file named '{new_name}' already exists in this folder")
+    
+    try:
+        # Update the file
+        frappe.db.set_value("Drive File", old_name, "title", new_name)
+        
+        # If this is a folder, update all child paths
+        if file_doc.is_group:
+            update_child_paths(old_name, new_name)
+        
+        frappe.db.commit()
+        return {"success": True, "new_name": new_name}
+    except Exception as e:
+        frappe.db.rollback()
+        frappe.log_error(f"Rename failed: {str(e)}")
+        frappe.throw("Failed to rename file")

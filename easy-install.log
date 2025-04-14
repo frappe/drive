@@ -1,0 +1,8 @@
+2025-04-08 20:06:19,002 - INFO - Running Production Setup
+2025-04-08 20:06:19,161 - ERROR - Docker Compose generation failed
+Traceback (most recent call last):
+  File "/mnt/d/drive/./easy-install.py", line 256, in start_prod
+    subprocess.run(
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'compose', '--project-name', 'drive_prod_setup', '-f', 'compose.yaml', '-f', 'overrides/compose.mariadb.yaml', '-f', 'overrides/compose.redis.yaml', '-f', 'overrides/compose.https.yaml', '-f', 'overrides/compose.backup-cron.yaml', '--env-file', '/home/kayy/drive_prod_setup.env', 'config']' returned non-zero exit status 1.

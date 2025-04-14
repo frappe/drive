@@ -1,0 +1,8 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+
+  configurator:
+    image: busybox  # Placeholder image, or use a relevant one if you know
+    command: echo "Configurator container placeholder"

@@ -140,34 +140,45 @@ def get_entity_with_permissions(entity_name):
     )
     return return_obj | entity_doc_content
 
-
 @frappe.whitelist()
 def get_shared_with_list(entity_name):
     """
-    Return the list of users with whom this file or folder has been shared
-
-    :param entity_name: Document-name of this file or folder
-    :raises PermissionError: If the user does not have edit permissions
-    :return: List of users, with permissions and last modified datetime
-    :rtype: list[frappe._dict]
+    Return the list of active users with whom this file or folder has been shared
     """
     if not frappe.has_permission(
         doctype="Drive File", doc=entity_name, ptype="share", user=frappe.session.user
     ):
         raise frappe.PermissionError
+    
+    # Modified query to filter active, non-deleted users
     permissions = frappe.db.get_all(
         "Drive Permission",
-        filters={"entity": entity_name, "user": ["!=", ""]},
+        filters={
+            "entity": entity_name, 
+            "user": ["!=", ""],
+            # Join with User table to check status
+            "user.enabled": 1,
+            "user.deleted": 0
+        },
         order_by="user",
         fields=["user", "read", "write", "comment", "share"],
     )
 
+    # Additional check for user status
+    valid_permissions = []
     for p in permissions:
-        user_info = frappe.db.get_value(
-            "User", p.user, ["user_image", "full_name", "email"], as_dict=True
-        )
-        p.update(user_info)
-    return permissions
+        user_status = frappe.db.get_value("User", p.user, ["enabled", "deleted"], as_dict=True)
+        if user_status and user_status.enabled and not user_status.deleted:
+            user_info = frappe.db.get_value(
+                "User", 
+                p.user, 
+                ["user_image", "full_name", "email"], 
+                as_dict=True
+            )
+            p.update(user_info)
+            valid_permissions.append(p)
+    
+    return valid_permissions
 
 
 # BROKEN
@@ -212,3 +223,57 @@ def user_has_permission(doc, ptype, user):
     access = get_user_access(doc, user)
     if ptype in access:
         return access[ptype]
+
+@frappe.whitelist()
+def cleanup_deleted_user_permissions():
+    """
+    Remove permissions for deleted users
+    """
+    # Get all permissions where user exists but is deleted/disabled
+    invalid_permissions = frappe.db.sql("""
+        SELECT dp.name 
+        FROM `tabDrive Permission` dp
+        LEFT JOIN `tabUser` u ON dp.user = u.name
+        WHERE dp.user != '' 
+        AND (u.name IS NULL OR u.enabled = 0 OR u.deleted = 1)
+    """, as_dict=True)
+    
+    # Delete them in batches
+    for perm in invalid_permissions:
+        frappe.delete_doc("Drive Permission", perm.name)
+    
+    return {"count": len(invalid_permissions)}
+
+def validate_write_permission(entity_name, user=None):
+    """
+    Explicit permission check for write operations like rename
+    """
+    if not user:
+        user = frappe.session.user
+    
+    entity = frappe.get_doc("Drive File", entity_name)
+    access = get_user_access(entity, user)
+    
+    if not access.get("write"):
+        frappe.throw(
+            "You don't have permission to rename this item",
+            frappe.PermissionError
+        )
+    
+    # Additional check for duplicate name in parent folder
+    if entity.parent_entity:
+        siblings = frappe.get_all(
+            "Drive File",
+            filters={
+                "parent_entity": entity.parent_entity,
+                "name": ("!=", entity_name),
+                "is_active": 1
+            },
+            pluck="name"
+        )
+        # This will help the rename function catch duplicates early
+        return {
+            "has_permission": True,
+            "sibling_names": siblings
+        }
+    return {"has_permission": True}
