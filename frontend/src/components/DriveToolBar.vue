@@ -7,7 +7,11 @@
         <Breadcrumbs
           :items="$store.state.breadcrumbs"
           :class="'select-none h-[12px]'"
-        />
+        >
+          <template #prefix="{ item }">
+            <LoadingIndicator v-if="item.loading" scale="70" />
+          </template>
+        </Breadcrumbs>
         <p v-if="selections.length" class="text-sm text-gray-800 px-0.5 pt-0.5">
           {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
           selected
@@ -269,6 +273,7 @@ import {
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
 import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
+import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
 const store = useStore()
 const props = defineProps({

@@ -42,7 +42,7 @@ import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
-import { setMetaData } from "../utils/files"
+import { prettyData, setMetaData } from "../utils/files"
 import router from "@/router"
 
 const TextEditor = defineAsyncComponent(() =>
@@ -113,6 +113,35 @@ const saveDocument = () => {
   }
 }
 
+const onSuccess = (data) => {
+  setMetaData(data)
+  if (!data.settings) {
+    data.settings =
+      '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
+  }
+  settings.value = JSON.parse(data.settings)
+  store.commit("setEntityInfo", [data])
+  store.commit("setActiveEntity", data)
+
+  if (!("docSpellcheck" in settings.value)) {
+    settings.value.docSpellcheck = 1
+  }
+  title.value = data.title
+  oldTitle.value = data.title
+  yjsContent.value = toUint8Array(data.content)
+  rawContent.value = data.raw_content
+  isWritable.value = data.owner === userId.value || !!data.write
+  store.commit("setHasWriteAccess", isWritable)
+  store.commit("setEntityInfo", [entity])
+
+  data.owner = data.owner === userId.value ? "You" : data.owner
+  entity.value = data
+  lastSaved.value = Date.now()
+  contentLoaded.value = true
+  setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
+    data.write && emitter.emit("rename")
+  })
+}
 const document = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   method: "GET",
@@ -120,45 +149,22 @@ const document = createResource({
   params: {
     entity_name: props.entityName,
   },
-  onSuccess(data) {
-    setMetaData(data)
-    data.size_in_bytes = data.file_size
-    data.file_size = formatSize(data.file_size)
-    data.modified = formatDate(data.modified)
-    data.creation = formatDate(data.creation)
-    store.commit("setEntityInfo", [data])
-    store.commit("setActiveEntity", data)
-    if (!data.settings) {
-      data.settings =
-        '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
-    }
-    settings.value = JSON.parse(data.settings)
-
-    if (!("docSpellcheck" in settings.value)) {
-      settings.value.docSpellcheck = 1
-    }
-    title.value = data.title
-    oldTitle.value = data.title
-    yjsContent.value = toUint8Array(data.content)
-    rawContent.value = data.raw_content
-    isWritable.value = data.owner === userId.value || !!data.write
-    store.commit("setHasWriteAccess", isWritable)
-    data.owner = data.owner === userId.value ? "You" : data.owner
-    entity.value = data
-    lastSaved.value = Date.now()
-    contentLoaded.value = true
-    setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
-      data.write && emitter.emit("rename")
-    })
-  },
+  cache: ["entity", props.entityName],
+  onSuccess,
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
 
+if (document.data) {
+  onSuccess(document.data)
+} else {
+  store.state.breadcrumbs.splice(1)
+  store.state.breadcrumbs.push({ loading: true })
+}
+
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",
-  debounce: 0,
   auto: false,
   onSuccess() {
     lastSaved.value = Date.now()

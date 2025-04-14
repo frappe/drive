@@ -7,7 +7,14 @@
     <div
       class="mx-auto pl-4 py-2.5 pr-2 h-12 z-10 flex items-center justify-between"
     >
-      <Breadcrumbs :items="$store.state.breadcrumbs" class="select-none" />
+      <Breadcrumbs
+        :items="$store.state.breadcrumbs"
+        :class="'select-none h-[12px]'"
+      >
+        <template #prefix="{ item }">
+          <LoadingIndicator v-if="item.loading" scale="70" />
+        </template>
+      </Breadcrumbs>
       <div class="flex gap-1">
         <div
           v-if="connectedUsers.length > 1 && isLoggedIn"
@@ -47,7 +54,7 @@
 <script setup>
 import UsersBar from "./UsersBar.vue"
 import Dialogs from "./Dialogs.vue"
-import { Button, Breadcrumbs } from "frappe-ui"
+import { Button, Breadcrumbs, LoadingIndicator } from "frappe-ui"
 import Share from "./EspressoIcons/Share.vue"
 import { useStore } from "vuex"
 import { computed } from "vue"

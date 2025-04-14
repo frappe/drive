@@ -10,13 +10,11 @@
 <script setup>
 import Folder from "../components/EspressoIcons/Folder.vue"
 import GenericPage from "@/components/GenericPage.vue"
-import { inject, onMounted, onBeforeUnmount } from "vue"
+import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
-import { formatDate } from "@/utils/format"
 import { COMMON_OPTIONS } from "@/resources/files"
-import { setBreadCrumbs, prettyData } from "@/utils/files"
-import { setMetaData } from "../utils/files"
+import { setBreadCrumbs, prettyData, setMetaData } from "@/utils/files"
 import router from "@/router"
 
 const store = useStore()
@@ -58,28 +56,38 @@ onBeforeUnmount(() => {
   store.commit("setEntityInfo", [])
 })
 
+const onSuccess = (entity) => {
+  if (router.currentRoute.value.params.entityName !== entity.name) return
+  store.commit("setCurrentFolderID", props.entityName)
+  setMetaData(entity)
+  document.title = "Folder - " + entity.title
+  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
+    emitter.emit("rename")
+  )
+}
+
+const e = computed(() => props.entityName)
 let currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
-  params: { entity_name: props.entityName },
+  makeParams: (e) => ({ entity_name: e }),
   transform(entity) {
     store.commit("setCurrentFolder", [entity])
-    store.commit("setCurrentFolderID", props.entityName)
-    entity = prettyData([entity])
+    return prettyData([entity])[0]
   },
-  onSuccess(data) {
-    setMetaData(data)
-    document.title = "Folder - " + data.title
-    data.modified = formatDate(data.modified)
-    data.creation = formatDate(data.creation)
-    setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
-      emitter.emit("rename")
-    )
-  },
+  onSuccess,
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
-  auto: true,
+  cache: ["entity", e.value],
 })
+watch(e, (v) => currentFolder.fetch(v), { immediate: true })
+
+if (currentFolder.data) {
+  onSuccess(currentFolder.data)
+} else {
+  store.state.breadcrumbs.splice(1)
+  store.state.breadcrumbs.push({ loading: true })
+}
 
 let userInfo = createResource({
   url: "frappe.desk.form.load.get_user_info_for_viewers",

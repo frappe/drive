@@ -126,24 +126,33 @@ onKeyStroke("ArrowRight", (e) => {
   scrollEntity()
 })
 
+const onSuccess = (entity) => {
+  setMetaData(entity)
+  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
+    emitter.emit("rename")
+  )
+}
 let file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
   transform(entity) {
+    store.commit("setActiveEntity", entity)
     store.commit("setEntityInfo", [entity])
-    entity = prettyData([entity])
+    return prettyData([entity])[0]
   },
-  onSuccess(data) {
-    setMetaData(data)
-    store.commit("setActiveEntity", data)
-    setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
-      emitter.emit("rename")
-    )
-  },
+  onSuccess,
+  cache: ["entity", props.entityName],
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
+
+if (file.data) {
+  onSuccess(file.data)
+} else {
+  store.state.breadcrumbs.splice(1)
+  store.state.breadcrumbs.push({ loading: true })
+}
 
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
