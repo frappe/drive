@@ -4,7 +4,7 @@ import re
 import mimetypes
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from drive.locks.distributed_lock import DistributedLock
+from drive.utils.files import get_home_folder
 from pathlib import Path
 from io import BytesIO
 
@@ -21,7 +21,6 @@ def get_file_content(embed_name, parent_entity_name):
     :raises PermissionError: If the current user does not have permission to read the file
     :raises FileLockedError: If the file has been writer-locked
     """
-
     old_parent_name = frappe.get_list(
         "Drive File",
         {"old_name": parent_entity_name},
@@ -54,24 +53,20 @@ def get_file_content(embed_name, parent_entity_name):
     if not drive_entity.document:
         raise ValueError
 
-    try:
-        embed = frappe.get_doc("Drive File", embed_name.split(".")[0])
-        embed_path = embed.path
-    except frappe.exceptions.DoesNotExistError:
-        embed = frappe.db.get_list(
-            "Drive File", filters={"old_name": embed_name.split(".")[0]}, fields=["path"]
-        )[0]
-        embed_path = embed["path"]
-
-    embed_path = Path(frappe.get_site_path("private/files"), embed_path)
+    path = Path(
+        frappe.get_site_path("private/files/"),
+        get_home_folder(drive_entity.team)["path"],
+        "embeds",
+        embed_name,
+    )
 
     with open(
-        str(embed_path),
+        str(path),
         "rb",
     ) as file:
         range_header = frappe.request.headers.get("Range", None)
         if range_header:
-            return stream_file_content(embed_path, range_header)
+            return stream_file_content(path, range_header)
         embed_data = BytesIO(file.read())
         response = Response(
             wrap_file(frappe.request.environ, embed_data),
