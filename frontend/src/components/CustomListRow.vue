@@ -20,9 +20,11 @@
         :align="column.align"
       >
         <template #default="{ label }">
-          <div class="truncate text-base max-w-[70%]">
-            {{ column?.getLabel ? column.getLabel({ row }) : label }}
-          </div>
+          <transition name="slide-fade" mode="out-in">
+            <div :key="label" class="truncate text-base max-w-[70%]">
+              {{ column?.getLabel ? column.getLabel({ row }) : label }}
+            </div>
+          </transition>
 
           <Button
             v-if="column.key === 'options'"
@@ -79,7 +81,7 @@
   </ListRow>
 </template>
 <script setup>
-import { FeatherIcon, ListRowItem, ListRow, Tooltip } from "frappe-ui"
+import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
 import Lock from "./EspressoIcons/Lock.vue"
 import { openEntity } from "@/utils/files"
 import { getLink } from "@/utils/getLink"
@@ -94,3 +96,29 @@ defineEmits(["mouseenter", "mouseleave"])
 const route = useRoute()
 const store = useStore()
 </script>
+
+<style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(2px);
+  filter: blur(10px);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+  filter: blur(10px);
+}
+</style>

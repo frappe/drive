@@ -26,15 +26,15 @@
   <RenameDialog
     v-if="dialog === 'rn'"
     v-model="dialog"
-    :entity="activeEntity"
+    :entity="selections[0]"
     @success="
       (data) => {
         let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
-        l.label = data.title
-        store.commit('setBreadcrumbs', store.state.breadcrumbs)
-        store.state.activeEntity.title = data.title
+        if (l.label === selections[0].title) {
+          l.label = data.title
+          setTitle(data.title)
+        }
         handleListMutate({ data })
-        setTitle(data.title)
         resetDialog()
       }
     "
@@ -45,13 +45,6 @@
     :entities="selections"
     :for="'remove'"
     @success="resetDialog"
-  />
-  <!-- BROKEN -->
-  <GeneralDialog
-    v-if="dialog === 'unshare'"
-    v-model="dialog"
-    :entities="selections"
-    :for="'unshare'"
   />
   <GeneralDialog
     v-if="dialog === 'restore'"
@@ -93,24 +86,15 @@ import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 import emitter from "@/emitter"
-import { computed } from "vue"
 import { useStore } from "vuex"
 
-const dialog = defineModel()
+const dialog = defineModel(String)
 const store = useStore()
 
 const props = defineProps({
   getEntities: Object,
   handleListMutate: { type: Function, default: () => {} },
-  activeEntity: Object,
-  selections: Set,
-})
-const selections = computed(() => {
-  return props.selections.size
-    ? Array.from(props.selections).map((n) =>
-        props.getEntities.data.find((l) => l.name === n)
-      )
-    : [props.activeEntity]
+  selections: Array,
 })
 const resetDialog = () => (dialog.value = null)
 
@@ -124,5 +108,6 @@ const mutate = (data) => {
   data.data.map((k) => props.handleListMutate({ ...data, data: k }))
   resetDialog()
 }
-const setTitle = (title) => (window.document.title = title)
+
+const setTitle = (title) => (document.title = title)
 </script>

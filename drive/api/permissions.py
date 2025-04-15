@@ -112,7 +112,7 @@ def get_entity_with_permissions(entity_name):
 
     user_access = get_user_access(entity, frappe.session.user)
     if user_access.get("read") == 0:
-        frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
+        frappe.throw("You don't have access to this file.", {"error": frappe.PermissionError})
 
     owner_info = (
         frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}

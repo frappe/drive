@@ -34,8 +34,7 @@
       :entities="rows"
     />
     <Dialogs
-      :selections
-      :active-entity="activeEntity"
+      :selections="activeEntity ? [activeEntity] : [...selections]"
       :get-entities="getEntities"
       :handle-list-mutate="handleListMutate"
       v-model="dialog"

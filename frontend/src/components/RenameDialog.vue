@@ -45,7 +45,7 @@ if (props.entity.is_group || props.entity.document) {
     store.state.activeEntity.title = newName.value
   }
 } else {
-  const parts = props.entity.value.title.split(".")
+  const parts = props.entity.title.split(".")
   if (parts.length > 1) {
     newName.value = parts.slice(0, -1).join(".").trim()
     ext.value = parts[parts.length - 1]
@@ -66,11 +66,11 @@ const open = computed({
 
 const submit = () => {
   emit("success", {
-    name: props.entity.value.name,
+    name: props.entity.name,
     title: newName.value + (ext.value ? "." + ext.value : ""),
   })
   rename.submit({
-    entity_name: props.entity.value.name,
+    entity_name: props.entity.name,
     new_title: newName.value + (ext.value ? "." + ext.value : ""),
   })
 }

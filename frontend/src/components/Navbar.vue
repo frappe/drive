@@ -46,10 +46,7 @@
       </div>
     </div>
   </nav>
-  <Dialogs
-    :active-entity="store.state.activeEntity"
-    :selections="new Set([store.state.activeEntity])"
-  />
+  <Dialogs :selections="[store.state.activeEntity]" />
 </template>
 <script setup>
 import UsersBar from "./UsersBar.vue"
