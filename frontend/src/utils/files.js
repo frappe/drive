@@ -17,6 +17,13 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   if (new_tab) {
     return window.open(getLink(entity, false), "_blank")
   }
+
+  store.state.breadcrumbs.push({
+    label: entity.title,
+    name: entity.name,
+    // onClick: final_func,
+    route: null,
+  })
   if (entity.is_group) {
     router.push({
       name: "Folder",
@@ -37,6 +44,16 @@ export const openEntity = (team = null, entity, new_tab = false) => {
       name: "File",
       params: { team, entityName: entity.name },
     })
+  }
+}
+
+export const manageBreadcrumbs = (to) => {
+  if (
+    store.state.breadcrumbs[store.state.breadcrumbs.length - 1]?.name !==
+    to.params.entityName
+  ) {
+    store.state.breadcrumbs.splice(1)
+    store.state.breadcrumbs.push({ loading: true })
   }
 }
 
@@ -68,6 +85,7 @@ export const setBreadCrumbs = (
     {
       label: "Shared",
       route: store.getters.isLoggedIn && "/shared",
+      // onClick: (e) => console.log("in", e),
     },
   ]
   const lastEl = breadcrumbs[breadcrumbs.length - 1]
@@ -86,14 +104,16 @@ export const setBreadCrumbs = (
     ]
   }
   if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
+  const popBreadcrumbs = (item) => {
+    return () => res.splice(res.findIndex((k) => k.name === item.name) + 1)
+  }
   breadcrumbs.forEach((item, idx) => {
+    const final = idx === breadcrumbs.length - 1
     res.push({
       label: item.title,
-      onClick: final_func,
-      route:
-        idx !== breadcrumbs.length - 1
-          ? `/t/${item.team}/folder/` + item.name
-          : null,
+      name: item.name,
+      onClick: final ? final_func : popBreadcrumbs(item),
+      route: final ? null : `/t/${item.team}/folder/` + item.name,
     })
   })
   store.commit("setBreadcrumbs", res)

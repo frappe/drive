@@ -78,16 +78,8 @@ let currentFolder = createResource({
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
-  cache: ["entity", e.value],
 })
 watch(e, (v) => currentFolder.fetch(v), { immediate: true })
-
-if (currentFolder.data) {
-  onSuccess(currentFolder.data)
-} else {
-  store.state.breadcrumbs.splice(1)
-  store.state.breadcrumbs.push({ loading: true })
-}
 
 let userInfo = createResource({
   url: "frappe.desk.form.load.get_user_info_for_viewers",

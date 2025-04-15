@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { getTeams, translate } from "./resources/files"
+import { manageBreadcrumbs } from "./utils/files"
 
 function redir404(to, from, next) {
   if (store.getters.isLoggedIn) {
@@ -156,6 +157,7 @@ const routes = [
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { allowGuest: true, filePage: true },
+    beforeEnter: [clearStore, manageBreadcrumbs],
     props: true,
   },
   {
@@ -171,6 +173,7 @@ const routes = [
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { sidebar: true, allowGuest: true },
+    beforeEnter: [manageBreadcrumbs],
     props: true,
   },
   {
@@ -187,7 +190,7 @@ const routes = [
     meta: { sidebar: false, documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
-    beforeEnter: [clearStore],
+    beforeEnter: [clearStore, manageBreadcrumbs],
   },
   {
     path: "/signup",

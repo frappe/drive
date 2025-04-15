@@ -141,18 +141,10 @@ let file = createResource({
     return prettyData([entity])[0]
   },
   onSuccess,
-  cache: ["entity", props.entityName],
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
-
-if (file.data) {
-  onSuccess(file.data)
-} else {
-  store.state.breadcrumbs.splice(1)
-  store.state.breadcrumbs.push({ loading: true })
-}
 
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value

@@ -148,19 +148,11 @@ const document = createResource({
   params: {
     entity_name: props.entityName,
   },
-  cache: ["entity", props.entityName],
   onSuccess,
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
-
-if (document.data) {
-  onSuccess(document.data)
-} else {
-  store.state.breadcrumbs.splice(1)
-  store.state.breadcrumbs.push({ loading: true })
-}
 
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",

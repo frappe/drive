@@ -25,7 +25,7 @@
           "
         >
           <div class="text-base font-medium leading-none text-gray-900">
-            {{ teamName }}
+            {{ $route.params.team ? teamName : route.name }}
           </div>
           <div
             class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
@@ -73,14 +73,13 @@ import { useRouter, useRoute } from "vue-router"
 
 const router = useRouter()
 const route = useRoute()
-const team = computed(() => route.params?.team)
 const teamName = ref("loading...")
 watch(
-  team,
+  route,
   async (v) => {
-    if (!v) return
+    if (!route.params.team) return
     await getTeams.fetch()
-    teamName.value = getTeams.data[v]?.title
+    teamName.value = getTeams.data[v.params.team]?.title
   },
   { immediate: true }
 )
