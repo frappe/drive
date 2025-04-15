@@ -91,7 +91,10 @@ const dialog = ref(null)
 const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
-const activeEntity = computed(() => store.state.activeEntity)
+const activeEntity = computed(() => {
+  console.log(store.state.activeEntity)
+  return store.state.activeEntity
+})
 const rows = computed(() =>
   props.getEntities.data?.filter?.(
     (k) => k.is_active != 0 && k.title[0] !== "."

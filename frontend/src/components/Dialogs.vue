@@ -63,7 +63,7 @@
   <ShareDialog
     v-if="dialog === 's'"
     v-model="dialog"
-    :entity-name="activeEntity.name"
+    :selections="selections[0]"
   />
   <MoveDialog
     v-if="dialog === 'm'"
@@ -105,7 +105,6 @@ const props = defineProps({
   activeEntity: Object,
   selections: Set,
 })
-
 const selections = computed(() => {
   return props.selections.size
     ? Array.from(props.selections).map((n) =>

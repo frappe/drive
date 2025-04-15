@@ -270,12 +270,10 @@ import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import { getUsersWithAccess, updateAccess } from "@/resources/permissions"
 import { useStore } from "vuex"
-const props = defineProps({ modelValue: String, entityName: String })
+const props = defineProps({ modelValue: String, entity: String })
 const emit = defineEmits(["update:modelValue", "success"])
-const store = useStore()
-getUsersWithAccess.fetch({ entity_name: props.entityName })
+getUsersWithAccess.fetch({ entity_name: props.entity.name })
 
-const entity = computed(() => store.state.activeEntity)
 const showSettings = ref(false)
 const invalidAfter = ref()
 const generalAccess = ref({
@@ -295,7 +293,7 @@ const getPublicAccess = createResource({
     generalAccess.value.type = res
   },
 })
-getPublicAccess.fetch({ entity: props.entityName })
+getPublicAccess.fetch({ entity: props.entity.name })
 const EMPTY_SHARE = {
   name: "",
   access: [
@@ -326,7 +324,7 @@ const accessMessage = computed(() => {
 })
 function addShare() {
   let r = {
-    entity_name: entity.value.name,
+    entity_name: props.entity.name,
     user: share.value.name,
     ...share.value.access.reduce((acc, { value }) => {
       acc[value] = 1
@@ -340,6 +338,6 @@ function addShare() {
 }
 const ACCESS_LEVELS = ["read", "comment", "share", "write"]
 const filteredAccess = computed(() =>
-  ACCESS_LEVELS.filter((l) => entity.value[l])
+  ACCESS_LEVELS.filter((l) => props.entity[l])
 )
 </script>

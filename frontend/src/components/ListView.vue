@@ -102,6 +102,7 @@ const selectedColumns = [
       title.lastIndexOf(".") === -1 || is_group || document
         ? title
         : title.slice(0, title.lastIndexOf(".")),
+    getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
     prefix: ({ row }) =>
       row.is_group
         ? h(Folder)

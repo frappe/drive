@@ -20,11 +20,9 @@
         :align="column.align"
       >
         <template #default="{ label }">
-          <Tooltip :text="label">
-            <div class="truncate text-base max-w-[70%]">
-              {{ column?.getLabel ? column.getLabel({ row }) : label }}
-            </div>
-          </Tooltip>
+          <div class="truncate text-base max-w-[70%]">
+            {{ column?.getLabel ? column.getLabel({ row }) : label }}
+          </div>
 
           <Button
             v-if="column.key === 'options'"

@@ -3,22 +3,24 @@
     class="flex gap-x-3 flex-wrap justify-start items-center w-full px-2 my-[10px]"
   >
     <div class="flex w-full justify-start items-center flex-wrap">
-      <div class="flex flex-col">
-        <Breadcrumbs
-          :items="$store.state.breadcrumbs"
-          :class="'select-none h-[12px]'"
-        >
-          <template #prefix="{ item }">
-            <LoadingIndicator v-if="item.loading" scale="70" />
-          </template>
-        </Breadcrumbs>
-        <p v-if="selections.length" class="text-sm text-gray-800 px-0.5 pt-0.5">
+      <div v-if="selections.length" class="flex flex-col">
+        <div class="font-semibold text-sm">Bulk Actions</div>
+        <div class="text-sm text-gray-800 px-0.5 pt-0.5">
           {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
           selected
-        </p>
+        </div>
       </div>
+      <Breadcrumbs
+        v-else
+        :items="$store.state.breadcrumbs"
+        :class="'select-none h-[12px]'"
+      >
+        <template #prefix="{ item }">
+          <LoadingIndicator v-if="item.loading" scale="70" />
+        </template>
+      </Breadcrumbs>
       <div
-        class="flex gap-3 ml-4 w-[30%] overflow-scroll md:w-fit"
+        class="flex gap-3 ml-4 w-[40%] overflow-scroll"
         v-if="selections.length"
       >
         <Button
@@ -29,8 +31,8 @@
                 !i.isEnabled ||
                 selections.every((e) => i.isEnabled(e, selections.length !== 1))
             )"
-          :variant="index < 2 ? 'solid' : 'outline'"
           :key="index"
+          :variant="index < 2 ? 'subtle' : 'outline'"
           @click="() => item.onClick(selections)"
         >
           <div class="flex">
