@@ -22,7 +22,7 @@
               borderRadius: '100%',
               borderColor: user.color,
             }"
-            :image="user.avatar"
+            :image="user?.user_image || require('@/assets/images/icons/default-avatar.png')"
             :label="user.name"
             :title="user.name"
           />

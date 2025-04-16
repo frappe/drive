@@ -10,7 +10,7 @@
   >
     <Avatar
       size="xs"
-      :image="activity.share_user_image"
+      :image="user?.user_image || require('@/assets/images/icons/default-avatar.png')"
       :label="
         activity.share_user_fullname
           ? activity.share_user_fullname

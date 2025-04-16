@@ -13,10 +13,12 @@
         class="flex items-start justify-start py-3 gap-x-2"
       >
       <Avatar
-        size="md"
-          :image="activity.user_image "
-        :label="activity.full_name || 'Deleted User'"
+        shape="circle"
+        :image="userData.value[row.owner]?.user_image || require('@/assets/images/icons/default-avatar.png')"
+        label="userData.value[row.owner]?.full_name || row.owner"
+        size="sm"
       />
+
 
     
         <div class="flex flex-col items-start justify-center">
