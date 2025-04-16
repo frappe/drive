@@ -21,8 +21,6 @@ from datetime import datetime
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 
-def title_exists_in_folder(title, parent):
-    return frappe.db.exists("Drive File", {"title": title, "parent_entity": parent, "is_active": 1})
 
 def if_folder_exists(team, folder_name, parent, personal):
     values = {
@@ -943,11 +941,3 @@ def get_translate():
         for l in frappe.get_list("Drive File", fields=["old_name", "name"])
         if l["old_name"]
     }
-
-
-@frappe.whitelist()
-def validate_rename(entity_name, new_title):
-    doc = frappe.get_doc("Drive File", entity_name)
-    if title_exists_in_folder(new_title, doc.parent_entity):
-        frappe.throw(f"A file or folder named '{new_title}' already exists in this location.", FileExistsError)
-    return True
