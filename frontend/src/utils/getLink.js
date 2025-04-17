@@ -1,14 +1,16 @@
 import { toast } from "@/utils/toasts.js"
 import router from "../router.js"
+import { scrubTitle } from "@/utils/helpers.ts"
 
 export function getLinkStem(entity) {
+  const scrubbedName = scrubTitle(entity.name);
   return `${
     {
       true: "file",
       [new Boolean(entity.is_group)]: "folder",
       [new Boolean(entity.document)]: "document",
     }[true]
-  }/${entity.name}`
+  }/${scrubbedName}`;
 }
 
 export function getLink(entity, copy = true) {

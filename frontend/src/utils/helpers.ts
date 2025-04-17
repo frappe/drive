@@ -197,6 +197,14 @@ function getDataForKey(datum: Object, key: string) {
   const data = Object.assign({}, datum)
   return key.split(".").reduce((d, key) => (d ? d[key] : null), data) as string
 }
+export function scrubTitle(name) {
+  return name
+    .replace(/\.[^/.]+$/, "") // Remove file extension
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // Remove special characters except hyphens and spaces
+    .trim()
+    .replace(/[\s_-]+/g, "-"); // Replace spaces and underscores with hyphen
+}
 
 export {
   HSVToHex,
@@ -216,4 +224,5 @@ export {
   isTargetEditable,
   kebabToCamelCase,
   stripExtension,
+  scrubTitle,
 }
