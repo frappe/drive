@@ -105,6 +105,7 @@ declare module 'vue' {
     LucideArrowBigLeft: typeof import('~icons/lucide/arrow-big-left')['default']
     LucideAxe: typeof import('~icons/lucide/axe')['default']
     LucideCheck: typeof import('~icons/lucide/check')['default']
+    LucideEye: typeof import('~icons/lucide/eye')['default']
     LucideHome: typeof import('~icons/lucide/home')['default']
     LucideLogOut: typeof import('~icons/lucide/log-out')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']

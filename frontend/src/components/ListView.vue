@@ -8,6 +8,7 @@
     @update:active-row="setActive"
     :options="{
       selectable: true,
+      enableActive: true,
       showTooltip: true,
       resizeColumn: true,
       getRowRoute: () => '',
@@ -107,7 +108,7 @@ const selectedColumns = [
       row.is_group
         ? h(Folder)
         : h("img", { src: getIconUrl(formatMimeType(row.mime_type)) }),
-    width: "30%",
+    width: "50%",
   },
   {
     label: "Owner",
@@ -146,6 +147,7 @@ const selectedColumns = [
     label: "Size",
     key: "",
     getLabel: ({ row }) => row.file_size_pretty, // || "<em>empty</em>",
+    width: "10%",
   },
   { label: "", key: "options", align: "right", width: "10px" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))

@@ -66,7 +66,7 @@
                   />
                 </router-view>
               </div>
-              <InfoSidebar v-if="hideInfoSideBar" />
+              <InfoSidebar v-if="showInfoSidebar" />
             </div>
           </div>
           <BottomBar
@@ -104,26 +104,19 @@ import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { useStore } from "vuex"
 import { onMounted, ref, computed } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import emitter from "@/emitter"
-import { LucideArrowUpRightFromSquare } from "lucide-vue-next"
+
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 
 const showSearchPopup = ref(false)
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const showUploadTracker = computed(
   () => isLoggedIn.value && store.state.uploads.length > 0
 )
-const hideInfoSideBar = computed(() => {
-  if (route.meta.documentPage) {
-    return false
-  }
-  if (route.name === "Inbox") {
-    return false
-  }
-  return true
-})
+const showInfoSidebar = computed(() => store.state.showInfo)
 
 onMounted(() => {
   addKeyboardShortcuts()
@@ -138,7 +131,7 @@ function addKeyboardShortcuts() {
   window.addEventListener("keydown", (e) => {
     let params = { team: localStorage.getItem("recentTeam") }
     const DOUBLE_KEY_MAPS = {
-      k: () => setTimeout(() => (this.showSearchPopup = true), 15), // band aid fix as k was showing up in search
+      k: () => setTimeout(() => (showSearchPopup.value = true), 15), // band aid fix as k was showing up in search
       h: () => router.push({ name: "Home", params }),
       n: () => router.push({ name: "Inbox", params }),
       t: () => router.push({ name: "Team", params }),
@@ -156,7 +149,7 @@ function addKeyboardShortcuts() {
         (e) => e.metaKey && e.shiftKey && e.key == "ArrowLeft",
         () => this.$store.commit("setIsSidebarExpanded", false),
       ],
-      [(e) => e.metaKey && e.key == "k", () => (this.showSearchPopup = true)],
+      [(e) => e.metaKey && e.key == "k", () => (showSearchPopup.value = true)],
     ]
     if (
       e.target.classList.contains("ProseMirror") ||
