@@ -407,7 +407,7 @@ def get_doc_version_list(entity_name):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name, trigger_download=0):  #
+def get_file_content(entity_name, trigger_download=0):
     """
     Stream file content and optionally trigger download
 

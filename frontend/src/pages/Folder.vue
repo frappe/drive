@@ -14,7 +14,12 @@ import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
-import { setBreadCrumbs, prettyData, setMetaData } from "@/utils/files"
+import {
+  setBreadCrumbs,
+  prettyData,
+  setMetaData,
+  setCache,
+} from "@/utils/files"
 import router from "@/router"
 
 const store = useStore()
@@ -38,6 +43,7 @@ const getFolderContents = createResource({
   }),
   cache: ["folder", props.entityName],
 })
+setCache(getFolderContents, ["folder", props.entityName])
 
 onMounted(() => {
   realtime.doc_subscribe("Drive File", props.entityName)

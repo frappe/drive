@@ -1,12 +1,13 @@
 import router from "@/router"
 import store from "@/store"
-import { formatSize, formatDate } from "@/utils/format"
+import { formatSize } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
 import { getTeams } from "@/resources/files"
 import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
 import { formatMimeType } from "@/utils/format"
+import { set } from "idb-keyval"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
   if (!team) team = entity.team
@@ -21,9 +22,9 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   store.state.breadcrumbs.push({
     label: entity.title,
     name: entity.name,
-    // onClick: final_func,
     route: null,
   })
+
   if (entity.is_group) {
     router.push({
       name: "Folder",
@@ -69,9 +70,6 @@ export const prettyData = (entities) => {
     entity.file_size_pretty = formatSize(entity.file_size)
     entity.relativeModified = useTimeAgo(entity.modified)
     if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
-    entity.modified = formatDate(entity.modified)
-    entity.creation = formatDate(entity.creation)
-
     return entity
   })
 }
@@ -85,7 +83,6 @@ export const setBreadCrumbs = (
     {
       label: "Shared",
       route: store.getters.isLoggedIn && "/shared",
-      // onClick: (e) => console.log("in", e),
     },
   ]
   const lastEl = breadcrumbs[breadcrumbs.length - 1]
@@ -118,6 +115,7 @@ export const setBreadCrumbs = (
   })
   store.commit("setBreadcrumbs", res)
 }
+
 export const setMetaData = (data) => {
   document.title = data.title
   document
@@ -220,4 +218,25 @@ export const MIME_LIST_MAP = {
     "application/gzip",
     "application/x-bzip2",
   ],
+}
+
+// Synced cache - ensure all setters are reflected in the app
+function getCacheKey(cacheKey) {
+  if (!cacheKey) {
+    return null
+  }
+  if (typeof cacheKey === "string") {
+    cacheKey = [cacheKey]
+  }
+  return JSON.stringify(cacheKey)
+}
+export function setCache(t, cache) {
+  t.setData = async (data) => {
+    if (typeof data === "function") {
+      t.data = data(t.data)
+    } else {
+      t.data = data
+    }
+    await set(getCacheKey(cache), JSON.stringify(t.data))
+  }
 }

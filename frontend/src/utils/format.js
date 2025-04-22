@@ -24,6 +24,7 @@ export function base2BlockSize(bytes) {
 }
 
 export function formatDate(date) {
+  if (!date) return ""
   const dateObj = new Date(date)
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const hourCycle = navigator.language || "en-US"

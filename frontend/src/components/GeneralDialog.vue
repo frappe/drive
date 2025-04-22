@@ -118,12 +118,16 @@ export default {
     method() {
       return {
         url: this.dialogData.methodName,
-        params: {
-          entity_names:
-            typeof this.entities === "string"
-              ? JSON.stringify([this.entities])
-              : JSON.stringify(this.entities.map((entity) => entity.name)),
-          team: this.$route.params.team,
+        makeParams: () => {
+          console.log("ha", this.$emit)
+          this.$emit("success")
+          return {
+            entity_names:
+              typeof this.entities === "string"
+                ? JSON.stringify([this.entities])
+                : JSON.stringify(this.entities.map((entity) => entity.name)),
+            team: this.$route.params.team,
+          }
         },
         onSuccess(data) {
           this.$emit("success", data)

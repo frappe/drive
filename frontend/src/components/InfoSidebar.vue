@@ -93,9 +93,9 @@
                 {{ `(${entity.file_size})` }}
               </span>
               <span class="col-span-1 text-gray-600">Modified</span>
-              <span class="col-span-1">{{ entity.modified }}</span>
+              <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
               <span class="col-span-1 text-gray-600">Uploaded</span>
-              <span class="col-span-1">{{ entity.creation }}</span>
+              <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
               <span class="col-span-1 text-gray-600">Owner</span>
               <span class="col-span-1">{{
                 entity.owner +

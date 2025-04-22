@@ -6,7 +6,7 @@
     <DriveToolBar
       v-if="!verify?.error && !getEntities.error"
       :column-headers="$route.name === 'Recents' ? null : columnHeaders"
-      :selections
+      :selections="selectedEntitities"
       :entities="rows"
       :action-items="actionItems"
     />
@@ -34,9 +34,8 @@
       :entities="rows"
     />
     <Dialogs
-      :selections="activeEntity ? [activeEntity] : [...selections]"
+      :selections="activeEntity ? [activeEntity] : selectedEntitities"
       :get-entities="getEntities"
-      :handle-list-mutate="handleListMutate"
       v-model="dialog"
     />
     <FileUploader
@@ -104,6 +103,12 @@ const rows = computed(() => {
 })
 
 const selections = ref(new Set())
+const selectedEntitities = computed(
+  () =>
+    props.getEntities.data?.filter?.(({ name }) =>
+      selections.value.has(name)
+    ) || []
+)
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
 watch(
@@ -234,14 +239,12 @@ const actionItems = computed(() => {
         label: "Favourite",
         icon: "star",
         onClick: (entities) => {
-          entities = entities.map((e) => ({
-            ...e,
-            is_favourite: true,
-          }))
+          entities.forEach((e) => (e.is_favourite = true))
+          // Hack to cache
+          props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
-          entities.map((data) => handleListMutate({ data }))
         },
-        isEnabled: (e, multi) => !e.is_favourite,
+        isEnabled: (e) => !e.is_favourite,
         important: true,
         multi: true,
       },
@@ -250,12 +253,9 @@ const actionItems = computed(() => {
         icon: "star",
         class: "stroke-amber-500 fill-amber-500",
         onClick: (entities) => {
-          entities = entities.map((e) => ({
-            ...e,
-            is_favourite: false,
-          }))
+          entities.forEach((e) => (e.is_favourite = false))
+          props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
-          entities.map((data) => handleListMutate({ data }))
         },
         isEnabled: (e) => e.is_favourite,
         important: true,
@@ -268,7 +268,6 @@ const actionItems = computed(() => {
           clearRecent.submit({
             entities,
           })
-          entities.map((data) => handleListMutate({ data }))
         },
         isEnabled: (e) => e.accessed,
         important: true,
@@ -294,17 +293,6 @@ const actionItems = computed(() => {
     ]
   }
 })
-
-function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
-  props.getEntities.setData((data) => {
-    if (_new) data.push(newData)
-    const index = data.findIndex((o) => o.name === newData.name)
-    if (_delete && all) data.splice(0, data.length)
-    else if (_delete && !all) data.splice(index, 1)
-    else data.splice(index, 1, { ...data[index], ...newData })
-    return data
-  })
-}
 
 const columnHeaders = [
   {

@@ -13,7 +13,7 @@
         () => $route.name !== 'Trash' && openEntity(route.params.team, row)
       "
     >
-      <template #default="{ idx, column, item, isActive }">
+      <template #default="{ idx, column, item }">
         <ListRowItem
           :column="column"
           :row="row"
@@ -29,15 +29,13 @@
 
             <Button
               v-if="column.key === 'options'"
-              class="me-3"
-              :class="
-                isActive
-                  ? 'bg-surface-gray-2 group-hover:bg-surface-gray-3'
-                  : 'bg-white group-hover:bg-surface-gray-1'
-              "
+              class="me-3 bg-inherit"
               @click="(e) => contextMenu(e, row)"
             >
-              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+              <FeatherIcon
+                name="more-horizontal"
+                class="bg-transparent h-4 w-4"
+              />
             </Button>
           </template>
           <template v-if="idx === 0" #suffix>
@@ -58,16 +56,6 @@
                 <LucideEyeOff width="16" height="16" class="my-auto" />
               </Tooltip>
             </div>
-          </template>
-          <template v-else-if="column.key === 'options'" #prefix>
-            <Button variant="ghost" class="group-hover:opacity-100 opacity-0">
-              <FeatherIcon
-                name="link"
-                class="stroke-1.5 w-4 h-4"
-                @click.once="getLink(row)"
-                @dblclick.stop
-              />
-            </Button>
           </template>
         </ListRowItem>
       </template>

@@ -72,11 +72,12 @@
           class="ml-auto"
           :loading="move.loading"
           @click="
-            move.submit({
-              entity_names: entities.map((obj) => obj.name),
-              new_parent: currentFolder,
-              is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
-            })
+            $emit('success'),
+              move.submit({
+                entity_names: entities.map((obj) => obj.name),
+                new_parent: currentFolder,
+                is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
+              })
           "
         >
           <template #prefix>
@@ -85,63 +86,64 @@
           Move
         </Button>
       </div>
+      <div class="flex flex-col overflow-scroll max-h-screen">
+        <div
+          v-for="(item, index) in folderContents.data"
+          :id="item.name"
+          :key="item.name"
+          class=""
+        >
+          <div
+            v-show="index > 0"
+            class="border-t w-full mx-auto max-w-[96%]"
+          ></div>
+          <div
+            class="px-3 grid items-center rounded h-9 group select-none"
+            :class="
+              !item.write
+                ? 'cursor-not-allowed opacity-75'
+                : 'cursor-pointer hover:bg-gray-100'
+            "
+            :draggable="false"
+            @click="item.write ? openEntity(item) : null"
+            @dragenter.prevent
+            @dragover.prevent
+            @mousedown.stop
+          >
+            <div
+              class="flex items-center text-gray-800 text-base font-medium truncate"
+              :draggable="false"
+            >
+              <svg
+                v-if="item.is_group"
+                :style="{ fill: item.color }"
+                :draggable="false"
+                class="h-4.5 mr-2"
+                viewBox="0 0 30 30"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
+                />
+              </svg>
+              <img
+                v-else
+                :src="getIconUrl(formatMimeType(item.mime_type))"
+                :draggable="false"
+                class="h-[20px] mr-3"
+              />
+              {{ item.title }}
+            </div>
+          </div>
+        </div>
+      </div>
       <Tabs as="div" v-model="tabIndex" :tabs="tabs">
         <template #tab-panel>
           <div class="py-1">
             <div
               v-if="folderContents.data?.length"
               class="flex flex-col justify-items-start h-[45vh] overflow-y-auto justify-start my-2"
-            >
-              <div
-                v-for="(item, index) in folderContents.data"
-                :id="item.name"
-                :key="item.name"
-                class=""
-              >
-                <div
-                  v-show="index > 0"
-                  class="border-t w-full mx-auto max-w-[96%]"
-                ></div>
-                <div
-                  class="px-3 grid items-center rounded h-9 group select-none"
-                  :class="
-                    !item.write
-                      ? 'cursor-not-allowed opacity-75'
-                      : 'cursor-pointer hover:bg-gray-100'
-                  "
-                  :draggable="false"
-                  @click="item.write ? openEntity(item) : null"
-                  @dragenter.prevent
-                  @dragover.prevent
-                  @mousedown.stop
-                >
-                  <div
-                    class="flex items-center text-gray-800 text-base font-medium truncate"
-                    :draggable="false"
-                  >
-                    <svg
-                      v-if="item.is_group"
-                      :style="{ fill: item.color }"
-                      :draggable="false"
-                      class="h-4.5 mr-2"
-                      viewBox="0 0 30 30"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
-                      />
-                    </svg>
-                    <img
-                      v-else
-                      :src="getIconUrl(formatMimeType(item.mime_type))"
-                      :draggable="false"
-                      class="h-[20px] mr-3"
-                    />
-                    {{ item.title }}
-                  </div>
-                </div>
-              </div>
-            </div>
+            ></div>
             <div
               v-else
               class="flex flex-col items-center justify-center h-[45vh] my-2"
@@ -249,7 +251,6 @@ const folderPermissions = createResource({
     entity_name: currentFolder.value,
   },
   onSuccess: (data) => {
-    console.log(data)
     let first = [{ name: "", title: data.is_private ? "Home" : "Team" }]
     breadcrumbs.value = first.concat(data.breadcrumbs.slice(1))
   },
@@ -339,8 +340,8 @@ const fetchAllFolders = createResource({
 
 const move = createResource({
   url: "drive.api.files.move",
-  onSuccess() {
-    emit("success", currentFolder.value)
+  onError() {
+    toast("There was an error moving your file")
   },
 })
 </script>

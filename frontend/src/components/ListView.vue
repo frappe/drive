@@ -15,7 +15,12 @@
     }"
   >
     <ListHeader />
-    <Loader v-if="!entities || entities.loading" />
+    <div
+      v-if="!entities"
+      class="w-full text-center flex items-center justify-center py-10"
+    >
+      <LoadingIndicator class="w-8" />
+    </div>
     <template v-else>
       <div class="h-full overflow-y-auto">
         <div
@@ -54,6 +59,7 @@ import {
   ListHeader,
   ListGroupRows,
   ListGroupHeader,
+  LoadingIndicator,
   ListView as FrappeListView,
   Avatar,
 } from "frappe-ui"
@@ -68,6 +74,7 @@ import Folder from "./MimeIcons/Folder.vue"
 import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
+import { formatDate } from "@/utils/format"
 
 const store = useStore()
 const route = useRoute()
@@ -114,7 +121,7 @@ const selectedColumns = [
     label: "Owner",
     key: "",
     getLabel: ({ row }) =>
-      row.owner === store.state.auth.userId
+      row.owner === store.state.auth.user_id
         ? "You"
         : userData.value[row.owner]?.full_name || row.owner,
     prefix: ({ row }) => {
@@ -132,6 +139,7 @@ const selectedColumns = [
   {
     label: "Last Modified",
     getLabel: ({ row }) => row.relativeModified,
+    getTooltip: (row) => formatDate(row.modified),
     key: "modified",
     isEnabled: (n) => n !== "Recents",
     width: "15%",
@@ -139,6 +147,7 @@ const selectedColumns = [
   {
     label: "Last Accessed",
     getLabel: ({ row }) => row.relativeAccessed,
+    getTooltip: (row) => formatDate(row.accessed),
     key: "modified",
     isEnabled: (n) => n === "Recents",
     width: "15%",

@@ -1,5 +1,9 @@
 <template>
   <FolderContentsError v-if="file.error" :error="file.error" />
+  <LoadingIndicator
+    v-if="file.loading"
+    class="w-10 h-full text-neutral-100 mx-auto"
+  />
   <div
     v-else
     class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
@@ -48,7 +52,7 @@ import {
   onBeforeUnmount,
   inject,
 } from "vue"
-import { Button } from "frappe-ui"
+import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"

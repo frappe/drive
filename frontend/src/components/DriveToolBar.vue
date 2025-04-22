@@ -16,12 +16,12 @@
         :class="'select-none h-[12px]'"
       >
         <template #prefix="{ item }">
-          <LoadingIndicator v-if="item.loading" scale="70" />
+          <LoadingIndicator v-if="item.loading" class="w-[24px]" scale="70" />
         </template>
       </Breadcrumbs>
       <div
-        class="flex gap-3 ml-4 w-[40%] overflow-scroll"
         v-if="selections.length"
+        class="flex gap-3 ml-4 w-[40%] overflow-scroll"
       >
         <Button
           v-for="(item, index) in actionItems
@@ -279,16 +279,11 @@ import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
 const store = useStore()
 const props = defineProps({
-  selections: Set,
-  entities: Array,
+  selections: Array,
   actionItems: Array,
   columnHeaders: Array,
 })
-const selections = computed(() =>
-  Array.from(props.selections).map((n) =>
-    props.entities.find((e) => e.name === n)
-  )
-)
+
 const sortOrder = ref(store.state.sortOrder)
 watch(sortOrder, (val) => store.commit("setSortOrder", val))
 const activeFilters = ref(store.state.activeFilters)
