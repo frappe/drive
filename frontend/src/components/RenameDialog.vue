@@ -40,7 +40,7 @@ const newName = ref("")
 const ext = ref("")
 
 if (props.entity.is_group || props.entity.document) {
-  newName.value = props.value.title
+  newName.value = props.entity.title
   if (useRoute().meta.documentPage) {
     store.state.activeEntity.title = newName.value
   }

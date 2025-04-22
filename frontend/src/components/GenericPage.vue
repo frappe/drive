@@ -90,31 +90,32 @@ const dialog = ref(null)
 const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
-const activeEntity = computed(() => {
-  console.log(store.state.activeEntity)
-  return store.state.activeEntity
-})
-const rows = computed(() =>
-  props.getEntities.data?.filter?.(
-    (k) => k.is_active != 0 && k.title[0] !== "."
-  )
-)
-const selections = ref(new Set())
-const fetchEntitites = () => {
-  props.getEntities.fetch({
-    team,
-    order_by: sortOrder.value.ascending
-      ? sortOrder.value.field
-      : sortOrder.value.field + " desc",
+const activeEntity = computed(() => store.state.activeEntity)
+
+// We do client side sorting for immediate UI updates
+const rows = computed(() => {
+  if (!props.getEntities.data) return
+  const field = sortOrder.value.field
+  const order = sortOrder.value.ascending ? 1 : -1
+  const sorted = props.getEntities.data.toSorted((a, b) => {
+    return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
   })
-}
-watch(sortOrder, fetchEntitites, {
-  immediate: route.name !== "Shared" && !props.verify,
+  return sorted.filter?.((k) => k.title[0] !== ".")
 })
-const verifyAccess = computed(() => props.verify?.data)
-watch(verifyAccess, (data) => {
-  if (data) fetchEntitites()
-})
+
+const selections = ref(new Set())
+
+const verifyAccess = computed(() => props.verify?.data || !props.verify)
+watch(
+  verifyAccess,
+  (data) => {
+    if (data)
+      props.getEntities.fetch({
+        team,
+      })
+  },
+  { immediate: true }
+)
 
 watch(activeFilters.value, async (val) => {
   props.getEntities.fetch({
