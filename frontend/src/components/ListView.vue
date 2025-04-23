@@ -66,6 +66,7 @@
     :event="rowEvent"
   />
 </template>
+
 <script setup>
 import {
   ListHeader,
@@ -135,12 +136,11 @@ const selectedColumns = [
         ? "You"
         : userData.value[row.owner]?.full_name || row.owner,
     prefix: ({ row }) => {
+      // Fallback to default avatar if no image is available
       return h(Avatar, {
         shape: "circle",
-        image: userData.value[row.owner]?.user_image,
-        label:
-          userData.value[row.owner]?.full_name ||
-          userData.value[row.owner]?.email,
+        image: userData.value[row.owner]?.user_image || 'path_to_default_avatar_image',
+        label: userData.value[row.owner]?.full_name || userData.value[row.owner]?.email,
         size: "sm",
       })
     },
