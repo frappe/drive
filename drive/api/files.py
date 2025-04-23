@@ -6,6 +6,7 @@ from .permissions import get_teams, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
+import mimemapper
 
 from drive.utils.files import (
     get_home_folder,
@@ -144,12 +145,12 @@ def upload_file(team, personal, fullpath=None, parent=None, last_modified=None):
             temp_path.unlink()
             frappe.throw("Size on disk does not match specified filesize.", ValueError)
 
-        mime_type, _ = mimetypes.guess_type(temp_path)
-
+        mime_type = mimemapper.get_mime_type(temp_path.suffix[1:])
         if mime_type is None:
             # Read the first 2KB of the binary stream to determine the file type if string checking failed
             # Do a rejection workflow to reject undesired mime types
             mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
+
         drive_file = create_drive_file(
             team,
             personal,
