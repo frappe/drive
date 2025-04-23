@@ -45,7 +45,7 @@
       </div>
     </template>
   </FrappeListView>
-  <EmptyEntityContextMenu
+  <ContextMenu
     v-if="rowEvent && selectedRow"
     :key="selectedRow.name"
     v-on-outside-click="() => (rowEvent = false)"
@@ -63,13 +63,12 @@ import {
   ListView as FrappeListView,
   Avatar,
 } from "frappe-ui"
-import Loader from "@/components/Loader.vue"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref } from "vue"
-import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
+import ContextMenu from "@/components/ContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
 import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
@@ -162,7 +161,7 @@ const selectedColumns = [
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entity) => {
-  if (entity.name === store.state.activeEntity?.name) {
+  if (entity && entity.name === store.state.activeEntity?.name) {
     selectedRow.value = null
     store.commit("setActiveEntity", null)
   } else {

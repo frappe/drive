@@ -1,5 +1,5 @@
 <template>
-  <TransitionGroup>
+  <TransitionGroup name="fade-in">
     <ListRow
       v-for="row in rows"
       :key="row.name"
@@ -21,7 +21,7 @@
           :align="column.align"
         >
           <template #default="{ label }">
-            <transition name="slide-fade" mode="out-in">
+            <transition name="fade-in" mode="out-in">
               <div :key="label" class="truncate text-base">
                 {{ column?.getLabel ? column.getLabel({ row }) : label }}
               </div>
@@ -64,9 +64,7 @@
 </template>
 <script setup>
 import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
-import Lock from "./EspressoIcons/Lock.vue"
 import { openEntity } from "@/utils/files"
-import { getLink } from "@/utils/getLink"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { LucideEyeOff } from "lucide-vue-next"
@@ -82,27 +80,16 @@ const store = useStore()
 </script>
 
 <style scoped>
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: all 0.2s ease;
+.fade-in-enter-active {
+  transition: opacity 300ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
 }
 
-.slide-fade-enter-to,
-.slide-fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
+.fade-in-leave-active {
+  transition: opacity 225ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.slide-fade-enter-from {
+.fade-in-enter,
+.fade-in-leave-to {
   opacity: 0;
-  transform: translateY(2px);
-  filter: blur(10px);
-}
-
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-  filter: blur(10px);
 }
 </style>

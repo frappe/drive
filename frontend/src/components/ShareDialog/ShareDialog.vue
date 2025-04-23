@@ -269,7 +269,6 @@ import GeneralAccess from "@/components/GeneralAccess.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import { getUsersWithAccess, updateAccess } from "@/resources/permissions"
-import { useStore } from "vuex"
 const props = defineProps({ modelValue: String, entity: String })
 const emit = defineEmits(["update:modelValue", "success"])
 getUsersWithAccess.fetch({ entity_name: props.entity.name })

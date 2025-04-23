@@ -10,6 +10,7 @@ import { formatMimeType } from "@/utils/format"
 import { set } from "idb-keyval"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
+  store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
   if (!entity.is_group) {
     getRecents.setData((data) => [...data, entity])

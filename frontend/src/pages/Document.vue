@@ -1,5 +1,10 @@
 <template>
   <FolderContentsError v-if="document.error" :error="document.error" />
+  <LoadingIndicator
+    v-else-if="!document.data && document.loading"
+    :error="document.error"
+    class="w-10 h-full text-neutral-100 mx-auto"
+  />
   <div v-else class="flex w-full">
     <TextEditor
       v-if="contentLoaded"
@@ -44,6 +49,7 @@ import { setBreadCrumbs } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import { prettyData, setMetaData } from "../utils/files"
 import router from "@/router"
+import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")

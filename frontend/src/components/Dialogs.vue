@@ -31,11 +31,7 @@
       }
     "
   />
-  <ShareDialog
-    v-if="dialog === 's'"
-    v-model="dialog"
-    :selections="selections[0]"
-  />
+  <ShareDialog v-if="dialog === 's'" v-model="dialog" :entity="selections[0]" />
 
   <!-- Deletion dialogs -->
   <GeneralDialog
