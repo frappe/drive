@@ -1,15 +1,21 @@
 import { toast } from "@/utils/toasts.js"
 import router from "../router.js"
+import { scrubTitle } from "@/utils/helpers.ts"
+
+import { scrubTitle } from "@/utils/helpers"
 
 export function getLinkStem(entity) {
+  const scrubbedSlug = scrubTitle(entity.name)
+  const id = entity.id || entity.uuid || entity.name // fallback
   return `${
     {
       true: "file",
       [new Boolean(entity.is_group)]: "folder",
       [new Boolean(entity.document)]: "document",
     }[true]
-  }/${entity.name}`
+  }/${id}-${scrubbedSlug}`
 }
+
 
 export function getLink(entity, copy = true) {
   const team = router.currentRoute.value.params.team
