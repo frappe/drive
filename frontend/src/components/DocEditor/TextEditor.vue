@@ -922,7 +922,7 @@ export default {
       )
         return
       if (this.implicitTitle.length) {
-        this.$store.state.entityInfo[0].title = this.implicitTitle
+        this.$store.state.activeEntity.title = this.implicitTitle
         this.$resources.rename.submit({
           entity_name: this.entityName,
           new_title: this.implicitTitle,

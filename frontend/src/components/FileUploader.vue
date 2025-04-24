@@ -94,7 +94,7 @@ function NonMergeMode(file) {
 }
 
 onMounted(() => {
-  dropzone.value = new Dropzone("div#dropTarget", {
+  dropzone.value = new Dropzone("div#dropzone", {
     paramName: "file",
     parallelUploads: 1,
     autoProcessQueue: false,

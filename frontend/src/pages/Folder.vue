@@ -59,7 +59,6 @@ onBeforeUnmount(() => {
   store.state.connectedUsers = []
   realtime.doc_close("Drive File", currentFolder.data?.name)
   realtime.doc_unsubscribe("Drive File", currentFolder.data?.name)
-  store.commit("setEntityInfo", [])
 })
 
 const onSuccess = (entity) => {

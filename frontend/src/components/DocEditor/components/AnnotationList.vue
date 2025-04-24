@@ -190,7 +190,7 @@ const fullName = computed(() => store.state.user.fullName)
 const email = computed(() => store.state.auth.user_id)
 const imageURL = computed(() => store.state.user.imageURL)
 const currentUserEmail = computed(() => store.state.auth.user_id)
-const entity = computed(() => store.state.entityInfo[0])
+const entity = computed(() => store.state.activeEntity)
 
 const openAndAnchoredAnnotations = computed(() => {
   let arr = allAnnotations.toArray()

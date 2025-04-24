@@ -271,6 +271,7 @@ import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import { getUsersWithAccess, updateAccess } from "@/resources/permissions"
 const props = defineProps({ modelValue: String, entity: String })
 const emit = defineEmits(["update:modelValue", "success"])
+console.log(props.entity)
 getUsersWithAccess.fetch({ entity_name: props.entity.name })
 
 const showSettings = ref(false)

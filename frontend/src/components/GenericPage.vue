@@ -1,53 +1,44 @@
 <template>
-  <div
-    class="h-full w-full px-2 overflow-y-auto flex flex-col"
-    @contextmenu="handleContextMenu"
-  >
-    <DriveToolBar
-      v-if="!verify?.error && !getEntities.error"
-      :column-headers="$route.name === 'Recents' ? null : columnHeaders"
-      :selections="selectedEntitities"
-      :entities="rows"
-      :action-items="actionItems"
-    />
-
-    <FolderContentsError
-      v-if="verify?.error || getEntities.error"
-      :error="verify?.error || getEntities.error"
-    />
-    <NoFilesSection
-      v-else-if="rows?.length === 0"
-      :icon="icon"
-      :primary-message="
-        activeFilters.length ? 'Nothing found.' : primaryMessage
-      "
-      :secondary-message="
-        activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
-      "
-    />
-    <ListView
-      v-else
-      ref="view"
-      v-model="selections"
-      :folder-contents="rows && grouper(rows)"
-      :action-items="actionItems"
-      :entities="rows"
-    />
-    <Dialogs
-      :selections="activeEntity ? [activeEntity] : selectedEntitities"
-      :get-entities="getEntities"
-      v-model="dialog"
-    />
-    <FileUploader
-      v-if="$store.state.auth.user_id"
-      @success="getEntities.fetch()"
-    />
-  </div>
+  <Navbar
+    v-if="!verify?.error && !getEntities.error"
+    :column-headers="$route.name === 'Recents' ? null : columnHeaders"
+    :selections="selectedEntitities"
+    :action-items="actionItems"
+  />
+  <FolderContentsError
+    v-if="verify?.error || getEntities.error"
+    :error="verify?.error || getEntities.error"
+  />
+  <NoFilesSection
+    v-else-if="rows?.length === 0"
+    :icon="icon"
+    :primary-message="activeFilters.length ? 'Nothing found.' : primaryMessage"
+    :secondary-message="
+      activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
+    "
+  />
+  <ListView
+    v-else
+    ref="view"
+    v-model="selections"
+    :folder-contents="rows && grouper(rows)"
+    :action-items="actionItems"
+    :entities="rows"
+  />
+  <Dialogs
+    v-model="dialog"
+    :selections="activeEntity ? [activeEntity] : selectedEntitities"
+    :get-entities="getEntities"
+  />
+  <FileUploader
+    v-if="$store.state.auth.user_id"
+    @success="getEntities.fetch()"
+  />
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"
 import GridView from "@/components/GridView.vue"
-import DriveToolBar from "@/components/DriveToolBar.vue"
+import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
@@ -129,13 +120,6 @@ watch(activeFilters.value, async (val) => {
   })
 })
 
-const clickEvent = ref(null)
-const defaultContextTriggered = ref(false)
-function handleContextMenu(event) {
-  clickEvent.value = event
-  defaultContextTriggered.value = true
-  event.preventDefault()
-}
 allUsers.fetch({ team })
 
 // Action Items
@@ -242,6 +226,7 @@ const actionItems = computed(() => {
           entities.forEach((e) => (e.is_favourite = true))
           // Hack to cache
           props.getEntities.setData(props.getEntities.data)
+          console.log("called 1")
           toggleFav.submit({ entities })
         },
         isEnabled: (e) => !e.is_favourite,
@@ -269,7 +254,7 @@ const actionItems = computed(() => {
             entities,
           })
         },
-        isEnabled: (e) => e.accessed,
+        isEnabled: () => route.name == "Recents",
         important: true,
         multi: true,
       },

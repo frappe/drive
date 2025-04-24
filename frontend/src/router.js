@@ -12,8 +12,7 @@ function redir404(to, from, next) {
 }
 
 function clearStore() {
-  store.commit("setEntityInfo", [])
-  store.commit("setCurrentFolder", [])
+  store.commit("setActiveEntity", null)
   store.commit("setCurrentEntitites", [])
 }
 
@@ -104,20 +103,20 @@ const routes = [
     name: "Inbox",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
+    beforeEnter: [setRootBreadCrumb],
   },
 
   {
     path: "/t/:team/team",
     name: "Team",
     component: () => import("@/pages/Team.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/t/:team/recents",
     name: "Recents",
     component: () => import("@/pages/Recents.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/t/:team/favourites",
@@ -142,7 +141,7 @@ const routes = [
     path: "/t/:team/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
+    beforeEnter: [setRootBreadCrumb],
   },
   {
     path: "/:team/file/:entityName",
@@ -157,7 +156,7 @@ const routes = [
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { allowGuest: true, filePage: true },
-    beforeEnter: [clearStore, manageBreadcrumbs],
+    beforeEnter: [manageBreadcrumbs],
     props: true,
   },
   {
@@ -190,7 +189,7 @@ const routes = [
     meta: { sidebar: false, documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
-    beforeEnter: [clearStore, manageBreadcrumbs],
+    beforeEnter: [manageBreadcrumbs],
   },
   {
     path: "/signup",
@@ -224,14 +223,14 @@ const routes = [
     path: "/shared",
     name: "Shared",
     component: () => import("@/pages/Shared.vue"),
-    beforeEnter: [setRootBreadCrumb, clearStore],
+    beforeEnter: [setRootBreadCrumb],
     meta: { allowGuest: true },
   },
   {
     path: "/:pathMatch(.*)*/",
     name: "Error",
     component: () => import("@/pages/Error.vue"),
-    beforeEnter: [redir404, clearStore],
+    beforeEnter: [redir404],
     meta: {
       errorPage: true,
     },
@@ -249,6 +248,7 @@ router.beforeEach(async (to, from, next) => {
     next("/login")
   } else {
     if (to.params.team) localStorage.setItem("recentTeam", to.params.team)
+    clearStore()
     next()
   }
 })

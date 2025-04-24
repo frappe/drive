@@ -119,7 +119,6 @@ export default {
       return {
         url: this.dialogData.methodName,
         makeParams: () => {
-          console.log("ha", this.$emit)
           this.$emit("success")
           return {
             entity_names:

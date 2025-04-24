@@ -1013,15 +1013,15 @@ export default {
           icon: markRaw(Comment),
           write: false,
           disabled:
-            this.$store.state.entityInfo[0].comment === 0 ||
-            this.$store.state.entityInfo[0].owner !==
+            this.$store.state.activeEntity.comment === 0 ||
+            this.$store.state.activeEntity.owner !==
               this.$store.state.auth.userId,
         },
         {
           name: "Versions",
           icon: markRaw(FileClock),
           write: false,
-          disabled: this.$store.state.entityInfo[0].write === 0,
+          disabled: this.$store.state.activeEntity.write === 0,
         },
         {
           name: "Clock",
@@ -1055,7 +1055,7 @@ export default {
       return this.$store.state.user.imageURL
     },
     entity() {
-      return this.$store.state.entityInfo[0]
+      return this.$store.state.activeEntity
     },
     unaddedTags() {
       return this.$resources.userTags.data.filter(

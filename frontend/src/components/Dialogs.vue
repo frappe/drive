@@ -95,7 +95,7 @@ emitter.on("rename", () => (dialog.value = "rn"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 const setTitle = (title) => (document.title = title)
-
+console.log("called with", props.selections)
 function addToList(data) {
   props.getEntities.data.push(data)
   props.getEntities.setData(props.getEntities.data)

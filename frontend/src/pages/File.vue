@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <FolderContentsError v-if="file.error" :error="file.error" />
   <LoadingIndicator
     v-if="file.loading"
@@ -34,16 +35,12 @@
         @click="scrollEntity()"
       ></Button>
     </div>
-    <ShareDialog
-      v-if="dialog === 's'"
-      v-model="dialog"
-      :entity-name="props.entityName"
-    />
   </div>
 </template>
 
 <script setup>
 import { useStore } from "vuex"
+import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   computed,
@@ -77,6 +74,7 @@ const dialog = ref("")
 const currentEntity = ref(props.entityName)
 
 const filteredEntities = computed(() => {
+  console.log(store.state.currentEntitites)
   if (store.state.currentEntitites.length) {
     return store.state.currentEntitites.filter(
       (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
@@ -141,7 +139,6 @@ let file = createResource({
   params: { entity_name: props.entityName },
   transform(entity) {
     store.commit("setActiveEntity", entity)
-    store.commit("setEntityInfo", [entity])
     return prettyData([entity])[0]
   },
   onSuccess,
@@ -173,7 +170,6 @@ onBeforeUnmount(() => {
   store.state.connectedUsers = []
   realtime.doc_close("Drive File", file.data?.name)
   realtime.doc_unsubscribe("Drive File", file.data?.name)
-  store.commit("setEntityInfo", [])
 })
 
 let userInfo = createResource({

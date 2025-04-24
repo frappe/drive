@@ -9,6 +9,18 @@ import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
 import { formatMimeType } from "@/utils/format"
 import { set } from "idb-keyval"
 
+// MIME icons
+import Folder from "@/components/MimeIcons/Folder.vue"
+import Archive from "@/components/MimeIcons/Archive.vue"
+import Document from "@/components/MimeIcons/Document.vue"
+import Spreadsheet from "@/components/MimeIcons/Spreadsheet.vue"
+import Presentation from "@/components/MimeIcons/Presentation.vue"
+import Audio from "@/components/MimeIcons/Audio.vue"
+import Image from "@/components/MimeIcons/Image.vue"
+import Video from "@/components/MimeIcons/Video.vue"
+import PDF from "@/components/MimeIcons/PDF.vue"
+import Unknown from "@/components/MimeIcons/Unknown.vue"
+
 export const openEntity = (team = null, entity, new_tab = false) => {
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
@@ -220,6 +232,49 @@ export const MIME_LIST_MAP = {
     "application/x-bzip2",
   ],
 }
+
+export const ICON_TYPES = [
+  {
+    label: "Folder",
+    icon: Folder,
+  },
+  {
+    label: "Image",
+    icon: Image,
+  },
+  {
+    label: "Audio",
+    icon: Audio,
+  },
+  {
+    label: "Video",
+    icon: Video,
+  },
+  {
+    label: "PDF",
+    icon: PDF,
+  },
+  {
+    label: "Document",
+    icon: Document,
+  },
+  {
+    label: "Spreadsheet",
+    icon: Spreadsheet,
+  },
+  {
+    label: "Archive",
+    icon: Archive,
+  },
+  {
+    label: "Presentation",
+    icon: Presentation,
+  },
+  {
+    label: "Unknown",
+    icon: Unknown,
+  },
+]
 
 // Synced cache - ensure all setters are reflected in the app
 function getCacheKey(cacheKey) {

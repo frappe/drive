@@ -1,17 +1,17 @@
 <template>
   <FrappeListView
-    class="select-none"
+    class="px-0.5 select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
-    @update:selections="(s) => (selections = s)"
+    @update:selections="handleSelections"
     @update:active-row="setActive"
     :options="{
       selectable: true,
       enableActive: true,
       showTooltip: true,
       resizeColumn: true,
-      getRowRoute: () => '',
+      getRowRoute: (row) => getLink(row, false, false),
     }"
   >
     <ListHeader />
@@ -67,13 +67,14 @@ import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
-import { computed, h, ref } from "vue"
+import { computed, h, ref, watch } from "vue"
 import ContextMenu from "@/components/ContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
-import { allUsers } from "../resources/permissions"
+import { allUsers } from "@/resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
+import { getLink } from "../utils/getLink"
 
 const store = useStore()
 const route = useRoute()
@@ -161,14 +162,11 @@ const selectedColumns = [
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entity) => {
-  if (entity && entity.name === store.state.activeEntity?.name) {
-    selectedRow.value = null
-    store.commit("setActiveEntity", null)
-  } else {
-    selectedRow.value = entity
-    store.commit("setActiveEntity", entity)
-  }
+  selectedRow.value =
+    !entity || entity.name !== store.state.activeEntity?.name ? entity : null
 }
+
+watch(selectedRow, (k) => store.commit("setActiveEntity", k))
 
 const dropdownActionItems = (row) => {
   if (!row) return []
@@ -186,10 +184,17 @@ const dropdownActionItems = (row) => {
 
 const contextMenu = (event, row) => {
   if (selections.value.size > 0) return
+  // Ctrl + click triggers context menu on Mac
   if (event.ctrlKey) openEntity(route.params.team, row, true)
-  selectedRow.value = row
   rowEvent.value = event
+  selectedRow.value = row
   event.stopPropagation()
   event.preventDefault()
+}
+
+const handleSelections = (sels) => {
+  selections.value = sels
+  selectedRow.value = null
+  store.commit("setActiveEntity", null)
 }
 </script>

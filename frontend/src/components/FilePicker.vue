@@ -414,15 +414,7 @@ const fetchFolderContents = createResource({
     })
     folderContents.value = data
   },
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      this.$store.commit("setError", {
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-      this.$router.replace({ name: "Error" })
-    }
-  },
+  // Better error handling
 })
 
 let sharedWithMe = createResource({
@@ -437,9 +429,6 @@ let sharedWithMe = createResource({
       entity.creation = formatDate(entity.creation)
     })
     folderContents.value = data
-  },
-  onError(error) {
-    console.log(error)
   },
 })
 </script>

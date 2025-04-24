@@ -5,7 +5,8 @@
     :error="document.error"
     class="w-10 h-full text-neutral-100 mx-auto"
   />
-  <div v-else class="flex w-full">
+  <Navbar />
+  <div class="flex w-full overflow-auto">
     <TextEditor
       v-if="contentLoaded"
       v-model:yjsContent="yjsContent"
@@ -22,16 +23,12 @@
       @mentioned-users="(val) => (mentionedUsers = val)"
       @save-document="saveDocument"
     />
-    <ShareDialog
-      v-if="showShareDialog"
-      v-model="showShareDialog"
-      :entity-name="entityName"
-    />
   </div>
 </template>
 
 <script setup>
 import { fromUint8Array, toUint8Array } from "js-base64"
+import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   computed,
@@ -53,9 +50,6 @@ import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
-)
-const ShareDialog = defineAsyncComponent(() =>
-  import("@/components/ShareDialog/ShareDialog.vue")
 )
 
 const store = useStore()
@@ -80,7 +74,6 @@ const contentLoaded = ref(false)
 const isWritable = ref(false)
 const entity = ref(null)
 const mentionedUsers = ref([])
-const showShareDialog = ref(false)
 const timeout = ref(1000 + Math.floor(Math.random() * 1000))
 const saveCount = ref(0)
 const lastSaved = ref(0)
@@ -126,7 +119,6 @@ const onSuccess = (data) => {
       '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
   }
   settings.value = JSON.parse(data.settings)
-  store.commit("setEntityInfo", [data])
   store.commit("setActiveEntity", data)
 
   if (!("docSpellcheck" in settings.value)) {
@@ -174,9 +166,6 @@ const updateDocument = createResource({
 
 onMounted(() => {
   allUsers.fetch({ team: route.params?.team })
-  emitter.on("showShareDialog", () => {
-    showShareDialog.value = true
-  })
   if (saveCount.value > 0) {
     intervalId.value = setInterval(() => {
       emitter.emit("triggerAutoSnapshot")

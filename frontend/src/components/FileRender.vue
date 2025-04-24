@@ -97,8 +97,4 @@ const previewComponent = computed(() => {
     props.previewEntity.mime_type === "text/x-python"]: TextPreview,
   }[true]
 })
-
-onBeforeMount(() => {
-  store.commit("setEntityInfo", [])
-})
 </script>

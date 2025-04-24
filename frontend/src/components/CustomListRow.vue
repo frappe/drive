@@ -4,11 +4,14 @@
       v-for="row in rows"
       :key="row.name"
       :row="row"
-      class="rounded group"
+      class="group"
+      :class="
+        row.name === selectedName
+          ? 'bg-surface-gray-3 hover:!bg-surface-gray-3'
+          : ''
+      "
       @click="$route.name !== 'Trash'"
       @contextmenu="(e) => contextMenu(e, row)"
-      @mouseenter="$emit('mouseenter', row)"
-      @mouseleave="$emit('mouseleave')"
       @dblclick="
         () => $route.name !== 'Trash' && openEntity(route.params.team, row)
       "
@@ -51,7 +54,7 @@
                 v-else-if="
                   row.is_private && store.state.breadcrumbs[0].label != 'Home'
                 "
-                text="Your file alone."
+                text="This is from your Home."
               >
                 <LucideEyeOff width="16" height="16" class="my-auto" />
               </Tooltip>
@@ -64,19 +67,21 @@
 </template>
 <script setup>
 import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
+import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 import { openEntity } from "@/utils/files"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { LucideEyeOff } from "lucide-vue-next"
-import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
+import { computed } from "vue"
 
 defineProps({
   rows: Array,
   contextMenu: Function,
 })
-defineEmits(["mouseenter", "mouseleave"])
 const route = useRoute()
 const store = useStore()
+
+// Used as right-click doesn't trigger active in frappe-ui
+const selectedName = computed(() => store.state.activeEntity?.name)
 </script>
 
 <style scoped>

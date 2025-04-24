@@ -42,10 +42,6 @@ const store = createStore({
     activeTags: [],
     activeEntity: null,
     notifCount: 0,
-    entityInfo:
-      JSON.parse(localStorage.getItem("selectedEntities")) ||
-      JSON.parse(localStorage.getItem("currentFolder")) ||
-      [],
     currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || [],
     currentEntitites: get("currentEntitites") || [],
     pasteData: { entities: [], action: null },
@@ -131,10 +127,6 @@ const store = createStore({
     toggleShareView(state, payload) {
       localStorage.setItem("shareView", JSON.stringify(payload))
       state.shareView = payload
-    },
-    setEntityInfo(state, payload) {
-      localStorage.setItem("selectedEntities", JSON.stringify(payload))
-      state.entityInfo = payload
     },
     setActiveEntity(state, payload) {
       state.activeEntity = payload
