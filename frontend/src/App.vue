@@ -39,12 +39,9 @@
   <Toasts />
 </template>
 <script setup>
-import Navbar from "@/components/Navbar.vue"
-import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Sidebar from "@/components/Sidebar.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
-import { Link } from "frappe-ui"
 import { Toasts } from "@/utils/toasts.js"
 import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
@@ -54,7 +51,6 @@ import { useRoute, useRouter } from "vue-router"
 import emitter from "@/emitter"
 
 const store = useStore()
-const route = useRoute()
 const router = useRouter()
 
 const showSearchPopup = ref(false)
@@ -63,13 +59,8 @@ const showUploadTracker = computed(
   () => isLoggedIn.value && store.state.uploads.length > 0
 )
 const showInfoSidebar = computed(() => store.state.showInfo)
-
-onMounted(() => {
-  addKeyboardShortcuts()
-  emitter.on("showSearchPopup", (data) => {
-    showSearchPopup.value = data
-  })
-  if (!isLoggedIn.value) return
+emitter.on("showSearchPopup", (data) => {
+  showSearchPopup.value = data
 })
 
 function addKeyboardShortcuts() {
@@ -123,4 +114,5 @@ function addKeyboardShortcuts() {
     }
   })
 }
+onMounted(addKeyboardShortcuts)
 </script>

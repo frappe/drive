@@ -22,7 +22,7 @@
       <LoadingIndicator class="w-8" />
     </div>
     <template v-else>
-      <div class="h-full overflow-y-auto">
+      <div id="drop-area" class="h-full overflow-y-auto">
         <div
           v-if="formattedRows[0].group"
           v-for="group in formattedRows"
@@ -43,6 +43,9 @@
           <CustomListRow :rows="formattedRows" :context-menu="contextMenu" />
         </div>
       </div>
+      <p class="hidden text-center w-[20%] left-[40%] top-[50%] z-10 font-bold">
+        Drop to upload
+      </p>
     </template>
   </FrappeListView>
   <ContextMenu
@@ -198,3 +201,17 @@ const handleSelections = (sels) => {
   store.commit("setActiveEntity", null)
 }
 </script>
+<style>
+.dz-drag-hover #drop-area {
+  opacity: 0.5;
+  border: black 2px dotted;
+  box-sizing: content-box;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dz-drag-hover #drop-area + p {
+  display: block;
+  position: absolute;
+}
+</style>
