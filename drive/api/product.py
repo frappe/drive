@@ -2,7 +2,6 @@ import frappe
 from frappe.rate_limiter import rate_limit
 from frappe.utils import escape_html
 from frappe.utils import split_emails, validate_email_address
-from .google import google_oauth_flow
 
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
