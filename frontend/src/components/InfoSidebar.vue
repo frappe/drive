@@ -35,7 +35,7 @@
           <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
         </div>
         <div class="space-y-6.5">
-          <div v-if="entity.owner === $store.state.auth.user_id">
+          <div v-if="entity.owner === $store.state.user.id">
             <div class="text-base font-medium mb-4">Access</div>
             <div class="flex items-center justify-between">
               <div class="flex">
@@ -99,7 +99,7 @@
               <span class="col-span-1 text-gray-600">Owner</span>
               <span class="col-span-1">{{
                 entity.owner +
-                (entity.owner === $store.state.auth.user_id ? " (you)" : "")
+                (entity.owner === $store.state.user.id ? " (you)" : "")
               }}</span>
             </div>
           </div>
@@ -239,7 +239,7 @@ const tab = ref(0)
 const newComment = ref("")
 const thumbnailLink = ref("")
 
-const userId = computed(() => store.state.auth.user_id)
+const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
 

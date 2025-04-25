@@ -187,9 +187,9 @@ const currentFilterState = ref(0)
 const commentText = ref<string>("")
 
 const fullName = computed(() => store.state.user.fullName)
-const email = computed(() => store.state.auth.user_id)
+const email = computed(() => store.state.user.id)
 const imageURL = computed(() => store.state.user.imageURL)
-const currentUserEmail = computed(() => store.state.auth.user_id)
+const currentUserEmail = computed(() => store.state.user.id)
 const entity = computed(() => store.state.activeEntity)
 
 const openAndAnchoredAnnotations = computed(() => {

@@ -30,10 +30,7 @@
     :selections="activeEntity ? [activeEntity] : selectedEntitities"
     :get-entities="getEntities"
   />
-  <FileUploader
-    v-if="$store.state.auth.user_id"
-    @success="getEntities.fetch()"
-  />
+  <FileUploader v-if="$store.state.user.id" @success="getEntities.fetch()" />
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"
@@ -81,16 +78,20 @@ const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
+const rows = computed(() => store.state.currentFolder.entities)
 
 // We do client side sorting for immediate UI updates
-const rows = computed(() => {
+watch([sortOrder, () => props.getEntities.data], () => {
   if (!props.getEntities.data) return
   const field = sortOrder.value.field
   const order = sortOrder.value.ascending ? 1 : -1
   const sorted = props.getEntities.data.toSorted((a, b) => {
     return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
   })
-  return sorted.filter?.((k) => k.title[0] !== ".")
+  store.commit("setCurrentFolder", {
+    name: sorted[0]?.parent_entity || "",
+    entities: sorted.filter?.((k) => k.title[0] !== "."),
+  })
 })
 
 const selections = ref(new Set())
@@ -104,9 +105,9 @@ const selectedEntitities = computed(
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
 watch(
   verifyAccess,
-  (data) => {
+  async (data) => {
     if (data)
-      props.getEntities.fetch({
+      await props.getEntities.fetch({
         team,
       })
   },
@@ -226,7 +227,6 @@ const actionItems = computed(() => {
           entities.forEach((e) => (e.is_favourite = true))
           // Hack to cache
           props.getEntities.setData(props.getEntities.data)
-          console.log("called 1")
           toggleFav.submit({ entities })
         },
         isEnabled: (e) => !e.is_favourite,

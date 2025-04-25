@@ -13,7 +13,7 @@
         class="flex flex-col h-screen flex-grow overflow-hidden"
       >
         <router-view :key="$route.fullPath" v-slot="{ Component }">
-          <component :is="Component" class="flex-grow" />
+          <component :is="Component" />
         </router-view>
       </div>
 

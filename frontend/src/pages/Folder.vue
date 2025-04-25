@@ -27,11 +27,8 @@ const realtime = inject("realtime")
 const emitter = inject("emitter")
 
 const props = defineProps({
-  entityName: {
-    type: String,
-    required: false,
-    default: "",
-  },
+  entityName: String,
+  team: String,
 })
 
 const getFolderContents = createResource({
@@ -39,6 +36,7 @@ const getFolderContents = createResource({
   url: "drive.api.list.files",
   makeParams: (params) => ({
     entity_name: props.entityName,
+    team: props.team,
     ...params,
   }),
   cache: ["folder", props.entityName],
@@ -63,7 +61,6 @@ onBeforeUnmount(() => {
 
 const onSuccess = (entity) => {
   if (router.currentRoute.value.params.entityName !== entity.name) return
-  store.commit("setCurrentFolderID", props.entityName)
   setMetaData(entity)
   document.title = "Folder - " + entity.title
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
@@ -76,7 +73,6 @@ let currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   makeParams: (e) => ({ entity_name: e }),
   transform(entity) {
-    store.commit("setCurrentFolder", [entity])
     return prettyData([entity])[0]
   },
   onSuccess,

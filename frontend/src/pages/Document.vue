@@ -57,11 +57,8 @@ const route = useRoute()
 const emitter = inject("emitter")
 
 const props = defineProps({
-  entityName: {
-    type: String,
-    required: false,
-    default: "",
-  },
+  entityName: String,
+  team: String,
 })
 
 // Reactive data properties
@@ -79,7 +76,7 @@ const saveCount = ref(0)
 const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
-const userId = computed(() => store.state.auth.user_id)
+const userId = computed(() => store.state.user.id)
 let intervalId = ref(null)
 
 setTimeout(() => {

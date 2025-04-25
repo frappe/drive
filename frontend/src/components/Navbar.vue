@@ -322,7 +322,6 @@ const props = defineProps({
 
 watch(sortOrder, (val) => store.commit("setSortOrder", val))
 watch(activeFilters.value, (val) => store.commit("setActiveFilters", val))
-watch(activeEls, console.log)
 const orderByItems = computed(() => {
   return props.columnHeaders.map((header) => ({
     ...header,
@@ -358,7 +357,7 @@ const newDocument = async () => {
     team: route.params.team,
     personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
     content: null,
-    parent: store.state.currentFolderID,
+    parent: store.state.currentFolder.name,
   })
   window.open(
     router.resolve({

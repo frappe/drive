@@ -10,7 +10,7 @@
           ? 'bg-surface-gray-3 hover:!bg-surface-gray-3'
           : ''
       "
-      @click="$route.name !== 'Trash'"
+      @click="$event.preventDefault(), $event.stopPropagation()"
       @contextmenu="(e) => contextMenu(e, row)"
       @dblclick="
         () => $route.name !== 'Trash' && openEntity(route.params.team, row)
@@ -24,11 +24,18 @@
           :align="column.align"
         >
           <template #default="{ label }">
-            <transition name="fade-in" mode="out-in">
+            <transition
+              v-if="column.key === 'title'"
+              name="fade-in"
+              mode="out-in"
+            >
               <div :key="label" class="truncate text-base">
                 {{ column?.getLabel ? column.getLabel({ row }) : label }}
               </div>
             </transition>
+            <div v-else :key="label" class="truncate text-base">
+              {{ column?.getLabel ? column.getLabel({ row }) : label }}
+            </div>
 
             <Button
               v-if="column.key === 'options'"

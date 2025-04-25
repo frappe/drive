@@ -116,7 +116,7 @@
                   }}</span>
                 </div>
                 <span
-                  v-if="user.user == $store.state.auth.user_id"
+                  v-if="user.user == $store.state.user.id"
                   class="ml-auto flex items-center gap-1 text-gray-600"
                 >
                   <em>You</em>
@@ -271,7 +271,6 @@ import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import { getUsersWithAccess, updateAccess } from "@/resources/permissions"
 const props = defineProps({ modelValue: String, entity: String })
 const emit = defineEmits(["update:modelValue", "success"])
-console.log(props.entity)
 getUsersWithAccess.fetch({ entity_name: props.entity.name })
 
 const showSettings = ref(false)

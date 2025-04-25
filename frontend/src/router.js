@@ -3,17 +3,8 @@ import store from "./store"
 import { getTeams, translate } from "./resources/files"
 import { manageBreadcrumbs } from "./utils/files"
 
-function redir404(to, from, next) {
-  if (store.getters.isLoggedIn) {
-    next()
-  } else {
-    next("/login")
-  }
-}
-
 function clearStore() {
   store.commit("setActiveEntity", null)
-  store.commit("setCurrentEntitites", [])
 }
 
 async function setRootBreadCrumb(to) {
@@ -225,16 +216,6 @@ const routes = [
     component: () => import("@/pages/Shared.vue"),
     beforeEnter: [setRootBreadCrumb],
     meta: { allowGuest: true },
-  },
-  {
-    path: "/:pathMatch(.*)*/",
-    name: "Error",
-    component: () => import("@/pages/Error.vue"),
-    beforeEnter: [redir404],
-    meta: {
-      errorPage: true,
-    },
-    props: true,
   },
 ]
 

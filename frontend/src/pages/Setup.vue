@@ -102,7 +102,7 @@ import { useStore } from "vuex"
 const route = useRoute()
 const store = useStore()
 const team_name = ref(null)
-const email = computed(() => store.state.auth.user_id)
+const email = computed(() => store.state.user.id)
 
 const domainTeams = createResource({
   url: "drive.api.product.get_domain_teams",

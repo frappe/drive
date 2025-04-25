@@ -103,7 +103,7 @@ export const setBreadCrumbs = (
     getTeams.data && Object.keys(getTeams.data).includes(lastEl.team)
   if (
     (partOfTeam && !lastEl.is_private) ||
-    lastEl.owner == store.state.auth.user_id
+    lastEl.owner == store.state.user.id
   ) {
     res = [
       {
@@ -294,5 +294,21 @@ export function setCache(t, cache) {
       t.data = data
     }
     await set(getCacheKey(cache), JSON.stringify(t.data))
+  }
+}
+
+export function enterFullScreen() {
+  let elem = document.getElementById("renderContainer")
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen()
+  } else if (elem.mozRequestFullScreen) {
+    /* Firefox */
+    elem.mozRequestFullScreen()
+  } else if (elem.webkitRequestFullscreen) {
+    /* Chrome, Safari & Opera */
+    elem.webkitRequestFullscreen()
+  } else if (elem.msRequestFullscreen) {
+    /* IE/Edge */
+    elem.msRequestFullscreen()
   }
 }

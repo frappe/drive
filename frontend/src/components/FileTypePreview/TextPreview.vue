@@ -23,7 +23,7 @@ import { onMounted, ref, watch } from "vue"
 
 const props = defineProps({
   previewEntity: {
-    type: String,
+    type: Object,
     default: "",
   },
 })

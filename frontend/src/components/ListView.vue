@@ -11,7 +11,8 @@
       enableActive: true,
       showTooltip: true,
       resizeColumn: true,
-      getRowRoute: (row) => getLink(row, false, false),
+      // Should be getLink(row, false, false) - but messes up clicking
+      getRowRoute: (row) => '',
     }"
   >
     <ListHeader />
@@ -77,7 +78,6 @@ import { allUsers } from "@/resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
-import { getLink } from "../utils/getLink"
 
 const store = useStore()
 const route = useRoute()
@@ -93,6 +93,7 @@ const userData = computed(() =>
   allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
 )
 const formattedRows = computed(() => {
+  return props.folderContents || []
   if (!props.folderContents) return []
   if (Array.isArray(props.folderContents))
     return props.folderContents.filter((k) => k)
@@ -124,7 +125,7 @@ const selectedColumns = [
     label: "Owner",
     key: "",
     getLabel: ({ row }) =>
-      row.owner === store.state.auth.user_id
+      row.owner === store.state.user.id
         ? "You"
         : userData.value[row.owner]?.full_name || row.owner,
     prefix: ({ row }) => {

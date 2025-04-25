@@ -150,7 +150,7 @@ onMounted(() => {
     },
   })
   dropzone.value.on("addedfile", function (file) {
-    file.parent = store.state.currentFolderID
+    file.parent = store.state.currentFolder.name
     store.commit("pushToUploads", {
       uuid: file.upload.uuid,
       name: file.name,

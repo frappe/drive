@@ -1014,8 +1014,7 @@ export default {
           write: false,
           disabled:
             this.$store.state.activeEntity.comment === 0 ||
-            this.$store.state.activeEntity.owner !==
-              this.$store.state.auth.userId,
+            this.$store.state.activeEntity.owner !== this.$store.state.user.id,
         },
         {
           name: "Versions",
@@ -1027,7 +1026,7 @@ export default {
           name: "Clock",
           icon: markRaw(Clock),
           write: false,
-          disabled: this.$store.state.auth.user_id === "Guest",
+          disabled: this.$store.state.user.id === "Guest",
         },
       ].filter((item) => !item.disabled),
       newComment: "",
@@ -1043,7 +1042,7 @@ export default {
   },
   computed: {
     userId() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
     fullName() {
       return this.$store.state.user.fullName

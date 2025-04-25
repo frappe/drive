@@ -55,8 +55,12 @@ import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
-import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import { prettyData, setBreadCrumbs, setMetaData } from "@/utils/files"
+import {
+  prettyData,
+  setBreadCrumbs,
+  setMetaData,
+  enterFullScreen,
+} from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"
 
 const router = useRouter()
@@ -64,25 +68,17 @@ const store = useStore()
 const emitter = inject("emitter")
 const realtime = inject("realtime")
 const props = defineProps({
-  entityName: {
-    type: String,
-    default: null,
-  },
+  entityName: String,
+  team: String,
 })
 
-const dialog = ref("")
 const currentEntity = ref(props.entityName)
 
-const filteredEntities = computed(() => {
-  console.log(store.state.currentEntitites)
-  if (store.state.currentEntitites.length) {
-    return store.state.currentEntitites.filter(
-      (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
-    )
-  } else {
-    return []
-  }
-})
+const filteredEntities = computed(() =>
+  store.state.currentFolder.entities.filter(
+    (item) => !item.is_group && !item.document && !item.is_link
+  )
+)
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(
@@ -99,22 +95,6 @@ function fetchFile(currentEntity) {
       params: { entityName: currentEntity },
     })
   })
-}
-
-function enterFullScreen() {
-  let elem = document.getElementById("renderContainer")
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen()
-  } else if (elem.mozRequestFullScreen) {
-    /* Firefox */
-    elem.mozRequestFullScreen()
-  } else if (elem.webkitRequestFullscreen) {
-    /* Chrome, Safari & Opera */
-    elem.webkitRequestFullscreen()
-  } else if (elem.msRequestFullscreen) {
-    /* IE/Edge */
-    elem.msRequestFullscreen()
-  }
 }
 
 onKeyStroke("ArrowLeft", (e) => {
@@ -159,9 +139,6 @@ onMounted(() => {
   realtime.on("doc_viewers", (data) => {
     store.state.connectedUsers = data.users
     userInfo.submit({ users: JSON.stringify(data.users) })
-  })
-  emitter.on("showShareDialog", () => {
-    dialog.value = "s"
   })
 })
 

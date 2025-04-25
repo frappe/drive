@@ -158,7 +158,7 @@ export default {
       return this.$store.state.user.fullName.split(" ")[1]
     },
     currentUserEmail() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
     fullName() {
       return this.$store.state.user.fullName

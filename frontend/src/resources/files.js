@@ -19,7 +19,6 @@ export const COMMON_OPTIONS = {
     }
   },
   transform(data) {
-    store.commit("setCurrentEntitites", data)
     return prettyData(data)
   },
 }
