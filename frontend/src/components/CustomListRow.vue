@@ -10,11 +10,9 @@
           ? 'bg-surface-gray-3 hover:!bg-surface-gray-3'
           : ''
       "
-      @click="$event.preventDefault(), $event.stopPropagation()"
       @contextmenu="(e) => contextMenu(e, row)"
-      @dblclick="
-        () => $route.name !== 'Trash' && openEntity(route.params.team, row)
-      "
+      @click="settings.data.single_click && open(row)"
+      @dblclick="!settings.data.single_click && open(row)"
     >
       <template #default="{ idx, column, item }">
         <ListRowItem
@@ -76,6 +74,7 @@
 import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
 import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 import { openEntity } from "@/utils/files"
+import { settings } from "@/resources/permissions"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { computed } from "vue"
@@ -89,6 +88,8 @@ const store = useStore()
 
 // Used as right-click doesn't trigger active in frappe-ui
 const selectedName = computed(() => store.state.activeEntity?.name)
+const open = (row) =>
+  route.name !== "Trash" && openEntity(route.params.team, row)
 </script>
 
 <style scoped>

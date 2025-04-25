@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { getTeams, translate } from "./resources/files"
+import { settings } from "./resources/permissions"
 import { manageBreadcrumbs } from "./utils/files"
 
 function clearStore() {
@@ -31,62 +32,9 @@ const routes = [
     path: "/",
     component: () => null,
     beforeEnter: async () => {
-      if (!store.getters.isLoggedIn) return
-      await getTeams.fetch()
-      if (store.getters.isLoggedIn)
-        if (Object.keys(getTeams.data.message || getTeams.data).length)
-          return "/t/" + Object.keys(getTeams.data.message || getTeams.data)[0]
-        else return "/teams"
-
-      return "/login"
-    },
-  },
-  {
-    path: "/folder/:entityName",
-    component: () => null,
-    beforeEnter: async (to) => {
-      await getTeams.fetch()
-      await translate.fetch()
-      return {
-        name: "Folder",
-        params: {
-          team: Object.keys(getTeams.data)[0],
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
-        },
-      }
-    },
-  },
-  {
-    path: "/document/:entityName",
-    component: () => null,
-    beforeEnter: async (to) => {
-      await getTeams.fetch()
-      await translate.fetch()
-      return {
-        name: "Document",
-        params: {
-          team: Object.keys(getTeams.data)[0],
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
-        },
-      }
-    },
-  },
-  {
-    path: "/file/:entityName",
-    component: () => null,
-    beforeEnter: async (to) => {
-      await getTeams.fetch()
-      await translate.fetch()
-      return {
-        name: "File",
-        params: {
-          team: Object.keys(getTeams.data)[0],
-          entityName:
-            translate.data[to.params.entityName] || to.params.entityName,
-        },
-      }
+      if (!store.getters.isLoggedIn) return "/login"
+      await settings.fetch()
+      return "/t/" + settings.data.default_team
     },
   },
   {
@@ -96,7 +44,19 @@ const routes = [
     component: () => import("@/pages/Notifications.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
-
+  {
+    path: "/:team/",
+    redirect: (to) => ({
+      name: "Home",
+      team: to.params.team,
+    }),
+  },
+  {
+    path: "/t/:team/",
+    name: "Home",
+    component: () => import("@/pages/Personal.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
   {
     path: "/t/:team/team",
     name: "Team",
@@ -116,31 +76,10 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/:team/",
-    redirect: (to) => ({
-      name: "Home",
-      team: to.params.team,
-    }),
-  },
-  {
-    path: "/t/:team/",
-    name: "Home",
-    component: () => import("@/pages/Personal.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
     path: "/t/:team/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
     beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/:team/file/:entityName",
-    redirect: (to) => ({
-      name: "File",
-      team: to.params.team,
-      entityName: to.params.entityName,
-    }),
   },
   {
     path: "/t/:team/file/:entityName",
@@ -151,33 +90,17 @@ const routes = [
     props: true,
   },
   {
-    path: "/:team/folder/:entityName",
-    redirect: (to) => ({
-      name: "Folder",
-      team: to.params.team,
-      entityName: to.params.entityName,
-    }),
-  },
-  {
     path: "/t/:team/folder/:entityName",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
-    meta: { sidebar: true, allowGuest: true },
+    meta: { allowGuest: true },
     beforeEnter: [manageBreadcrumbs],
     props: true,
   },
   {
-    path: "/:team/document/:entityName",
-    redirect: (to) => ({
-      name: "Document",
-      team: to.params.team,
-      entityName: to.params.entityName,
-    }),
-  },
-  {
     path: "/t/:team/document/:entityName",
     name: "Document",
-    meta: { sidebar: false, documentPage: true, allowGuest: true },
+    meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
     props: true,
     beforeEnter: [manageBreadcrumbs],

@@ -195,6 +195,13 @@ def verify_otp(account_request, otp):
 
 
 @frappe.whitelist(allow_guest=True)
+def get_settings():
+    if frappe.session.user == "Guest":
+        return {}
+    return frappe.get_cached_doc("Drive Settings", frappe.session.user)
+
+
+@frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60)
 def resend_otp(email):
     account_request = frappe.db.get_value("Account Request", {"email": email}, "name")
