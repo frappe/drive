@@ -23,7 +23,7 @@ from drive.api.storage import storage_bar_data
 
 
 @frappe.whitelist()
-def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified=None, embed=True):
+def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified=None, embed=0):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -37,7 +37,7 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
     """
     if not team:
         team = frappe.get_value("Drive File", parent, "team")
-
+    embed = int(embed)
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
     if isinstance(personal, str):
@@ -47,16 +47,9 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
             parent = if_folder_exists(team, i, parent, personal)
-            if not parent:
-                new_folder = create_folder(team, i, personal, parent)
 
     # Validate: team members can upload to team folders, and permissions
     is_team_member = team in get_teams() and not personal
-    print(
-        frappe.has_permission(
-            doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
-        )
-    )
     if not is_team_member and not frappe.has_permission(
         doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
@@ -70,7 +63,6 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
 
     file = frappe.request.files["file"]
     upload_session = frappe.form_dict.uuid
-
     title = get_new_title(frappe.form_dict.filename if embed else file.filename, parent)
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
@@ -91,7 +83,7 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
         temp_path.unlink()
         frappe.throw("Size on disk does not match specified filesize.", ValueError)
 
-    mime_type, _ = mimetypes.guess_type(temp_path)
+    mime_type = mimemapper.get_mime_type(temp_path.suffix[1:])
     if mime_type is None:
         mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
 

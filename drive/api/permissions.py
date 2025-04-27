@@ -127,7 +127,6 @@ def get_entity_with_permissions(entity_name):
         ["entity as is_favourite"],
     )
     mark_as_viewed(entity)
-    print(user_access)
     return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
     entity_doc_content = (
         frappe.db.get_value(
