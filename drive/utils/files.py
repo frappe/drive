@@ -1,10 +1,16 @@
 import frappe
 import os
 from pathlib import Path
-import hashlib
 from PIL import Image, ImageOps
 from drive.locks.distributed_lock import DistributedLock
 import cv2
+from pathlib import Path
+import os
+import boto3
+import frappe
+from io import BytesIO
+from .dev import timing
+
 
 DriveFile = frappe.qb.DocType("Drive File")
 
@@ -80,45 +86,87 @@ MIME_LIST_MAP = {
 }
 
 
-def create_user_directory():
-    """
-    Create user directory on disk, and insert corresponding DriveEntity doc
+class FileManager:
+    def __init__(self):
+        settings = frappe.get_single("Drive S3 Settings")
+        self.s3_enabled = settings.enabled
+        self.bucket = settings.bucket
+        self.site_folder = Path(frappe.get_site_path("private/files"))
+        if self.s3_enabled:
+            self.conn = boto3.client(
+                "s3",
+                aws_access_key_id=settings.aws_key,
+                aws_secret_access_key=settings.get_password("aws_secret"),
+            )
 
-    :raises FileExistsError: If user directory already exists
-    :return: Dictionary containing the document-name and path
-    :rtype: frappe._dict
-    """
-    if frappe.session.user == "Guest":
-        return
-    # imperative that user dir is created by an owner that has drive_user role
-    user_roles = frappe.get_roles(frappe.session.user)
-    if "Drive Admin" not in user_roles:
-        if "Drive User" not in user_roles:
-            raise frappe.PermissionError("You do not have access to Frappe Drive")
-    user_directory_name = _get_user_directory_name()
-    user_directory_path = Path(frappe.get_site_path("private/files"), user_directory_name)
-    user_directory_path.mkdir(exist_ok=True)
+    def upload_file(self, current_path: str, new_path: str) -> None:
+        """
+        Moves the file from the current path to another path
+        """
+        if self.s3_enabled:
+            self.conn.upload_file(current_path, self.bucket, new_path)
+        else:
+            os.rename(current_path, self.site_folder / new_path)
 
-    full_name = frappe.get_value("User", frappe.session.user, "full_name")
-    user_directory = frappe.get_doc(
-        {
-            "doctype": "Drive File",
-            "name": user_directory_name,
-            "title": f"{full_name}'s Drive",
-            "is_group": 1,
-            "path": user_directory_path,
-        }
-    )
-    user_directory.flags.file_created = True
-    # frappe.local.rollback_observers.append(user_directory)
-    # (Placeholder) till we make login and onboarding
-    # user_directory breaks if its not created by a `drive_user`
-    user = frappe.get_doc("User", frappe.session.user)
+    def upload_thumbnail(self, file):
+        """
+        Creates a thumbnail for the file on disk and then uploads to the relevant team directory
+        """
+        team_directory = get_home_folder(file.team)["name"]
+        save_path = Path(team_directory) / "thumbnails" / (file.name + ".thumbnail")
+        disk_path = self.site_folder / save_path
 
-    user.flags.ignore_permlevel_for_fields = ["roles"]
-    user.save(ignore_permissions=True)
-    user_directory.insert()
-    return frappe._dict({"name": user_directory.name, "path": user_directory.path})
+        with DistributedLock(file.path, exclusive=False):
+            try:
+                # BROKEN - get from S3
+                if file.mime_type.startswith("image"):
+                    image_path = self.site_folder / file.path
+                    with Image.open(image_path).convert("RGB") as image:
+                        image = ImageOps.exif_transpose(image)
+                        image.thumbnail((512, 512))
+                        image.save(str(disk_path), format="webp")
+                elif file.mime_type.startswith("video"):
+                    video_path = str(file.path)
+                    cap = cv2.VideoCapture(video_path)
+                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                    target_frame = int(frame_count / 2)
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                    _, frame = cap.read()
+                    cap.release()
+                    _, thumbnail_encoded = cv2.imencode(
+                        ".webp",
+                        frame,
+                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
+                    )
+                    with open(str(disk_path), "wb") as f:
+                        f.write(thumbnail_encoded)
+            except:
+                pass
+
+        if self.s3_enabled:
+            self.conn.upload_file(disk_path, self.bucket, str(save_path))
+            disk_path.unlink()
+
+    @timing
+    def get_file(self, path):
+        """
+        Function to read file from a s3 file.
+
+        Temporary: if not found in S3, look at disk.
+        """
+        not_s3 = not self.s3_enabled
+        if self.s3_enabled:
+            try:
+                buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
+            except:
+                not_s3 = True
+
+        if not_s3:
+            with DistributedLock(path, exclusive=False):
+                with open(self.site_folder / path, "rb") as fh:
+                    buf = BytesIO(fh.read())
+
+        return buf
 
 
 def get_home_folder(team):
@@ -142,32 +190,6 @@ def get_home_folder(team):
             error_msg += f"<br /><br />Or maybe you want <a class='text-black' href='/drive/t/{team_names[0]}'>{frappe.db.get_value('Drive Team', team_names[0], 'title')}</a>?"
         frappe.throw(error_msg, {"error": frappe.NotFound})
     return ls[0]
-
-
-def get_user_directory(user=None):
-    """
-    Return the document-name, and path of the specified user's user directory
-
-    :param user: User whose directory details should be returned. Defaults to the current user
-    :raises FileNotFoundError: If user directory does not exist
-    :return: Dictionary containing the document-name and path
-    :rtype: frappe._dict
-    """
-
-    user_directory_name = _get_user_directory_name(user)
-    user_directory = frappe.db.get_value(
-        "Drive File", user_directory_name, ["name", "path"], as_dict=1
-    )
-    if user_directory is None:
-        user_directory = create_user_directory()
-    return user_directory
-
-
-def _get_user_directory_name(user=None):
-    """Returns user directory name from user's unique id"""
-    if not user:
-        user = frappe.session.user
-    return hashlib.md5(user.encode("utf-8")).hexdigest()
 
 
 @frappe.whitelist()
@@ -369,3 +391,21 @@ def update_file_size(entity, delta):
     # Update root
     doc.file_size += delta
     doc.save(ignore_permissions=True)
+
+
+def if_folder_exists(team, folder_name, parent, personal):
+    values = {
+        "title": folder_name,
+        "is_group": 1,
+        "is_active": 1,
+        "team": team,
+        "owner": frappe.session.user,
+        "is_private": personal,
+        "parent_entity": parent,
+    }
+    existing_folder = frappe.db.get_value(
+        "Drive File", values, ["name", "title", "is_group", "is_active"], as_dict=1
+    )
+
+    if existing_folder:
+        return existing_folder.name
