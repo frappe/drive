@@ -2,3 +2,4 @@ black
 Pillow
 opencv-python
 mimemapper
+boto3

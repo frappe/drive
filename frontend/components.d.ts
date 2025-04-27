@@ -108,6 +108,7 @@ declare module 'vue' {
     LucideCircleArrowOutUpRight: typeof import('~icons/lucide/circle-arrow-out-up-right')['default']
     LucideCircleRight: typeof import('~icons/lucide/circle-right')['default']
     LucideEye: typeof import('~icons/lucide/eye')['default']
+    LucideEyeOff: typeof import('~icons/lucide/eye-off')['default']
     LucideHome: typeof import('~icons/lucide/home')['default']
     LucideLogOut: typeof import('~icons/lucide/log-out')['default']
     LucideMars: typeof import('~icons/lucide/mars')['default']
