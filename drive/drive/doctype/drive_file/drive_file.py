@@ -2,14 +2,10 @@ import frappe
 from frappe.model.document import Document
 from pathlib import Path
 import shutil
-import uuid
 from drive.utils.files import (
     get_home_folder,
-    get_user_directory,
-    create_user_directory,
     get_new_title,
     get_team_thumbnails_directory,
-    create_thumbnail,
     update_file_size,
 )
 from drive.api.files import get_ancestors_of
@@ -132,7 +128,6 @@ class DriveFile(Document):
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
-        # BROKEN
         title = self.title
 
         if not parent_user_directory:
@@ -141,10 +136,7 @@ class DriveFile(Document):
                 if new_parent
                 else frappe.session.user
             )
-            try:
-                parent_user_directory = get_user_directory(parent_owner)
-            except FileNotFoundError:
-                parent_user_directory = create_user_directory()
+            # BROKEN - parent dir is team
             new_parent = new_parent or parent_user_directory.name
             parent_is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
             if not parent_is_group:
@@ -163,8 +155,6 @@ class DriveFile(Document):
                 frappe.throw("You cannot copy a folder into itself")
 
             title = get_new_title(title, new_parent)
-
-        name = uuid.uuid4().hex
 
         if self.is_group:
             drive_entity = frappe.get_doc(
