@@ -143,7 +143,7 @@ const sidebarItems = computed(() => {
       icon: Trash,
     },
   ]
-  if (getTeams.data && getTeams.data[team.value].title === "Your Drive")
+  if (getTeams.data && getTeams.data[team.value]?.title === "Your Drive")
     items.splice(1, 1)
   return items
 })

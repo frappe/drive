@@ -35,13 +35,15 @@ import {
   defineAsyncComponent,
   onBeforeUnmount,
 } from "vue"
-import { useRouter, useRoute } from "vue-router"
+import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { formatSize, formatDate } from "@/utils/format"
 import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
+import { setMetaData } from "../utils/files"
+import router from "@/router"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -51,7 +53,6 @@ const ShareDialog = defineAsyncComponent(() =>
 )
 
 const store = useStore()
-const router = useRouter()
 const route = useRoute()
 const emitter = inject("emitter")
 
@@ -120,8 +121,7 @@ const document = createResource({
     entity_name: props.entityName,
   },
   onSuccess(data) {
-    window.document.title = data.title
-    data.size_in_bytes = data.file_size
+    setMetaData(data)
     data.file_size = formatSize(data.file_size)
     data.modified = formatDate(data.modified)
     data.creation = formatDate(data.creation)
@@ -149,6 +149,9 @@ const document = createResource({
     setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
       data.write && emitter.emit("rename")
     })
+  },
+  onError() {
+    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
 

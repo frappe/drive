@@ -202,7 +202,7 @@ export default {
           this.search = value
           this.$resources.entities.submit({
             query: value,
-            team: this.$route.params.team(),
+            team: this.$route.params.team,
           })
         } else {
           this.$resources.entities.reset()

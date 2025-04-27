@@ -4,6 +4,7 @@
     @contextmenu="handleContextMenu"
   >
     <DriveToolBar
+      v-if="!verify?.error && !getEntities.error"
       :column-headers="$route.name === 'Recents' ? null : columnHeaders"
       :selections
       :entities="rows"

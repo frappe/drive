@@ -6,6 +6,7 @@ from .permissions import get_teams, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
+import mimemapper
 
 from drive.utils.files import (
     get_home_folder,
@@ -436,7 +437,7 @@ def create_doc_version(entity_name, doc_name, snapshot_data, snapshot_message):
         user=frappe.session.user,
     ):
         raise frappe.permissionerror("you do not have permission to view this file")
-    new_version = frappe.new_doc("drive document version")
+    new_version = frappe.new_doc("Drive Document Version")
     new_version.snapshot_data = snapshot_data
     new_version.parent_entity = entity_name
     new_version.snapshot_message = snapshot_message

@@ -16,11 +16,23 @@ function clearStore() {
   store.commit("setCurrentEntitites", [])
 }
 
-function setRootBreadCrumb(to) {
+async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = to.name
     store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
+  document
+    .querySelector(`head meta[property="og:title"]`)
+    .setAttribute("content", "Drive - " + to.name)
+  document
+    .querySelector(`head meta[name="twitter:title"]`)
+    .setAttribute("content", "Drive - " + to.name)
+  document
+    .querySelector(`head meta[property="og:image"]`)
+    .setAttribute("content", "")
+  document
+    .querySelector(`head meta[name="twitter:image"]`)
+    .setAttribute("content", "")
 }
 
 const routes = [
@@ -199,6 +211,11 @@ const routes = [
     path: "/teams",
     name: "Teams",
     component: () => import("@/pages/Teams.vue"),
+  },
+  {
+    path: "/setup",
+    name: "Setup",
+    component: () => import("@/pages/Setup.vue"),
   },
   {
     path: "/shared",

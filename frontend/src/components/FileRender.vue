@@ -158,7 +158,6 @@ export default {
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "frappe_doc",
         ].some((type) => this.previewEntity.mime_type.startsWith(type))
-
       if (!isSupportedType) {
         this.error = "Previews are not supported for this file type"
         if (
@@ -171,10 +170,10 @@ export default {
         this.loading = false
       } else if (
         this.previewEntity.mime_type.startsWith("video") &&
-        this.previewEntity.size_in_bytes < 2000 * 1024 * 1024
+        this.previewEntity.file_size < 2000 * 1024 * 1024
       ) {
         this.loading = false
-      } else if (this.previewEntity.size_in_bytes > 400 * 1024 * 1024) {
+      } else if (this.previewEntity.file_size > 10 * 1024 * 1024) {
         this.error = "File is too large to preview"
         this.loading = false
       } else {

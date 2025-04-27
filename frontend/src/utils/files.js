@@ -4,7 +4,9 @@ import { formatSize, formatDate } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
-import { getTeams } from "../resources/files"
+import { getTeams } from "@/resources/files"
+import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
+import { formatMimeType } from "@/utils/format"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
   if (!team) team = entity.team
@@ -96,7 +98,27 @@ export const setBreadCrumbs = (
   })
   store.commit("setBreadcrumbs", res)
 }
-
+export const setMetaData = (data) => {
+  document.title = data.title
+  document
+    .querySelector(`head meta[property="og:title"]`)
+    .setAttribute("content", "Drive - " + data.title)
+  document
+    .querySelector(`head meta[name="twitter:title"]`)
+    .setAttribute("content", "Drive - " + data.title)
+  thumbnail_getIconUrl(
+    formatMimeType(data.mime_type),
+    data.name,
+    data.file_ext
+  ).then((url) => {
+    document
+      .querySelector(`head meta[property="og:image"]`)
+      .setAttribute("content", url)
+    document
+      .querySelector(`head meta[name="twitter:image"]`)
+      .setAttribute("content", url)
+  })
+}
 export const MIME_LIST_MAP = {
   Image: [
     "image/png",

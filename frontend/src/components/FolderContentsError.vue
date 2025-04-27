@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col items-center h-screen p-6 text-center pt-20 w-full">
+  <div
+    class="flex flex-col items-center h-screen p-6 text-center mt-[10%] w-full"
+  >
     <div
       class="bg-red-100 text-red-600 p-4 rounded-full flex items-center justify-center w-16 h-16"
     >
