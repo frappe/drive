@@ -1,12 +1,8 @@
 import frappe
-import os
-import re
-import mimetypes
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from pathlib import Path
-from io import BytesIO
-from drive.utils.files import FileManager
+from drive.utils.files import FileManager, get_home_folder
 
 
 @frappe.whitelist()
@@ -21,7 +17,7 @@ def get_file_content(embed_name, parent_entity_name):
     :raises PermissionError: If the current user does not have permission to read the file
     :raises FileLockedError: If the file has been writer-locked
     """
-    # Used for <v0.1 support
+    # Used for <v0.1 support, also a security flaw
     old_parent_name = frappe.get_list(
         "Drive File",
         {"old_name": parent_entity_name},
@@ -53,15 +49,17 @@ def get_file_content(embed_name, parent_entity_name):
 
     if not drive_entity.document:
         raise ValueError
-
-    try:
-        embed = frappe.get_doc("Drive File", embed_name.split(".")[0])
-        embed_path = embed.path
-    except frappe.exceptions.DoesNotExistError:
-        embed = frappe.db.get_list(
-            "Drive File", filters={"old_name": embed_name.split(".")[0]}, fields=["path"]
-        )[0]
-        embed_path = embed["path"]
+    embed_path = frappe.get_value("Drive File", embed_name, "path")
+    # Remove at some point
+    if not embed_path:
+        embed_path = str(
+            Path(
+                get_home_folder(drive_entity.team)["path"],
+                "embeds",
+                embed_name,
+            )
+        )
+        print(embed_path)
 
     # Flaw? Doesn't stream for range header
     manager = FileManager()

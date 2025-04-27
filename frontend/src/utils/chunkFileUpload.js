@@ -32,6 +32,7 @@ export async function uploadDriveEntity(file, doc_name) {
         throw new Error(`Upload failed: ${response.statusText}`)
       }
       const data = await response.json()
+      // New method - pass only name without extension, check for permissions, and get the embed
       return `/api/method/drive.api.embed.get_file_content?embed_name=${data.message.name}&parent_entity_name=${doc_name}`
     }
 
