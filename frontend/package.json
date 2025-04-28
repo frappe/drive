@@ -36,6 +36,7 @@
     "@uppy/drop-target": "^2.0.4",
     "@uppy/tus": "^3.5.3",
     "@vitejs/plugin-react": "^4.3.3",
+    "@vueuse/components": "^13.1.0",
     "@vueuse/core": "^10.3.0",
     "canvas-datagrid": "^0.4.5",
     "date-fns": "^3.6.0",

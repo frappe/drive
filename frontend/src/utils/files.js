@@ -114,9 +114,8 @@ export const setBreadCrumbs = (
     ]
   }
   if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
-  const popBreadcrumbs = (item) => {
-    return () => res.splice(res.findIndex((k) => k.name === item.name) + 1)
-  }
+  const popBreadcrumbs = (item) => () =>
+    res.splice(res.findIndex((k) => k.name === item.name) + 1)
   breadcrumbs.forEach((item, idx) => {
     const final = idx === breadcrumbs.length - 1
     res.push({
@@ -129,27 +128,6 @@ export const setBreadCrumbs = (
   store.commit("setBreadcrumbs", res)
 }
 
-export const setMetaData = (data) => {
-  document.title = data.title
-  document
-    .querySelector(`head meta[property="og:title"]`)
-    .setAttribute("content", "Drive - " + data.title)
-  document
-    .querySelector(`head meta[name="twitter:title"]`)
-    .setAttribute("content", "Drive - " + data.title)
-  thumbnail_getIconUrl(
-    formatMimeType(data.mime_type),
-    data.name,
-    data.file_ext
-  ).then((url) => {
-    document
-      .querySelector(`head meta[property="og:image"]`)
-      .setAttribute("content", url)
-    document
-      .querySelector(`head meta[name="twitter:image"]`)
-      .setAttribute("content", url)
-  })
-}
 export const MIME_LIST_MAP = {
   Image: [
     "image/png",

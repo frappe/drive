@@ -39,12 +39,10 @@ import {
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { formatSize, formatDate } from "@/utils/format"
 import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
-import { prettyData, setMetaData } from "../utils/files"
 import router from "@/router"
 import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
@@ -110,7 +108,6 @@ const saveDocument = () => {
 }
 
 const onSuccess = (data) => {
-  setMetaData(data)
   if (!data.settings) {
     data.settings =
       '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'

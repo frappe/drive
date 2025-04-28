@@ -244,10 +244,8 @@
       </div>
       <div v-if="isLoggedIn" class="block sm:flex">
         <Button
-          v-if="store.state.activeEntity?.share"
           :variant="'solid'"
           class="bg-gray-200 rounded flex justify-center items-center px-1"
-          @click="emitter.emit('showShareDialog')"
         >
           <template #prefix>
             <Share class="w-4" />

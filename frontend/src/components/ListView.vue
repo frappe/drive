@@ -46,15 +46,16 @@
       </template>
     </ListHeader>
     <div
-      v-if="!entities"
+      v-if="!folderContents"
       class="w-full text-center flex items-center justify-center py-10"
     >
       <LoadingIndicator class="w-8" />
     </div>
     <template v-else>
       <div id="drop-area" class="h-full overflow-y-auto">
+        <ListEmptyState v-if="!formattedRows.length" />
         <div
-          v-if="formattedRows[0]?.group"
+          v-else-if="formattedRows[0].group"
           v-for="group in formattedRows"
           :key="group.group"
         >
@@ -69,10 +70,9 @@
             <CustomListRow :rows="group.rows" :context-menu="contextMenu" />
           </ListGroupRows>
         </div>
-        <div v-else-if="formattedRows.length">
+        <div v-else="formattedRows.length">
           <CustomListRow :rows="formattedRows" :context-menu="contextMenu" />
         </div>
-        <ListEmptyState v-else />
       </div>
       <p class="hidden text-center w-[20%] left-[40%] top-[50%] z-10 font-bold">
         Drop to upload
@@ -107,7 +107,6 @@ import { useRoute } from "vue-router"
 import { computed, h, ref, watch } from "vue"
 import ContextMenu from "@/components/ContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
-import { allUsers } from "@/resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
@@ -117,7 +116,7 @@ const route = useRoute()
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
-  entities: Array,
+  userData: Object,
 })
 
 const selections = defineModel(new Set())
@@ -132,12 +131,7 @@ watch(showSearch, (v) => {
   if (v) searchInput.value[0].el.focus()
 })
 
-const userData = computed(() =>
-  allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
-)
-
 const formattedRows = computed(() => {
-  console.log(filter.value)
   if (!props.folderContents) return []
   if (Array.isArray(props.folderContents))
     return props.folderContents.filter((k) => k.title.includes(filter.value))
@@ -171,14 +165,14 @@ const selectedColumns = [
     getLabel: ({ row }) =>
       row.owner === store.state.user.id
         ? "You"
-        : userData.value[row.owner]?.full_name || row.owner,
+        : props.userData[row.owner]?.full_name || row.owner,
     prefix: ({ row }) => {
       return h(Avatar, {
         shape: "circle",
-        image: userData.value[row.owner]?.user_image,
+        image: props.userData[row.owner]?.user_image,
         label:
-          userData.value[row.owner]?.full_name ||
-          userData.value[row.owner]?.email,
+          props.userData[row.owner]?.full_name ||
+          props.userData[row.owner]?.email,
         size: "sm",
       })
     },

@@ -36,7 +36,7 @@ const store = createStore({
     pasteData: { entities: [], action: null },
     showInfo: false,
     currentFolder: {
-      entity: JSON.parse(localStorage.getItem("currentFolder")) || {},
+      name: JSON.parse(localStorage.getItem("currentFolder")) || {},
       entities: JSON.parse(localStorage.getItem("currentEntitites")) || [],
     },
     breadcrumbs: JSON.parse(localStorage.getItem("breadcrumbs")) || [
@@ -127,7 +127,7 @@ const store = createStore({
     },
     setShowInfo(state, payload) {
       localStorage.setItem("showInfo", payload)
-      state.showInfo = payload
+      if (payload) state.showInfo = payload
     },
     setAllComments(state, payload) {
       /* localStorage.setItem("allDocComments",payload); */

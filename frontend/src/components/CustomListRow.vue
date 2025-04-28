@@ -89,18 +89,3 @@ const selectedName = computed(() => store.state.activeEntity?.name)
 const open = (row) =>
   route.name !== "Trash" && openEntity(route.params.team, row)
 </script>
-
-<style scoped>
-.fade-in-enter-active {
-  transition: opacity 300ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-}
-
-.fade-in-leave-active {
-  transition: opacity 225ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.fade-in-enter,
-.fade-in-leave-to {
-  opacity: 0;
-}
-</style>

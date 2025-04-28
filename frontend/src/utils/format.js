@@ -39,7 +39,7 @@ export function formatDate(date) {
   return `${formattedDate}, ${formattedTime}`
 }
 
-export function formatMimeType(mimeType) {
+export function formatMimeType(mimeType, lower = true) {
   let icon = "unknown"
   if (!mimeType) return icon
   const generic = mimeType.split("/")[0]
@@ -51,31 +51,31 @@ export function formatMimeType(mimeType) {
   else
     switch (specific) {
       case "pdf":
-        icon = "pdf"
+        icon = "PDF"
         break
       case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        icon = "spreadsheet"
+        icon = "Spreadsheet"
         break
       case "vnd.openxmlformats-officedocument.presentationml.presentation":
-        icon = "presentation"
+        icon = "Presentation"
         break
       case "vnd.openxmlformats-officedocument.wordprocessingml.document":
-        icon = "word"
+        icon = "Word"
         break
       case "msword":
-        icon = "word"
+        icon = "Word"
         break
       case "zip":
-        icon = "zip"
+        icon = "Zip"
         break
       case "x-tar":
-        icon = "zip"
+        icon = "Zip"
         break
       case "x-7z-compressed":
-        icon = "zip"
+        icon = "Zip"
         break
     }
-  return icon
+  return lower ? icon.toLowerCase() : icon
 }
 
 export function getDateDiffInDays(date1, date2) {

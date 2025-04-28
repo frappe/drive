@@ -14,12 +14,7 @@ import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
-import {
-  setBreadCrumbs,
-  prettyData,
-  setMetaData,
-  setCache,
-} from "@/utils/files"
+import { setBreadCrumbs, prettyData, setCache } from "@/utils/files"
 import router from "@/router"
 
 const store = useStore()
@@ -61,7 +56,6 @@ onBeforeUnmount(() => {
 
 const onSuccess = (entity) => {
   if (router.currentRoute.value.params.entityName !== entity.name) return
-  setMetaData(entity)
   document.title = "Folder - " + entity.title
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")

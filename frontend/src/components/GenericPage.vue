@@ -23,8 +23,9 @@
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
-      :entities="rows"
+      :user-data="userData"
     />
+    <InfoPopup :entities="infoEntities" />
   </template>
 
   <Dialogs
@@ -41,6 +42,7 @@ import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
+import InfoPopup from "@/components/InfoPopup.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers, settings } from "@/resources/permissions"
@@ -76,12 +78,12 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref(null)
+const infoEntities = ref([])
 const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = computed(() => store.state.currentFolder.entities)
-const filter = ref("")
 
 // We do client side sorting for immediate UI updates
 watch([sortOrder, () => props.getEntities.data], () => {
@@ -96,8 +98,6 @@ watch([sortOrder, () => props.getEntities.data], () => {
     entities: sorted.filter?.((k) => k.title[0] !== "."),
   })
 })
-
-watch(filter, console.log)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -216,13 +216,13 @@ const actionItems = computed(() => {
       {
         label: "Show Info",
         icon: Info,
-        onClick: () => store.commit("setShowInfo", true),
+        onClick: () => infoEntities.value.push(store.state.activeEntity),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
         label: "Hide Info",
         icon: Info,
-        onClick: () => store.commit("setShowInfo", false),
+        onClick: () => (dialog.value = "info"),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
@@ -306,6 +306,9 @@ const columnHeaders = [
     field: "mime_type",
   },
 ]
+const userData = computed(() =>
+  allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
+)
 
 async function newLink() {
   if (!document.hasFocus()) return

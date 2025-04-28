@@ -142,22 +142,22 @@ def get_entity_with_permissions(entity_name):
 
 
 @frappe.whitelist()
-def get_shared_with_list(entity_name):
+def get_shared_with_list(entity):
     """
     Return the list of users with whom this file or folder has been shared
 
-    :param entity_name: Document-name of this file or folder
+    :param entity: Document-name of this file or folder
     :raises PermissionError: If the user does not have edit permissions
     :return: List of users, with permissions and last modified datetime
     :rtype: list[frappe._dict]
     """
     if not frappe.has_permission(
-        doctype="Drive File", doc=entity_name, ptype="share", user=frappe.session.user
+        doctype="Drive File", doc=entity, ptype="share", user=frappe.session.user
     ):
         raise frappe.PermissionError
     permissions = frappe.db.get_all(
         "Drive Permission",
-        filters={"entity": entity_name, "user": ["!=", ""]},
+        filters={"entity": entity, "user": ["!=", ""]},
         order_by="user",
         fields=["user", "read", "write", "comment", "share"],
     )

@@ -55,12 +55,7 @@ import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
-import {
-  prettyData,
-  setBreadCrumbs,
-  setMetaData,
-  enterFullScreen,
-} from "@/utils/files"
+import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"
 
 const router = useRouter()
@@ -109,7 +104,6 @@ onKeyStroke("ArrowRight", (e) => {
 })
 
 const onSuccess = (entity) => {
-  setMetaData(entity)
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )

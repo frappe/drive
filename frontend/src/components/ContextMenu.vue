@@ -21,7 +21,6 @@
       <button
         v-else
         class="group flex h-7 w-full items-center rounded px-2 text-base hover:bg-surface-gray-3 text-ink-gray-6"
-        @click="item.onClick"
       >
         <FeatherIcon
           v-if="item.icon && typeof item.icon === 'string'"
@@ -38,23 +37,6 @@
           {{ item.label }}
         </span>
       </button>
-      <!-- <div
-        v-else
-        class="group flex h-7 w-full items-center rounded px-2 text-base text-ink-gray-6"
-      >
-        <FeatherIcon
-          v-if="item.icon && typeof item.icon === 'string'"
-          :name="item.icon"
-          class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-6"
-          aria-hidden="true"
-        />
-        <component
-          v-else
-          class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-6"
-          :is="item.icon"
-        />
-        <div>{{ item.label }}</div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -111,8 +93,3 @@ function calculateX() {
   }
 }
 </script>
-<style>
-.disable-scroll {
-  overflow: hidden;
-}
-</style>
