@@ -762,6 +762,15 @@
               Export PDF
             </template>
           </Button>
+          <Button
+            class="w-full justify-start"
+            @click="() => $resources.exportMedia.submit()"
+          >
+            <template #prefix>
+              <LucideImage class="text-gray-700 w-4 stroke-[1.5]" />
+              Export Media
+            </template>
+          </Button>
           <!-- <Button class="w-full justify-start">
             <template #prefix>
               <FileDown class="text-gray-700 w-4" />
@@ -844,6 +853,7 @@ import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
 import Info from "@/components/EspressoIcons/Info.vue"
 import Comment from "@/components/EspressoIcons/Comment.vue"
+import { entitiesDownload } from "@/utils/download"
 import {
   Plus,
   Minus,
@@ -1316,6 +1326,18 @@ export default {
     },
   },
   resources: {
+    exportMedia() {
+      return {
+        url: "drive.api.files.export_media",
+        params: {
+          entity_name: this.entity.name,
+        },
+        auto: false,
+        onSuccess(data) {
+          entitiesDownload(null, data)
+        },
+      }
+    },
     storeVersion() {
       return {
         url: "drive.api.files.create_doc_version",

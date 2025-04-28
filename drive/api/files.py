@@ -919,3 +919,10 @@ def get_translate():
         for l in frappe.get_list("Drive File", fields=["old_name", "name"])
         if l["old_name"]
     }
+
+
+@frappe.whitelist()
+def export_media(entity_name):
+    return frappe.get_list(
+        "Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"]
+    )
