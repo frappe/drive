@@ -1,6 +1,6 @@
 <template>
   <FrappeListView
-    class="px-0.5 select-none"
+    class="px-1 pt-3 select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -10,12 +10,41 @@
       selectable: true,
       enableActive: true,
       showTooltip: true,
-      resizeColumn: true,
+      resizeColumn: false,
       // Should be getLink(row, false, false) - but messes up clicking
       getRowRoute: (row) => '',
+      emptyState: {
+        description: 'Nothing found with that search - try something else?',
+      },
     }"
   >
-    <ListHeader />
+    <ListHeader>
+      <template #default>
+        <ListHeaderItem
+          v-for="column in selectedColumns"
+          :key="column.key"
+          :item="column"
+        >
+          <template v-if="column.key === 'title'" #suffix>
+            <div class="absolute right-0 flex gap-0">
+              <TextInput
+                ref="searchInput"
+                v-model="filter"
+                type="text"
+                class="my-auto scale-[88%]"
+                :class="showSearch ? 'opacity-1' : 'opacity-0'"
+                placeholder="search..."
+              />
+
+              <Button @click=";(showSearch = !showSearch), (filter = '')">
+                <LucideSearch v-if="!showSearch" class="my-auto w-3 h-3" />
+                <LucideX v-else class="my-auto w-3 h-3" />
+              </Button>
+            </div>
+          </template>
+        </ListHeaderItem>
+      </template>
+    </ListHeader>
     <div
       v-if="!entities"
       class="w-full text-center flex items-center justify-center py-10"
@@ -25,7 +54,7 @@
     <template v-else>
       <div id="drop-area" class="h-full overflow-y-auto">
         <div
-          v-if="formattedRows[0].group"
+          v-if="formattedRows[0]?.group"
           v-for="group in formattedRows"
           :key="group.group"
         >
@@ -40,9 +69,10 @@
             <CustomListRow :rows="group.rows" :context-menu="contextMenu" />
           </ListGroupRows>
         </div>
-        <div v-else>
+        <div v-else-if="formattedRows.length">
           <CustomListRow :rows="formattedRows" :context-menu="contextMenu" />
         </div>
+        <ListEmptyState v-else />
       </div>
       <p class="hidden text-center w-[20%] left-[40%] top-[50%] z-10 font-bold">
         Drop to upload
@@ -62,7 +92,10 @@
 import {
   ListHeader,
   ListGroupRows,
+  TextInput,
   ListGroupHeader,
+  ListEmptyState,
+  ListHeaderItem,
   LoadingIndicator,
   ListView as FrappeListView,
   Avatar,
@@ -86,17 +119,28 @@ const props = defineProps({
   actionItems: Array,
   entities: Array,
 })
-const selections = defineModel()
+
+const selections = defineModel(new Set())
 const selectedRow = ref(null)
+
 const rowEvent = ref(null)
+
+const showSearch = ref(false)
+const searchInput = ref(null)
+const filter = ref("")
+watch(showSearch, (v) => {
+  if (v) searchInput.value[0].el.focus()
+})
+
 const userData = computed(() =>
   allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
 )
+
 const formattedRows = computed(() => {
-  return props.folderContents || []
+  console.log(filter.value)
   if (!props.folderContents) return []
   if (Array.isArray(props.folderContents))
-    return props.folderContents.filter((k) => k)
+    return props.folderContents.filter((k) => k.title.includes(filter.value))
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,
@@ -171,7 +215,6 @@ const setActive = (entity) => {
 }
 
 watch(selectedRow, (k) => store.commit("setActiveEntity", k))
-
 const dropdownActionItems = (row) => {
   if (!row) return []
   return props.actionItems

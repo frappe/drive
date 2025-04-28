@@ -1,6 +1,5 @@
 <template>
   <GenericPage
-    :recents="true"
     :grouper="groupByTime"
     :get-entities="getRecents"
     :show-sort="false"

@@ -17,14 +17,16 @@
       activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
     "
   />
-  <ListView
-    v-else
-    ref="view"
-    v-model="selections"
-    :folder-contents="rows && grouper(rows)"
-    :action-items="actionItems"
-    :entities="rows"
-  />
+  <template v-else>
+    <ListView
+      ref="view"
+      v-model="selections"
+      :folder-contents="rows && grouper(rows)"
+      :action-items="actionItems"
+      :entities="rows"
+    />
+  </template>
+
   <Dialogs
     v-model="dialog"
     :selections="activeEntity ? [activeEntity] : selectedEntitities"
@@ -79,6 +81,7 @@ const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = computed(() => store.state.currentFolder.entities)
+const filter = ref("")
 
 // We do client side sorting for immediate UI updates
 watch([sortOrder, () => props.getEntities.data], () => {
@@ -93,6 +96,8 @@ watch([sortOrder, () => props.getEntities.data], () => {
     entities: sorted.filter?.((k) => k.title[0] !== "."),
   })
 })
+
+watch(filter, console.log)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
