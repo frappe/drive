@@ -5,8 +5,6 @@ import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
 import { getTeams } from "@/resources/files"
-import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
-import { formatMimeType } from "@/utils/format"
 import { set } from "idb-keyval"
 
 // MIME icons

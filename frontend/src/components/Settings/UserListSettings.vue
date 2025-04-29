@@ -288,7 +288,7 @@ function extractEmails() {
 }
 
 const isAdmin = createResource({
-  url: "drive.api.product.is_admin",
+  url: "drive.api.permissions.is_admin",
   params: { team: team.value },
   auto: true,
 })

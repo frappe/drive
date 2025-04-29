@@ -47,7 +47,7 @@ import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { useStore } from "vuex"
 import { onMounted, ref, computed } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 import emitter from "@/emitter"
 
 const store = useStore()

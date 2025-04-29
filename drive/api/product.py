@@ -2,6 +2,7 @@ import frappe
 from frappe.rate_limiter import rate_limit
 from frappe.utils import escape_html
 from frappe.utils import split_emails, validate_email_address
+from drive.api.permissions import is_admin
 
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
@@ -253,12 +254,6 @@ def set_role(team, user_id, role):
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
     drive_team[user_id].is_admin = role
     drive_team[user_id].save()
-
-
-@frappe.whitelist()
-def is_admin(team):
-    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].is_admin
 
 
 @frappe.whitelist()

@@ -57,10 +57,6 @@ def files(
             frappe.exceptions.PageDoesNotExistError,
         )
 
-    # Do not bubble down write access from home folder
-    if entity_name == home:
-        user_access["write"] = entity.owner == frappe.session.user
-
     # Get all the children entities
     query = (
         frappe.qb.from_(DriveFile)
@@ -74,10 +70,7 @@ def files(
             fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read"),
             fn.Coalesce(DrivePermission.comment, user_access["comment"]).as_("comment"),
             fn.Coalesce(DrivePermission.share, user_access["share"]).as_("share"),
-            fn.Coalesce(
-                DrivePermission.write,
-                (DriveFile.owner == frappe.session.user),
-            ).as_("write"),
+            fn.Coalesce(DrivePermission.write, user_access["write"]).as_("write"),
         )
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )

@@ -158,6 +158,7 @@
 <script setup>
 import { watch, computed, h, ref } from "vue"
 import { getIconUrl } from "@/utils/getIconUrl"
+import { openEntity as openFolder } from "@/utils/files"
 import {
   createResource,
   Dialog,
@@ -172,6 +173,8 @@ import Team from "./EspressoIcons/Organization.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
+import { toast } from "@/utils/toasts.js"
+import { useStore } from "vuex"
 
 const route = useRoute()
 const currentFolder = ref("")
@@ -239,8 +242,12 @@ const tabs = [
   // },
 ]
 
-const tabIndex = ref(0)
-const breadcrumbs = ref([{ name: "", title: "Home", is_private: 1 }])
+const store = useStore()
+const in_home = store.state.breadcrumbs[0].label == "Home"
+const tabIndex = ref(in_home ? 0 : 1)
+const breadcrumbs = ref([
+  { name: "", title: in_home ? "Home" : "Team", is_private: in_home ? 1 : 0 },
+])
 const folderSearch = ref({})
 
 const folderPermissions = createResource({
@@ -338,8 +345,22 @@ const fetchAllFolders = createResource({
 
 const move = createResource({
   url: "drive.api.files.move",
+  onSuccess() {
+    const moved = breadcrumbs.value[breadcrumbs.value.length - 1]
+    toast({
+      title: "Moved to " + moved.title,
+      buttons: [
+        {
+          label: "Go",
+          action: () => {
+            openFolder(route.params.team, { name: moved.name, is_group: true })
+          },
+        },
+      ],
+    })
+  },
   onError() {
-    toast("There was an error moving your file")
+    toast("There was an error - do you already have a file of that name?")
   },
 })
 </script>
