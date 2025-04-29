@@ -139,7 +139,6 @@
           </Tooltip>
         </Dropdown>
         <div
-          v-if="false"
           class="bg-gray-100 rounded-md space-x-0.5 h-7 px-0.5 py-1 flex items-center"
         >
           <Button
@@ -242,18 +241,8 @@
       >
         <UsersBar />
       </div>
-      <div v-if="isLoggedIn" class="block sm:flex">
-        <Button
-          :variant="'solid'"
-          class="bg-gray-200 rounded flex justify-center items-center px-1"
-        >
-          <template #prefix>
-            <Share class="w-4" />
-          </template>
-          Share
-        </Button>
-      </div>
-      <div v-else class="ml-auto">
+
+      <div v-if="!isLoggedIn" class="ml-auto">
         <Button variant="solid" @click="$router.push({ name: 'Login' })">
           Sign In
         </Button>

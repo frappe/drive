@@ -143,7 +143,20 @@ def files(
 
     if folders:
         query = query.where(DriveFile.is_group == 1)
-    return query.run(as_dict=True)
+
+    child_count_query = (
+        frappe.qb.from_(DriveFile)
+        .where((DriveFile.team == team))
+        .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
+        .groupby(DriveFile.parent_entity)
+    )
+    if personal:
+        child_count_query = child_count_query.where(DriveFile.is_private == 1)
+    children_count = dict(child_count_query.run())
+    res = query.run(as_dict=True)
+    for r in res:
+        r["children"] = children_count.get(r["name"], 0)
+    return res
 
 
 @frappe.whitelist()

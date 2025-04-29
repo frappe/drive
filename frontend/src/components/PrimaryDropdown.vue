@@ -58,12 +58,11 @@
 </template>
 
 <script setup>
-import { markRaw, onMounted } from "vue"
+import { markRaw } from "vue"
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Docs from "@/components/EspressoIcons/Docs.vue"
-import AppSwitcher from "@/components/AppSwitcher.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"

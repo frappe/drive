@@ -27,7 +27,7 @@ const store = createStore({
       field: "modified",
       ascending: false,
     },
-    view: "list",
+    view: JSON.parse(localStorage.getItem("view")) || "list",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
     activeFilters: JSON.parse(localStorage.getItem("activeFilters")) || [],
     activeTags: [],

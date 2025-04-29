@@ -44,10 +44,10 @@ export function formatMimeType(mimeType, lower = true) {
   if (!mimeType) return icon
   const generic = mimeType.split("/")[0]
   const specific = mimeType.split("/")[1]
-  if (["image", "video", "audio"].includes(generic)) icon = generic
-  else if (generic === "frappe_doc") icon = "Frappe Doc"
+  if (["image", "video", "audio"].includes(generic))
+    icon = generic[0].toUpperCase() + generic.slice(1)
+  else if (generic === "frappe_doc") icon = "Doc"
   else if (generic === "link") icon = "Link"
-  else if (generic === "frappe_whiteboard") icon = "Frappe Whiteboard"
   else
     switch (specific) {
       case "pdf":
