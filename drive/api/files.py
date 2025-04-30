@@ -83,7 +83,7 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
         temp_path.unlink()
         frappe.throw("Size on disk does not match specified filesize.", ValueError)
 
-    mime_type = mimemapper.get_mime_type(temp_path.suffix[1:])
+    mime_type = mimemapper.get_mime_type(temp_path.suffix[1:], native_first=False)
     if mime_type is None:
         mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
 

@@ -105,7 +105,7 @@ watch(
     })
     props.getEntities.setData(sorted)
     store.commit("setCurrentFolder", {
-      name: sorted?.parent_entity || "",
+      name: sorted[0]?.parent_entity || "",
       entities: sorted.filter?.((k) => k.title[0] !== "."),
     })
   },
