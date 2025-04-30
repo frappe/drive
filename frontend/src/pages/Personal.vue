@@ -13,6 +13,5 @@ import { getPersonal } from "@/resources/files"
 import { useStore } from "vuex"
 
 const store = useStore()
-store.commit("setCurrentFolder", "")
-store.commit("setCurrentFolderID", "")
+store.commit("setCurrentFolder", { name: "" })
 </script>

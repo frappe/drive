@@ -113,7 +113,6 @@ declare module 'vue' {
     LucideLogOut: typeof import('~icons/lucide/log-out')['default']
     LucideMars: typeof import('~icons/lucide/mars')['default']
     LucideOut: typeof import('~icons/lucide/out')['default']
-    LucideOut: typeof import('~icons/lucide/out')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']
     LucideSearchvElse: typeof import('~icons/lucide/searchv-else')['default']
     LucideTrash: typeof import('~icons/lucide/trash')['default']

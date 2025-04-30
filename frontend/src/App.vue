@@ -17,7 +17,7 @@
         </router-view>
       </div>
 
-      <InfoSidebar v-if="showInfoSidebar" />
+      <InfoSidebar v-if="$route.name === 'File'" />
 
       <BottomBar v-if="isLoggedIn" class="fixed bottom-0 w-full sm:hidden" />
     </div>
@@ -47,7 +47,7 @@ import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { useStore } from "vuex"
 import { onMounted, ref, computed } from "vue"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import emitter from "@/emitter"
 
 const store = useStore()
@@ -58,7 +58,6 @@ const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const showUploadTracker = computed(
   () => isLoggedIn.value && store.state.uploads.length > 0
 )
-const showInfoSidebar = computed(() => store.state.showInfo)
 emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data
 })

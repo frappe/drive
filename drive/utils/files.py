@@ -9,7 +9,6 @@ import os
 import boto3
 import frappe
 from io import BytesIO
-from .dev import timing
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -147,7 +146,6 @@ class FileManager:
             self.conn.upload_file(disk_path, self.bucket, str(save_path))
             disk_path.unlink()
 
-    @timing
     def get_file(self, path):
         """
         Function to read file from a s3 file.

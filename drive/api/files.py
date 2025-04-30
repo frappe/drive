@@ -107,12 +107,15 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
     update_file_size(parent, file_size)
 
     if mime_type.startswith(("image", "video")) and not embed:
-        frappe.enqueue(
-            manager.upload_thumbnail,
-            now=True,
-            at_front=True,
-            file=drive_file,
-        )
+        try:
+            frappe.enqueue(
+                manager.upload_thumbnail,
+                now=True,
+                at_front=True,
+                file=drive_file,
+            )
+        except:
+            pass
 
     return drive_file
 

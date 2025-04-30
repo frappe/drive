@@ -127,7 +127,7 @@ const store = createStore({
     },
     setShowInfo(state, payload) {
       localStorage.setItem("showInfo", payload)
-      if (payload) state.showInfo = payload
+      state.showInfo = payload
     },
     setAllComments(state, payload) {
       /* localStorage.setItem("allDocComments",payload); */

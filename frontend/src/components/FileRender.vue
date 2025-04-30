@@ -42,7 +42,6 @@ const props = defineProps({
     default: true,
   },
 })
-const store = useStore()
 
 const SUPPORTED_TYPES = [
   "image",
@@ -67,7 +66,7 @@ const error = computed(() => {
     )
   if (!isSupportedType)
     return "Previews are not supported for this file type. Would you like to download it instead?"
-  else if (props.previewEntity.file_size > 400 * 1024 * 1024)
+  else if (props.previewEntity.file_size > 10 * 1024 * 1024)
     return "This is too large to preview - would you like to download instead?"
   return false
 })

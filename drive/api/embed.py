@@ -5,7 +5,7 @@ from pathlib import Path
 from drive.utils.files import FileManager, get_home_folder
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_file_content(embed_name, parent_entity_name):
     """
     Stream file content and optionally trigger download

@@ -27,6 +27,9 @@ export const settings = createResource({
 export const setSettings = createResource({
   url: "/api/method/drive.api.product.set_settings",
   method: "POST",
+  onSuccess: () => {
+    settings.fetch()
+  },
 })
 
 export const generalAccess = createResource({

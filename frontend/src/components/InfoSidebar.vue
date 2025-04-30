@@ -1,21 +1,9 @@
 <template>
   <div
+    v-if="entity && store.state.showInfo"
     class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[352px] min-w-full"
   >
-    <div v-if="entity">
-      <div class="w-full px-5 py-4 border-b">
-        <div class="flex items-center">
-          <div class="font-medium truncate text-lg">
-            {{ entity.title }}
-          </div>
-          <Button
-            icon="x"
-            variant="ghost"
-            class="ml-auto sm:hidden"
-            @click="$store.commit('setShowInfo', false)"
-          />
-        </div>
-      </div>
+    <div>
       <!-- Information -->
       <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
         <span
@@ -178,13 +166,6 @@
         <ActivityTree v-if="entity.write" :entity="entity" />
       </div>
     </div>
-    <div
-      v-else
-      class="flex h-full w-full flex-col items-center justify-center rounded-lg text-center"
-    >
-      <File class="w-auto h-10 text-gray-600 mb-2" />
-      <p class="text-sm text-gray-600 font-medium">No file selected</p>
-    </div>
   </div>
 
   <div
@@ -285,7 +266,7 @@ watch(entity, (newEntity) => {
     thumbnailUrl()
     comments.fetch({ entity_name: newEntity.name })
     generalAccess.fetch({ entity: newEntity.name })
-    userList.fetch({ entity_name: newEntity.name })
+    userList.fetch({ entity: newEntity.name })
   }
 })
 

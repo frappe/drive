@@ -23,7 +23,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
   if (!entity.is_group) {
-    getRecents.setData((data) => [...data, entity])
+    getRecents.setData((data) => [...(data || []), entity])
     mutate([entity], (e) => (e.accessed = true))
   }
   if (new_tab) {

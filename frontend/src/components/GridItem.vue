@@ -63,24 +63,9 @@ onMounted(async () => {
     props.file.name,
     props.file.file_ext
   )
-  if (result !== mime_link.value) {
+  if (result.href !== mime_link.value.href) {
     mime_link.value = result
     isThumbnail.value = true
   }
-  // this.link = result
 })
-// const link = ref()
-
-// computed: {
-//   foldersBefore() {
-//     return this.$store.state.foldersBefore
-//   },
-//   parsedStyled() {
-//     // if (typeof this.link === "string") {
-//     //   return "h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]"
-//     // } else {
-//     //   return "h-10 w-auto"
-//     // }
-//   },
-// },
 </script>
