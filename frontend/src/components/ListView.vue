@@ -154,9 +154,12 @@ const selectedColumns = [
         : title.slice(0, title.lastIndexOf(".")),
     getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
     prefix: ({ row }) =>
-      row.is_group
-        ? h(Folder)
-        : h("img", { src: getIconUrl(formatMimeType(row.mime_type)) }),
+      h("img", {
+        src: getIconUrl(
+          row.is_group ? formatMimeType(row.mime_type) : "folder"
+        ),
+        width: 16,
+      }),
     width: "50%",
   },
   {
@@ -176,7 +179,7 @@ const selectedColumns = [
         size: "sm",
       })
     },
-    width: "20%",
+    width: "15%",
   },
   {
     label: "Last Modified",
@@ -205,7 +208,7 @@ const selectedColumns = [
         : row.file_size_pretty,
     width: "10%",
   },
-  { label: "", key: "options", align: "right", width: "10px" },
+  { label: "", key: "options", align: "right", width: "5%" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entity) => {

@@ -97,12 +97,13 @@ watch([sortOrder, () => props.getEntities.data], () => {
   if (!props.getEntities.data) return
   const field = sortOrder.value.field
   const order = sortOrder.value.ascending ? 1 : -1
-  props.getEntities.data.sort((a, b) => {
+  const sorted = props.getEntities.data.toSorted((a, b) => {
     return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
   })
+  props.getEntities.setData(sorted)
   store.commit("setCurrentFolder", {
-    name: rows.value[0]?.parent_entity || "",
-    entities: rows.value.filter?.((k) => k.title[0] !== "."),
+    name: sorted?.parent_entity || "",
+    entities: sorted.filter?.((k) => k.title[0] !== "."),
   })
 })
 

@@ -1,5 +1,8 @@
 <template>
-  <div v-if="rows?.length" class="grid-container px-[10px] pt-3">
+  <div
+    v-if="rows?.length"
+    class="grid-container px-[10px] pt-3 overflow-scroll"
+  >
     <div
       v-for="file in rows"
       :id="file.name"

@@ -38,10 +38,7 @@
             class="me-3 !bg-inherit"
             @click="(e) => contextMenu(e, row)"
           >
-            <FeatherIcon
-              name="more-horizontal"
-              class="bg-transparent h-4 w-4"
-            />
+            <FeatherIcon name="more-horizontal" class="h-4 w-4" />
           </Button>
         </template>
         <template v-if="idx === 0" #suffix>

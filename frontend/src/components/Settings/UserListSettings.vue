@@ -66,7 +66,7 @@
     ></div>
     <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
       <div class="flex justify-between w-full">
-        <span class="text-base">{{ invite.email }}</span>
+        <span class="text-base my-auto">{{ invite.email }}</span>
         <div class="flex">
           <Tooltip
             :text="
@@ -122,14 +122,14 @@
           label: 'Send Invitation',
           variant: 'solid',
           disabled: !emailTest().length && !invited.length,
-          loading: () => inviteUsers.loading,
+          loading: inviteUsers.loading,
           onClick: () => {
             extractEmails()
+            showInvite = false
             inviteUsers.submit({
               emails: invited.join(','),
               team,
             })
-            dialog = null
           },
         },
       ],
@@ -292,7 +292,7 @@ const isAdmin = createResource({
 const inviteUsers = createResource({
   url: "drive.api.product.invite_users",
   onSuccess: () => {
-    showInvite.value = false
+    invites.fetch()
     toast("Invite sent!")
   },
 })
