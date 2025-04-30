@@ -28,7 +28,7 @@
           "
           :draggable="false"
         />
-        <p>
+        <p class="truncate">
           {{ file.is_group ? childrenSentence + "∙" : "" }}
           {{ formattedType !== "unknown" ? formattedType + "∙" : "" }}
           {{ file.relativeModified }}

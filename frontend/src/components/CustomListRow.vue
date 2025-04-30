@@ -82,7 +82,6 @@ defineProps({
 })
 const route = useRoute()
 const store = useStore()
-console.log(settings.data)
 const action = (settings.data.message || settings.data).single_click
   ? "click"
   : "dblclick"
