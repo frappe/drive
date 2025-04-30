@@ -1,5 +1,5 @@
 <template>
-  <div v-if="rows.length" class="grid-container px-[10px] pt-3">
+  <div v-if="rows?.length" class="grid-container px-[10px] pt-3">
     <div
       v-for="file in rows"
       :id="file.name"
@@ -20,6 +20,13 @@
       @contextmenu="contextMenu($event, file)"
       @mousedown.stop
     >
+      <FeatherIcon
+        v-if="file.is_favourite"
+        class="stroke-amber-500 fill-amber-500 z-10 absolute top-2 left-2 h-4"
+        name="star"
+        width="16"
+        height="16"
+      />
       <Button
         :variant="'subtle'"
         @click.stop="contextMenu($event, file)"

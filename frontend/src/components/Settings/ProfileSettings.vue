@@ -75,18 +75,19 @@
           <Input v-model="newLastName"></Input>
         </div>
       </div>
-      <ErrorMessage
-        v-if="errorMessage"
-        class="text-sm mt-2"
-        :message="errorMessage"
-      />
     </template>
   </Dialog>
   <h1 class="font-semibold mt-12 mb-4">Preferences</h1>
-  <Autocomplete :options="teamOptions" v-model="defaultTeam" label="Team" />
+  <Autocomplete
+    :options="teamOptions"
+    v-model="defaultTeam"
+    label="Default Team"
+    class="mb-3"
+  />
   <Switch
     v-model="singleClick"
     label="Single click to open files and folders"
+    class="!px-0 hover:!bg-inherit"
   />
 </template>
 <script setup>

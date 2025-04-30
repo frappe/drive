@@ -12,7 +12,7 @@
           <AppsIcon class="size-4" />
           <span class="whitespace-nowrap"> Apps </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-gray-600" />
+        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-6" />
       </button>
     </template>
     <template #body>

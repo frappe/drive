@@ -57,7 +57,6 @@ def files(
             frappe.exceptions.PageDoesNotExistError,
         )
 
-    # Get all the children entities
     query = (
         frappe.qb.from_(DriveFile)
         .where(DriveFile.is_active == is_active)
@@ -143,9 +142,11 @@ def files(
         .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
         .groupby(DriveFile.parent_entity)
     )
-    if personal:
-        child_count_query = child_count_query.where(DriveFile.is_private == 1)
+    if personal is not None:
+        child_count_query = child_count_query.where(DriveFile.is_private == personal)
+
     children_count = dict(child_count_query.run())
+    print(personal, children_count)
     res = query.run(as_dict=True)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
