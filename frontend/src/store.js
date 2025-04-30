@@ -12,6 +12,13 @@ let getCookies = () => {
   )
 }
 const { user_id, system_user, full_name, user_image } = getCookies()
+const getJson = (key, initial) => {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || initial
+  } catch {
+    return initial
+  }
+}
 const store = createStore({
   state: {
     user: {
@@ -22,26 +29,24 @@ const store = createStore({
     },
     uploads: [],
     connectedUsers: [],
-    sortOrder: JSON.parse(localStorage.getItem("sortOrder")) || {
+    sortOrder: getJson("sortOrder", {
       label: "Modified",
       field: "modified",
       ascending: false,
-    },
-    view: JSON.parse(localStorage.getItem("view")) || "list",
-    shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
-    activeFilters: JSON.parse(localStorage.getItem("activeFilters")) || [],
+    }),
+    view: getJson("view", "list"),
+    shareView: getJson("shareView", "with"),
+    activeFilters: getJson("activeFilters", []),
     activeTags: [],
     activeEntity: null,
     notifCount: 0,
     pasteData: { entities: [], action: null },
     showInfo: false,
     currentFolder: {
-      name: JSON.parse(localStorage.getItem("currentFolder")) || {},
-      entities: JSON.parse(localStorage.getItem("currentEntitites")) || [],
+      name: getJson("currentFolder", {}),
+      entities: getJson("currentEntitites", []),
     },
-    breadcrumbs: JSON.parse(localStorage.getItem("breadcrumbs")) || [
-      { label: "Home", route: "/" },
-    ],
+    breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     // Writer ones
     hasWriteAccess: false,
     allComments: "",

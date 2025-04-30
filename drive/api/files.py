@@ -878,7 +878,6 @@ def search(query, team):
         """,
             as_dict=1,
         )
-        print(result)
         return result
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")

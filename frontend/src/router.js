@@ -33,7 +33,9 @@ const routes = [
     beforeEnter: async () => {
       if (!store.getters.isLoggedIn) return "/login"
       await settings.fetch()
-      return "/t/" + settings.data.default_team
+      return settings.data.default_team
+        ? "/t/" + settings.data.default_team
+        : "/teams"
     },
   },
   {

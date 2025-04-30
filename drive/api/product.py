@@ -67,7 +67,7 @@ def get_team_invites(team):
 
 
 @frappe.whitelist(allow_guest=True)
-def signup(account_request, first_name, last_name=None, team=None, referrer=None):
+def signup(account_request, first_name, last_name=None, team=None):
     account_request = frappe.get_doc("Account Request", account_request)
     if not account_request.login_count:
         frappe.throw("Email not verified")
@@ -103,6 +103,15 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
 
     account_request.save(ignore_permissions=True)
     frappe.local.login_manager.login_as(user.email)
+    doc = frappe.get_doc(
+        {
+            "doctype": "Drive Settings",
+            "user": account_request.email,
+            "single_click": 1,
+        }
+    )
+    print(doc)
+    doc.insert()
 
     # Check invites for this user
     if not team:
@@ -192,7 +201,6 @@ def verify_otp(account_request, otp):
     if req.signed_up:
         frappe.local.login_manager.login_as(req.email)
         return {"location": "/drive"}
-    req.save(ignore_permissions=True)
 
 
 @frappe.whitelist(allow_guest=True)

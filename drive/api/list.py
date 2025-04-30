@@ -146,7 +146,6 @@ def files(
         child_count_query = child_count_query.where(DriveFile.is_private == personal)
 
     children_count = dict(child_count_query.run())
-    print(personal, children_count)
     res = query.run(as_dict=True)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
