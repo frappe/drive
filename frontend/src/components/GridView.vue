@@ -64,7 +64,9 @@ const store = useStore()
 const selections = defineModel(Set)
 
 const rows = computed(() => props.folderContents)
-const action = settings.data.message.single_click ? "click" : "dblclick"
+const action = (settings.data.message || settings.data).single_click
+  ? "click"
+  : "dblclick"
 
 defineEmits([
   "entitySelected",

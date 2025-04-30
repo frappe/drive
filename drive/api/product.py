@@ -202,6 +202,16 @@ def get_settings():
     return frappe.get_cached_doc("Drive Settings", frappe.session.user)
 
 
+@frappe.whitelist()
+def set_settings(updates):
+    settings = frappe.get_doc("Drive Settings", frappe.session.user)
+    if "single_click" in updates:
+        settings.single_click = int(updates["single_click"])
+    if "default_team" in updates:
+        settings.default_team = updates["default_team"]
+    settings.save()
+
+
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60)
 def resend_otp(email):
