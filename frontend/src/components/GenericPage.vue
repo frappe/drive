@@ -90,19 +90,19 @@ const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
-const rows = computed(() => store.state.currentFolder.entities)
+const rows = computed(() => props.getEntities.data)
 
 // We do client side sorting for immediate UI updates
 watch([sortOrder, () => props.getEntities.data], () => {
   if (!props.getEntities.data) return
   const field = sortOrder.value.field
   const order = sortOrder.value.ascending ? 1 : -1
-  const sorted = props.getEntities.data.toSorted((a, b) => {
+  props.getEntities.data.sort((a, b) => {
     return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
   })
   store.commit("setCurrentFolder", {
-    name: sorted[0]?.parent_entity || "",
-    entities: sorted.filter?.((k) => k.title[0] !== "."),
+    name: rows.value[0]?.parent_entity || "",
+    entities: rows.value.filter?.((k) => k.title[0] !== "."),
   })
 })
 

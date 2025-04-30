@@ -197,7 +197,12 @@ const selectedColumns = [
   {
     label: "Size",
     key: "",
-    getLabel: ({ row }) => row.file_size_pretty, // || "<em>empty</em>",
+    getLabel: ({ row }) =>
+      row.is_group
+        ? row.children
+          ? row.children + " item" + (row.children === 1 ? "" : "s")
+          : "empty"
+        : row.file_size_pretty,
     width: "10%",
   },
   { label: "", key: "options", align: "right", width: "10px" },
