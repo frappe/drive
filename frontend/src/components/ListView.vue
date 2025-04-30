@@ -156,7 +156,7 @@ const selectedColumns = [
     prefix: ({ row }) =>
       h("img", {
         src: getIconUrl(
-          row.is_group ? formatMimeType(row.mime_type) : "folder"
+          row.is_group ? "folder" : formatMimeType(row.mime_type)
         ),
         width: 16,
       }),
