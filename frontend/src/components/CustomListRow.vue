@@ -10,8 +10,7 @@
         : ''
     "
     @contextmenu="(e) => contextMenu(e, row)"
-    @click="settings.data.single_click && open(row)"
-    @dblclick="!settings.data.single_click && open(row)"
+    @[action]="open(row)"
   >
     <template #default="{ idx, column, item }">
       <ListRowItem
@@ -36,7 +35,7 @@
 
           <Button
             v-if="column.key === 'options'"
-            class="me-3 bg-inherit"
+            class="me-3 !bg-inherit"
             @click="(e) => contextMenu(e, row)"
           >
             <FeatherIcon
@@ -69,7 +68,7 @@
   </ListRow>
 </template>
 <script setup>
-import { FeatherIcon, ListRowItem, ListRow, ListEmptyState } from "frappe-ui"
+import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
 import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 import { openEntity } from "@/utils/files"
 import { settings } from "@/resources/permissions"
@@ -83,6 +82,7 @@ defineProps({
 })
 const route = useRoute()
 const store = useStore()
+const action = settings.data.message.single_click ? "click" : "dblclick"
 
 // Used as right-click doesn't trigger active in frappe-ui
 const selectedName = computed(() => store.state.activeEntity?.name)

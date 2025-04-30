@@ -20,7 +20,6 @@
   <template v-else>
     <ListView
       v-if="$store.state.view === 'list'"
-      ref="view"
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
@@ -28,6 +27,7 @@
     />
     <GridView
       v-else
+      v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
       :user-data="userData"
