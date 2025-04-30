@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     currentUserName() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
   },
   watch: {

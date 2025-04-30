@@ -3,8 +3,7 @@ import { toast } from "@/utils/toasts"
 
 import store from "@/store"
 import router from "@/router"
-import { prettyData } from "@/utils/files"
-import { set } from "idb-keyval"
+import { prettyData, setCache } from "@/utils/files"
 
 // GETTERS
 export const COMMON_OPTIONS = {
@@ -20,7 +19,6 @@ export const COMMON_OPTIONS = {
     }
   },
   transform(data) {
-    store.commit("setCurrentEntitites", data)
     return prettyData(data)
   },
 }
@@ -41,18 +39,6 @@ export const getTeams = createResource({
   },
   method: "GET",
   cache: "teams",
-})
-
-// Separate for cache purposes
-export const getFolderContents = createResource({
-  ...COMMON_OPTIONS,
-  url: "drive.api.list.files",
-  makeParams: (params) => {
-    return {
-      ...getFolderContents.params,
-      ...params,
-    }
-  },
 })
 
 export const getRecents = createResource({
@@ -151,8 +137,6 @@ export const toggleFav = createResource({
 export const clearRecent = createResource({
   url: "drive.api.files.remove_recents",
   makeParams: (data) => {
-    getRecents.setData([])
-    mutate(getRecents.data, (el) => (el.accessed = false))
     if (!data) {
       return { clear_all: true }
     }
@@ -160,7 +144,6 @@ export const clearRecent = createResource({
     getRecents.setData((d) =>
       d.filter(({ name }) => !entity_names.includes(name))
     )
-    mutate(data.entities, (el) => (el.accessed = false))
     return {
       entity_names,
     }
@@ -236,27 +219,6 @@ export const translate = createResource({
   url: "/api/method/drive.api.files.get_translate",
   cache: "translate",
 })
-
-// Synced cache - ensure all setters are reflected in the app
-function getCacheKey(cacheKey) {
-  if (!cacheKey) {
-    return null
-  }
-  if (typeof cacheKey === "string") {
-    cacheKey = [cacheKey]
-  }
-  return JSON.stringify(cacheKey)
-}
-function setCache(t, cache) {
-  t.setData = async (data) => {
-    if (typeof data === "function") {
-      t.data = data(t.data)
-    } else {
-      t.data = data
-    }
-    await set(getCacheKey(cache), JSON.stringify(t.data))
-  }
-}
 
 setCache(getHome, "home-folder-contents")
 setCache(getShared, "shared-folder-contents")

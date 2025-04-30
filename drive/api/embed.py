@@ -59,7 +59,6 @@ def get_file_content(embed_name, parent_entity_name):
                 embed_name,
             )
         )
-        print(embed_path)
 
     # Flaw? Doesn't stream for range header
     manager = FileManager()

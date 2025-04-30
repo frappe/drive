@@ -1,11 +1,6 @@
 <template>
   <div
-    class="transition-all duration-200 ease-in-out h-full border-l"
-    :class="
-      showInfoSidebar
-        ? 'sm:min-w-[352px] sm:max-w-[352px] min-w-full opacity-100'
-        : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
-    "
+    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[352px] min-w-full"
   >
     <div v-if="entity">
       <div class="w-full px-5 py-4 border-b">
@@ -31,17 +26,16 @@
         </span>
         <div
           v-if="
-            (entity.mime_type?.startsWith('video') ||
-              (entity.mime_type?.startsWith('image') &&
-                entity?.mime_type !== 'image/svg+xml')) &&
-            showInfoSidebar
+            entity.mime_type?.startsWith('video') ||
+            (entity.mime_type?.startsWith('image') &&
+              entity?.mime_type !== 'image/svg+xml')
           "
           class="h-[210px] w-full mb-4"
         >
           <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
         </div>
         <div class="space-y-6.5">
-          <div v-if="entity.owner === $store.state.auth.user_id">
+          <div v-if="entity.owner === $store.state.user.id">
             <div class="text-base font-medium mb-4">Access</div>
             <div class="flex items-center justify-between">
               <div class="flex">
@@ -99,13 +93,13 @@
                 {{ `(${entity.file_size})` }}
               </span>
               <span class="col-span-1 text-gray-600">Modified</span>
-              <span class="col-span-1">{{ entity.modified }}</span>
+              <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
               <span class="col-span-1 text-gray-600">Uploaded</span>
-              <span class="col-span-1">{{ entity.creation }}</span>
+              <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
               <span class="col-span-1 text-gray-600">Owner</span>
               <span class="col-span-1">{{
                 entity.owner +
-                (entity.owner === $store.state.auth.user_id ? " (you)" : "")
+                (entity.owner === $store.state.user.id ? " (you)" : "")
               }}</span>
             </div>
           </div>
@@ -194,16 +188,11 @@
   </div>
 
   <div
-    v-if="showInfoSidebar"
     class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
   >
     <Button
       class="text-gray-600"
-      :class="[
-        tab === 0 && showInfoSidebar
-          ? 'text-black bg-gray-200'
-          : ' hover:bg-gray-50',
-      ]"
+      :class="[tab === 0 ? 'text-black bg-gray-200' : ' hover:bg-gray-50']"
       variant="minimal"
       @click="switchTab(0)"
     >
@@ -212,11 +201,7 @@
     <Button
       v-if="entity?.comment"
       class="text-gray-600"
-      :class="[
-        tab === 1 && showInfoSidebar
-          ? 'text-black bg-gray-200'
-          : ' hover:bg-gray-50',
-      ]"
+      :class="[tab === 1 ? 'text-black bg-gray-200' : ' hover:bg-gray-50']"
       variant="minimal"
       @click="switchTab(1)"
     >
@@ -225,11 +210,7 @@
     <Button
       v-if="entity?.write"
       class="text-gray-600"
-      :class="[
-        tab === 2 && showInfoSidebar
-          ? 'text-black bg-gray-200'
-          : ' hover:bg-gray-50',
-      ]"
+      :class="[tab === 2 ? 'text-black bg-gray-200' : ' hover:bg-gray-50']"
       variant="minimal"
       @click="switchTab(2)"
     >
@@ -258,11 +239,9 @@ const tab = ref(0)
 const newComment = ref("")
 const thumbnailLink = ref("")
 
-const userId = computed(() => store.state.auth.user_id)
+const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
-
-const showInfoSidebar = computed(() => store.state.showInfo)
 
 const formattedMimeType = computed(() => {
   if (entity.value.is_group) return "Folder"
@@ -292,7 +271,7 @@ async function thumbnailUrl() {
   thumbnailLink.value = result
 }
 
-watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
+watch(entity, (newEntity) => {
   if (
     newEntity &&
     typeof newEntity !== "number" &&
@@ -303,12 +282,10 @@ watch([entity, showInfoSidebar], ([newEntity, newShowInfoSidebar]) => {
       (!newEntity.comment && tab.value === 1)
     )
       tab.value = 0
-    if (newShowInfoSidebar == true) {
-      thumbnailUrl()
-      comments.fetch({ entity_name: newEntity.name })
-      generalAccess.fetch({ entity: newEntity.name })
-      userList.fetch({ entity_name: newEntity.name })
-    }
+    thumbnailUrl()
+    comments.fetch({ entity_name: newEntity.name })
+    generalAccess.fetch({ entity: newEntity.name })
+    userList.fetch({ entity_name: newEntity.name })
   }
 })
 

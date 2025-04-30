@@ -1,5 +1,10 @@
 <template>
+  <Navbar />
   <FolderContentsError v-if="file.error" :error="file.error" />
+  <LoadingIndicator
+    v-if="file.loading"
+    class="w-10 h-full text-neutral-100 mx-auto"
+  />
   <div
     v-else
     class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
@@ -30,16 +35,12 @@
         @click="scrollEntity()"
       ></Button>
     </div>
-    <ShareDialog
-      v-if="dialog === 's'"
-      v-model="dialog"
-      :entity-name="props.entityName"
-    />
   </div>
 </template>
 
 <script setup>
 import { useStore } from "vuex"
+import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   computed,
@@ -48,14 +49,13 @@ import {
   onBeforeUnmount,
   inject,
 } from "vue"
-import { Button } from "frappe-ui"
+import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
-import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import { prettyData, setBreadCrumbs, setMetaData } from "@/utils/files"
+import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"
 
 const router = useRouter()
@@ -63,24 +63,17 @@ const store = useStore()
 const emitter = inject("emitter")
 const realtime = inject("realtime")
 const props = defineProps({
-  entityName: {
-    type: String,
-    default: null,
-  },
+  entityName: String,
+  team: String,
 })
 
-const dialog = ref("")
 const currentEntity = ref(props.entityName)
 
-const filteredEntities = computed(() => {
-  if (store.state.currentEntitites.length) {
-    return store.state.currentEntitites.filter(
-      (item) => item.is_group === 0 && item.mime_type !== "frappe_doc"
-    )
-  } else {
-    return []
-  }
-})
+const filteredEntities = computed(() =>
+  store.state.currentFolder.entities.filter(
+    (item) => !item.is_group && !item.document && !item.is_link
+  )
+)
 
 const index = computed(() => {
   return filteredEntities.value.findIndex(
@@ -99,22 +92,6 @@ function fetchFile(currentEntity) {
   })
 }
 
-function enterFullScreen() {
-  let elem = document.getElementById("renderContainer")
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen()
-  } else if (elem.mozRequestFullScreen) {
-    /* Firefox */
-    elem.mozRequestFullScreen()
-  } else if (elem.webkitRequestFullscreen) {
-    /* Chrome, Safari & Opera */
-    elem.webkitRequestFullscreen()
-  } else if (elem.msRequestFullscreen) {
-    /* IE/Edge */
-    elem.msRequestFullscreen()
-  }
-}
-
 onKeyStroke("ArrowLeft", (e) => {
   if (!e.shiftKey) return
   e.preventDefault()
@@ -126,20 +103,19 @@ onKeyStroke("ArrowRight", (e) => {
   scrollEntity()
 })
 
+const onSuccess = (entity) => {
+  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
+    emitter.emit("rename")
+  )
+}
 let file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
   transform(entity) {
-    store.commit("setEntityInfo", [entity])
-    entity = prettyData([entity])
+    store.commit("setActiveEntity", entity)
+    return prettyData([entity])[0]
   },
-  onSuccess(data) {
-    setMetaData(data)
-    store.commit("setActiveEntity", data)
-    setBreadCrumbs(data.breadcrumbs, data.is_private, () =>
-      emitter.emit("rename")
-    )
-  },
+  onSuccess,
   onError() {
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
@@ -158,9 +134,6 @@ onMounted(() => {
     store.state.connectedUsers = data.users
     userInfo.submit({ users: JSON.stringify(data.users) })
   })
-  emitter.on("showShareDialog", () => {
-    dialog.value = "s"
-  })
 })
 
 onBeforeUnmount(() => {
@@ -168,7 +141,6 @@ onBeforeUnmount(() => {
   store.state.connectedUsers = []
   realtime.doc_close("Drive File", file.data?.name)
   realtime.doc_unsubscribe("Drive File", file.data?.name)
-  store.commit("setEntityInfo", [])
 })
 
 let userInfo = createResource({

@@ -25,7 +25,7 @@
           "
         >
           <div class="text-base font-medium leading-none text-gray-900">
-            {{ teamName }}
+            {{ $route.params.team ? teamName : route.name }}
           </div>
           <div
             class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
@@ -58,12 +58,11 @@
 </template>
 
 <script setup>
-import { markRaw, onMounted } from "vue"
+import { markRaw } from "vue"
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Docs from "@/components/EspressoIcons/Docs.vue"
-import AppSwitcher from "@/components/AppSwitcher.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
@@ -73,14 +72,13 @@ import { useRouter, useRoute } from "vue-router"
 
 const router = useRouter()
 const route = useRoute()
-const team = computed(() => route.params?.team)
 const teamName = ref("loading...")
 watch(
-  team,
+  route,
   async (v) => {
-    if (!v) return
+    if (!route.params.team) return
     await getTeams.fetch()
-    teamName.value = getTeams.data[v]?.title
+    teamName.value = getTeams.data[v.params.team]?.title
   },
   { immediate: true }
 )

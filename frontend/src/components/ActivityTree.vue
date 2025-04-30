@@ -164,7 +164,7 @@ function groupAndTransform(activities) {
       }
     }
     activity.full_name =
-      activity.owner === store.state.auth.user_id ? "You" : activity.full_name
+      activity.owner === store.state.user.id ? "You" : activity.full_name
     activity.message = generateMessage(activity)
     activity.creation = formatDate(activity.creation)
   }

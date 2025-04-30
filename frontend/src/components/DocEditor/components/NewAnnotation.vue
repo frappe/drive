@@ -67,7 +67,7 @@ export default {
       return this.$store.state.user.imageURL
     },
     currentUserEmail() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
     commentRootContent() {
       const { view, state } = this.editor
@@ -127,7 +127,7 @@ export default {
       newCommentYmap.set("resolved", 0)
       //newCommentYmap.set('synced', 1)
       newCommentYmap.set("owner", this.currentUserName)
-      newCommentYmap.set("ownerEmail", this.$store.state.auth.user_id)
+      newCommentYmap.set("ownerEmail", this.$store.state.user.id)
       newCommentYmap.set("ownerImage", this.currentUserImage)
       newCommentYmap.set("replies", newCommentRepliesYarray)
       newCommentYmap.set("createdAt", Date.now())

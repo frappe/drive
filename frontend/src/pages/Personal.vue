@@ -1,9 +1,8 @@
 <template>
   <GenericPage
-    :getEntities="getPersonal"
+    :get-entities="getPersonal"
     :icon="Home"
-    :primaryMessage="'No personal files'"
-    :secondaryMessage="''"
+    primary-message="No personal files"
   />
 </template>
 

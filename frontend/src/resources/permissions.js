@@ -18,6 +18,17 @@ export const notifCount = createResource({
   cache: "notif-count",
 })
 
+export const settings = createResource({
+  url: "/api/method/drive.api.product.get_settings",
+  auto: true,
+  cache: "settings",
+})
+
+export const setSettings = createResource({
+  url: "/api/method/drive.api.product.set_settings",
+  method: "POST",
+})
+
 export const generalAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   auto: false,

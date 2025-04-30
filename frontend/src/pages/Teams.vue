@@ -142,7 +142,7 @@ import { LucideFolderOpenDot, LucidePlaneTakeoff } from "lucide-vue-next"
 import { computed } from "vue"
 
 const store = useStore()
-const email = computed(() => store.state.auth.user_id)
+const email = computed(() => store.state.user.id)
 getTeams.fetch()
 getInvites.fetch({ email: email.value })
 </script>

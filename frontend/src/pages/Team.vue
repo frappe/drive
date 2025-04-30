@@ -2,8 +2,8 @@
   <GenericPage
     :get-entities="getHome"
     :icon="Team"
-    :primary-message="'Team is empty'"
-    :secondary-message="'Add files by dropping them here.'"
+    primary-message="Team is empty"
+    secondary-message="Add files by dropping them here."
   />
 </template>
 
@@ -15,8 +15,6 @@ import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 
 const store = useStore()
-store.commit("setCurrentFolder", "")
-store.commit("setCurrentFolderID", "")
 if (getTeams.data)
   store.commit("setBreadcrumbs", [
     {

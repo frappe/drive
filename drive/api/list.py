@@ -57,10 +57,6 @@ def files(
             frappe.exceptions.PageDoesNotExistError,
         )
 
-    # Do not bubble down write access from home folder
-    if entity_name == home:
-        user_access["write"] = entity.owner == frappe.session.user
-
     # Get all the children entities
     query = (
         frappe.qb.from_(DriveFile)
@@ -74,10 +70,7 @@ def files(
             fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read"),
             fn.Coalesce(DrivePermission.comment, user_access["comment"]).as_("comment"),
             fn.Coalesce(DrivePermission.share, user_access["share"]).as_("share"),
-            fn.Coalesce(
-                DrivePermission.write,
-                (DriveFile.owner == frappe.session.user),
-            ).as_("write"),
+            fn.Coalesce(DrivePermission.write, user_access["write"]).as_("write"),
         )
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
@@ -143,7 +136,20 @@ def files(
 
     if folders:
         query = query.where(DriveFile.is_group == 1)
-    return query.run(as_dict=True)
+
+    child_count_query = (
+        frappe.qb.from_(DriveFile)
+        .where((DriveFile.team == team))
+        .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
+        .groupby(DriveFile.parent_entity)
+    )
+    if personal:
+        child_count_query = child_count_query.where(DriveFile.is_private == 1)
+    children_count = dict(child_count_query.run())
+    res = query.run(as_dict=True)
+    for r in res:
+        r["children"] = children_count.get(r["name"], 0)
+    return res
 
 
 @frappe.whitelist()

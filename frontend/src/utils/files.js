@@ -1,14 +1,26 @@
 import router from "@/router"
 import store from "@/store"
-import { formatSize, formatDate } from "@/utils/format"
+import { formatSize } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
 import { getTeams } from "@/resources/files"
-import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
-import { formatMimeType } from "@/utils/format"
+import { set } from "idb-keyval"
+
+// MIME icons
+import Folder from "@/components/MimeIcons/Folder.vue"
+import Archive from "@/components/MimeIcons/Archive.vue"
+import Document from "@/components/MimeIcons/Document.vue"
+import Spreadsheet from "@/components/MimeIcons/Spreadsheet.vue"
+import Presentation from "@/components/MimeIcons/Presentation.vue"
+import Audio from "@/components/MimeIcons/Audio.vue"
+import Image from "@/components/MimeIcons/Image.vue"
+import Video from "@/components/MimeIcons/Video.vue"
+import PDF from "@/components/MimeIcons/PDF.vue"
+import Unknown from "@/components/MimeIcons/Unknown.vue"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
+  store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
   if (!entity.is_group) {
     getRecents.setData((data) => [...data, entity])
@@ -17,6 +29,13 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   if (new_tab) {
     return window.open(getLink(entity, false), "_blank")
   }
+
+  store.state.breadcrumbs.push({
+    label: entity.title,
+    name: entity.name,
+    route: null,
+  })
+
   if (entity.is_group) {
     router.push({
       name: "Folder",
@@ -40,6 +59,16 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   }
 }
 
+export const manageBreadcrumbs = (to) => {
+  if (
+    store.state.breadcrumbs[store.state.breadcrumbs.length - 1]?.name !==
+    to.params.entityName
+  ) {
+    store.state.breadcrumbs.splice(1)
+    store.state.breadcrumbs.push({ loading: true })
+  }
+}
+
 export const groupByFolder = (entities) => {
   return {
     Folders: entities.filter((x) => x.is_group === 1),
@@ -52,9 +81,6 @@ export const prettyData = (entities) => {
     entity.file_size_pretty = formatSize(entity.file_size)
     entity.relativeModified = useTimeAgo(entity.modified)
     if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
-    entity.modified = formatDate(entity.modified)
-    entity.creation = formatDate(entity.creation)
-
     return entity
   })
 }
@@ -75,7 +101,7 @@ export const setBreadCrumbs = (
     getTeams.data && Object.keys(getTeams.data).includes(lastEl.team)
   if (
     (partOfTeam && !lastEl.is_private) ||
-    lastEl.owner == store.state.auth.user_id
+    lastEl.owner == store.state.user.id
   ) {
     res = [
       {
@@ -86,39 +112,20 @@ export const setBreadCrumbs = (
     ]
   }
   if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
+  const popBreadcrumbs = (item) => () =>
+    res.splice(res.findIndex((k) => k.name === item.name) + 1)
   breadcrumbs.forEach((item, idx) => {
+    const final = idx === breadcrumbs.length - 1
     res.push({
       label: item.title,
-      onClick: final_func,
-      route:
-        idx !== breadcrumbs.length - 1
-          ? `/t/${item.team}/folder/` + item.name
-          : null,
+      name: item.name,
+      onClick: final ? final_func : popBreadcrumbs(item),
+      route: final ? null : `/t/${item.team}/folder/` + item.name,
     })
   })
   store.commit("setBreadcrumbs", res)
 }
-export const setMetaData = (data) => {
-  document.title = data.title
-  document
-    .querySelector(`head meta[property="og:title"]`)
-    .setAttribute("content", "Drive - " + data.title)
-  document
-    .querySelector(`head meta[name="twitter:title"]`)
-    .setAttribute("content", "Drive - " + data.title)
-  thumbnail_getIconUrl(
-    formatMimeType(data.mime_type),
-    data.name,
-    data.file_ext
-  ).then((url) => {
-    document
-      .querySelector(`head meta[property="og:image"]`)
-      .setAttribute("content", url)
-    document
-      .querySelector(`head meta[name="twitter:image"]`)
-      .setAttribute("content", url)
-  })
-}
+
 export const MIME_LIST_MAP = {
   Image: [
     "image/png",
@@ -200,4 +207,84 @@ export const MIME_LIST_MAP = {
     "application/gzip",
     "application/x-bzip2",
   ],
+}
+
+export const ICON_TYPES = [
+  {
+    label: "Folder",
+    icon: Folder,
+  },
+  {
+    label: "Image",
+    icon: Image,
+  },
+  {
+    label: "Audio",
+    icon: Audio,
+  },
+  {
+    label: "Video",
+    icon: Video,
+  },
+  {
+    label: "PDF",
+    icon: PDF,
+  },
+  {
+    label: "Document",
+    icon: Document,
+  },
+  {
+    label: "Spreadsheet",
+    icon: Spreadsheet,
+  },
+  {
+    label: "Archive",
+    icon: Archive,
+  },
+  {
+    label: "Presentation",
+    icon: Presentation,
+  },
+  {
+    label: "Unknown",
+    icon: Unknown,
+  },
+]
+
+// Synced cache - ensure all setters are reflected in the app
+function getCacheKey(cacheKey) {
+  if (!cacheKey) {
+    return null
+  }
+  if (typeof cacheKey === "string") {
+    cacheKey = [cacheKey]
+  }
+  return JSON.stringify(cacheKey)
+}
+export function setCache(t, cache) {
+  t.setData = async (data) => {
+    if (typeof data === "function") {
+      t.data = data(t.data)
+    } else {
+      t.data = data
+    }
+    await set(getCacheKey(cache), JSON.stringify(t.data))
+  }
+}
+
+export function enterFullScreen() {
+  let elem = document.getElementById("renderContainer")
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen()
+  } else if (elem.mozRequestFullScreen) {
+    /* Firefox */
+    elem.mozRequestFullScreen()
+  } else if (elem.webkitRequestFullscreen) {
+    /* Chrome, Safari & Opera */
+    elem.webkitRequestFullscreen()
+  } else if (elem.msRequestFullscreen) {
+    /* IE/Edge */
+    elem.msRequestFullscreen()
+  }
 }

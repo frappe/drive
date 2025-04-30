@@ -457,7 +457,7 @@ def get_doc_version_list(entity_name):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name, trigger_download=0):  #
+def get_file_content(entity_name, trigger_download=0):
     """
     Stream file content and optionally trigger download
 
@@ -848,7 +848,8 @@ def search(query, team):
     """
     Placeholder search implementation
     """
-    text = frappe.db.escape(query + "*")
+    text = frappe.db.escape(" ".join(k + "*" for k in query.split()))
+    user = frappe.db.escape(frappe.session.user)
     team = frappe.db.escape(team)
     try:
         result = frappe.db.sql(
@@ -867,12 +868,14 @@ def search(query, team):
         LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
         WHERE `tabDrive File`.team = {team}
             AND `tabDrive File`.`is_active` = 1
+            AND (`tabDrive File`.`owner` = {user} OR `tabDrive File`.is_private = 0)
             AND `tabDrive File`.`parent_entity` <> ''
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
         GROUP  BY `tabDrive File`.`name` 
         """,
             as_dict=1,
         )
+        print(result)
         return result
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")

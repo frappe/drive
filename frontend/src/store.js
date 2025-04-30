@@ -11,22 +11,14 @@ let getCookies = () => {
       .map((entry) => [entry[0], decodeURIComponent(entry[1])])
   )
 }
-
+const { user_id, system_user, full_name, user_image } = getCookies()
 const store = createStore({
   state: {
-    auth: {
-      user_id: getCookies().user_id,
-    },
     user: {
-      systemUser: getCookies().system_user === "yes",
-      fullName: getCookies().full_name,
-      imageURL: getCookies().user_image,
-    },
-    error: {
-      iconName: "x-circle",
-      iconClass: "fill-red-500 stroke-white",
-      primaryMessage: "404 Not Found",
-      secondaryMessage: "The resource you're looking for does not exist",
+      id: user_id,
+      systemUser: system_user === "yes",
+      fullName: full_name,
+      imageURL: user_image,
     },
     uploads: [],
     connectedUsers: [],
@@ -37,44 +29,34 @@ const store = createStore({
     },
     view: JSON.parse(localStorage.getItem("view")) || "list",
     shareView: JSON.parse(localStorage.getItem("shareView")) || "with",
-    elementExists: false,
     activeFilters: JSON.parse(localStorage.getItem("activeFilters")) || [],
     activeTags: [],
     activeEntity: null,
     notifCount: 0,
-    entityInfo:
-      JSON.parse(localStorage.getItem("selectedEntities")) ||
-      JSON.parse(localStorage.getItem("currentFolder")) ||
-      [],
-    currentFolder: JSON.parse(localStorage.getItem("currentFolder")) || [],
-    currentEntitites: get("currentEntitites") || [],
     pasteData: { entities: [], action: null },
     showInfo: false,
-    hasWriteAccess: false,
-    // Default to empty string to upload to user Home folder
-    currentFolderID: "",
+    currentFolder: {
+      name: JSON.parse(localStorage.getItem("currentFolder")) || {},
+      entities: JSON.parse(localStorage.getItem("currentEntitites")) || [],
+    },
     breadcrumbs: JSON.parse(localStorage.getItem("breadcrumbs")) || [
       { label: "Home", route: "/" },
     ],
+    // Writer ones
+    hasWriteAccess: false,
     allComments: "",
     activeCommentsInstance: "",
     IsSidebarExpanded: JSON.parse(
       localStorage.getItem("IsSidebarExpanded") || true
     ),
     passiveRename: false,
-    foldersBefore: localStorage.getItem("foldersBefore")
-      ? JSON.parse(localStorage.getItem("foldersBefore"))
-      : true,
-    singleClick: localStorage.getItem("singleClick")
-      ? JSON.parse(localStorage.getItem("singleClick"))
-      : false,
     editorNewTab: localStorage.getItem("editorNewTab")
       ? JSON.parse(localStorage.getItem("editorNewTab"))
       : false,
   },
   getters: {
     isLoggedIn: (state) => {
-      return state.auth.user_id && state.auth.user_id !== "Guest"
+      return state.user.id && state.user.id !== "Guest"
     },
     uploadsInProgress: (state) => {
       return state.uploads.filter((upload) => !upload.completed)
@@ -90,20 +72,9 @@ const store = createStore({
     setElementExists(state, val) {
       state.elementExists = val
     },
-    toggleFoldersBefore(state) {
-      state.foldersBefore = !state.foldersBefore
-      localStorage.setItem("foldersBefore", JSON.stringify(state.foldersBefore))
-    },
-    toggleSingleClick(state) {
-      state.singleClick = !state.singleClick
-      localStorage.setItem("singleClick", JSON.stringify(state.singleClick))
-    },
     toggleEditorNewTab(state) {
       state.editorNewTab = !state.editorNewTab
       localStorage.setItem("editorNewTab", JSON.stringify(state.editorNewTab))
-    },
-    setError(state, error) {
-      Object.assign(state.error, error)
     },
     setUploads(state, uploads) {
       state.uploads = uploads
@@ -132,10 +103,6 @@ const store = createStore({
       localStorage.setItem("shareView", JSON.stringify(payload))
       state.shareView = payload
     },
-    setEntityInfo(state, payload) {
-      localStorage.setItem("selectedEntities", JSON.stringify(payload))
-      state.entityInfo = payload
-    },
     setActiveEntity(state, payload) {
       state.activeEntity = payload
     },
@@ -144,19 +111,23 @@ const store = createStore({
       state.activeFilters = payload
     },
     setCurrentFolder(state, payload) {
-      localStorage.setItem("currentFolder", JSON.stringify(payload))
-      state.currentFolder = payload
-    },
-    setCurrentEntitites(state, payload) {
-      state.currentEntitites = payload
-      set("currentEntitites", JSON.stringify(payload))
+      // Don't clear cache for performance's sake (state is cleared on every reroute)
+      if (payload === null) state.currentFolder = { name: null, entities: [] }
+      else {
+        state.currentFolder = { ...state.currentFolder, ...payload }
+        localStorage.setItem("currentFolder", JSON.stringify(payload.name))
+        localStorage.setItem(
+          "currentEntitites",
+          JSON.stringify(payload.entities)
+        )
+      }
     },
     setPasteData(state, payload) {
       state.pasteData = payload
     },
     setShowInfo(state, payload) {
       localStorage.setItem("showInfo", payload)
-      state.showInfo = payload
+      if (payload) state.showInfo = payload
     },
     setAllComments(state, payload) {
       /* localStorage.setItem("allDocComments",payload); */
@@ -167,13 +138,6 @@ const store = createStore({
     },
     setHasWriteAccess(state, payload) {
       state.hasWriteAccess = payload
-    },
-    setCurrentFolderID(state, payload) {
-      state.currentFolderID = payload
-    },
-    setHomeFolderID(state, payload) {
-      state.homeFolderID = payload
-      localStorage.setItem("homeFolderID", payload)
     },
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))

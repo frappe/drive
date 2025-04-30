@@ -9,7 +9,7 @@
   >
     <Globe
       v-if="accessType === 'public'"
-      :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
+      :class="size == 'md' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />
     <!-- <Team
       v-if="accessType === 'public'"
@@ -18,7 +18,7 @@
     <Lock
       v-else
       class=""
-      :class="size == 'sm' ? 'h-[80%] w-[80%]' : 'h-[65%] w-[65%]'"
+      :class="size == 'md' ? 'h-[80%] w-[80%]' : 'h-[65%] w-[65%]'"
     />
   </div>
 </template>

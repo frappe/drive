@@ -206,6 +206,7 @@ import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute, useRouter } from "vue-router"
+import { settings } from "../resources/permissions"
 
 const route = useRoute()
 const router = useRouter()
@@ -292,6 +293,7 @@ const verifyOTP = createResource({
   url: "drive.api.product.verify_otp",
   onSuccess: (data) => {
     otpValidated.value = true
+    settings.fetch()
     if (data.location) {
       window.location.replace(data.location)
     }

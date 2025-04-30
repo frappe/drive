@@ -94,7 +94,7 @@ function NonMergeMode(file) {
 }
 
 onMounted(() => {
-  dropzone.value = new Dropzone("div#dropTarget", {
+  dropzone.value = new Dropzone("div#dropzone", {
     paramName: "file",
     parallelUploads: 1,
     autoProcessQueue: false,
@@ -147,7 +147,7 @@ onMounted(() => {
     },
   })
   dropzone.value.on("addedfile", function (file) {
-    file.parent = store.state.currentFolderID
+    file.parent = store.state.currentFolder.name
     store.commit("pushToUploads", {
       uuid: file.upload.uuid,
       name: file.name,
