@@ -94,7 +94,7 @@ function NonMergeMode(file) {
 }
 
 onMounted(() => {
-  dropzone.value = new Dropzone("div#dropTarget", {
+  dropzone.value = new Dropzone("div#dropzone", {
     paramName: "file",
     parallelUploads: 1,
     autoProcessQueue: false,
@@ -127,10 +127,7 @@ onMounted(() => {
     },
     sending: function (file, _, formData) {
       formData.append("team", route.params.team)
-      formData.append(
-        "personal",
-        store.state.breadcrumbs[0].label == "Home" ? 1 : 0
-      )
+      formData.append("personal", route.name == "Home" ? 1 : 0)
       if (file.lastModified) formData.append("last_modified", file.lastModified)
       if (file.parent) formData.append("parent", file.parent)
       const path = file.newFullPath || file.webkitRelativePath || file.fullPath
@@ -150,7 +147,7 @@ onMounted(() => {
     },
   })
   dropzone.value.on("addedfile", function (file) {
-    file.parent = store.state.currentFolderID
+    file.parent = store.state.currentFolder.name
     store.commit("pushToUploads", {
       uuid: file.upload.uuid,
       name: file.name,

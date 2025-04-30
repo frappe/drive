@@ -1,11 +1,11 @@
 <template>
   <GenericPage
-    :recents="true"
     :grouper="groupByTime"
     :get-entities="getRecents"
     :show-sort="false"
     :icon="Recent"
-    primary-message="No Recent Files"
+    primary-message="No recent files"
+    secondary-message="Try opening something!"
   />
 </template>
 

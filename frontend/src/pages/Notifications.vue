@@ -49,7 +49,7 @@
       :rows="notifications.data"
       row-key="name"
     ></ListView>
-    <div v-else class="flex flex-col items-center justify-center m-auto">
+    <div v-else class="flex flex-col items-center justify-center m-auto h-full">
       <FeatherIcon name="inbox" class="w-14 h-auto text-gray-500 pb-4" />
       <span class="text-base text-gray-600 font-medium">No Notifications</span>
     </div>

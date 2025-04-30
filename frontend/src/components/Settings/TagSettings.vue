@@ -2,9 +2,9 @@
   <div class="flex items-center mb-6">
     <h1 class="font-semibold">Tags</h1>
     <Button
+      class="ml-auto mr-4"
       variant="solid"
       icon-left="plus"
-      class="ml-auto"
       @click="showNewTagDialog = true"
     >
       New
@@ -69,7 +69,7 @@
       v-if="!$resources.getTagsWithOwner.data?.length"
       class="h-full w-full flex flex-col items-center justify-center my-auto"
     >
-      <Tag class="h-7 stroke-1 text-gray-600" />
+      <LucideTag class="h-7 stroke-1 text-gray-600" />
       <span class="text-gray-800 text-sm mt-2">No Tags</span>
     </div>
   </div>
@@ -106,7 +106,6 @@
 </template>
 <script>
 import { Dropdown, Button, FeatherIcon, Dialog } from "frappe-ui"
-import { Tag } from "lucide-vue-next"
 import NewTagDialog from "./NewTagDialog.vue"
 import EditTagDialog from "./EditTagDialog.vue"
 
@@ -119,7 +118,6 @@ export default {
     NewTagDialog,
     EditTagDialog,
     Dialog,
-    Tag,
   },
   data() {
     return {

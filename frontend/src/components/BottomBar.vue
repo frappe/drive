@@ -3,7 +3,7 @@
     <div
       ondragstart="return false;"
       ondrop="return false;"
-      class="grid grid-cols-5 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
+      class="grid grid-cols-6 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
     >
       <router-link
         v-for="item in sidebarItems"
@@ -21,8 +21,8 @@
           :href="href"
           @click="navigate && $emit('toggleMobileSidebar')"
         >
-          <FeatherIcon
-            :name="item.icon"
+          <component
+            :is="item.icon"
             class="stroke-1.5 self-center w-auto h-5.5 text-gray-800"
           />
         </a>
@@ -38,6 +38,12 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui"
+import Recent from "./EspressoIcons/Recent.vue"
+import Star from "./EspressoIcons/Star.vue"
+import Home from "./EspressoIcons/Home.vue"
+import Trash from "./EspressoIcons/Trash.vue"
+import Team from "./EspressoIcons/Organization.vue"
+import Users from "./EspressoIcons/Users.vue"
 
 export default {
   name: "Sidebar",
@@ -52,59 +58,61 @@ export default {
     isExpanded() {
       return this.$store.state.IsSidebarExpanded
     },
-    /* currentSideBarWidth: {
-        get() {
-          return this.currentSideBarWidth = this.$store.state.IsSidebarExpanded ? 280 : 60
-        },
-        set(val) {
-          console.log(val)
-          return this.currentSideBarWidth = val
-        }
-      }, */
+    team() {
+      return this.$route.params.team || localStorage.getItem("recentTeam")
+    },
     sidebarItems() {
       return [
-        /*  {
-            label: "Search",
-            route: () => {},
-            icon: "search",
-            highlight: () => {},
-          }, */
+        // {
+        //   label: "Search",
+        //   route: () => {},
+        //   icon: "search",
+        //   highlight: () => {},
+        // },
         {
           label: "Home",
-          route: "/home",
-          icon: "home",
+          route: "/t/" + this.team,
+          icon: Home,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Home"
           },
         },
         {
           label: "Recents",
-          route: "/recents",
-          icon: "clock",
+          route: "/t/" + this.team + "/recents",
+          icon: Recent,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Recents"
           },
         },
         {
           label: "Favourites",
-          route: "/favourites",
-          icon: "star",
+          route: "/t/" + this.team + "/favourites",
+          icon: Star,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Favourites"
           },
         },
         {
+          label: "Team",
+          route: "/t/" + this.team + "/team",
+          icon: Team,
+          highlight: () => {
+            return this.$store.state.breadcrumbs[0].name === "Team"
+          },
+        },
+        {
           label: "Shared",
           route: "/shared",
-          icon: "users",
+          icon: Users,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Shared"
           },
         },
         {
           label: "Trash",
-          route: "/trash",
-          icon: "trash-2",
+          route: "/t/" + this.team + "/trash",
+          icon: Trash,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].label === "Trash"
           },
@@ -152,6 +160,7 @@ export default {
   resources: {
     getRootFolderSize() {
       return {
+        // BROKEN
         url: "drive.api.files.get_user_directory_size",
         onError(error) {
           console.log(error)

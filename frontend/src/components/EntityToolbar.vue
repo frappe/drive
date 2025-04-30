@@ -99,7 +99,7 @@ function IsDownloadEnabled() {
     return (
       entity.allow_download ||
       entity.write ||
-      entity.owner === store.state.auth.user_id
+      entity.owner === store.state.user.id
     )
   })
   return allEntitiesSatisfyCondition

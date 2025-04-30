@@ -28,11 +28,11 @@
         </Tooltip>
         <span
           class="flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
-          :class="
+          :class="[
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
-              : 'ml-2 w-auto opacity-100'
-          "
+              : 'ml-2 w-auto opacity-100',
+          ]"
         >
           {{ label }}
         </span>

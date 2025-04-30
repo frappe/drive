@@ -11,10 +11,6 @@ jobs:
   build:
     name: Build
 
-    permissions:
-      contents: read
-      packages: write
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -42,13 +38,13 @@ jobs:
 
       - name: Set Branch
         run: |
-          export APPS_JSON='[{"url": "https://github.com/${{ github.repository }}","branch": "${{ github.ref_name }}"}]'
+          export APPS_JSON='[{"url": "https://github.com/frappe/drive","branch": "main"}]'
           echo "APPS_JSON_BASE64=$(echo $APPS_JSON | base64 -w 0)" >> $GITHUB_ENV
-          echo "FRAPPE_BRANCH=${{ github.ref_type == 'tag' || github.ref_name == 'main' && 'version-15' || 'develop' }}" >> $GITHUB_ENV
+          echo "FRAPPE_BRANCH=version-15" >> $GITHUB_ENV
 
       - name: Set Image Tag
         run: |
-          echo "IMAGE_TAG=${{ github.ref_name == 'develop' && 'latest' || 'v15' }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=stable" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         with:

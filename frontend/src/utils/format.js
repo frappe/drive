@@ -24,6 +24,7 @@ export function base2BlockSize(bytes) {
 }
 
 export function formatDate(date) {
+  if (!date) return ""
   const dateObj = new Date(date)
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const hourCycle = navigator.language || "en-US"
@@ -38,43 +39,49 @@ export function formatDate(date) {
   return `${formattedDate}, ${formattedTime}`
 }
 
-export function formatMimeType(mimeType) {
+export function formatMimeType(mimeType, lower = true) {
   let icon = "unknown"
   if (!mimeType) return icon
   const generic = mimeType.split("/")[0]
   const specific = mimeType.split("/")[1]
-  if (["image", "video", "audio"].includes(generic)) icon = generic
-  else if (generic === "frappe_doc") icon = "Frappe Doc"
+  if (["image", "video", "audio"].includes(generic))
+    icon = generic[0].toUpperCase() + generic.slice(1)
+  else if (generic === "frappe_doc") icon = "Doc"
   else if (generic === "link") icon = "Link"
-  else if (generic === "frappe_whiteboard") icon = "Frappe Whiteboard"
   else
     switch (specific) {
       case "pdf":
-        icon = "pdf"
+        icon = "PDF"
         break
       case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        icon = "spreadsheet"
+        icon = "Spreadsheet"
+        break
+      case "vnd.apple.numbers":
+        icon = "Spreadsheet"
         break
       case "vnd.openxmlformats-officedocument.presentationml.presentation":
-        icon = "presentation"
+        icon = "Presentation"
+        break
+      case "vnd.apple.keynote":
+        icon = "Presentation"
         break
       case "vnd.openxmlformats-officedocument.wordprocessingml.document":
-        icon = "word"
+        icon = "Word"
         break
       case "msword":
-        icon = "word"
+        icon = "Word"
         break
       case "zip":
-        icon = "zip"
+        icon = "Zip"
         break
       case "x-tar":
-        icon = "zip"
+        icon = "Zip"
         break
       case "x-7z-compressed":
-        icon = "zip"
+        icon = "Zip"
         break
     }
-  return icon
+  return lower ? icon.toLowerCase() : icon
 }
 
 export function getDateDiffInDays(date1, date2) {

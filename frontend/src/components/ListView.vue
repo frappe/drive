@@ -1,24 +1,61 @@
 <template>
   <FrappeListView
-    class="select-none"
+    class="px-[10px] pt-3 select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
-    @update:selections="(s) => (selections = s)"
+    @update:selections="handleSelections"
+    @update:active-row="setActive"
     :options="{
       selectable: true,
+      enableActive: true,
       showTooltip: true,
-      resizeColumn: true,
-      selectionWord: (v) => (v === 1 ? 'item' : 'items'),
-      getRowRoute: (getLinkStem) => '',
+      resizeColumn: false,
+      // Should be getLink(row, false, false) - but messes up clicking
+      getRowRoute: (row) => '',
+      emptyState: {
+        description: 'Nothing found with that search - try something else?',
+      },
     }"
   >
-    <ListHeader />
-    <Loader v-if="!entities || entities.loading" />
+    <ListHeader>
+      <template #default>
+        <ListHeaderItem
+          v-for="column in selectedColumns"
+          :key="column.key"
+          :item="column"
+        >
+          <template v-if="column.key === 'title'" #suffix>
+            <div class="absolute right-0 flex gap-0">
+              <TextInput
+                ref="searchInput"
+                v-model="filter"
+                type="text"
+                class="my-auto scale-[88%]"
+                :class="showSearch ? 'opacity-1' : 'opacity-0'"
+                placeholder="search..."
+              />
+
+              <Button @click=";(showSearch = !showSearch), (filter = '')">
+                <LucideSearch v-if="!showSearch" class="my-auto w-3 h-3" />
+                <LucideX v-else class="my-auto w-3 h-3" />
+              </Button>
+            </div>
+          </template>
+        </ListHeaderItem>
+      </template>
+    </ListHeader>
+    <div
+      v-if="!folderContents"
+      class="w-full text-center flex items-center justify-center py-10"
+    >
+      <LoadingIndicator class="w-8" />
+    </div>
     <template v-else>
-      <div class="h-full overflow-y-auto">
+      <div id="drop-area" class="h-full overflow-y-auto">
+        <ListEmptyState v-if="!formattedRows.length" />
         <div
-          v-if="formattedRows[0].group"
+          v-else-if="formattedRows[0].group"
           v-for="group in formattedRows"
           :key="group.group"
         >
@@ -30,34 +67,19 @@
             />
           </ListGroupHeader>
           <ListGroupRows :group="group">
-            <CustomListRow
-              :rows="group.rows"
-              :context-menu="contextMenu"
-              :set-active="setActive"
-              :items-selected="selections.size > 0"
-              :selected="(row) => selectedRow?.name === row.name"
-              :hovered="(row) => hoveredRow === row.name"
-              @mouseenter="(row) => (hoveredRow = row.name)"
-              @mouseleave="() => (hoveredRow = null)"
-            />
+            <CustomListRow :rows="group.rows" :context-menu="contextMenu" />
           </ListGroupRows>
         </div>
-        <div v-else>
-          <CustomListRow
-            :rows="formattedRows"
-            :items-selected="selections.size > 0"
-            :context-menu="contextMenu"
-            :set-active="setActive"
-            :selected="(row) => selectedRow?.name === row.name"
-            :hovered="(row) => hoveredRow === row.name"
-            @mouseenter="(row) => (hoveredRow = row.name)"
-            @mouseleave="hoveredRow = null"
-          />
+        <div v-else="formattedRows.length">
+          <CustomListRow :rows="formattedRows" :context-menu="contextMenu" />
         </div>
       </div>
+      <p class="hidden text-center w-[20%] left-[40%] top-[50%] z-10 font-bold">
+        Drop to upload
+      </p>
     </template>
   </FrappeListView>
-  <EmptyEntityContextMenu
+  <ContextMenu
     v-if="rowEvent && selectedRow"
     :key="selectedRow.name"
     v-on-outside-click="() => (rowEvent = false)"
@@ -70,40 +92,49 @@
 import {
   ListHeader,
   ListGroupRows,
+  TextInput,
   ListGroupHeader,
+  ListEmptyState,
+  ListHeaderItem,
+  LoadingIndicator,
   ListView as FrappeListView,
   Avatar,
 } from "frappe-ui"
-import Loader from "@/components/Loader.vue"
 import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
-import { computed, h, ref } from "vue"
-import EmptyEntityContextMenu from "@/components/EmptyEntityContextMenu.vue"
+import { computed, h, ref, watch } from "vue"
+import ContextMenu from "@/components/ContextMenu.vue"
 import Folder from "./MimeIcons/Folder.vue"
-import { allUsers } from "../resources/permissions"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
+import { formatDate } from "@/utils/format"
 
 const store = useStore()
 const route = useRoute()
-const hoveredRow = ref(null)
 const props = defineProps({
   folderContents: Object,
   actionItems: Array,
-  entities: Array,
+  userData: Object,
 })
-const selections = defineModel()
+
+const selections = defineModel(new Set())
 const selectedRow = ref(null)
+
 const rowEvent = ref(null)
-const userData = computed(() =>
-  allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
-)
+
+const showSearch = ref(false)
+const searchInput = ref(null)
+const filter = ref("")
+watch(showSearch, (v) => {
+  if (v) searchInput.value[0].el.focus()
+})
+
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
   if (Array.isArray(props.folderContents))
-    return props.folderContents.filter((k) => k)
+    return props.folderContents.filter((k) => k.title.includes(filter.value))
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,
@@ -121,60 +152,71 @@ const selectedColumns = [
       title.lastIndexOf(".") === -1 || is_group || document
         ? title
         : title.slice(0, title.lastIndexOf(".")),
+    getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
     prefix: ({ row }) =>
-      row.is_group
-        ? h(Folder)
-        : h("img", { src: getIconUrl(formatMimeType(row.mime_type)) }),
-    width: 2,
+      h("img", {
+        src: getIconUrl(
+          row.is_group ? "folder" : formatMimeType(row.mime_type)
+        ),
+        width: 16,
+      }),
+    width: "50%",
   },
   {
     label: "Owner",
     key: "",
     getLabel: ({ row }) =>
-      row.owner === store.state.auth.userId
+      row.owner === store.state.user.id
         ? "You"
-        : userData.value[row.owner]?.full_name || row.owner,
+        : props.userData[row.owner]?.full_name || row.owner,
     prefix: ({ row }) => {
       return h(Avatar, {
         shape: "circle",
-        image: userData.value[row.owner]?.user_image,
+        image: props.userData[row.owner]?.user_image,
         label:
-          userData.value[row.owner]?.full_name ||
-          userData.value[row.owner]?.email,
+          props.userData[row.owner]?.full_name ||
+          props.userData[row.owner]?.email,
         size: "sm",
       })
     },
+    width: "15%",
   },
   {
     label: "Last Modified",
     getLabel: ({ row }) => row.relativeModified,
+    getTooltip: (row) => formatDate(row.modified),
     key: "modified",
     isEnabled: (n) => n !== "Recents",
+    width: "15%",
   },
   {
     label: "Last Accessed",
     getLabel: ({ row }) => row.relativeAccessed,
+    getTooltip: (row) => formatDate(row.accessed),
     key: "modified",
     isEnabled: (n) => n === "Recents",
+    width: "15%",
   },
   {
     label: "Size",
     key: "",
-    getLabel: ({ row }) => row.file_size_pretty, // || "<em>empty</em>",
+    getLabel: ({ row }) =>
+      row.is_group
+        ? row.children
+          ? row.children + " item" + (row.children === 1 ? "" : "s")
+          : "empty"
+        : row.file_size_pretty,
+    width: "10%",
   },
-  { label: "", key: "options", align: "right", width: "10px" },
+  { label: "", key: "options", align: "right", width: "5%" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entity) => {
-  if (entity.name === store.state.activeEntity?.name) {
-    selectedRow.value = null
-    store.commit("setActiveEntity", null)
-  } else {
-    selectedRow.value = entity
-    store.commit("setActiveEntity", entity)
-  }
+  selectedRow.value =
+    !entity || entity.name !== store.state.activeEntity?.name ? entity : null
 }
 
+watch(selectedRow, (k) => store.commit("setActiveEntity", k))
 const dropdownActionItems = (row) => {
   if (!row) return []
   return props.actionItems
@@ -191,10 +233,31 @@ const dropdownActionItems = (row) => {
 
 const contextMenu = (event, row) => {
   if (selections.value.size > 0) return
+  // Ctrl + click triggers context menu on Mac
   if (event.ctrlKey) openEntity(route.params.team, row, true)
-  selectedRow.value = row
   rowEvent.value = event
+  selectedRow.value = row
   event.stopPropagation()
   event.preventDefault()
 }
+
+const handleSelections = (sels) => {
+  selections.value = sels
+  selectedRow.value = null
+  store.commit("setActiveEntity", null)
+}
 </script>
+<style>
+.dz-drag-hover #drop-area {
+  opacity: 0.5;
+  border: black 2px dotted;
+  box-sizing: content-box;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dz-drag-hover #drop-area + p {
+  display: block;
+  position: absolute;
+}
+</style>

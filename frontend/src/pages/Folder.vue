@@ -10,22 +10,20 @@
 <script setup>
 import Folder from "../components/EspressoIcons/Folder.vue"
 import GenericPage from "@/components/GenericPage.vue"
-import { inject, onMounted, onBeforeUnmount } from "vue"
+import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
-import { formatDate } from "@/utils/format"
 import { COMMON_OPTIONS } from "@/resources/files"
-import { setBreadCrumbs, prettyData } from "@/utils/files"
+import { setBreadCrumbs, prettyData, setCache } from "@/utils/files"
+import router from "@/router"
 
 const store = useStore()
 const realtime = inject("realtime")
+const emitter = inject("emitter")
 
 const props = defineProps({
-  entityName: {
-    type: String,
-    required: false,
-    default: "",
-  },
+  entityName: String,
+  team: String,
 })
 
 const getFolderContents = createResource({
@@ -33,11 +31,12 @@ const getFolderContents = createResource({
   url: "drive.api.list.files",
   makeParams: (params) => ({
     entity_name: props.entityName,
-    personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
+    team: props.team,
     ...params,
   }),
   cache: ["folder", props.entityName],
 })
+setCache(getFolderContents, ["folder", props.entityName])
 
 onMounted(() => {
   realtime.doc_subscribe("Drive File", props.entityName)
@@ -53,28 +52,29 @@ onBeforeUnmount(() => {
   store.state.connectedUsers = []
   realtime.doc_close("Drive File", currentFolder.data?.name)
   realtime.doc_unsubscribe("Drive File", currentFolder.data?.name)
-  store.commit("setEntityInfo", [])
 })
 
+const onSuccess = (entity) => {
+  if (router.currentRoute.value.params.entityName !== entity.name) return
+  document.title = "Folder - " + entity.title
+  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
+    emitter.emit("rename")
+  )
+}
+
+const e = computed(() => props.entityName)
 let currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
-  params: { entity_name: props.entityName },
+  makeParams: (e) => ({ entity_name: e }),
   transform(entity) {
-    store.commit("setCurrentFolder", [entity])
-    store.commit("setCurrentFolderID", props.entityName)
-    entity = prettyData([entity])
+    return prettyData([entity])[0]
   },
-  onSuccess(data) {
-    document.title = "Folder - " + data.title
-    data.modified = formatDate(data.modified)
-    data.creation = formatDate(data.creation)
-    setBreadCrumbs(data.breadcrumbs, data.is_private)
+  onSuccess,
+  onError() {
+    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
-  onError(error) {
-    console.log(error)
-  },
-  auto: true,
 })
+watch(e, (v) => currentFolder.fetch(v), { immediate: true })
 
 let userInfo = createResource({
   url: "frappe.desk.form.load.get_user_info_for_viewers",
@@ -91,6 +91,5 @@ let userInfo = createResource({
     })
     store.state.connectedUsers = data
   },
-  auto: false,
 })
 </script>

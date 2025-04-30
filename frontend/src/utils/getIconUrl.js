@@ -1,7 +1,7 @@
 export function getIconUrl(mime_type) {
   return new URL(`/src/assets/images/icons/${mime_type}.svg`, import.meta.url)
 }
-
+// BROKEN
 export async function thumbnail_getIconUrl(mime_type, name, file_ext) {
   if (mime_type === "image" && file_ext !== ".svg") {
     return get_thumbnail_content(name)

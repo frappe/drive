@@ -1,7 +1,12 @@
 <template>
   <h1 class="font-semibold mb-8">Profile</h1>
   <div class="flex justify-start w-full items-center gap-x-4">
-    <Avatar :image="imageURL" size="3xl" :label="fullName" class="w-20 h-20" />
+    <Avatar
+      :image="newImageUrl"
+      size="3xl"
+      :label="fullName"
+      class="w-20 h-20"
+    />
     <div class="flex flex-col">
       <span class="text-xl font-semibold">{{ fullName }}</span>
       <span class="text-base text-gray-700">{{ currentUserEmail }}</span>
@@ -19,7 +24,7 @@
         {
           label: 'Confirm',
           variant: 'solid',
-          onClick: submit,
+          onClick: updateProfile,
         },
       ],
     }"
@@ -48,7 +53,6 @@
               ><template #icon> <X class="stroke-1 h-4" /> </template
             ></Button>
           </div>
-
           <FileUploader
             v-else
             :file-types="'image/png, image/jpeg, image/jpg'"
@@ -59,9 +63,7 @@
               }
             "
           >
-            <template
-              #default="{ file, progress, uploading, openFileSelector }"
-            >
+            <template #default="{ openFileSelector }">
               <Button @click="openFileSelector"> Add Image </Button>
             </template>
           </FileUploader>
@@ -73,158 +75,90 @@
           <Input v-model="newLastName"></Input>
         </div>
       </div>
-      <ErrorMessage
-        v-if="errorMessage"
-        class="text-sm mt-2"
-        :message="errorMessage"
-      />
     </template>
   </Dialog>
   <h1 class="font-semibold mt-12 mb-4">Preferences</h1>
-  <Switch v-model="foldersBefore" label="Group folders before files"></Switch>
+  <Autocomplete
+    :options="teamOptions"
+    v-model="defaultTeam"
+    label="Default Team"
+    class="mb-3"
+  />
   <Switch
     v-model="singleClick"
     label="Single click to open files and folders"
-  ></Switch>
+    class="!px-0 hover:!bg-inherit"
+  />
 </template>
-<script>
-import { Button, Input, Avatar, Dialog, FileUploader, Switch } from "frappe-ui"
+<script setup>
+import {
+  Button,
+  Input,
+  Avatar,
+  Dialog,
+  FileUploader,
+  Switch,
+  Autocomplete,
+  createResource,
+} from "frappe-ui"
 import Link from "../EspressoIcons/Link.vue"
 import { X } from "lucide-vue-next"
+import { useStore } from "vuex"
+import { ref, computed, watch } from "vue"
 import ErrorMessage from "frappe-ui/src/components/ErrorMessage.vue"
+import { getTeams } from "@/resources/files"
+import { settings, setSettings } from "@/resources/permissions"
 
-export default {
-  name: "NoFilesSection",
-  components: {
-    Avatar,
-    Button,
-    Input,
-    Dialog,
-    Link,
-    X,
-    FileUploader,
-    ErrorMessage,
-    Switch,
-  },
-  data() {
-    return {
-      newImageUrl: this.$store.state.user.imageURL,
-      newFirstName: this.$store.state.user.fullName.split(" ")[0],
-      newLastName: this.$store.state.user.fullName.split(" ")[1],
-      editProfileDialog: false,
-      addImageDialog: true,
-      errorMessage: null,
-      routeOptions: [
-        {
-          group: "Routes",
-          hideLabel: true,
-          items: [
-            {
-              icon: "home",
-              label: "Home",
-            },
-            {
-              icon: "clock",
-              label: "Recents",
-            },
-            {
-              icon: "star",
-              label: "Favourites",
-            },
-            {
-              icon: "users",
-              label: "Shared",
-            },
-            {
-              icon: "trash-2",
-              label: "Trash",
-            },
-          ],
-        },
-      ],
-    }
-  },
-  computed: {
-    newFullName() {
-      return this.newFirstName + " " + this.newLastName
-    },
-    isExpanded() {
-      return this.$store.state.IsSidebarExpanded
-    },
-    firstName() {
-      return this.$store.state.user.fullName.split(" ")[0]
-    },
-    lastName() {
-      return this.$store.state.user.fullName.split(" ")[1]
-    },
-    currentUserEmail() {
-      return this.$store.state.auth.user_id
-    },
-    fullName() {
-      return this.$store.state.user.fullName
-    },
-    imageURL() {
-      return this.$store.state.user.imageURL
-    },
-    foldersBefore: {
-      get() {
-        return this.$store.state.foldersBefore
-      },
-      set() {
-        //toggled in mutation
-        this.$store.commit("toggleFoldersBefore")
-      },
-    },
-    singleClick: {
-      get() {
-        return this.$store.state.singleClick
-      },
-      set() {
-        this.$store.commit("toggleSingleClick")
-      },
-    },
-    editorNewTab: {
-      get() {
-        return this.$store.state.editorNewTab
-      },
-      set() {
-        this.$store.commit("toggleEditorNewTab")
-      },
-    },
-  },
-  methods: {
-    submit() {
-      this.$resources.profile.setValue
-        .submit({
-          first_name: this.newFirstName,
-          last_name: this.newLastName,
-          user_image: this.newImageUrl,
-        })
-        .then((data) => {
-          this.$store.state.user.fullName = data.full_name
-          this.$store.state.user.imageURL = data.user_image
-          this.editProfileDialog = false
-        })
-    },
-    validateFile(file) {
-      let extension = file.name.split(".").pop().toLowerCase()
-      if (!["jpg", "jpeg", "png"].includes(extension)) {
-        this.errorMessage = "Not a valid Image file"
-      } else {
-        this.errorMessage = null
-      }
-    },
-  },
-  resources: {
-    profile() {
-      return {
-        type: "document",
-        doctype: "User",
-        name: this.currentUserEmail,
-        auto: true,
-        realtime: true,
-      }
-    },
-  },
+const store = useStore()
+const newImageUrl = ref(store.state.user.imageURL)
+const newLastName = ref(store.state.user.fullName.split(" ")[1])
+const newFirstName = ref(store.state.user.fullName.split(" ")[0])
+const fullName = computed(() => store.state.user.fullName)
+const newFullName = computed(() => this.newFirstName + " " + this.newLastName)
+const editProfileDialog = ref(false)
+
+const teamOptions = computed(() =>
+  Object.keys(getTeams.data).map((k) => ({
+    value: k,
+    label: getTeams.data[k].title,
+  }))
+)
+const singleClick = ref(Boolean(settings.data.message.single_click))
+watch(singleClick, (v) => {
+  setSettings.submit({ updates: { single_click: v } })
+})
+const defaultTeam = ref(settings.data.message.default_team)
+watch(defaultTeam, (v) => {
+  setSettings.submit({ updates: { default_team: v.value } })
+})
+// const profile = createResource({
+//   type: "document",
+//   doctype: "User",
+//   name: store.state.user.id,
+//   auto: true,
+//   realtime: true,
+// })
+
+// const updateProfile = () => {
+//   profile.setValue
+//     .submit({
+//       first_name: newFirstName.value,
+//       last_name: newLastName.value,
+//       user_image: newImageUrl.value,
+//     })
+//     .then((data) => {
+//       store.state.user.fullName = data.full_name
+//       store.state.user.imageURL = data.user_image
+//       editProfileDialog.value = false
+//     })
+// }
+
+const validateFile = (file) => {
+  let extension = file.name.split(".").pop().toLowerCase()
+  if (!["jpg", "jpeg", "png"].includes(extension)) {
+    this.errorMessage = "Not a valid Image file"
+  } else {
+    this.errorMessage = null
+  }
 }
 </script>

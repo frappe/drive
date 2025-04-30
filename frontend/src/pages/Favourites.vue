@@ -1,9 +1,9 @@
 <template>
   <GenericPage
-    :getEntities="getFavourites"
+    :get-entities="getFavourites"
     :icon="Star"
-    :primaryMessage="'No Favourite Files'"
-    :secondaryMessage="''"
+    primary-message="No favourites yet"
+    secondary-message="Click on the star icon to favourite an item."
   />
 </template>
 

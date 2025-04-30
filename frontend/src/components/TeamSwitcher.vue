@@ -9,12 +9,12 @@
         @click.prevent="togglePopover()"
       >
         <div class="flex gap-2">
-          <FeatherIcon name="user" class="size-4 text-gray-600" />
+          <FeatherIcon name="user" class="size-4 text-ink-gray-6" />
           <span class="whitespace-nowrap"
-            >{{ $route.params.team ? "Change" : "Go to" }} Team</span
-          >
+            >{{ $route.params.team ? "Change Team" : "Go to" }}
+          </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-gray-600" />
+        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-6" />
       </button>
     </template>
     <template #body>

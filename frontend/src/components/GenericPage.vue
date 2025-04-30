@@ -1,56 +1,55 @@
 <template>
-  <div
-    class="h-full w-full px-2 overflow-y-auto flex flex-col"
-    @contextmenu="handleContextMenu"
-  >
-    <DriveToolBar
-      :column-headers="$route.name === 'Recents' ? null : columnHeaders"
-      :selections
-      :entities="rows"
-      :action-items="actionItems"
-    />
-
-    <!-- This sucks, redo it -->
-    <FolderContentsError
-      v-if="verify?.error || getEntities.error"
-      :error="verify?.error || getEntities.error"
-    />
-    <NoFilesSection
-      v-else-if="rows?.length === 0"
-      :icon="icon"
-      :primary-message="primaryMessage"
-      :secondary-message="
-        activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
-      "
-    />
+  <Navbar
+    v-if="!verify?.error && !getEntities.error"
+    :column-headers="$route.name === 'Recents' ? null : columnHeaders"
+    :selections="selectedEntitities"
+    :action-items="actionItems"
+  />
+  <FolderContentsError
+    v-if="verify?.error || getEntities.error"
+    :error="verify?.error || getEntities.error"
+  />
+  <NoFilesSection
+    v-else-if="rows?.length === 0"
+    :icon="icon"
+    :primary-message="activeFilters.length ? 'Nothing found.' : primaryMessage"
+    :secondary-message="
+      activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
+    "
+  />
+  <template v-else>
     <ListView
-      v-else
-      ref="view"
+      v-if="$store.state.view === 'list'"
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
-      :entities="rows"
+      :user-data="userData"
     />
-    <Dialogs
-      :selections
-      :active-entity="activeEntity"
-      :get-entities="getEntities"
-      :handle-list-mutate="handleListMutate"
-      v-model="dialog"
+    <GridView
+      v-else
+      v-model="selections"
+      :folder-contents="rows"
+      :action-items="actionItems"
+      :user-data="userData"
     />
-    <FileUploader
-      v-if="$store.state.auth.user_id"
-      @success="getEntities.fetch()"
-    />
-  </div>
+    <InfoPopup :entities="infoEntities" />
+  </template>
+
+  <Dialogs
+    v-model="dialog"
+    :selections="activeEntity ? [activeEntity] : selectedEntitities"
+    :get-entities="getEntities"
+  />
+  <FileUploader v-if="$store.state.user.id" @success="getEntities.fetch()" />
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"
 import GridView from "@/components/GridView.vue"
-import DriveToolBar from "@/components/DriveToolBar.vue"
+import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
 import FolderContentsError from "@/components/FolderContentsError.vue"
+import InfoPopup from "@/components/InfoPopup.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
@@ -86,32 +85,52 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref(null)
-const link = ref(null)
+const infoEntities = ref([])
 const team = route.params.team
 const sortOrder = computed(() => store.state.sortOrder)
 const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
-const rows = computed(() =>
-  props.getEntities.data?.filter?.(
-    (k) => k.is_active != 0 && k.title[0] !== "."
-  )
+const rows = computed(() => props.getEntities.data)
+
+// We do client side sorting for immediate UI updates
+// Can't check for entity data updates as we are updating - so check for loading
+watch(
+  [sortOrder, () => props.getEntities.loading],
+  ([val, loading]) => {
+    if (!props.getEntities.data || loading) return
+    const field = val.field
+    const order = val.ascending ? 1 : -1
+    const sorted = props.getEntities.data.toSorted((a, b) => {
+      return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
+    })
+    props.getEntities.setData(sorted)
+    store.commit("setCurrentFolder", {
+      name: sorted?.parent_entity || "",
+      entities: sorted.filter?.((k) => k.title[0] !== "."),
+    })
+  },
+  { immediate: true }
 )
+
 const selections = ref(new Set())
-const fetchEntitites = () => {
-  props.getEntities.fetch({
-    team,
-    order_by: sortOrder.value.ascending
-      ? sortOrder.value.field
-      : sortOrder.value.field + " desc",
-  })
-}
-watch(sortOrder, fetchEntitites, {
-  immediate: route.name !== "Shared" && !props.verify,
-})
-const verifyAccess = computed(() => props.verify?.data)
-watch(verifyAccess, (data) => {
-  if (data) fetchEntitites()
-})
+const selectedEntitities = computed(
+  () =>
+    props.getEntities.data?.filter?.(({ name }) =>
+      selections.value.has(name)
+    ) || []
+)
+
+const verifyAccess = computed(() => props.verify?.data || !props.verify)
+watch(
+  verifyAccess,
+  async (data) => {
+    if (data)
+      await props.getEntities.fetch({
+        team,
+      })
+  },
+  { immediate: true }
+)
 
 watch(activeFilters.value, async (val) => {
   props.getEntities.fetch({
@@ -120,13 +139,6 @@ watch(activeFilters.value, async (val) => {
   })
 })
 
-const clickEvent = ref(null)
-const defaultContextTriggered = ref(false)
-function handleContextMenu(event) {
-  clickEvent.value = event
-  defaultContextTriggered.value = true
-  event.preventDefault()
-}
 allUsers.fetch({ team })
 
 // Action Items
@@ -217,27 +229,25 @@ const actionItems = computed(() => {
       {
         label: "Show Info",
         icon: Info,
-        onClick: () => store.commit("setShowInfo", true),
+        onClick: () => infoEntities.value.push(store.state.activeEntity),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
         label: "Hide Info",
         icon: Info,
-        onClick: () => store.commit("setShowInfo", false),
+        onClick: () => (dialog.value = "info"),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
         label: "Favourite",
         icon: "star",
         onClick: (entities) => {
-          entities = entities.map((e) => ({
-            ...e,
-            is_favourite: true,
-          }))
+          entities.forEach((e) => (e.is_favourite = true))
+          // Hack to cache
+          props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
-          entities.map((data) => handleListMutate({ data }))
         },
-        isEnabled: (e, multi) => !e.is_favourite,
+        isEnabled: (e) => !e.is_favourite,
         important: true,
         multi: true,
       },
@@ -246,12 +256,9 @@ const actionItems = computed(() => {
         icon: "star",
         class: "stroke-amber-500 fill-amber-500",
         onClick: (entities) => {
-          entities = entities.map((e) => ({
-            ...e,
-            is_favourite: false,
-          }))
+          entities.forEach((e) => (e.is_favourite = false))
+          props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
-          entities.map((data) => handleListMutate({ data }))
         },
         isEnabled: (e) => e.is_favourite,
         important: true,
@@ -264,9 +271,8 @@ const actionItems = computed(() => {
           clearRecent.submit({
             entities,
           })
-          entities.map((data) => handleListMutate({ data }))
         },
-        isEnabled: (e) => e.accessed,
+        isEnabled: () => route.name == "Recents",
         important: true,
         multi: true,
       },
@@ -291,17 +297,6 @@ const actionItems = computed(() => {
   }
 })
 
-function handleListMutate({ data: newData, new: _new, delete: _delete, all }) {
-  props.getEntities.setData((data) => {
-    if (_new) data.push(newData)
-    const index = data.findIndex((o) => o.name === newData.name)
-    if (_delete && all) data.splice(0, data.length)
-    else if (_delete && !all) data.splice(index, 1)
-    else data.splice(index, 1, { ...data[index], ...newData })
-    return data
-  })
-}
-
 const columnHeaders = [
   {
     label: "Name",
@@ -324,13 +319,15 @@ const columnHeaders = [
     field: "mime_type",
   },
 ]
+const userData = computed(() =>
+  allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
+)
 
 async function newLink() {
   if (!document.hasFocus()) return
-  const text = await navigator.clipboard.readText()
-  if (localStorage.getItem("prevClip") === text) return
-
   try {
+    const text = await navigator.clipboard.readText()
+    if (localStorage.getItem("prevClip") === text) return
     new URL(text)
     localStorage.setItem("prevClip", text)
     toast({
@@ -341,7 +338,6 @@ async function newLink() {
           label: "Add",
           action: () => {
             dialog.value = "l"
-            link.value = text
           },
         },
       ],

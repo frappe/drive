@@ -16,88 +16,28 @@
           >
             <div class="mb-7.5 text-center">
               <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
-                <template v-if="domainTeams.length">Welcome to Drive</template>
-                <template v-else>{{
+                {{
                   isLogin
                     ? "Log in to Drive"
                     : params.get("t")
                     ? "Join " + params.get("t")
                     : "Create a new account"
-                }}</template>
+                }}
               </p>
               <p
                 class="break-words text-base font-normal leading-[21px] text-gray-700"
               >
-                <template v-if="domainTeams.length"
-                  >We're glad you're here.</template
-                >
-                <template v-else>
-                  {{
-                    !isLogin
-                      ? params.get("t")
-                        ? "Powered by Frappe Drive."
-                        : "5 GB free - forever."
-                      : "Welcome back!"
-                  }}
-                </template>
+                {{
+                  !isLogin
+                    ? params.get("t")
+                      ? "Powered by Frappe Drive."
+                      : "Get 5 GB for free, no credit card required."
+                    : "Welcome back!"
+                }}
               </p>
             </div>
-            <template v-if="domainTeams.length">
-              <div class="flex flex-col ms-3 text-md gap-2">
-                <p>
-                  We noticed that you are on a
-                  <strong>corporate domain</strong>.
-                </p>
-                <p v-if="domainTeams[0].title">
-                  Do you want to create a personal account, or request to join
-                  the team (<strong>{{ domainTeams[0].title }}</strong
-                  >) associated with your domain?
-                </p>
-                <p v-else>
-                  Do you want to create a personal account, or create a team
-                  with your domain?
-                </p>
-                <FormControl
-                  v-if="typeof team_name === 'string'"
-                  label="Team Name"
-                  class="py-2"
-                  v-model="team_name"
-                  type="text"
-                  required
-                />
-                <div class="flex justify-between mt-3">
-                  <Button
-                    variant="subtle"
-                    class="w-100"
-                    @click="createPersonalTeam.submit()"
-                    >Create Personal</Button
-                  >
-                  <Button
-                    v-if="domainTeams[0].title"
-                    variant="solid"
-                    @click="
-                      requestInvite.submit({
-                        team: domainTeams[0].name,
-                      }),
-                        $router.go('/drive/teams')
-                    "
-                  >
-                    Join {{ domainTeams[0].title }}
-                  </Button>
-                  <Button
-                    v-else
-                    @click="
-                      typeof team_name === 'string'
-                        ? createPersonalTeam.submit({ team_name, email })
-                        : (team_name = '')
-                    "
-                  >
-                    Create Team
-                  </Button>
-                </div>
-              </div>
-            </template>
-            <form v-else class="flex flex-col">
+
+            <form class="flex flex-col">
               <FormControl
                 label="Email"
                 v-model="email"
@@ -141,7 +81,7 @@
                 <!-- Buttons -->
                 <div class="mt-8 flex flex-col items-center gap-3">
                   <Button
-                    :loading="signup?.loading"
+                    :loading="signup.loading"
                     :disabled="!first_name.length || !terms_accepted"
                     variant="solid"
                     class="w-full font-medium"
@@ -207,15 +147,10 @@
                   class="mt-4"
                   :loading="sendOTP.loading"
                   variant="solid"
-                  @click="sendOTP.submit({ email })"
+                  @click="sendOTP.submit({ email, login: isLogin })"
                 >
                   {{ isLogin ? "Login" : "Join" }}
                 </Button>
-                <p class="text-center text-sm my-3">
-                  If this doesn't work, use
-                  <a class="underline" href="/login">the old way</a>.
-                </p>
-
                 <div class="mt-6 border-t text-center">
                   <div class="-translate-y-1/2 transform">
                     <span
@@ -235,14 +170,15 @@
                   <div class="flex items-center">
                     <div v-html="provider.icon"></div>
                     <span class="ml-2"
-                      >Continue with {{ provider.provider_name }}</span
+                      >{{ isLogin ? "Continue" : "Join" }} with
+                      {{ provider.provider_name }}</span
                     >
                   </div>
                 </Button>
               </template>
             </form>
 
-            <div class="mt-6 text-center" v-if="!domainTeams.length">
+            <div class="mt-6 text-center">
               <router-link
                 class="text-center text-base font-medium text-gray-900 hover:text-gray-700"
                 :to="{
@@ -266,23 +202,21 @@
 
 <script setup>
 import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
-import { ref, onMounted, computed, watch } from "vue"
+import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
-import { useRoute } from "vue-router"
-const route = useRoute()
+import { useRoute, useRouter } from "vue-router"
+import { settings } from "../resources/permissions"
 
+const route = useRoute()
+const router = useRouter()
 const params = new URLSearchParams(new URL(window.location.href).search)
 const email = ref(params.get("e") || "")
 const first_name = ref("")
 const last_name = ref("")
-const team_name = ref(null)
-
 const terms_accepted = ref(false)
-
 const otpRequested = ref(false)
 const otpValidated = ref(false)
-const domainTeams = ref([])
 const otp = ref("")
 const otpResendCountdown = ref(0)
 const account_request = ref(params.get("r") || "")
@@ -313,11 +247,11 @@ const signup = createResource({
       throw new Error("Please accept the terms of service")
     }
   },
-  onSuccess(data) {
+  onSuccess() {
     otpValidated.value = true
-    if (data.location) window.location.replace(data.location)
-    if ((data.message || data)?.length) domainTeams.value = data.message || data
-    else domainTeams.value = [{ name: null, title: null }]
+    router.push({
+      name: "Setup",
+    })
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
@@ -349,29 +283,20 @@ const sendOTP = createResource({
     toast("Verification code sent to your email")
   },
   onError(err) {
-    console.log(err)
-    toast("Failed to send verification code")
+    if (JSON.stringify(err).includes("not found"))
+      toast("Please sign up first!")
+    else toast("Failed to send verification code")
   },
 })
+
 const verifyOTP = createResource({
   url: "drive.api.product.verify_otp",
   onSuccess: (data) => {
     otpValidated.value = true
+    settings.fetch()
     if (data.location) {
       window.location.replace(data.location)
     }
   },
-})
-
-const createPersonalTeam = createResource({
-  url: "drive.api.product.create_personal_team",
-  onSuccess: (data) => {
-    if (data) window.location.replace("/t/" + data)
-    window.reload()
-  },
-})
-
-const requestInvite = createResource({
-  url: "drive.api.product.request_invite",
 })
 </script>

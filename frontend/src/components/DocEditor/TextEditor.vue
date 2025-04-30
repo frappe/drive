@@ -92,14 +92,13 @@ import { computed, normalizeClass } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebrtcProvider } from "y-webrtc"
 import * as Y from "yjs"
-import { uploadDriveEntity } from "../../utils/chunkFileUpload"
-import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
+import { uploadDriveEntity } from "@/utils/chunkFileUpload"
+import { detectMarkdown, markdownToHTML } from "@/utils/markdown"
 import DocMenuAndInfoBar from "./components/DocMenuAndInfoBar.vue"
 import configureMention from "./extensions/mention/mention"
 import Menu from "./components/Menu.vue"
 import { Table } from "./extensions/table"
 import TableBubbleMenu from "./components/TableBubbleMenu.vue"
-import { Comment } from "./extensions/comment"
 import { PageBreak } from "./extensions/Pagebreak"
 import { Highlight } from "./extensions/backgroundColor"
 import { CharacterCount } from "./extensions/character-count"
@@ -257,8 +256,10 @@ export default {
           "Link"
         )
       }
-      if (this.entity.owner == "You" || this.entity.comment) {
+      if (this.entity.owner == "You") {
         buttons.push("Separator", "NewAnnotation")
+      } else if (this.entity.comment) {
+        buttons.push("NewAnnotation")
       }
       return buttons.map(createEditorButton)
     },
@@ -920,7 +921,7 @@ export default {
       )
         return
       if (this.implicitTitle.length) {
-        this.$store.state.entityInfo[0].title = this.implicitTitle
+        this.$store.state.activeEntity.title = this.implicitTitle
         this.$resources.rename.submit({
           entity_name: this.entityName,
           new_title: this.implicitTitle,

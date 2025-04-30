@@ -116,7 +116,7 @@
                   }}</span>
                 </div>
                 <span
-                  v-if="user.user == $store.state.auth.user_id"
+                  v-if="user.user == $store.state.user.id"
                   class="ml-auto flex items-center gap-1 text-gray-600"
                 >
                   <em>You</em>
@@ -169,8 +169,7 @@
                 v-model="generalAccess.access"
                 :options="[
                   { label: 'Restricted', value: 'restricted' },
-                  // BROKEN: this is actually public underneath.
-                  { label: 'Team', value: 'public' },
+                  { label: 'Public', value: 'public' },
                 ]"
                 :hideSearch="true"
                 @update:model-value="
@@ -270,13 +269,10 @@ import GeneralAccess from "@/components/GeneralAccess.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import { getUsersWithAccess, updateAccess } from "@/resources/permissions"
-import { useStore } from "vuex"
-const props = defineProps({ modelValue: String, entityName: String })
+const props = defineProps({ modelValue: String, entity: String })
 const emit = defineEmits(["update:modelValue", "success"])
-const store = useStore()
-getUsersWithAccess.fetch({ entity_name: props.entityName })
+getUsersWithAccess.fetch({ entity: props.entity.name })
 
-const entity = computed(() => store.state.activeEntity)
 const showSettings = ref(false)
 const invalidAfter = ref()
 const generalAccess = ref({
@@ -287,18 +283,24 @@ const getPublicAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({ ...params, user: "Guest" }),
   onSuccess: (data) => {
-    // if (data[read] === 0) generalAccess.
+    if (!data) return
+    const res = Object.keys(data)
+      .filter((k) => ACCESS_LEVELS.includes(k) && data[k])
+      .map((k) => ({ value: k, label: k[0].toUpperCase() + k.slice(1) }))
+    if (!res.length) return
+    generalAccess.value.access = { value: "public", label: "Public" }
+    generalAccess.value.type = res
   },
 })
-getPublicAccess.fetch({ entity: props.entityName })
-
-const share = ref({
+getPublicAccess.fetch({ entity: props.entity.name })
+const EMPTY_SHARE = {
   name: "",
   access: [
     { value: "read", label: "Read" },
     { value: "comment", label: "Comment" },
   ],
-})
+}
+const share = ref(EMPTY_SHARE)
 const openDialog = computed({
   get: () => {
     return props.modelValue === "s"
@@ -317,11 +319,11 @@ const accessMessage = computed(() => {
       ? modifiers[0]
       : modifiers.slice(0, -1).join(", ") +
         ` and ${modifiers[modifiers.length - 1]}`) + " this file."
-  return "Anyone on this team can " + modifier
+  return "Anyone on this planet can " + modifier
 })
 function addShare() {
   let r = {
-    entity_name: entity.value.name,
+    entity_name: props.entity.name,
     user: share.value.name,
     ...share.value.access.reduce((acc, { value }) => {
       acc[value] = 1
@@ -330,10 +332,11 @@ function addShare() {
   }
   updateAccess.submit(r)
   getUsersWithAccess.data.push(r)
-  Object.assign(share, { name: "", access: [] }), getLink(entity)
+  share.value.name = ""
+  share.value.access = EMPTY_SHARE.access
 }
 const ACCESS_LEVELS = ["read", "comment", "share", "write"]
 const filteredAccess = computed(() =>
-  ACCESS_LEVELS.filter((l) => entity.value[l])
+  ACCESS_LEVELS.filter((l) => props.entity[l])
 )
 </script>

@@ -48,7 +48,7 @@ const diffContent = ref()
 const store = useStore()
 const currentEditor = inject("editor")
 
-const entity = computed(() => store.state.entityInfo[0])
+const entity = computed(() => store.state.activeEntity)
 
 const props = defineProps({
   yjsUpdate: {

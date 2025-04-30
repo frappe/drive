@@ -11,11 +11,13 @@ export function getLinkStem(entity) {
   }/${entity.name}`
 }
 
-export function getLink(entity, copy = true) {
+export function getLink(entity, copy = true, withDomain = true) {
   const team = router.currentRoute.value.params.team
   let link = entity.is_link
     ? entity.path
-    : `${window.location.origin}/drive/t/${team}/${getLinkStem(entity)}`
+    : `${
+        withDomain ? window.location.origin + "/drive/" : ""
+      }/t/${team}/${getLinkStem(entity)}`
 
   if (!copy) return link
   try {

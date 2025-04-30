@@ -762,6 +762,15 @@
               Export PDF
             </template>
           </Button>
+          <Button
+            class="w-full justify-start"
+            @click="() => $resources.exportMedia.submit()"
+          >
+            <template #prefix>
+              <LucideImage class="text-gray-700 w-4 stroke-[1.5]" />
+              Export Media
+            </template>
+          </Button>
           <!-- <Button class="w-full justify-start">
             <template #prefix>
               <FileDown class="text-gray-700 w-4" />
@@ -844,6 +853,7 @@ import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
 import Info from "@/components/EspressoIcons/Info.vue"
 import Comment from "@/components/EspressoIcons/Comment.vue"
+import { entitiesDownload } from "@/utils/download"
 import {
   Plus,
   Minus,
@@ -888,7 +898,7 @@ import { useTimeAgo } from "@vueuse/core"
 import * as Y from "yjs"
 import { TiptapTransformer } from "@hocuspocus/transformer"
 import { fromUint8Array, toUint8Array } from "js-base64"
-import { formatDate } from "../../../utils/format"
+import { formatDate } from "@/utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
 import Clock from "../../EspressoIcons/Clock.vue"
 import ActivityTree from "../../ActivityTree.vue"
@@ -1013,21 +1023,20 @@ export default {
           icon: markRaw(Comment),
           write: false,
           disabled:
-            this.$store.state.entityInfo[0].comment === 0 ||
-            this.$store.state.entityInfo[0].owner !==
-              this.$store.state.auth.userId,
+            this.$store.state.activeEntity.comment === 0 ||
+            this.$store.state.activeEntity.owner !== this.$store.state.user.id,
         },
         {
           name: "Versions",
           icon: markRaw(FileClock),
           write: false,
-          disabled: this.$store.state.entityInfo[0].write === 0,
+          disabled: this.$store.state.activeEntity.write === 0,
         },
         {
           name: "Clock",
           icon: markRaw(Clock),
           write: false,
-          disabled: this.$store.state.auth.user_id === "Guest",
+          disabled: this.$store.state.user.id === "Guest",
         },
       ].filter((item) => !item.disabled),
       newComment: "",
@@ -1043,7 +1052,7 @@ export default {
   },
   computed: {
     userId() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
     fullName() {
       return this.$store.state.user.fullName
@@ -1055,7 +1064,7 @@ export default {
       return this.$store.state.user.imageURL
     },
     entity() {
-      return this.$store.state.entityInfo[0]
+      return this.$store.state.activeEntity
     },
     unaddedTags() {
       return this.$resources.userTags.data.filter(
@@ -1316,6 +1325,18 @@ export default {
     },
   },
   resources: {
+    exportMedia() {
+      return {
+        url: "drive.api.files.export_media",
+        params: {
+          entity_name: this.entity.name,
+        },
+        auto: false,
+        onSuccess(data) {
+          entitiesDownload(null, data)
+        },
+      }
+    },
     storeVersion() {
       return {
         url: "drive.api.files.create_doc_version",
