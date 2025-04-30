@@ -28,7 +28,7 @@
     <GridView
       v-else
       v-model="selections"
-      :folder-contents="rows && grouper(rows)"
+      :folder-contents="rows"
       :action-items="actionItems"
       :user-data="userData"
     />

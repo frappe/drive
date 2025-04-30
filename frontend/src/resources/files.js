@@ -138,6 +138,7 @@ export const clearRecent = createResource({
   url: "drive.api.files.remove_recents",
   makeParams: (data) => {
     if (!data) {
+      getRecents.setData([])
       return { clear_all: true }
     }
     const entity_names = data.entities.map(({ name }) => name)
@@ -156,12 +157,13 @@ export const clearRecent = createResource({
 
 export const clearTrash = createResource({
   url: "drive.api.files.delete_entities",
-  makeParams: (data) =>
-    data
-      ? {
-          entity_names: data.entities.map((e) => e.name),
-        }
-      : { clear_all: true },
+  makeParams: (data) => {
+    if (!data) {
+      getTrash.setData([])
+      return { clear_all: true }
+    }
+    return { entity_names: data.entities.map((e) => e.name) }
+  },
   onSuccess: () =>
     toast(
       `Permanently deleted  ${clearRecent.params.entities} file${

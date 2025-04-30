@@ -57,13 +57,13 @@ export function formatMimeType(mimeType, lower = true) {
         icon = "Spreadsheet"
         break
       case "vnd.apple.numbers":
-        icon = "spreadsheet"
+        icon = "Spreadsheet"
         break
       case "vnd.openxmlformats-officedocument.presentationml.presentation":
         icon = "Presentation"
         break
       case "vnd.apple.keynote":
-        icon = "presentation"
+        icon = "Presentation"
         break
       case "vnd.openxmlformats-officedocument.wordprocessingml.document":
         icon = "Word"
