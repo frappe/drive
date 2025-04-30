@@ -11,7 +11,7 @@ dependencies = [
     "Pillow>=10.0.0,<11.0.0",
     "opencv-python-headless>=4.10.0.84",
     "python-magic==0.4.27",
-    "mimemapper==0.3.0",
+    "mimemapper==0.4.0",
     "boto3==1.37.31",
 ]
 
