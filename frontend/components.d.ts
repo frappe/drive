@@ -115,6 +115,7 @@ declare module 'vue' {
     LucideOut: typeof import('~icons/lucide/out')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']
     LucideSearchvElse: typeof import('~icons/lucide/searchv-else')['default']
+    LucideTag: typeof import('~icons/lucide/tag')['default']
     LucideTrash: typeof import('~icons/lucide/trash')['default']
     LucideX: typeof import('~icons/lucide/x')['default']
     Mention: typeof import('./src/components/DocEditor/icons/Mention.vue')['default']

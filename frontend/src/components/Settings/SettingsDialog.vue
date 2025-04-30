@@ -29,18 +29,14 @@
           </div>
         </div>
         <div class="flex flex-1 flex-col px-8 pt-6 overflow-y-auto">
-          <component
-            :is="activeTab.component"
-            v-if="activeTab"
-            @close="$emit('update:modelValue', false)"
-          />
+          <component :is="activeTab.component" v-if="activeTab" />
         </div>
         <Button
-          class="my-3 mr-4 absolute right-0"
+          class="my-2 mr-2 absolute right-0"
           variant="ghost"
           @click="$emit('update:modelValue', false)"
         >
-          <FeatherIcon name="x" class="stroke-2 ml-auto h-4" />
+          <LucideX class="ml-auto w-4 h-4" />
         </Button>
       </div>
     </template>

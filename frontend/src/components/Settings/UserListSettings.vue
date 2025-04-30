@@ -6,11 +6,7 @@
       variant="solid"
       icon-left="plus"
       class="ml-auto mr-4"
-      @click="
-        () => {
-          showInvite = true
-        }
-      "
+      @click="showInvite = true"
     >
       Invite
     </Button>
