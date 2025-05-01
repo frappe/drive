@@ -14,7 +14,6 @@
 
 > [!Warning]  
 > Frappe Drive is in beta. It is strongly advised to take backups in production use.
->
 
 ## Frappe Drive
 
@@ -45,7 +44,6 @@ Writer — the document editor
 - Manually version your documents to always be able to go back to an older version
 - Automatic versioning to make sure you never lose data
 - Import docx documents into the editor
-
 
 <details>
 <summary>More screenshots</summary>
