@@ -207,12 +207,19 @@ def verify_otp(account_request, otp):
 def get_settings():
     if frappe.session.user == "Guest":
         return {}
-    return frappe.get_cached_doc("Drive Settings", frappe.session.user)
+    try:
+        return frappe.get_cached_doc("Drive Settings", frappe.session.user)
+    except:
+        return {}
 
 
 @frappe.whitelist()
 def set_settings(updates):
-    settings = frappe.get_doc("Drive Settings", frappe.session.user)
+    try:
+        settings = frappe.get_doc("Drive Settings", frappe.session.user)
+    except:
+        settings = frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user})
+        settings.insert()
     if "single_click" in updates:
         settings.single_click = int(updates["single_click"])
     if "default_team" in updates:
