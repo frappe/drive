@@ -19,6 +19,7 @@ add_to_apps_screen = [
         "logo": "/assets/drive/frontend/favicon-310x310.png",
         "title": "Drive",
         "route": "/drive",
+        "has_permission": "drive.api.product.access_app",
     }
 ]
 

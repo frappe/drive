@@ -8,6 +8,10 @@ from drive.api.permissions import is_admin
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
 
+def access_app():
+    return True
+
+
 @frappe.whitelist()
 def get_domain_teams(domain):
     return frappe.db.get_all(
