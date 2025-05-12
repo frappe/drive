@@ -27,7 +27,7 @@ def files(
     recents_only=0,
     tag_list=[],
     file_kinds=[],
-    personal=None,
+    personal=-1,
     folders=0,
     only_parent=1,
 ):
@@ -35,6 +35,7 @@ def files(
     is_active = int(is_active)
     only_parent = int(only_parent)
     folders = int(folders)
+    personal = int(personal)
 
     if not entity_name:
         # If not specified, get home folder
@@ -108,13 +109,18 @@ def files(
     elif not is_active:
         query = query.where(DriveFile.owner == frappe.session.user)
 
-    if personal == 0 or personal == "0":
+    if personal == 0:
         query = query.where(DriveFile.is_private == 0)
-    elif personal == 1 or personal == "1":
+    elif personal == 1:
         query = query.where(DriveFile.is_private == 1)
         # Temporary hack: the correct way would be to check permissions on all children
         if entity_name == home:
             query = query.where(DriveFile.owner == frappe.session.user)
+    elif personal == -1:
+        query = query.where(
+            (DriveFile.is_private == 0)
+            | ((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
+        )
 
     query = query.select(Recents.last_interaction.as_("accessed"))
     if tag_list:
@@ -142,7 +148,7 @@ def files(
         .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
         .groupby(DriveFile.parent_entity)
     )
-    if personal is not None:
+    if personal == -1:
         child_count_query = child_count_query.where(DriveFile.is_private == personal)
 
     children_count = dict(child_count_query.run())
