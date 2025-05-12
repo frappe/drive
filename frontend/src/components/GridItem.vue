@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-3/5 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden bg-gray-50"
+    class="h-3/5 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden"
   >
     <img
       loading="lazy"
@@ -20,23 +20,21 @@
     <div class="mt-1 text-xs text-gray-600">
       <div class="flex items-center justify-start gap-1">
         <img
-          v-if="formattedType !== 'unknown'"
+          v-if="formattedType !== 'Unknown' && !file.is_group"
           loading="lazy"
           class="h-4 w-auto"
-          :src="
-            getIconUrl(file.is_group ? 'folder' : formattedType.toLowerCase())
-          "
+          :src="getIconUrl(formattedType.toLowerCase()) || '/drive'"
           :draggable="false"
         />
         <p class="truncate">
           {{ file.is_group ? childrenSentence + "∙" : "" }}
-          {{ formattedType !== "unknown" ? formattedType + "∙" : "" }}
+          {{ formattedType !== "Unknown" ? formattedType + "∙" : "" }}
           {{ file.relativeModified }}
         </p>
       </div>
-      <p class="mt-1">
+      <!-- <p class="mt-1">
         {{ file.file_size_pretty }}
-      </p>
+      </p> -->
     </div>
   </div>
 </template>

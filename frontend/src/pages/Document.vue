@@ -1,11 +1,11 @@
 <template>
+  <Navbar v-if="!document.error" />
   <FolderContentsError v-if="document.error" :error="document.error" />
   <LoadingIndicator
     v-else-if="!document.data && document.loading"
     :error="document.error"
     class="w-10 h-full text-neutral-100 mx-auto"
   />
-  <Navbar />
   <div class="flex w-full overflow-auto">
     <TextEditor
       v-if="contentLoaded"

@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "debug": "vite build --mode=development --base=/assets/drive/frontend/ && yarn copy-html-entry",
