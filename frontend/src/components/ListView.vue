@@ -18,33 +18,7 @@
       },
     }"
   >
-    <ListHeader>
-      <template #default>
-        <ListHeaderItem
-          v-for="column in selectedColumns"
-          :key="column.key"
-          :item="column"
-        >
-          <template v-if="column.key === 'title'" #suffix>
-            <div class="absolute right-0 flex gap-0">
-              <TextInput
-                ref="searchInput"
-                v-model="filter"
-                type="text"
-                class="my-auto scale-[88%]"
-                :class="showSearch ? 'opacity-1' : 'opacity-0'"
-                placeholder="search..."
-              />
-
-              <Button @click=";(showSearch = !showSearch), (filter = '')">
-                <LucideSearch v-if="!showSearch" class="my-auto w-3 h-3" />
-                <LucideX v-else class="my-auto w-3 h-3" />
-              </Button>
-            </div>
-          </template>
-        </ListHeaderItem>
-      </template>
-    </ListHeader>
+    <ListHeader />
     <div
       v-if="!folderContents"
       class="w-full text-center flex items-center justify-center py-10"
@@ -124,24 +98,9 @@ const selectedRow = ref(null)
 
 const rowEvent = ref(null)
 
-const showSearch = ref(false)
-onKeyDown("Escape", () => {
-  if (showSearch.value) {
-    filter.value = ""
-    showSearch.value = false
-  }
-})
-const searchInput = ref(null)
-const filter = ref("")
-watch(showSearch, (v) => {
-  if (v) searchInput.value[0].el.focus()
-})
-
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
-  const search = new RegExp(filter.value, "i")
-  if (Array.isArray(props.folderContents))
-    return props.folderContents.filter((k) => search.test(k.title))
+  if (Array.isArray(props.folderContents)) return props.folderContents
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,
