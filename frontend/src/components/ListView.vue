@@ -14,7 +14,7 @@
       // Should be getLink(row, false, false) - but messes up clicking
       getRowRoute: (row) => '',
       emptyState: {
-        description: 'Nothing found with that search - try something else?',
+        description: 'Nothing found - try something else?',
       },
     }"
   >
@@ -106,10 +106,10 @@ import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref, watch } from "vue"
 import ContextMenu from "@/components/ContextMenu.vue"
-import Folder from "./MimeIcons/Folder.vue"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
+import { onKeyDown } from "@vueuse/core"
 
 const store = useStore()
 const route = useRoute()
@@ -125,6 +125,12 @@ const selectedRow = ref(null)
 const rowEvent = ref(null)
 
 const showSearch = ref(false)
+onKeyDown("Escape", () => {
+  if (showSearch.value) {
+    filter.value = ""
+    showSearch.value = false
+  }
+})
 const searchInput = ref(null)
 const filter = ref("")
 watch(showSearch, (v) => {
@@ -133,8 +139,9 @@ watch(showSearch, (v) => {
 
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
+  const search = new RegExp(filter.value, "i")
   if (Array.isArray(props.folderContents))
-    return props.folderContents.filter((k) => k.title.includes(filter.value))
+    return props.folderContents.filter((k) => search.test(k.title))
   return Object.keys(props.folderContents)
     .map((k) => ({
       group: k,

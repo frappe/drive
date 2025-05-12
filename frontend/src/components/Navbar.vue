@@ -249,7 +249,7 @@
       </div>
     </div>
   </nav>
-  <Dialogs :selections="activeEls" />
+  <!-- <Dialogs :selections="activeEls" /> -->
 </template>
 <script setup>
 import UsersBar from "./UsersBar.vue"

@@ -1,21 +1,9 @@
 <template>
   <Dialog v-model="open" :options="{ title: DialogTitle, size: '2xl' }">
     <template #body-content>
-      <Autocomplete
-        v-if="fetchAllFolders.data"
-        v-model="folderSearch"
-        label="Go to..."
-        :options="
-          fetchAllFolders.data.filter((k) =>
-            currentFolder === ''
-              ? k.label !== 'Home'
-              : k.value !== currentFolder
-          )
-        "
-      ></Autocomplete>
-      <div class="flex items-center justify-between max-h-7 my-4">
+      <div class="flex items-center justify-between max-h-7 mb-4">
         <div class="flex flex-col">
-          <div class="flex items-center my-2 justify-start">
+          <div class="flex items-center my-auto justify-start">
             <p class="text-sm">Moving to:</p>
             <Dropdown
               v-if="dropDownItems.length"
@@ -70,6 +58,7 @@
         <Button
           variant="solid"
           class="ml-auto"
+          size="sm"
           :loading="move.loading"
           @click="
             $emit('success'),
@@ -86,7 +75,19 @@
           Move
         </Button>
       </div>
-
+      <Autocomplete
+        class="mb-2"
+        v-if="fetchAllFolders.data"
+        v-model="folderSearch"
+        placeholder="Search for a folder"
+        :options="
+          fetchAllFolders.data.filter((k) =>
+            currentFolder === ''
+              ? k.label !== 'Home'
+              : k.value !== currentFolder
+          )
+        "
+      ></Autocomplete>
       <Tabs as="div" v-model="tabIndex" :tabs="tabs">
         <template #tab-panel>
           <div class="py-1">
@@ -196,7 +197,7 @@ const open = computed({
     return props.modelValue === "m"
   },
   set(newValue) {
-    emit("update:modelValue", newValue)
+    emit("update:modelValue", newValue || "")
   },
 })
 
@@ -248,7 +249,7 @@ const tabIndex = ref(in_home ? 0 : 1)
 const breadcrumbs = ref([
   { name: "", title: in_home ? "Home" : "Team", is_private: in_home ? 1 : 0 },
 ])
-const folderSearch = ref({})
+const folderSearch = ref(null)
 
 const folderPermissions = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
@@ -300,9 +301,9 @@ watch(
   },
   { immediate: true }
 )
-watch(folderSearch, openEntity)
 
 function openEntity(value) {
+  if (!value) return
   currentFolder.value = value.name || value.value
   folderPermissions.fetch({
     entity_name: currentFolder.value,
@@ -310,7 +311,9 @@ function openEntity(value) {
   folderContents.fetch({
     entity_name: currentFolder.value,
   })
+  folderSearch.value = null
 }
+watch(folderSearch, openEntity)
 
 function closeEntity(name) {
   const index = breadcrumbs.value.findIndex((obj) => obj.name === name)
