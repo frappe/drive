@@ -42,55 +42,60 @@
     >
       <template #prefix><LucideSearch class="w-4 h-4" /></template>
     </TextInput>
-    <div
-      v-if="activeFilters.length"
-      class="flex flex-wrap items-start justify-end gap-1 ml-3"
-    >
-      <div v-for="(item, index) in activeFilters" :key="index">
-        <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
-          <component :is="ICON_TYPES[item]"></component>
-          <span class="text-sm ml-2">{{ item }}</span>
-          <Button variant="minimal" @click="activeFilters.splice(index, 1)">
-            <template #icon>
-              <FeatherIcon class="h-3 w-3" name="x" />
-            </template>
-          </Button>
-        </div>
-      </div>
-      <div v-for="(item, index) in activeTags" :key="index">
-        <div class="flex items-center border rounded pl-2 py-1 h-7 text-base">
-          <svg
-            v-if="item.color"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              r="4.5"
-              cx="8"
-              cy="8"
-              :fill="item.color"
-              :stroke="item.color"
-              stroke-width="3"
-            />
-          </svg>
-          <span class="text-sm ml-2">{{ item.title }}</span>
 
-          <Button
-            variant="minimal"
-            @click="store.state.activeTags.splice(index, 1)"
-          >
-            <template #icon>
-              <FeatherIcon class="h-3 w-3" name="x" />
-            </template>
-          </Button>
-        </div>
-      </div>
-    </div>
     <div class="flex gap-2 ml-auto">
       <template v-if="selections && !selections.length">
+        <div
+          v-if="activeFilters.length"
+          class="flex flex-wrap items-start justify-end gap-1 ml-3"
+        >
+          <div v-for="(item, index) in activeFilters" :key="index">
+            <div
+              class="flex items-center border rounded pl-2 py-1 h-7 text-base"
+            >
+              <component :is="ICON_TYPES[item]"></component>
+              <span class="text-sm ml-2">{{ item }}</span>
+              <Button variant="minimal" @click="activeFilters.splice(index, 1)">
+                <template #icon>
+                  <FeatherIcon class="h-3 w-3" name="x" />
+                </template>
+              </Button>
+            </div>
+          </div>
+          <div v-for="(item, index) in activeTags" :key="index">
+            <div
+              class="flex items-center border rounded pl-2 py-1 h-7 text-base"
+            >
+              <svg
+                v-if="item.color"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  r="4.5"
+                  cx="8"
+                  cy="8"
+                  :fill="item.color"
+                  :stroke="item.color"
+                  stroke-width="3"
+                />
+              </svg>
+              <span class="text-sm ml-2">{{ item.title }}</span>
+
+              <Button
+                variant="minimal"
+                @click="store.state.activeTags.splice(index, 1)"
+              >
+                <template #icon>
+                  <FeatherIcon class="h-3 w-3" name="x" />
+                </template>
+              </Button>
+            </div>
+          </div>
+        </div>
         <Dropdown
           v-if="$route.name !== 'Recents'"
           :options="orderByItems"

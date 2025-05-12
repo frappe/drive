@@ -7,7 +7,7 @@
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg border group select-none entity cursor-pointer relative sm:w-[182px] sm:h-[182px]"
+      class="grid-item rounded-lg border group select-none entity cursor-pointer relative sm:w-[172px] sm:h-[172px]"
       :class="[
         selections.has(file.name)
           ? 'bg-green-100 shadow-green'
@@ -122,7 +122,7 @@ const open = (row) =>
 <style scoped>
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(182px, 1fr));
+  grid-template-columns: repeat(auto-fill, 172px);
   gap: 20px;
 }
 

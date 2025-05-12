@@ -1,5 +1,5 @@
 <template>
-  <Navbar />
+  <Navbar v-if="!file?.error" />
   <FolderContentsError v-if="file.error" :error="file.error" />
   <LoadingIndicator
     v-if="file.loading"

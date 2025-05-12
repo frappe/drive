@@ -5,7 +5,7 @@
     :error="verify?.error || getEntities.error"
   />
   <NoFilesSection
-    v-else-if="rows?.length === 100"
+    v-else-if="!props.getEntities.data?.length"
     :icon="icon"
     :primary-message="primaryMessage"
     :secondary-message="secondaryMessage"
@@ -95,26 +95,6 @@ watch(
     rows.value = val
   }
 )
-
-// We do client side sorting for immediate UI updates
-// Can't check for entity data updates as we are updating - so check for loading
-// watch(
-//   [sortOrder, () => props.getEntities.loading],
-//   ([val, loading]) => {
-//     if (!props.getEntities.data || loading) return
-//     const field = val.field
-//     const order = val.ascending ? 1 : -1
-//     const sorted = props.getEntities.data.toSorted((a, b) => {
-//       return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
-//     })
-//     props.getEntities.setData(sorted)
-//     store.commit("setCurrentFolder", {
-//       name: sorted[0]?.parent_entity || "",
-//       entities: sorted.filter?.((k) => k.title[0] !== "."),
-//     })
-//   },
-//   { immediate: true }
-// )
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
