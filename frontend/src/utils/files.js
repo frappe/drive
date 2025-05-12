@@ -4,6 +4,7 @@ import { formatSize } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
+import { markRaw } from "vue"
 import { getTeams } from "@/resources/files"
 import { set } from "idb-keyval"
 
@@ -127,6 +128,7 @@ export const setBreadCrumbs = (
 }
 
 export const MIME_LIST_MAP = {
+  Folder: [],
   Image: [
     "image/png",
     "image/jpeg",
@@ -209,48 +211,18 @@ export const MIME_LIST_MAP = {
   ],
 }
 
-export const ICON_TYPES = [
-  {
-    label: "Folder",
-    icon: Folder,
-  },
-  {
-    label: "Image",
-    icon: Image,
-  },
-  {
-    label: "Audio",
-    icon: Audio,
-  },
-  {
-    label: "Video",
-    icon: Video,
-  },
-  {
-    label: "PDF",
-    icon: PDF,
-  },
-  {
-    label: "Document",
-    icon: Document,
-  },
-  {
-    label: "Spreadsheet",
-    icon: Spreadsheet,
-  },
-  {
-    label: "Archive",
-    icon: Archive,
-  },
-  {
-    label: "Presentation",
-    icon: Presentation,
-  },
-  {
-    label: "Unknown",
-    icon: Unknown,
-  },
-]
+export const ICON_TYPES = {
+  Folder: Folder,
+  Image: Image,
+  Audio: Audio,
+  Video: Video,
+  PDF: PDF,
+  Document: Document,
+  Spreadsheet: Spreadsheet,
+  Archive: Archive,
+  Presentation: Presentation,
+  Unknown: Unknown,
+}
 
 // Synced cache - ensure all setters are reflected in the app
 function getCacheKey(cacheKey) {

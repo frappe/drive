@@ -55,6 +55,7 @@ declare module 'vue' {
     Document: typeof import('./src/components/MimeIcons/Document.vue')['default']
     DownArrow: typeof import('./src/components/EspressoIcons/DownArrow.vue')['default']
     Download: typeof import('./src/components/EspressoIcons/Download.vue')['default']
+    DriveToolBar: typeof import('./src/components/DriveToolBar.vue')['default']
     Edit: typeof import('./src/components/EspressoIcons/Edit.vue')['default']
     EditTagDialog: typeof import('./src/components/Settings/EditTagDialog.vue')['default']
     EntityToolbar: typeof import('./src/components/EntityToolbar.vue')['default']

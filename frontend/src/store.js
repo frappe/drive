@@ -36,7 +36,6 @@ const store = createStore({
     }),
     view: getJson("view", "list"),
     shareView: getJson("shareView", "with"),
-    activeFilters: getJson("activeFilters", []),
     activeTags: [],
     activeEntity: null,
     notifCount: 0,
@@ -110,10 +109,6 @@ const store = createStore({
     },
     setActiveEntity(state, payload) {
       state.activeEntity = payload
-    },
-    setActiveFilters(state, payload) {
-      localStorage.setItem("activeFilters", JSON.stringify(payload))
-      state.activeFilters = payload
     },
     setCurrentFolder(state, payload) {
       // Don't clear cache for performance's sake (state is cleared on every reroute)

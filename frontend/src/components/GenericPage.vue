@@ -1,23 +1,22 @@
 <template>
-  <Navbar
-    v-if="!verify?.error && !getEntities.error"
-    :column-headers="$route.name === 'Recents' ? null : columnHeaders"
-    :selections="selectedEntitities"
-    :action-items="actionItems"
-  />
+  <Navbar v-if="!verify?.error && !getEntities.error" />
   <FolderContentsError
     v-if="verify?.error || getEntities.error"
     :error="verify?.error || getEntities.error"
   />
   <NoFilesSection
-    v-else-if="rows?.length === 0"
+    v-else-if="rows?.length === 100"
     :icon="icon"
-    :primary-message="activeFilters.length ? 'Nothing found.' : primaryMessage"
-    :secondary-message="
-      activeFilters.length ? 'Try changing filters, maybe?' : secondaryMessage
-    "
+    :primary-message="primaryMessage"
+    :secondary-message="secondaryMessage"
   />
   <template v-else>
+    <DriveToolBar
+      v-model="rows"
+      :action-items="actionItems"
+      :selections="selectedEntitities"
+      :get-entities="getEntities"
+    />
     <ListView
       v-if="$store.state.view === 'list'"
       v-model="selections"
@@ -45,6 +44,7 @@
 <script setup>
 import ListView from "@/components/ListView.vue"
 import GridView from "@/components/GridView.vue"
+import DriveToolBar from "@/components/DriveToolBar.vue"
 import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
@@ -87,30 +87,34 @@ const store = useStore()
 const dialog = ref(null)
 const infoEntities = ref([])
 const team = route.params.team
-const sortOrder = computed(() => store.state.sortOrder)
-const activeFilters = computed(() => store.state.activeFilters)
 const activeEntity = computed(() => store.state.activeEntity)
-const rows = computed(() => props.getEntities.data)
+const rows = ref(props.getEntities.data)
+watch(
+  () => props.getEntities.data,
+  (val) => {
+    rows.value = val
+  }
+)
 
 // We do client side sorting for immediate UI updates
 // Can't check for entity data updates as we are updating - so check for loading
-watch(
-  [sortOrder, () => props.getEntities.loading],
-  ([val, loading]) => {
-    if (!props.getEntities.data || loading) return
-    const field = val.field
-    const order = val.ascending ? 1 : -1
-    const sorted = props.getEntities.data.toSorted((a, b) => {
-      return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
-    })
-    props.getEntities.setData(sorted)
-    store.commit("setCurrentFolder", {
-      name: sorted[0]?.parent_entity || "",
-      entities: sorted.filter?.((k) => k.title[0] !== "."),
-    })
-  },
-  { immediate: true }
-)
+// watch(
+//   [sortOrder, () => props.getEntities.loading],
+//   ([val, loading]) => {
+//     if (!props.getEntities.data || loading) return
+//     const field = val.field
+//     const order = val.ascending ? 1 : -1
+//     const sorted = props.getEntities.data.toSorted((a, b) => {
+//       return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
+//     })
+//     props.getEntities.setData(sorted)
+//     store.commit("setCurrentFolder", {
+//       name: sorted[0]?.parent_entity || "",
+//       entities: sorted.filter?.((k) => k.title[0] !== "."),
+//     })
+//   },
+//   { immediate: true }
+// )
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -131,13 +135,6 @@ watch(
   },
   { immediate: true }
 )
-
-watch(activeFilters.value, async (val) => {
-  props.getEntities.fetch({
-    team,
-    file_kinds: JSON.stringify(val.map((k) => k.label)),
-  })
-})
 
 allUsers.fetch({ team })
 
@@ -297,28 +294,6 @@ const actionItems = computed(() => {
   }
 })
 
-const columnHeaders = [
-  {
-    label: "Name",
-    field: "title",
-  },
-  {
-    label: "Owner",
-    field: "owner",
-  },
-  {
-    label: "Modified",
-    field: "modified",
-  },
-  {
-    label: "Size",
-    field: "file_size",
-  },
-  {
-    label: "Type",
-    field: "mime_type",
-  },
-]
 const userData = computed(() =>
   allUsers.data ? Object.fromEntries(allUsers.data.map((k) => [k.name, k])) : {}
 )

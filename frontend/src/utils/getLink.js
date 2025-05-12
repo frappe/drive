@@ -16,7 +16,7 @@ export function getLink(entity, copy = true, withDomain = true) {
   let link = entity.is_link
     ? entity.path
     : `${
-        withDomain ? window.location.origin + "/drive/" : ""
+        withDomain ? window.location.origin + "/drive" : ""
       }/t/${team}/${getLinkStem(entity)}`
 
   if (!copy) return link
