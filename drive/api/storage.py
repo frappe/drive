@@ -12,7 +12,7 @@ def storage_breakdown(team, owned_only):
         "team": team,
         "is_group": False,
         "is_active": 1,
-        "file_size": [">=", limit / 200 * MEGA_BYTE],
+        "file_size": [">=", limit / 200],
     }
     if owned_only:
         filters["owner"] = frappe.session.user
@@ -33,7 +33,6 @@ def storage_breakdown(team, owned_only):
         query = query.where(DriveFile.owner == frappe.session.user)
     else:
         query = query.where(DriveFile.is_private == 0)
-
     return {
         "limit": limit,
         "total": query.groupby(DriveFile.mime_type).run(as_dict=True),

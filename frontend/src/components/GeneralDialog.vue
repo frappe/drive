@@ -26,6 +26,7 @@
 import { Dialog, ErrorMessage } from "frappe-ui"
 import { del } from "idb-keyval"
 import { toast } from "@/utils/toasts.js"
+import emitter from "@/emitter"
 import { mutate, getTrash } from "@/resources/files.js"
 
 export default {
@@ -130,6 +131,7 @@ export default {
         },
         onSuccess(data) {
           this.$emit("success", data)
+          emitter.emit("recalculate")
           this.$resources.method.reset()
           this.entities.map((entity) => del(entity.name))
           if (this.dialogData.mutate)

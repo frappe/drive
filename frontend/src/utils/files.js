@@ -4,7 +4,6 @@ import { formatSize } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
-import { markRaw } from "vue"
 import { getTeams } from "@/resources/files"
 import { set } from "idb-keyval"
 
