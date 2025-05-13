@@ -1,5 +1,6 @@
 <template>
   <FrappeListView
+    ref="container"
     class="px-[10px] pt-3 select-none"
     row-key="name"
     :columns="selectedColumns"
@@ -76,14 +77,13 @@ import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
-import { computed, h, ref, watch } from "vue"
+import { computed, h, ref, watch, useTemplateRef } from "vue"
 import ContextMenu from "@/components/ContextMenu.vue"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
 import Users from "./EspressoIcons/Users.vue"
 import Globe from "./EspressoIcons/Globe.vue"
-
 const store = useStore()
 const route = useRoute()
 const props = defineProps({
@@ -91,6 +91,9 @@ const props = defineProps({
   actionItems: Array,
   userData: Object,
 })
+
+const container = useTemplateRef("container")
+setInterval(() => console.log(container.value), 1000)
 
 const selections = defineModel(new Set())
 const selectedRow = ref(null)

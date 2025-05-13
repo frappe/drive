@@ -27,7 +27,10 @@ export const getHome = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   makeParams: (params) => {
-    return { ...params, personal: 0 }
+    return {
+      ...params,
+      personal: 0,
+    }
   },
   cache: "home-folder-contents",
 })

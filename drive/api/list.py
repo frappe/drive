@@ -2,7 +2,8 @@ import frappe
 import json
 from drive.utils.files import get_home_folder, MIME_LIST_MAP
 from .permissions import ENTITY_FIELDS, get_user_access
-from pypika import Order, Criterion, functions as fn
+from pypika import Order, Criterion, Field, functions as fn, CustomFunction
+
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
@@ -14,14 +15,17 @@ DriveFavourite = frappe.qb.DocType("Drive Favourite")
 Recents = frappe.qb.DocType("Drive Entity Log")
 DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 
+Binary = CustomFunction("BINARY", ["expression"])
+
 
 @frappe.whitelist(allow_guest=True)
 def files(
     team,
     entity_name=None,
-    order_by="modified asc",
+    order_by="modified 1",
     is_active=1,
-    limit=1000,
+    limit=20,
+    cursor=None,
     favourites_only=0,
     recents_only=0,
     tag_list=[],
@@ -31,10 +35,12 @@ def files(
     only_parent=1,
 ):
     home = get_home_folder(team)["name"]
+    field, ascending = order_by.split(" ")
     is_active = int(is_active)
     only_parent = int(only_parent)
     folders = int(folders)
     personal = int(personal)
+    ascending = int(ascending)
 
     if not entity_name:
         # If not specified, get home folder
@@ -62,7 +68,6 @@ def files(
         .where(DriveFile.is_active == is_active)
         .left_join(DrivePermission)
         .on((DrivePermission.entity == DriveFile.name) & (DrivePermission.user == user))
-        .limit(limit)
         # Give defaults as a team member
         .select(
             *ENTITY_FIELDS,
@@ -73,6 +78,13 @@ def files(
         )
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
+    # Cursor pagination
+    if cursor:
+        query = query.where(
+            (Binary(DriveFile[field]) > cursor if ascending else field < cursor)
+        ).limit(limit)
+        print(query)
+        pass
     if only_parent:
         query = query.where(DriveFile.parent_entity == entity_name)
     else:
@@ -95,12 +107,9 @@ def files(
         )
     else:
         query = (
-            query.left_join(Recents).on(
-                (Recents.entity_name == DriveFile.name) & (Recents.user == frappe.session.user)
-            )
-        ).orderby(
-            order_by.split()[0],
-            order=Order.desc if order_by.endswith("desc") else Order.asc,
+            query.left_join(Recents)
+            .on((Recents.entity_name == DriveFile.name) & (Recents.user == frappe.session.user))
+            .orderby(Binary(DriveFile[field]), order=Order.asc if ascending else Order.desc)
         )
 
     if favourites_only or recents_only:

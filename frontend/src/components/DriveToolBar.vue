@@ -109,7 +109,7 @@
             >
               <DownArrow
                 :class="{
-                  '[transform:rotateX(180deg)]': sortOrder.ascending,
+                  '[transform:rotateX(180deg)]': sortOrder.descending,
                 }"
                 class="h-3.5"
               />
@@ -221,9 +221,6 @@ const store = useStore()
 const sortOrder = ref(store.state.sortOrder)
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
-const activeEls = computed(() => {
-  return [store.state.activeEntity]
-})
 
 const search = ref("")
 const searchInput = useTemplateRef("search-input")
@@ -235,7 +232,7 @@ watch(
     const field = val.field
     const order = val.ascending ? 1 : -1
     rows.value.sort((a, b) => {
-      return a[field] == b[field] ? 0 : a[field] < b[field] ? order : -order
+      return a[field] == b[field] ? 0 : a[field] > b[field] ? order : -order
     })
     props.getEntities.setData(rows.value)
     store.commit("setCurrentFolder", {
