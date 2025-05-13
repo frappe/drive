@@ -52,7 +52,6 @@ export function formatMimeType(mimeType, lower = true) {
       Object.keys(MIME_LIST_MAP).find((k) =>
         MIME_LIST_MAP[k].includes(mimeType)
       ) || "Unknown"
-  console.log(icon)
   return lower ? icon.toLowerCase() : icon
 }
 
