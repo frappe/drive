@@ -44,7 +44,7 @@ def create_video_thumbnail(entity_name):
     drive_file = frappe.get_value(
         "Drive File",
         entity_name,
-        ["is_group", "path", "title", "mime_type", "file_size", "owner"],
+        ["is_group", "path", "title", "mime_type", "file_size", "owner", "team"],
         as_dict=1,
     )
     if not drive_file or drive_file.is_group:

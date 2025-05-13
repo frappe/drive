@@ -91,9 +91,8 @@
       <span class="text-gray-800 text-sm">{{ i.title }}</span>
 
       <div class="text-gray-800 text-sm ml-auto flex gap-2 h-10 leading-10">
-        <div v-if="hoveredRow === i.name">
+        <div class="my-auto" v-if="hoveredRow === i.name">
           <Button
-            class="!p-1 !py-0 !h-6"
             variant="ghost"
             @click="openEntity($route.params.team, i), $emit('close')"
             ><FeatherIcon name="arrow-right" class="w-4 h-4 !p-0 text-gray-600"

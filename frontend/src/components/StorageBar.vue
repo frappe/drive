@@ -82,4 +82,7 @@ let totalStorage = createResource({
   },
 })
 watch(team, () => totalStorage.fetch({ team: team.value }), { immediate: true })
+emitter.on("recalculate", () => {
+  setTimeout(() => totalStorage.fetch({ team: team.value }), 2000)
+})
 </script>
