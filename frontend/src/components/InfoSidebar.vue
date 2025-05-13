@@ -73,6 +73,8 @@
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">Type</span>
               <span class="col-span-1">{{ formattedMimeType }}</span>
+              <span class="col-span-1 text-gray-600">MIME Type</span>
+              <span class="col-span-1">{{ entity.mime_type }}</span>
               <span v-if="entity.file_size" class="col-span-1 text-gray-600">
                 Size
               </span>

@@ -1,16 +1,16 @@
 <template>
   <div
     v-if="rows?.length"
-    class="grid-container px-[10px] pt-3 overflow-scroll"
+    class="grid-container px-[10px] py-3 overflow-scroll"
   >
     <div
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg border group select-none entity cursor-pointer relative sm:w-[172px] sm:h-[172px]"
+      class="grid-item rounded-lg group select-none entity cursor-pointer relative sm:w-[172px] sm:h-[172px] border"
       :class="[
-        selections.has(file.name)
-          ? 'bg-green-100 shadow-green'
+        selections.has(file.name) || selectedRow?.name === file.name
+          ? 'bg-gray-100 shadow-gray'
           : 'border-gray-200 hover:shadow-xl',
       ]"
       :draggable="true"
@@ -48,8 +48,8 @@
   <ContextMenu
     v-if="rowEvent && selectedRow"
     :key="selectedRow.name"
-    v-on-outside-click="() => (rowEvent = false)"
-    :close="() => (rowEvent = false)"
+    v-on-outside-click="() => ((rowEvent = false), (selectedRow = null))"
+    :close="() => ((rowEvent = false), (selectedRow = null))"
     :action-items="dropdownActionItems(selectedRow)"
     :event="rowEvent"
   />
@@ -126,7 +126,7 @@ const open = (row) =>
   gap: 20px;
 }
 
-.shadow-green {
-  box-shadow: 0px 0px 0px 2px rgba(91, 185, 140, 1);
+.shadow-gray {
+  box-shadow: 0px 0px 0px 2px rgb(161, 159, 159);
 }
 </style>

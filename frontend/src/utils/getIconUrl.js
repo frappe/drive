@@ -1,5 +1,4 @@
 export function getIconUrl(mime_type) {
-  console.log(`/src/assets/images/icons/${mime_type}.svg`)
   return new URL(`/src/assets/images/icons/${mime_type}.svg`, import.meta.url)
 }
 // BROKEN

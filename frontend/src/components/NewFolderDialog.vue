@@ -16,7 +16,7 @@
     }"
   >
     <template #body-content>
-      <p class="text-gray-500 text-sm mb-2">Folder name:</p>
+      <p class="text-gray-600 text-sm mb-2">Folder name:</p>
       <TextInput
         ref="my-input"
         v-model="folderName"

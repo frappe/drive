@@ -142,6 +142,7 @@ export const MIME_LIST_MAP = {
   ],
   PDF: ["application/pdf"],
   "After Effects": ["application/vnd.adobe.aftereffects.project"],
+  Photoshop: ["application/photoshop"],
   Code: [
     "text/x-python",
     "text/x-shellscript",

@@ -66,10 +66,8 @@
 import {
   ListHeader,
   ListGroupRows,
-  TextInput,
   ListGroupHeader,
   ListEmptyState,
-  ListHeaderItem,
   LoadingIndicator,
   ListView as FrappeListView,
   Avatar,
@@ -83,7 +81,8 @@ import ContextMenu from "@/components/ContextMenu.vue"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
-import { onKeyDown } from "@vueuse/core"
+import Users from "./EspressoIcons/Users.vue"
+import Globe from "./EspressoIcons/Globe.vue"
 
 const store = useStore()
 const route = useRoute()
@@ -128,6 +127,7 @@ const selectedColumns = [
       }),
     width: "50%",
   },
+
   {
     label: "Owner",
     key: "",
@@ -145,7 +145,24 @@ const selectedColumns = [
         size: "sm",
       })
     },
-    width: "15%",
+    width: "10%",
+  },
+  {
+    label: "Sharing",
+    key: "",
+    getLabel: ({ row }) => {
+      if (row.share_count === -2) return "Public"
+      else if (row.share_count === -1) return "Team"
+      else if (row.share_count > 0)
+        return row.share_count + (row.share_count === 1 ? " person" : " people")
+      return "-"
+    },
+    prefix: ({ row }) => {
+      if (row.share_count === -2) return h(Globe)
+      else if (row.share_count === -1) return "Team"
+      else if (row.share_count > 0) return h(Users)
+    },
+    width: "10%",
   },
   {
     label: "Last Modified",
@@ -172,7 +189,7 @@ const selectedColumns = [
           ? row.children + " item" + (row.children === 1 ? "" : "s")
           : "empty"
         : row.file_size_pretty,
-    width: "10%",
+    width: "8%",
   },
   { label: "", key: "options", align: "right", width: "5%" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))

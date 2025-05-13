@@ -45,13 +45,14 @@ export function formatMimeType(mimeType, lower = true) {
   const generic = mimeType.split("/")[0]
   if (["image", "video", "audio"].includes(generic))
     icon = generic[0].toUpperCase() + generic.slice(1)
-  else if (generic === "frappe_doc") icon = "Doc"
+  else if (generic === "frappe_doc") icon = "Document"
   else if (generic === "link") icon = "Link"
   else
     icon =
       Object.keys(MIME_LIST_MAP).find((k) =>
         MIME_LIST_MAP[k].includes(mimeType)
       ) || "Unknown"
+  console.log(icon)
   return lower ? icon.toLowerCase() : icon
 }
 
