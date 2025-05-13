@@ -96,6 +96,7 @@ class FileManager:
                 "s3",
                 aws_access_key_id=settings.aws_key,
                 aws_secret_access_key=settings.get_password("aws_secret"),
+                endpoint_url=(settings.endpoint_url or None),
             )
 
     def upload_file(self, current_path: str, new_path: str) -> None:
