@@ -11,7 +11,6 @@ DrivePermission = frappe.qb.DocType("Drive Permission")
 Team = frappe.qb.DocType("Drive Team")
 TeamMember = frappe.qb.DocType("Drive Team Member")
 DriveFavourite = frappe.qb.DocType("Drive Favourite")
-DriveDocShare = frappe.qb.DocType("Drive DocShare")
 Recents = frappe.qb.DocType("Drive Entity Log")
 DriveEntityTag = frappe.qb.DocType("Drive Entity Tag")
 
@@ -148,13 +147,28 @@ def files(
         .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
         .groupby(DriveFile.parent_entity)
     )
-    if personal == -1:
-        child_count_query = child_count_query.where(DriveFile.is_private == personal)
-
+    share_query = (
+        frappe.qb.from_(DriveFile)
+        .right_join(DrivePermission)
+        .on(DrivePermission.entity == DriveFile.name)
+        .select(DriveFile.name, fn.Count("*").as_("share_count"))
+        .groupby(DriveFile.name)
+    )
+    public_files_query = (
+        frappe.qb.from_(DrivePermission)
+        .where(DrivePermission.user == "")
+        .select(DrivePermission.entity)
+    )
+    public_files = set(k[0] for k in public_files_query.run())
+    #  if personal != -1:
+    #     child_count_query = child_count_query.where(DriveFile.is_private == personal)
     children_count = dict(child_count_query.run())
+    share_count = dict(share_query.run())
     res = query.run(as_dict=True)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
+        r["share_count"] = share_count.get(r["name"], 0) if r["name"] not in public_files else -2
+
     return res
 
 

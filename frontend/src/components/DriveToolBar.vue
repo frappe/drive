@@ -1,5 +1,5 @@
 <template>
-  <div class="flex px-4 pt-2">
+  <div class="flex pl-3 pr-4 pt-2">
     <div v-if="selections?.length" class="my-auto w-[40%]">
       {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
       selected

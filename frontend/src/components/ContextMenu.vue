@@ -2,8 +2,12 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="p-1.5 absolute mt-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-    :style="{ left: `${calculateX}px`, top: `${calculateY}px` }"
+    class="w-[208px] p-1.5 absolute mt-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+    :style="{
+      left: `${calculateX}px`,
+      top: `${calculateY}px`,
+      'z-index': 1000,
+    }"
   >
     <div
       v-for="(item, index) in actionItems"
@@ -16,24 +20,29 @@
       "
     >
       <div v-if="item.label === 'Divider'">
-        <hr />
+        <hr class="my-1 bg-gray-300" />
       </div>
       <button
         v-else
         class="group flex h-7 w-full items-center rounded px-2 text-base hover:bg-surface-gray-3 text-ink-gray-6"
       >
         <FeatherIcon
-          v-if="item.icon && typeof item.icon === 'string'"
+          v-if="typeof item.icon === 'string'"
           :name="item.icon"
-          class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-6"
+          class="mr-2 h-4 w-4 flex-shrink-0"
+          :class="item.danger ? 'stroke-red-600' : 'text-ink-gray-7'"
           aria-hidden="true"
         />
         <component
           :is="item.icon"
-          v-else-if="item.icon"
-          class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-6"
+          v-else
+          class="mr-2 h-4 w-4 flex-shrink-0"
+          :class="item.danger ? 'text-[#E03636]' : 'text-ink-gray-7'"
         />
-        <span class="whitespace-nowrap text-ink-gray-7">
+        <span
+          class="whitespace-nowrap"
+          :class="item.danger ? 'text-red-600' : 'text-ink-gray-7'"
+        >
           {{ item.label }}
         </span>
       </button>

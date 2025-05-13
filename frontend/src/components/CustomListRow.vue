@@ -35,7 +35,7 @@
 
           <Button
             v-if="column.key === 'options'"
-            class="me-3 !bg-inherit"
+            class="!bg-inherit"
             @click="(e) => contextMenu(e, row)"
           >
             <FeatherIcon name="more-horizontal" class="h-4 w-4" />

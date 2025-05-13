@@ -11,21 +11,13 @@
       ondrop="return false;"
     >
       <SidebarItem
-        label="Search"
+        label="Control Centre"
         class="mb-1"
         :is-collapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)"
       >
         <template #icon>
-          <LucideSearch class="size-4" />
-        </template>
-        <template #right>
-          <div
-            class="flex items-center justify-start w-full duration-300 ease-in-out"
-            :class="
-              isExpanded ? 'ml-2 opacity-100' : 'ml-0 overflow-hidden opacity-0'
-            "
-          ></div>
+          <LucideCommand class="size-4" />
         </template>
       </SidebarItem>
       <SidebarItem
@@ -85,7 +77,7 @@
 </template>
 <script setup>
 import PrimaryDropDown from "./PrimaryDropdown.vue"
-import { ArrowLeftFromLine } from "lucide-vue-next"
+import { ArrowLeftFromLine, LucideCommand } from "lucide-vue-next"
 import Recent from "./EspressoIcons/Recent.vue"
 import Star from "./EspressoIcons/Star.vue"
 import Home from "./EspressoIcons/Home.vue"

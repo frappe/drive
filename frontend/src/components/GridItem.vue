@@ -46,7 +46,13 @@ const props = defineProps({ file: Object })
 
 const formattedType = formatMimeType(props.file.mime_type, false)
 const mime_link = ref(
-  getIconUrl(props.file.is_group ? "folder" : formattedType.toLowerCase())
+  getIconUrl(
+    props.file.is_group
+      ? props.file.share_count > 0
+        ? "shared-folder"
+        : "folder"
+      : formattedType.toLowerCase()
+  )
 )
 const isThumbnail = ref(false)
 const childrenSentence = computed(() => {

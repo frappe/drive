@@ -57,7 +57,7 @@ import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
 import Team from "./EspressoIcons/Organization.vue"
-import Share from "./EspressoIcons/Share.vue"
+import Share from "./EspressoIcons/ShareNew.vue"
 import Download from "./EspressoIcons/Download.vue"
 import Link from "./EspressoIcons/Link.vue"
 import Rename from "./EspressoIcons/Rename.vue"
@@ -152,6 +152,14 @@ const actionItems = computed(() => {
         onClick: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => e.is_link,
       },
+      { label: "Divider" },
+      {
+        label: "Share",
+        icon: Share,
+        onClick: () => (dialog.value = "s"),
+        isEnabled: (e) => e.share,
+        important: true,
+      },
       {
         label: "Download",
         icon: Download,
@@ -161,24 +169,12 @@ const actionItems = computed(() => {
         important: true,
       },
       {
-        label: "Share",
-        icon: Share,
-        onClick: () => (dialog.value = "s"),
-        isEnabled: (e) => e.share,
-        important: true,
-      },
-      {
-        label: "Get Link",
+        label: "Copy Link",
         icon: Link,
         onClick: ([entity]) => getLink(entity),
         important: true,
       },
-      {
-        label: "Rename",
-        icon: Rename,
-        onClick: () => (dialog.value = "rn"),
-        isEnabled: (e) => e.write,
-      },
+      { label: "Divider" },
       {
         label: "Move",
         icon: Move,
@@ -188,21 +184,28 @@ const actionItems = computed(() => {
         important: true,
       },
       {
-        label: "Move to Team",
-        icon: Team,
-        onClick: (entities) =>
-          confirm(
-            `Are you sure you want to move ${entities.length} ${
-              entities.length === 1 ? "item" : "items"
-            } to the team?`
-          ) &&
-          entities.map((e) =>
-            togglePersonal.submit({ entity_name: e.name, new_value: 0 })
-          ),
-        isEnabled: () => route.name == "Home",
-        multi: true,
-        important: true,
+        label: "Rename",
+        icon: Rename,
+        onClick: () => (dialog.value = "rn"),
+        isEnabled: (e) => e.write,
       },
+
+      // {
+      //   label: "Move to Team",
+      //   icon: Team,
+      //   onClick: (entities) =>
+      //     confirm(
+      //       `Are you sure you want to move ${entities.length} ${
+      //         entities.length === 1 ? "item" : "items"
+      //       } to the team?`
+      //     ) &&
+      //     entities.map((e) =>
+      //       togglePersonal.submit({ entity_name: e.name, new_value: 0 })
+      //     ),
+      //   isEnabled: () => route.name == "Home",
+      //   multi: true,
+      //   important: true,
+      // },
       {
         label: "Show Info",
         icon: Info,
@@ -261,8 +264,11 @@ const actionItems = computed(() => {
         isEnabled: (e) =>
           e.owner != "You" && e.user_doctype === "User" && e.everyone !== 1,
       },
+      { label: "Divider" },
       {
         label: "Move to Trash",
+        danger: true,
+
         icon: Trash,
         onClick: () => (dialog.value = "remove"),
         isEnabled: (e) => e.write,
