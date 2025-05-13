@@ -72,9 +72,9 @@
             <div class="text-base font-medium mb-4">Properties</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">Type</span>
-              <span class="col-span-1">{{ formattedMimeType }}</span>
-              <span class="col-span-1 text-gray-600">MIME Type</span>
-              <span class="col-span-1">{{ entity.mime_type }}</span>
+              <span class="col-span-1" :title="entity.mime_type">
+                {{ formattedMimeType }}
+              </span>
               <span v-if="entity.file_size" class="col-span-1 text-gray-600">
                 Size
               </span>
@@ -216,6 +216,7 @@ import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
 import { generalAccess, userList } from "@/resources/permissions"
+import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 
 const store = useStore()
 const tab = ref(0)

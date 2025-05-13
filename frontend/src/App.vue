@@ -17,8 +17,6 @@
         </router-view>
       </div>
 
-      <InfoSidebar v-if="$route.name === 'File'" />
-
       <BottomBar v-if="isLoggedIn" class="fixed bottom-0 w-full sm:hidden" />
     </div>
     <router-view v-else :key="$route.fullPath" v-slot="{ Component }">

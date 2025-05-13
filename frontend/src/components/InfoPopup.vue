@@ -144,7 +144,6 @@ const access = computedAsync(async () => {
       "/api/method/drive.api.permissions.get_user_access?user=Guest&entity=" +
         p.name
     )
-    console.log()
     res.push({
       users: await users.json(),
       general: await general.json(),
