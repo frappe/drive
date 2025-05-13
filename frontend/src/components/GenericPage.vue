@@ -10,7 +10,8 @@
     :primary-message="primaryMessage"
     :secondary-message="secondaryMessage"
   />
-  <template v-else>
+
+  <div class="flex flex-col overflow-scroll" ref="container" v-else>
     <DriveToolBar
       v-model="rows"
       :action-items="actionItems"
@@ -32,7 +33,7 @@
       :user-data="userData"
     />
     <InfoPopup :entities="infoEntities" />
-  </template>
+  </div>
 
   <Dialogs
     v-model="dialog"
@@ -65,11 +66,10 @@ import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, useTemplateRef } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
-import { togglePersonal } from "@/resources/files"
 import { toast } from "@/utils/toasts"
 
 const props = defineProps({
@@ -83,6 +83,7 @@ const props = defineProps({
 })
 const route = useRoute()
 const store = useStore()
+import { useInfiniteScroll } from "@vueuse/core"
 
 const dialog = ref(null)
 const infoEntities = ref([])
@@ -105,12 +106,16 @@ const selectedEntitities = computed(
 )
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
+
 watch(
   verifyAccess,
   async (data) => {
     if (data)
       await props.getEntities.fetch({
         team,
+        order_by:
+          store.state.sortOrder.field +
+          (store.state.sortOrder.ascending ? " 1" : " 0"),
       })
   },
   { immediate: true }
