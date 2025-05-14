@@ -11,10 +11,10 @@
       v-if="accessType === 'public'"
       :class="size == 'md' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />
-    <!-- <Team
-      v-if="accessType === 'public'"
+    <Team
+      v-else-if="accessType === 'team'"
       :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
-    /> -->
+    />
     <Lock
       v-else
       class=""
@@ -46,6 +46,8 @@ const props = defineProps({
 const colorClasses = computed(() => {
   if (props.disabled) {
     return "bg-gray-300 text-gray-500"
+  } else if (props.accessType === "team") {
+    return "bg-blue-100 text-blue-500"
   } else if (props.accessType === "public") {
     return "bg-red-100 text-red-500"
   }

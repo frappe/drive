@@ -93,7 +93,6 @@ const props = defineProps({
 })
 
 const container = useTemplateRef("container")
-setInterval(() => console.log(container.value), 1000)
 
 const selections = defineModel(new Set())
 const selectedRow = ref(null)

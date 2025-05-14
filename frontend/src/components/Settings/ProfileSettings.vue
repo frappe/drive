@@ -105,7 +105,6 @@ import Link from "../EspressoIcons/Link.vue"
 import { X } from "lucide-vue-next"
 import { useStore } from "vuex"
 import { ref, computed, watch } from "vue"
-import ErrorMessage from "frappe-ui/src/components/ErrorMessage.vue"
 import { getTeams } from "@/resources/files"
 import { settings, setSettings } from "@/resources/permissions"
 
@@ -123,7 +122,9 @@ const teamOptions = computed(() =>
     label: getTeams.data[k].title,
   }))
 )
-const singleClick = ref(Boolean(settings.data.message.single_click))
+const singleClick = ref(
+  Boolean((settings.data.message || settings.data).single_click)
+)
 watch(singleClick, (v) => {
   setSettings.submit({ updates: { single_click: v } })
 })

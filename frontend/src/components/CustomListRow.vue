@@ -79,9 +79,9 @@ defineProps({
 })
 const route = useRoute()
 const store = useStore()
-const action = (settings.data.message || settings.data).single_click
-  ? "click"
-  : "dblclick"
+const action = computed(() =>
+  (settings.data.message || settings.data).single_click ? "click" : "dblclick"
+)
 
 // Used as right-click doesn't trigger active in frappe-ui
 const selectedName = computed(() => store.state.activeEntity?.name)
