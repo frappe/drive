@@ -161,7 +161,7 @@ def get_shared_with_list(entity):
         raise frappe.PermissionError
     permissions = frappe.db.get_all(
         "Drive Permission",
-        filters={"entity": entity, "user": ["!=", ""]},
+        filters=[["entity", "=", entity], ["user", "!=", ""], ["user", "!=", "$TEAM"]],
         order_by="user",
         fields=["user", "read", "write", "comment", "share"],
     )

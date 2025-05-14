@@ -11,6 +11,7 @@ from drive.utils.files import (
 from drive.api.files import get_ancestors_of
 from drive.utils.files import generate_upward_path
 from drive.api.activity import create_new_activity_log
+from datetime import datetime
 
 
 class DriveFile(Document):
@@ -308,14 +309,7 @@ class DriveFile(Document):
         return self.name
 
     @frappe.whitelist()
-    def share(
-        self,
-        user=None,
-        read=None,
-        comment=None,
-        share=None,
-        write=None,
-    ):
+    def share(self, user=None, read=None, comment=None, share=None, write=None, valid_until=""):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -358,6 +352,7 @@ class DriveFile(Document):
             {
                 "user": user,
                 "entity": self.name,
+                "valid_until": valid_until,
             }
             | {l[0]: l[1] for l in levels if l[1] is not None}
         )

@@ -160,6 +160,7 @@ def files(
         frappe.qb.from_(DriveFile)
         .right_join(DrivePermission)
         .on(DrivePermission.entity == DriveFile.name)
+        .where((DrivePermission.user != "") & (DrivePermission.user != "$TEAM"))
         .select(DriveFile.name, fn.Count("*").as_("share_count"))
         .groupby(DriveFile.name)
     )
