@@ -1,5 +1,17 @@
 <template>
-  <Navbar v-if="!verify?.error && !getEntities.error" />
+  <Navbar
+    v-if="!verify?.error && !getEntities.error"
+    :root-actions="
+      verify?.data &&
+      actionItems
+        .filter((k) => k.isEnabled?.(verify.data))
+        .slice(1)
+        .map((k) => ({ ...k, onClick: () => k.action([verify.data]) }))
+    "
+    :trigger-root="
+      () => ((selections = new Set()), store.commit('setActiveEntity', null))
+    "
+  />
   <FolderContentsError
     v-if="verify?.error || getEntities.error"
     :error="verify?.error || getEntities.error"
@@ -37,7 +49,8 @@
 
   <Dialogs
     v-model="dialog"
-    :selections="activeEntity ? [activeEntity] : selectedEntitities"
+    :selected-rows="activeEntity ? [activeEntity] : selectedEntitities"
+    :root-entity="verify?.data"
     :get-entities="getEntities"
   />
   <FileUploader v-if="$store.state.user.id" @success="getEntities.fetch()" />
@@ -57,7 +70,6 @@ import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import { RotateCcw } from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
-import Team from "./EspressoIcons/Organization.vue"
 import Share from "./EspressoIcons/ShareNew.vue"
 import Download from "./EspressoIcons/Download.vue"
 import Link from "./EspressoIcons/Link.vue"
@@ -130,14 +142,14 @@ const actionItems = computed(() => {
       {
         label: "Restore",
         icon: RotateCcw,
-        onClick: () => (dialog.value = "restore"),
+        action: () => (dialog.value = "restore"),
         multi: true,
         important: true,
       },
       {
         label: "Delete forever",
         icon: Trash,
-        onClick: () => (dialog.value = "d"),
+        action: () => (dialog.value = "d"),
         isEnabled: () => route.name === "Trash",
         multi: true,
         important: true,
@@ -148,20 +160,20 @@ const actionItems = computed(() => {
       {
         label: "Preview",
         icon: Preview,
-        onClick: ([entity]) => openEntity(team, entity),
+        action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => !e.is_link,
       },
       {
         label: "Open",
         icon: "external-link",
-        onClick: ([entity]) => openEntity(team, entity),
+        action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => e.is_link,
       },
       { label: "Divider" },
       {
         label: "Share",
         icon: Share,
-        onClick: () => (dialog.value = "s"),
+        action: () => (dialog.value = "s"),
         isEnabled: (e) => e.share,
         important: true,
       },
@@ -169,21 +181,21 @@ const actionItems = computed(() => {
         label: "Download",
         icon: Download,
         isEnabled: (e) => !e.is_link,
-        onClick: (entities) => entitiesDownload(team, entities),
+        action: (entities) => entitiesDownload(team, entities),
         multi: true,
         important: true,
       },
       {
         label: "Copy Link",
         icon: Link,
-        onClick: ([entity]) => getLink(entity),
+        action: ([entity]) => getLink(entity),
         important: true,
       },
       { label: "Divider" },
       {
         label: "Move",
         icon: Move,
-        onClick: () => (dialog.value = "m"),
+        action: () => (dialog.value = "m"),
         isEnabled: (e) => e.write,
         multi: true,
         important: true,
@@ -191,14 +203,14 @@ const actionItems = computed(() => {
       {
         label: "Rename",
         icon: Rename,
-        onClick: () => (dialog.value = "rn"),
+        action: () => (dialog.value = "rn"),
         isEnabled: (e) => e.write,
       },
 
       // {
       //   label: "Move to Team",
       //   icon: Team,
-      //   onClick: (entities) =>
+      //   action: (entities) =>
       //     confirm(
       //       `Are you sure you want to move ${entities.length} ${
       //         entities.length === 1 ? "item" : "items"
@@ -214,19 +226,19 @@ const actionItems = computed(() => {
       {
         label: "Show Info",
         icon: Info,
-        onClick: () => infoEntities.value.push(store.state.activeEntity),
+        action: () => infoEntities.value.push(store.state.activeEntity),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
         label: "Hide Info",
         icon: Info,
-        onClick: () => (dialog.value = "info"),
+        action: () => (dialog.value = "info"),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
         label: "Favourite",
         icon: "star",
-        onClick: (entities) => {
+        action: (entities) => {
           entities.forEach((e) => (e.is_favourite = true))
           // Hack to cache
           props.getEntities.setData(props.getEntities.data)
@@ -240,7 +252,7 @@ const actionItems = computed(() => {
         label: "Unfavourite",
         icon: "star",
         class: "stroke-amber-500 fill-amber-500",
-        onClick: (entities) => {
+        action: (entities) => {
           entities.forEach((e) => (e.is_favourite = false))
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
@@ -252,7 +264,7 @@ const actionItems = computed(() => {
       {
         label: "Remove from Recents",
         icon: "clock",
-        onClick: (entities) => {
+        action: (entities) => {
           clearRecent.submit({
             entities,
           })
@@ -265,7 +277,7 @@ const actionItems = computed(() => {
         label: "Unshare",
         danger: true,
         icon: "trash-2",
-        onClick: () => (dialog.value = "unshare"),
+        action: () => (dialog.value = "unshare"),
         isEnabled: (e) =>
           e.owner != "You" && e.user_doctype === "User" && e.everyone !== 1,
       },
@@ -275,7 +287,7 @@ const actionItems = computed(() => {
         danger: true,
 
         icon: Trash,
-        onClick: () => (dialog.value = "remove"),
+        action: () => (dialog.value = "remove"),
         isEnabled: (e) => e.write,
         important: true,
         multi: true,

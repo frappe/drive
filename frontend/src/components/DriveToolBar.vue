@@ -176,7 +176,7 @@
           :key="item.label"
         >
           <Tooltip :text="item.label">
-            <Button variant="outline" @click.once="item.onClick(selections)">
+            <Button variant="outline" @click.once="item.action(selections)">
               <div class="flex">
                 <FeatherIcon
                   v-if="typeof item.icon === 'string'"

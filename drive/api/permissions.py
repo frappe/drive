@@ -64,7 +64,14 @@ def get_user_access(entity, user=frappe.session.user):
         return user_access
     public_path = generate_upward_path(entity.name, "Guest")
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
-    for access_type in (user_access, public_access):
+
+    valid_accesses = [user_access, public_access]
+    if entity.team in teams:
+        team_path = generate_upward_path(entity.name, "$TEAM")
+        team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
+        valid_accesses.append(team_access)
+        print(team_access)
+    for access_type in valid_accesses:
         for type, v in access_type.items():
             if v:
                 access[type] = 1

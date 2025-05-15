@@ -71,11 +71,11 @@
               <span class="col-span-1 text-gray-600">Type</span>
               <span class="col-span-1">Frappe Doc</span>
               <span class="col-span-1 text-gray-600">Size</span>
-              <span class="col-span-1">{{ entity.file_size }}</span>
+              <span class="col-span-1">{{ entity.file_size_pretty }}</span>
               <span class="col-span-1 text-gray-600">Modified</span>
-              <span class="col-span-1">{{ entity.modified }}</span>
+              <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
               <span class="col-span-1 text-gray-600">Created</span>
-              <span class="col-span-1">{{ entity.creation }}</span>
+              <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
               <span class="col-span-1 text-gray-600">Owner</span>
               <span class="col-span-1">{{ entity.full_name }}</span>
             </div>
@@ -991,6 +991,7 @@ export default {
       generalAccess: generalAccess.data,
       sharedWithList: userList.data,
       tab: this.entity?.write ? 0 : 4,
+      formatDate,
       docFont: this.settings.docFont,
       tabs: [
         {
@@ -1361,6 +1362,7 @@ export default {
           data.forEach((element) => {
             element.relativeTime = useTimeAgo(element.creation)
             element.creation = formatDate(element.creation)
+            element.modified = formatDate(element.modified)
             element.snapshot_data = toUint8Array(element.snapshot_data)
           })
         },

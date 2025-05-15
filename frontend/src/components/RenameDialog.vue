@@ -65,13 +65,17 @@ const open = computed({
 })
 
 const submit = () => {
-  emit("success", {
+  console.log({
     name: props.entity.name,
     title: newName.value + (ext.value ? "." + ext.value : ""),
   })
   rename.submit({
     entity_name: props.entity.name,
     new_title: newName.value + (ext.value ? "." + ext.value : ""),
+  })
+  emit("success", {
+    name: props.entity.name,
+    title: newName.value + (ext.value ? "." + ext.value : ""),
   })
 }
 </script>

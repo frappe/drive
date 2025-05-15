@@ -9,7 +9,13 @@
         <LoadingIndicator v-if="item.loading" scale="70" />
       </template>
     </Breadcrumbs>
+
     <div class="flex gap-2">
+      <Dropdown :options="rootActions" v-if="rootActions">
+        <Button variant="ghost" @click="triggerRoot">
+          <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+        </Button>
+      </Dropdown>
       <Dropdown
         v-if="['Folder', 'Home', 'Team'].includes($route.name) && isLoggedIn"
         :options="newEntityOptions"
@@ -37,6 +43,7 @@
         </template>
         {{ button.label }}
       </Button>
+
       <div
         v-if="connectedUsers.length > 1 && isLoggedIn"
         class="hidden sm:flex bg-gray-200 rounded justify-center items-center px-1"
@@ -82,6 +89,10 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
+defineProps({
+  rootActions: Array,
+  triggerRoot: Function,
+})
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const connectedUsers = computed(() => store.state.connectedUsers)
 

@@ -19,7 +19,7 @@
     :entity="selections[0]"
     @success="
       ({ name, title }) => {
-        if (props.getEntities)
+        if (selections[0] !== rootEntity && props.getEntities)
           props.getEntities.data.find((k) => k.name === name).title = title
         resetDialog()
         // Handle breadcrumbs
@@ -78,15 +78,24 @@ import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 import emitter from "@/emitter"
 import { useStore } from "vuex"
+import { computed } from "vue"
+import { useRoute } from "vue-router"
 
 const dialog = defineModel(String)
 const store = useStore()
+const route = useRoute()
 
 const props = defineProps({
   getEntities: Object,
-  selections: Array,
+  selectedRows: Array,
+  rootEntity: Object,
 })
 const resetDialog = () => (dialog.value = null)
+const selections = computed(() => {
+  return props.selectedRows && props.selectedRows.length
+    ? props.selectedRows
+    : [props.rootEntity]
+})
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
@@ -94,7 +103,8 @@ emitter.on("newFolder", () => (dialog.value = "f"))
 emitter.on("rename", () => (dialog.value = "rn"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
-const setTitle = (title) => (document.title = title)
+const setTitle = (title) =>
+  (document.title = (route.name === "Folder" ? "Folder - " : "") + title)
 function addToList(data) {
   props.getEntities.data.push(data)
   props.getEntities.setData(props.getEntities.data)
