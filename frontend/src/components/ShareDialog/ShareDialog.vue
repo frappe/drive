@@ -361,6 +361,7 @@ function addShares() {
     getUsersWithAccess.data.push({ ...user, ...access })
   }
   sharedUsers.value = []
+  emit("success")
 }
 const invalidAfter = ref()
 
@@ -392,19 +393,17 @@ watch([generalAccessType, generalAccessLevel], ([type, level]) => {
       method: "unshare",
     })
   }
-  console.log(level)
-  setTimeout(
-    () =>
-      updateAccess.submit({
-        entity_name: props.entity.name,
-        user: level.value === "public" ? "" : "$TEAM",
-        read: 1,
-        comment: 1,
-        share: 1,
-        write: type.value === "editor",
-      }),
-    1000
-  )
+  setTimeout(() => {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: level.value === "public" ? "" : "$TEAM",
+      read: 1,
+      comment: 1,
+      share: 1,
+      write: type.value === "editor",
+    })
+    emit("success")
+  }, 1000)
 })
 
 const openDialog = computed({
