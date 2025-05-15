@@ -175,6 +175,9 @@
                   { label: 'Public', value: 'public' },
                 ]"
                 :hide-search="true"
+                @update:model-value="
+                  (val) => updateGeneralAccess(val, generalAccessLevel)
+                "
               />
               <Autocomplete
                 v-if="generalAccessLevel.value !== 'restricted'"
@@ -186,14 +189,7 @@
                 v-model="generalAccessType"
                 :hide-search="true"
                 @update:model-value="
-                  updateAccess.submit({
-                    entity_name: entity.name,
-                    user: '',
-                    ...generalAccessType.reduce((acc, { value }) => {
-                      acc[value] = 1
-                      return acc
-                    }, {}),
-                  })
+                  (val) => updateGeneralAccess(generalAccessType, val)
                 "
               ></Autocomplete>
             </div>
@@ -385,7 +381,7 @@ const getGeneralAccess = createResource({
   },
 })
 getGeneralAccess.fetch({ user: "" })
-watch([generalAccessType, generalAccessLevel], ([type, level]) => {
+const updateGeneralAccess = (type, level) => {
   for (let user of ["$TEAM", ""]) {
     updateAccess.submit({
       entity_name: props.entity.name,
@@ -393,18 +389,20 @@ watch([generalAccessType, generalAccessLevel], ([type, level]) => {
       method: "unshare",
     })
   }
-  setTimeout(() => {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user: level.value === "public" ? "" : "$TEAM",
-      read: 1,
-      comment: 1,
-      share: 1,
-      write: type.value === "editor",
-    })
-    emit("success")
-  }, 1000)
-})
+  if (level.value !== "restricted") {
+    setTimeout(() => {
+      updateAccess.submit({
+        entity_name: props.entity.name,
+        user: level.value === "public" ? "" : "$TEAM",
+        read: 1,
+        comment: 1,
+        share: 1,
+        write: type.value === "editor",
+      })
+      emit("success")
+    }, 1000)
+  }
+}
 
 const openDialog = computed({
   get: () => {
