@@ -41,7 +41,7 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
-import { setBreadCrumbs } from "@/utils/files"
+import { setBreadCrumbs, prettyData } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import router from "@/router"
 import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
@@ -119,6 +119,8 @@ const onSuccess = (data) => {
   if (!("docSpellcheck" in settings.value)) {
     settings.value.docSpellcheck = 1
   }
+  console.log(prettyData([entity])[0])
+  document.setData(prettyData([entity])[0])
   title.value = data.title
   oldTitle.value = data.title
   yjsContent.value = toUint8Array(data.content)

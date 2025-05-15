@@ -71,7 +71,7 @@
               <span class="col-span-1 text-gray-600">Type</span>
               <span class="col-span-1">Frappe Doc</span>
               <span class="col-span-1 text-gray-600">Size</span>
-              <span class="col-span-1">{{ entity.file_size_pretty }}</span>
+              <span class="col-span-1">{{ formatSize(entity.file_size) }}</span>
               <span class="col-span-1 text-gray-600">Modified</span>
               <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
               <span class="col-span-1 text-gray-600">Created</span>
@@ -898,7 +898,7 @@ import { useTimeAgo } from "@vueuse/core"
 import * as Y from "yjs"
 import { TiptapTransformer } from "@hocuspocus/transformer"
 import { fromUint8Array, toUint8Array } from "js-base64"
-import { formatDate } from "@/utils/format"
+import { formatDate, formatSize } from "@/utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
 import Clock from "../../EspressoIcons/Clock.vue"
 import ActivityTree from "../../ActivityTree.vue"
@@ -992,6 +992,7 @@ export default {
       sharedWithList: userList.data,
       tab: this.entity?.write ? 0 : 4,
       formatDate,
+      formatSize,
       docFont: this.settings.docFont,
       tabs: [
         {

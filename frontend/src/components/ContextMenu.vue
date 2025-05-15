@@ -67,8 +67,8 @@ const childWidth = ref(null)
 const childHeight = ref(null)
 
 onMounted(() => {
-  parentWidth.value = contextMenu.value.parentElement.clientWidth
-  parentHeight.value = contextMenu.value.parentElement.clientHeight
+  parentWidth.value = window.document.body.clientWidth
+  parentHeight.value = window.document.body.clientHeight
   childWidth.value = contextMenu.value.clientWidth
   childHeight.value = contextMenu.value.clientHeight
   calculateY()
