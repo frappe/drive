@@ -169,7 +169,13 @@ def files(
         .where(DrivePermission.user == "")
         .select(DrivePermission.entity)
     )
+    team_files_query = (
+        frappe.qb.from_(DrivePermission)
+        .where(DrivePermission.user == "$TEAM")
+        .select(DrivePermission.entity)
+    )
     public_files = set(k[0] for k in public_files_query.run())
+    team_files = set(k[0] for k in team_files_query.run())
     #  if personal != -1:
     #     child_count_query = child_count_query.where(DriveFile.is_private == personal)
     children_count = dict(child_count_query.run())
@@ -177,7 +183,12 @@ def files(
     res = query.run(as_dict=True)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
-        r["share_count"] = share_count.get(r["name"], 0) if r["name"] not in public_files else -2
+        if r["name"] in public_files:
+            r["share_count"] = -2
+        elif r["name"] in team_files:
+            r["share_count"] = -1
+        else:
+            r["share_count"] = share_count.get(r["name"], 0)
 
     return res
 

@@ -39,6 +39,7 @@
         </div>
       </div>
     </div>
+    <Dialogs :root-entity="file.data" />
     <InfoSidebar />
   </div>
 </template>
@@ -62,6 +63,7 @@ import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"
+import Dialogs from "@/components/Dialogs.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
 
 const router = useRouter()
@@ -110,6 +112,7 @@ onKeyStroke("ArrowRight", (e) => {
 })
 
 const onSuccess = (entity) => {
+  document.title = entity.title
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )

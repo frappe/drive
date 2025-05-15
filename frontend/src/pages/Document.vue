@@ -108,6 +108,7 @@ const saveDocument = () => {
 }
 
 const onSuccess = (data) => {
+  window.document.title = data.title
   if (!data.settings) {
     data.settings =
       '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'

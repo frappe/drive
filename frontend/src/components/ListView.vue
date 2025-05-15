@@ -84,6 +84,7 @@ import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
 import Users from "./EspressoIcons/Users.vue"
 import Globe from "./EspressoIcons/Globe.vue"
+import Team from "./EspressoIcons/Organization.vue"
 const store = useStore()
 const route = useRoute()
 const props = defineProps({
@@ -161,7 +162,7 @@ const selectedColumns = [
     },
     prefix: ({ row }) => {
       if (row.share_count === -2) return h(Globe)
-      else if (row.share_count === -1) return "Team"
+      else if (row.share_count === -1) return h(Team)
       else if (row.share_count > 0) return h(Users)
     },
     width: "10%",
@@ -211,7 +212,7 @@ const dropdownActionItems = (row) => {
       handler: () => {
         rowEvent.value = false
         store.commit("setActiveEntity", row)
-        a.onClick([row])
+        a.action([row])
       },
     }))
 }
