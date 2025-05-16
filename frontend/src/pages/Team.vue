@@ -15,6 +15,7 @@ import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 
 const store = useStore()
+store.commit("setCurrentFolder", { name: "" })
 if (getTeams.data)
   store.commit("setBreadcrumbs", [
     {

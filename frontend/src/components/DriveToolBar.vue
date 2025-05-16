@@ -1,5 +1,5 @@
 <template>
-  <div class="flex pl-3 pr-4 pt-2">
+  <div v-if="getEntities.data?.length" class="flex pl-3 pr-4 pt-2">
     <div v-if="selections?.length" class="my-auto w-[40%]">
       {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
       selected
@@ -236,7 +236,10 @@ watch(
     })
     props.getEntities.setData(rows.value)
     store.commit("setCurrentFolder", {
-      name: rows.value[0]?.parent_entity || "",
+      name:
+        props.getEntities.params?.entity_name ||
+        rows.value[0]?.parent_entity ||
+        "",
       entities: rows.value.filter?.((k) => k.title[0] !== "."),
     })
     store.commit("setSortOrder", val)

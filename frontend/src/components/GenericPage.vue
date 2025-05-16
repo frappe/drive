@@ -12,6 +12,12 @@
       () => ((selections = new Set()), store.commit('setActiveEntity', null))
     "
   />
+  <DriveToolBar
+    v-model="rows"
+    :action-items="actionItems"
+    :selections="selectedEntitities"
+    :get-entities="getEntities"
+  />
   <FolderContentsError
     v-if="verify?.error || getEntities.error"
     :error="verify?.error || getEntities.error"
@@ -22,14 +28,7 @@
     :primary-message="primaryMessage"
     :secondary-message="secondaryMessage"
   />
-
   <div class="flex flex-col overflow-scroll" ref="container" v-else>
-    <DriveToolBar
-      v-model="rows"
-      :action-items="actionItems"
-      :selections="selectedEntitities"
-      :get-entities="getEntities"
-    />
     <ListView
       v-if="$store.state.view === 'list'"
       v-model="selections"
@@ -78,7 +77,7 @@ import Move from "./EspressoIcons/Move.vue"
 import Info from "./EspressoIcons/Info.vue"
 import Preview from "./EspressoIcons/Preview.vue"
 import Trash from "./EspressoIcons/Trash.vue"
-import { ref, computed, watch, useTemplateRef } from "vue"
+import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
