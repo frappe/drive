@@ -147,12 +147,16 @@ allFolders.fetch({ team })
 
 const onDrop = (targetFile, draggedItem) => {
   if (!targetFile.is_group || draggedItem === targetFile.name) return
-  // Example: emit drop event or move file logic
   move.submit({
     entity_names: [draggedItem],
     new_parent: targetFile.name,
   })
-  props.getEntities.fetch()
+  const removedIndex = props.getEntities.data.findIndex(
+    (k) => k.name === draggedItem
+  )
+  props.getEntities.data.splice(removedIndex, 1)
+  props.getEntities.data.find((k) => k.name === targetFile.name).children += 1
+  props.getEntities.setData(data)
 }
 
 // Action Items

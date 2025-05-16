@@ -18,7 +18,7 @@
       @dragstart="draggedItem = file.name"
       @dragend="draggedItem = null"
       @dragover="file.is_group && $event.preventDefault()"
-      @drop="onDrop(file)"
+      @drop="$emit('dropped', file, draggedItem)"
       @click.meta="
         selections.has(file.name)
           ? selections.delete(file.name)
@@ -117,11 +117,6 @@ const open = (row) =>
   openEntity(route.params.team, row)
 
 const draggedItem = ref(null)
-
-const onDrop = (targetFile) => {
-  emit("dropped", targetFile, draggedItem.value)
-  draggedItem.value = null
-}
 </script>
 <style scoped>
 .grid-container {

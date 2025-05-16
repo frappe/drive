@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="px-3 select-none"
+    class="relative px-3 select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -42,14 +42,22 @@
             />
           </ListGroupHeader>
           <ListGroupRows :group="group">
-            <CustomListRow :rows="group.rows" :context-menu="contextMenu" />
+            <CustomListRow
+              :rows="group.rows"
+              :context-menu="contextMenu"
+              @dropped="emit('dropped')"
+            />
           </ListGroupRows>
         </div>
         <div v-else="formattedRows.length">
-          <CustomListRow :rows="formattedRows" :context-menu="contextMenu" />
+          <CustomListRow
+            :rows="formattedRows"
+            :context-menu="contextMenu"
+            @dropped="(...p) => $emit('dropped', ...p)"
+          />
         </div>
       </div>
-      <p class="hidden text-center w-[20%] left-[40%] top-[50%] z-10 font-bold">
+      <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
         Drop to upload
       </p>
     </template>
@@ -235,16 +243,13 @@ const handleSelections = (sels) => {
 }
 </script>
 <style>
-.dz-drag-hover #drop-area {
+/* .dz-drag-hover #drop-area {
   opacity: 0.5;
-  border: black 2px dotted;
-  box-sizing: content-box;
   padding-left: 0;
   padding-right: 0;
 }
 
 .dz-drag-hover #drop-area + p {
   display: block;
-  position: absolute;
-}
+} */
 </style>
