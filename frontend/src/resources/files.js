@@ -4,6 +4,7 @@ import { toast } from "@/utils/toasts"
 import store from "@/store"
 import router from "@/router"
 import { prettyData, setCache } from "@/utils/files"
+import { openEntity } from "@/utils/files"
 
 // GETTERS
 export const COMMON_OPTIONS = {
@@ -217,6 +218,52 @@ export const togglePersonal = createResource({
       return data
     })
   },
+})
+
+export const move = createResource({
+  url: "drive.api.files.move",
+  onSuccess() {
+    const moved = allFolders.data.find(
+      (k) => k.value === move.params.new_parent
+    ) || { value: "", label: "Home" }
+    // Only toast
+    toast({
+      title: "Moved to " + moved.label,
+      buttons: [
+        {
+          label: "Go",
+          action: () => {
+            openEntity(allFolders.params.team, {
+              name: moved.value,
+              is_group: true,
+              is_private: moved.params.is_private,
+            })
+          },
+        },
+      ],
+    })
+  },
+  onError() {
+    toast("There was an error - do you already have a file of that name?")
+  },
+})
+
+export const allFolders = createResource({
+  method: "GET",
+  url: "drive.api.list.files",
+  cache: "all-folders",
+  makeParams: (params) => ({
+    ...params,
+    is_active: 1,
+    folders: 1,
+    personal: -1,
+    only_parent: 0,
+  }),
+  transform: (d) =>
+    d.map((k) => ({
+      value: k.name,
+      label: k.title,
+    })),
 })
 
 export const translate = createResource({

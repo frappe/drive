@@ -11,6 +11,13 @@
     </Breadcrumbs>
 
     <div class="flex gap-2">
+      <FeatherIcon
+        v-if="rootEntity?.is_favourite"
+        name="star"
+        width="16"
+        height="16"
+        class="my-auto stroke-amber-500 fill-amber-500"
+      />
       <Dropdown :options="rootActions" v-if="rootActions">
         <Button variant="ghost" @click="triggerRoot">
           <FeatherIcon name="more-horizontal" class="h-4 w-4" />
@@ -92,15 +99,10 @@ const router = useRouter()
 defineProps({
   rootActions: Array,
   triggerRoot: Function,
+  rootEntity: Object,
 })
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const connectedUsers = computed(() => store.state.connectedUsers)
-
-// onMounted(() => {
-//   for (let element of document.getElementsByTagName("button")) {
-//     element.classList.remove("focus:ring-2", "focus:ring-offset-2")
-//   }
-// })
 
 // Functions
 const newDocument = async () => {

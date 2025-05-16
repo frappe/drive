@@ -112,6 +112,7 @@ declare module 'vue' {
     LucideImage: typeof import('~icons/lucide/image')['default']
     LucideLogOut: typeof import('~icons/lucide/log-out')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']
+    LucideStar: typeof import('~icons/lucide/star')['default']
     LucideTag: typeof import('~icons/lucide/tag')['default']
     LucideTrash: typeof import('~icons/lucide/trash')['default']
     LucideUser: typeof import('~icons/lucide/user')['default']

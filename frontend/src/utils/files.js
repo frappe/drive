@@ -36,7 +36,12 @@ export const openEntity = (team = null, entity, new_tab = false) => {
     route: null,
   })
 
-  if (entity.is_group) {
+  if (entity.name === "") {
+    router.push({
+      name: entity.is_private ? "Home" : "Team",
+      params: { team },
+    })
+  } else if (entity.is_group) {
     router.push({
       name: "Folder",
       params: { team, entityName: entity.name },

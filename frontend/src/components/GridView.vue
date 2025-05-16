@@ -7,13 +7,18 @@
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg group select-none entity cursor-pointer relative sm:w-[172px] sm:h-[172px] border"
+      class="grid-item rounded-lg group select-none entity cursor-pointer relative sm:w-[172px] sm:h-[172px] border bg-white"
       :class="[
         selections.has(file.name) || selectedRow?.name === file.name
           ? 'bg-gray-100 shadow-gray'
-          : 'border-gray-200 hover:shadow-xl',
+          : 'border-gray-200 hover:shadow-lg',
+        draggedItem === file.name ? 'opacity-60 hover:shadow-none' : '',
       ]"
       :draggable="true"
+      @dragstart="draggedItem = file.name"
+      @dragend="draggedItem = null"
+      @dragover="file.is_group && $event.preventDefault()"
+      @drop="onDrop(file)"
       @click.meta="
         selections.has(file.name)
           ? selections.delete(file.name)
@@ -69,6 +74,7 @@ const props = defineProps({
   actionItems: Array,
   userData: Object,
 })
+const emit = defineEmits(["dropped"])
 const route = useRoute()
 const store = useStore()
 const selections = defineModel(Set)
@@ -77,15 +83,6 @@ const rows = computed(() => props.folderContents)
 const action = (settings.data.message || settings.data).single_click
   ? "click"
   : "dblclick"
-
-defineEmits([
-  "entitySelected",
-  "openEntity",
-  "showEntityContext",
-  "showEmptyEntityContext",
-  "fetchFolderContents",
-  "updateOffset",
-])
 
 const selectedRow = ref(null)
 const rowEvent = ref(null)
@@ -110,7 +107,7 @@ const dropdownActionItems = (row) => {
       handler: () => {
         rowEvent.value = false
         store.commit("setActiveEntity", row)
-        a.onClick([row])
+        a.action([row])
       },
     }))
 }
@@ -118,6 +115,13 @@ const open = (row) =>
   !selections.value.size &&
   route.name !== "Trash" &&
   openEntity(route.params.team, row)
+
+const draggedItem = ref(null)
+
+const onDrop = (targetFile) => {
+  emit("dropped", targetFile, draggedItem.value)
+  draggedItem.value = null
+}
 </script>
 <style scoped>
 .grid-container {

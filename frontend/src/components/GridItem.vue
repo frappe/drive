@@ -13,11 +13,11 @@
       :draggable="false"
     />
   </div>
-  <div class="p-2 h-2/5 content-center grid border-t border-gray-100">
-    <span class="truncate text-base font-medium text-gray-800">
+  <div class="p-2 h-1/5 my-2 border-t border-gray-100">
+    <div class="truncate w-full w-fit text-base font-medium text-gray-800">
       {{ file.title }}
-    </span>
-    <div class="mt-1 text-xs text-gray-600">
+    </div>
+    <div class="mt-[5px] text-xs text-gray-600">
       <div class="flex items-center justify-start gap-1">
         <img
           v-if="formattedType !== 'Unknown' && !file.is_group"

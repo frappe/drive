@@ -5,36 +5,42 @@
       verify?.data &&
       actionItems
         .filter((k) => k.isEnabled?.(verify.data))
+        // Remove irrelevant ones
         .slice(1)
+        .toSpliced(4, 1)
         .map((k) => ({ ...k, onClick: () => k.action([verify.data]) }))
     "
     :trigger-root="
       () => ((selections = new Set()), store.commit('setActiveEntity', null))
     "
+    :root-entity="verify?.data"
   />
-  <DriveToolBar
-    v-model="rows"
-    :action-items="actionItems"
-    :selections="selectedEntitities"
-    :get-entities="getEntities"
-  />
+
   <FolderContentsError
     v-if="verify?.error || getEntities.error"
     :error="verify?.error || getEntities.error"
   />
-  <NoFilesSection
-    v-else-if="!props.getEntities.data?.length"
-    :icon="icon"
-    :primary-message="primaryMessage"
-    :secondary-message="secondaryMessage"
-  />
-  <div class="flex flex-col overflow-scroll" ref="container" v-else>
+
+  <div class="flex flex-col overflow-scroll min-h-full" ref="container" v-else>
+    <DriveToolBar
+      v-model="rows"
+      :action-items="actionItems"
+      :selections="selectedEntitities"
+      :get-entities="getEntities"
+    />
+    <NoFilesSection
+      v-if="!props.getEntities.data?.length"
+      :icon="icon"
+      :primary-message="primaryMessage"
+      :secondary-message="secondaryMessage"
+    />
     <ListView
-      v-if="$store.state.view === 'list'"
+      v-else-if="$store.state.view === 'list'"
       v-model="selections"
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
       :user-data="userData"
+      @dropped="onDrop"
     />
     <GridView
       v-else
@@ -42,6 +48,7 @@
       :folder-contents="rows"
       :action-items="actionItems"
       :user-data="userData"
+      @dropped="onDrop"
     />
     <InfoPopup :entities="infoEntities" />
   </div>
@@ -82,6 +89,7 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
+import { move, allFolders } from "@/resources/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -133,6 +141,19 @@ watch(
 )
 
 allUsers.fetch({ team })
+allFolders.fetch({ team })
+
+// Drag and drop
+
+const onDrop = (targetFile, draggedItem) => {
+  if (!targetFile.is_group || draggedItem === targetFile.name) return
+  // Example: emit drop event or move file logic
+  move.submit({
+    entity_names: [draggedItem],
+    new_parent: targetFile.name,
+  })
+  props.getEntities.fetch()
+}
 
 // Action Items
 const actionItems = computed(() => {

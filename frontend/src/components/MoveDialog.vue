@@ -77,11 +77,11 @@
       </div>
       <Autocomplete
         class="mb-2"
-        v-if="fetchAllFolders.data"
+        v-if="allFolders.data"
         v-model="folderSearch"
         placeholder="Search for a folder"
         :options="
-          fetchAllFolders.data.filter((k) =>
+          allFolders.data.filter((k) =>
             currentFolder === ''
               ? k.label !== 'Home'
               : k.value !== currentFolder
@@ -169,12 +169,12 @@ import {
   Autocomplete,
 } from "frappe-ui"
 import { formatMimeType } from "@/utils/format"
+import { move, allFolders } from "@/resources/files"
 import Home from "./EspressoIcons/Home.vue"
 import Team from "./EspressoIcons/Organization.vue"
 import Move from "./EspressoIcons/Move.vue"
 import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
-import { toast } from "@/utils/toasts.js"
 import { useStore } from "vuex"
 
 const route = useRoute()
@@ -326,44 +326,4 @@ function closeEntity(name) {
     })
   }
 }
-
-const fetchAllFolders = createResource({
-  method: "GET",
-  url: "drive.api.list.files",
-  cache: "all-folders",
-  auto: true,
-  params: {
-    team: route.params.team,
-    is_active: 1,
-    folders: 1,
-    personal: -1,
-    only_parent: 0,
-  },
-  transform: (d) =>
-    d.map((k) => ({
-      value: k.name,
-      label: k.title,
-    })),
-})
-
-const move = createResource({
-  url: "drive.api.files.move",
-  onSuccess() {
-    const moved = breadcrumbs.value[breadcrumbs.value.length - 1]
-    toast({
-      title: "Moved to " + moved.title,
-      buttons: [
-        {
-          label: "Go",
-          action: () => {
-            openFolder(route.params.team, { name: moved.name, is_group: true })
-          },
-        },
-      ],
-    })
-  },
-  onError() {
-    toast("There was an error - do you already have a file of that name?")
-  },
-})
 </script>
