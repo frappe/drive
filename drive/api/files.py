@@ -304,6 +304,7 @@ def create_folder(team, title, personal=False, parent=None):
                 "is_private": 1,
             }
         )
+    # BROKEN: capitlization?
     if entity_exists:
         suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(

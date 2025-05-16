@@ -92,6 +92,7 @@ const props = defineProps({
   actionItems: Array,
   userData: Object,
 })
+const emit = defineEmits(["dropped"])
 
 const container = useTemplateRef("container")
 

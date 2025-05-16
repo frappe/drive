@@ -28,6 +28,7 @@ import { del } from "idb-keyval"
 import { toast } from "@/utils/toasts.js"
 import emitter from "@/emitter"
 import { mutate, getTrash } from "@/resources/files.js"
+import { sortEntities } from "@/utils/files.js"
 
 export default {
   name: "GeneralDialog",
@@ -80,8 +81,12 @@ export default {
             message:
               "Selected items will be restored to their original locations.",
             buttonMessage: "Restore",
-            onSuccess: (e) =>
-              getTrash.setData((d) => d.filter((k) => !e.includes(k.name))),
+            onSuccess: (entities, data) => {
+              getTrash.setData((d) =>
+                d.filter((k) => !e.map((l) => l.name).includes(k.name))
+              ),
+                console.log(data)
+            },
             variant: "solid",
             buttonIcon: "refresh-ccw",
             methodName: "drive.api.files.remove_or_restore",
@@ -96,6 +101,9 @@ export default {
               " will be moved to Trash. Items in trash are deleted forever after 30 days.",
             buttonMessage: "Move to Trash",
             mutate: (el) => (el.is_active = 0),
+            onSuccess: (e) => {
+              getTrash.setData(sortEntities([...getTrash.data, ...e]))
+            },
             theme: "red",
             variant: "subtle",
             buttonIcon: "trash-2",
@@ -137,9 +145,7 @@ export default {
           if (this.dialogData.mutate)
             mutate(this.entities, this.dialogData.mutate)
           if (this.dialogData.onSuccess)
-            this.dialogData.onSuccess(
-              this.entities.map((entity) => entity.name)
-            )
+            this.dialogData.onSuccess(this.entities, data)
           toast({
             title: this.dialogData.toastMessage,
             position: "bottom-right",

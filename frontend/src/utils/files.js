@@ -23,8 +23,12 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
   if (!entity.is_group) {
-    getRecents.setData((data) => [...(data || []), entity])
-    mutate([entity], (e) => (e.accessed = true))
+    if (!getRecents.data.some((k) => k.name === entity.name))
+      getRecents.setData((data) => [...(data || []), entity])
+    mutate([entity], (e) => {
+      e.accessed = Date()
+      entity.relativeAccessed = useTimeAgo(entity.accessed)
+    })
   }
   if (new_tab) {
     return window.open(getLink(entity, false), "_blank")
@@ -62,6 +66,17 @@ export const openEntity = (team = null, entity, new_tab = false) => {
       params: { team, entityName: entity.name },
     })
   }
+}
+
+export const sortEntities = (rows, order) => {
+  if (!order) order = store.state.sortOrder
+  // Mutates directly
+  const field = order.field
+  const asc = order.ascending ? 1 : -1
+  rows.sort((a, b) => {
+    return a[field] == b[field] ? 0 : a[field] > b[field] ? asc : -asc
+  })
+  return rows
 }
 
 export const manageBreadcrumbs = (to) => {

@@ -85,6 +85,8 @@ import emitter from "@/emitter"
 import { useStore } from "vuex"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
+import { sortEntities } from "@/utils/files"
+import { useTimeAgo } from "@vueuse/core"
 
 const dialog = defineModel(String)
 const store = useStore()
@@ -111,9 +113,13 @@ emitter.on("newLink", () => (dialog.value = "l"))
 const setTitle = (title) =>
   (document.title = (route.name === "Folder" ? "Folder - " : "") + title)
 function addToList(data) {
-  props.getEntities.data.push(data)
-  props.getEntities.setData(props.getEntities.data)
-  props.getEntities.fetch()
+  data.modified = Date()
+  data.relativeModified = useTimeAgo(data.modified)
+  const newData = [...props.getEntities.data, data]
+  console.log(newData, store.state.sortOrder)
+  sortEntities(newData, store.state.sortOrder)
+  props.getEntities.setData(newData)
+  // props.getEntities.fetch()
   resetDialog()
 }
 

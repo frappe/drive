@@ -30,9 +30,9 @@ const getFolderContents = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   makeParams: (params) => ({
+    ...params,
     entity_name: props.entityName,
     team: props.team,
-    ...params,
   }),
   cache: ["folder", props.entityName],
 })

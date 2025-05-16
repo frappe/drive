@@ -201,8 +201,7 @@
 <script setup>
 import { Button, FeatherIcon, Tooltip, Dropdown, TextInput } from "frappe-ui"
 import { ref, computed, watch, useTemplateRef } from "vue"
-import { ICON_TYPES, MIME_LIST_MAP } from "@/utils/files"
-import Share from "./EspressoIcons/Share.vue"
+import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
 import ViewList from "@/components/EspressoIcons/ViewList.vue"
@@ -229,11 +228,7 @@ watch(
   [sortOrder, () => props.getEntities.loading],
   ([val, loading]) => {
     if (!rows.value || loading) return
-    const field = val.field
-    const order = val.ascending ? 1 : -1
-    rows.value.sort((a, b) => {
-      return a[field] == b[field] ? 0 : a[field] > b[field] ? order : -order
-    })
+    sortEntities(rows.value, val)
     props.getEntities.setData(rows.value)
     store.commit("setCurrentFolder", {
       name:

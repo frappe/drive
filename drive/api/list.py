@@ -2,7 +2,7 @@ import frappe
 import json
 from drive.utils.files import get_home_folder, MIME_LIST_MAP
 from .permissions import ENTITY_FIELDS, get_user_access
-from pypika import Order, Criterion, Field, functions as fn, CustomFunction
+from pypika import Order, Criterion, functions as fn, CustomFunction
 
 
 DriveUser = frappe.qb.DocType("User")
@@ -83,9 +83,8 @@ def files(
         query = query.where(
             (Binary(DriveFile[field]) > cursor if ascending else field < cursor)
         ).limit(limit)
-        print(query)
-        pass
-    if only_parent:
+
+    if only_parent and (not recents_only and not favourites_only):
         query = query.where(DriveFile.parent_entity == entity_name)
     else:
         query = query.where((DriveFile.team == team) & (DriveFile.parent_entity != ""))
@@ -109,7 +108,7 @@ def files(
         query = (
             query.left_join(Recents)
             .on((Recents.entity_name == DriveFile.name) & (Recents.user == frappe.session.user))
-            .orderby(Binary(DriveFile[field]), order=Order.asc if ascending else Order.desc)
+            .orderby(DriveFile[field], order=Order.asc if ascending else Order.desc)
         )
 
     if favourites_only or recents_only:
