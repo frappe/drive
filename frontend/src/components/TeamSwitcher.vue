@@ -32,6 +32,7 @@
               params: { team: getTeams.data[team].name },
             }"
             class="block w-100 rounded justify-center items-center p-1 text-sm text-gray-700 hover:bg-gray-100"
+            @click="LISTS.forEach((k) => k.reset())"
           >
             {{ getTeams.data[team].title }}
           </router-link>
@@ -49,6 +50,7 @@ import { FeatherIcon } from "frappe-ui"
 import { getTeams } from "@/resources/files"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
+import { LISTS } from "@/resources/files"
 
 getTeams.fetch()
 const route = useRoute()

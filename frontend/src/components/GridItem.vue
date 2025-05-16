@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-3/5 flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden"
+    class="h-[65%] flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden"
   >
     <img
       loading="lazy"
@@ -13,7 +13,9 @@
       :draggable="false"
     />
   </div>
-  <div class="p-2 h-1/5 my-2 border-t border-gray-100">
+  <div
+    class="p-2 h-[35%] border-t border-gray-100 flex flex-col justify-evenly"
+  >
     <div class="truncate w-full w-fit text-base font-medium text-gray-800">
       {{ file.title }}
     </div>

@@ -91,7 +91,13 @@ export const getTrash = createResource({
 })
 
 // SETTERS
-const LISTS = [getPersonal, getHome, getRecents, getShared, getFavourites]
+export const LISTS = [
+  getPersonal,
+  getHome,
+  getRecents,
+  getShared,
+  getFavourites,
+]
 export const mutate = (entities, func) => {
   LISTS.forEach((l) =>
     l.setData((d) => {
