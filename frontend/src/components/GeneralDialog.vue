@@ -29,6 +29,7 @@ import { toast } from "@/utils/toasts.js"
 import emitter from "@/emitter"
 import { mutate, getTrash } from "@/resources/files.js"
 import { sortEntities } from "@/utils/files.js"
+import { useTimeAgo } from "@vueuse/core"
 
 export default {
   name: "GeneralDialog",
@@ -38,7 +39,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     entities: {
@@ -102,7 +103,16 @@ export default {
             buttonMessage: "Move to Trash",
             mutate: (el) => (el.is_active = 0),
             onSuccess: (e) => {
-              getTrash.setData(sortEntities([...getTrash.data, ...e]))
+              getTrash.setData(
+                sortEntities([
+                  ...getTrash.data,
+                  ...e.map((k) => {
+                    k.modified = Date()
+                    k.relativeModified = useTimeAgo(k.modified)
+                    return k
+                  }),
+                ])
+              )
             },
             theme: "red",
             variant: "subtle",
@@ -119,7 +129,7 @@ export default {
         return this.modelValue === this.for
       },
       set(value) {
-        this.$emit("update:modelValue", value)
+        this.$emit("update:modelValue", value || "")
       },
     },
   },

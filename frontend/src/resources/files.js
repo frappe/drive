@@ -182,10 +182,12 @@ export const clearRecent = createResource({
       entity_names,
     }
   },
-  onSuccess: () =>
-    getRecents.previousData > 1
-      ? toast(`Cleared  ${getRecents.previousData.length} files from Recents`)
-      : null,
+  onSuccess: () => {
+    const files = clearRecent.params.entity_names?.length
+    toast(
+      `Removed  ${files || "all"} file${files === 1 ? "" : "s"} from Recents.`
+    )
+  },
 })
 
 export const clearTrash = createResource({
@@ -197,12 +199,13 @@ export const clearTrash = createResource({
     }
     return { entity_names: data.entities.map((e) => e.name) }
   },
-  onSuccess: () =>
+  onSuccess: () => {
+    // Buggy for some reason
+    const files = clearTrash.params.entity_names?.length
     toast(
-      `Permanently deleted  ${clearRecent.params.entities} file${
-        clearRecent.params.entities === 1 ? "" : "s"
-      }.`
-    ),
+      `Permanently deleted ${files || "all"} file${files === 1 ? "" : "s"}.`
+    )
+  },
 })
 
 export const rename = createResource({

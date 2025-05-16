@@ -1,6 +1,6 @@
 <template>
-  <div v-if="getEntities.data?.length" class="flex pl-3 pr-4 pt-2">
-    <div v-if="selections?.length" class="my-auto w-[40%]">
+  <div v-if="getEntities.data?.length" class="flex p-3">
+    <div v-if="selections?.length" class="my-auto w-[40%] text-base">
       {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
       selected
     </div>

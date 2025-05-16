@@ -803,7 +803,7 @@ def auto_delete_from_trash():
     days_before = (date.today() - timedelta(days=30)).isoformat()
     result = frappe.db.get_all(
         "Drive File",
-        filters={"is_active": 0, "trashed_on": ["<", days_before]},
+        filters={"is_active": 0, "last_modified": ["<", days_before]},
         fields=["name"],
     )
     delete_entities(result)

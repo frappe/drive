@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="px-[10px] pt-3 select-none"
+    class="px-3 select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -19,7 +19,7 @@
       },
     }"
   >
-    <ListHeader />
+    <ListHeader class="mb-[1px]" />
     <div
       v-if="!folderContents"
       class="w-full text-center flex items-center justify-center py-10"

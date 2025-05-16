@@ -135,7 +135,7 @@ has_permission = {
 
 scheduler_events = {
     "daily": ["drive.api.files.auto_delete_from_trash"],
-    "daily": ["drive.api.permissions.auto_delete_expired_docshares"],
+    "hourly": ["drive.api.permissions.auto_delete_expired_perms"],
 }
 
 # Testing

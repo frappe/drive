@@ -181,30 +181,14 @@ def get_shared_with_list(entity):
     return permissions
 
 
-# BROKEN
-@frappe.whitelist()
-def update_document_invalidation(entity_name, invalidation_date):
-    x = frappe.get_list(
-        "Drive DocShare",
-        filters={"share_name": entity_name, "share_doctype": "Drive File"},
-        order_by="creation desc",
-        fields=["name", "valid_until", "share_parent"],
-    )
-    for i in x:
-        doc = frappe.get_doc("Drive DocShare", i.name)
-        doc.valid_until = invalidation_date
-        doc.save()
-
-
-def auto_delete_expired_docshares():
+def auto_delete_expired_perms():
     current_date = getdate()
     expired_documents = frappe.get_list(
         "Drive Permission",
         filters=[
-            ["valid_until", "<", current_date],
             ["valid_until", "is", "set"],
+            ["valid_until", "<", current_date],
         ],
-        order_by="creation desc",
         fields=["name", "valid_until"],
     )
     if expired_documents:
@@ -214,7 +198,6 @@ def auto_delete_expired_docshares():
                 frappe.delete_doc("Drive Permission", d.name)
 
         frappe.enqueue(batch_delete_perms, docs=expired_documents)
-    return
 
 
 def user_has_permission(doc, ptype, user):
