@@ -69,6 +69,7 @@ import emitter from "@/emitter"
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
+import AppSwitcher from "./AppSwitcher.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -100,6 +101,9 @@ const settingsItems = computed(() => {
       items: [
         {
           component: markRaw(TeamSwitcher),
+        },
+        {
+          component: markRaw(AppSwitcher),
         },
         {
           icon: Docs,

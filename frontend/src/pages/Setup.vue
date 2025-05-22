@@ -120,7 +120,7 @@ const createPersonalTeam = createResource({
   }),
   onSuccess: (data) => {
     if (data) {
-      window.location.replace("/t/" + data)
+      window.location.replace("/drive/t/" + data)
     } else {
       window.location.reload()
     }
