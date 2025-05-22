@@ -9,6 +9,7 @@ import os
 import boto3
 import frappe
 from io import BytesIO
+from botocore.config import Config
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -97,6 +98,7 @@ class FileManager:
                 aws_access_key_id=settings.aws_key,
                 aws_secret_access_key=settings.get_password("aws_secret"),
                 endpoint_url=(settings.endpoint_url or None),
+                config=Config(signature_version="s3v4"),
             )
 
     def upload_file(self, current_path: str, new_path: str) -> None:
@@ -105,6 +107,7 @@ class FileManager:
         """
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
+            os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
 
