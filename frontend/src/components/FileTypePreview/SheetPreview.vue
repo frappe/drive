@@ -9,25 +9,16 @@
 </template>
 <script setup>
 import { LoadingIndicator } from "frappe-ui"
-import { ref, onBeforeUnmount, onMounted, watch, computed, inject } from "vue"
+import { ref, onBeforeUnmount, onMounted, watch } from "vue"
 import { read, utils } from "xlsx"
 import Spreadsheet from "x-data-spreadsheet"
 
 const props = defineProps({
-  previewEntity: {
-    type: Object,
-    default: null,
-  },
+  previewEntity: Object,
 })
 
 const loading = ref(true)
-const canWrite = computed(() => {
-  return props.previewEntity.owner == "You"
-    ? true
-    : props.previewEntity.write
-    ? true
-    : false
-})
+
 let grid
 async function fetchContent() {
   loading.value = true

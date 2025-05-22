@@ -73,7 +73,7 @@
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">Type</span>
               <span class="col-span-1" :title="entity.mime_type">
-                {{ formattedMimeType }}
+                {{ entity.file_type_pretty }}
               </span>
               <span v-if="entity.file_size" class="col-span-1 text-gray-600">
                 Size
@@ -216,7 +216,6 @@ import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
 import { generalAccess, userList } from "@/resources/permissions"
-import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 
 const store = useStore()
 const tab = ref(0)
@@ -226,13 +225,6 @@ const thumbnailLink = ref("")
 const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
-
-const formattedMimeType = computed(() => {
-  if (entity.value.is_group) return "Folder"
-  const kind = formatMimeType(entity.value.mime_type)
-  return kind.charAt(0).toUpperCase() + kind.slice(1)
-})
-
 const entity = computed(() => store.state.activeEntity)
 
 function switchTab(val) {

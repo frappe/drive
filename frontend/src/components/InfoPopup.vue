@@ -30,7 +30,7 @@
 
           <li>
             <span class="inline-block w-24 text-gray-600">Type:</span>
-            <span class="col-span-1">{{ getEntityType(entity) }}</span>
+            <span class="col-span-1">{{ entity.file_type_pretty }}</span>
           </li>
           <li v-if="entity.file_size">
             <span class="inline-block w-24 text-gray-600">Size:</span>
@@ -116,8 +116,7 @@
 </template>
 
 <script setup>
-import { formatMimeType, formatDate } from "@/utils/format"
-import Info from "./EspressoIcons/Info.vue"
+import { formatDate } from "@/utils/format"
 
 import { UseDraggable } from "@vueuse/components"
 import { Button } from "frappe-ui"
@@ -126,11 +125,6 @@ import { computedAsync } from "@vueuse/core"
 const props = defineProps({
   entities: Array,
 })
-
-const getEntityType = (entity) => {
-  if (entity.is_group) return "Folder"
-  return formatMimeType(entity.mime_type, false)
-}
 
 const height = document.body.clientHeight
 const width = document.body.clientWidth
