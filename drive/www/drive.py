@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 import frappe
+from drive.api.permissions import get_user_access
 
 no_cache = 1
+
+TITLES = {"login": "Login", "signup": "Create an Account", "setup": "Set up your Account"}
 
 
 def get_context():
@@ -12,6 +15,25 @@ def get_context():
     context.boot.csrf_token = csrf_token
     context.csrf_token = csrf_token
     context.site_name = frappe.local.site
+    # Parsing
+    parts = frappe.form_dict.app_path.split("/")
+    context.title = "Frappe Drive"
+    context.description = "Visit Drive online."
+    context.og_image = "https://raw.githubusercontent.com/frappe/drive/main/.github/og_1200.png"
+
+    if len(parts) >= 4:
+        doc = frappe.get_doc("Drive File", parts[3])
+        if get_user_access(doc)["read"]:
+            context.title = "Folder - " + doc.title if doc.is_group else doc.title
+            context.description = "Owned by " + doc.owner
+
+            context.og_image = (
+                "/api/method/drive.api.thumbnail_generator.create_image_thumbnail?entity_name="
+                + doc.name
+            )
+    elif parts[0] in TITLES:
+        context.title = TITLES[parts[0]]
+        context.description = ""
     return context
 
 

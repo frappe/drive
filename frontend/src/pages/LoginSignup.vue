@@ -4,10 +4,7 @@
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
           <!-- logo -->
-          <div
-            class="flex flex-col items-center"
-            @dblclick="window.location.href = '/f-login'"
-          >
+          <div class="flex flex-col items-center">
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
           <!-- card -->
@@ -18,7 +15,7 @@
               <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
                 {{
                   isLogin
-                    ? "Log in to Drive"
+                    ? "Login to Drive"
                     : params.get("t")
                     ? "Join " + params.get("t")
                     : "Create a new account"

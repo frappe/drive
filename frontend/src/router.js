@@ -12,18 +12,6 @@ async function setRootBreadCrumb(to) {
     document.title = to.name
     store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
-  document
-    .querySelector(`head meta[property="og:title"]`)
-    .setAttribute("content", "Drive - " + to.name)
-  document
-    .querySelector(`head meta[name="twitter:title"]`)
-    .setAttribute("content", "Drive - " + to.name)
-  document
-    .querySelector(`head meta[property="og:image"]`)
-    .setAttribute("content", "")
-  document
-    .querySelector(`head meta[name="twitter:image"]`)
-    .setAttribute("content", "")
 }
 
 const routes = [
