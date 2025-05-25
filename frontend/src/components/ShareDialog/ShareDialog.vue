@@ -81,70 +81,74 @@
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0"
           >
-            <ComboboxOptions
-              v-if="open && query.length"
-              class="absolute z-10 left-4 mt-1 max-h-30 w-[calc(100%-2rem)] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
+            <div
+              class="absolute z-[4] mt-1 rounded-lg bg-surface-modal text-base shadow-2xl"
             >
-              <ComboboxOption
-                as="template"
-                v-if="!filteredUsers.length"
-                :value="{ email: query, name: query }"
-                v-slot="{ selected, active }"
+              <ComboboxOptions
+                v-if="open && query.length"
+                class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5"
               >
-                <li
-                  class="relative cursor-default select-none py-2 pl-10 pr-4"
-                  :class="{
-                    'bg-gray-200 text-black': active,
-                    'text-gray-700': !active,
-                  }"
+                <ComboboxOption
+                  as="template"
+                  v-if="!filteredUsers.length"
+                  :value="baseOption"
+                  v-slot="{ selected, active }"
                 >
-                  <span
-                    class="block truncate"
+                  <li
+                    class="flex cursor-pointer items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
                     :class="{
-                      'font-medium': selected,
-                      'font-normal': !selected,
+                      'bg-surface-gray-3': active,
                     }"
                   >
-                    {{ query }}
-                  </span>
-                </li>
-              </ComboboxOption>
-              <ComboboxOption
-                v-for="person in filteredUsers"
-                as="template"
-                :key="person.email"
-                :value="person"
-                v-slot="{ selected, active }"
-              >
-                <li
-                  class="relative cursor-default select-none py-2 pl-10 pr-4"
-                  :class="{
-                    'bg-gray-200 text-black': active,
-                    'text-gray-700': !active,
-                  }"
-                >
-                  <span
-                    class="block truncate"
-                    :class="{
-                      'font-medium': selected,
-                      'font-normal': !selected,
-                    }"
-                  >
-                    {{ person.email }}
-                    <span v-if="person.full_name"
-                      >({{ person.full_name }})</span
+                    <span
+                      class="block truncate"
+                      :class="{
+                        'font-medium': selected,
+                        'font-normal': !selected,
+                      }"
                     >
-                  </span>
-                  <span
-                    v-if="selected"
-                    class="absolute inset-y-0 left-0 flex items-center pl-2"
-                    :class="{ 'text-black': active, 'text-gray-700': !active }"
+                      {{ query }}
+                    </span>
+                  </li>
+                </ComboboxOption>
+                <ComboboxOption
+                  v-for="person in filteredUsers"
+                  as="template"
+                  :key="person.email"
+                  :value="person"
+                  v-slot="{ selected, active }"
+                >
+                  <li
+                    class="cursor-pointer flex justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
+                    :class="{
+                      'bg-surface-gray-3': active,
+                    }"
                   >
-                    <LucideCheck class="size-4" aria-hidden="true" />
-                  </span>
-                </li>
-              </ComboboxOption>
-            </ComboboxOptions>
+                    <span
+                      class="block truncate"
+                      :class="{
+                        'font-medium': selected,
+                        'font-normal': !selected,
+                      }"
+                    >
+                      {{ person.email }}
+                      <span v-if="person.full_name"
+                        >({{ person.full_name }})</span
+                      >
+                    </span>
+                    <span
+                      v-if="selected"
+                      :class="{
+                        'text-black': active,
+                        'text-gray-700': !active,
+                      }"
+                    >
+                      <LucideCheck class="size-4" aria-hidden="true" />
+                    </span>
+                  </li>
+                </ComboboxOption>
+              </ComboboxOptions>
+            </div>
           </transition>
         </Combobox>
         <Button
@@ -331,6 +335,7 @@ watch(sharedUsers, (now, prev) => {
 })
 const shareAccess = ref({ value: "reader" })
 const advancedTweak = false
+const baseOption = computed(() => ({ email: query, name: query }))
 const query = ref("")
 const queryInput = useTemplateRef("queryInput")
 const filteredUsers = computed(() => {
