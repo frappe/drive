@@ -4,7 +4,14 @@
   "creation": "2025-04-09 12:48:31.850910",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["enabled", "aws_key", "aws_secret", "bucket", "endpoint_url"],
+  "field_order": [
+    "enabled",
+    "aws_key",
+    "aws_secret",
+    "bucket",
+    "endpoint_url",
+    "signature_version"
+  ],
   "fields": [
     {
       "depends_on": "enabled",
@@ -31,17 +38,26 @@
       "label": "S3 Bucket"
     },
     {
+      "depends_on": "enabled",
       "description": "Example format: https://s3.ap-south-1.amazonaws.com",
       "fieldname": "endpoint_url",
       "fieldtype": "Data",
       "label": "Endpoint URL"
+    },
+    {
+      "default": "s3v4",
+      "depends_on": "enabled",
+      "description": "Defaults to \"s3v4\". Some providers only support \"s3\".",
+      "fieldname": "signature_version",
+      "fieldtype": "Data",
+      "label": "Signature Version"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-05-13 15:15:54.389028",
+  "modified": "2025-05-25 19:05:44.366826",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive S3 Settings",
