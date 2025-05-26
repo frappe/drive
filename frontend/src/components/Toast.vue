@@ -51,8 +51,7 @@
   </div>
 </template>
 <script>
-import { FeatherIcon, Button } from "frappe-ui"
-import Avatar from "frappe-ui/src/components/Avatar.vue"
+import { FeatherIcon, Button, Avatar } from "frappe-ui"
 
 export default {
   name: "Toast",

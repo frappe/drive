@@ -118,8 +118,7 @@ import {
   formatPercent,
 } from "@/utils/format"
 import Cloud from "@/components/EspressoIcons/Cloud.vue"
-import FeatherIcon from "frappe-ui/src/components/FeatherIcon.vue"
-import { Tooltip } from "frappe-ui"
+import { Tooltip, FeatherIcon } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createResource } from "frappe-ui"

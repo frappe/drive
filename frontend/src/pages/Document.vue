@@ -39,12 +39,11 @@ import {
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { createResource } from "frappe-ui"
+import { createResource, LoadingIndicator } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs, prettyData } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import router from "@/router"
-import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
