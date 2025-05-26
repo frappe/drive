@@ -63,7 +63,7 @@ const childrenSentence = computed(() => {
 })
 
 onMounted(async () => {
-  if (!["Image", "Video"].includes(formattedType)) return
+  if (!["Image", "Video", "PDF"].includes(formattedType)) return
   const result = await getThumbnailUrl(
     formatMimeType(props.file.mime_type),
     props.file.name,

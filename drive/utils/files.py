@@ -10,6 +10,7 @@ import boto3
 import frappe
 from io import BytesIO
 from botocore.config import Config
+from wand.image import Image as WandImage
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -120,7 +121,10 @@ class FileManager:
                 os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
-            if drive_file.mime_type.startswith(("image", "video")):
+            if (
+                drive_file.mime_type.startswith(("image", "video"))
+                or drive_file.mime_type == "application/pdf"
+            ):
                 self.upload_thumbnail(drive_file)
 
     def upload_thumbnail(self, file):
@@ -128,7 +132,7 @@ class FileManager:
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
         team_directory = get_home_folder(file.team)["name"]
-        save_path = Path(team_directory) / "thumbnails" / (file.name + ".thumbnail")
+        save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
         disk_path = self.site_folder / save_path
         file_path = str(self.site_folder / file.path)
         with DistributedLock(file.path, exclusive=False):
@@ -153,11 +157,19 @@ class FileManager:
                     with open(str(disk_path), "wb") as f:
                         f.write(thumbnail_encoded)
                 elif file.mime_type == "application/pdf":
-                    print("EHYYU")
+                    imageFromPdf = WandImage(filename=file_path)
+                    image = WandImage(width=imageFromPdf.width, height=imageFromPdf.height)
+                    image.composite(imageFromPdf.sequence[0], top=0, left=0)
+                    image.resize(512, 512)
+                    image.format = "jpeg"
+                    image.save(filename=disk_path)
+                    # Rename as directly passing in .thumbnail fails
+                    Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
             except Exception as e:
-                pass
+                print(e)
 
         if self.s3_enabled:
+            os.remove(file_path)
             self.conn.upload_file(disk_path, self.bucket, str(save_path))
             disk_path.unlink()
 
@@ -249,57 +261,6 @@ def get_team_thumbnails_directory(team_name):
     return Path(
         frappe.get_site_path("private/files"), get_home_folder(team_name)["name"], "thumbnails"
     )
-
-
-def create_thumbnail(entity_name, path, mime_type, team):
-    user_thumbnails_directory = get_team_thumbnails_directory(team)
-    thumbnail_savepath = Path(user_thumbnails_directory, entity_name + ".thumbnail")
-
-    with DistributedLock(path, exclusive=False):
-        if mime_type.startswith("image"):
-            max_retries = 3
-            retry_count = 0
-            while retry_count < max_retries:
-                try:
-                    image_path = path
-                    with Image.open(image_path).convert("RGB") as image:
-                        image = ImageOps.exif_transpose(image)
-                        image.thumbnail((512, 512))
-                        image.save(str(thumbnail_savepath), format="webp")
-                    break
-                except Exception as e:
-                    print(e)
-                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
-                    retry_count += 1
-            else:
-                print("Failed to create thumbnail after maximum retries.")
-
-        if mime_type.startswith("video"):
-            max_retries = 3
-            retry_count = 0
-            while retry_count < max_retries:
-                try:
-                    video_path = str(path)
-                    cap = cv2.VideoCapture(video_path)
-                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    target_frame = int(frame_count / 2)
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
-                    ret, frame = cap.read()
-                    cap.release()
-                    _, thumbnail_encoded = cv2.imencode(
-                        # ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30]
-                        ".webp",
-                        frame,
-                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
-                    )
-                    with open(str(thumbnail_savepath) + ".thumbnail", "wb") as f:
-                        f.write(thumbnail_encoded)
-                    break
-                except Exception as e:
-                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
-                    retry_count += 1
-            else:
-                print("Failed to create thumbnail after maximum retries.")
 
 
 def dribble_access(path):
