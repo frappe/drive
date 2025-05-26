@@ -62,7 +62,6 @@ def files(
             f"You don't have access.",
             frappe.exceptions.PageDoesNotExistError,
         )
-
     query = (
         frappe.qb.from_(DriveFile)
         .where(DriveFile.is_active == is_active)
@@ -175,8 +174,7 @@ def files(
     )
     public_files = set(k[0] for k in public_files_query.run())
     team_files = set(k[0] for k in team_files_query.run())
-    #  if personal != -1:
-    #     child_count_query = child_count_query.where(DriveFile.is_private == personal)
+
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
     res = query.run(as_dict=True)

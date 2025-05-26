@@ -23,7 +23,7 @@ from drive.api.storage import storage_bar_data
 
 
 @frappe.whitelist()
-def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified=None, embed=0):
+def upload_file(team, fullpath=None, parent=None, last_modified=None, embed=0):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -35,25 +35,22 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
     :raises ValueError: If the size of the stored file does not match the specified filesize
     :return: DriveEntity doc once the entire file has been uploaded
     """
-    if not team:
-        team = frappe.get_value("Drive File", parent, "team")
-    embed = int(embed)
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
-    if isinstance(personal, str):
-        personal = int(personal)
+    is_private = frappe.get_value("Drive File", parent, "is_private")
+    embed = int(embed)
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
-            parent = if_folder_exists(team, i, parent, personal)
+            parent = if_folder_exists(team, i, parent, is_private)
 
     # Validate: team members can upload to team folders, and permissions
-    is_team_member = team in get_teams() and not personal
+    is_team_member = team in get_teams() and not is_private
     if not is_team_member and not frappe.has_permission(
         doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
-        frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
+        frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     storage_data = storage_bar_data(team)
     if (storage_data["limit"] - storage_data["total_size"]) < int(
@@ -90,7 +87,7 @@ def upload_file(team=None, personal=0, fullpath=None, parent=None, last_modified
     # Create DB record
     drive_file = create_drive_file(
         team,
-        personal,
+        is_private,
         title,
         parent,
         file_size,
@@ -148,7 +145,7 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
     if not frappe.has_permission(
         doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
     ):
-        frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
+        frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     file = frappe.request.files["file"]
 
