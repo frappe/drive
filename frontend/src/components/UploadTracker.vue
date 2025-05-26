@@ -153,6 +153,7 @@
         actions: [
           {
             label: 'OK',
+            variant: 'solid',
             onClick: () => {
               showErrorDialog = false
             },

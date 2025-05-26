@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { Dialog, Input } from "frappe-ui"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -59,16 +59,14 @@ const open = computed({
     return props.modelValue === "rn"
   },
   set: (value) => {
-    emit("update:modelValue", value)
+    emit("update:modelValue", value || "")
     if (!value) newName.value = ""
   },
 })
-
+onMounted(() => {
+  console.log(document.activeElement)
+})
 const submit = () => {
-  console.log({
-    name: props.entity.name,
-    title: newName.value + (ext.value ? "." + ext.value : ""),
-  })
   rename.submit({
     entity_name: props.entity.name,
     new_title: newName.value + (ext.value ? "." + ext.value : ""),

@@ -15,12 +15,16 @@ def get_context():
     context.boot.csrf_token = csrf_token
     context.csrf_token = csrf_token
     context.site_name = frappe.local.site
-    # Parsing
-    parts = frappe.form_dict.app_path.split("/")
+
     context.title = "Frappe Drive"
     context.description = "Visit Drive online."
     context.og_image = "https://raw.githubusercontent.com/frappe/drive/main/.github/og_1200.png"
 
+    if not frappe.form_dict.app_path:
+        return context
+
+    # Parsing
+    parts = frappe.form_dict.app_path.split("/")
     if len(parts) >= 4:
         doc = frappe.get_doc("Drive File", parts[3])
         if get_user_access(doc)["read"]:

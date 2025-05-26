@@ -98,7 +98,7 @@ class FileManager:
                 aws_access_key_id=settings.aws_key,
                 aws_secret_access_key=settings.get_password("aws_secret"),
                 endpoint_url=(settings.endpoint_url or None),
-                config=Config(signature_version="s3v4"),
+                config=Config(signature_version=settings.signature_version),
             )
 
     def upload_file(self, current_path: str, new_path: str) -> None:
