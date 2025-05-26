@@ -135,6 +135,7 @@ onKeyDown("Escape", (e) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, 172px);
   gap: 20px;
+  justify-content: space-evenly;
 }
 
 .shadow-gray {
