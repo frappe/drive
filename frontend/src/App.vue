@@ -38,14 +38,14 @@
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
-import InfoSidebar from "@/components/InfoSidebar.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
 import { Toasts } from "@/utils/toasts.js"
 import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { useStore } from "vuex"
-import { onMounted, ref, computed } from "vue"
-import { useRouter, useRoute } from "vue-router"
+import { ref, computed } from "vue"
+import { useRouter } from "vue-router"
+import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 
 const store = useStore()
@@ -60,57 +60,43 @@ emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data
 })
 
-function addKeyboardShortcuts() {
-  let tapped
-  window.addEventListener("keydown", (e) => {
-    let params = { team: localStorage.getItem("recentTeam") }
-    const DOUBLE_KEY_MAPS = {
-      k: () => setTimeout(() => (showSearchPopup.value = true), 15), // band aid fix as k was showing up in search
-      h: () => router.push({ name: "Home", params }),
-      n: () => router.push({ name: "Inbox", params }),
-      t: () => router.push({ name: "Team", params }),
-      f: () => router.push({ name: "Favourites", params }),
-      r: () => router.push({ name: "Recents", params }),
-      s: () => router.push({ name: "Shared" }),
-    }
-
-    // TODO: keyboard shortcuts
-    const KEY_MAPS = [
-      [
-        (e) => e.metaKey && e.shiftKey && e.key == "ArrowRight",
-        () => store.commit("setIsSidebarExpanded", true),
-      ],
-      [
-        (e) => e.metaKey && e.shiftKey && e.key == "ArrowLeft",
-        () => store.commit("setIsSidebarExpanded", false),
-      ],
-      [(e) => e.metaKey && e.key == "k", () => (showSearchPopup.value = true)],
-    ]
-    if (
-      e.target.classList.contains("ProseMirror") ||
-      e.target.tagName === "INPUT" ||
-      e.target.tagName === "TEXTAREA"
-    )
-      return
-
-    for (const key in DOUBLE_KEY_MAPS) {
-      if (e.key === key) {
-        if (tapped === key) {
-          DOUBLE_KEY_MAPS[key]()
-          tapped = null
-        } else {
-          tapped = key
-          setTimeout(() => (tapped = null), 500)
-        }
-      }
-    }
-    for (let [keys, action] of KEY_MAPS) {
-      if (keys(e)) {
-        action()
-        document.activeElement.blur()
-      }
-    }
+// Add keyboard shortcuts
+const KEY_BINDS = {
+  k: () => (showSearchPopup.value = true),
+  h: () => router.push({ name: "Home" }),
+  i: () => router.push({ name: "Inbox" }),
+  t: () => router.push({ name: "Team" }),
+  f: () => router.push({ name: "Favourites" }),
+  r: () => router.push({ name: "Recents" }),
+  s: () => router.push({ name: "Shared" }),
+  u: () => emitter.emit("uploadFile"),
+  U: () => emitter.emit("uploadFolder"),
+  u: () => emitter.emit("uploadFile"),
+  N: () => emitter.emit("newFolder"),
+  m: () => store.state.activeEntity && emitter.emit("move"),
+  Enter: () => store.state.activeEntity && emitter.emit("rename"),
+}
+for (let k in KEY_BINDS) {
+  onKeyDown(k, (e) => {
+    if (e.ctrlKey) KEY_BINDS[k](e)
+    e.preventDefault()
   })
 }
-onMounted(addKeyboardShortcuts)
+
+onKeyDown((e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
+  if (e.metaKey) {
+    if (e.shiftKey) {
+      if (e.key == "ArrowRight") store.commit("setIsSidebarExpanded", true)
+      else if (e.key == "ArrowLeft") store.commit("setIsSidebarExpanded", false)
+    }
+    // Support Cmd + K also
+    if (e.key == "k") showSearchPopup.value = true
+  }
+})
 </script>

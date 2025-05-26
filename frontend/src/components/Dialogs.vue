@@ -83,7 +83,7 @@ import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 import emitter from "@/emitter"
 import { useStore } from "vuex"
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import { sortEntities } from "@/utils/files"
 import { useTimeAgo } from "@vueuse/core"
@@ -101,13 +101,16 @@ const resetDialog = () => (dialog.value = null)
 const selections = computed(() => {
   return props.selectedRows && props.selectedRows.length
     ? props.selectedRows
-    : [props.rootResource.data]
+    : props.rootResource
+    ? [props.rootResource.data]
+    : null
 })
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => (dialog.value = "f"))
 emitter.on("rename", () => (dialog.value = "rn"))
+emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 const setTitle = (title) =>

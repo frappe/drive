@@ -104,12 +104,12 @@ function fetchFile(currentEntity) {
 }
 
 onKeyStroke("ArrowLeft", (e) => {
-  if (!e.shiftKey) return
+  if (e.metaKey) return
   e.preventDefault()
   scrollEntity(true)
 })
 onKeyStroke("ArrowRight", (e) => {
-  if (!e.shiftKey) return
+  if (e.metaKey) return
   e.preventDefault()
   scrollEntity()
 })

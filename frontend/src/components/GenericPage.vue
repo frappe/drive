@@ -102,7 +102,6 @@ const props = defineProps({
 })
 const route = useRoute()
 const store = useStore()
-import { useInfiniteScroll } from "@vueuse/core"
 
 const dialog = ref(null)
 const infoEntities = ref([])
@@ -144,7 +143,6 @@ allUsers.fetch({ team })
 allFolders.fetch({ team })
 
 // Drag and drop
-
 const onDrop = (targetFile, draggedItem) => {
   if (!targetFile.is_group || draggedItem === targetFile.name) return
   move.submit({
@@ -346,4 +344,6 @@ document.addEventListener("visibilitychange", () => {
   window.focus()
   !document.hidden && setTimeout(newLink, 100)
 })
+
+// Keyboard shortcuts
 </script>
