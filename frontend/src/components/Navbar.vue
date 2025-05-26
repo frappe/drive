@@ -18,7 +18,7 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
-      <Dropdown :options="rootActions" v-if="rootActions">
+      <Dropdown :options="genericActions" v-if="genericActions">
         <Button variant="ghost" @click="triggerRoot">
           <FeatherIcon name="more-horizontal" class="h-4 w-4" />
         </Button>
@@ -64,6 +64,11 @@
         </Button>
       </div>
     </div>
+    <Dialogs
+      v-if="$route.name === 'File' || $route.name === 'Document'"
+      v-model="dialog"
+      :root-resource
+    />
   </nav>
 </template>
 <script setup>
@@ -83,26 +88,115 @@ import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
 import emitter from "@/emitter"
-import { computed } from "vue"
+import { ref, computed } from "vue"
 import {
   getRecents,
   getFavourites,
   getTrash,
   createDocument,
+  toggleFav,
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
+import Share from "./EspressoIcons/ShareNew.vue"
+import Download from "./EspressoIcons/Download.vue"
+import Rename from "./EspressoIcons/Rename.vue"
+import Move from "./EspressoIcons/Move.vue"
+import Info from "./EspressoIcons/Info.vue"
+import Trash from "./EspressoIcons/Trash.vue"
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-defineProps({
+const props = defineProps({
   rootActions: Array,
   triggerRoot: Function,
-  rootEntity: Object,
+  rootResource: Object,
 })
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const connectedUsers = computed(() => store.state.connectedUsers)
+const dialog = ref("")
+const rootEntity = computed(() => props.rootResource?.data)
+
+const genericActions = computed(
+  () =>
+    rootEntity.value &&
+    [
+      {
+        label: "Share",
+        icon: Share,
+        onClick: () => (dialog.value = "s"),
+        isEnabled: () => rootEntity.value.share,
+      },
+      {
+        label: "Download",
+        icon: Download,
+        onClick: (entities) => entitiesDownload(team, entities),
+      },
+      {
+        label: "Copy Link",
+        icon: Link,
+        onClick: ([entity]) => getLink(entity),
+      },
+      { label: "Divider" },
+      {
+        label: "Move",
+        icon: Move,
+        onClick: () => (dialog.value = "m"),
+        isEnabled: () => rootEntity.value.write,
+      },
+      {
+        label: "Rename",
+        icon: Rename,
+        onClick: () => (dialog.value = "rn"),
+        isEnabled: () => rootEntity.value.write,
+      },
+      {
+        label: "Show Info",
+        icon: Info,
+        onClick: () => infoEntities.value.push(store.state.activeEntity),
+        isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+      },
+      {
+        label: "Hide Info",
+        icon: Info,
+        onClick: () => (dialog.value = "info"),
+        isEnabled: () => store.state.activeEntity && store.state.showInfo,
+      },
+      {
+        label: "Favourite",
+        icon: "star",
+        onClick: () => {
+          rootEntity.value.is_favourite = true
+          toggleFav.submit({
+            entities: [{ name: rootEntity.value.name, is_favourite: false }],
+          })
+        },
+        isEnabled: () => !rootEntity.value.is_favourite,
+      },
+      {
+        label: "Unfavourite",
+        icon: "star",
+        class: "stroke-amber-500 fill-amber-500",
+        onClick: () => {
+          rootEntity.value.is_favourite = false
+          toggleFav.submit({
+            entities: [{ name: rootEntity.value.name, is_favourite: false }],
+          })
+        },
+        isEnabled: () => rootEntity.value.is_favourite,
+      },
+
+      { label: "Divider" },
+      {
+        label: "Move to Trash",
+        icon: Trash,
+        onClick: () => (dialog.value = "remove"),
+        isEnabled: () => rootEntity.value.write,
+        danger: true,
+      },
+    ].filter((k) => k.isEnabled?.())
+)
 
 // Functions
 const newDocument = async () => {

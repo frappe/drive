@@ -235,7 +235,7 @@ watch(
         props.getEntities.params?.entity_name ||
         rows.value[0]?.parent_entity ||
         "",
-      team: props.getEntities.params.team,
+      team: props.getEntities.params?.team || rows.value[0]?.team,
       entities: rows.value.filter?.((k) => k.title[0] !== "."),
     })
     store.commit("setSortOrder", val)

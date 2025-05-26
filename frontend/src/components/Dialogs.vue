@@ -19,7 +19,7 @@
     :entity="selections[0]"
     @success="
       ({ name, title }) => {
-        if (selections[0] !== rootEntity && props.getEntities)
+        if (selections[0] !== rootResource?.data && props.getEntities)
           props.getEntities.data.find((k) => k.name === name).title = title
         resetDialog()
         // Handle breadcrumbs
@@ -93,30 +93,34 @@ const store = useStore()
 const route = useRoute()
 
 const props = defineProps({
-  getEntities: Object,
+  rootResource: Object,
   selectedRows: Array,
-  rootEntity: Object,
+  getEntities: { type: Object, default: null },
 })
 const resetDialog = () => (dialog.value = null)
 const selections = computed(() => {
   return props.selectedRows && props.selectedRows.length
     ? props.selectedRows
-    : [props.rootEntity]
+    : props.rootResource
+    ? [props.rootResource.data]
+    : null
 })
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => (dialog.value = "f"))
 emitter.on("rename", () => (dialog.value = "rn"))
+emitter.on("remove", () => (dialog.value = "remove"))
+emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 const setTitle = (title) =>
   (document.title = (route.name === "Folder" ? "Folder - " : "") + title)
 function addToList(data) {
+  if (!props.getEntities) return
   data.modified = Date()
   data.relativeModified = useTimeAgo(data.modified)
   const newData = [...props.getEntities.data, data]
-  console.log(newData, store.state.sortOrder)
   sortEntities(newData, store.state.sortOrder)
   props.getEntities.setData(newData)
   // props.getEntities.fetch()
@@ -124,6 +128,9 @@ function addToList(data) {
 }
 
 function removeFromList(entities) {
+  // Hack
+  setTimeout(() => props.rootResource?.fetch?.(), 1000)
+  if (!props.getEntities) return
   const names = entities.map((o) => o.name)
   props.getEntities.setData(
     props.getEntities.data.filter(({ name }) => !names.includes(name))

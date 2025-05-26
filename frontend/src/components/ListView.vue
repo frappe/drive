@@ -13,13 +13,13 @@
       showTooltip: true,
       resizeColumn: false,
       // Should be getLink(row, false, false) - but messes up clicking
-      getRowRoute: (row) => '',
+      getRowRoute: () => '',
       emptyState: {
         description: 'Nothing found - try something else?',
       },
     }"
   >
-    <ListHeader class="mb-[1px]" />
+    <ListHeader class="mb-[1px] rounded-sm" />
     <div
       v-if="!folderContents"
       class="w-full text-center flex items-center justify-center py-10"
@@ -93,6 +93,7 @@ import { formatDate } from "@/utils/format"
 import Users from "./EspressoIcons/Users.vue"
 import Globe from "./EspressoIcons/Globe.vue"
 import Team from "./EspressoIcons/Organization.vue"
+import { onKeyDown } from "@vueuse/core"
 const store = useStore()
 const route = useRoute()
 const props = defineProps({
@@ -103,7 +104,6 @@ const props = defineProps({
 const emit = defineEmits(["dropped"])
 
 const container = useTemplateRef("container")
-
 const selections = defineModel(new Set())
 const selectedRow = ref(null)
 
@@ -206,12 +206,15 @@ const selectedColumns = [
   { label: "", key: "options", align: "right", width: "5%" },
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
-const setActive = (entity) => {
+const setActive = (entityName) => {
+  const entity = props.folderContents.find((k) => k.name === entityName)
   selectedRow.value =
     !entity || entity.name !== store.state.activeEntity?.name ? entity : null
 }
 
-watch(selectedRow, (k) => store.commit("setActiveEntity", k))
+watch(selectedRow, (k) => {
+  store.commit("setActiveEntity", k)
+})
 const dropdownActionItems = (row) => {
   if (!row) return []
   return props.actionItems
@@ -241,6 +244,22 @@ const handleSelections = (sels) => {
   selectedRow.value = null
   store.commit("setActiveEntity", null)
 }
+
+// Add keyboard shortcuts here as f-ui selections has to be mutated
+onKeyDown("a", (e) => {
+  if (e.metaKey) {
+    container.value.selections.clear()
+    props.folderContents.map((k) => container.value.selections.add(k.name))
+    e.preventDefault()
+  }
+})
+onKeyDown("Backspace", (e) => {
+  if (e.metaKey) emitter.emit("remove")
+})
+onKeyDown("Escape", (e) => {
+  container.value.selections.clear()
+  e.preventDefault()
+})
 </script>
 <style>
 /* .dz-drag-hover #drop-area {

@@ -42,7 +42,7 @@
 </template>
 <script setup>
 import { formatMimeType } from "@/utils/format"
-import { getIconUrl, thumbnail_getIconUrl } from "@/utils/getIconUrl"
+import { getIconUrl, getThumbnailUrl } from "@/utils/getIconUrl"
 import { onMounted, ref, computed } from "vue"
 const props = defineProps({ file: Object })
 
@@ -64,7 +64,7 @@ const childrenSentence = computed(() => {
 
 onMounted(async () => {
   if (!["Image", "Video"].includes(formattedType)) return
-  const result = await thumbnail_getIconUrl(
+  const result = await getThumbnailUrl(
     formatMimeType(props.file.mime_type),
     props.file.name,
     props.file.file_ext

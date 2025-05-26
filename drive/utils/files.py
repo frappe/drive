@@ -101,15 +101,27 @@ class FileManager:
                 config=Config(signature_version=settings.signature_version),
             )
 
-    def upload_file(self, current_path: str, new_path: str) -> None:
+    def upload_file(self, current_path: str, new_path: str, drive_file: str = None) -> None:
         """
         Moves the file from the current path to another path
         """
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
             os.remove(current_path)
+            if drive_file.mime_type.startswith(("image", "video")):
+                self.upload_thumbnail(drive_file)
+                # frappe.enqueue(
+                #     self.upload_thumbnail,
+                #     now=True,
+                #     at_front=True,
+                #     file=drive_file,
+                # )
+            else:
+                os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
+            if drive_file.mime_type.startswith(("image", "video")):
+                self.upload_thumbnail(drive_file)
 
     def upload_thumbnail(self, file):
         """
@@ -118,19 +130,16 @@ class FileManager:
         team_directory = get_home_folder(file.team)["name"]
         save_path = Path(team_directory) / "thumbnails" / (file.name + ".thumbnail")
         disk_path = self.site_folder / save_path
-
+        file_path = str(self.site_folder / file.path)
         with DistributedLock(file.path, exclusive=False):
             try:
-                # BROKEN - get from S3
                 if file.mime_type.startswith("image"):
-                    image_path = self.site_folder / file.path
-                    with Image.open(image_path).convert("RGB") as image:
+                    with Image.open(file_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
                         image.thumbnail((512, 512))
                         image.save(str(disk_path), format="webp")
                 elif file.mime_type.startswith("video"):
-                    video_path = str(file.path)
-                    cap = cv2.VideoCapture(video_path)
+                    cap = cv2.VideoCapture(file_path)
                     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                     target_frame = int(frame_count / 2)
                     cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
@@ -143,7 +152,9 @@ class FileManager:
                     )
                     with open(str(disk_path), "wb") as f:
                         f.write(thumbnail_encoded)
-            except:
+                elif file.mime_type == "application/pdf":
+                    print("EHYYU")
+            except Exception as e:
                 pass
 
         if self.s3_enabled:

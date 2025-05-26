@@ -10,7 +10,8 @@ function clearStore() {
 async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = to.name
-    store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
+    if (to.name !== "Team")
+      store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
   }
 }
 

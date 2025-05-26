@@ -63,9 +63,7 @@ const open = computed({
     if (!value) newName.value = ""
   },
 })
-onMounted(() => {
-  console.log(document.activeElement)
-})
+
 const submit = () => {
   rename.submit({
     entity_name: props.entity.name,

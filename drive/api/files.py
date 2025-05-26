@@ -20,10 +20,16 @@ import magic
 from datetime import datetime
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
+from pathlib import Path
+from io import BytesIO
+from werkzeug.wrappers import Response
+from werkzeug.wsgi import wrap_file
+from drive.locks.distributed_lock import DistributedLock
+from drive.utils.files import get_team_thumbnails_directory
 
 
 @frappe.whitelist()
-def upload_file(team, fullpath=None, parent=None, last_modified=None, embed=0):
+def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=None, embed=0):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -37,7 +43,7 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None, embed=0):
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
-    is_private = frappe.get_value("Drive File", parent, "is_private")
+    is_private = personal or frappe.get_value("Drive File", parent, "is_private")
     embed = int(embed)
 
     if fullpath:
@@ -100,19 +106,8 @@ def upload_file(team, fullpath=None, parent=None, last_modified=None, embed=0):
 
     # Upload and update parent folder size
     manager = FileManager()
-    manager.upload_file(temp_path, drive_file.path)
+    manager.upload_file(temp_path, drive_file.path, drive_file if not embed else None)
     update_file_size(parent, file_size)
-
-    if mime_type.startswith(("image", "video")) and not embed:
-        try:
-            frappe.enqueue(
-                manager.upload_thumbnail,
-                now=True,
-                at_front=True,
-                file=drive_file,
-            )
-        except:
-            pass
 
     return drive_file
 
@@ -185,6 +180,43 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
     os.rename(save_path, Path(frappe.get_site_path("private/files")) / drive_file.path)
 
     return drive_file.name + save_path.suffix
+
+
+@frappe.whitelist()
+def get_thumbnail(entity_name):
+    drive_file = frappe.get_value(
+        "Drive File",
+        entity_name,
+        ["is_group", "path", "title", "mime_type", "file_size", "owner", "team"],
+        as_dict=1,
+    )
+    if not drive_file or drive_file.is_group:
+        frappe.throw("No such image found", ValueError)
+    if not frappe.has_permission(
+        doctype="Drive File", doc=drive_file.name, ptype="write", user=frappe.session.user
+    ):
+        frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
+    with DistributedLock(drive_file.path, exclusive=False):
+        if frappe.cache().exists(entity_name):
+            thumbnail_data = frappe.cache().get_value(entity_name)
+        else:
+            try:
+                thumbnail_getpath = Path(
+                    get_team_thumbnails_directory(drive_file.team), entity_name
+                )
+                with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
+                    thumbnail_data = BytesIO(file.read())
+                frappe.cache().set_value(entity_name, thumbnail_data)
+            except FileNotFoundError:
+                return ""
+
+        response = Response(
+            wrap_file(frappe.request.environ, thumbnail_data),
+            direct_passthrough=True,
+        )
+        response.headers.set("Content-Type", "image/jpeg")
+        response.headers.set("Content-Disposition", "inline", filename=entity_name)
+        return response
 
 
 @frappe.whitelist()

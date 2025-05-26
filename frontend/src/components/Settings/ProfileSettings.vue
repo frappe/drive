@@ -132,27 +132,27 @@ const defaultTeam = ref(settings.data.message.default_team)
 watch(defaultTeam, (v) => {
   setSettings.submit({ updates: { default_team: v.value } })
 })
-// const profile = createResource({
-//   type: "document",
-//   doctype: "User",
-//   name: store.state.user.id,
-//   auto: true,
-//   realtime: true,
-// })
+const profile = createResource({
+  type: "document",
+  doctype: "User",
+  name: store.state.user.id,
+  auto: true,
+  realtime: true,
+})
 
-// const updateProfile = () => {
-//   profile.setValue
-//     .submit({
-//       first_name: newFirstName.value,
-//       last_name: newLastName.value,
-//       user_image: newImageUrl.value,
-//     })
-//     .then((data) => {
-//       store.state.user.fullName = data.full_name
-//       store.state.user.imageURL = data.user_image
-//       editProfileDialog.value = false
-//     })
-// }
+const updateProfile = () => {
+  profile.setValue
+    .submit({
+      first_name: newFirstName.value,
+      last_name: newLastName.value,
+      user_image: newImageUrl.value,
+    })
+    .then((data) => {
+      store.state.user.fullName = data.full_name
+      store.state.user.imageURL = data.user_image
+      editProfileDialog.value = false
+    })
+}
 
 const validateFile = (file) => {
   let extension = file.name.split(".").pop().toLowerCase()

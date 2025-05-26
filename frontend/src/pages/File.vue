@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <div class="flex-grow">
-      <Navbar v-if="!file?.error" />
+      <Navbar v-if="!file?.error" :root-resource="file" />
       <FolderContentsError v-if="file.error" :error="file.error" />
 
       <div
@@ -39,7 +39,6 @@
         </div>
       </div>
     </div>
-    <Dialogs :root-entity="file.data" />
     <InfoSidebar />
   </div>
 </template>
@@ -101,12 +100,12 @@ function fetchFile(currentEntity) {
 }
 
 onKeyStroke("ArrowLeft", (e) => {
-  if (!e.shiftKey) return
+  if (e.metaKey) return
   e.preventDefault()
   scrollEntity(true)
 })
 onKeyStroke("ArrowRight", (e) => {
-  if (!e.shiftKey) return
+  if (e.metaKey) return
   e.preventDefault()
   scrollEntity()
 })

@@ -13,7 +13,7 @@
     :trigger-root="
       () => ((selections = new Set()), store.commit('setActiveEntity', null))
     "
-    :root-entity="verify?.data"
+    :root-resource="verify"
   />
 
   <FolderContentsError
@@ -56,7 +56,7 @@
   <Dialogs
     v-model="dialog"
     :selected-rows="activeEntity ? [activeEntity] : selectedEntitities"
-    :root-entity="verify?.data"
+    :root-resource="verify"
     :get-entities="getEntities"
   />
   <FileUploader v-if="$store.state.user.id" @success="getEntities.fetch()" />
@@ -102,7 +102,6 @@ const props = defineProps({
 })
 const route = useRoute()
 const store = useStore()
-import { useInfiniteScroll } from "@vueuse/core"
 
 const dialog = ref(null)
 const infoEntities = ref([])
@@ -144,7 +143,6 @@ allUsers.fetch({ team })
 allFolders.fetch({ team })
 
 // Drag and drop
-
 const onDrop = (targetFile, draggedItem) => {
   if (!targetFile.is_group || draggedItem === targetFile.name) return
   move.submit({
@@ -297,19 +295,9 @@ const actionItems = computed(() => {
         important: true,
         multi: true,
       },
-      {
-        label: "Unshare",
-        danger: true,
-        icon: "trash-2",
-        action: () => (dialog.value = "unshare"),
-        isEnabled: (e) =>
-          e.owner != "You" && e.user_doctype === "User" && e.everyone !== 1,
-      },
       { label: "Divider" },
       {
         label: "Move to Trash",
-        danger: true,
-
         icon: Trash,
         action: () => (dialog.value = "remove"),
         isEnabled: (e) => e.write,
@@ -356,4 +344,6 @@ document.addEventListener("visibilitychange", () => {
   window.focus()
   !document.hidden && setTimeout(newLink, 100)
 })
+
+// Keyboard shortcuts
 </script>

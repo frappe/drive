@@ -29,7 +29,7 @@
       @mousedown.stop
     >
       <FeatherIcon
-        v-if="file.is_favourite"
+        v-if="$route.name !== 'Favourites' && file.is_favourite"
         class="stroke-amber-500 fill-amber-500 z-10 absolute top-2 left-2 h-4"
         name="star"
         width="16"
@@ -62,12 +62,14 @@
 
 <script setup>
 import GridItem from "@/components/GridItem.vue"
+import emitter from "@/emitter"
 import { FeatherIcon, Button } from "frappe-ui"
 import { ref, computed } from "vue"
 import { openEntity } from "@/utils/files"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { settings } from "@/resources/permissions"
+import { onKeyDown } from "@vueuse/core"
 
 const props = defineProps({
   folderContents: Object,
@@ -77,7 +79,7 @@ const props = defineProps({
 const emit = defineEmits(["dropped"])
 const route = useRoute()
 const store = useStore()
-const selections = defineModel(Set)
+const selections = defineModel(new Set())
 
 const rows = computed(() => props.folderContents)
 const action = (settings.data.message || settings.data).single_click
@@ -117,12 +119,27 @@ const open = (row) =>
   openEntity(route.params.team, row)
 
 const draggedItem = ref(null)
+
+onKeyDown("a", (e) => {
+  if (e.metaKey) {
+    selections.value = new Set(props.folderContents.map((k) => k.name))
+    e.preventDefault()
+  }
+})
+onKeyDown("Backspace", (e) => {
+  if (e.metaKey) emitter.emit("remove")
+})
+onKeyDown("Escape", (e) => {
+  selections.value = new Set()
+  e.preventDefault()
+})
 </script>
 <style scoped>
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, 172px);
   gap: 20px;
+  justify-content: space-evenly;
 }
 
 .shadow-gray {
