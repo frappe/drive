@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <div class="flex-grow">
-      <Navbar v-if="!file?.error" />
+      <Navbar v-if="!file?.error" :root-resource="file" />
       <FolderContentsError v-if="file.error" :error="file.error" />
       <LoadingIndicator
         v-if="file.loading"
@@ -16,7 +16,11 @@
           :draggable="false"
           class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh] mt-3"
         >
-          <FileRender v-if="file.data" :preview-entity="file.data" />
+          <!-- Meant to render even if file is being updated, doesn't work because loading is checked in l7 -->
+          <FileRender
+            v-if="file.data || file.previousData"
+            :preview-entity="file.data || file.previousData"
+          />
         </div>
         <div
           class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-white"
@@ -39,7 +43,6 @@
         </div>
       </div>
     </div>
-    <Dialogs :root-entity="file.data" />
     <InfoSidebar />
   </div>
 </template>

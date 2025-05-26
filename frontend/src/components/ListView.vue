@@ -13,13 +13,13 @@
       showTooltip: true,
       resizeColumn: false,
       // Should be getLink(row, false, false) - but messes up clicking
-      getRowRoute: (row) => '',
+      getRowRoute: () => '',
       emptyState: {
         description: 'Nothing found - try something else?',
       },
     }"
   >
-    <ListHeader class="mb-[1px]" />
+    <ListHeader class="mb-0 rounded-sm" />
     <div
       v-if="!folderContents"
       class="w-full text-center flex items-center justify-center py-10"

@@ -74,14 +74,15 @@ function addKeyboardShortcuts() {
       s: () => router.push({ name: "Shared" }),
     }
 
+    // TODO: keyboard shortcuts
     const KEY_MAPS = [
       [
         (e) => e.metaKey && e.shiftKey && e.key == "ArrowRight",
-        () => this.$store.commit("setIsSidebarExpanded", true),
+        () => store.commit("setIsSidebarExpanded", true),
       ],
       [
         (e) => e.metaKey && e.shiftKey && e.key == "ArrowLeft",
-        () => this.$store.commit("setIsSidebarExpanded", false),
+        () => store.commit("setIsSidebarExpanded", false),
       ],
       [(e) => e.metaKey && e.key == "k", () => (showSearchPopup.value = true)],
     ]

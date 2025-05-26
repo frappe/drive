@@ -113,8 +113,8 @@ export const mutate = (entities, func) => {
   )
 }
 
-export const updateMoved = (new_parent, team, is_private) => {
-  if (new_parent != "") {
+export const updateMoved = (new_parent, team) => {
+  if (new_parent && team) {
     // All details are repetetively provided (check Folder.vue) because if this is run first
     // No further mutation of the resource object can take place
     createResource({
@@ -123,6 +123,7 @@ export const updateMoved = (new_parent, team, is_private) => {
       makeParams: (params) => ({
         ...params,
         entity_name: new_parent,
+        personal: -2,
         team,
       }),
       cache: ["folder", new_parent],
@@ -281,7 +282,7 @@ export const move = createResource({
     // Update moved-into folder
     updateMoved(
       move.params.new_parent,
-      allFolders.params.team,
+      allFolders.params?.team,
       move.params.is_private
     )
   },
