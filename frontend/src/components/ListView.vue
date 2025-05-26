@@ -253,6 +253,9 @@ onKeyDown("a", (e) => {
     e.preventDefault()
   }
 })
+onKeyDown("Backspace", (e) => {
+  if (e.metaKey) emitter.emit("remove")
+})
 onKeyDown("Escape", (e) => {
   container.value.selections.clear()
   e.preventDefault()

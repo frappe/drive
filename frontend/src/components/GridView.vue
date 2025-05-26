@@ -62,6 +62,7 @@
 
 <script setup>
 import GridItem from "@/components/GridItem.vue"
+import emitter from "@/emitter"
 import { FeatherIcon, Button } from "frappe-ui"
 import { ref, computed } from "vue"
 import { openEntity } from "@/utils/files"
@@ -124,6 +125,9 @@ onKeyDown("a", (e) => {
     selections.value = new Set(props.folderContents.map((k) => k.name))
     e.preventDefault()
   }
+})
+onKeyDown("Backspace", (e) => {
+  if (e.metaKey) emitter.emit("remove")
 })
 onKeyDown("Escape", (e) => {
   selections.value = new Set()

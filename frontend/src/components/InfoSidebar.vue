@@ -208,7 +208,7 @@ import { useStore } from "vuex"
 import { Avatar, call, createResource } from "frappe-ui"
 import { formatMimeType, formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
-import { thumbnail_getIconUrl } from "@/utils/getIconUrl"
+import { getThumbnailUrl } from "@/utils/getIconUrl"
 import Info from "./EspressoIcons/Info.vue"
 import File from "./EspressoIcons/File.vue"
 import Comment from "./EspressoIcons/Comment.vue"
@@ -247,7 +247,7 @@ function switchTab(val) {
 }
 
 async function thumbnailUrl() {
-  let result = await thumbnail_getIconUrl(
+  let result = await getThumbnailUrl(
     formatMimeType(entity.value.mime_type),
     entity.value.name,
     entity.value.file_ext
