@@ -186,9 +186,8 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import { FeatherIcon } from "frappe-ui"
+import { FeatherIcon, Dialog } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
-import Dialog from "frappe-ui/src/components/Dialog.vue"
 import File from "./EspressoIcons/File.vue"
 
 export default {

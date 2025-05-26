@@ -205,7 +205,7 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
-import { Avatar, call, createResource } from "frappe-ui"
+import { Avatar, call, createResource, Tooltip } from "frappe-ui"
 import { formatMimeType, formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"
@@ -216,7 +216,6 @@ import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
 import { generalAccess, userList } from "@/resources/permissions"
-import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 
 const store = useStore()
 const tab = ref(0)
