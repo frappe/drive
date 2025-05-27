@@ -1,6 +1,6 @@
 <template>
   <iframe
-    v-if="warned && !jwt_token"
+    v-if="warned && jwt_token"
     :src="'https://view.officeapps.live.com/op/embed.aspx?src=' + srcUrl"
     class="w-[80%] mx-auto h-[90%]"
     frameborder="0"
@@ -47,14 +47,15 @@ watch(warned, async () => {
     "/api/method/drive.api.files.create_auth_token?entity_name=" +
       props.previewEntity.name
   )
-  const { message } = JSON.stringify(await res.text())
+  const { message } = JSON.parse(await res.text())
   jwt_token.value = message
+  console.log(jwt_token.value)
 })
 const jwt_token = ref(null)
 const srcUrl = computed(
   () =>
     new URL(
-      `/api/method/drive.api.files.get_file_content?jwt_token=${jwt_token}&entity_name=${props.previewEntity.name}&trigger_download=1`,
+      `/api/method/drive.api.files.get_file_content?jwt_token=${jwt_token.value}&entity_name=${props.previewEntity.name}&trigger_download=1`,
       window.location.origin
     ).href
 )
