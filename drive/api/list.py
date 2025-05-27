@@ -1,6 +1,6 @@
 import frappe
 import json
-from drive.utils.files import get_home_folder, MIME_LIST_MAP
+from drive.utils.files import get_home_folder, MIME_LIST_MAP, get_file_type
 from .permissions import ENTITY_FIELDS, get_user_access
 from pypika import Order, Criterion, functions as fn, CustomFunction
 
@@ -150,7 +150,7 @@ def files(
 
     child_count_query = (
         frappe.qb.from_(DriveFile)
-        .where((DriveFile.team == team))
+        .where((DriveFile.team == team) & (DriveFile.is_active == 1))
         .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
         .groupby(DriveFile.parent_entity)
     )
@@ -180,6 +180,9 @@ def files(
     res = query.run(as_dict=True)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
+        if r["title"] == "Test":
+            print(get_file_type(r))
+        r["file_type"] = get_file_type(r)
         if r["name"] in public_files:
             r["share_count"] = -2
         elif r["name"] in team_files:

@@ -30,7 +30,7 @@
 
           <li>
             <span class="inline-block w-24 text-gray-600">Type:</span>
-            <span class="col-span-1">{{ entity.file_type_pretty }}</span>
+            <span class="col-span-1">{{ entity.file_type }}</span>
           </li>
           <li v-if="entity.file_size">
             <span class="inline-block w-24 text-gray-600">Size:</span>

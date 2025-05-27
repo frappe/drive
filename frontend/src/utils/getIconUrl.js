@@ -1,15 +1,21 @@
-export function getIconUrl(mime_type) {
-  return new URL(`/src/assets/images/icons/${mime_type}.svg`, import.meta.url)
+export function getIconUrl(file_type) {
+  return new URL(
+    `/src/assets/images/icons/${file_type.toLowerCase()}.svg`,
+    import.meta.url
+  )
 }
 
-export async function getThumbnailUrl(mime_type, name) {
+export async function getThumbnailUrl(name, file_type) {
+  const fileContent = await get_thumbnail_content(name)
   try {
-    const fileContent = await get_thumbnail_content(name)
-    return fileContent.type == "image/jpeg"
-      ? URL.createObjectURL(fileContent)
-      : getIconUrl(mime_type)
+    if (fileContent.type == "image/jpeg")
+      return URL.createObjectURL(fileContent)
+
+    const text = JSON.parse(await fileContent.text())
+    if (!text.message) return getIconUrl(file_type.toLowerCase())
+    return text.message.content
   } catch {
-    return getIconUrl(mime_type)
+    return getIconUrl(file_type.toLowerCase())
   }
 }
 
@@ -20,6 +26,6 @@ async function get_thumbnail_content(entity_name) {
   if (content.ok) {
     return content.blob()
   } else {
-    throw new Error(`Request failed with status ${response.status}`)
+    throw new Error(`Request failed with status ${content.status}`)
   }
 }

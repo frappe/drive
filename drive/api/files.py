@@ -10,6 +10,7 @@ import mimemapper
 
 from drive.utils.files import (
     get_home_folder,
+    get_file_type,
     get_new_title,
     update_file_size,
     if_folder_exists,
@@ -208,6 +209,13 @@ def get_thumbnail(entity_name):
                     thumbnail_data = BytesIO(file.read())
                 frappe.cache().set_value(entity_name, thumbnail_data)
             except FileNotFoundError:
+                if drive_file.mime_type.startswith("text"):
+                    m = FileManager()
+                    with m.get_file(drive_file.path) as f:
+                        return {
+                            "type": "text",
+                            "content": f.read()[:1000].decode("utf-8").replace("\n", "<br/>"),
+                        }
                 return ""
 
         response = Response(
@@ -879,7 +887,7 @@ def move(entity_names, new_parent=None, is_private=None):
 @frappe.whitelist()
 def search(query, team):
     """
-    Placeholder search implementation
+    Basic search implementation
     """
     text = frappe.db.escape(" ".join(k + "*" for k in query.split()))
     user = frappe.db.escape(frappe.session.user)
@@ -908,6 +916,8 @@ def search(query, team):
         """,
             as_dict=1,
         )
+        for r in result:
+            r["file_type"] = get_file_type(r)
         return result
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Frappe Drive Search Error")

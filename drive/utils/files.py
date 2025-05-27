@@ -30,21 +30,6 @@ MIME_LIST_MAP = {
     "PDF": ["application/pdf"],
     "Text": [
         "text/plain",
-        "text/html",
-        "text/css",
-        "text/javascript",
-        "application/javascript",
-        "text/rich-text",
-        "text/x-shellscript",
-        "text/markdown",
-        "application/json",
-        "application/x-httpd-php",
-        "text/x-python",
-        "application/x-python-script",
-        "application/x-sql",
-        "text/x-perl",
-        "text/x-csrc",
-        "text/x-sh",
     ],
     "XML Data": ["application/xml"],
     "Document": [
@@ -69,6 +54,23 @@ MIME_LIST_MAP = {
         "application/vnd.oasis.opendocument.presentation",
         "application/vnd.apple.keynote",
     ],
+    "Code": [
+        "text/x-python",
+        "text/html",
+        "text/css",
+        "text/javascript",
+        "application/javascript",
+        "text/rich-text",
+        "text/x-shellscript",
+        "text/markdown",
+        "application/json",
+        "application/x-httpd-php",
+        "application/x-python-script",
+        "application/x-sql",
+        "text/x-perl",
+        "text/x-csrc",
+        "text/x-sh",
+    ],
     "Audio": ["audio/mpeg", "audio/wav", "audio/x-midi", "audio/ogg", "audio/mp4", "audio/mp3"],
     "Video": ["video/mp4", "video/webm", "video/ogg", "video/quicktime", "video/x-matroska"],
     "Book": ["application/epub+zip", "application/x-mobipocket-ebook"],
@@ -85,6 +87,18 @@ MIME_LIST_MAP = {
         "application/x-bzip2",
     ],
 }
+
+
+def get_file_type(r):
+    if r["is_group"]:
+        return "Folder"
+    elif r["is_link"]:
+        return "Link"
+    else:
+        try:
+            return next(k for (k, v) in MIME_LIST_MAP.items() if r["mime_type"] in v)
+        except StopIteration:
+            return "Unknown"
 
 
 class FileManager:

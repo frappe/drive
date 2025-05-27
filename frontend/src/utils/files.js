@@ -1,6 +1,6 @@
 import router from "@/router"
 import store from "@/store"
-import { formatSize, formatMimeType } from "@/utils/format"
+import { formatSize } from "@/utils/format"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
@@ -99,9 +99,6 @@ export const groupByFolder = (entities) => {
 export const prettyData = (entities) => {
   return entities.map((entity) => {
     entity.file_size_pretty = formatSize(entity.file_size)
-    entity.file_type_pretty = entity.is_group
-      ? "Folder"
-      : formatMimeType(entity.mime_type, false)
     entity.relativeModified = useTimeAgo(entity.modified)
     if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
     return entity

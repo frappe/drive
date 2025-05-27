@@ -43,7 +43,7 @@ const props = defineProps({
 })
 
 const error = computed(() => {
-  if (props.previewEntity.file_type_pretty === "Unknown")
+  if (props.previewEntity.file_type === "Unknown")
     return "Previews are not supported for this file type. Would you like to download it instead?"
   else if (props.previewEntity.file_size > 10 * 1024 * 1024)
     return "This is too large to preview - would you like to download instead?"
@@ -65,7 +65,5 @@ const RENDERS = {
   Text: TextPreview,
   Markdown: TextPreview,
 }
-const previewComponent = computed(
-  () => RENDERS[props.previewEntity.file_type_pretty]
-)
+const previewComponent = computed(() => RENDERS[props.previewEntity.file_type])
 </script>

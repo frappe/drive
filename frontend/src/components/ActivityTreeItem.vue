@@ -29,7 +29,7 @@
       v-else-if="!strikeThrough"
       loading="lazy"
       class="h-full"
-      :src="getIconUrl(formatMimeType(entity.mime_type))"
+      :src="getIconUrl(entity.file_type)"
       :draggable="false"
     />
     <span
@@ -41,7 +41,6 @@
 </template>
 <script setup>
 import { getIconUrl } from "../utils/getIconUrl"
-import { formatMimeType } from "../utils/format"
 
 defineProps({
   title: {

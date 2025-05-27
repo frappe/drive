@@ -73,7 +73,7 @@
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">Type</span>
               <span class="col-span-1" :title="entity.mime_type">
-                {{ entity.file_type_pretty }}
+                {{ entity.file_type }}
               </span>
               <span v-if="entity.file_size" class="col-span-1 text-gray-600">
                 Size
@@ -206,11 +206,10 @@
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { Avatar, call, createResource } from "frappe-ui"
-import { formatMimeType, formatDate } from "@/utils/format"
+import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"
 import Info from "./EspressoIcons/Info.vue"
-import File from "./EspressoIcons/File.vue"
 import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
@@ -239,11 +238,7 @@ function switchTab(val) {
 }
 
 async function thumbnailUrl() {
-  let result = await getThumbnailUrl(
-    formatMimeType(entity.value.mime_type),
-    entity.value.name,
-    entity.value.file_ext
-  )
+  let result = await getThumbnailUrl(entity.value.name, entity.value.file_type)
   thumbnailLink.value = result
 }
 
