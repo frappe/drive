@@ -180,8 +180,6 @@ def files(
     res = query.run(as_dict=True)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
-        if r["title"] == "Test":
-            print(get_file_type(r))
         r["file_type"] = get_file_type(r)
         if r["name"] in public_files:
             r["share_count"] = -2

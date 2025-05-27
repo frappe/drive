@@ -74,7 +74,7 @@ const childrenSentence = computed(() => {
 
 onMounted(async () => {
   if (
-    !["Image", "Video", "PDF", "Markdown", "Code", "Text"].includes(
+    !["Image", "Video", "PDF", "Markdown", "Code", "Text", "Document"].includes(
       props.file.file_type
     )
   )

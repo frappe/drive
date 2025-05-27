@@ -21,14 +21,14 @@
 </template>
 <script setup>
 import { FeatherIcon } from "frappe-ui"
-import SheetPreview from "@/components/FileTypePreview/SheetPreview.vue"
+import MSOfficePreview from "@/components/FileTypePreview/MSOfficePreview.vue"
 import ImagePreview from "@/components/FileTypePreview/ImagePreview.vue"
-import DocPreview from "@/components/FileTypePreview/DocPreview.vue"
 import PDFPreview from "./FileTypePreview/PDFPreview.vue"
 import VideoPreview from "./FileTypePreview/VideoPreview.vue"
 import TextPreview from "./FileTypePreview/TextPreview.vue"
 import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue"
 import { computed } from "vue"
+import Presentation from "./MimeIcons/Presentation.vue"
 
 const props = defineProps({
   previewEntity: {
@@ -43,7 +43,7 @@ const props = defineProps({
 })
 
 const error = computed(() => {
-  if (props.previewEntity.file_type === "Unknown")
+  if (!Object.keys(RENDERS).includes(props.previewEntity.file_type))
     return "Previews are not supported for this file type. Would you like to download it instead?"
   else if (props.previewEntity.file_size > 10 * 1024 * 1024)
     return "This is too large to preview - would you like to download instead?"
@@ -59,10 +59,11 @@ const RENDERS = {
   Image: ImagePreview,
   Video: VideoPreview,
   Audio: AudioPreview,
-  // Not Frappe Doc
-  Document: DocPreview,
-  Spreadsheet: SheetPreview,
+  Document: MSOfficePreview,
+  Spreadsheet: MSOfficePreview,
+  Presentation: MSOfficePreview,
   Text: TextPreview,
+  Code: TextPreview,
   Markdown: TextPreview,
 }
 const previewComponent = computed(() => RENDERS[props.previewEntity.file_type])

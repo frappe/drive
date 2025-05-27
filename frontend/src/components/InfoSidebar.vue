@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="entity && store.state.showInfo"
-    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[352px] min-w-full"
+    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[452px] shrink-0 whitespace-nowrap"
   >
     <div>
       <!-- Information -->

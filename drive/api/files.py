@@ -7,6 +7,7 @@ from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
 import mimemapper
+import jwt
 
 from drive.utils.files import (
     get_home_folder,
@@ -188,11 +189,11 @@ def get_thumbnail(entity_name):
     drive_file = frappe.get_value(
         "Drive File",
         entity_name,
-        ["is_group", "path", "title", "mime_type", "file_size", "owner", "team"],
+        ["is_group", "path", "title", "mime_type", "file_size", "owner", "team", "document"],
         as_dict=1,
     )
-    if not drive_file or drive_file.is_group:
-        frappe.throw("No such image found", ValueError)
+    if not drive_file or drive_file.is_group or drive_file.is_link:
+        frappe.throw("No thumbnail for this type.", ValueError)
     if not frappe.has_permission(
         doctype="Drive File", doc=drive_file.name, ptype="write", user=frappe.session.user
     ):
@@ -216,6 +217,12 @@ def get_thumbnail(entity_name):
                             "type": "text",
                             "content": f.read()[:1000].decode("utf-8").replace("\n", "<br/>"),
                         }
+                if drive_file.mime_type == "frappe_doc":
+                    html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
+                    return {
+                        "type": "text",
+                        "content": html[:1000],
+                    }
                 return ""
 
         response = Response(
@@ -497,8 +504,24 @@ def get_doc_version_list(entity_name):
     )
 
 
+@frappe.whitelist()
+def create_auth_token(entity_name):
+    if not frappe.has_permission(
+        doctype="Drive File",
+        doc=entity_name,
+        ptype="read",
+        user=frappe.session.user,
+    ):
+        raise frappe.PermissionError("You do not have permission to view this file")
+    settings = frappe.get_single("Drive Site Settings")
+    return jwt.encode(
+        {"name": entity_name, "expiry": (datetime.now() + timedelta(minutes=1)).timestamp()},
+        key=settings.get_password("jwt_key"),
+    )
+
+
 @frappe.whitelist(allow_guest=True)
-def get_file_content(entity_name, trigger_download=0):
+def get_file_content(entity_name, trigger_download=0, jwt_token=None):
     """
     Stream file content and optionally trigger download
 
@@ -508,14 +531,25 @@ def get_file_content(entity_name, trigger_download=0):
     :raises ValueError: If the DriveEntity doc does not exist or is not a file
     :raises PermissionError: If the current user does not have permission to read the file
     :raises FileLockedError: If the file has been writer-locked
+
+    JWT tokens are a vulnerability - if used, they bypass all permissions and give the file.
+    Only the file name and secret token is needed to get access to all files.
+
+    A more secure way would be a DB-stored auth token that can only be created by someone with read access.
     """
-    if not frappe.has_permission(
+    if jwt_token:
+        settings = frappe.get_single("Drive Site Settings")
+        auth = jwt.decode(jwt_token, key=settings.get_password("jwt_key"), algorithms=["HS256"])
+        if auth["expiry"] < datetime.now().timestamp() or auth["name"] != entity_name:
+            raise frappe.PermissionError("You do not have permission to view this file")
+    elif not frappe.has_permission(
         doctype="Drive File",
         doc=entity_name,
         ptype="read",
         user=frappe.session.user,
     ):
         raise frappe.PermissionError("You do not have permission to view this file")
+
     trigger_download = int(trigger_download)
     drive_file = frappe.get_value(
         "Drive File",
