@@ -102,6 +102,11 @@ def get_file_type(r):
 
 
 class FileManager:
+    ACCEPTABLE_MIME_TYPES = [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]
+
     def __init__(self):
         settings = frappe.get_single("Drive S3 Settings")
         self.s3_enabled = settings.enabled
@@ -116,6 +121,12 @@ class FileManager:
                 config=Config(signature_version=settings.signature_version),
             )
 
+    def can_create_thumbnail(self, file):
+        return (
+            file.mime_type.startswith(("image", "video"))
+            or file.mime_type in FileManager.ACCEPTABLE_MIME_TYPES
+        )
+
     def upload_file(self, current_path: str, new_path: str, drive_file: str = None) -> None:
         """
         Moves the file from the current path to another path
@@ -123,7 +134,7 @@ class FileManager:
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
             os.remove(current_path)
-            if drive_file.mime_type.startswith(("image", "video")):
+            if self.can_create_thumbnail():
                 self.upload_thumbnail(drive_file)
                 # frappe.enqueue(
                 #     self.upload_thumbnail,
@@ -146,7 +157,7 @@ class FileManager:
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
         team_directory = get_home_folder(file.team)["name"]
-        save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
+        save_path = Path(team_directory) / "thumbnails" / (file.name + ".thumbnail")
         disk_path = self.site_folder / save_path
         file_path = str(self.site_folder / file.path)
         with DistributedLock(file.path, exclusive=False):
@@ -179,6 +190,10 @@ class FileManager:
                     image.save(filename=disk_path)
                     # Rename as directly passing in .thumbnail fails
                     Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
+                elif "word" in file.mime_type:
+                    # Word document thumbnail
+                    pass
+
             except Exception as e:
                 print(e)
 
@@ -397,3 +412,7 @@ def if_folder_exists(team, folder_name, parent, personal):
 
     if existing_folder:
         return existing_folder.name
+    else:
+        d = frappe.get_doc({"doctype": "Drive File", **values})
+        d.insert()
+        return d.name
