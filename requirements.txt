@@ -5,3 +5,4 @@ mimemapper
 unoconv
 thumbnail
 boto3
+PyJWT
