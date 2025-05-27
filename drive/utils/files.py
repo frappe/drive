@@ -10,7 +10,6 @@ import boto3
 import frappe
 from io import BytesIO
 from botocore.config import Config
-from thumbnail import generate_thumbnail
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -161,6 +160,7 @@ class FileManager:
         """
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
+
         team_directory = get_home_folder(file.team)["name"]
         save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
         disk_path = str((self.site_folder / save_path).resolve())
@@ -188,6 +188,8 @@ class FileManager:
                     with open(disk_path, "wb") as f:
                         f.write(thumbnail_encoded)
                 else:
+                    from thumbnail import generate_thumbnail
+
                     # Word document thumbnail
                     res = generate_thumbnail(
                         file_path,
@@ -200,7 +202,7 @@ class FileManager:
                             "type": "thumbnail",
                         },
                     )
-                    print(res)
+
                 Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
 
             except Exception as e:
