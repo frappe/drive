@@ -12,6 +12,7 @@ dependencies = [
     "opencv-python-headless>=4.10.0.84",
     "python-magic==0.4.27",
     "mimemapper==0.4.1",
+    "unoconv>=0.9.0",
     "thumbnail>=1.5.0",
     "boto3==1.37.31",
 ]
