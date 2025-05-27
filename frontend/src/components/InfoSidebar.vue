@@ -205,7 +205,7 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
-import { Avatar, call, createResource } from "frappe-ui"
+import { Avatar, call, createResource, Tooltip } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"

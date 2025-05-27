@@ -72,8 +72,7 @@
   </template>
 </template>
 <script setup>
-import { FeatherIcon, ListRowItem, ListRow } from "frappe-ui"
-import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
+import { FeatherIcon, ListRowItem, ListRow, Tooltip } from "frappe-ui"
 import { openEntity } from "@/utils/files"
 import { settings } from "@/resources/permissions"
 import { useRoute } from "vue-router"
