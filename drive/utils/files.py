@@ -10,7 +10,7 @@ import boto3
 import frappe
 from io import BytesIO
 from botocore.config import Config
-from wand.image import Image as WandImage
+from thumbnail import generate_thumbnail
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -105,6 +105,12 @@ class FileManager:
     ACCEPTABLE_MIME_TYPES = [
         "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.oasis.opendocument.presentation",
     ]
 
     def __init__(self):
@@ -122,8 +128,10 @@ class FileManager:
             )
 
     def can_create_thumbnail(self, file):
+        # Don't create thumbnails for text files
         return (
             file.mime_type.startswith(("image", "video"))
+            or file.mime_type == "application/pdf"
             or file.mime_type in FileManager.ACCEPTABLE_MIME_TYPES
         )
 
@@ -134,7 +142,7 @@ class FileManager:
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
             os.remove(current_path)
-            if self.can_create_thumbnail():
+            if self.can_create_thumbnail(drive_file):
                 self.upload_thumbnail(drive_file)
                 # frappe.enqueue(
                 #     self.upload_thumbnail,
@@ -146,10 +154,7 @@ class FileManager:
                 os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
-            if (
-                drive_file.mime_type.startswith(("image", "video"))
-                or drive_file.mime_type == "application/pdf"
-            ):
+            if self.can_create_thumbnail(drive_file):
                 self.upload_thumbnail(drive_file)
 
     def upload_thumbnail(self, file):
@@ -157,11 +162,12 @@ class FileManager:
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
         team_directory = get_home_folder(file.team)["name"]
-        save_path = Path(team_directory) / "thumbnails" / (file.name + ".thumbnail")
-        disk_path = self.site_folder / save_path
-        file_path = str(self.site_folder / file.path)
+        save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
+        disk_path = str((self.site_folder / save_path).resolve())
+        file_path = str((self.site_folder / file.path).resolve())
         with DistributedLock(file.path, exclusive=False):
             try:
+                # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
                 if file.mime_type.startswith("image"):
                     with Image.open(file_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
@@ -179,20 +185,23 @@ class FileManager:
                         frame,
                         [int(cv2.IMWRITE_WEBP_QUALITY), 50],
                     )
-                    with open(str(disk_path), "wb") as f:
+                    with open(disk_path, "wb") as f:
                         f.write(thumbnail_encoded)
-                elif file.mime_type == "application/pdf":
-                    imageFromPdf = WandImage(filename=file_path)
-                    image = WandImage(width=imageFromPdf.width, height=imageFromPdf.height)
-                    image.composite(imageFromPdf.sequence[0], top=0, left=0)
-                    image.resize(512, 512)
-                    image.format = "jpeg"
-                    image.save(filename=disk_path)
-                    # Rename as directly passing in .thumbnail fails
-                    Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
-                elif "word" in file.mime_type:
+                else:
                     # Word document thumbnail
-                    pass
+                    res = generate_thumbnail(
+                        file_path,
+                        disk_path,
+                        {
+                            "trim": False,
+                            "height": 512,
+                            "width": 512,
+                            "quality": 100,
+                            "type": "thumbnail",
+                        },
+                    )
+                    print(res)
+                Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
 
             except Exception as e:
                 print(e)

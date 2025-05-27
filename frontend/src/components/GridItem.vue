@@ -74,9 +74,16 @@ const childrenSentence = computed(() => {
 
 onMounted(async () => {
   if (
-    !["Image", "Video", "PDF", "Markdown", "Code", "Text", "Document"].includes(
-      props.file.file_type
-    )
+    ![
+      "Image",
+      "Video",
+      "PDF",
+      "Markdown",
+      "Code",
+      "Text",
+      "Document",
+      "Presentation",
+    ].includes(props.file.file_type)
   )
     return
   const result = await getThumbnailUrl(props.file.name, props.file.file_type)

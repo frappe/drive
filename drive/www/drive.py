@@ -26,6 +26,8 @@ def get_context():
     # Parsing
     parts = frappe.form_dict.app_path.split("/")
     if len(parts) >= 4:
+        context.description = "Open this online."
+        context.og_image = ""
         doc = frappe.get_doc("Drive File", parts[3])
         if get_user_access(doc)["read"]:
             context.title = "Folder - " + doc.title if doc.is_group else doc.title

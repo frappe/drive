@@ -2,5 +2,5 @@ black
 Pillow
 opencv-python
 mimemapper
-wand
+thumbnail
 boto3
