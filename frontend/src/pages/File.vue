@@ -1,14 +1,10 @@
 <template>
-  <div class="flex">
-    <div class="flex-grow">
+  <div class="flex w-full">
+    <div class="flex-1 overflow-scroll">
       <Navbar v-if="!file?.error" :root-resource="file" />
       <FolderContentsError v-if="file.error" :error="file.error" />
-      <LoadingIndicator
-        v-if="file.loading"
-        class="w-10 h-full text-neutral-100 mx-auto"
-      />
+
       <div
-        v-else
         class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
       >
         <div
@@ -16,11 +12,11 @@
           :draggable="false"
           class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh] mt-3"
         >
-          <!-- Meant to render even if file is being updated, doesn't work because loading is checked in l7 -->
-          <FileRender
-            v-if="file.data || file.previousData"
-            :preview-entity="file.data || file.previousData"
+          <LoadingIndicator
+            v-if="file.loading"
+            class="w-10 h-full text-neutral-100 mx-auto"
           />
+          <FileRender v-else-if="file.data" :preview-entity="file.data" />
         </div>
         <div
           class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-white"
@@ -66,7 +62,6 @@ import { Scan } from "lucide-vue-next"
 import { onKeyStroke } from "@vueuse/core"
 import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"
-import Dialogs from "@/components/Dialogs.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
 
 const router = useRouter()

@@ -65,17 +65,6 @@ export default {
           ? `this item`
           : `${this.entities.length} items`
       switch (this.for) {
-        case "unshare":
-          return {
-            title: "Unshare",
-            message:
-              "Selected items will not be shared with you anymore and you will lose access to them.",
-            buttonMessage: "Remove",
-            theme: "red",
-            buttonIcon: "trash-2",
-            methodName: "drive.api.files.unshare_entities",
-            toastMessage: `Unshared ${items}`,
-          }
         case "restore":
           return {
             title: "Restore Items",

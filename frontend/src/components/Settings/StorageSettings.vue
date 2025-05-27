@@ -87,7 +87,7 @@
       @mouseenter="hoveredRow = i.name"
       @mouseleave="hoveredRow = null"
     >
-      <img :src="getIconUrl(formatMimeType(i.mime_type))" />
+      <img :src="getIconUrl(i.file_type)" />
       <span class="text-gray-800 text-sm">{{ i.title }}</span>
 
       <div class="text-gray-800 text-sm ml-auto flex gap-2 h-10 leading-10">
@@ -113,7 +113,6 @@
 import {
   formatSize,
   base2BlockSize,
-  formatMimeType,
   COLOR_MAP,
   formatPercent,
 } from "@/utils/format"

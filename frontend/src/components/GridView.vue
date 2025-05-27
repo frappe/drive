@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="rows?.length"
-    class="grid-container px-[10px] py-3 overflow-scroll"
+    class="grid-container px-[10px] py-3 pb-[60px] overflow-scroll"
   >
     <div
       v-for="file in rows"

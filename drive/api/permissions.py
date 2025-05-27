@@ -2,7 +2,7 @@ import frappe
 from frappe.utils import getdate
 
 from drive.utils.users import mark_as_viewed
-from drive.utils.files import get_valid_breadcrumbs, generate_upward_path
+from drive.utils.files import get_valid_breadcrumbs, generate_upward_path, get_file_type
 
 
 ENTITY_FIELDS = [
@@ -138,7 +138,14 @@ def get_entity_with_permissions(entity_name):
         ["entity as is_favourite"],
     )
     mark_as_viewed(entity)
-    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite}
+    file_type = get_file_type(entity)
+    return_obj = (
+        entity
+        | user_access
+        | owner_info
+        | breadcrumbs
+        | {"is_favourite": favourite, "file_type": file_type}
+    )
     entity_doc_content = (
         frappe.db.get_value(
             "Drive Document",

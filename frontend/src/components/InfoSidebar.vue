@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="entity && store.state.showInfo"
-    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[352px] min-w-full"
+    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[452px] shrink-0 whitespace-nowrap"
   >
     <div>
       <!-- Information -->
@@ -73,7 +73,7 @@
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">Type</span>
               <span class="col-span-1" :title="entity.mime_type">
-                {{ formattedMimeType }}
+                {{ entity.file_type }}
               </span>
               <span v-if="entity.file_size" class="col-span-1 text-gray-600">
                 Size
@@ -206,11 +206,10 @@
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { Avatar, call, createResource, Tooltip } from "frappe-ui"
-import { formatMimeType, formatDate } from "@/utils/format"
+import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"
 import Info from "./EspressoIcons/Info.vue"
-import File from "./EspressoIcons/File.vue"
 import Comment from "./EspressoIcons/Comment.vue"
 import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
@@ -225,13 +224,6 @@ const thumbnailLink = ref("")
 const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
-
-const formattedMimeType = computed(() => {
-  if (entity.value.is_group) return "Folder"
-  const kind = formatMimeType(entity.value.mime_type)
-  return kind.charAt(0).toUpperCase() + kind.slice(1)
-})
-
 const entity = computed(() => store.state.activeEntity)
 
 function switchTab(val) {
@@ -246,11 +238,7 @@ function switchTab(val) {
 }
 
 async function thumbnailUrl() {
-  let result = await getThumbnailUrl(
-    formatMimeType(entity.value.mime_type),
-    entity.value.name,
-    entity.value.file_ext
-  )
+  let result = await getThumbnailUrl(entity.value.name, entity.value.file_type)
   thumbnailLink.value = result
 }
 

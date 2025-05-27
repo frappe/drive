@@ -133,7 +133,7 @@
                       </svg>
                       <img
                         v-else
-                        :src="getIconUrl(formatMimeType(item.mime_type))"
+                        :src="getIconUrl(item.mime_type)"
                         :draggable="false"
                         class="h-[20px] mr-3"
                       />
@@ -159,7 +159,6 @@
 <script setup>
 import { watch, computed, h, ref } from "vue"
 import { getIconUrl } from "@/utils/getIconUrl"
-import { openEntity as openFolder } from "@/utils/files"
 import {
   createResource,
   Dialog,
@@ -168,7 +167,6 @@ import {
   Dropdown,
   Autocomplete,
 } from "frappe-ui"
-import { formatMimeType } from "@/utils/format"
 import { move, allFolders } from "@/resources/files"
 import Home from "./EspressoIcons/Home.vue"
 import Team from "./EspressoIcons/Organization.vue"

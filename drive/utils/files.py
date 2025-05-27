@@ -10,6 +10,7 @@ import boto3
 import frappe
 from io import BytesIO
 from botocore.config import Config
+from thumbnail import generate_thumbnail
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -29,21 +30,6 @@ MIME_LIST_MAP = {
     "PDF": ["application/pdf"],
     "Text": [
         "text/plain",
-        "text/html",
-        "text/css",
-        "text/javascript",
-        "application/javascript",
-        "text/rich-text",
-        "text/x-shellscript",
-        "text/markdown",
-        "application/json",
-        "application/x-httpd-php",
-        "text/x-python",
-        "application/x-python-script",
-        "application/x-sql",
-        "text/x-perl",
-        "text/x-csrc",
-        "text/x-sh",
     ],
     "XML Data": ["application/xml"],
     "Document": [
@@ -68,6 +54,23 @@ MIME_LIST_MAP = {
         "application/vnd.oasis.opendocument.presentation",
         "application/vnd.apple.keynote",
     ],
+    "Code": [
+        "text/x-python",
+        "text/html",
+        "text/css",
+        "text/javascript",
+        "application/javascript",
+        "text/rich-text",
+        "text/x-shellscript",
+        "text/markdown",
+        "application/json",
+        "application/x-httpd-php",
+        "application/x-python-script",
+        "application/x-sql",
+        "text/x-perl",
+        "text/x-csrc",
+        "text/x-sh",
+    ],
     "Audio": ["audio/mpeg", "audio/wav", "audio/x-midi", "audio/ogg", "audio/mp4", "audio/mp3"],
     "Video": ["video/mp4", "video/webm", "video/ogg", "video/quicktime", "video/x-matroska"],
     "Book": ["application/epub+zip", "application/x-mobipocket-ebook"],
@@ -86,7 +89,30 @@ MIME_LIST_MAP = {
 }
 
 
+def get_file_type(r):
+    if r["is_group"]:
+        return "Folder"
+    elif r["is_link"]:
+        return "Link"
+    else:
+        try:
+            return next(k for (k, v) in MIME_LIST_MAP.items() if r["mime_type"] in v)
+        except StopIteration:
+            return "Unknown"
+
+
 class FileManager:
+    ACCEPTABLE_MIME_TYPES = [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.oasis.opendocument.presentation",
+    ]
+
     def __init__(self):
         settings = frappe.get_single("Drive S3 Settings")
         self.s3_enabled = settings.enabled
@@ -101,6 +127,14 @@ class FileManager:
                 config=Config(signature_version=settings.signature_version),
             )
 
+    def can_create_thumbnail(self, file):
+        # Don't create thumbnails for text files
+        return (
+            file.mime_type.startswith(("image", "video"))
+            or file.mime_type == "application/pdf"
+            or file.mime_type in FileManager.ACCEPTABLE_MIME_TYPES
+        )
+
     def upload_file(self, current_path: str, new_path: str, drive_file: str = None) -> None:
         """
         Moves the file from the current path to another path
@@ -108,7 +142,7 @@ class FileManager:
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
             os.remove(current_path)
-            if drive_file.mime_type.startswith(("image", "video")):
+            if self.can_create_thumbnail(drive_file):
                 self.upload_thumbnail(drive_file)
                 # frappe.enqueue(
                 #     self.upload_thumbnail,
@@ -120,7 +154,7 @@ class FileManager:
                 os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
-            if drive_file.mime_type.startswith(("image", "video")):
+            if self.can_create_thumbnail(drive_file):
                 self.upload_thumbnail(drive_file)
 
     def upload_thumbnail(self, file):
@@ -128,11 +162,12 @@ class FileManager:
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
         team_directory = get_home_folder(file.team)["name"]
-        save_path = Path(team_directory) / "thumbnails" / (file.name + ".thumbnail")
-        disk_path = self.site_folder / save_path
-        file_path = str(self.site_folder / file.path)
+        save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
+        disk_path = str((self.site_folder / save_path).resolve())
+        file_path = str((self.site_folder / file.path).resolve())
         with DistributedLock(file.path, exclusive=False):
             try:
+                # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
                 if file.mime_type.startswith("image"):
                     with Image.open(file_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
@@ -150,14 +185,29 @@ class FileManager:
                         frame,
                         [int(cv2.IMWRITE_WEBP_QUALITY), 50],
                     )
-                    with open(str(disk_path), "wb") as f:
+                    with open(disk_path, "wb") as f:
                         f.write(thumbnail_encoded)
-                elif file.mime_type == "application/pdf":
-                    print("EHYYU")
+                else:
+                    # Word document thumbnail
+                    res = generate_thumbnail(
+                        file_path,
+                        disk_path,
+                        {
+                            "trim": False,
+                            "height": 512,
+                            "width": 512,
+                            "quality": 100,
+                            "type": "thumbnail",
+                        },
+                    )
+                    print(res)
+                Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
+
             except Exception as e:
-                pass
+                print(e)
 
         if self.s3_enabled:
+            os.remove(file_path)
             self.conn.upload_file(disk_path, self.bucket, str(save_path))
             disk_path.unlink()
 
@@ -249,57 +299,6 @@ def get_team_thumbnails_directory(team_name):
     return Path(
         frappe.get_site_path("private/files"), get_home_folder(team_name)["name"], "thumbnails"
     )
-
-
-def create_thumbnail(entity_name, path, mime_type, team):
-    user_thumbnails_directory = get_team_thumbnails_directory(team)
-    thumbnail_savepath = Path(user_thumbnails_directory, entity_name + ".thumbnail")
-
-    with DistributedLock(path, exclusive=False):
-        if mime_type.startswith("image"):
-            max_retries = 3
-            retry_count = 0
-            while retry_count < max_retries:
-                try:
-                    image_path = path
-                    with Image.open(image_path).convert("RGB") as image:
-                        image = ImageOps.exif_transpose(image)
-                        image.thumbnail((512, 512))
-                        image.save(str(thumbnail_savepath), format="webp")
-                    break
-                except Exception as e:
-                    print(e)
-                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
-                    retry_count += 1
-            else:
-                print("Failed to create thumbnail after maximum retries.")
-
-        if mime_type.startswith("video"):
-            max_retries = 3
-            retry_count = 0
-            while retry_count < max_retries:
-                try:
-                    video_path = str(path)
-                    cap = cv2.VideoCapture(video_path)
-                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    target_frame = int(frame_count / 2)
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
-                    ret, frame = cap.read()
-                    cap.release()
-                    _, thumbnail_encoded = cv2.imencode(
-                        # ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30]
-                        ".webp",
-                        frame,
-                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
-                    )
-                    with open(str(thumbnail_savepath) + ".thumbnail", "wb") as f:
-                        f.write(thumbnail_encoded)
-                    break
-                except Exception as e:
-                    print(f"Failed to create thumbnail. Retry {retry_count+1}/{max_retries}")
-                    retry_count += 1
-            else:
-                print("Failed to create thumbnail after maximum retries.")
 
 
 def dribble_access(path):
@@ -422,3 +421,7 @@ def if_folder_exists(team, folder_name, parent, personal):
 
     if existing_folder:
         return existing_folder.name
+    else:
+        d = frappe.get_doc({"doctype": "Drive File", **values})
+        d.insert()
+        return d.name

@@ -47,11 +47,7 @@
                 </clipPath>
               </defs>
             </svg>
-            <img
-              v-else
-              class="w-4 h-4"
-              :src="getIconUrl(formatMimeType(entity.mime_type))"
-            />
+            <img v-else class="w-4 h-4" :src="getIconUrl(entity.file_type)" />
             <span class="truncate">{{ entity.title }}</span>
           </div>
           <div
@@ -155,7 +151,6 @@ import Search from "./EspressoIcons/Search.vue"
 import FileUpload from "./EspressoIcons/File-upload.vue"
 import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import { Dialog, Avatar } from "frappe-ui"
-import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import Star from "./EspressoIcons/Star.vue"
 
@@ -173,7 +168,7 @@ export default {
   },
   emits: ["openEntity", "update:open"],
   setup() {
-    return { formatMimeType, getIconUrl }
+    return { getIconUrl }
   },
   data() {
     return {

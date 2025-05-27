@@ -845,7 +845,6 @@ import {
 } from "frappe-ui"
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
-import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { v4 as uuidv4 } from "uuid"
 import { defineAsyncComponent, markRaw } from "vue"
@@ -984,7 +983,7 @@ export default {
     },
   },
   setup() {
-    return { formatMimeType, getIconUrl }
+    return { getIconUrl }
   },
   data() {
     return {

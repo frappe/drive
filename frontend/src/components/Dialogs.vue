@@ -128,8 +128,8 @@ function addToList(data) {
 }
 
 function removeFromList(entities) {
-  // Hack
-  setTimeout(() => props.rootResource?.fetch?.(), 1000)
+  // Hack (that breaks for some reason)
+  // setTimeout(() => props.rootResource?.fetch?.(), 1000)
   if (!props.getEntities) return
   const names = entities.map((o) => o.name)
   props.getEntities.setData(
