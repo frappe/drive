@@ -121,15 +121,42 @@ const open = (row) =>
 const draggedItem = ref(null)
 
 onKeyDown("a", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
   if (e.metaKey) {
     selections.value = new Set(props.folderContents.map((k) => k.name))
     e.preventDefault()
   }
 })
 onKeyDown("Backspace", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
   if (e.metaKey) emitter.emit("remove")
 })
+onKeyDown("m", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
+  if (e.ctrlKey) emitter.emit("move")
+})
 onKeyDown("Escape", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
   selections.value = new Set()
   e.preventDefault()
 })

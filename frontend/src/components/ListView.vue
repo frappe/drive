@@ -244,6 +244,13 @@ const handleSelections = (sels) => {
 
 // Add keyboard shortcuts here as f-ui selections has to be mutated
 onKeyDown("a", (e) => {
+  // How do I do this nicely?
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
   if (e.metaKey) {
     container.value.selections.clear()
     props.folderContents.map((k) => container.value.selections.add(k.name))
@@ -251,9 +258,30 @@ onKeyDown("a", (e) => {
   }
 })
 onKeyDown("Backspace", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
   if (e.metaKey) emitter.emit("remove")
 })
+onKeyDown("m", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
+  if (e.ctrlKey) emitter.emit("move")
+})
 onKeyDown("Escape", (e) => {
+  if (
+    e.target.classList.contains("ProseMirror") ||
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  )
+    return
   container.value.selections.clear()
   e.preventDefault()
 })

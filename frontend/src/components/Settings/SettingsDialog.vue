@@ -44,7 +44,7 @@
 </template>
 <script setup>
 import { ref, defineProps, markRaw, computed } from "vue"
-import { Dialog, FeatherIcon, Button } from "frappe-ui"
+import { Dialog, Button } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import User from "@/components/EspressoIcons/User.vue"

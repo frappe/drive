@@ -168,6 +168,7 @@ declare module 'vue' {
     ShareDialog: typeof import('./src/components/ShareDialog/ShareDialog.vue')['default']
     ShareNew: typeof import('./src/components/EspressoIcons/ShareNew.vue')['default']
     SheetPreview: typeof import('./src/components/FileTypePreview/SheetPreview.vue')['default']
+    ShortcutsDialog: typeof import('./src/components/ShortcutsDialog.vue')['default']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
     SidebarItem: typeof import('./src/components/SidebarItem.vue')['default']
     SlidePreview: typeof import('./src/components/FileTypePreview/SlidePreview.vue')['default']

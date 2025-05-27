@@ -55,12 +55,14 @@
     v-model="showSettings"
     :suggested-tab="suggestedTab"
   />
+  <ShortcutsDialog v-if="showShortcuts" v-model="showShortcuts" />
 </template>
 
 <script setup>
 import { markRaw } from "vue"
 import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
+import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import Docs from "@/components/EspressoIcons/Docs.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
@@ -89,6 +91,7 @@ defineProps({
   isExpanded: Boolean,
 })
 const showSettings = ref(false)
+const showShortcuts = ref(false)
 const suggestedTab = ref(0)
 
 const fullName = computed(() => store.state.user.fullName)
@@ -136,11 +139,13 @@ const settingsItems = computed(() => {
   ]
 })
 
-emitter.on("showSettings", (val) => {
+emitter.on("showSettings", (val = 0) => {
   showSettings.value = true
-  suggestedTab.value = val || 0
+  suggestedTab.value = val
 })
-
+emitter.on("toggleShortcuts", () => {
+  showShortcuts.value = !showShortcuts.value
+})
 function logout() {
   store.dispatch("logout")
   router.redirect("/")

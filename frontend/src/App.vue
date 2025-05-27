@@ -92,13 +92,26 @@ onKeyDown((e) => {
     e.target.tagName === "TEXTAREA"
   )
     return
+  if (e.key == "?") emitter.emit("toggleShortcuts")
   if (e.metaKey) {
+    if (e.key == ",") {
+      emitter.emit("showSettings")
+      e.preventDefault()
+    }
     if (e.shiftKey) {
-      if (e.key == "ArrowRight") store.commit("setIsSidebarExpanded", true)
-      else if (e.key == "ArrowLeft") store.commit("setIsSidebarExpanded", false)
+      if (e.key == "ArrowRight") {
+        store.commit("setIsSidebarExpanded", true)
+        e.preventDefault()
+      } else if (e.key == "ArrowLeft") {
+        store.commit("setIsSidebarExpanded", false)
+        e.preventDefault()
+      }
     }
     // Support Cmd + K also
-    if (e.key == "k") showSearchPopup.value = true
+    if (e.key == "k") {
+      showSearchPopup.value = true
+      e.preventDefault()
+    }
   }
 })
 </script>
