@@ -122,13 +122,11 @@ const teamOptions = computed(() =>
     label: getTeams.data[k].title,
   }))
 )
-const singleClick = ref(
-  Boolean((settings.data.message || settings.data).single_click)
-)
+const singleClick = ref(Boolean(settings.data.single_click))
 watch(singleClick, (v) => {
   setSettings.submit({ updates: { single_click: v } })
 })
-const defaultTeam = ref(settings.data.message.default_team)
+const defaultTeam = ref(settings.data.default_team)
 watch(defaultTeam, (v) => {
   setSettings.submit({ updates: { default_team: v.value } })
 })

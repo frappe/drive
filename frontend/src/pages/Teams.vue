@@ -110,6 +110,7 @@
             <div
               v-if="
                 !getInvites?.data?.length &&
+                getTeams.data &&
                 !Object.values(getTeams.data).length
               "
               class="text-sm font-semibold mt-2"
