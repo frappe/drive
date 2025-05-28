@@ -108,7 +108,7 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
 
     # Upload and update parent folder size
     manager = FileManager()
-    manager.upload_file(temp_path, drive_file.path, drive_file if not embed else None)
+    manager.upload_file(str(temp_path), drive_file.path, drive_file if not embed else None)
     update_file_size(parent, file_size)
 
     return drive_file
@@ -198,40 +198,42 @@ def get_thumbnail(entity_name):
         doctype="Drive File", doc=drive_file.name, ptype="write", user=frappe.session.user
     ):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
+
     with DistributedLock(drive_file.path, exclusive=False):
-        if frappe.cache().exists(entity_name):
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        else:
+        # if frappe.cache().exists(entity_name):
+        #     thumbnail_data = frappe.cache().get_value(entity_name)
+        if True:
+            thumbnail_data = None
             try:
-                thumbnail_getpath = Path(
-                    get_team_thumbnails_directory(drive_file.team), entity_name
-                )
-                with open(str(thumbnail_getpath) + ".thumbnail", "rb") as file:
-                    thumbnail_data = BytesIO(file.read())
+                manager = FileManager()
+                thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
+                thumbnail_data = BytesIO(thumbnail.read())
                 frappe.cache().set_value(entity_name, thumbnail_data)
             except FileNotFoundError:
                 if drive_file.mime_type.startswith("text"):
-                    m = FileManager()
-                    with m.get_file(drive_file.path) as f:
-                        return {
-                            "type": "text",
-                            "content": f.read()[:1000].decode("utf-8").replace("\n", "<br/>"),
-                        }
-                if drive_file.mime_type == "frappe_doc":
+                    with manager.get_file(drive_file.path) as f:
+                        thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
+                elif drive_file.mime_type == "frappe_doc":
                     html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
-                    return {
-                        "type": "text",
-                        "content": html[:1000],
-                    }
-                return ""
+                    thumbnail_data = html[:1000]
+                    print(thumbnail_data)
+                if thumbnail_data:
+                    frappe.cache().set_value(entity_name, thumbnail_data)
 
+    if isinstance(thumbnail_data, BytesIO):
         response = Response(
             wrap_file(frappe.request.environ, thumbnail_data),
             direct_passthrough=True,
         )
         response.headers.set("Content-Type", "image/jpeg")
         response.headers.set("Content-Disposition", "inline", filename=entity_name)
-        return response
+    else:
+        response = Response(
+            thumbnail_data,
+        )
+        response.headers.set("Content-Type", "text/html")
+
+    return response
 
 
 @frappe.whitelist()
@@ -930,7 +932,7 @@ def search(query, team):
         result = frappe.db.sql(
             f"""
         SELECT  `tabDrive File`.name,
-                `tabDrive File`.title, 
+                `tabDrive File`.title,
                 `tabDrive File`.is_group,
                 `tabDrive File`.is_link,
                 `tabDrive File`.mime_type,
@@ -946,7 +948,7 @@ def search(query, team):
             AND (`tabDrive File`.`owner` = {user} OR `tabDrive File`.is_private = 0)
             AND `tabDrive File`.`parent_entity` <> ''
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
-        GROUP  BY `tabDrive File`.`name` 
+        GROUP  BY `tabDrive File`.`name`
         """,
             as_dict=1,
         )
@@ -967,20 +969,20 @@ def get_ancestors_of(entity_name):
     entity_name = frappe.db.escape(entity_name)
     result = frappe.db.sql(
         f"""
-        WITH RECURSIVE generated_path as ( 
-        SELECT 
+        WITH RECURSIVE generated_path as (
+        SELECT
             `tabDrive File`.name,
             `tabDrive File`.parent_entity
-        FROM `tabDrive File` 
+        FROM `tabDrive File`
         WHERE `tabDrive File`.name = {entity_name}
 
         UNION ALL
 
-        SELECT 
+        SELECT
             t.name,
             t.parent_entity
         FROM generated_path as gp
-        JOIN `tabDrive File` as t ON t.name = gp.parent_entity) 
+        JOIN `tabDrive File` as t ON t.name = gp.parent_entity)
         SELECT name FROM generated_path;
     """,
         as_dict=0,

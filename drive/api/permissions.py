@@ -60,7 +60,6 @@ def get_user_access(entity, user=frappe.session.user):
 
     path = generate_upward_path(entity.name, user)
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
-    print(user, path)
     if not user or user == "Guest":
         return user_access
     public_path = generate_upward_path(entity.name, "Guest")

@@ -140,9 +140,8 @@ class FileManager:
         """
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
-            os.remove(current_path)
             if self.can_create_thumbnail(drive_file):
-                self.upload_thumbnail(drive_file)
+                self.upload_thumbnail(drive_file, current_path)
                 # frappe.enqueue(
                 #     self.upload_thumbnail,
                 #     now=True,
@@ -154,9 +153,9 @@ class FileManager:
         else:
             os.rename(current_path, self.site_folder / new_path)
             if self.can_create_thumbnail(drive_file):
-                self.upload_thumbnail(drive_file)
+                self.upload_thumbnail(drive_file, str(self.site_folder / new_path))
 
-    def upload_thumbnail(self, file):
+    def upload_thumbnail(self, file, file_path: str):
         """
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
@@ -164,54 +163,59 @@ class FileManager:
         team_directory = get_home_folder(file.team)["name"]
         save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
         disk_path = str((self.site_folder / save_path).resolve())
-        file_path = str((self.site_folder / file.path).resolve())
+
+        if not file_path:
+            file_path = str(().resolve())
         with DistributedLock(file.path, exclusive=False):
-            try:
-                # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
-                if file.mime_type.startswith("image"):
-                    with Image.open(file_path).convert("RGB") as image:
-                        image = ImageOps.exif_transpose(image)
-                        image.thumbnail((512, 512))
-                        image.save(str(disk_path), format="webp")
-                elif file.mime_type.startswith("video"):
-                    cap = cv2.VideoCapture(file_path)
-                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    target_frame = int(frame_count / 2)
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
-                    _, frame = cap.read()
-                    cap.release()
-                    _, thumbnail_encoded = cv2.imencode(
-                        ".webp",
-                        frame,
-                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
-                    )
-                    with open(disk_path, "wb") as f:
-                        f.write(thumbnail_encoded)
-                else:
-                    from thumbnail import generate_thumbnail
+            # try:
+            # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
+            if file.mime_type.startswith("image"):
+                with Image.open(file_path).convert("RGB") as image:
+                    image = ImageOps.exif_transpose(image)
+                    image.thumbnail((512, 512))
+                    image.save(str(disk_path), format="webp")
+            elif file.mime_type.startswith("video"):
+                cap = cv2.VideoCapture(file_path)
+                frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                target_frame = int(frame_count / 2)
+                cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                _, frame = cap.read()
+                cap.release()
+                _, thumbnail_encoded = cv2.imencode(
+                    ".webp",
+                    frame,
+                    [int(cv2.IMWRITE_WEBP_QUALITY), 50],
+                )
+                with open(disk_path, "wb") as f:
+                    f.write(thumbnail_encoded)
+            else:
+                from thumbnail import generate_thumbnail
 
-                    # Word document thumbnail
-                    res = generate_thumbnail(
-                        file_path,
-                        disk_path,
-                        {
-                            "trim": False,
-                            "height": 512,
-                            "width": 512,
-                            "quality": 100,
-                            "type": "thumbnail",
-                        },
-                    )
+                # Word document thumbnail
+                generate_thumbnail(
+                    file_path,
+                    disk_path,
+                    {
+                        "trim": False,
+                        "height": 512,
+                        "width": 512,
+                        "quality": 100,
+                        "type": "thumbnail",
+                    },
+                )
+            final_path = Path(disk_path)
+            if self.s3_enabled:
+                os.remove(file_path)
+                self.conn.upload_file(
+                    final_path, self.bucket, str(save_path.with_suffix(".thumbnail"))
+                )
+                final_path.unlink()
+            else:
+                final_path.rename(final_path.with_suffix(".thumbnail"))
 
-                Path(disk_path).rename(Path(disk_path).with_suffix(".thumbnail"))
-
-            except Exception as e:
-                print(e)
-
-        if self.s3_enabled:
-            os.remove(file_path)
-            self.conn.upload_file(disk_path, self.bucket, str(save_path))
-            disk_path.unlink()
+        # except Exception as e:
+        #     os.remove(file_path)
+        #     print(e)
 
     def get_file(self, path):
         """
@@ -232,6 +236,11 @@ class FileManager:
                     buf = BytesIO(fh.read())
 
         return buf
+
+    def get_thumbnail(self, team, name):
+        return self.get_file(
+            str(Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail"))
+        )
 
 
 def get_home_folder(team):

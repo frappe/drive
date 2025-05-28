@@ -10,10 +10,7 @@ export async function getThumbnailUrl(name, file_type) {
   try {
     if (fileContent.type == "image/jpeg")
       return URL.createObjectURL(fileContent)
-
-    const text = JSON.parse(await fileContent.text())
-    if (!text.message) return getIconUrl(file_type.toLowerCase())
-    return text.message.content
+    return await fileContent.text()
   } catch {
     return getIconUrl(file_type.toLowerCase())
   }

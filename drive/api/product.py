@@ -114,7 +114,6 @@ def signup(account_request, first_name, last_name=None, team=None):
             "single_click": 1,
         }
     )
-    print(doc)
     doc.insert()
 
     # Check invites for this user
