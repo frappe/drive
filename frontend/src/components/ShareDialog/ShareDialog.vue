@@ -180,7 +180,7 @@
                 ]"
                 :hide-search="true"
                 @update:model-value="
-                  (val) => updateGeneralAccess(val, generalAccessLevel)
+                  (val) => updateGeneralAccess(val, generalAccessType)
                 "
               />
               <Autocomplete
@@ -386,6 +386,7 @@ const getGeneralAccess = createResource({
   },
 })
 getGeneralAccess.fetch({ user: "" })
+
 const updateGeneralAccess = (type, level) => {
   for (let user of ["$TEAM", ""]) {
     updateAccess.submit({

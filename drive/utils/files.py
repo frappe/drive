@@ -325,10 +325,9 @@ def generate_upward_path(entity_name, user=None):
     Stops when parent_drive_file IS NULL
     """
     entity = frappe.db.escape(entity_name)
-    if not user:
+    if user is None:
         user = frappe.session.user
     user = frappe.db.escape(user if user != "Guest" else "")
-
     result = frappe.db.sql(
         f"""WITH RECURSIVE
             generated_path as (

@@ -97,7 +97,7 @@ const props = defineProps({
   selectedRows: Array,
   getEntities: { type: Object, default: null },
 })
-const resetDialog = () => (dialog.value = null)
+const resetDialog = () => (dialog.value = "")
 const selections = computed(() => {
   return props.selectedRows && props.selectedRows.length
     ? props.selectedRows

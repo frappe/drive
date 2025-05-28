@@ -103,7 +103,7 @@ const props = defineProps({
 const route = useRoute()
 const store = useStore()
 
-const dialog = ref(null)
+const dialog = ref("")
 const infoEntities = ref([])
 const team = route.params.team
 const activeEntity = computed(() => store.state.activeEntity)
