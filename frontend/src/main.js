@@ -14,8 +14,8 @@ import "./index.css"
 import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
 
-setConfig("resourceFetcher", frappeRequest)
 const app = createApp(App)
+setConfig("resourceFetcher", frappeRequest)
 app.config.unwrapInjectedRef = true
 app.config.globalProperties.emitter = emitter
 app.provide("emitter", emitter)

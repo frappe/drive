@@ -95,6 +95,7 @@ import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
 import { move, allFolders } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
+import { settings } from "@/resources/permissions"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -146,6 +147,7 @@ watch(
 
 allUsers.fetch({ team })
 allFolders.fetch({ team })
+if (!settings.fetched) settings.fetch()
 
 // Drag and drop
 const onDrop = (targetFile, draggedItem) => {
@@ -306,8 +308,9 @@ async function newLink() {
   try {
     const text = await navigator.clipboard.readText()
     if (localStorage.getItem("prevClip") === text) return
-    new URL(text)
     localStorage.setItem("prevClip", text)
+    new URL(text)
+
     toast({
       title: "Link detected",
       text,
@@ -323,15 +326,10 @@ async function newLink() {
   } catch (_) {}
 }
 
-// Hacky but performant way to track links - when the user loads page, copies on page, or comes to page
 // JS doesn't allow direct reading of clipboard
-newLink()
-addEventListener("copy", () => document.getElementById("popovers").click())
-document.getElementById("popovers").addEventListener("click", newLink)
-document.addEventListener("visibilitychange", () => {
-  window.focus()
-  !document.hidden && setTimeout(newLink, 100)
-})
-
-// Keyboard shortcuts
+if (settings.data.auto_detect_links) {
+  newLink()
+  window.addEventListener("focus", newLink)
+  window.addEventListener("copy", newLink)
+}
 </script>

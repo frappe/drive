@@ -5,7 +5,7 @@
   "creation": "2025-04-24 17:38:30.853130",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["user", "default_team", "single_click", "animations"],
+  "field_order": ["user", "default_team", "single_click", "auto_detect_links"],
   "fields": [
     {
       "fieldname": "user",
@@ -27,16 +27,16 @@
       "label": "Single Click"
     },
     {
-      "default": "1",
-      "fieldname": "animations",
+      "default": "0",
+      "fieldname": "auto_detect_links",
       "fieldtype": "Check",
-      "label": "Animations"
+      "label": "Auto Detect Links"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-04-30 14:51:32.679286",
+  "modified": "2025-05-29 11:38:36.385483",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",

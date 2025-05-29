@@ -70,6 +70,7 @@
                 @change="query = $event.target.value"
                 ref="queryInput"
                 autocomplete="off"
+                v-focus
               />
             </div>
           </div>

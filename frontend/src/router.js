@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { settings } from "./resources/permissions"
 import { manageBreadcrumbs } from "./utils/files"
 
 function clearStore() {
@@ -21,7 +20,12 @@ const routes = [
     component: () => null,
     beforeEnter: async () => {
       if (!store.getters.isLoggedIn) return "/login"
-      await settings.fetch()
+      const settings = createResource({
+        url: "/api/method/drive.api.product.get_settings",
+        method: "GET",
+        cache: "settings",
+      })
+      if (!settings.data) await settings.fetch()
       return settings.data.default_team
         ? "/t/" + settings.data.default_team
         : "/teams"

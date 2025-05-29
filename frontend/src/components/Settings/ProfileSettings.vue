@@ -89,6 +89,11 @@
     label="Single click to open files and folders"
     class="!px-0 hover:!bg-inherit"
   />
+  <Switch
+    v-model="detectLinks"
+    label="Automatically detect links"
+    class="!px-0 hover:!bg-inherit"
+  />
 </template>
 <script setup>
 import {
@@ -123,13 +128,21 @@ const teamOptions = computed(() =>
   }))
 )
 const singleClick = ref(Boolean(settings.data.single_click))
-watch(singleClick, (v) => {
-  setSettings.submit({ updates: { single_click: v } })
-})
+const detectLinks = ref(Boolean(settings.data.auto_detect_links))
 const defaultTeam = ref(settings.data.default_team)
-watch(defaultTeam, (v) => {
-  setSettings.submit({ updates: { default_team: v.value } })
-})
+const options = {
+  single_click: singleClick,
+  auto_detect_links: detectLinks,
+  default_team: defaultTeam,
+}
+for (let k in options) {
+  watch(options[k], (v) => {
+    setSettings.submit({
+      updates: { [k]: v },
+    })
+  })
+}
+
 const profile = createResource({
   type: "document",
   doctype: "User",

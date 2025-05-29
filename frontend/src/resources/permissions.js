@@ -21,7 +21,6 @@ export const notifCount = createResource({
 export const settings = createResource({
   url: "/api/method/drive.api.product.get_settings",
   method: "GET",
-  auto: true,
   cache: "settings",
 })
 

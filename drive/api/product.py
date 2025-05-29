@@ -225,6 +225,8 @@ def set_settings(updates):
         settings.insert()
     if "single_click" in updates:
         settings.single_click = int(updates["single_click"])
+    if "auto_detect_links" in updates:
+        settings.auto_detect_links = int(updates["auto_detect_links"])
     if "default_team" in updates:
         settings.default_team = updates["default_team"]
     settings.save()
