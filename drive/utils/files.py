@@ -224,9 +224,6 @@ class FileManager:
             except Exception as e:
                 os.remove(file_path)
 
-    def get_s3_object(self, path):
-        return self.conn.get_object(Bucket=self.bucket, Key=path)
-
     def get_file(self, path):
         """
         Function to read file from a s3 file.
@@ -236,7 +233,7 @@ class FileManager:
         not_s3 = not self.s3_enabled
         if self.s3_enabled:
             try:
-                buf = self.get_s3_object(path)["Body"]
+                buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
             except:
                 not_s3 = True
 
@@ -255,7 +252,7 @@ class FileManager:
 
     def delete_file(self, team, name, path):
         if self.s3_enabled:
-            self.get_s3_object(path).delete()
+            self.conn.delete_object(Bucket=self.bucket, Key=path)
         else:
             try:
                 (self.site_folder / path).unlink()

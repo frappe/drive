@@ -141,7 +141,7 @@ function addToList(data, file_type) {
 
 function removeFromList(entities, move = true) {
   // Hack (that breaks for some reason)
-  if (props.rootResource) {
+  if (!props.getEntities.data && props.rootResource) {
     if (move) {
       store.state.breadcrumbs.splice(1)
       store.state.breadcrumbs.push({ loading: true })
@@ -158,8 +158,6 @@ function removeFromList(entities, move = true) {
     props.getEntities.setData(
       props.getEntities.data.filter(({ name }) => !names.includes(name))
     )
-    console.log(props.getEntities)
-    props.getEntities.fetch()
   }
   resetDialog()
 }

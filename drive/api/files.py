@@ -663,23 +663,13 @@ def delete_entities(entity_names=None, clear_all=None):
         entity_names = frappe.db.get_list(
             "Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name"
         )
-
-    if isinstance(entity_names, str):
+    elif isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
-    if not isinstance(entity_names, list) or not entity_names:
+    elif not isinstance(entity_names, list) or not entity_names:
         frappe.throw(f"Expected non-empty list but got {type(entity_names)}", ValueError)
 
     for entity in entity_names:
-        write_access = frappe.has_permission(doctype="Drive File", doc=entity, ptype="write")
-        parent_write_access = frappe.has_permission(
-            doctype="Drive File",
-            doc=frappe.get_valu("Drive File", entity, "parent_entity"),
-            ptype="write",
-        )
-        if not (write_access or parent_write_access):
-            frappe.throw("Not permitted", frappe.PermissionError)
-
-        frappe.db.set_value("Drive File", entity, "is_active", -1)
+        frappe.get_doc("Drive File", entity).permanent_delete()
 
 
 @frappe.whitelist()
@@ -765,11 +755,11 @@ def remove_or_restore(entity_names, team):
         doc.save()
 
     for entity in entity_names:
+        doc = frappe.get_doc("Drive File", entity)
         if not frappe.has_permission(
             doctype="Drive File", user=frappe.session.user, doc=doc, ptype="write"
         ):
             raise frappe.PermissionError("You do not have permission to remove this file")
-        doc = frappe.get_doc("Drive File", entity)
         depth_zero_toggle_is_active(doc)
 
 
@@ -844,15 +834,18 @@ def auto_delete_from_trash():
 
 
 def clear_deleted_files():
-    days_before = (date.today() - timedelta(days=30)).isoformat()
+    print("DELETINGGG")
+    days_before = (date.today() + timedelta(days=30)).isoformat()
     result = frappe.db.get_all(
         "Drive File",
-        filters={"is_active": -1, "last_modified": ["<", days_before]},
+        filters={"is_active": -1, "modified": ["<", days_before]},
         fields=["name"],
     )
+    print(result)
     for entity in result:
         doc = frappe.get_doc("Drive File", entity, ignore_permissions=True)
         doc.delete()
+        print("deleted", doc)
 
 
 @frappe.whitelist()

@@ -7,11 +7,11 @@ from drive.utils.files import (
     get_new_title,
     get_team_thumbnails_directory,
     update_file_size,
+    FileManager,
 )
 from drive.api.files import get_ancestors_of
 from drive.utils.files import generate_upward_path
 from drive.api.activity import create_new_activity_log
-from datetime import datetime
 
 
 class DriveFile(Document):
@@ -51,18 +51,6 @@ class DriveFile(Document):
         if self.path:
             manager = FileManager()
             manager.delete_file(self.team, self.name, self.path)
-
-        if self.mime_type:
-            if self.mime_type.startswith("image") or self.mime_type.startswith("video"):
-                max_attempts = 3
-                for attempt in range(max_attempts):
-                    try:
-                        thumbnails_directory = get_team_thumbnails_directory(self.team)
-                        thumbnail_getpath = Path(thumbnails_directory, self.name)
-                        Path(str(thumbnail_getpath) + ".thumbnail").unlink()
-                        break
-                    except Exception as e:
-                        print(f"Attempt {attempt + 1}: Failed to delete thumbnail - {e}")
 
     def on_rollback(self):
         if self.flags.file_created:
@@ -306,6 +294,23 @@ class DriveFile(Document):
                 child.toggle_personal(new_value, False)
         self.save()
         return self.name
+
+    def permanent_delete(self):
+        write_access = frappe.has_permission(doctype="Drive File", doc=self, ptype="write")
+        parent_write_access = frappe.has_permission(
+            doctype="Drive File",
+            doc=frappe.get_value("Drive File", self, "parent_entity"),
+            ptype="write",
+        )
+
+        if not (write_access or parent_write_access):
+            frappe.throw("Not permitted", frappe.PermissionError)
+
+        self.is_active = -1
+        if self.is_group:
+            for child in self.get_children():
+                child.permanent_delete()
+        self.save()
 
     @frappe.whitelist()
     def share(self, user=None, read=None, comment=None, share=None, write=None, valid_until=""):
