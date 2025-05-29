@@ -200,9 +200,9 @@ def get_thumbnail(entity_name):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
     with DistributedLock(drive_file.path, exclusive=False):
-        # if frappe.cache().exists(entity_name):
-        #     thumbnail_data = frappe.cache().get_value(entity_name)
-        if True:
+        if frappe.cache().exists(entity_name):
+            thumbnail_data = frappe.cache().get_value(entity_name)
+        else:
             thumbnail_data = None
             try:
                 manager = FileManager()
@@ -216,7 +216,6 @@ def get_thumbnail(entity_name):
                 elif drive_file.mime_type == "frappe_doc":
                     html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
                     thumbnail_data = html[:1000]
-                    print(thumbnail_data)
                 if thumbnail_data:
                     frappe.cache().set_value(entity_name, thumbnail_data)
 
@@ -908,16 +907,19 @@ def move(entity_names, new_parent=None, is_private=None):
 
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
-    if not isinstance(entity_names, list):
-        frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
+    if not entity_names or not isinstance(entity_names, list):
+        frappe.throw(f"Expected a non-empty list but got {type(entity_names)}", ValueError)
+
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
-        doc.move(new_parent)
+        res = doc.move(new_parent)
         if is_private is not None:
             doc.is_private = int(is_private)
         doc.save()
 
-    return
+    if res["title"] == "Drive - " + res["name"]:
+        res["title"] = "Home" if res["is_private"] else "Team"
+    return res
 
 
 @frappe.whitelist()

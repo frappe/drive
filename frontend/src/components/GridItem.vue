@@ -60,7 +60,7 @@ const props = defineProps({ file: Object })
 const mime_link = ref(
   getIconUrl(
     props.file.is_group
-      ? props.file.share_count > 0
+      ? props.file.share_count != 0
         ? "shared-folder"
         : "folder"
       : props.file.file_type?.toLowerCase?.()

@@ -133,7 +133,7 @@ export const updateMoved = (new_parent, team) => {
         (store.state.sortOrder.ascending ? " 1" : " 0"),
     })
   } else {
-    ;(move.params.is_private ? getPersonal : getHome).fetch()
+    ;(move.params.is_private ? getPersonal : getHome).fetch({ team })
   }
 }
 
@@ -255,24 +255,18 @@ export const togglePersonal = createResource({
 
 export const move = createResource({
   url: "drive.api.files.move",
-  onSuccess() {
-    const moved = allFolders.data.find(
-      (k) => k.value === move.params.new_parent
-    ) || {
-      value: "",
-      label: "Home",
-    }
-
+  onSuccess(data) {
     toast({
-      title: "Moved to " + moved.label,
+      title: "Moved to " + data.title,
       buttons: [
         {
           label: "Go",
           action: () => {
-            openEntity(allFolders.params.team, {
-              name: moved.value,
+            openEntity(null, {
+              name: data.name,
+              team: data.team,
               is_group: true,
-              is_private: move.params.is_private,
+              is_private: data.is_private,
             })
           },
         },
@@ -280,11 +274,7 @@ export const move = createResource({
     })
 
     // Update moved-into folder
-    updateMoved(
-      move.params.new_parent,
-      allFolders.params?.team,
-      move.params.is_private
-    )
+    updateMoved(data.name, data.team, data.is_private)
   },
   onError() {
     toast("There was an error - do you already have a file of that name?")

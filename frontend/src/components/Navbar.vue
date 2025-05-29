@@ -6,7 +6,7 @@
   >
     <Breadcrumbs :items="store.state.breadcrumbs" :class="'select-none'">
       <template #prefix="{ item }">
-        <LoadingIndicator v-if="item.loading" scale="70" />
+        <LoadingIndicator v-if="item.loading" width="20" scale="70" />
       </template>
     </Breadcrumbs>
 
@@ -18,7 +18,7 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
-      <Dropdown :options="genericActions" v-if="genericActions">
+      <Dropdown :options="dropdownAction" v-if="dropdownAction">
         <Button variant="ghost" @click="triggerRoot">
           <FeatherIcon name="more-horizontal" class="h-4 w-4" />
         </Button>
@@ -109,7 +109,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  rootActions: Array,
+  actions: Array,
   triggerRoot: Function,
   rootResource: Object,
 })
@@ -118,85 +118,85 @@ const connectedUsers = computed(() => store.state.connectedUsers)
 const dialog = ref("")
 const rootEntity = computed(() => props.rootResource?.data)
 
-const genericActions = computed(
-  () =>
-    rootEntity.value &&
-    [
-      {
-        label: "Share",
-        icon: Share,
-        onClick: () => (dialog.value = "s"),
-        isEnabled: () => rootEntity.value.share,
+const dropdownAction = computed(() => {
+  if (props.actions) return props.actions
+  if (!rootEntity.value) return
+  return [
+    {
+      label: "Share",
+      icon: Share,
+      onClick: () => (dialog.value = "s"),
+      isEnabled: () => rootEntity.value.share,
+    },
+    {
+      label: "Download",
+      icon: Download,
+      onClick: (entities) => entitiesDownload(team, entities),
+    },
+    {
+      label: "Copy Link",
+      icon: Link,
+      onClick: ([entity]) => getLink(entity),
+    },
+    // { label: "Divider" },
+    {
+      label: "Move",
+      icon: Move,
+      onClick: () => (dialog.value = "m"),
+      isEnabled: () => rootEntity.value.write,
+    },
+    {
+      label: "Rename",
+      icon: Rename,
+      onClick: () => (dialog.value = "rn"),
+      isEnabled: () => rootEntity.value.write,
+    },
+    {
+      label: "Show Info",
+      icon: Info,
+      onClick: () => infoEntities.value.push(store.state.activeEntity),
+      isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+    },
+    {
+      label: "Hide Info",
+      icon: Info,
+      onClick: () => (dialog.value = "info"),
+      isEnabled: () => store.state.activeEntity && store.state.showInfo,
+    },
+    {
+      label: "Favourite",
+      icon: "star",
+      onClick: () => {
+        rootEntity.value.is_favourite = true
+        toggleFav.submit({
+          entities: [{ name: rootEntity.value.name, is_favourite: false }],
+        })
       },
-      {
-        label: "Download",
-        icon: Download,
-        onClick: (entities) => entitiesDownload(team, entities),
+      isEnabled: () => !rootEntity.value.is_favourite,
+    },
+    {
+      label: "Unfavourite",
+      icon: "star",
+      class: "stroke-amber-500 fill-amber-500",
+      onClick: () => {
+        rootEntity.value.is_favourite = false
+        toggleFav.submit({
+          entities: [{ name: rootEntity.value.name, is_favourite: false }],
+        })
       },
-      {
-        label: "Copy Link",
-        icon: Link,
-        onClick: ([entity]) => getLink(entity),
-      },
-      { label: "Divider" },
-      {
-        label: "Move",
-        icon: Move,
-        onClick: () => (dialog.value = "m"),
-        isEnabled: () => rootEntity.value.write,
-      },
-      {
-        label: "Rename",
-        icon: Rename,
-        onClick: () => (dialog.value = "rn"),
-        isEnabled: () => rootEntity.value.write,
-      },
-      {
-        label: "Show Info",
-        icon: Info,
-        onClick: () => infoEntities.value.push(store.state.activeEntity),
-        isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
-      },
-      {
-        label: "Hide Info",
-        icon: Info,
-        onClick: () => (dialog.value = "info"),
-        isEnabled: () => store.state.activeEntity && store.state.showInfo,
-      },
-      {
-        label: "Favourite",
-        icon: "star",
-        onClick: () => {
-          rootEntity.value.is_favourite = true
-          toggleFav.submit({
-            entities: [{ name: rootEntity.value.name, is_favourite: false }],
-          })
-        },
-        isEnabled: () => !rootEntity.value.is_favourite,
-      },
-      {
-        label: "Unfavourite",
-        icon: "star",
-        class: "stroke-amber-500 fill-amber-500",
-        onClick: () => {
-          rootEntity.value.is_favourite = false
-          toggleFav.submit({
-            entities: [{ name: rootEntity.value.name, is_favourite: false }],
-          })
-        },
-        isEnabled: () => rootEntity.value.is_favourite,
-      },
+      isEnabled: () => rootEntity.value.is_favourite,
+    },
 
-      { label: "Divider" },
-      {
-        label: "Move to Trash",
-        icon: Trash,
-        onClick: () => (dialog.value = "remove"),
-        isEnabled: () => rootEntity.value.write,
-        danger: true,
-      },
-    ].filter((k) => k.isEnabled?.())
-)
+    // { label: "Divider" },
+    {
+      label: "Move to Trash",
+      icon: Trash,
+      onClick: () => (dialog.value = "remove"),
+      isEnabled: () => rootEntity.value.write,
+      danger: true,
+    },
+  ].filter((k) => !k.isEnabled || k.isEnabled())
+})
 
 // Functions
 const newDocument = async () => {

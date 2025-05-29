@@ -118,7 +118,6 @@ const onSuccess = (data) => {
   if (!("docSpellcheck" in settings.value)) {
     settings.value.docSpellcheck = 1
   }
-  console.log(prettyData([entity])[0])
   document.setData(prettyData([entity])[0])
   title.value = data.title
   oldTitle.value = data.title

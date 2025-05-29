@@ -4,13 +4,13 @@
     v-if="dialog === 'f'"
     v-model="dialog"
     :parent="$route.params.entityName"
-    @success="addToList"
+    @success="(data) => addToList(data, 'Folder')"
   />
   <NewLinkDialog
     v-if="dialog === 'l'"
     v-model="dialog"
     :parent="$route.params.entityName"
-    @success="addToList"
+    @success="(data) => addToList(data, 'Link')"
   />
   <!-- Mutation dialog -->
   <RenameDialog
@@ -44,7 +44,7 @@
     v-model="dialog"
     :entities="selections"
     :for="'remove'"
-    @success="removeFromList(selections)"
+    @success="removeFromList(selections, false)"
   />
   <GeneralDialog
     v-if="dialog === 'restore'"
@@ -87,6 +87,7 @@ import { computed } from "vue"
 import { useRoute } from "vue-router"
 import { sortEntities } from "@/utils/files"
 import { useTimeAgo } from "@vueuse/core"
+import { openEntity } from "../utils/files"
 
 const dialog = defineModel(String)
 const store = useStore()
@@ -116,10 +117,21 @@ emitter.on("newLink", () => (dialog.value = "l"))
 
 const setTitle = (title) =>
   (document.title = (route.name === "Folder" ? "Folder - " : "") + title)
-function addToList(data) {
+function addToList(data, file_type) {
   if (!props.getEntities) return
-  data.modified = Date()
+  data = {
+    ...data,
+    modified: Date(),
+    file_type,
+    share_count: 0,
+    read: 1,
+    write: 1,
+    share: 1,
+    comment: 1,
+  }
+
   data.relativeModified = useTimeAgo(data.modified)
+
   const newData = [...props.getEntities.data, data]
   sortEntities(newData, store.state.sortOrder)
   props.getEntities.setData(newData)
@@ -127,15 +139,28 @@ function addToList(data) {
   resetDialog()
 }
 
-function removeFromList(entities) {
+function removeFromList(entities, move = true) {
   // Hack (that breaks for some reason)
-  // setTimeout(() => props.rootResource?.fetch?.(), 1000)
-  if (!props.getEntities) return
-  const names = entities.map((o) => o.name)
-  props.getEntities.setData(
-    props.getEntities.data.filter(({ name }) => !names.includes(name))
-  )
-  props.getEntities.fetch()
+  if (props.rootResource) {
+    if (move) {
+      store.state.breadcrumbs.splice(1)
+      store.state.breadcrumbs.push({ loading: true })
+      setTimeout(() => props.rootResource.fetch(), 1000)
+    } else {
+      openEntity(null, {
+        team: props.rootResource.data.team,
+        name: props.rootResource.data.parent_entity,
+        is_group: true,
+      })
+    }
+  } else {
+    const names = entities.map((o) => o.name)
+    props.getEntities.setData(
+      props.getEntities.data.filter(({ name }) => !names.includes(name))
+    )
+    console.log(props.getEntities)
+    props.getEntities.fetch()
+  }
   resetDialog()
 }
 </script>

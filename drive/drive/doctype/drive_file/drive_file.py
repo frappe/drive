@@ -118,7 +118,9 @@ class DriveFile(Document):
         if title != self.title:
             self.rename(title)
         self.save()
-        return self
+        return frappe.get_value(
+            "Drive File", new_parent, ["title", "team", "name", "is_private"], as_dict=True
+        )
 
     @frappe.whitelist()
     def copy(self, new_parent=None, parent_user_directory=None):

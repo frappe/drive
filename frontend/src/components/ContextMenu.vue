@@ -59,7 +59,6 @@ const props = defineProps({
   event: Object,
   close: Function,
 })
-
 const contextMenu = ref(null)
 const parentWidth = ref(null)
 const parentHeight = ref(null)

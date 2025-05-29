@@ -1,7 +1,7 @@
 <template>
   <Navbar
     v-if="!verify?.error && !getEntities.error"
-    :root-actions="
+    :actions="
       verify?.data &&
       actionItems
         .filter((k) => k.isEnabled?.(verify.data))
