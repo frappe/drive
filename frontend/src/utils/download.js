@@ -6,6 +6,30 @@ import { jsPDF } from "jspdf"
 import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 
+async function getPdfFromDoc(entity_name) {
+  const res = await fetch(
+    `/api/method/drive.api.files.get_file_content?entity_name=${entity_name}`
+  )
+  const raw_html = (await res.json()).message
+  const content = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <style>${globalStyle}</style>
+              <style>${editorStyle}</style>
+            </head>
+            <body>
+              <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                ${raw_html}
+              </div>
+            </body>
+          </html>
+        `
+
+  const pdfBlob = html2pdf().from(content).toPdf()
+  await pdfBlob
+  return pdfBlob.prop.pdf.output("arraybuffer")
+}
 export function entitiesDownload(team, entities) {
   if (entities.length === 1) {
     if (entities[0].mime_type === "frappe_doc") {
@@ -34,31 +58,8 @@ export function entitiesDownload(team, entities) {
         return Promise.all(promises)
       })
     } else if (entity.document) {
-      const res = await fetch(
-        `/api/method/drive.api.files.get_file_content?entity_name=${entities[0].name}`
-      )
-      const raw_html = (await res.json()).message
-      const content = `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <style>${globalStyle}</style>
-              <style>${editorStyle}</style>
-            </head>
-            <body>
-              <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
-                ${raw_html}
-              </div>
-            </body>
-          </html>
-        `
-
-      const pdfBlob = html2pdf().from(content).toPdf()
-      await pdfBlob
-      parentFolder.file(
-        entity.title + ".pdf",
-        pdfBlob.prop.pdf.output("arraybuffer")
-      )
+      const content = await getPdfFromDoc(entities[0].name)
+      parentFolder.file(entity.title + ".pdf", content)
     } else {
       const fileContent = await get_file_content(entity.name)
       parentFolder.file(entity.title, fileContent)
@@ -88,8 +89,8 @@ export function entitiesDownload(team, entities) {
 export function folderDownload(team, root_entity) {
   const folderName = root_entity.title
   const zip = new JSZip()
-
-  temp(team, root_entity.name, zip)
+  const rootFolder = zip.folder(root_entity.title)
+  temp(team, root_entity.name, rootFolder)
     .then(() => {
       return zip.generateAsync({ type: "blob", streamFiles: true })
     })
@@ -115,6 +116,11 @@ function temp(team, entity_name, parentZip) {
           if (entity.is_group) {
             const folder = parentZip.folder(entity.title)
             return temp(team, entity.name, folder)
+          }
+          if (entity.document) {
+            getPdfFromDoc(entity.name).then((content) =>
+              parentZip.file(entity.title + ".pdf", content)
+            )
           } else {
             return get_file_content(entity.name).then((fileContent) => {
               parentZip.file(entity.title, fileContent)
