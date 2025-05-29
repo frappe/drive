@@ -7,6 +7,7 @@ import {
   frappeRequest,
 } from "frappe-ui"
 import store from "./store"
+import translationPlugin from "./translation"
 import router from "./router"
 import App from "./App.vue"
 import emitter from "@/emitter"
@@ -19,6 +20,7 @@ setConfig("resourceFetcher", frappeRequest)
 app.config.unwrapInjectedRef = true
 app.config.globalProperties.emitter = emitter
 app.provide("emitter", emitter)
+app.use(translationPlugin)
 app.use(router)
 app.use(store)
 

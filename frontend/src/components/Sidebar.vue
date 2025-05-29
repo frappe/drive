@@ -105,32 +105,32 @@ const team = computed(
 const sidebarItems = computed(() => {
   const items = [
     {
-      label: "Home",
+      label: __("Home"),
       route: `/t/${team.value}/`,
       icon: Home,
     },
     {
-      label: "Recents",
+      label: __("Recents"),
       route: `/t/${team.value}/recents`,
       icon: Recent,
     },
     {
-      label: "Favourites",
+      label: __("Favourites"),
       route: `/t/${team.value}/favourites`,
       icon: Star,
     },
     {
-      label: "Team",
+      label: __("Team"),
       route: `/t/${team.value}/team`,
       icon: Team,
     },
     {
-      label: "Shared",
+      label: __("Shared"),
       route: `/shared/`,
       icon: Users,
     },
     {
-      label: "Trash",
+      label: __("Trash"),
       route: `/t/${team.value}/trash`,
       icon: Trash,
     },

@@ -11,7 +11,7 @@ async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     document.title = to.name
     if (to.name !== "Team")
-      store.commit("setBreadcrumbs", [{ label: to.name, route: to.path }])
+      store.commit("setBreadcrumbs", [{ label: __(to.name), route: to.path }])
   }
 }
 

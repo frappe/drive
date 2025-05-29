@@ -25,7 +25,7 @@
           "
         >
           <div class="text-base font-medium leading-none text-gray-900">
-            {{ $route.params.team ? teamName : route.name }}
+            {{ $route.params.team ? teamName : __(route.name) }}
           </div>
           <div
             class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"

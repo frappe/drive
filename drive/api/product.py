@@ -3,6 +3,8 @@ from frappe.rate_limiter import rate_limit
 from frappe.utils import escape_html
 from frappe.utils import split_emails, validate_email_address
 from drive.api.permissions import is_admin
+from frappe.translate import get_all_translations
+from frappe import _
 
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
@@ -333,3 +335,15 @@ def reject_invite(key):
 
     invitation.status = "Expired"
     invitation.save(ignore_permissions=True)
+
+
+@frappe.whitelist(allow_guest=True)
+def get_translations():
+    if frappe.session.user != "Guest":
+        language = frappe.db.get_value("User", frappe.session.user, "language")
+        if not language:
+            language = frappe.db.get_single_value("System Settings", "language")
+    else:
+        language = frappe.db.get_single_value("System Settings", "language")
+
+    return get_all_translations(language)
