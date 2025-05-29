@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { manageBreadcrumbs } from "./utils/files"
+import { createResource } from "frappe-ui"
 
 function clearStore() {
   store.commit("setActiveEntity", null)
