@@ -52,12 +52,13 @@ watch(warned, async () => {
   console.log(jwt_token.value)
 })
 const jwt_token = ref(null)
-const srcUrl = computed(
-  () =>
+const srcUrl = computed(() =>
+  encodeURIComponent(
     new URL(
       `/api/method/drive.api.files.get_file_content?jwt_token=${jwt_token.value}&entity_name=${props.previewEntity.name}&trigger_download=1`,
       window.location.origin
     ).href
+  )
 )
 const download = () => (window.location.ref = srcUrl.value)
 </script>
