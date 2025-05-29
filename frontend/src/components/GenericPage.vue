@@ -28,8 +28,12 @@
       :selections="selectedEntitities"
       :get-entities="getEntities"
     />
+    <LoadingIndicator
+      class="size-10 m-auto"
+      v-if="!props.getEntities.fetched"
+    />
     <NoFilesSection
-      v-if="!props.getEntities.data?.length"
+      v-else-if="!props.getEntities.data?.length"
       :icon="icon"
       :primary-message="primaryMessage"
       :secondary-message="secondaryMessage"
@@ -90,6 +94,7 @@ import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
 import { move, allFolders } from "@/resources/files"
+import { LoadingIndicator } from "frappe-ui"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
