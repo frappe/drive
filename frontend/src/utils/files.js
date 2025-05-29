@@ -6,6 +6,8 @@ import { mutate, getRecents } from "@/resources/files"
 import { getLink } from "./getLink"
 import { getTeams } from "@/resources/files"
 import { set } from "idb-keyval"
+import editorStyle from "@/components/DocEditor/editor.css?inline"
+import globalStyle from "@/index.css?inline"
 
 // MIME icons
 import Folder from "@/components/MimeIcons/Folder.vue"
@@ -284,5 +286,64 @@ export function enterFullScreen() {
   } else if (elem.msRequestFullscreen) {
     /* IE/Edge */
     elem.msRequestFullscreen()
+  }
+}
+
+export function printDoc(html) {
+  const content = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>${globalStyle}</style>
+                <style>${editorStyle}</style>
+              </head>
+              <body>
+                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                  ${html}
+                </div>
+              </body>
+            </html>
+          `
+  const iframe = document.createElement("iframe")
+  iframe.id = "el-tiptap-iframe"
+  iframe.setAttribute(
+    "style",
+    "position: absolute; width: 0; height: 0; top: -10px; left: -10px;"
+  )
+  document.body.appendChild(iframe)
+
+  const frameWindow = iframe.contentWindow
+  const doc =
+    iframe.contentDocument ||
+    (iframe.contentWindow && iframe.contentWindow.document)
+
+  if (doc) {
+    doc.open()
+    doc.write(content)
+    doc.close()
+  }
+
+  if (frameWindow) {
+    iframe.onload = function () {
+      try {
+        setTimeout(() => {
+          frameWindow.focus()
+          try {
+            if (!frameWindow.document.execCommand("print", false)) {
+              frameWindow.print()
+            }
+          } catch (e) {
+            frameWindow.print()
+          }
+          frameWindow.close()
+        }, 500)
+      } catch (err) {
+        console.error(err)
+      }
+
+      setTimeout(function () {
+        document.body.removeChild(iframe)
+      }, 1000)
+    }
   }
 }

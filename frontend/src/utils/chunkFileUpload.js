@@ -5,7 +5,7 @@ import store from "@/store"
    Currently only used in documents
 */
 
-export async function uploadDriveEntity(file, doc_name) {
+export async function uploadDriveEntity(file, team, doc_name) {
   const fileUuid = uuidv4()
   const chunkSize = 5 * 1024 * 1024 // size of each chunk (5MB)
   let chunkByteOffset = 0
@@ -15,6 +15,7 @@ export async function uploadDriveEntity(file, doc_name) {
     let CurrentChunk = file.slice(chunkByteOffset, chunkByteOffset + chunkSize)
     const response = await uploadChunk(
       file.name,
+      team,
       CurrentChunk,
       fileUuid,
       file.size,
@@ -43,6 +44,7 @@ export async function uploadDriveEntity(file, doc_name) {
 
 async function uploadChunk(
   fileName,
+  team,
   CurrentChunk,
   fileUuid,
   fileSize,
@@ -55,6 +57,7 @@ async function uploadChunk(
 ) {
   const formData = new FormData()
   formData.append("filename", fileName)
+  formData.append("team", team)
   formData.append("total_file_size", fileSize)
   formData.append("mime_type", fileType)
   formData.append("total_chunk_count", totalChunks)

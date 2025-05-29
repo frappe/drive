@@ -6,6 +6,7 @@ from .permissions import get_teams, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
+from io import BytesIO
 import mimemapper
 import jwt
 
@@ -27,7 +28,6 @@ from io import BytesIO
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from drive.locks.distributed_lock import DistributedLock
-from drive.utils.files import get_team_thumbnails_directory
 
 
 @frappe.whitelist()
@@ -557,28 +557,34 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
         {"name": entity_name, "is_active": 1},
         [
             "is_group",
+            "is_link",
             "path",
             "title",
             "mime_type",
             "file_size",
             "is_active",
             "owner",
+            "document",
         ],
         as_dict=1,
     )
-    if not drive_file or drive_file.is_group or drive_file.is_active != 1:
+    if not drive_file or drive_file.is_group or drive_file.is_link or drive_file.is_active != 1:
         frappe.throw("Not found", frappe.NotFound)
 
-    manager = FileManager()
-    return send_file(
-        manager.get_file(drive_file.path),
-        mimetype=drive_file.mime_type,
-        as_attachment=trigger_download,
-        conditional=True,
-        max_age=3600,
-        download_name=drive_file.title,
-        environ=frappe.request.environ,
-    )
+    if drive_file.document:
+        html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
+        return html
+    else:
+        manager = FileManager()
+        return send_file(
+            manager.get_file(drive_file.path),
+            mimetype=drive_file.mime_type,
+            as_attachment=trigger_download,
+            conditional=True,
+            max_age=3600,
+            download_name=drive_file.title,
+            environ=frappe.request.environ,
+        )
 
 
 def stream_file_content(drive_file, range_header):

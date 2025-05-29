@@ -140,8 +140,7 @@ class FileManager:
         """
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
-            if self.can_create_thumbnail(drive_file):
-                self.upload_thumbnail(drive_file, current_path)
+            if drive_file and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
                     now=True,
@@ -153,7 +152,7 @@ class FileManager:
                 os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
-            if self.can_create_thumbnail(drive_file):
+            if drive_file and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
                     now=True,
@@ -222,7 +221,10 @@ class FileManager:
                     final_path.rename(final_path.with_suffix(".thumbnail"))
 
             except Exception as e:
-                os.remove(file_path)
+                try:
+                    os.remove(file_path)
+                except FileNotFoundError:
+                    pass
 
     def get_file(self, path):
         """

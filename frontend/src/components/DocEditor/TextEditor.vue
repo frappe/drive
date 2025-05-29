@@ -120,8 +120,7 @@ import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 import { DiffMarkExtension } from "./extensions/createDiffMark"
-import editorStyle from "./editor.css?inline"
-import globalStyle from "../../index.css?inline"
+import { printDoc } from "@/utils/files"
 
 export default {
   name: "TextEditor",
@@ -539,7 +538,8 @@ export default {
           types: ["textStyle"],
         }),
         ResizableMedia.configure({
-          uploadFn: (file) => uploadDriveEntity(file, this.entityName),
+          uploadFn: (file) =>
+            uploadDriveEntity(file, this.entity.team, this.entityName),
         }),
         DiffMarkExtension,
       ],
@@ -695,68 +695,10 @@ export default {
         title: "Document saved",
       })
     },
-    printHtml() {
-      const content = `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <style>${globalStyle}</style>
-                <style>${editorStyle}</style>
-              </head>
-              <body>
-                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
-                  ${this.editor.getHTML()}
-                </div>
-              </body>
-            </html>
-          `
-      const iframe = document.createElement("iframe")
-      iframe.id = "el-tiptap-iframe"
-      iframe.setAttribute(
-        "style",
-        "position: absolute; width: 0; height: 0; top: -10px; left: -10px;"
-      )
-      document.body.appendChild(iframe)
-
-      const frameWindow = iframe.contentWindow
-      const doc =
-        iframe.contentDocument ||
-        (iframe.contentWindow && iframe.contentWindow.document)
-
-      if (doc) {
-        doc.open()
-        doc.write(content)
-        doc.close()
-      }
-
-      if (frameWindow) {
-        iframe.onload = function () {
-          try {
-            setTimeout(() => {
-              frameWindow.focus()
-              try {
-                if (!frameWindow.document.execCommand("print", false)) {
-                  frameWindow.print()
-                }
-              } catch (e) {
-                frameWindow.print()
-              }
-              frameWindow.close()
-            }, 500)
-          } catch (err) {
-            console.error(err)
-          }
-
-          setTimeout(function () {
-            // document.body.removeChild(iframe)
-          }, 100)
-        }
-      }
-    },
     printEditorContent() {
-      const editorContent = document.getElementById("editor-capture")
-      if (editorContent) {
-        this.printHtml(editorContent)
+      const html = this.editor.getHTML()
+      if (html) {
+        printDoc(html)
         return true
       }
       return false
