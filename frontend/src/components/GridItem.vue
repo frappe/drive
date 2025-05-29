@@ -73,19 +73,6 @@ const childrenSentence = computed(() => {
 })
 
 onMounted(async () => {
-  if (
-    ![
-      "Image",
-      "Video",
-      "PDF",
-      "Markdown",
-      "Code",
-      "Text",
-      "Document",
-      "Presentation",
-    ].includes(props.file.file_type)
-  )
-    return
   const result = await getThumbnailUrl(props.file.name, props.file.file_type)
   if (result.href) return
   if (!result.startsWith("blob")) {

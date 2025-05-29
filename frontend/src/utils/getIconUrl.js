@@ -6,6 +6,19 @@ export function getIconUrl(file_type) {
 }
 
 export async function getThumbnailUrl(name, file_type) {
+  if (
+    ![
+      "Image",
+      "Video",
+      "PDF",
+      "Markdown",
+      "Code",
+      "Text",
+      "Document",
+      "Presentation",
+    ].includes(file_type)
+  )
+    return getIconUrl(file_type.toLowerCase())
   const fileContent = await get_thumbnail_content(name)
   try {
     if (fileContent.type == "image/jpeg")
