@@ -11,7 +11,7 @@
       ondrop="return false;"
     >
       <SidebarItem
-        label="Go"
+        :label="__('Go')"
         class="mb-1"
         :is-collapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)"

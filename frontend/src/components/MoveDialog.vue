@@ -242,7 +242,7 @@ const tabs = [
 ]
 
 const store = useStore()
-const in_home = store.state.breadcrumbs[0].label == "Home"
+const in_home = store.state.breadcrumbs[0].name == "Home"
 const tabIndex = ref(in_home ? 0 : 1)
 const breadcrumbs = ref([
   { name: "", title: in_home ? "Home" : "Team", is_private: in_home ? 1 : 0 },

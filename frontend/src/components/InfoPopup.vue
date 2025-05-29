@@ -22,28 +22,38 @@
         </div>
         <ul class="space-y-3 text-sm pb-2">
           <li>
-            <span class="inline-block w-24 text-gray-600">Owned by: </span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("Owner") }}:
+            </span>
             <span class="col-span-1"
               ><a href="mailto:{{ entity.owner }}">{{ entity.owner }}</a>
             </span>
           </li>
 
           <li>
-            <span class="inline-block w-24 text-gray-600">Type:</span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("Type") }}:</span
+            >
             <span class="col-span-1">{{ entity.file_type }}</span>
           </li>
           <li v-if="entity.file_size">
-            <span class="inline-block w-24 text-gray-600">Size:</span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("Size") }}:</span
+            >
             <span class="col-span-1">
               {{ entity.file_size_pretty }}{{ ` (${entity.file_size})` }}</span
             >
           </li>
           <li>
-            <span class="inline-block w-24 text-gray-600">Modified:</span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("Modified") }}:</span
+            >
             <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
           </li>
           <li>
-            <span class="inline-block w-24 text-gray-600">Added:</span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("Added") }}:</span
+            >
             <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
           </li>
           <!-- <li>
@@ -60,7 +70,7 @@
             class="rounded flex justify-center items-center scale-[90%]"
             @click="emitter.emit('showShareDialog')"
           >
-            Manage
+            {{ __("Manage") }}
           </Button>
         </div>
 
@@ -69,7 +79,9 @@
         </div>
         <ul v-else class="space-y-3 text-sm py-2">
           <li class="flex">
-            <span class="inline-block w-24 text-gray-600">General:</span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("General") }}:</span
+            >
             <div class="col-span-1 flex gap-2">
               <GeneralAccess
                 size="sm"
@@ -88,15 +100,17 @@
             </div>
           </li>
           <li>
-            <span class="inline-block w-24 text-gray-600">Shared with:</span>
+            <span class="inline-block w-24 text-gray-600"
+              >{{ __("Shared") }}:</span
+            >
             <span class="col-span-1">
               {{}}
               {{
                 access[i].users.message.length
-                  ? access[i].users.message.length +
+                  ? access[i].users.message.length + ' ' +
                     (access[i].users.message.length === 1
-                      ? " person"
-                      : " people")
+                      ? __("person")
+                      : __("people"))
                   : "-"
               }}
               {{

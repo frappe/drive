@@ -67,10 +67,7 @@ async function uploadChunk(
   formData.append("file", CurrentChunk)
   formData.append("parent", doc_name)
   formData.append("embed", 1)
-  formData.append(
-    "personal",
-    store.state.breadcrumbs[0].label == "Home" ? 1 : 0
-  )
+  formData.append("personal", store.state.breadcrumbs[0].name == "Home" ? 1 : 0)
 
   formData.append("uuid", fileUuid)
   const response = await fetch(

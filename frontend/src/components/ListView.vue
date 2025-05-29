@@ -122,7 +122,7 @@ const formattedRows = computed(() => {
 
 const selectedColumns = [
   {
-    label: "Name",
+    label: __("Name"),
     key: "title",
     getLabel: ({ row: { title, is_group, document } }) =>
       title.lastIndexOf(".") === -1 || is_group || document
@@ -138,7 +138,7 @@ const selectedColumns = [
   },
 
   {
-    label: "Owner",
+    label: __("Owner"),
     key: "",
     getLabel: ({ row }) =>
       row.owner === store.state.user.id
@@ -157,13 +157,17 @@ const selectedColumns = [
     width: "10%",
   },
   {
-    label: "Sharing",
+    label: __("Shared"),
     key: "",
     getLabel: ({ row }) => {
       if (row.share_count === -2) return "Public"
       else if (row.share_count === -1) return "Team"
       else if (row.share_count > 0)
-        return row.share_count + (row.share_count === 1 ? " person" : " people")
+        return (
+          row.share_count +
+          " " +
+          (row.share_count === 1 ? __("person") : __("people"))
+        )
       return "-"
     },
     prefix: ({ row }) => {
@@ -174,7 +178,7 @@ const selectedColumns = [
     width: "10%",
   },
   {
-    label: "Last Modified",
+    label: __("Last Modified"),
     getLabel: ({ row }) => row.relativeModified,
     getTooltip: (row) => formatDate(row.modified),
     key: "modified",
@@ -182,7 +186,7 @@ const selectedColumns = [
     width: "15%",
   },
   {
-    label: "Last Accessed",
+    label: __("Last Accessed"),
     getLabel: ({ row }) => row.relativeAccessed,
     getTooltip: (row) => formatDate(row.accessed),
     key: "modified",
@@ -190,7 +194,7 @@ const selectedColumns = [
     width: "15%",
   },
   {
-    label: "Size",
+    label: __("Size"),
     key: "",
     getLabel: ({ row }) =>
       row.is_group

@@ -58,7 +58,7 @@
               <Tooltip
                 v-else-if="
                   row.is_private &&
-                  !['Home', 'Shared'].includes(store.state.breadcrumbs[0].label)
+                  !['Home', 'Shared'].includes(store.state.breadcrumbs[0].name)
                 "
                 text="This is from your Home."
               >

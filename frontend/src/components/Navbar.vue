@@ -123,48 +123,48 @@ const dropdownAction = computed(() => {
   if (!rootEntity.value) return
   return [
     {
-      label: "Share",
+      label: __("Share"),
       icon: Share,
       onClick: () => (dialog.value = "s"),
       isEnabled: () => rootEntity.value.share,
     },
     {
-      label: "Download",
+      label: __("Download"),
       icon: Download,
       onClick: (entities) => entitiesDownload(team, entities),
     },
     {
-      label: "Copy Link",
+      label: __("Copy Link"),
       icon: Link,
       onClick: ([entity]) => getLink(entity),
     },
     // { label: "Divider" },
     {
-      label: "Move",
+      label: __("Move"),
       icon: Move,
       onClick: () => (dialog.value = "m"),
       isEnabled: () => rootEntity.value.write,
     },
     {
-      label: "Rename",
+      label: __("Rename"),
       icon: Rename,
       onClick: () => (dialog.value = "rn"),
       isEnabled: () => rootEntity.value.write,
     },
     {
-      label: "Show Info",
+      label: __("Show Info"),
       icon: Info,
       onClick: () => infoEntities.value.push(store.state.activeEntity),
       isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
     },
     {
-      label: "Hide Info",
+      label: __("Hide Info"),
       icon: Info,
       onClick: () => (dialog.value = "info"),
       isEnabled: () => store.state.activeEntity && store.state.showInfo,
     },
     {
-      label: "Favourite",
+      label: __("Favourite"),
       icon: "star",
       onClick: () => {
         rootEntity.value.is_favourite = true
@@ -175,7 +175,7 @@ const dropdownAction = computed(() => {
       isEnabled: () => !rootEntity.value.is_favourite,
     },
     {
-      label: "Unfavourite",
+      label: __("Unfavourite"),
       icon: "star",
       class: "stroke-amber-500 fill-amber-500",
       onClick: () => {
@@ -189,7 +189,7 @@ const dropdownAction = computed(() => {
 
     // { label: "Divider" },
     {
-      label: "Move to Trash",
+      label: __("Delete"),
       icon: Trash,
       onClick: () => (dialog.value = "remove"),
       isEnabled: () => rootEntity.value.write,
@@ -203,7 +203,7 @@ const newDocument = async () => {
   let data = await createDocument.submit({
     title: "Untitled Document",
     team: route.params.team,
-    personal: store.state.breadcrumbs[0].label === "Home" ? 1 : 0,
+    personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
     content: null,
     parent: store.state.currentFolder.name,
   })
@@ -217,16 +217,16 @@ const newDocument = async () => {
 
 // Constants
 const possibleButtons = [
-  { route: "Recents", label: "Clear", icon: "clock", entities: getRecents },
+  { route: "Recents", label: __("Clear"), icon: "clock", entities: getRecents },
   {
     route: "Favourites",
-    label: "Clear",
+    label: __("Clear"),
     icon: "star",
     entities: getFavourites,
   },
   {
     route: "Trash",
-    label: "Empty",
+    label: __("Empty"),
     icon: "trash",
     entities: getTrash,
     theme: "red",

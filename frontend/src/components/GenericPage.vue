@@ -35,8 +35,8 @@
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"
       :icon="icon"
-      :primary-message="primaryMessage"
-      :secondary-message="secondaryMessage"
+      :primary-message="__(primaryMessage)"
+      :secondary-message="__(secondaryMessage)"
     />
     <ListView
       v-else-if="$store.state.view === 'list'"
@@ -187,27 +187,27 @@ const actionItems = computed(() => {
   } else {
     return [
       {
-        label: "Preview",
+        label: __("Preview"),
         icon: Preview,
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => !e.is_link,
       },
       {
-        label: "Open",
+        label: __("Open"),
         icon: "external-link",
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => e.is_link,
       },
       { label: "Divider" },
       {
-        label: "Share",
+        label: __("Share"),
         icon: Share,
         action: () => (dialog.value = "s"),
         isEnabled: (e) => e.share,
         important: true,
       },
       {
-        label: "Download",
+        label: __("Download"),
         icon: Download,
         isEnabled: (e) => !e.is_link,
         action: (entities) => entitiesDownload(team, entities),
@@ -215,14 +215,14 @@ const actionItems = computed(() => {
         important: true,
       },
       {
-        label: "Copy Link",
+        label: __("Copy Link"),
         icon: Link,
         action: ([entity]) => getLink(entity),
         important: true,
       },
       { label: "Divider" },
       {
-        label: "Move",
+        label: __("Move"),
         icon: Move,
         action: () => (dialog.value = "m"),
         isEnabled: (e) => e.write,
@@ -230,25 +230,25 @@ const actionItems = computed(() => {
         important: true,
       },
       {
-        label: "Rename",
+        label: __("Rename"),
         icon: Rename,
         action: () => (dialog.value = "rn"),
         isEnabled: (e) => e.write,
       },
       {
-        label: "Show Info",
+        label: __("Show Info"),
         icon: Info,
         action: () => infoEntities.value.push(store.state.activeEntity),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
-        label: "Hide Info",
+        label: __("Hide Info"),
         icon: Info,
         action: () => (dialog.value = "info"),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
-        label: "Favourite",
+        label: __("Favourite"),
         icon: "star",
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = true))
@@ -261,7 +261,7 @@ const actionItems = computed(() => {
         multi: true,
       },
       {
-        label: "Unfavourite",
+        label: __("Unfavourite"),
         icon: "star",
         class: "stroke-amber-500 fill-amber-500",
         action: (entities) => {
@@ -274,7 +274,7 @@ const actionItems = computed(() => {
         multi: true,
       },
       {
-        label: "Remove from Recents",
+        label: __("Remove from Recents"),
         icon: "clock",
         action: (entities) => {
           clearRecent.submit({
@@ -287,7 +287,7 @@ const actionItems = computed(() => {
       },
       { label: "Divider", isEnabled: (e) => e.write },
       {
-        label: "Move to Trash",
+        label: __("Delete"),
         icon: Trash,
         action: () => (dialog.value = "remove"),
         isEnabled: (e) => e.write,

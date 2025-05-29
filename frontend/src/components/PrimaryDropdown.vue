@@ -99,7 +99,7 @@ const fullName = computed(() => store.state.user.fullName)
 const settingsItems = computed(() => {
   return [
     {
-      group: "Manage",
+      group: __("Manage"),
       hideLabel: true,
       items: [
         {
@@ -110,28 +110,28 @@ const settingsItems = computed(() => {
         },
         {
           icon: Docs,
-          label: "Documentation",
+          label: __("Documentation"),
           onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
         },
         {
           icon: "life-buoy",
-          label: "Support",
+          label: __("Support"),
           onClick: () => window.open("https://t.me/frappedrive", "_blank"),
         },
       ],
     },
     {
-      group: "Others",
+      group: __("Others"),
       hideLabel: true,
       items: [
         {
           icon: "settings",
-          label: "Settings",
+          label: __("Settings"),
           onClick: () => (showSettings.value = true),
         },
         {
           icon: "log-out",
-          label: "Log out",
+          label: __("Log out"),
           onClick: logout,
         },
       ],

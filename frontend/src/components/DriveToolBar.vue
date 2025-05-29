@@ -37,7 +37,7 @@
       :class="selections.length ? 'hidden' : 'block'"
       ref="search-input"
       v-model="search"
-      placeholder="Search"
+      :placeholder="__('Search')"
       class="w-[30%]"
     >
       <template #prefix><LucideSearch class="w-4 h-4" /></template>
@@ -115,14 +115,14 @@
               />
             </Button>
             <Button class="text-sm h-7 rounded-l-none flex-1 md:block">
-              {{ sortOrder.label }}
+              {{ __(sortOrder.label) }}
             </Button>
           </div>
         </Dropdown>
         <Dropdown
           :options="
             Object.keys(ICON_TYPES).map((k) => ({
-              label: k,
+              label: __(k),
               icon: ICON_TYPES[k],
               onClick: () => activeFilters.push(k),
             }))
@@ -288,23 +288,23 @@ const toggleAscending = () => {
 
 const columnHeaders = [
   {
-    label: "Name",
+    label: __("Name"),
     field: "title",
   },
   {
-    label: "Owner",
+    label: __("Owner"),
     field: "owner",
   },
   {
-    label: "Modified",
+    label: __("Modified"),
     field: "modified",
   },
   {
-    label: "Size",
+    label: __("Size"),
     field: "file_size",
   },
   {
-    label: "Type",
+    label: __("Type"),
     field: "mime_type",
   },
 ]
