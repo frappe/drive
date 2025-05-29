@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-1">
     <Autocomplete
       class="w-fit"
       placeholder="Access"

@@ -7,6 +7,7 @@
           class="w-full"
           type="text"
           @keyup.enter="submit"
+          v-focus
         />
         <span
           v-if="entity.file_ext"

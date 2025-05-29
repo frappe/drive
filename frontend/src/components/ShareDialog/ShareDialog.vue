@@ -95,7 +95,7 @@
                   v-slot="{ selected, active }"
                 >
                   <li
-                    class="flex cursor-pointer items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
+                    class="flex items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
                     :class="{
                       'bg-surface-gray-3': active,
                     }"
@@ -111,42 +111,41 @@
                     </span>
                   </li>
                 </ComboboxOption>
-                <ComboboxOption
-                  v-for="person in filteredUsers"
-                  as="template"
-                  :key="person.email"
-                  :value="person"
-                  v-slot="{ selected, active }"
-                >
-                  <li
-                    class="cursor-pointer flex justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
-                    :class="{
-                      'bg-surface-gray-3': active,
-                    }"
+                <template v-for="person in filteredUsers" :key="person.email">
+                  <ComboboxOption
+                    as="template"
+                    :value="person"
+                    :disabled="person.disabled"
+                    v-slot="{ selected, active }"
                   >
-                    <span
-                      class="block truncate"
+                    <li
+                      class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7"
                       :class="{
-                        'font-medium': selected,
-                        'font-normal': !selected,
+                        'bg-surface-gray-3': active,
+                        'cursor-pointer': !person.disabled,
+                        'opacity-50 cursor-not-allowed': person.disabled,
                       }"
                     >
-                      {{ person.email }}
-                      <span v-if="person.full_name"
-                        >({{ person.full_name }})</span
+                      <LucideCheck
+                        v-if="selected"
+                        class="size-4 text-ink-gray-7"
+                      />
+                      <div v-else class="h-4 w-4" />
+                      <span
+                        class="block truncate"
+                        :class="{
+                          'font-medium': selected,
+                          'font-normal': !selected,
+                        }"
                       >
-                    </span>
-                    <span
-                      v-if="selected"
-                      :class="{
-                        'text-black': active,
-                        'text-gray-700': !active,
-                      }"
-                    >
-                      <LucideCheck class="size-4" aria-hidden="true" />
-                    </span>
-                  </li>
-                </ComboboxOption>
+                        {{ person.email }}
+                        <span v-if="person.full_name"
+                          >({{ person.full_name }})</span
+                        >
+                      </span>
+                    </li>
+                  </ComboboxOption>
+                </template>
               </ComboboxOptions>
             </div>
           </transition>
@@ -156,36 +155,37 @@
           label="Invite"
           @click="addShares"
           variant="solid"
-          class="w-full my-2"
+          class="w-full mt-4"
         />
-        <div class="my-2">
-          <div class="text-gray-600 font-medium text-base mb-2">
-            General access:
-          </div>
-          <div
-            class="grid grid-flow-col-dense grid-cols-10 items-start justify-start mb-5"
-          >
-            <GeneralAccess
-              size="lg"
-              class="col-span-1 justify-self-start row-start-1 row-end-1"
-              :access-type="generalAccessLevel.value"
-            />
-            <div class="col-span-10 mb-2 flex justify-between">
+        <div class="mt-4">
+          <div class="text-gray-600 font-medium text-base">General access:</div>
+          <div class="flex justify-between pt-2">
+            <div class="flex flex-col gap-1">
+              <div class="w-fit">
+                <Autocomplete
+                  v-model="generalAccessLevel"
+                  :options="generalOptions"
+                  :hide-search="true"
+                  @update:model-value="
+                    (val) => updateGeneralAccess(val, generalAccessType)
+                  "
+                >
+                  <template #prefix>
+                    <component :is="generalAccessLevel.icon" class="mr-2" />
+                  </template>
+                  <template #item-prefix="{ option }">
+                    <component :is="option.icon" />
+                  </template>
+                </Autocomplete>
+              </div>
+              <span class="pl-0.5 text-xs text-gray-700">
+                {{ accessMessage }}
+              </span>
+            </div>
+            <div class="my-auto">
               <Autocomplete
-                v-model="generalAccessLevel"
-                :options="[
-                  { label: 'Restricted', value: 'restricted' },
-                  { label: 'Team', value: 'team' },
-                  { label: 'Public', value: 'public' },
-                ]"
-                :hide-search="true"
-                @update:model-value="
-                  (val) => updateGeneralAccess(val, generalAccessType)
-                "
-              />
-              <Autocomplete
+                class="my-auto"
                 v-if="generalAccessLevel.value !== 'restricted'"
-                class="float-right"
                 :options="[
                   { value: 'reader', label: 'Reader' },
                   { value: 'editor', label: 'Editor' },
@@ -195,21 +195,15 @@
                 @update:model-value="
                   (val) => updateGeneralAccess(generalAccessType, val)
                 "
-              ></Autocomplete>
+              />
             </div>
-
-            <span
-              class="pl-0.5 text-xs text-gray-700 row-start-2 row-end-2 col-span-6 col-start-2"
-            >
-              {{ accessMessage }}
-            </span>
           </div>
         </div>
-        <div v-if="getUsersWithAccess.data" class="mt-3">
+        <div v-if="getUsersWithAccess.data" class="mt-4">
           <div class="text-gray-600 font-medium text-base">Members</div>
           <div
             v-if="!getUsersWithAccess.data?.length"
-            class="text-base text-center w-full"
+            class="text-base text-center w-full my-4"
           >
             No shares yet.
           </div>
@@ -277,12 +271,26 @@
         <div v-else class="flex min-h-[19.2vh] w-full">
           <LoadingIndicator class="w-7 h-auto text-gray-700 mx-auto" />
         </div>
-        <div class="w-full flex items-center justify-between mt-2">
-          <Button class="ml-auto" :variant="'outline'" @click="getLink(entity)">
+        <div class="w-full flex items-center justify-between">
+          <div class="text-sm my-auto flex gap-2 text-gray-700">
+            <Info class="w-4 h-4" />
+            <a
+              href="https://docs.frappe.io/drive/file-access"
+              class="my-auto"
+              target="_blank"
+              >Learn about sharing</a
+            >
+          </div>
+
+          <Button
+            class="ml-auto font-semibold text-base"
+            variant="outline"
+            @click="getLink(entity)"
+          >
             <template #prefix>
               <Link />
             </template>
-            Get Link
+            Copy Link
           </Button>
         </div>
       </div>
@@ -290,7 +298,7 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed, watch, useTemplateRef } from "vue"
+import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
 import { formatDate } from "@/utils/format"
 import {
   Avatar,
@@ -309,7 +317,9 @@ import {
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
-import GeneralAccess from "@/components/GeneralAccess.vue"
+import Lock from "@/components/EspressoIcons/Lock.vue"
+import Globe from "@/components/EspressoIcons/Globe.vue"
+import Team from "@/components/EspressoIcons/Organization.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
 import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import {
@@ -317,6 +327,7 @@ import {
   updateAccess,
   allUsers,
 } from "@/resources/permissions"
+import { LucideCheck } from "lucide-vue-next"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])
@@ -340,9 +351,14 @@ const query = ref("")
 const queryInput = useTemplateRef("queryInput")
 const filteredUsers = computed(() => {
   const regex = new RegExp(query.value, "i")
-  return allUsers.data.filter(
-    (k) => regex.test(k.email) || regex.test(k.full_name)
-  )
+  console.log("TRIGGER")
+  return allUsers.data
+    .filter((k) => regex.test(k.email) || regex.test(k.full_name))
+    .map((k) =>
+      getUsersWithAccess.data.find(({ user }) => user === k.name)
+        ? { ...k, disabled: true }
+        : k
+    )
 })
 
 function addShares() {
@@ -367,7 +383,12 @@ function addShares() {
 const invalidAfter = ref()
 
 // General access
-const generalAccessLevel = ref({ value: "restricted", label: "Restricted" })
+const generalOptions = [
+  { label: "Restricted", value: "restricted", icon: markRaw(Lock) },
+  { label: "Team", value: "team", icon: markRaw(Team) },
+  { label: "Public", value: "public", icon: markRaw(Globe) },
+]
+const generalAccessLevel = ref(generalOptions[0])
 const generalAccessType = ref({ value: "reader" })
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
@@ -379,9 +400,10 @@ const getGeneralAccess = createResource({
       return
     }
     const translate = { "": "public", $TEAM: "team" }
-    generalAccessLevel.value = {
-      value: translate[getGeneralAccess.params.user],
-    }
+    generalAccessLevel.value = generalOptions.find(
+      (k) => k.value === translate[getGeneralAccess.params.user]
+    )
+
     generalAccessType.value = { value: data.write ? "editor" : "reader" }
   },
 })

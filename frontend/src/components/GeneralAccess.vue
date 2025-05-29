@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-full relative flex items-center justify-center"
+    class="rounded-sm relative flex items-center justify-center"
     :class="[
       colorClasses,
       sizeClasses,
