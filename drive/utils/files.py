@@ -142,18 +142,25 @@ class FileManager:
             self.conn.upload_file(current_path, self.bucket, new_path)
             if self.can_create_thumbnail(drive_file):
                 self.upload_thumbnail(drive_file, current_path)
-                # frappe.enqueue(
-                #     self.upload_thumbnail,
-                #     now=True,
-                #     at_front=True,
-                #     file=drive_file,
-                # )
+                frappe.enqueue(
+                    self.upload_thumbnail,
+                    now=True,
+                    at_front=True,
+                    file=drive_file,
+                    file_path=current_path,
+                )
             else:
                 os.remove(current_path)
         else:
             os.rename(current_path, self.site_folder / new_path)
             if self.can_create_thumbnail(drive_file):
-                self.upload_thumbnail(drive_file, str(self.site_folder / new_path))
+                frappe.enqueue(
+                    self.upload_thumbnail,
+                    now=True,
+                    at_front=True,
+                    file=drive_file,
+                    file_path=str(self.site_folder / new_path),
+                )
 
     def upload_thumbnail(self, file, file_path: str):
         """
@@ -165,57 +172,60 @@ class FileManager:
         disk_path = str((self.site_folder / save_path).resolve())
 
         if not file_path:
-            file_path = str(().resolve())
+            file_path = str((file_path).resolve())
+
         with DistributedLock(file.path, exclusive=False):
-            # try:
-            # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
-            if file.mime_type.startswith("image"):
-                with Image.open(file_path).convert("RGB") as image:
-                    image = ImageOps.exif_transpose(image)
-                    image.thumbnail((512, 512))
-                    image.save(str(disk_path), format="webp")
-            elif file.mime_type.startswith("video"):
-                cap = cv2.VideoCapture(file_path)
-                frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                target_frame = int(frame_count / 2)
-                cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
-                _, frame = cap.read()
-                cap.release()
-                _, thumbnail_encoded = cv2.imencode(
-                    ".webp",
-                    frame,
-                    [int(cv2.IMWRITE_WEBP_QUALITY), 50],
-                )
-                with open(disk_path, "wb") as f:
-                    f.write(thumbnail_encoded)
-            else:
-                from thumbnail import generate_thumbnail
+            try:
+                # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
+                if file.mime_type.startswith("image"):
+                    with Image.open(file_path).convert("RGB") as image:
+                        image = ImageOps.exif_transpose(image)
+                        image.thumbnail((512, 512))
+                        image.save(str(disk_path), format="webp")
+                elif file.mime_type.startswith("video"):
+                    cap = cv2.VideoCapture(file_path)
+                    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                    target_frame = int(frame_count / 2)
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                    _, frame = cap.read()
+                    cap.release()
+                    _, thumbnail_encoded = cv2.imencode(
+                        ".webp",
+                        frame,
+                        [int(cv2.IMWRITE_WEBP_QUALITY), 50],
+                    )
+                    with open(disk_path, "wb") as f:
+                        f.write(thumbnail_encoded)
+                else:
+                    from thumbnail import generate_thumbnail
 
-                # Word document thumbnail
-                generate_thumbnail(
-                    file_path,
-                    disk_path,
-                    {
-                        "trim": False,
-                        "height": 512,
-                        "width": 512,
-                        "quality": 100,
-                        "type": "thumbnail",
-                    },
-                )
-            final_path = Path(disk_path)
-            if self.s3_enabled:
+                    # Word document thumbnail
+                    generate_thumbnail(
+                        file_path,
+                        disk_path,
+                        {
+                            "trim": False,
+                            "height": 512,
+                            "width": 512,
+                            "quality": 100,
+                            "type": "thumbnail",
+                        },
+                    )
+                final_path = Path(disk_path)
+                if self.s3_enabled:
+                    os.remove(file_path)
+                    self.conn.upload_file(
+                        final_path, self.bucket, str(save_path.with_suffix(".thumbnail"))
+                    )
+                    final_path.unlink()
+                else:
+                    final_path.rename(final_path.with_suffix(".thumbnail"))
+
+            except Exception as e:
                 os.remove(file_path)
-                self.conn.upload_file(
-                    final_path, self.bucket, str(save_path.with_suffix(".thumbnail"))
-                )
-                final_path.unlink()
-            else:
-                final_path.rename(final_path.with_suffix(".thumbnail"))
 
-        # except Exception as e:
-        #     os.remove(file_path)
-        #     print(e)
+    def get_s3_object(self, path):
+        return self.conn.get_object(Bucket=self.bucket, Key=path)
 
     def get_file(self, path):
         """
@@ -226,7 +236,7 @@ class FileManager:
         not_s3 = not self.s3_enabled
         if self.s3_enabled:
             try:
-                buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
+                buf = self.get_s3_object(path)["Body"]
             except:
                 not_s3 = True
 
@@ -237,10 +247,21 @@ class FileManager:
 
         return buf
 
+    def get_thumbnail_path(self, team, name):
+        Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail")
+
     def get_thumbnail(self, team, name):
-        return self.get_file(
-            str(Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail"))
-        )
+        return self.get_file(str(self.get_thumbnail_path(team, name)))
+
+    def delete_file(self, team, name, path):
+        if self.s3_enabled:
+            self.get_s3_object(path).delete()
+        else:
+            try:
+                (self.site_folder / path).unlink()
+                self.get_thumbnail_path(team, name).unlink()
+            except FileNotFoundError:
+                pass
 
 
 def get_home_folder(team):

@@ -134,7 +134,7 @@ has_permission = {
 # ---------------
 
 scheduler_events = {
-    "daily": ["drive.api.files.auto_delete_from_trash"],
+    "daily": ["drive.api.files.auto_delete_from_trash", "drive.api.files.clear_deleted_files"],
     "hourly": ["drive.api.permissions.auto_delete_expired_perms"],
 }
 
