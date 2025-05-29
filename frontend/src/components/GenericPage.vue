@@ -228,23 +228,6 @@ const actionItems = computed(() => {
         action: () => (dialog.value = "rn"),
         isEnabled: (e) => e.write,
       },
-
-      // {
-      //   label: "Move to Team",
-      //   icon: Team,
-      //   action: (entities) =>
-      //     confirm(
-      //       `Are you sure you want to move ${entities.length} ${
-      //         entities.length === 1 ? "item" : "items"
-      //       } to the team?`
-      //     ) &&
-      //     entities.map((e) =>
-      //       togglePersonal.submit({ entity_name: e.name, new_value: 0 })
-      //     ),
-      //   isEnabled: () => route.name == "Home",
-      //   multi: true,
-      //   important: true,
-      // },
       {
         label: "Show Info",
         icon: Info,
@@ -295,7 +278,7 @@ const actionItems = computed(() => {
         important: true,
         multi: true,
       },
-      { label: "Divider" },
+      { label: "Divider", isEnabled: (e) => e.write },
       {
         label: "Move to Trash",
         icon: Trash,

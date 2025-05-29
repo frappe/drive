@@ -160,14 +160,14 @@
         <div class="mt-4">
           <div class="text-gray-600 font-medium text-base">General access:</div>
           <div class="flex justify-between pt-2">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-2">
               <div class="w-fit">
                 <Autocomplete
                   v-model="generalAccessLevel"
                   :options="generalOptions"
                   :hide-search="true"
                   @update:model-value="
-                    (val) => updateGeneralAccess(val, generalAccessType)
+                    (val) => updateGeneralAccess(val, generalAccessLevel)
                   "
                 >
                   <template #prefix>
@@ -203,7 +203,7 @@
           <div class="text-gray-600 font-medium text-base">Members</div>
           <div
             v-if="!getUsersWithAccess.data?.length"
-            class="text-base text-center w-full my-4"
+            class="text-sm w-full my-4"
           >
             No shares yet.
           </div>
@@ -328,6 +328,7 @@ import {
   allUsers,
 } from "@/resources/permissions"
 import { LucideCheck } from "lucide-vue-next"
+import store from "../../store"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])
@@ -351,9 +352,12 @@ const query = ref("")
 const queryInput = useTemplateRef("queryInput")
 const filteredUsers = computed(() => {
   const regex = new RegExp(query.value, "i")
-  console.log("TRIGGER")
   return allUsers.data
-    .filter((k) => regex.test(k.email) || regex.test(k.full_name))
+    .filter(
+      (k) =>
+        (regex.test(k.email) || regex.test(k.full_name)) &&
+        store.state.user.id != k.name
+    )
     .map((k) =>
       getUsersWithAccess.data.find(({ user }) => user === k.name)
         ? { ...k, disabled: true }
@@ -417,19 +421,17 @@ const updateGeneralAccess = (type, level) => {
       method: "unshare",
     })
   }
-  if (level.value !== "restricted") {
-    setTimeout(() => {
-      updateAccess.submit({
-        entity_name: props.entity.name,
-        user: level.value === "public" ? "" : "$TEAM",
-        read: 1,
-        comment: 1,
-        share: 1,
-        write: type.value === "editor",
-      })
-      emit("success")
-    }, 1000)
+  if (type.value !== "restricted") {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: type.value === "public" ? "" : "$TEAM",
+      read: 1,
+      comment: 1,
+      share: 1,
+      write: level.value === "editor",
+    })
   }
+  emit("success")
 }
 
 const openDialog = computed({
