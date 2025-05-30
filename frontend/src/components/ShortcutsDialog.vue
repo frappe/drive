@@ -71,6 +71,9 @@ const shortcutGroups = [
       [["Esc"], "Unselect all"],
       [["Cmd", "Delete"], "Delete selected file(s)"],
       [["Ctrl", "M"], "Move selected file(s)"],
+      [["Ctrl", "U"], "Upload a file"],
+      [["Ctrl", "Shift", "U"], "Upload a folder"],
+      [["Ctrl", "Shift", "N"], "Create a folder"],
     ],
   },
 ]
