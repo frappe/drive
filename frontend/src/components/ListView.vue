@@ -81,7 +81,7 @@ import {
   ListView as FrappeListView,
   Avatar,
 } from "frappe-ui"
-import { getIconUrl } from "@/utils/getIconUrl"
+import { getIconUrl, getThumbnailUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref, watch, useTemplateRef } from "vue"
@@ -129,11 +129,9 @@ const selectedColumns = [
         ? title
         : title.slice(0, title.lastIndexOf(".")),
     getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
-    prefix: ({ row }) =>
-      h("img", {
-        src: getIconUrl(row.file_type.toLowerCase()),
-        width: 16,
-      }),
+    prefix: ({ row }) => {
+      return getThumbnailUrl(row.name, row.file_type)
+    },
     width: "50%",
   },
 

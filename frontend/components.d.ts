@@ -44,6 +44,7 @@ declare module 'vue' {
     ContextMenu: typeof import('./src/components/ContextMenu.vue')['default']
     CTADeleteDialog: typeof import('./src/components/CTADeleteDialog.vue')['default']
     CustomListRow: typeof import('./src/components/CustomListRow.vue')['default']
+    CustomListRowItem: typeof import('./src/components/CustomListRowItem.vue')['default']
     Delete: typeof import('./src/components/DocEditor/icons/delete.vue')['default']
     DeleteDialog: typeof import('./src/components/DeleteDialog.vue')['default']
     Details: typeof import('./src/components/DocEditor/icons/Details.vue')['default']

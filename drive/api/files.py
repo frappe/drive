@@ -200,15 +200,17 @@ def get_thumbnail(entity_name):
         frappe.throw("Cannot upload due to insufficient permissions", frappe.PermissionError)
 
     with DistributedLock(drive_file.path, exclusive=False):
+        thumbnail_data = None
         if frappe.cache().exists(entity_name):
             thumbnail_data = frappe.cache().get_value(entity_name)
-        else:
+
+        if not thumbnail_data:
             thumbnail_data = None
             try:
                 manager = FileManager()
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
                 thumbnail_data = BytesIO(thumbnail.read())
-                frappe.cache().set_value(entity_name, thumbnail_data)
+                frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
             except FileNotFoundError:
                 if drive_file.mime_type.startswith("text"):
                     with manager.get_file(drive_file.path) as f:
@@ -217,7 +219,7 @@ def get_thumbnail(entity_name):
                     html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
                     thumbnail_data = html[:1000]
                 if thumbnail_data:
-                    frappe.cache().set_value(entity_name, thumbnail_data)
+                    frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
 
     if isinstance(thumbnail_data, BytesIO):
         response = Response(
@@ -226,13 +228,9 @@ def get_thumbnail(entity_name):
         )
         response.headers.set("Content-Type", "image/jpeg")
         response.headers.set("Content-Disposition", "inline", filename=entity_name)
+        return response
     else:
-        response = Response(
-            thumbnail_data,
-        )
-        response.headers.set("Content-Type", "text/html")
-
-    return response
+        return thumbnail_data
 
 
 @frappe.whitelist()

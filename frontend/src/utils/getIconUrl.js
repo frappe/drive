@@ -5,36 +5,27 @@ export function getIconUrl(file_type) {
   )
 }
 
-export async function getThumbnailUrl(name, file_type) {
-  if (
-    ![
-      "Image",
-      "Video",
-      "PDF",
-      "Markdown",
-      "Code",
-      "Text",
-      "Document",
-      "Presentation",
-    ].includes(file_type)
-  )
-    return getIconUrl(file_type.toLowerCase())
-  const fileContent = await get_thumbnail_content(name)
-  try {
-    if (fileContent.type == "image/jpeg")
-      return URL.createObjectURL(fileContent)
-    return await fileContent.text()
-  } catch {
-    return getIconUrl(file_type.toLowerCase())
-  }
+export function getThumbnailUrl(name, file_type) {
+  const HTML_THUMBNAILS = ["Markdown", "Code", "Text", "Document"]
+  const IMAGE_THUMBNAILS = ["Image", "Video", "PDF", "Presentation"]
+  const is_image = IMAGE_THUMBNAILS.includes(file_type)
+  const iconURL = getIconUrl(file_type.toLowerCase())
+  if (!is_image && !HTML_THUMBNAILS.includes(file_type))
+    return [null, iconURL, true]
+  return [
+    `/api/method/drive.api.files.get_thumbnail?entity_name=${name}`,
+    iconURL,
+    is_image,
+  ]
 }
 
 async function get_thumbnail_content(entity_name) {
-  const fileUrl = `/api/method/drive.api.files.get_thumbnail?entity_name=${entity_name}`
+  const fileUrl = ``
 
   const content = await fetch(fileUrl)
-  if (content.ok) {
-    return content.blob()
+  const blob = await content.blob()
+  if (content.ok && blob.size) {
+    return blob
   } else {
     throw new Error(`Request failed with status ${content.status}`)
   }

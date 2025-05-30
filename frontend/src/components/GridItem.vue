@@ -2,24 +2,34 @@
   <div
     class="h-[65%] flex items-center justify-center rounded-t-[calc(theme(borderRadius.lg)-1px)] overflow-hidden"
   >
-    <img
-      v-if="isThumbnail !== 'text'"
-      loading="lazy"
-      :class="
-        isThumbnail
-          ? 'h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]'
-          : 'h-10 w-auto'
-      "
-      :src="mime_link"
-      :draggable="false"
-    />
+    <template v-if="is_image || !getThumbnail?.data">
+      <img
+        v-show="!imgLoaded"
+        loading="lazy"
+        :class="'h-10 w-auto'"
+        :src="backupLink"
+        :draggable="false"
+      />
+      <img
+        v-show="imgLoaded"
+        :class="
+          src === backupLink
+            ? 'h-10 w-auto'
+            : 'h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]'
+        "
+        :src="src"
+        @error="src = backupLink"
+        @load="imgLoaded = true"
+        :draggable="false"
+      />
+    </template>
     <!-- Direct padding doesn't work -->
     <div
       v-else
       class="overflow-hidden text-ellipsis whitespace-nowrap h-full w-[calc(100%-1rem)] object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] py-2"
     >
       <div
-        v-html="mime_link"
+        v-html="getThumbnail.data"
         class="prose prose-sm pointer-events-none scale-[.39] ml-0 origin-top-left"
       ></div>
     </div>
@@ -33,7 +43,11 @@
     <div class="mt-[5px] text-xs text-gray-600">
       <div class="flex items-center justify-start gap-1">
         <img
-          v-if="file.file_type !== 'Unknown' && !file.is_group"
+          v-if="
+            file.file_type !== 'Unknown' &&
+            !file.is_group &&
+            ((imgLoaded && src !== backupLink) || !is_image)
+          "
           loading="lazy"
           class="h-4 w-auto"
           :src="getIconUrl(file.file_type) || '/drive'"
@@ -53,34 +67,27 @@
 </template>
 <script setup>
 import { getIconUrl, getThumbnailUrl } from "@/utils/getIconUrl"
-import { onMounted, ref, computed } from "vue"
+import { createResource } from "frappe-ui"
+import { ref, computed } from "vue"
 const props = defineProps({ file: Object })
 
-// Add this as first load doesn't have .file_type until cache is cleared
-const mime_link = ref(
-  getIconUrl(
-    props.file.is_group
-      ? props.file.share_count != 0
-        ? "shared-folder"
-        : "folder"
-      : props.file.file_type?.toLowerCase?.()
-  )
+const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(
+  props.file.name,
+  props.file.file_type
 )
-const isThumbnail = ref(null)
+const src = ref(thumbnailLink || backupLink)
+const imgLoaded = ref(false)
+
+let getThumbnail
+if (!is_image) {
+  getThumbnail = createResource({
+    url: thumbnailLink,
+    auto: true,
+  })
+}
+
 const childrenSentence = computed(() => {
   if (!props.file.children) return "Empty"
   return props.file.children + " item" + (props.file.children === 1 ? "" : "s")
-})
-
-onMounted(async () => {
-  const result = await getThumbnailUrl(props.file.name, props.file.file_type)
-  if (result.href) return
-  if (!result.startsWith("blob")) {
-    mime_link.value = result
-    isThumbnail.value = "text"
-  } else if (result.href !== mime_link.value.href) {
-    mime_link.value = result
-    isThumbnail.value = "image"
-  }
 })
 </script>

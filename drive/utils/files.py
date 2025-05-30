@@ -247,7 +247,7 @@ class FileManager:
         return buf
 
     def get_thumbnail_path(self, team, name):
-        Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail")
+        return Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail")
 
     def get_thumbnail(self, team, name):
         return self.get_file(str(self.get_thumbnail_path(team, name)))

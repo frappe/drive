@@ -31,7 +31,7 @@
           ? 'ml-2 w-auto opacity-100 h-auto'
           : 'ml-0 w-0 overflow-hidden opacity-0 h-0'
       "
-      >{{ formatedString }}</span
+      >{{ formattedString }}</span
     >
   </div>
 </template>
@@ -51,10 +51,10 @@ const storageMax = ref(5368709120)
 
 const props = defineProps(["isExpanded"])
 
-const formatedString = computed(() => {
+const formattedString = computed(() => {
   return (
     (formatSize(usedStorage.value) || "-") +
-    "used out of" +
+    " used out of " +
     base2BlockSize(storageMax.value)
   )
 })
