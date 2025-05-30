@@ -81,7 +81,7 @@ let tabs = [
 
 const emit = defineEmits(["update:modelValue"])
 const props = defineProps({
-  modelValue: String,
+  modelValue: Boolean,
   suggestedTab: Number,
 })
 let activeTab = ref(tabs[props.suggestedTab])

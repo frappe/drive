@@ -9,7 +9,7 @@
     />
     <div class="flex flex-col">
       <span class="text-xl font-semibold">{{ fullName }}</span>
-      <span class="text-base text-gray-700">{{ currentUserEmail }}</span>
+      <span class="text-base text-gray-700">{{ $store.state.user.id }}</span>
     </div>
     <Button class="ml-auto" @click="editProfileDialog = true">{{
       __("Edit profile")
@@ -55,10 +55,11 @@
           </div>
           <FileUploader
             v-else
-            :file-types="'image/png, image/jpeg, image/jpg'"
+            file-types="image/png, image/jpeg, image/jpg"
             :validate-file="validateFile"
             @success="
               (file) => {
+                console.log(file)
                 newImageUrl = file.file_url
               }
             "
@@ -69,15 +70,15 @@
           </FileUploader>
         </div>
         <div class="w-full flex flex-col gap-y-2 my-2">
-          <span class="text-base text-gray-600">First Name</span>
-          <Input v-model="newFirstName"></Input>
-          <span class="text-base text-gray-600">Last Name</span>
+          <span class="text-base text-gray-600">{{ __("First Name") }}</span>
+          <Input v-model="newFirstName" v-focus></Input>
+          <span class="text-base text-gray-600">{{ __("Last Name") }}</span>
           <Input v-model="newLastName"></Input>
         </div>
       </div>
     </template>
   </Dialog>
-  <h1 class="font-semibold mt-12 mb-4">{{ __("Preference") }}</h1>
+  <h1 class="font-semibold mt-12 mb-4">{{ __("Preferences") }}</h1>
   <Autocomplete
     :options="teamOptions"
     v-model="defaultTeam"
@@ -104,7 +105,7 @@ import {
   FileUploader,
   Switch,
   Autocomplete,
-  createResource,
+  createDocumentResource,
 } from "frappe-ui"
 import Link from "../EspressoIcons/Link.vue"
 import { X } from "lucide-vue-next"
@@ -114,11 +115,13 @@ import { getTeams } from "@/resources/files"
 import { settings, setSettings } from "@/resources/permissions"
 
 const store = useStore()
+
 const newImageUrl = ref(store.state.user.imageURL)
-const newLastName = ref(store.state.user.fullName.split(" ")[1])
-const newFirstName = ref(store.state.user.fullName.split(" ")[0])
 const fullName = computed(() => store.state.user.fullName)
-const newFullName = computed(() => this.newFirstName + " " + this.newLastName)
+const newLastName = ref(fullName.value.split(" ")[1])
+const newFirstName = ref(fullName.value.split(" ")[0])
+const newFullName = computed(() => newFirstName.value + " " + newLastName.value)
+
 const editProfileDialog = ref(false)
 
 const teamOptions = computed(() =>
@@ -143,12 +146,10 @@ for (let k in options) {
   })
 }
 
-const profile = createResource({
-  type: "document",
+const profile = createDocumentResource({
   doctype: "User",
   name: store.state.user.id,
   auto: true,
-  realtime: true,
 })
 
 const updateProfile = () => {
@@ -168,9 +169,8 @@ const updateProfile = () => {
 const validateFile = (file) => {
   let extension = file.name.split(".").pop().toLowerCase()
   if (!["jpg", "jpeg", "png"].includes(extension)) {
-    this.errorMessage = "Not a valid Image file"
-  } else {
-    this.errorMessage = null
+    alert("Not a valid Image file")
+    return false
   }
 }
 </script>

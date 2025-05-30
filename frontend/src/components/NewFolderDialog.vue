@@ -50,7 +50,7 @@ const props = defineProps({
   parent: String,
 })
 const emit = defineEmits(["update:modelValue", "success", "mutate"])
-const folderName = ref("Untitled")
+const folderName = ref("")
 const text = useTemplateRef("my-input")
 watch(text, (val) => {
   val.el.focus()
@@ -71,7 +71,6 @@ const createFolder = createResource({
       return "Folder name is required"
     }
   },
-  onError(data) {},
   onSuccess(data) {
     folderName.value = ""
     emit("success", data)
