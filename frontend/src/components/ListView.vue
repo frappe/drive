@@ -289,7 +289,7 @@ onKeyDown("Escape", (e) => {
 })
 </script>
 <style>
-/* .dz-drag-hover #drop-area {
+.dz-drag-hover #drop-area {
   opacity: 0.5;
   padding-left: 0;
   padding-right: 0;
@@ -297,5 +297,5 @@ onKeyDown("Escape", (e) => {
 
 .dz-drag-hover #drop-area + p {
   display: block;
-} */
+}
 </style>

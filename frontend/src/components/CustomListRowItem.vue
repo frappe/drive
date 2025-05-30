@@ -1,33 +1,21 @@
 <template>
   <ListRowItem :column="column" :row="row" :item="item" :align="column.align">
     <template v-if="column.key === 'title'" #prefix>
-      <template v-if="is_image || !getThumbnail?.data">
-        <img
-          v-if="!imgLoaded"
-          loading="lazy"
-          class="h-[16px]"
-          :src="backupLink"
-          :draggable="false"
-        />
-        <img
-          v-show="imgLoaded"
-          class="h-[16px]"
-          :src="src"
-          @error="src = backupLink"
-          @load="imgLoaded = true"
-          :draggable="false"
-        />
-      </template>
-      <!-- Direct padding doesn't work -->
-      <div
-        v-else
-        class="overflow-hidden text-ellipsis whitespace-nowrap w-[16px] h-[16px]"
-      >
-        <div
-          v-html="getThumbnail.data"
-          class="prose prose-sm pointer-events-none ml-0 origin-top-left scale-[.05]"
-        ></div>
-      </div>
+      <img
+        v-if="!imgLoaded"
+        loading="lazy"
+        class="h-[16px]"
+        :src="backupLink"
+        :draggable="false"
+      />
+      <img
+        v-show="imgLoaded"
+        class="h-[16px]"
+        :src="src"
+        @error="src = backupLink"
+        @load="imgLoaded = true"
+        :draggable="false"
+      />
     </template>
     <template #default="{ label }">
       <transition v-if="column.key === 'title'" name="fade-in" mode="out-in">
@@ -79,7 +67,7 @@ const props = defineProps({
   item: String,
 })
 
-let src, imgLoaded, thumbnailLink, backupLink, is_image, getThumbnail
+let src, imgLoaded, thumbnailLink, backupLink, is_image
 
 if (props.column.prefix && props.column.key === "title") {
   ;[thumbnailLink, backupLink, is_image] = props.column.prefix({
@@ -88,12 +76,5 @@ if (props.column.prefix && props.column.key === "title") {
 
   src = ref(thumbnailLink || backupLink)
   imgLoaded = ref(false)
-  if (!is_image) {
-    getThumbnail = createResource({
-      url: thumbnailLink,
-      cache: ["thumbnail", props.row.name],
-      auto: true,
-    })
-  }
 }
 </script>

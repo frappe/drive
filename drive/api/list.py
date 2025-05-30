@@ -245,6 +245,48 @@ def shared(
         query = query.where(
             Criterion.any(DriveFile.mime_type == mime_type for mime_type in mime_type_list)
         )
+
+    # Extremely inefficient
+    child_count_query = (
+        frappe.qb.from_(DriveFile)
+        .where((DriveFile.is_active == 1))
+        .select(DriveFile.parent_entity, fn.Count("*").as_("child_count"))
+        .groupby(DriveFile.parent_entity)
+    )
+    share_query = (
+        frappe.qb.from_(DriveFile)
+        .right_join(DrivePermission)
+        .on(DrivePermission.entity == DriveFile.name)
+        .where((DrivePermission.user != "") & (DrivePermission.user != "$TEAM"))
+        .select(DriveFile.name, fn.Count("*").as_("share_count"))
+        .groupby(DriveFile.name)
+    )
+    public_files_query = (
+        frappe.qb.from_(DrivePermission)
+        .where(DrivePermission.user == "")
+        .select(DrivePermission.entity)
+    )
+    team_files_query = (
+        frappe.qb.from_(DrivePermission)
+        .where(DrivePermission.user == "$TEAM")
+        .select(DrivePermission.entity)
+    )
+    public_files = set(k[0] for k in public_files_query.run())
+    team_files = set(k[0] for k in team_files_query.run())
+
+    children_count = dict(child_count_query.run())
+    share_count = dict(share_query.run())
     res = query.run(as_dict=True)
     parents = {r["name"] for r in res}
+
+    for r in res:
+        r["children"] = children_count.get(r["name"], 0)
+        r["file_type"] = get_file_type(r)
+        if r["name"] in public_files:
+            r["share_count"] = -2
+        elif r["name"] in team_files:
+            r["share_count"] = -1
+        else:
+            r["share_count"] = share_count.get(r["name"], 0)
+
     return [r for r in res if r["parent_entity"] not in parents]

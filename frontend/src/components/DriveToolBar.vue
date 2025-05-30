@@ -1,12 +1,12 @@
 <template>
-  <div v-if="getEntities.data?.length" class="flex p-3">
+  <div class="flex p-3">
     <div v-if="selections?.length" class="my-auto w-[40%] text-base">
       {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
       selected
     </div>
     <div
-      v-if="$route.name === 'Shared'"
-      class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
+      v-else-if="$route.name === 'Shared'"
+      class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 mr-4 py-1"
     >
       <Button
         variant="ghost"
@@ -16,7 +16,7 @@
             ? 'bg-white shadow-sm hover:bg-white active:bg-white'
             : '',
         ]"
-        @click="store.commit('toggleShareView', 'with')"
+        @click="getEntities.reset(), store.commit('toggleShareView', 'with')"
       >
         With you
       </Button>
@@ -28,12 +28,13 @@
             ? 'bg-white shadow-sm hover:bg-white active:bg-white'
             : '',
         ]"
-        @click="store.commit('toggleShareView', 'by')"
+        @click="getEntities.reset(), store.commit('toggleShareView', 'by')"
       >
         By you
       </Button>
     </div>
     <TextInput
+      :disabled="!getEntities.data?.length"
       :class="selections.length ? 'hidden' : 'block'"
       ref="search-input"
       v-model="search"
@@ -106,15 +107,20 @@
             <Button
               class="text-sm h-7 border-r border-slate-200 rounded-r-none"
               @click.stop="toggleAscending"
+              :disabled="!getEntities.data?.length"
             >
               <DownArrow
                 :class="{
-                  '[transform:rotateX(180deg)]': sortOrder.descending,
+                  '[transform:rotateX(180deg)]': sortOrder.ascending,
                 }"
                 class="h-3.5"
               />
             </Button>
-            <Button class="text-sm h-7 rounded-l-none flex-1 md:block">
+
+            <Button
+              class="text-sm h-7 rounded-l-none flex-1 md:block"
+              :disabled="!getEntities.data?.length"
+            >
               {{ __(sortOrder.label) }}
             </Button>
           </div>
@@ -130,7 +136,7 @@
           placement="right"
         >
           <Tooltip text="Filter">
-            <Button>
+            <Button :disabled="!getEntities.data?.length">
               <Filter />
             </Button>
           </Tooltip>
@@ -139,6 +145,7 @@
           class="bg-gray-100 rounded-md space-x-0.5 h-7 px-0.5 py-1 flex items-center"
         >
           <Button
+            :disabled="!getEntities.data?.length"
             variant="ghost"
             class="max-h-6 leading-none transition-colors focus:outline-none"
             :class="[
@@ -151,6 +158,7 @@
             <ViewGrid />
           </Button>
           <Button
+            :disabled="!getEntities.data?.length"
             variant="ghost"
             class="max-h-6 leading-none transition-colors focus:outline-none"
             :class="[
