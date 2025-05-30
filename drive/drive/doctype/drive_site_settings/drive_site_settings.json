@@ -10,14 +10,16 @@
       "description": "Never share this publicly! This gives complete read access to all files in your site.",
       "fieldname": "jwt_key",
       "fieldtype": "Password",
-      "label": "JWT Key"
+      "in_list_view": 1,
+      "label": "JWT Key",
+      "reqd": 1
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-05-27 14:29:39.428707",
+  "modified": "2025-05-30 15:23:21.155154",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Site Settings",

@@ -513,9 +513,10 @@ def create_auth_token(entity_name):
     ):
         raise frappe.PermissionError("You do not have permission to view this file")
     settings = frappe.get_single("Drive Site Settings")
+    key = settings.get_password("jwt_key", raise_exception=False)
     return jwt.encode(
         {"name": entity_name, "expiry": (datetime.now() + timedelta(minutes=1)).timestamp()},
-        key=settings.get_password("jwt_key"),
+        key=key,
     )
 
 
