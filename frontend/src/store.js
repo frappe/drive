@@ -46,7 +46,9 @@ const store = createStore({
       team: getJson("currentFolderTeam", {}),
       entities: getJson("currentEntitites", []),
     },
-    breadcrumbs: getJson("breadcrumbs", [{ label: __("Home"), route: "/" }]),
+    // Should renamed or left as this since its breadcrubs?
+    //breadcrumbs: getJson("breadcrumbs", [{ label: __("Home"), route: "/" }]),
+    breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     // Writer ones
     hasWriteAccess: false,
     allComments: "",
