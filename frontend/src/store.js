@@ -30,7 +30,7 @@ const store = createStore({
     uploads: [],
     connectedUsers: [],
     sortOrder: getJson("sortOrder", {
-      label: "Modified",
+      label: __("Modified"),
       field: "modified",
       ascending: false,
     }),
@@ -46,7 +46,7 @@ const store = createStore({
       team: getJson("currentFolderTeam", {}),
       entities: getJson("currentEntitites", []),
     },
-    breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
+    breadcrumbs: getJson("breadcrumbs", [{ label: __("Home"), route: "/" }]),
     // Writer ones
     hasWriteAccess: false,
     allComments: "",
