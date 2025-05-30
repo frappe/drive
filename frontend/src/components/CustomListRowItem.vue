@@ -65,6 +65,7 @@ const props = defineProps({
   column: Object,
   row: Object,
   item: String,
+  contextMenu: Function,
 })
 
 let src, imgLoaded, thumbnailLink, backupLink, is_image
