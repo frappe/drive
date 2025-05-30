@@ -68,7 +68,7 @@ export default {
       colors: ["gray", "blue", "green", "orange", "red"],
       tagActions: [
         {
-          label: "Delete",
+          label: __("Delete"),
           icon: "trash-2",
           handler: () => {
             this.$resources.deleteTag.submit()

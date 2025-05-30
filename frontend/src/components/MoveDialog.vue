@@ -228,15 +228,15 @@ const dropDownItems = computed(() => {
 
 const tabs = [
   {
-    label: "Home",
+    label: __("Home"),
     icon: h(Home, { class: "w-4 h-4" }),
   },
   {
-    label: "Team",
+    label: __("Team"),
     icon: h(Team, { class: "w-4 h-4" }),
   },
   // {
-  //   label: "Favourites",
+  //   label: __("Favourites"),
   //   icon: h(Star, { class: "w-4 h-4" }),
   // },
 ]
