@@ -114,7 +114,8 @@ export const setBreadCrumbs = (
   const route = router.currentRoute.value
   let res = [
     {
-      label: "Shared",
+      label: __("Shared"),
+      name: "Shared",
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
@@ -127,7 +128,9 @@ export const setBreadCrumbs = (
   ) {
     res = [
       {
-        label: is_private ? "Home" : getTeams.data[breadcrumbs[0].team].title,
+        label: is_private
+          ? __("Home")
+          : getTeams.data[breadcrumbs[0].team].title,
         name: is_private ? "Home" : "Team",
         route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
       },

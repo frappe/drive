@@ -81,7 +81,7 @@ import {
   ListView as FrappeListView,
   Avatar,
 } from "frappe-ui"
-import { getIconUrl, getThumbnailUrl } from "@/utils/getIconUrl"
+import { getThumbnailUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { computed, h, ref, watch, useTemplateRef } from "vue"

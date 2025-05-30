@@ -20,7 +20,7 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          Information
+          {{ __("Information") }}
         </span>
         <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
           <div v-if="entity.owner === 'You'">
@@ -68,36 +68,40 @@
           <div>
             <div class="text-base font-medium mb-4">Properties</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-              <span class="col-span-1 text-gray-600">Type</span>
+              <span class="col-span-1 text-gray-600">{{ __("Type") }}</span>
               <span class="col-span-1">Frappe Doc</span>
-              <span class="col-span-1 text-gray-600">Size</span>
+              <span class="col-span-1 text-gray-600">{{ __("Size") }}</span>
               <span class="col-span-1">{{ formatSize(entity.file_size) }}</span>
-              <span class="col-span-1 text-gray-600">Modified</span>
+              <span class="col-span-1 text-gray-600">{{ __("Modified") }}</span>
               <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
-              <span class="col-span-1 text-gray-600">Created</span>
+              <span class="col-span-1 text-gray-600">{{ __("Created") }}</span>
               <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
-              <span class="col-span-1 text-gray-600">Owner</span>
+              <span class="col-span-1 text-gray-600">{{ __("Owner") }}</span>
               <span class="col-span-1">{{ entity.full_name }}</span>
             </div>
           </div>
           <div>
-            <div class="text-base font-medium mb-4">Stats</div>
+            <div class="text-base font-medium mb-4">{{ __("Statistics") }}</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-              <span class="col-span-1 text-gray-600">Words</span>
+              <span class="col-span-1 text-gray-600">{{ __("Words") }}</span>
               <span class="col-span-1">
                 {{ editor.storage.characterCount.words() }}
               </span>
-              <span class="col-span-1 text-gray-600">Characters</span>
+              <span class="col-span-1 text-gray-600">{{
+                __("Characters")
+              }}</span>
               <span class="col-span-1">
                 {{ editor.storage.characterCount.characters() }}
               </span>
-              <span class="col-span-1 text-gray-600">Reading Time</span>
+              <span class="col-span-1 text-gray-600">{{
+                __("Reading Time")
+              }}</span>
               <span class="col-span-1">
                 {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
                 {{
                   Math.ceil(editor.storage.characterCount.words() / 200) > 1
-                    ? "mins"
-                    : "min"
+                    ? __("minutes")
+                    : __("minute")
                 }}
               </span>
             </div>

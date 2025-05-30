@@ -10,17 +10,13 @@
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
           <!-- <Info /> -->
-          Information
+          {{ __("Information") }}
         </span>
-        <div
-          v-if="
-            entity.mime_type?.startsWith('video') ||
-            (entity.mime_type?.startsWith('image') &&
-              entity?.mime_type !== 'image/svg+xml')
-          "
-          class="h-[210px] w-full mb-4"
-        >
-          <img class="object-contain h-full mx-auto" :src="thumbnailLink" />
+        <div v-if="thumbnailUrl[2]" class="h-[210px] w-full mb-4">
+          <img
+            class="object-contain h-full mx-auto"
+            :src="thumbnailUrl[0] || thumbnailUrl[1]"
+          />
         </div>
         <div class="space-y-6.5">
           <div v-if="entity.owner === $store.state.user.id">
@@ -60,33 +56,33 @@
                 class="rounded flex justify-center items-center"
                 @click="emitter.emit('showShareDialog')"
               >
-                Manage
+                {{ __("Manage") }}
               </Button>
             </div>
           </div>
           <div v-if="userId !== 'Guest'">
-            <div class="text-base font-medium mb-4">Tags</div>
+            <div class="text-base font-medium mb-4">{{ __("Tags") }}</div>
             <TagInput class="min-w-full" :entity="entity" />
           </div>
           <div>
-            <div class="text-base font-medium mb-4">Properties</div>
+            <div class="text-base font-medium mb-4">{{ __("Properties") }}</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-              <span class="col-span-1 text-gray-600">Type</span>
+              <span class="col-span-1 text-gray-600">{{ __("Type") }}</span>
               <span class="col-span-1" :title="entity.mime_type">
                 {{ entity.file_type }}
               </span>
               <span v-if="entity.file_size" class="col-span-1 text-gray-600">
-                Size
+                {{ __("Size") }}
               </span>
               <span v-if="entity.file_size" class="col-span-1">
                 {{ entity.file_size_pretty }}
                 {{ `(${entity.file_size})` }}
               </span>
-              <span class="col-span-1 text-gray-600">Modified</span>
+              <span class="col-span-1 text-gray-600">{{ __("Modified") }}</span>
               <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
-              <span class="col-span-1 text-gray-600">Uploaded</span>
+              <span class="col-span-1 text-gray-600">{{ __("Uploaded") }}</span>
               <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
-              <span class="col-span-1 text-gray-600">Owner</span>
+              <span class="col-span-1 text-gray-600">{{ __("Owner") }}</span>
               <span class="col-span-1">{{
                 entity.owner +
                 (entity.owner === $store.state.user.id ? " (you)" : "")
@@ -104,7 +100,7 @@
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
           <!--  <Comment /> -->
-          Comments
+          {{ __("Comments") }}
         </span>
         <!-- Check commenting permissions -->
         <div class="pb-2 px-5">
@@ -163,7 +159,7 @@
         <span
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          Activity
+          {{ __("Activity") }}
         </span>
         <ActivityTree v-if="entity.write" :entity="entity" />
       </div>
@@ -219,12 +215,16 @@ import { generalAccess, userList } from "@/resources/permissions"
 const store = useStore()
 const tab = ref(0)
 const newComment = ref("")
-const thumbnailLink = ref("")
 
 const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
 const entity = computed(() => store.state.activeEntity)
+const thumbnailUrl = computed(() => {
+  const res = getThumbnailUrl(entity.value?.name, entity.value?.file_type)
+  console.log(res)
+  return res
+})
 
 function switchTab(val) {
   if (store.state.showInfo == false) {
@@ -235,11 +235,6 @@ function switchTab(val) {
   } else {
     tab.value = val
   }
-}
-
-async function thumbnailUrl() {
-  let result = await getThumbnailUrl(entity.value.name, entity.value.file_type)
-  thumbnailLink.value = result
 }
 
 watch(entity, (newEntity) => {
@@ -253,7 +248,6 @@ watch(entity, (newEntity) => {
       (!newEntity.comment && tab.value === 1)
     )
       tab.value = 0
-    thumbnailUrl()
     comments.fetch({ entity_name: newEntity.name })
     generalAccess.fetch({ entity: newEntity.name })
     userList.fetch({ entity: newEntity.name })

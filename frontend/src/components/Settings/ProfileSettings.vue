@@ -1,5 +1,5 @@
 <template>
-  <h1 class="font-semibold mb-8">Profile</h1>
+  <h1 class="font-semibold mb-8">{{ __("Profile") }}</h1>
   <div class="flex justify-start w-full items-center gap-x-4">
     <Avatar
       :image="newImageUrl"
@@ -11,18 +11,18 @@
       <span class="text-xl font-semibold">{{ fullName }}</span>
       <span class="text-base text-gray-700">{{ currentUserEmail }}</span>
     </div>
-    <Button class="ml-auto" @click="editProfileDialog = true"
-      >Edit profile</Button
-    >
+    <Button class="ml-auto" @click="editProfileDialog = true">{{
+      __("Edit profile")
+    }}</Button>
   </div>
   <Dialog
     v-model="editProfileDialog"
     :options="{
-      title: 'Edit Profile',
+      title: __('Edit Profile'),
       size: 'md',
       actions: [
         {
-          label: 'Confirm',
+          label: __('Confirm'),
           variant: 'solid',
           onClick: updateProfile,
         },
@@ -64,7 +64,7 @@
             "
           >
             <template #default="{ openFileSelector }">
-              <Button @click="openFileSelector"> Add Image </Button>
+              <Button @click="openFileSelector">{{ __("Add Image") }} </Button>
             </template>
           </FileUploader>
         </div>
@@ -77,7 +77,7 @@
       </div>
     </template>
   </Dialog>
-  <h1 class="font-semibold mt-12 mb-4">Preferences</h1>
+  <h1 class="font-semibold mt-12 mb-4">{{ __("Preference") }}</h1>
   <Autocomplete
     :options="teamOptions"
     v-model="defaultTeam"

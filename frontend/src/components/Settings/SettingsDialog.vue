@@ -4,7 +4,7 @@
       <div class="flex" :style="{ height: '80vh' }">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
           <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
-            Settings
+            {{ __("Settings") }}
           </h1>
           <div class="mt-3 space-y-1">
             <button
@@ -23,7 +23,7 @@
                 class="h-4 w-4 text-gray-700 stroke-[1.5]"
               />
               <span class="text-base text-gray-800">
-                {{ tab.label }}
+                {{ __(tab.label) }}
               </span>
             </button>
           </div>

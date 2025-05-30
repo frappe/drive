@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center mb-4">
-    <h1 class="font-semibold">Users</h1>
+    <h1 class="font-semibold">{{ __("Users") }}</h1>
     <Button
       v-if="isAdmin?.data"
       variant="solid"
@@ -8,7 +8,7 @@
       class="ml-auto mr-4"
       @click="showInvite = true"
     >
-      Invite
+      {{ __("Invite") }}
     </Button>
   </div>
   <div
@@ -33,14 +33,14 @@
           class="ml-auto text-base text-gray-600"
         >
           <Button variant="ghost" @click="selectedUser = user"
-            >{{ user.role == "admin" ? "Manager" : "User" }}
+            >{{ user.role == "admin" ? __("Manager") : __("User") }}
             <template #suffix>
               <ChevronDown :class="{ '[transform:rotateX(180deg)]': open }" />
             </template>
           </Button>
         </Dropdown>
         <span v-else class="ml-auto text-base text-gray-600">{{
-          user.role == "admin" ? "Manager" : "User"
+          user.role == "admin" ? __("Manager") : __("User")
         }}</span>
       </div>
     </div>
@@ -52,7 +52,7 @@
     <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
     <span class="text-gray-800 text-sm mt-2">No Users</span>
   </div>
-  <h3 class="my-4 text-base font-medium">Invites</h3>
+  <h3 class="my-4 text-base font-medium">{{ __("Invites") }}</h3>
   <div
     class="text-center text-sm"
     v-if="!invites?.data || !invites.data.length"
@@ -80,7 +80,7 @@
               variant="subtle"
               class="my-auto mr-2"
               size="sm"
-              >{{ invite.status }}</Badge
+              >{{ __(invite.status) }}</Badge
             >
           </Tooltip>
           <div class="flex gap-2">

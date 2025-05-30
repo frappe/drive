@@ -1,5 +1,5 @@
 <template>
-  <h1 class="font-semibold mb-4">Storage</h1>
+  <h1 class="font-semibold mb-4">{{ __("Storage") }}</h1>
 
   <div class="flex items-center justify-between w-full mb-2">
     <span class="text-base font-medium text-gray-900"
@@ -22,7 +22,7 @@
         ]"
         @click="showFileStorage = true"
       >
-        You
+        {{ __("You") }}
       </Button>
       <Button
         variant="ghost"
@@ -34,7 +34,7 @@
         ]"
         @click="showFileStorage = false"
       >
-        Team
+        {{ __("Team") }}
       </Button>
     </div>
   </div>

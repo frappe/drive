@@ -309,20 +309,20 @@ async function newLink() {
     const text = await navigator.clipboard.readText()
     if (localStorage.getItem("prevClip") === text) return
     localStorage.setItem("prevClip", text)
-    new URL(text)
-
-    toast({
-      title: "Link detected",
-      text,
-      buttons: [
-        {
-          label: "Add",
-          action: () => {
-            dialog.value = "l"
+    url = new URL(text)
+    if (url.host)
+      toast({
+        title: "Link detected",
+        text,
+        buttons: [
+          {
+            label: "Add",
+            action: () => {
+              dialog.value = "l"
+            },
           },
-        },
-      ],
-    })
+        ],
+      })
   } catch (_) {}
 }
 

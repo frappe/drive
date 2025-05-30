@@ -5,7 +5,7 @@
       class="px-5 pb-2 gap-x-2"
     >
       <span class="text-base text-gray-600 font-medium leading-6">
-        {{ i }}
+        {{ __(i) }}
       </span>
       <div
         v-for="activity in group"
@@ -18,7 +18,7 @@
           :label="activity.full_name"
         />
         <div class="flex flex-col items-start justify-center">
-          <span class="text-sm text-gray-900">{{ activity.message }}</span>
+          <span class="text-sm text-gray-900">{{ __(activity.message) }}</span>
           <span class="text-xs text-gray-600 mb-3">{{
             activity.creation
           }}</span>

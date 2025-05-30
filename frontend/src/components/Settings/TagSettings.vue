@@ -1,13 +1,13 @@
 <template>
   <div class="flex items-center mb-6">
-    <h1 class="font-semibold">Tags</h1>
+    <h1 class="font-semibold">{{ __("Tags") }}</h1>
     <Button
       class="ml-auto mr-4"
       variant="solid"
       icon-left="plus"
       @click="showNewTagDialog = true"
     >
-      New
+      {{ __("New") }}
     </Button>
   </div>
   <div class="flex flex-col items-stretch justify-start overflow-y-auto">

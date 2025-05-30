@@ -24,7 +24,7 @@
   </template>
 </template>
 <script setup>
-import { FeatherIcon, ListRowItem, ListRow, Tooltip } from "frappe-ui"
+import { ListRow } from "frappe-ui"
 import CustomListRowItem from "./CustomListRowItem.vue"
 import { openEntity } from "@/utils/files"
 import { settings } from "@/resources/permissions"

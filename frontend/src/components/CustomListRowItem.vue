@@ -50,7 +50,7 @@
     <template v-if="idx === 0" #suffix>
       <div class="flex flex-row grow justify-end gap-2 w-[20px]">
         <FeatherIcon
-          v-if="row.is_favourite && route.name !== 'Favourites'"
+          v-if="row.is_favourite && $route.name !== 'Favourites'"
           name="star"
           width="16"
           height="16"
@@ -91,6 +91,7 @@ if (props.column.prefix && props.column.key === "title") {
   if (!is_image) {
     getThumbnail = createResource({
       url: thumbnailLink,
+      cache: ["thumbnail", props.row.name],
       auto: true,
     })
   }
