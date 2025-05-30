@@ -18,7 +18,13 @@
       @drop="$emit('dropped', row, draggedItem)"
     >
       <template #default="{ idx, column, item }">
-        <CustomListRowItem :column :row :item :idx />
+        <CustomListRowItem
+          :column="column"
+          :row="row"
+          :item="item"
+          :idx="idx"
+          :contextMenu="contextMenu"
+        />
       </template>
     </ListRow>
   </template>
