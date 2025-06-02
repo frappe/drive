@@ -10,9 +10,7 @@
       ]"
       :hideSearch="true"
     ></Autocomplete>
-    <Button variant="ghost" @click="$emit('removeAccess')"
-      ><LucideX class="size-4 my-auto"
-    /></Button>
+    <Button variant="ghost"><LucideX class="size-4 my-auto" /></Button>
   </div>
 </template>
 <script setup>
