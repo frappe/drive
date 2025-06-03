@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="relative px-3 select-none"
+    class="relative px-3 pb-[60px] select-none pt-1"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"

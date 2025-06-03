@@ -16,151 +16,153 @@
             <FeatherIcon name="x" class="stroke-2 h-4" />
           </Button>
         </div>
-        <Combobox multiple v-model="sharedUsers" v-slot="{ open }">
-          <div
-            class="flex flex-col items-start justify-start rounded bg-gray-100"
-          >
-            <div class="flex justify-between p-1 border-b w-full">
-              <Autocomplete
-                class="w-fit"
-                placeholder="Access"
-                v-model="shareAccess"
-                :hide-search="true"
-                :options="
-                  advancedTweak
-                    ? filteredAccess.map((k) => ({
-                        value: k,
-                        label: k[0].toUpperCase() + k.slice(1),
-                      }))
-                    : [
-                        { value: 'reader', label: 'Reader' },
-                        { value: 'editor', label: 'Editor' },
-                      ]
-                "
-              />
-              <div>
-                <DateTimePicker
-                  class="bg-inherit"
-                  placeholder="Valid Until"
-                  :formatter="(d) => formatDate(d)"
-                  v-model="invalidAfter"
-                  variant="subtle"
-                />
+
+        <div class="flex gap-3">
+          <div class="flex-grow">
+            <Combobox multiple v-model="sharedUsers" v-slot="{ open }">
+              <div
+                class="flex flex-col items-start justify-start rounded-md bg-gray-100"
+              >
+                <div class="flex flex-wrap justify-between py-0.5 px-2 w-full">
+                  <div class="w-[75%] flex flex-wrap">
+                    <Button
+                      v-for="(user, idx) in sharedUsers"
+                      :key="user.name"
+                      :label="user.email"
+                      variant="outline"
+                      class="shadow-sm m-0.5 h-[24px]"
+                    >
+                      <template #suffix>
+                        <LucideX
+                          class="h-4"
+                          stroke-width="1.5"
+                          @click.stop="() => sharedUsers.splice(idx, 1)"
+                        />
+                      </template>
+                    </Button>
+                    <ComboboxInput
+                      placeholder="Add people..."
+                      class="text-base p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
+                      @change="query = $event.target.value"
+                      ref="queryInput"
+                      autocomplete="off"
+                      v-focus
+                    />
+                  </div>
+                  <div class="w-[25%] mt-auto">
+                    <Autocomplete
+                      class=""
+                      placeholder="Access"
+                      v-model="shareAccess"
+                      :hide-search="true"
+                      :options="
+                        advancedTweak
+                          ? filteredAccess.map((k) => ({
+                              value: k,
+                              label: k[0].toUpperCase() + k.slice(1),
+                            }))
+                          : [
+                              { value: 'reader', label: 'Reader' },
+                              { value: 'editor', label: 'Editor' },
+                            ]
+                      "
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="flex flex-wrap gap-1 p-2 w-full">
-              <Button
-                v-for="(user, idx) in sharedUsers"
-                :key="user.name"
-                :label="user.email"
-                variant="outline"
-                class="shadow-sm"
+              <transition
+                enter-active-class="transition duration-100 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-75 ease-out"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0"
               >
-                <template #suffix>
-                  <LucideX
-                    class="h-4"
-                    stroke-width="1.5"
-                    @click.stop="() => sharedUsers.splice(idx, 1)"
-                  />
-                </template>
-              </Button>
-              <ComboboxInput
-                placeholder="Add people..."
-                class="pl-2 w-full border-none bg-transparent py-3 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
-                @change="query = $event.target.value"
-                ref="queryInput"
-                autocomplete="off"
-                v-focus
-              />
-            </div>
-          </div>
-          <transition
-            enter-active-class="transition duration-100 ease-out"
-            enter-from-class="transform scale-95 opacity-0"
-            enter-to-class="transform scale-100 opacity-100"
-            leave-active-class="transition duration-75 ease-out"
-            leave-from-class="transform scale-100 opacity-100"
-            leave-to-class="transform scale-95 opacity-0"
-          >
-            <div
-              class="absolute z-[4] mt-1 rounded-lg bg-surface-modal text-base shadow-2xl"
-            >
-              <ComboboxOptions
-                v-if="open && query.length"
-                class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5"
-              >
-                <ComboboxOption
-                  as="template"
-                  v-if="!filteredUsers.length"
-                  :value="baseOption"
-                  v-slot="{ selected, active }"
+                <div
+                  class="absolute z-[4] rounded-lg bg-surface-modal text-base shadow-2xl"
                 >
-                  <li
-                    class="flex items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
-                    :class="{
-                      'bg-surface-gray-3': active,
-                    }"
+                  <ComboboxOptions
+                    v-if="open && query.length"
+                    class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5"
                   >
-                    <span
-                      class="block truncate"
-                      :class="{
-                        'font-medium': selected,
-                        'font-normal': !selected,
-                      }"
+                    <ComboboxOption
+                      as="template"
+                      v-if="!filteredUsers.length"
+                      :value="baseOption"
+                      v-slot="{ selected, active }"
                     >
-                      {{ query }}
-                    </span>
-                  </li>
-                </ComboboxOption>
-                <template v-for="person in filteredUsers" :key="person.email">
-                  <ComboboxOption
-                    as="template"
-                    :value="person"
-                    :disabled="person.disabled"
-                    v-slot="{ selected, active }"
-                  >
-                    <li
-                      class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7"
-                      :class="{
-                        'bg-surface-gray-3': active,
-                        'cursor-pointer': !person.disabled,
-                        'opacity-50 cursor-not-allowed': person.disabled,
-                      }"
-                    >
-                      <LucideCheck
-                        v-if="selected"
-                        class="size-4 text-ink-gray-7"
-                      />
-                      <div v-else class="h-4 w-4" />
-                      <span
-                        class="block truncate"
+                      <li
+                        class="flex items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
                         :class="{
-                          'font-medium': selected,
-                          'font-normal': !selected,
+                          'bg-surface-gray-3': active,
                         }"
                       >
-                        {{ person.email }}
-                        <span v-if="person.full_name"
-                          >({{ person.full_name }})</span
+                        <span
+                          class="block truncate"
+                          :class="{
+                            'font-medium': selected,
+                            'font-normal': !selected,
+                          }"
                         >
-                      </span>
-                    </li>
-                  </ComboboxOption>
-                </template>
-              </ComboboxOptions>
-            </div>
-          </transition>
-        </Combobox>
-        <Button
-          :disabled="!sharedUsers.length"
-          label="Invite"
-          @click="addShares"
-          variant="solid"
-          class="w-full mt-4"
-        />
-        <div class="mt-4">
-          <div class="text-gray-600 font-medium text-base">General access:</div>
-          <div class="flex justify-between pt-2">
+                          {{ query }}
+                        </span>
+                      </li>
+                    </ComboboxOption>
+                    <template
+                      v-for="person in filteredUsers"
+                      :key="person.email"
+                    >
+                      <ComboboxOption
+                        as="template"
+                        :value="person"
+                        :disabled="person.disabled"
+                        v-slot="{ selected, active }"
+                      >
+                        <li
+                          class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7"
+                          :class="{
+                            'bg-surface-gray-3': active,
+                            'cursor-pointer': !person.disabled,
+                            'opacity-50 cursor-not-allowed': person.disabled,
+                          }"
+                        >
+                          <LucideCheck
+                            v-if="selected"
+                            class="size-4 text-ink-gray-7"
+                          />
+                          <div v-else class="h-4 w-4" />
+                          <span
+                            class="block truncate"
+                            :class="{
+                              'font-medium': selected,
+                              'font-normal': !selected,
+                            }"
+                          >
+                            {{ person.email }}
+                            <span v-if="person.full_name"
+                              >({{ person.full_name }})</span
+                            >
+                          </span>
+                        </li>
+                      </ComboboxOption>
+                    </template>
+                  </ComboboxOptions>
+                </div>
+              </transition>
+            </Combobox>
+          </div>
+          <Button
+            :disabled="!sharedUsers.length"
+            label="Invite"
+            @click="addShares"
+            variant="solid"
+            class="w-[76px] font-base rounded-md mt-auto py-4"
+          />
+        </div>
+
+        <div v-if="getUsersWithAccess.data" class="my-3">
+          <div class="text-gray-600 font-medium text-base">Members</div>
+          <div class="flex justify-between mt-3">
             <div class="flex flex-col gap-2">
               <div class="w-fit">
                 <Autocomplete
@@ -179,9 +181,6 @@
                   </template>
                 </Autocomplete>
               </div>
-              <span class="pl-0.5 text-xs text-gray-700">
-                {{ accessMessage }}
-              </span>
             </div>
             <div class="my-auto">
               <Autocomplete
@@ -199,9 +198,6 @@
               />
             </div>
           </div>
-        </div>
-        <div v-if="getUsersWithAccess.data" class="mt-4">
-          <div class="text-gray-600 font-medium text-base">Members</div>
           <div
             v-if="!getUsersWithAccess.data?.length"
             class="text-sm w-full my-4"
@@ -215,7 +211,7 @@
             <div
               v-for="(user, idx) in getUsersWithAccess.data"
               :key="user.name"
-              class="flex items-center gap-x-3"
+              class="flex items-center gap-x-3 pr-1"
             >
               <Avatar
                 size="xl"
@@ -264,7 +260,7 @@
                 class="ml-auto flex items-center gap-1 text-gray-600"
               >
                 Owner
-                <Diamond class="h-3.5" />
+                <LucideDiamond class="size-3" />
               </span>
             </div>
           </div>
@@ -300,13 +296,11 @@
 </template>
 <script setup>
 import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
-import { formatDate } from "@/utils/format"
 import {
   Avatar,
   Dialog,
   FeatherIcon,
   Autocomplete,
-  DateTimePicker,
   LoadingIndicator,
   createResource,
 } from "frappe-ui"
@@ -322,14 +316,13 @@ import Lock from "@/components/EspressoIcons/Lock.vue"
 import Globe from "@/components/EspressoIcons/Globe.vue"
 import Team from "@/components/EspressoIcons/Organization.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
-import Diamond from "@/components/EspressoIcons/Diamond.vue"
 import {
   getUsersWithAccess,
   updateAccess,
   allUsers,
 } from "@/resources/permissions"
-import { LucideCheck } from "lucide-vue-next"
-import store from "../../store"
+import { LucideCheck, LucideDiamond } from "lucide-vue-next"
+import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])
@@ -348,7 +341,7 @@ watch(sharedUsers, (now, prev) => {
 })
 const shareAccess = ref({ value: "reader" })
 const advancedTweak = false
-const baseOption = computed(() => ({ email: query, name: query }))
+const baseOption = computed(() => ({ email: query.value, name: query.value }))
 const query = ref("")
 const queryInput = useTemplateRef("queryInput")
 const filteredUsers = computed(() => {
@@ -442,17 +435,6 @@ const openDialog = computed({
   set: (value) => {
     emit("update:modelValue", value || "")
   },
-})
-
-const accessMessage = computed(() => {
-  if (generalAccessLevel.value.value === "restricted")
-    return "Limited to people with access."
-  const people =
-    generalAccessLevel.value.value === "team"
-      ? "in your team"
-      : "on this planet"
-  const modifier = generalAccessType.value.value === "reader" ? "read" : "edit"
-  return `Anyone ${people} can ${modifier} this file.`
 })
 
 const ACCESS_LEVELS = ["read", "comment", "share", "write"]

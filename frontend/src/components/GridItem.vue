@@ -82,7 +82,7 @@ let getThumbnail
 if (!is_image) {
   getThumbnail = createResource({
     url: thumbnailLink,
-    cache: ["thumbnail", props.row?.name],
+    cache: ["thumbnail", props.file.name],
     auto: true,
   })
 }

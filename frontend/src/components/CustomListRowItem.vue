@@ -4,13 +4,13 @@
       <img
         v-if="!imgLoaded"
         loading="lazy"
-        class="h-[16px]"
+        class="h-[16px] w-[16px]"
         :src="backupLink"
         :draggable="false"
       />
       <img
         v-show="imgLoaded"
-        class="h-[16px]"
+        class="h-[16px] w-[16px] object-cover"
         :src="src"
         @error="src = backupLink"
         @load="imgLoaded = true"

@@ -9,7 +9,6 @@ function clearStore() {
 
 async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
-    console.log(to.name)
     document.title = __(to.name)
     if (to.name !== "Team")
       store.commit("setBreadcrumbs", [
