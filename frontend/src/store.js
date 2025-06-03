@@ -45,7 +45,7 @@ const store = createStore({
       name: getJson("currentFolder", {}),
       team: getJson("currentFolderTeam", {}),
       entities: getJson("currentEntitites", []),
-    }
+    },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     // Writer ones
     hasWriteAccess: false,
