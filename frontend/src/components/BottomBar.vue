@@ -70,7 +70,7 @@ export default {
         //   highlight: () => {},
         // },
         {
-          label: __("Home"),
+          label: "Home",
           route: "/t/" + this.team,
           icon: Home,
           highlight: () => {
@@ -78,7 +78,7 @@ export default {
           },
         },
         {
-          label: __("Recents"),
+          label: "Recents",
           route: "/t/" + this.team + "/recents",
           icon: Recent,
           highlight: () => {
@@ -86,7 +86,7 @@ export default {
           },
         },
         {
-          label: __("Favourites"),
+          label: "Favourites",
           route: "/t/" + this.team + "/favourites",
           icon: Star,
           highlight: () => {
@@ -94,7 +94,7 @@ export default {
           },
         },
         {
-          label: __("Team"),
+          label: "Team",
           route: "/t/" + this.team + "/team",
           icon: Team,
           highlight: () => {
@@ -102,7 +102,7 @@ export default {
           },
         },
         {
-          label: __("Shared"),
+          label: "Shared",
           route: "/shared",
           icon: Users,
           highlight: () => {
@@ -110,7 +110,7 @@ export default {
           },
         },
         {
-          label: __("Trash"),
+          label: "Trash",
           route: "/t/" + this.team + "/trash",
           icon: Trash,
           highlight: () => {
