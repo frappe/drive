@@ -30,7 +30,7 @@ const store = createStore({
     uploads: [],
     connectedUsers: [],
     sortOrder: getJson("sortOrder", {
-      label: __("Modified"),
+      label: "Modified",
       field: "modified",
       ascending: false,
     }),
@@ -45,9 +45,7 @@ const store = createStore({
       name: getJson("currentFolder", {}),
       team: getJson("currentFolderTeam", {}),
       entities: getJson("currentEntitites", []),
-    },
-    // Should renamed or left as this since its breadcrubs?
-    //breadcrumbs: getJson("breadcrumbs", [{ label: __("Home"), route: "/" }]),
+    }
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     // Writer ones
     hasWriteAccess: false,
