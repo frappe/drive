@@ -60,7 +60,7 @@ export default {
     ),
   },
   Comment: {
-    label: __("New Comment"),
+    label: "New Comment",
     icon: NewLink,
     isActive: (editor) => editor.isActive("comment"),
     component: defineAsyncComponent(() =>
