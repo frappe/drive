@@ -11,37 +11,37 @@ import ToggleHeaderCell from "./icons/ToggleHeaderCell.vue"
 
 export default {
   Bold: {
-    label: __("Bold"),
+    label: "Bold",
     icon: Bold,
     action: (editor) => editor.chain().focus().toggleBold().run(),
     isActive: (editor) => editor.isActive("bold"),
   },
   Italic: {
-    label: __("Italic"),
+    label: "Italic",
     icon: Italic,
     action: (editor) => editor.chain().focus().toggleItalic().run(),
     isActive: (editor) => editor.isActive("italic"),
   },
   Underline: {
-    label: __("Underline"),
+    label: "Underline",
     icon: Underline,
     action: (editor) => editor.chain().focus().toggleUnderline().run(),
     isActive: (editor) => editor.isActive("underline"),
   },
   Strikethrough: {
-    label: __("Strikethrough"),
+    label: "Strikethrough",
     icon: Strikethrough,
     action: (editor) => editor.chain().focus().toggleStrike().run(),
     isActive: (editor) => editor.isActive("strike"),
   },
   Code: {
-    label: __("Code"),
+    label: "Code",
     icon: Code,
     action: (editor) => editor.chain().focus().toggleCode().run(),
     isActive: (editor) => editor.isActive("code"),
   },
   Link: {
-    label: __("New Link"),
+    label: "New Link",
     icon: NewLink,
     isActive: (editor) => editor.isActive("link"),
     component: defineAsyncComponent(() =>
@@ -52,7 +52,7 @@ export default {
     type: "separator",
   },
   NewAnnotation: {
-    label: __("New Annotation"),
+    label: "New Annotation",
     icon: NewCommentIcon,
     isActive: (editor) => editor.isActive("comment"),
     component: defineAsyncComponent(() =>
@@ -68,19 +68,19 @@ export default {
     ),
   },
   MergeCells: {
-    label: __("Merge Cells"),
+    label: "Merge Cells",
     icon: TableCellsMerge,
     isActive: () => false,
     action: (editor) => editor.chain().focus().mergeCells().run(),
   },
   SplitCells: {
-    label: __("Split Cells"),
+    label: "Split Cells",
     icon: TableCellsSplit,
     isActive: () => false,
     action: (editor) => editor.chain().focus().splitCell().run(),
   },
   ToggleHeaderCell: {
-    label: __("Toggle Header"),
+    label: "Toggle Header",
     icon: ToggleHeaderCell,
     isActive: () => false,
     action: (editor) => editor.chain().focus().toggleHeaderCell().run(),
