@@ -148,7 +148,8 @@ const selectedColumns = [
         image: props.userData[row.owner]?.user_image,
         label:
           props.userData[row.owner]?.full_name ||
-          props.userData[row.owner]?.email,
+          props.userData[row.owner]?.email ||
+          row.owner,
         size: "sm",
       })
     },

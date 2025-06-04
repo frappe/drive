@@ -327,7 +327,7 @@ async function newLink() {
 }
 
 // JS doesn't allow direct reading of clipboard
-if (settings.data.auto_detect_links) {
+if (settings.data?.auto_detect_links) {
   newLink()
   window.addEventListener("focus", newLink)
   window.addEventListener("copy", newLink)
