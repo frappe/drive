@@ -220,7 +220,7 @@ def get_thumbnail(entity_name):
                     thumbnail_data = html[:1000]
                 if thumbnail_data:
                     frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
-    print(thumbnail_data)
+
     if isinstance(thumbnail_data, BytesIO):
         response = Response(
             wrap_file(frappe.request.environ, thumbnail_data),

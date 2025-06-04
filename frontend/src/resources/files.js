@@ -296,6 +296,8 @@ export const allFolders = createResource({
     d.map((k) => ({
       value: k.name,
       label: k.title,
+      parent: k.parent_entity,
+      is_private: k.is_private,
     })),
 })
 
