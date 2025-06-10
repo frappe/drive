@@ -1,7 +1,28 @@
 <template>
-  <Dialog v-model="open" :options="{ title: dialogTitle, size: '2xl' }">
-    <template #body-content>
-      <!-- <Autocomplete
+  <Dialog v-model="open" :options="{ size: '2xl' }">
+    <template #body-main>
+      <div class="py-5 px-4 sm:px-6">
+        <div class="flex w-full justify-between gap-x-15 mb-4">
+          <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
+            Moving "
+            <div class="truncate max-w-[80%]">
+              {{
+                props.entities.length > 1
+                  ? props.entities.length + " items"
+                  : props.entities[0].title
+              }}
+            </div>
+            "
+          </div>
+          <Button
+            class="ml-auto"
+            variant="ghost"
+            @click="$emit('update:modelValue', false)"
+          >
+            <LucideX class="size-4" />
+          </Button>
+        </div>
+        <!-- <Autocomplete
         class="mb-2"
         v-if="allFolders.data"
         v-model="folderSearch"
@@ -14,150 +35,157 @@
           )
         "
       ></Autocomplete> -->
-      <Tabs as="div" v-model="tabIndex" :tabs="tabs">
-        <template #tab-panel>
-          <div class="py-1 h-40">
-            <Tree
-              v-for="k in tree.children"
-              :key="tree.name"
-              nodeKey="value"
-              :node="k"
-            >
-              <template
-                #node="{ node, hasChildren, isCollapsed, toggleCollapsed }"
+        <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+          <template #tab-panel>
+            <div class="py-1 h-40">
+              <Tree
+                v-for="k in tree.children"
+                :key="tree.name"
+                nodeKey="value"
+                :node="k"
               >
-                <div
-                  class="flex items-center cursor-pointer select-none gap-1 h-[28px]"
-                  @click="openEntity(node)"
+                <template
+                  #node="{ node, hasChildren, isCollapsed, toggleCollapsed }"
                 >
-                  <div ref="iconRef" @click="toggleCollapsed($event)">
-                    <LucideChevronDown
-                      v-if="hasChildren && !isCollapsed"
-                      class="size-3.5"
-                    />
-                    <LucideChevronRight
-                      v-else-if="hasChildren"
-                      class="size-3.5"
-                    />
-                  </div>
                   <div
-                    class="flex-grow group rounded-sm text-base truncate h-full flex items-center pl-1"
-                    :class="
-                      currentFolder === node.value
-                        ? 'bg-gray-200'
-                        : 'hover:bg-gray-100 '
-                    "
+                    class="flex items-center cursor-pointer select-none gap-1 h-[28px]"
+                    @click="openEntity(node)"
                   >
-                    <Folder class="mr-1" />
-                    <div v-if="node.value === null" class="overflow-visible">
-                      <Input
-                        @click.stop
-                        @key.enter="openEntity(node)"
-                        type="text"
-                        v-focus
-                        inputClass=" !h-6"
-                        v-model="node.label"
+                    <div ref="iconRef" @click="toggleCollapsed($event)">
+                      <LucideChevronDown
+                        v-if="hasChildren && !isCollapsed"
+                        class="size-3.5"
+                      />
+                      <LucideChevronRight
+                        v-else-if="hasChildren"
+                        class="size-3.5"
                       />
                     </div>
-                    <span v-else>{{ node.label }}</span>
-                    <Button
-                      class="shrink hidden group-hover:block ml-auto"
-                      @click.stop="
-                        (e) => {
-                          let obj = {
-                            parent: node.value,
-                            value: null,
-                            label: 'New folder',
-                          }
-                          node.children.push(obj)
-                          if (isCollapsed) toggleCollapsed(e)
-                        }
-                      "
+                    <div
+                      class="flex-grow rounded-sm text-base truncate h-full flex items-center pl-1"
+                      :class="[
+                        currentFolder === node.value
+                          ? 'bg-gray-200'
+                          : 'hover:bg-gray-100 ',
+                        $store.state.currentFolder.name === node.value
+                          ? 'cursor-not-allowed hover:bg-white'
+                          : 'group',
+                      ]"
                     >
-                      <NewFolder />
-                    </Button>
-                  </div></div
-              ></template>
-            </Tree>
-            <p v-if="!tree.children.length" class="text-base text-center pt-5">
-              No folders yet.
-            </p>
-          </div>
-        </template>
-      </Tabs>
-      <div class="flex items-center justify-between max-h-7">
-        <div class="flex flex-col">
-          <div class="flex items-center my-auto justify-start">
-            <p class="text-sm pr-1">Moving to:</p>
-            <Dropdown
-              v-if="dropDownItems.length"
-              class="h-7"
-              :options="dropDownItems"
-            >
-              <Button variant="ghost">
-                <template #icon>
-                  <svg
-                    class="w-4 text-gray-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="19" cy="12" r="1" />
-                    <circle cx="5" cy="12" r="1" />
-                  </svg>
-                </template>
-              </Button>
-            </Dropdown>
-            <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
-              {{ "/" }}
-            </span>
-            <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
-              <span
-                v-if="breadcrumbs.length > 1 && index > 0"
-                class="text-gray-600 mx-0.5"
+                      <Folder class="mr-1" />
+                      <div v-if="node.value === null" class="overflow-visible">
+                        <Input
+                          @click.stop
+                          @key.enter="openEntity(node)"
+                          type="text"
+                          v-focus
+                          inputClass=" !h-6"
+                          v-model="node.label"
+                        />
+                      </div>
+                      <span v-else>{{ node.label }}</span>
+                      <Button
+                        class="shrink hidden group-hover:block ml-auto"
+                        @click.stop="
+                          (e) => {
+                            let obj = {
+                              parent: node.value,
+                              value: null,
+                              label: 'New folder',
+                            }
+                            node.children.push(obj)
+                            if (isCollapsed) toggleCollapsed(e)
+                          }
+                        "
+                      >
+                        <NewFolder />
+                      </Button>
+                    </div></div
+                ></template>
+              </Tree>
+              <p
+                v-if="!tree.children.length"
+                class="text-base text-center pt-5"
               >
+                No folders yet.
+              </p>
+            </div>
+          </template>
+        </Tabs>
+        <div class="flex items-center justify-between max-h-7">
+          <div class="flex flex-col">
+            <div class="flex items-center my-auto justify-start">
+              <p class="text-sm pr-1">Moving to:</p>
+              <Dropdown
+                v-if="dropDownItems.length"
+                class="h-7"
+                :options="dropDownItems"
+              >
+                <Button variant="ghost">
+                  <template #icon>
+                    <svg
+                      class="w-4 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                    </svg>
+                  </template>
+                </Button>
+              </Dropdown>
+              <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
                 {{ "/" }}
               </span>
-              <button
-                class="text-base cursor-pointer"
-                :class="
-                  index === lastTwoBreadCrumbs.length - 1
-                    ? 'text-gray-900 text-base font-medium p-1'
-                    : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
-                "
-                @click="closeEntity(crumb.name)"
-              >
-                {{ crumb.title }}
-              </button>
+              <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
+                <span
+                  v-if="breadcrumbs.length > 1 && index > 0"
+                  class="text-gray-600 mx-0.5"
+                >
+                  {{ "/" }}
+                </span>
+                <button
+                  class="text-base cursor-pointer"
+                  :class="
+                    index === lastTwoBreadCrumbs.length - 1
+                      ? 'text-gray-900 text-base font-medium p-1'
+                      : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
+                  "
+                  @click="closeEntity(crumb.name)"
+                >
+                  {{ crumb.title }}
+                </button>
+              </div>
             </div>
           </div>
+          <Button
+            variant="solid"
+            class="ml-auto"
+            size="sm"
+            :loading="move.loading"
+            @click="
+              $emit('success'),
+                move.submit({
+                  entity_names: entities.map((obj) => obj.name),
+                  new_parent: currentFolder,
+                  is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
+                })
+            "
+          >
+            <template #prefix>
+              <Move />
+            </template>
+            Move
+          </Button>
         </div>
-        <Button
-          variant="solid"
-          class="ml-auto"
-          size="sm"
-          :loading="move.loading"
-          @click="
-            $emit('success'),
-              move.submit({
-                entity_names: entities.map((obj) => obj.name),
-                new_parent: currentFolder,
-                is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
-              })
-          "
-        >
-          <template #prefix>
-            <Move />
-          </template>
-          Move
-        </Button>
       </div>
     </template>
   </Dialog>
@@ -183,7 +211,6 @@ import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { LucideChevronDown } from "lucide-vue-next"
-import { DialogTitle } from "@headlessui/vue"
 
 const route = useRoute()
 const currentFolder = ref("")
@@ -238,14 +265,6 @@ const open = computed({
   set(newValue) {
     emit("update:modelValue", newValue || "")
   },
-})
-
-const dialogTitle = computed(() => {
-  if (props.entities.length > 1) {
-    return `Moving ${props.entities.length} items`
-  } else {
-    return `Moving "${props.entities[0].title}"`
-  }
 })
 
 const lastTwoBreadCrumbs = computed(() => {
@@ -361,6 +380,7 @@ const createFolder = createResource({
 })
 
 function openEntity(node) {
+  if (store.state.currentFolder.name === node.value) return
   if (!node.value) {
     createdNode.value = node
     createFolder.fetch({

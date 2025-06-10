@@ -44,6 +44,7 @@ import { Dialog, TextInput, createResource } from "frappe-ui"
 import NewFolder from "./EspressoIcons/Folder.vue"
 
 import { useRoute } from "vue-router"
+import { allFolders } from "../resources/files"
 const route = useRoute()
 const props = defineProps({
   modelValue: String,
@@ -73,6 +74,7 @@ const createFolder = createResource({
   },
   onSuccess(data) {
     folderName.value = ""
+    allFolders.fetch()
     emit("success", data)
   },
 })

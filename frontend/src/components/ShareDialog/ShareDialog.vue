@@ -13,7 +13,7 @@
             variant="ghost"
             @click="$emit('update:modelValue', false)"
           >
-            <FeatherIcon name="x" class="stroke-2 h-4" />
+            <LucideX class="size-4" />
           </Button>
         </div>
 
@@ -297,7 +297,6 @@ import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
 import {
   Avatar,
   Dialog,
-  FeatherIcon,
   Autocomplete,
   LoadingIndicator,
   createResource,
