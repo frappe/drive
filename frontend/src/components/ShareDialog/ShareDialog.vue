@@ -62,8 +62,8 @@
                               label: k[0].toUpperCase() + k.slice(1),
                             }))
                           : [
-                              { value: 'reader', label: 'Reader' },
-                              { value: 'editor', label: 'Editor' },
+                              { value: 'reader', label: 'Can View' },
+                              { value: 'editor', label: 'Can Edit' },
                             ]
                       "
                     />
@@ -187,8 +187,8 @@
                 class="my-auto"
                 v-if="generalAccessLevel.value !== 'restricted'"
                 :options="[
-                  { value: 'reader', label: 'Reader' },
-                  { value: 'editor', label: 'Editor' },
+                  { value: 'reader', label: 'Can View' },
+                  { value: 'editor', label: 'Can Edit' },
                 ]"
                 v-model="generalAccessType"
                 :hide-search="true"
@@ -231,7 +231,10 @@
                 v-if="user.user == $store.state.user.id"
                 class="ml-auto mr-1 text-gray-700"
               >
-                <em>You</em>
+                <template v-if="user.user === entity.owner"
+                  >Owner (you)</template
+                >
+                <template v-else>You</template>
               </span>
               <AccessButton
                 v-else-if="user.user !== entity.owner"
@@ -269,7 +272,13 @@
           <LoadingIndicator class="w-7 h-auto text-gray-700 mx-auto" />
         </div>
         <div class="w-full flex items-center justify-between">
-          <div class="text-sm my-auto flex gap-2 text-gray-700">
+          <Button class="text-base" variant="outline" @click="getLink(entity)">
+            <template #prefix>
+              <Link />
+            </template>
+            Copy Link
+          </Button>
+          <div class="text-sm my-auto flex gap-2 text-gray-700 ml-auto">
             <Info class="w-4 h-4" />
             <a
               href="https://docs.frappe.io/drive/file-access"
@@ -278,17 +287,6 @@
               >Learn about sharing</a
             >
           </div>
-
-          <Button
-            class="ml-auto font-semibold text-base"
-            variant="outline"
-            @click="getLink(entity)"
-          >
-            <template #prefix>
-              <Link />
-            </template>
-            Copy Link
-          </Button>
         </div>
       </div>
     </template>
