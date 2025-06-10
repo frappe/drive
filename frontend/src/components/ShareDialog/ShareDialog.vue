@@ -2,21 +2,65 @@
   <Dialog v-model="openDialog" :options="{ size: 'lg' }">
     <template #body-main>
       <div class="py-5 px-4 sm:px-6">
-        <div class="flex w-full justify-between gap-x-15 mb-4">
+        <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             Sharing "
             <div class="truncate max-w-[80%]">{{ entity?.title }}</div>
             "
           </div>
           <Button
-            class="ml-auto"
+            class="ml-auto shrink-0"
             variant="ghost"
             @click="$emit('update:modelValue', false)"
           >
-            <LucideX class="size-4" />
+            <template #icon>
+              <LucideX class="size-4" />
+            </template>
           </Button>
         </div>
-
+        <div class="mb-4 border-b pb-4">
+          <div class="mb-2 text-ink-gray-5 font-medium text-base">
+            General Access
+          </div>
+          <div class="flex justify-between mt-3">
+            <div class="flex flex-col gap-2">
+              <div class="w-fit">
+                <Autocomplete
+                  v-model="generalAccessLevel"
+                  :options="generalOptions"
+                  :hide-search="true"
+                  @update:model-value="
+                    (val) => updateGeneralAccess(val, generalAccessLevel)
+                  "
+                >
+                  <template #prefix>
+                    <component :is="generalAccessLevel.icon" class="mr-2" />
+                  </template>
+                  <template #item-prefix="{ option }">
+                    <component :is="option.icon" />
+                  </template>
+                </Autocomplete>
+              </div>
+            </div>
+            <div class="my-auto">
+              <Autocomplete
+                class="my-auto"
+                v-if="generalAccessLevel.value !== 'restricted'"
+                :options="[
+                  { value: 'reader', label: 'Can view' },
+                  { value: 'editor', label: 'Can edit' },
+                ]"
+                v-model="generalAccessType"
+                :hide-search="true"
+                @update:model-value="
+                  (val) => updateGeneralAccess(generalAccessType, val)
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <!-- Members section -->
+        <div class="text-gray-600 font-medium text-base mb-2">Members</div>
         <div class="flex gap-3">
           <div class="flex-grow">
             <Combobox multiple v-model="sharedUsers" v-slot="{ open }">
@@ -49,25 +93,7 @@
                       v-focus
                     />
                   </div>
-                  <div class="w-[25%] mt-auto">
-                    <Autocomplete
-                      class=""
-                      placeholder="Access"
-                      v-model="shareAccess"
-                      :hide-search="true"
-                      :options="
-                        advancedTweak
-                          ? filteredAccess.map((k) => ({
-                              value: k,
-                              label: k[0].toUpperCase() + k.slice(1),
-                            }))
-                          : [
-                              { value: 'reader', label: 'Can View' },
-                              { value: 'editor', label: 'Can Edit' },
-                            ]
-                      "
-                    />
-                  </div>
+                  <div class="w-[25%] mt-auto"></div>
                 </div>
               </div>
               <transition
@@ -151,18 +177,27 @@
               </transition>
             </Combobox>
           </div>
-          <Button
-            :disabled="!sharedUsers.length"
-            label="Invite"
-            @click="addShares"
-            variant="solid"
-            class="w-[76px] font-base rounded-md mt-auto py-4"
+          <Autocomplete
+            class=""
+            placeholder="Access"
+            v-model="shareAccess"
+            :hide-search="true"
+            :options="
+              advancedTweak
+                ? filteredAccess.map((k) => ({
+                    value: k,
+                    label: k[0].toUpperCase() + k.slice(1),
+                  }))
+                : [
+                    { value: 'reader', label: 'Can view' },
+                    { value: 'editor', label: 'Can edit' },
+                  ]
+            "
           />
         </div>
 
-        <div v-if="getUsersWithAccess.data" class="my-3">
-          <div class="text-gray-600 font-medium text-base">Members</div>
-          <div class="flex justify-between mt-3">
+        <div v-if="getUsersWithAccess.data" class="mb-3">
+          <!-- <div class="flex justify-between mt-3">
             <div class="flex flex-col gap-2">
               <div class="w-fit">
                 <Autocomplete
@@ -197,7 +232,7 @@
                 "
               />
             </div>
-          </div>
+          </div> -->
           <div
             v-if="!getUsersWithAccess.data?.length"
             class="text-sm w-full my-4"
@@ -220,7 +255,7 @@
               />
 
               <div class="flex items-start flex-col gap-1">
-                <span class="text-medium">{{
+                <span class="font-medium text-base text-ink-gray-9">{{
                   user.full_name || user.user || user.email
                 }}</span>
                 <span class="text-gray-700 text-sm">{{
@@ -271,22 +306,19 @@
         <div v-else class="flex min-h-[19.2vh] w-full">
           <LoadingIndicator class="w-7 h-auto text-gray-700 mx-auto" />
         </div>
-        <div class="w-full flex items-center justify-between">
+        <div class="w-full flex items-center justify-end gap-2">
           <Button class="text-base" variant="outline" @click="getLink(entity)">
             <template #prefix>
               <Link />
             </template>
             Copy Link
           </Button>
-          <div class="text-sm my-auto flex gap-2 text-gray-700 ml-auto">
-            <Info class="w-4 h-4" />
-            <a
-              href="https://docs.frappe.io/drive/file-access"
-              class="my-auto"
-              target="_blank"
-              >Learn about sharing</a
-            >
-          </div>
+          <Button
+            v-if="sharedUsers.length"
+            label="Invite"
+            @click="addShares"
+            variant="solid"
+          />
         </div>
       </div>
     </template>
@@ -313,6 +345,7 @@ import Lock from "@/components/EspressoIcons/Lock.vue"
 import Globe from "@/components/EspressoIcons/Globe.vue"
 import Team from "@/components/EspressoIcons/Organization.vue"
 import Link from "@/components/EspressoIcons/Link.vue"
+
 import {
   getUsersWithAccess,
   updateAccess,
@@ -379,9 +412,13 @@ const invalidAfter = ref()
 
 // General access
 const generalOptions = [
-  { label: "Restricted", value: "restricted", icon: markRaw(Lock) },
-  { label: "Team", value: "team", icon: markRaw(Team) },
-  { label: "Public", value: "public", icon: markRaw(Globe) },
+  {
+    label: "Accessible to invited members",
+    value: "restricted",
+    icon: markRaw(Lock),
+  },
+  { label: "Accessible to team only", value: "team", icon: markRaw(Team) },
+  { label: "Accessible to all", value: "public", icon: markRaw(Globe) },
 ]
 const generalAccessLevel = ref(generalOptions[0])
 const generalAccessType = ref({ value: "reader" })
