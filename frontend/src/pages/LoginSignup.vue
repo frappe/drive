@@ -3,11 +3,9 @@
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
-          <!-- logo -->
           <div class="flex flex-col items-center">
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
-          <!-- card -->
           <div
             class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
@@ -203,7 +201,7 @@ import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute, useRouter } from "vue-router"
-import { settings } from "../resources/permissions"
+import { settings } from "@/resources/permissions"
 
 const route = useRoute()
 const router = useRouter()
@@ -212,11 +210,12 @@ const email = ref(params.get("e") || "")
 const first_name = ref("")
 const last_name = ref("")
 const terms_accepted = ref(false)
-const otpRequested = ref(false)
-const otpValidated = ref(false)
+
 const otp = ref("")
 const otpResendCountdown = ref(0)
 const account_request = ref(params.get("r") || "")
+const otpRequested = ref(account_request.value !== "")
+const otpValidated = ref(account_request.value !== "")
 const isLogin = computed(() => route.name === "Login")
 
 onMounted(() => {
@@ -244,11 +243,9 @@ const signup = createResource({
       throw new Error("Please accept the terms of service")
     }
   },
-  onSuccess() {
-    otpValidated.value = true
-    router.push({
-      name: "Setup",
-    })
+  onSuccess(data) {
+    console.log(data.location)
+    window.location.href = data.location
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {

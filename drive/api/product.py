@@ -88,6 +88,7 @@ def signup(account_request, first_name, last_name=None, team=None):
             "user_type": "Website User",
         }
     )
+
     user.flags.no_welcome_mail = True
     user.flags.ignore_password_policy = True
     try:
@@ -97,6 +98,7 @@ def signup(account_request, first_name, last_name=None, team=None):
     account_request.signed_up = 1
 
     team = None
+
     if account_request.invite:
         invite = frappe.get_doc("Drive User Invitation", account_request.invite)
         invite.status = "Accepted"
@@ -117,15 +119,15 @@ def signup(account_request, first_name, last_name=None, team=None):
         }
     )
     doc.insert()
-
+    print(team)
     # Check invites for this user
-    if not team:
-        # Create team for this user
-        domain = user.email.split("@")[-1]
-        if domain in CORPORATE_DOMAINS:
-            team = create_personal_team(user.email)
-        else:
-            return get_domain_teams(domain)
+    # if not team:
+    #     # Create team for this user
+    #     domain = user.email.split("@")[-1]
+    #     if domain in CORPORATE_DOMAINS:
+    #         team = create_personal_team(user.email)
+    #     else:
+    #         return get_domain_teams(domain)
 
     return {"location": "/drive/t/" + team}
 

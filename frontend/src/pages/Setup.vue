@@ -3,14 +3,12 @@
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
-          <!-- logo -->
           <div
             class="flex flex-col items-center"
             @dblclick="window.location.href = '/f-login'"
           >
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
-          <!-- card -->
           <div
             class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >

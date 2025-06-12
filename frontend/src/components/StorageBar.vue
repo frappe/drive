@@ -81,7 +81,9 @@ let totalStorage = createResource({
     storageMax.value = data.limit
   },
 })
-watch(team, (val) => totalStorage.fetch({ team: val }), { immediate: true })
+watch(team, (val) => val && totalStorage.fetch({ team: val }), {
+  immediate: true,
+})
 
 emitter.on("recalculate", () => {
   setTimeout(() => totalStorage.fetch({ team: team.value }), 2000)
