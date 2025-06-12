@@ -1,5 +1,8 @@
 <template>
-  <div class="flex flex-col items-center m-auto">
+  <div
+    class="flex flex-col items-center m-auto"
+    style="transform: translate(0, -88.5px)"
+  >
     <div v-if="icon">
       <component :is="icon" class="w-14 stroke-[0] h-auto text-gray-500 pb-4" />
     </div>

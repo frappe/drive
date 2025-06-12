@@ -28,10 +28,14 @@
       :selections="selectedEntitities"
       :get-entities="getEntities"
     />
-    <LoadingIndicator
-      class="size-10 m-auto"
+
+    <div
       v-if="!props.getEntities.fetched"
-    />
+      class="m-auto"
+      style="transform: translate(0, -88.5px)"
+    >
+      <LoadingIndicator class="size-10" />
+    </div>
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"
       :icon="icon"
