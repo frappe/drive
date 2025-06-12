@@ -198,7 +198,7 @@ const actionItems = computed(() => {
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => e.is_link,
       },
-      { label: "Divider" },
+      { divider: true },
       {
         label: __("Share"),
         icon: Share,
@@ -220,7 +220,7 @@ const actionItems = computed(() => {
         action: ([entity]) => getLink(entity),
         important: true,
       },
-      { label: "Divider" },
+      { divider: true },
       {
         label: __("Move"),
         icon: Move,
@@ -285,7 +285,7 @@ const actionItems = computed(() => {
         important: true,
         multi: true,
       },
-      { label: "Divider", isEnabled: (e) => e.write },
+      { divider: true, isEnabled: (e) => e.write },
       {
         label: __("Delete"),
         icon: Trash,
@@ -294,6 +294,7 @@ const actionItems = computed(() => {
         important: true,
         multi: true,
         danger: true,
+        color: "text-ink-red-4",
       },
     ]
   }

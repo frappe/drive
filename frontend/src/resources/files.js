@@ -277,7 +277,7 @@ export const move = createResource({
     updateMoved(data.name, data.team, data.is_private)
   },
   onError() {
-    toast("There was an error - do you already have a file of that name?")
+    toast("There was an error.")
   },
 })
 

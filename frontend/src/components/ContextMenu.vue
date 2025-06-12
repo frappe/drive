@@ -19,7 +19,7 @@
         }
       "
     >
-      <div v-if="item.label === 'Divider'">
+      <div v-if="item.divider">
         <hr class="my-1 bg-gray-300" />
       </div>
       <button

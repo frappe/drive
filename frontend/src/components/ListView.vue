@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="relative px-3 pb-[60px] select-none pt-1"
+    class="relative p-3 pb-[60px] select-none"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -93,6 +93,8 @@ import Users from "./EspressoIcons/Users.vue"
 import Globe from "./EspressoIcons/Globe.vue"
 import Team from "./EspressoIcons/Organization.vue"
 import { onKeyDown } from "@vueuse/core"
+import emitter from "@/emitter"
+
 const store = useStore()
 const route = useRoute()
 const props = defineProps({

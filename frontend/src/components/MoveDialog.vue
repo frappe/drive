@@ -4,15 +4,16 @@
       <div class="py-5 px-4 sm:px-6">
         <div class="flex w-full justify-between gap-x-15 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
-            Moving "
-            <div class="truncate max-w-[80%]">
-              {{
-                props.entities.length > 1
-                  ? props.entities.length + " items"
-                  : props.entities[0].title
-              }}
-            </div>
-            "
+            <template v-if="props.entities.length > 1"
+              >Moving {{ props.entities.length }} items</template
+            >
+            <template v-else>
+              Moving "
+              <div class="truncate max-w-[80%]">
+                {{ props.entities[0].title }}
+              </div>
+              "
+            </template>
           </div>
           <Button
             class="ml-auto"
@@ -22,25 +23,25 @@
             <LucideX class="size-4" />
           </Button>
         </div>
-        <!-- <Autocomplete
-        class="mb-2"
-        v-if="allFolders.data"
-        v-model="folderSearch"
-        placeholder="Search for a folder"
-        :options="
-          allFolders.data.filter((k) =>
-            currentFolder === ''
-              ? k.label !== 'Home'
-              : k.value !== currentFolder
-          )
-        "
-      ></Autocomplete> -->
+        <Autocomplete
+          class="mb-2"
+          v-if="allFolders.data"
+          v-model="folderSearch"
+          placeholder="Search for a folder"
+          :options="
+            allFolders.data.filter((k) =>
+              currentFolder === ''
+                ? k.label !== 'Home'
+                : k.value !== currentFolder
+            )
+          "
+        />
         <Tabs as="div" v-model="tabIndex" :tabs="tabs">
           <template #tab-panel>
             <div class="py-1 h-40">
               <Tree
                 v-for="k in tree.children"
-                :key="tree.name"
+                :key="k.value"
                 nodeKey="value"
                 :node="k"
               >
@@ -60,13 +61,14 @@
                         v-else-if="hasChildren"
                         class="size-3.5"
                       />
+                      <div v-else class="ps-3.5"></div>
                     </div>
                     <div
                       class="flex-grow rounded-sm text-base truncate h-full flex items-center pl-1"
                       :class="[
                         currentFolder === node.value
                           ? 'bg-gray-200'
-                          : 'hover:bg-gray-100 ',
+                          : 'hover:bg-gray-100',
                         $store.state.currentFolder.name === node.value
                           ? 'cursor-not-allowed hover:bg-white'
                           : 'group',
@@ -86,6 +88,9 @@
                       <span v-else>{{ node.label }}</span>
                       <Button
                         class="shrink hidden group-hover:block ml-auto"
+                        :class="{
+                          '!bg-gray-200': currentFolder === node.value,
+                        }"
                         @click.stop="
                           (e) => {
                             let obj = {
@@ -117,9 +122,9 @@
             <div class="flex items-center my-auto justify-start">
               <p class="text-sm pr-1">Moving to:</p>
               <Dropdown
-                v-if="dropDownItems.length"
+                v-if="dropDownBreadcrumbs.length"
                 class="h-7"
-                :options="dropDownItems"
+                :options="dropDownBreadcrumbs"
               >
                 <Button variant="ghost">
                   <template #icon>
@@ -142,10 +147,13 @@
                   </template>
                 </Button>
               </Dropdown>
-              <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
+              <span
+                v-if="dropDownBreadcrumbs.length"
+                class="text-gray-600 mx-0.5"
+              >
                 {{ "/" }}
               </span>
-              <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
+              <div v-for="(crumb, index) in slicedBreadcrumbs" :key="index">
                 <span
                   v-if="breadcrumbs.length > 1 && index > 0"
                   class="text-gray-600 mx-0.5"
@@ -155,7 +163,7 @@
                 <button
                   class="text-base cursor-pointer"
                   :class="
-                    index === lastTwoBreadCrumbs.length - 1
+                    index === slicedBreadcrumbs.length - 1
                       ? 'text-gray-900 text-base font-medium p-1'
                       : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
                   "
@@ -170,6 +178,9 @@
             variant="solid"
             class="ml-auto"
             size="sm"
+            :disabled="
+              currentFolder === '' && breadcrumbs[0].title == $route.name
+            "
             :loading="move.loading"
             @click="
               $emit('success'),
@@ -211,6 +222,7 @@ import Folder from "./EspressoIcons/Folder.vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { LucideChevronDown } from "lucide-vue-next"
+import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
 
 const route = useRoute()
 const currentFolder = ref("")
@@ -240,12 +252,20 @@ const homeRoot = reactive({
   name: "",
   label: "Home",
   children: [],
+  isCollapsed: true,
 })
-const teamRoot = reactive({ name: "", label: "Team", children: [] })
+
+const teamRoot = reactive({
+  name: "",
+  label: "Team",
+  children: [],
+  isCollapsed: true,
+})
 
 allFolders.data.forEach((item) => {
   let map = item.is_private ? homeMap : teamMap
   const node = map[item.value]
+  node.isCollapsed = true
   if (map[item.parent]) {
     map[item.parent].children.push(node)
   } else {
@@ -256,7 +276,7 @@ allFolders.data.forEach((item) => {
 const store = useStore()
 const in_home = store.state.breadcrumbs[0].name == "Home"
 const tabIndex = ref(in_home ? 0 : 1)
-const tree = computed(() => (tabIndex.value === 0 ? homeRoot : teamRoot))
+const tree = ref(tabIndex.value === 0 ? homeRoot : teamRoot)
 
 const open = computed({
   get() {
@@ -267,14 +287,14 @@ const open = computed({
   },
 })
 
-const lastTwoBreadCrumbs = computed(() => {
+const slicedBreadcrumbs = computed(() => {
   if (breadcrumbs.value.length > 3) {
     return breadcrumbs.value.slice(-3)
   }
   return breadcrumbs.value
 })
 
-const dropDownItems = computed(() => {
+const dropDownBreadcrumbs = computed(() => {
   let allExceptLastTwo = breadcrumbs.value.slice(0, -3)
   return allExceptLastTwo.map((item) => {
     return {
@@ -330,6 +350,8 @@ const folderContents = createResource({
 watch(
   tabIndex,
   (newValue) => {
+    currentFolder.value = ""
+    tree.value = tabIndex.value === 0 ? homeRoot : teamRoot
     switch (newValue) {
       case 0:
         breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }]
@@ -398,16 +420,16 @@ function openEntity(node) {
   folderSearch.value = null
 }
 
-const toggleCollapsed = (obj, name) => {
-  if (obj.name === name) {
-    obj.isCollapsed = false
+const expandNode = (obj, name) => {
+  console.log(name, obj)
+  if (obj.value === name) {
     return obj
   }
+
   for (let k of obj.children) {
-    let res = toggleCollapsed(k, name)
+    let res = expandNode(k, name)
     if (res) {
       obj.isCollapsed = false
-      console.log(obj, res)
       return res
     }
   }
@@ -415,9 +437,13 @@ const toggleCollapsed = (obj, name) => {
 }
 
 watch(folderSearch, (val) => {
-  if (!folderSearch) return
+  if (!val) return
+  tree.value = val.is_private ? homeRoot : teamRoot
+  tabIndex.value = val.is_private ? 0 : 1
+  expandNode(tree.value, val.value)
+
   currentFolder.value = val.value
-  // toggleCollapsed(tree.value, val.value)
+  openEntity(val)
 })
 
 function closeEntity(name) {

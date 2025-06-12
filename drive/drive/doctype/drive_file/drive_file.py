@@ -67,6 +67,7 @@ class DriveFile(Document):
     def move(self, new_parent=None):
         """
         Move file or folder to the new parent folder
+        If not owned by current user, copies it.
 
         :param new_parent: Document-name of the new parent folder. Defaults to the user directory
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
@@ -75,7 +76,13 @@ class DriveFile(Document):
         """
         new_parent = new_parent or get_home_folder(self.team).name
         if new_parent == self.parent_entity:
-            return self
+            return {
+                "title": self.title,
+                "team": self.team,
+                "name": self.name,
+                "is_private": self.is_private,
+            }
+
         if new_parent == self.name:
             frappe.throw(
                 "Cannot move into itself",
@@ -93,6 +100,7 @@ class DriveFile(Document):
                     frappe.PermissionError,
                 )
                 return
+
         update_file_size(self.parent_entity, -self.file_size)
         update_file_size(new_parent, +self.file_size)
 

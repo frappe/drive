@@ -46,10 +46,7 @@
               <Autocomplete
                 class="my-auto"
                 v-if="generalAccessLevel.value !== 'restricted'"
-                :options="[
-                  { value: 'reader', label: 'Can view' },
-                  { value: 'editor', label: 'Can edit' },
-                ]"
+                :options="accessOptions"
                 v-model="generalAccessType"
                 :hide-search="true"
                 @update:model-value="
@@ -188,51 +185,12 @@
                     value: k,
                     label: k[0].toUpperCase() + k.slice(1),
                   }))
-                : [
-                    { value: 'reader', label: 'Can view' },
-                    { value: 'editor', label: 'Can edit' },
-                  ]
+                : accessOptions
             "
           />
         </div>
 
         <div v-if="getUsersWithAccess.data" class="mb-3">
-          <!-- <div class="flex justify-between mt-3">
-            <div class="flex flex-col gap-2">
-              <div class="w-fit">
-                <Autocomplete
-                  v-model="generalAccessLevel"
-                  :options="generalOptions"
-                  :hide-search="true"
-                  @update:model-value="
-                    (val) => updateGeneralAccess(val, generalAccessLevel)
-                  "
-                >
-                  <template #prefix>
-                    <component :is="generalAccessLevel.icon" class="mr-2" />
-                  </template>
-                  <template #item-prefix="{ option }">
-                    <component :is="option.icon" />
-                  </template>
-                </Autocomplete>
-              </div>
-            </div>
-            <div class="my-auto">
-              <Autocomplete
-                class="my-auto"
-                v-if="generalAccessLevel.value !== 'restricted'"
-                :options="[
-                  { value: 'reader', label: 'Can View' },
-                  { value: 'editor', label: 'Can Edit' },
-                ]"
-                v-model="generalAccessType"
-                :hide-search="true"
-                @update:model-value="
-                  (val) => updateGeneralAccess(generalAccessType, val)
-                "
-              />
-            </div>
-          </div> -->
           <div
             v-if="!getUsersWithAccess.data?.length"
             class="text-sm w-full my-4"
@@ -389,6 +347,15 @@ const filteredUsers = computed(() => {
     )
 })
 
+const accessOptions = computed(() => {
+  console.log(props.entity)
+  return props.entity.write
+    ? [
+        { value: "reader", label: "Can view" },
+        { value: "editor", label: "Can edit" },
+      ]
+    : [{ value: "reader", label: "Can view" }]
+})
 function addShares() {
   // Used to enable future advanced config
   const access =

@@ -2,13 +2,13 @@
   <!-- pt-1 to accomodate borders -->
   <div
     v-if="rows?.length"
-    class="grid-container px-[10px] pb-[60px] overflow-scroll select-none pt-1"
+    class="grid-container gap-5 p-3 pb-[60px] overflow-scroll select-none"
   >
     <div
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg group select-none entity cursor-pointer relative sm:w-[172px] sm:h-[172px] border bg-white"
+      class="grid-item rounded-lg group select-none entity cursor-pointer relative w-[172px] h-[172px] border bg-white"
       :class="[
         selections.has(file.name) || selectedRow?.name === file.name
           ? 'bg-gray-100 shadow-gray'
@@ -166,8 +166,7 @@ onKeyDown("Escape", (e) => {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, 172px);
-  gap: 20px;
-  justify-content: space-between;
+  gap: 12px;
 }
 
 .shadow-gray {

@@ -80,6 +80,7 @@
   </Dialog>
   <h1 class="font-semibold mt-12 mb-4">{{ __("Preferences") }}</h1>
   <Autocomplete
+    placeholder="Not set"
     :options="teamOptions"
     v-model="defaultTeam"
     label="Default Team"
@@ -132,7 +133,7 @@ const teamOptions = computed(() =>
 )
 const singleClick = ref(Boolean(settings.data.single_click))
 const detectLinks = ref(Boolean(settings.data.auto_detect_links))
-const defaultTeam = ref(settings.data.default_team)
+const defaultTeam = ref(settings.data.default_team || { label: "-" })
 const options = {
   single_click: singleClick,
   auto_detect_links: detectLinks,

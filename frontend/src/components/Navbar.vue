@@ -89,6 +89,7 @@ import FolderUpload from "./EspressoIcons/Folder-upload.vue"
 import NewFile from "./EspressoIcons/NewFile.vue"
 import emitter from "@/emitter"
 import { ref, computed } from "vue"
+import { entitiesDownload } from "@/utils/download"
 import {
   getRecents,
   getFavourites,
@@ -131,14 +132,14 @@ const dropdownAction = computed(() => {
     {
       label: __("Download"),
       icon: Download,
-      onClick: (entities) => entitiesDownload(team, entities),
+      onClick: () => entitiesDownload(route.params.team, [rootEntity.value]),
     },
     {
       label: __("Copy Link"),
       icon: Link,
-      onClick: ([entity]) => getLink(entity),
+      onClick: () => getLink(rootEntity.value),
     },
-    // { label: "Divider" },
+    { divider: true },
     {
       label: __("Move"),
       icon: Move,
@@ -186,14 +187,13 @@ const dropdownAction = computed(() => {
       },
       isEnabled: () => rootEntity.value.is_favourite,
     },
-
-    // { label: "Divider" },
+    { divider: true },
     {
       label: __("Delete"),
       icon: Trash,
       onClick: () => (dialog.value = "remove"),
       isEnabled: () => rootEntity.value.write,
-      danger: true,
+      color: "text-ink-red-4",
     },
   ].filter((k) => !k.isEnabled || k.isEnabled())
 })

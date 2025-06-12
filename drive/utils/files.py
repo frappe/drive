@@ -165,7 +165,7 @@ class FileManager:
         """
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
-
+        print("CREATE THUMBNAIL")
         team_directory = get_home_folder(file.team)["name"]
         save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
         disk_path = str((self.site_folder / save_path).resolve())
