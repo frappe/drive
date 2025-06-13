@@ -1,6 +1,9 @@
 <template>
   <div class="flex p-3 pb-0">
-    <div v-if="selections?.length" class="my-auto w-[40%] text-base">
+    <div
+      v-if="selections?.length"
+      class="my-auto w-[40%] text-base"
+    >
       {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
       selected
     </div>
@@ -52,20 +55,29 @@
           v-if="activeFilters.length"
           class="flex flex-wrap items-start justify-end gap-1 ml-3"
         >
-          <div v-for="(item, index) in activeFilters" :key="index">
+          <div
+            v-for="(item, index) in activeFilters"
+            :key="index"
+          >
             <div
               class="flex items-center border rounded pl-2 py-1 h-7 text-base"
             >
               <component :is="ICON_TYPES[item]" />
               <span class="text-sm ml-2">{{ item }}</span>
-              <Button variant="minimal" @click="activeFilters.splice(index, 1)">
+              <Button
+                variant="minimal"
+                @click="activeFilters.splice(index, 1)"
+              >
                 <template #icon>
                   <LucideX class="size-3" />
                 </template>
               </Button>
             </div>
           </div>
-          <div v-for="(item, index) in activeTags" :key="index">
+          <div
+            v-for="(item, index) in activeTags"
+            :key="index"
+          >
             <div
               class="flex items-center border rounded pl-2 py-1 h-7 text-base"
             >
@@ -115,7 +127,10 @@
                 v-if="sortOrder.ascending"
                 class="size-4 text-ink-gray-6"
               />
-              <LucideArrowDownAz v-else class="size-4 text-ink-gray-6" />
+              <LucideArrowDownAz
+                v-else
+                class="size-4 text-ink-gray-6"
+              />
             </Button>
 
             <Button
@@ -173,7 +188,10 @@
           </Button>
         </div>
       </template>
-      <div v-else-if="actionItems" class="flex gap-3 ml-4 overflow-scroll">
+      <div
+        v-else-if="actionItems"
+        class="flex gap-3 ml-4 overflow-scroll"
+      >
         <template
           v-for="item in actionItems
             .filter((i) => i.important && (selections.length === 1 || i.multi))
@@ -185,7 +203,10 @@
           :key="item.label"
         >
           <Tooltip :text="item.label">
-            <Button variant="outline" @click.once="item.action(selections)">
+            <Button
+              variant="outline"
+              @click.once="item.action(selections)"
+            >
               <div class="flex">
                 <component
                   :is="item.icon"

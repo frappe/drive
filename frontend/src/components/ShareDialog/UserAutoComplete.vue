@@ -26,7 +26,9 @@
         <span class="text-base text-gray-700">{{ user.full_name }}</span>
       </li>
     </ul>
-    <span v-else class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
+    <span
+      v-else
+      class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
       >No users found</span
     >
     <div class="flex items-center justify-end border-t py-1 mt-1">

@@ -1,5 +1,8 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Edit Tag', size: 'sm' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Edit Tag', size: 'sm' }"
+  >
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
         <TagColorInput
@@ -17,10 +20,17 @@
           @keyup.enter="submitTag"
         />
       </div>
-      <ErrorMessage class="mt-2" :message="errorMessage" />
+      <ErrorMessage
+        class="mt-2"
+        :message="errorMessage"
+      />
     </template>
     <template #actions>
-      <Button variant="solid" class="w-full" @click="submitTag">
+      <Button
+        variant="solid"
+        class="w-full"
+        @click="submitTag"
+      >
         Confirm
       </Button>
     </template>

@@ -1,12 +1,18 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Open a file', size: '5xl' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Open a file', size: '5xl' }"
+  >
     <template #body>
       <h3 class="text-2xl font-semibold leading-6 text-gray-900 px-6 pt-5">
         Open a file
       </h3>
       <div class="px-2 pt-2">
         <div class="flex items-center justify-start px-4 my-2">
-          <Dropdown v-if="dropDownItems.length" :options="dropDownItems">
+          <Dropdown
+            v-if="dropDownItems.length"
+            :options="dropDownItems"
+          >
             <button class="flex">
               <svg
                 class="size-4 m-auto text-gray-600"
@@ -20,17 +26,35 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <circle cx="12" cy="12" r="1" />
-                <circle cx="19" cy="12" r="1" />
-                <circle cx="5" cy="12" r="1" />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="1"
+                />
+                <circle
+                  cx="19"
+                  cy="12"
+                  r="1"
+                />
+                <circle
+                  cx="5"
+                  cy="12"
+                  r="1"
+                />
               </svg>
             </button>
           </Dropdown>
 
-          <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
+          <span
+            v-if="dropDownItems.length"
+            class="text-gray-600 mx-0.5"
+          >
             {{ "/" }}
           </span>
-          <div v-for="(crumb, index) in lastFourBreadCrumbs" :key="index">
+          <div
+            v-for="(crumb, index) in lastFourBreadCrumbs"
+            :key="index"
+          >
             <span
               v-if="breadcrumbs.length > 1 && index > 0"
               class="text-gray-600 mx-0.5"
@@ -51,8 +75,14 @@
           </div>
         </div>
 
-        <div class="flex" :style="{ height: 'calc(100vh - 20rem)' }">
-          <Tabs v-model="tabIndex" :tabs="tabs">
+        <div
+          class="flex"
+          :style="{ height: 'calc(100vh - 20rem)' }"
+        >
+          <Tabs
+            v-model="tabIndex"
+            :tabs="tabs"
+          >
             <div
               v-if="tabIndex === 4"
               class="flex flex-col h-full items-center justify-center p-4"
@@ -75,7 +105,10 @@
               primary-message="No Files"
               secondary-message=" "
             />
-            <div v-else class="h-full p-4">
+            <div
+              v-else
+              class="h-full p-4"
+            >
               <div class="mt-2">
                 <div class="flex py-1 justify-between">
                   <span

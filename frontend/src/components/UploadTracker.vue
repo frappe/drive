@@ -36,7 +36,10 @@
         >
           <LucideMinus class="size-4 text-gray-800" />
         </button>
-        <button class="focus:outline-none" @click="close">
+        <button
+          class="focus:outline-none"
+          @click="close"
+        >
           <LucideX class="size-4 text-gray-800" />
         </button>
       </div>
@@ -82,7 +85,10 @@
         Failed
       </Button>
     </div>
-    <div v-if="!collapsed" class="max-h-64 overflow-y-auto bg-white w-full">
+    <div
+      v-if="!collapsed"
+      class="max-h-64 overflow-y-auto bg-white w-full"
+    >
       <span
         v-if="!currentTabGetter().length"
         class="px-1.5 text-base font-medium text-gray-800"
@@ -106,7 +112,10 @@
                 {{ upload.name }}
               </p>
             </div>
-            <LucideX v-if="upload.completed && upload.error" class="h-3 w-3" />
+            <LucideX
+              v-if="upload.completed && upload.error"
+              class="h-3 w-3"
+            />
             <Button variant="ghost">
               <LucideFolderOpenDot
                 v-if="upload.completed"
@@ -128,7 +137,10 @@
               v-show="!upload.completed && !upload.error"
               class="h-6 w-6"
             >
-              <ProgressRing :radius="14" :progress="upload.progress" />
+              <ProgressRing
+                :radius="14"
+                :progress="upload.progress"
+              />
             </div>
           </div>
         </div>

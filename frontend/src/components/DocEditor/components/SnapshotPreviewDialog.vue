@@ -1,7 +1,13 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'none', size: '4xl' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'none', size: '4xl' }"
+  >
     <template #body>
-      <div v-if="snapshotData" class="px-4 pb-6 pt-5 sm:px-6">
+      <div
+        v-if="snapshotData"
+        class="px-4 pb-6 pt-5 sm:px-6"
+      >
         <div class="w-full mb-4">
           <h3 class="text-2xl font-semibold leading-6 text-gray-900">
             {{ snapshotData.snapshot_message }}
@@ -36,7 +42,11 @@
           />
         </div>
         <div class="flex">
-          <Button class="ml-auto" :variant="'solid'" @click="applySnapshot">
+          <Button
+            class="ml-auto"
+            :variant="'solid'"
+            @click="applySnapshot"
+          >
             Restore
           </Button>
         </div>

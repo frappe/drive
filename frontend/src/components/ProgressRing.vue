@@ -1,5 +1,8 @@
 <template>
-  <svg :height="radius * 2" :width="radius * 2">
+  <svg
+    :height="radius * 2"
+    :width="radius * 2"
+  >
     <circle
       class="fill-transparent stroke-current"
       :class="secondaryClass"

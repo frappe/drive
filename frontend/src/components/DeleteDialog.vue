@@ -1,5 +1,8 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Delete Forever?', size: 'sm' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Delete Forever?', size: 'sm' }"
+  >
     <template #body-content>
       <p class="text-gray-600">
         {{ entities.length === 1 ? `This item` : `${entities.length} items` }}

@@ -5,13 +5,19 @@
   >
     <div>
       <!-- Information -->
-      <div v-if="tab === 0" class="h-full border-b px-5 pt-4 pb-5 w-full">
+      <div
+        v-if="tab === 0"
+        class="h-full border-b px-5 pt-4 pb-5 w-full"
+      >
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
           {{ __("Information") }}
         </span>
-        <div v-if="thumbnailUrl[2]" class="h-[210px] w-full mb-4">
+        <div
+          v-if="thumbnailUrl[2]"
+          class="h-[210px] w-full mb-4"
+        >
           <img
             class="object-contain h-full mx-auto"
             :src="thumbnailUrl[0] || thumbnailUrl[1]"
@@ -63,7 +69,10 @@
             <div class="text-base font-medium mb-4">
               {{ __("Tags") }}
             </div>
-            <TagInput class="min-w-full" :entity="entity" />
+            <TagInput
+              class="min-w-full"
+              :entity="entity"
+            />
           </div>
           <div>
             <div class="text-base font-medium mb-4">
@@ -71,13 +80,22 @@
             </div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">{{ __("Type") }}</span>
-              <span class="col-span-1" :title="entity.mime_type">
+              <span
+                class="col-span-1"
+                :title="entity.mime_type"
+              >
                 {{ entity.file_type }}
               </span>
-              <span v-if="entity.file_size" class="col-span-1 text-gray-600">
+              <span
+                v-if="entity.file_size"
+                class="col-span-1 text-gray-600"
+              >
                 {{ __("Size") }}
               </span>
-              <span v-if="entity.file_size" class="col-span-1">
+              <span
+                v-if="entity.file_size"
+                class="col-span-1"
+              >
                 {{ entity.file_size_pretty }}
                 {{ `(${entity.file_size})` }}
               </span>
@@ -133,7 +151,11 @@
             </div>
           </div>
           <div class="flex items-center justify-start py-2">
-            <Avatar :label="fullName" :image="imageURL" class="mr-3" />
+            <Avatar
+              :label="fullName"
+              :image="imageURL"
+              class="mr-3"
+            />
             <div
               class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
             >
@@ -164,7 +186,10 @@
         >
           {{ __("Activity") }}
         </span>
-        <ActivityTree v-if="entity.write" :entity="entity" />
+        <ActivityTree
+          v-if="entity.write"
+          :entity="entity"
+        />
       </div>
     </div>
   </div>

@@ -21,7 +21,11 @@
     :error="verify?.error || getEntities.error"
   />
 
-  <div v-else ref="container" class="flex flex-col overflow-scroll min-h-full">
+  <div
+    v-else
+    ref="container"
+    class="flex flex-col overflow-scroll min-h-full"
+  >
     <DriveToolBar
       v-model="rows"
       :action-items="actionItems"
@@ -67,7 +71,10 @@
     :root-resource="verify"
     :get-entities="getEntities"
   />
-  <FileUploader v-if="$store.state.user.id" @success="getEntities.fetch()" />
+  <FileUploader
+    v-if="$store.state.user.id"
+    @success="getEntities.fetch()"
+  />
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"

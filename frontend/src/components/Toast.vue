@@ -25,7 +25,10 @@
           >
             {{ title }}
           </p>
-          <p v-if="text" class="text-sm text-gray-600">
+          <p
+            v-if="text"
+            class="text-sm text-gray-600"
+          >
             {{ text }}
           </p>
           <Button

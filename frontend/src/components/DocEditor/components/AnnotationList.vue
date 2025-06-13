@@ -6,7 +6,10 @@
       >
         Annotations
       </span>
-      <Dropdown :options="filterItems" placement="left">
+      <Dropdown
+        :options="filterItems"
+        placement="left"
+      >
         <Button>
           <template #prefix>
             <LucideFilter class="size-4 text-ink-gray-6" />
@@ -62,7 +65,11 @@
             placement="right"
             class="ml-auto mb-auto"
           >
-            <Button size="sm" variant="ghost" icon="more-horizontal" />
+            <Button
+              size="sm"
+              variant="ghost"
+              icon="more-horizontal"
+            />
           </Dropdown>
         </div>
         <div class="pl-10 text-sm leading-5">
@@ -76,7 +83,10 @@
 
         <!-- replies for current annotation -->
         <div v-if="comment.get('id') === activeAnnotation">
-          <div class="mt-6" v-for="(reply, j) in comment.get('replies')">
+          <div
+            class="mt-6"
+            v-for="(reply, j) in comment.get('replies')"
+          >
             <div
               class="flex py-0.5 gap-x-0.5 text-sm justify-start items-center mb-1.5"
             >
@@ -125,7 +135,12 @@
             class="flex flex-col gap-2"
           >
             <div class="flex items-center justify-start gap-2 mt-6 mb-2">
-              <Avatar size="md" :label="fullName" :image="imageURL" class="" />
+              <Avatar
+                size="md"
+                :label="fullName"
+                :image="imageURL"
+                class=""
+              />
 
               <TiptapInput
                 v-model="commentText"
@@ -137,7 +152,10 @@
         </div>
       </div>
 
-      <div v-else class="text-gray-600 text-sm my-5">
+      <div
+        v-else
+        class="text-gray-600 text-sm my-5"
+      >
         There are annotations for the current document or category
       </div>
     </div>

@@ -1,5 +1,8 @@
 <template>
-  <editor-content v-if="editor" :editor="editor" />
+  <editor-content
+    v-if="editor"
+    :editor="editor"
+  />
 </template>
 
 <script setup>

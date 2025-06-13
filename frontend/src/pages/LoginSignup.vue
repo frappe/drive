@@ -61,7 +61,10 @@
                   />
                 </div>
                 <div class="!mt-6 flex gap-2">
-                  <FormControl v-model="terms_accepted" type="checkbox" />
+                  <FormControl
+                    v-model="terms_accepted"
+                    type="checkbox"
+                  />
                   <label class="text-base">
                     I accept the
                     <Link
@@ -244,7 +247,6 @@ const signup = createResource({
     }
   },
   onSuccess(data) {
-    console.log(data.location)
     window.location.href = data.location
   },
   onError(err) {

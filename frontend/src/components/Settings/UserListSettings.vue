@@ -16,13 +16,20 @@
   <div
     class="flex flex-col items-stretch justify-start h-[60%] overflow-y-auto"
   >
-    <div v-for="(user, index) in allUsers?.data" :key="user.user_name">
+    <div
+      v-for="(user, index) in allUsers?.data"
+      :key="user.user_name"
+    >
       <div
         v-if="index > 0"
         class="w-[95%] mx-auto h-px border-t border-gray-200"
       />
       <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
-        <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
+        <Avatar
+          :image="user.user_image"
+          :label="user.full_name"
+          size="lg"
+        />
         <div class="flex flex-col">
           <span class="text-base">{{ user.full_name }}</span>
           <span class="text-xs text-gray-700">{{ user.user_name }}</span>
@@ -34,7 +41,10 @@
           placement="right"
           class="ml-auto text-base text-gray-600"
         >
-          <Button variant="ghost" @click="selectedUser = user">
+          <Button
+            variant="ghost"
+            @click="selectedUser = user"
+          >
             {{ user.role == "admin" ? __("Manager") : __("User") }}
             <template #suffix>
               <LucideChevronDown
@@ -43,9 +53,11 @@
             </template>
           </Button>
         </Dropdown>
-        <span v-else class="ml-auto text-base text-gray-600">{{
-          user.role == "admin" ? __("Manager") : __("User")
-        }}</span>
+        <span
+          v-else
+          class="ml-auto text-base text-gray-600"
+          >{{ user.role == "admin" ? __("Manager") : __("User") }}</span
+        >
       </div>
     </div>
   </div>
@@ -65,7 +77,10 @@
   >
     No invites found.
   </div>
-  <div v-for="(invite, index) in invites?.data" :key="invite.name">
+  <div
+    v-for="(invite, index) in invites?.data"
+    :key="invite.name"
+  >
     <div
       v-if="index > 0"
       class="w-[95%] mx-auto h-px border-t border-gray-200"
@@ -99,8 +114,14 @@
                   invites.data.splice(index, 1)
               "
             >
-              <LucideX v-if="invite.status === 'Proposed'" class="size-4" />
-              <LucideTrash v-else class="size-4" />
+              <LucideX
+                v-if="invite.status === 'Proposed'"
+                class="size-4"
+              />
+              <LucideTrash
+                v-else
+                class="size-4"
+              />
             </Button>
 
             <Button

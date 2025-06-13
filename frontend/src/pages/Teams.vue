@@ -15,7 +15,11 @@
           >
             <div class="text-sm absolute top-3 right-3 flex gap-1.5">
               <LucideLogOut class="w-3 h-3 my-auto" />
-              <a href="#" @click="$store.dispatch('logout')">Log out</a>
+              <a
+                href="#"
+                @click="$store.dispatch('logout')"
+                >Log out</a
+              >
             </div>
             <h2 class="grow font-bold font-xl text-center mb-4">
               Welcome, {{ $store.state.user.fullName }}
@@ -29,7 +33,10 @@
               >
                 You haven't joined any teams yet.
               </p>
-              <ul v-else class="ms-1">
+              <ul
+                v-else
+                class="ms-1"
+              >
                 <li
                   v-for="team in Object.values(getTeams?.data)"
                   :key="team.id"
@@ -54,7 +61,10 @@
             </div>
             <div class="py-3">
               <p class="font-bold text-lg mb-3">Invites</p>
-              <p v-if="!getInvites?.data?.length" class="text-center text-sm">
+              <p
+                v-if="!getInvites?.data?.length"
+                class="text-center text-sm"
+              >
                 No invites found.
               </p>
               <li
@@ -93,7 +103,10 @@
                       v-if="invite.status === 'Pending'"
                       class="size-4"
                     />
-                    <LucideTrash v-else class="size-4" />
+                    <LucideTrash
+                      v-else
+                      class="size-4"
+                    />
                   </Button>
 
                   <Button

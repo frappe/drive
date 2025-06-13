@@ -13,7 +13,10 @@
     </Button>
   </div>
   <div class="flex flex-col items-stretch justify-start overflow-y-auto">
-    <div v-for="(tag, i) in $resources.getTagsWithOwner.data" :key="tag.name">
+    <div
+      v-for="(tag, i) in $resources.getTagsWithOwner.data"
+      :key="tag.name"
+    >
       <div
         class="flex items-center justify-start text-sm py-1.5 gap-x-1.5 w-full"
         :class="i > 0 ? 'border-t' : ''"
@@ -58,7 +61,10 @@
             },
           ]"
         >
-          <Button variant="ghost" @click="selectedTag = tag">
+          <Button
+            variant="ghost"
+            @click="selectedTag = tag"
+          >
             <template #icon>
               <LucideMoreHorizontal class="size-4" />
             </template>

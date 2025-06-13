@@ -1,6 +1,12 @@
 <template>
-  <Navbar v-if="!document.error" :root-resource="document" />
-  <FolderContentsError v-if="document.error" :error="document.error" />
+  <Navbar
+    v-if="!document.error"
+    :root-resource="document"
+  />
+  <FolderContentsError
+    v-if="document.error"
+    :error="document.error"
+  />
   <LoadingIndicator
     v-else-if="!document.data && document.loading"
     :error="document.error"

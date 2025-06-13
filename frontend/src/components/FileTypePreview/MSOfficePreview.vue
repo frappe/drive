@@ -12,10 +12,17 @@
     v-else
     class="max-w-[350px] p-8 z-10 bg-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
   >
-    <div v-if="error" class="text-base">
+    <div
+      v-if="error"
+      class="text-base"
+    >
       <LucideSettings class="size-8 mb-6 mx-auto" />
       Please ask your site's administrator to set the access key in the
-      <a href="/app/drive-site-settings" class="underline">Settings</a>.
+      <a
+        href="/app/drive-site-settings"
+        class="underline"
+        >Settings</a
+      >.
     </div>
     <template v-else>
       <LucideAlertCircle class="size-8 mb-6" />
@@ -32,7 +39,11 @@
       >
         View anyway
       </Button>
-      <Button class="mt-4 w-full" variant="solid" @click="download">
+      <Button
+        class="mt-4 w-full"
+        variant="solid"
+        @click="download"
+      >
         Download
       </Button>
     </template>

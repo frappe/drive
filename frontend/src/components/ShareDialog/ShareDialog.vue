@@ -1,5 +1,8 @@
 <template>
-  <Dialog v-model="openDialog" :options="{ size: 'lg' }">
+  <Dialog
+    v-model="openDialog"
+    :options="{ size: 'lg' }"
+  >
     <template #body-main>
       <div class="py-5 px-4 sm:px-6">
         <div class="flex w-full justify-between gap-x-2 mb-4">
@@ -68,7 +71,11 @@
         <div class="text-gray-600 font-medium text-base mb-2">Members</div>
         <div class="flex gap-3">
           <div class="flex-grow">
-            <Combobox v-slot="{ open }" v-model="sharedUsers" multiple>
+            <Combobox
+              v-slot="{ open }"
+              v-model="sharedUsers"
+              multiple
+            >
               <div
                 class="flex flex-col items-start justify-start rounded-md bg-gray-100"
               >
@@ -161,7 +168,10 @@
                             v-if="selected"
                             class="size-4 text-ink-gray-7"
                           />
-                          <div v-else class="size-4" />
+                          <div
+                            v-else
+                            class="size-4"
+                          />
                           <span
                             class="block truncate"
                             :class="{
@@ -198,7 +208,10 @@
           />
         </div>
 
-        <div v-if="getUsersWithAccess.data" class="mb-3">
+        <div
+          v-if="getUsersWithAccess.data"
+          class="mb-3"
+        >
           <div
             v-if="!getUsersWithAccess.data?.length"
             class="text-sm w-full my-4"
@@ -269,11 +282,18 @@
             </div>
           </div>
         </div>
-        <div v-else class="flex min-h-[19.2vh] w-full">
+        <div
+          v-else
+          class="flex min-h-[19.2vh] w-full"
+        >
           <LoadingIndicator class="w-7 h-auto text-gray-700 mx-auto" />
         </div>
         <div class="w-full flex items-center justify-end gap-2">
-          <Button class="text-base" variant="outline" @click="getLink(entity)">
+          <Button
+            class="text-base"
+            variant="outline"
+            @click="getLink(entity)"
+          >
             <template #prefix>
               <LucideLink2 />
             </template>

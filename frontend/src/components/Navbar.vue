@@ -4,10 +4,20 @@
     ondrop="return false;"
     class="bg-white border-b w-full px-4 py-2.5 h-12 flex items-center justify-between"
   >
-    <Breadcrumbs :items="store.state.breadcrumbs" :class="'select-none'">
+    <Breadcrumbs
+      :items="store.state.breadcrumbs"
+      :class="'select-none'"
+    >
       <template #prefix="{ item, index }">
-        <LoadingIndicator v-if="item.loading" width="20" scale="70" />
-        <div v-if="index == 0" class="mr-1.5">
+        <LoadingIndicator
+          v-if="item.loading"
+          width="20"
+          scale="70"
+        />
+        <div
+          v-if="index == 0"
+          class="mr-1.5"
+        >
           <component
             :is="COMPONENT_MAP[item.name]"
             class="size-4 text-ink-gray-6"
@@ -23,9 +33,18 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
-      <Dropdown v-if="dropdownAction" :options="dropdownAction">
-        <Button variant="ghost" @click="triggerRoot">
-          <LucideMoreHorizontal name="more-horizontal" class="size-4" />
+      <Dropdown
+        v-if="dropdownAction"
+        :options="dropdownAction"
+      >
+        <Button
+          variant="ghost"
+          @click="triggerRoot"
+        >
+          <LucideMoreHorizontal
+            name="more-horizontal"
+            class="size-4"
+          />
         </Button>
       </Dropdown>
       <Dropdown
@@ -51,7 +70,10 @@
         @click="emitter.emit('showCTADelete')"
       >
         <template #prefix>
-          <component :is="button.icon" class="size-4" />
+          <component
+            :is="button.icon"
+            class="size-4"
+          />
         </template>
         {{ button.label }}
       </Button>
@@ -63,8 +85,14 @@
         <UsersBar />
       </div>
 
-      <div v-if="!isLoggedIn" class="ml-auto">
-        <Button variant="solid" @click="$router.push({ name: 'Login' })">
+      <div
+        v-if="!isLoggedIn"
+        class="ml-auto"
+      >
+        <Button
+          variant="solid"
+          @click="$router.push({ name: 'Login' })"
+        >
           Sign In
         </Button>
       </div>

@@ -327,7 +327,10 @@ const alignClass = computed(() => {
       </div>
     </div>
 
-    <div v-else class="w-fit flex relative">
+    <div
+      v-else
+      class="w-fit flex relative"
+    >
       <img
         v-if="mediaType === 'img'"
         loading="lazy"

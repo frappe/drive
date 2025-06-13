@@ -13,12 +13,20 @@
       v-html="error.messages?.join?.('\n') || error"
     />
     <div class="w-50 flex gap-10 my-8">
-      <Button variant="outline" size="md" @click="$router.go(-1)">
+      <Button
+        variant="outline"
+        size="md"
+        @click="$router.go(-1)"
+      >
         <div class="flex gap-2">
           <LucideArrowBigLeft class="size-4" />Go Back
         </div>
       </Button>
-      <Button variant="solid" size="md" @click="$router.replace({ path: '/' })">
+      <Button
+        variant="solid"
+        size="md"
+        @click="$router.replace({ path: '/' })"
+      >
         <div class="flex gap-2"><LucideHome class="size-4" />Go Home</div>
       </Button>
     </div>

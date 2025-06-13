@@ -1,5 +1,8 @@
 <template>
-  <template v-for="(group, i) in groupedActivityLog" :key="i">
+  <template
+    v-for="(group, i) in groupedActivityLog"
+    :key="i"
+  >
     <div
       v-if="group.length && Object.keys(groupedActivityLog).length > 1"
       class="px-5 pb-2 gap-x-2"
@@ -44,9 +47,18 @@
             v-else-if="activity.action_type.startsWith('share')"
             :activity="activity"
           >
-            <template v-if="activity.nested" #nested>
-              <div v-for="nested in activity.nested" :key="nested.name">
-                <ActivityTreeShare v-if="activity.nested" :activity="nested" />
+            <template
+              v-if="activity.nested"
+              #nested
+            >
+              <div
+                v-for="nested in activity.nested"
+                :key="nested.name"
+              >
+                <ActivityTreeShare
+                  v-if="activity.nested"
+                  :activity="nested"
+                />
               </div>
             </template>
           </ActivityTreeShare>

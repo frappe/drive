@@ -16,7 +16,10 @@
         >
           <slot name="icon">
             <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-              <component :is="icon" class="size-4 text-gray-700" />
+              <component
+                :is="icon"
+                class="size-4 text-gray-700"
+              />
             </span>
           </slot>
         </Tooltip>

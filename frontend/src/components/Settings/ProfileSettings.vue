@@ -13,7 +13,10 @@
       <span class="text-xl font-semibold">{{ fullName }}</span>
       <span class="text-base text-gray-700">{{ $store.state.user.id }}</span>
     </div>
-    <Button class="ml-auto" @click="editProfileDialog = true">
+    <Button
+      class="ml-auto"
+      @click="editProfileDialog = true"
+    >
       {{ __("Edit profile") }}
     </Button>
   </div>
@@ -47,9 +50,11 @@
             class="flex items-center justify-between bg-gray-100 h-7 pl-2 text-base rounded"
           >
             <LucideLink class="mr-2" />
-            <a :href="newImageUrl" class="truncate max-w-56 underline">{{
-              newImageUrl
-            }}</a>
+            <a
+              :href="newImageUrl"
+              class="truncate max-w-56 underline"
+              >{{ newImageUrl }}</a
+            >
 
             <Button @click="newImageUrl = null">
               <template #icon>
@@ -77,7 +82,10 @@
         </div>
         <div class="w-full flex flex-col gap-y-2 my-2">
           <span class="text-base text-gray-600">{{ __("First Name") }}</span>
-          <Input v-model="newFirstName" v-focus />
+          <Input
+            v-model="newFirstName"
+            v-focus
+          />
           <span class="text-base text-gray-600">{{ __("Last Name") }}</span>
           <Input v-model="newLastName" />
         </div>

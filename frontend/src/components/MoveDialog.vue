@@ -1,7 +1,13 @@
 <template>
-  <Dialog v-model="open" :options="{ size: '2xl' }">
+  <Dialog
+    v-model="open"
+    :options="{ size: '2xl' }"
+  >
     <template #body-main>
-      <div class="py-5 px-4 sm:px-6">
+      <div
+        v-focus
+        class="py-5 px-4 sm:px-6"
+      >
         <div class="flex w-full justify-between gap-x-15 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             <template v-if="props.entities.length > 1">
@@ -36,7 +42,11 @@
             )
           "
         />
-        <Tabs v-model="tabIndex" as="div" :tabs="tabs">
+        <Tabs
+          v-model="tabIndex"
+          as="div"
+          :tabs="tabs"
+        >
           <template #tab-panel>
             <div class="py-1 h-40">
               <Tree
@@ -52,7 +62,10 @@
                     class="flex items-center cursor-pointer select-none gap-1 h-[28px]"
                     @click="openEntity(node)"
                   >
-                    <div ref="iconRef" @click="toggleCollapsed($event)">
+                    <div
+                      ref="iconRef"
+                      @click="toggleCollapsed($event)"
+                    >
                       <LucideChevronDown
                         v-if="hasChildren && !isCollapsed"
                         class="size-3.5"
@@ -61,7 +74,10 @@
                         v-else-if="hasChildren"
                         class="size-3.5"
                       />
-                      <div v-else class="ps-3.5" />
+                      <div
+                        v-else
+                        class="ps-3.5"
+                      />
                     </div>
                     <div
                       class="flex-grow rounded-sm text-base truncate h-full flex items-center pl-1"
@@ -78,15 +94,21 @@
                         v-if="isCollapsed"
                         class="mr-1 size-4"
                       />
-                      <LucideFolder v-else class="mr-1 size-4" />
-                      <div v-if="node.value === null" class="overflow-visible">
+                      <LucideFolder
+                        v-else
+                        class="mr-1 size-4"
+                      />
+                      <div
+                        v-if="node.value === null"
+                        class="overflow-visible"
+                      >
                         <Input
                           v-model="node.label"
                           v-focus
                           type="text"
                           input-class=" !h-6"
                           @click.stop
-                          @key.enter="openEntity(node)"
+                          @keydown.enter="openEntity(node)"
                         />
                       </div>
                       <span v-else>{{ node.label }}</span>
@@ -107,7 +129,7 @@
                           }
                         "
                       >
-                        <NewFolder />
+                        <LucideFolderPlus class="size-4" />
                       </Button>
                     </div>
                   </div>
@@ -141,7 +163,10 @@
               >
                 {{ "/" }}
               </span>
-              <div v-for="(crumb, index) in slicedBreadcrumbs" :key="index">
+              <div
+                v-for="(crumb, index) in slicedBreadcrumbs"
+                :key="index"
+              >
                 <span
                   v-if="breadcrumbs.length > 1 && index > 0"
                   class="text-gray-600 mx-0.5"
@@ -411,7 +436,6 @@ function openEntity(node) {
 }
 
 const expandNode = (obj, name) => {
-  console.log(name, obj)
   if (obj.value === name) {
     return obj
   }

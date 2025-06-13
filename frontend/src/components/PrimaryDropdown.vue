@@ -55,7 +55,10 @@
     v-model="showSettings"
     :suggested-tab="suggestedTab"
   />
-  <ShortcutsDialog v-if="showShortcuts" v-model="showShortcuts" />
+  <ShortcutsDialog
+    v-if="showShortcuts"
+    v-model="showShortcuts"
+  />
 </template>
 
 <script setup>

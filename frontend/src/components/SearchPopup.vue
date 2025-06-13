@@ -1,8 +1,14 @@
 <template>
-  <Dialog v-model:open="open" :options="{ size: '2xl', position: 'top' }">
+  <Dialog
+    v-model:open="open"
+    :options="{ size: '2xl', position: 'top' }"
+  >
     <template #body>
       <div class="flex px-4 py-3 gap-1 items-center border-b">
-        <LucideSearch class="w-4 mr-1 h-auto" name="search" />
+        <LucideSearch
+          class="w-4 mr-1 h-auto"
+          name="search"
+        />
         <input
           v-model="search"
           icon-left="search"
@@ -43,11 +49,19 @@
               </g>
               <defs>
                 <clipPath id="clip0_1942_59507">
-                  <rect width="16" height="16" fill="white" />
+                  <rect
+                    width="16"
+                    height="16"
+                    fill="white"
+                  />
                 </clipPath>
               </defs>
             </svg>
-            <img v-else class="size-4" :src="getIconUrl(entity.file_type)" />
+            <img
+              v-else
+              class="size-4"
+              :src="getIconUrl(entity.file_type)"
+            />
             <span class="truncate">{{ entity.title }}</span>
           </div>
           <div

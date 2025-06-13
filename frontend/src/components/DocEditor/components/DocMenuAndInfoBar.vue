@@ -7,7 +7,10 @@
         : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
     "
   >
-    <div v-if="entity" class="w-full border-b px-5 py-4">
+    <div
+      v-if="entity"
+      class="w-full border-b px-5 py-4"
+    >
       <div class="flex items-center">
         <div class="font-medium truncate text-lg">
           {{ entity.title }}
@@ -16,7 +19,10 @@
     </div>
     <div v-if="entity && editor">
       <!-- Info -->
-      <div v-if="tab === 4" class="px-5 py-4 border-b">
+      <div
+        v-if="tab === 4"
+        class="px-5 py-4 border-b"
+      >
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
@@ -63,7 +69,10 @@
             v-if="$resources.entityTags.data?.length || entity.owner === 'You'"
           >
             <div class="text-base font-medium mb-4">Tags</div>
-            <TagInput class="min-w-full" :entity="entity" />
+            <TagInput
+              class="min-w-full"
+              :entity="entity"
+            />
           </div>
           <div>
             <div class="text-base font-medium mb-4">Properties</div>
@@ -112,7 +121,10 @@
       </div>
 
       <!-- Comments -->
-      <div v-if="tab === 5" class="px-5 py-4 border-b">
+      <div
+        v-if="tab === 5"
+        class="px-5 py-4 border-b"
+      >
         <AnnotationList
           v-if="allAnnotations"
           :active-annotation="activeAnnotation"
@@ -123,12 +135,19 @@
       </div>
 
       <!-- Versions -->
-      <div v-if="tab === 6" class="px-2 py-4 border-b">
+      <div
+        v-if="tab === 6"
+        class="px-2 py-4 border-b"
+      >
         <span
           class="px-3 inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
         >
           Versions
-          <Button class="ml-auto" @click="generateSnapshot">New</Button>
+          <Button
+            class="ml-auto"
+            @click="generateSnapshot"
+            >New</Button
+          >
         </span>
         <div
           v-if="
@@ -153,7 +172,10 @@
             </span>
           </div>
         </div>
-        <div v-else class="text-gray-600 text-sm my-5 px-3">
+        <div
+          v-else
+          class="text-gray-600 text-sm my-5 px-3"
+        >
           No previous versions available for the current document
         </div>
       </div>
@@ -172,7 +194,10 @@
       </div>
 
       <!-- Typography -->
-      <div v-if="tab === 0" class="flex flex-col px-5 py-4 border-b">
+      <div
+        v-if="tab === 0"
+        class="flex flex-col px-5 py-4 border-b"
+      >
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
@@ -464,7 +489,10 @@
             @click="editor.chain().focus().toggleCodeBlock().run()"
           >
             <template #prefix>
-              <Codeblock name="code" class="w-4" />
+              <Codeblock
+                name="code"
+                class="w-4"
+              />
             </template>
             Block
           </Button>
@@ -473,7 +501,10 @@
             @click="editor.chain().focus().toggleBlockquote().run()"
           >
             <template #prefix>
-              <BlockQuote name="quote" class="w-4" />
+              <BlockQuote
+                name="quote"
+                class="w-4"
+              />
             </template>
             Focus
           </Button>
@@ -548,7 +579,10 @@
       </div>
 
       <!-- Insert -->
-      <div v-if="tab === 1" class="flex flex-col px-5 py-4 border-b">
+      <div
+        v-if="tab === 1"
+        class="flex flex-col px-5 py-4 border-b"
+      >
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
@@ -557,14 +591,20 @@
         <div>
           <span class="font-medium text-gray-600 text-base mb-1">Media</span>
           <div class="w-full flex justify-between gap-x-1.5 mb-6">
-            <Button class="w-full justify-start" @click="addImageDialog = true">
+            <Button
+              class="w-full justify-start"
+              @click="addImageDialog = true"
+            >
               <template #prefix>
                 <Image class="text-gray-700 w-4" />
                 Image
               </template>
             </Button>
 
-            <Button class="w-full justify-start" @click="addVideoDialog = true">
+            <Button
+              class="w-full justify-start"
+              @click="addVideoDialog = true"
+            >
               <template #prefix>
                 <Video class="text-gray-700 w-4" />
                 Video
@@ -656,7 +696,11 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path
+                  stroke="none"
+                  d="M0 0h24v24H0z"
+                  fill="none"
+                />
                 <path
                   d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5"
                 />
@@ -672,16 +716,28 @@
       </div>
 
       <!-- Document Settings -->
-      <div v-if="tab === 2" class="flex flex-col px-3 py-4 border-b">
+      <div
+        v-if="tab === 2"
+        class="flex flex-col px-3 py-4 border-b"
+      >
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full px-2"
         >
           Settings
         </span>
-        <Switch v-model="settings.docSize" label="Small Text" />
-        <Switch v-model="settings.docSpellcheck" label="Spellcheck" />
+        <Switch
+          v-model="settings.docSize"
+          label="Small Text"
+        />
+        <Switch
+          v-model="settings.docSpellcheck"
+          label="Spellcheck"
+        />
         <!-- <Switch v-model="settings.docSize" label="Highlight Check" /> -->
-        <Switch v-model="settings.docWidth" label="Full Width" />
+        <Switch
+          v-model="settings.docWidth"
+          label="Full Width"
+        />
         <span class="font-medium text-gray-700 text-base my-2.5 px-2.5">
           Default Font
         </span>
@@ -735,7 +791,10 @@
       </div>
 
       <!-- Transform -->
-      <div v-if="tab === 3" class="px-5 py-4 border-b">
+      <div
+        v-if="tab === 3"
+        class="px-5 py-4 border-b"
+      >
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
@@ -790,7 +849,10 @@
   <div
     class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
   >
-    <template v-for="(item, index) in tabs" :key="item.label">
+    <template
+      v-for="(item, index) in tabs"
+      :key="item.label"
+    >
       <button
         v-if="item.write === $store.state.hasWriteAccess || !item.write"
         variant="'ghost'"
@@ -815,8 +877,14 @@
       Might spawn from emits 
       so they fall outside of tabs scope
     -->
-    <InsertImage v-model="addImageDialog" :editor="editor" />
-    <InsertVideo v-model="addVideoDialog" :editor="editor" />
+    <InsertImage
+      v-model="addImageDialog"
+      :editor="editor"
+    />
+    <InsertVideo
+      v-model="addVideoDialog"
+      :editor="editor"
+    />
     <NewManualSnapshotDialog
       v-if="newSnapshotDialog"
       v-model="newSnapshotDialog"

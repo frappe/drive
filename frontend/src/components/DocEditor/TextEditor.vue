@@ -1,5 +1,8 @@
 <template>
-  <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
+  <div
+    v-if="editor && initComplete"
+    class="flex-col w-full overflow-y-auto"
+  >
     <div
       :class="[
         settings.docFont,
@@ -21,7 +24,10 @@
         @keydown.enter.passive="handleEnterKey"
       />
     </div>
-    <TableBubbleMenu v-if="isWritable" :editor="editor" />
+    <TableBubbleMenu
+      v-if="isWritable"
+      :editor="editor"
+    />
     <BubbleMenu
       v-if="editor"
       v-show="!forceHideBubbleMenu"

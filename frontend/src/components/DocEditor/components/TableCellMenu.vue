@@ -96,7 +96,9 @@ const Selection = computed(() => {
         ><template #icon>
           <TableCellsSplit class="w-4 stroke-[1.5]" /> </template
       ></Button>
-      <Button variant="ghost" @click="() => emits('onHeaderCell')"
+      <Button
+        variant="ghost"
+        @click="() => emits('onHeaderCell')"
         ><template #icon>
           <ToggleHeaderCell class="w-4 stroke-[1.5]" /> </template
       ></Button>

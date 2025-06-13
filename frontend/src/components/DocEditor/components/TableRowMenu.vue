@@ -123,7 +123,11 @@ function onDeleteRow() {
         ><template #icon>
           <ToggleHeaderCell class="w-4 stroke-[1.5]" /> </template
       ></Button>
-      <Button variant="ghost" icon="trash-2" @click="onDeleteRow" />
+      <Button
+        variant="ghost"
+        icon="trash-2"
+        @click="onDeleteRow"
+      />
     </div>
   </BubbleMenu>
 </template>

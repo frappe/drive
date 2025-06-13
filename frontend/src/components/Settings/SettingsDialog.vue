@@ -1,7 +1,13 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Settings', size: '5xl' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Settings', size: '5xl' }"
+  >
     <template #body>
-      <div class="flex" :style="{ height: '80vh' }">
+      <div
+        class="flex"
+        :style="{ height: '80vh' }"
+      >
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
           <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
             {{ __("Settings") }}
@@ -29,7 +35,10 @@
           </div>
         </div>
         <div class="flex flex-1 flex-col px-8 pt-6 overflow-y-auto">
-          <component :is="activeTab.component" v-if="activeTab" />
+          <component
+            :is="activeTab.component"
+            v-if="activeTab"
+          />
         </div>
         <Button
           class="my-2 mr-2 absolute right-0"

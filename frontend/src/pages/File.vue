@@ -1,8 +1,14 @@
 <template>
   <div class="flex w-full">
     <div class="flex-1 overflow-scroll">
-      <Navbar v-if="!file?.error" :root-resource="file" />
-      <FolderContentsError v-if="file.error" :error="file.error" />
+      <Navbar
+        v-if="!file?.error"
+        :root-resource="file"
+      />
+      <FolderContentsError
+        v-if="file.error"
+        :error="file.error"
+      />
 
       <div
         class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
@@ -16,7 +22,10 @@
             v-if="file.loading"
             class="w-10 h-full text-neutral-100 mx-auto"
           />
-          <FileRender v-else-if="file.data" :preview-entity="file.data" />
+          <FileRender
+            v-else-if="file.data"
+            :preview-entity="file.data"
+          />
         </div>
         <div
           class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-white"
@@ -27,7 +36,10 @@
             icon="arrow-left"
             @click="scrollEntity(true)"
           />
-          <Button :variant="'ghost'" @click="enterFullScreen">
+          <Button
+            :variant="'ghost'"
+            @click="enterFullScreen"
+          >
             <Scan class="w-4" />
           </Button>
           <Button

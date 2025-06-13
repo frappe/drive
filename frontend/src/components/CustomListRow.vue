@@ -1,5 +1,8 @@
 <template>
-  <template v-for="row in rows" :key="row.name">
+  <template
+    v-for="row in rows"
+    :key="row.name"
+  >
     <ListRow
       :row="row"
       class="group"

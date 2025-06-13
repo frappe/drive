@@ -2,7 +2,10 @@
   <div class="min-w-full">
     <Popover>
       <template #target="{ isOpen, open: openPopover, togglePopover }">
-        <slot name="target" v-bind="{ open: openPopover, togglePopover }">
+        <slot
+          name="target"
+          v-bind="{ open: openPopover, togglePopover }"
+        >
           <div
             class="flex items-center justify-start min-w-full flex-wrap gap-2"
           >
@@ -21,7 +24,12 @@
             >
               This file has no tags
             </span>
-            <Button class="ml-auto" @click="togglePopover()"> Manage </Button>
+            <Button
+              class="ml-auto"
+              @click="togglePopover()"
+            >
+              Manage
+            </Button>
           </div>
         </slot>
       </template>
@@ -82,7 +90,10 @@
                       stroke-width="3"
                     />
                   </svg>
-                  <span class="text-base" :class="`text-${item.color}-700`">
+                  <span
+                    class="text-base"
+                    :class="`text-${item.color}-700`"
+                  >
                     {{ item.title }}
                   </span>
                 </div>

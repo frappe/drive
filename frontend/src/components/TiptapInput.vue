@@ -2,7 +2,10 @@
   <div
     class="flex items-center min-h-7 justify-start border border-gray-200 rounded pl-2 pr-1 py-0.5 hover:border-gray-200 focus-within:bg-white focus-within:border-gray-500 focus-within:shadow-sm focus-within:ring-2 focus-within:ring-gray-400 text-gray-800 transition-colors w-full"
   >
-    <editor-content class="w-full" :editor="editor" />
+    <editor-content
+      class="w-full"
+      :editor="editor"
+    />
     <!-- Take this out later -->
     <Button
       v-if="showInlineButton"

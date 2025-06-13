@@ -1,5 +1,8 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New Link', size: 'xs' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'New Link', size: 'xs' }"
+  >
     <template #body-content>
       <TextInput
         ref="input"
@@ -18,10 +21,16 @@
         @keydown.enter="createLink.submit"
         @keydown="createLink.error = null"
       />
-      <div v-if="createLink.error" class="pt-4 text-base font-sm text-red-500">
+      <div
+        v-if="createLink.error"
+        class="pt-4 text-base font-sm text-red-500"
+      >
         This file already exists.
       </div>
-      <div class="flex" :class="createLink.error ? 'mt-5' : 'mt-8'">
+      <div
+        class="flex"
+        :class="createLink.error ? 'mt-5' : 'mt-8'"
+      >
         <Button
           variant="solid"
           class="w-full"

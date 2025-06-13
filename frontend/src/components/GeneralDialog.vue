@@ -1,12 +1,18 @@
 <template>
-  <Dialog v-model="open" :options="{ title: dialogData.title, size: 'sm' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: dialogData.title, size: 'sm' }"
+  >
     <template #body-content>
       <div class="flex items-center justify-start">
         <p class="text-base text-gray-600 leading-5">
           {{ dialogData.message }}
         </p>
       </div>
-      <ErrorMessage class="my-1 text-center" :message="errorMessage" />
+      <ErrorMessage
+        class="my-1 text-center"
+        :message="errorMessage"
+      />
       <div class="flex mt-5">
         <Button
           :variant="dialogData.variant"
@@ -71,11 +77,10 @@ export default {
             message:
               "Selected items will be restored to their original locations.",
             buttonMessage: "Restore",
-            onSuccess: (entities, data) => {
+            onSuccess: () => {
               getTrash.setData((d) =>
                 d.filter((k) => !e.map((l) => l.name).includes(k.name))
-              ),
-                console.log(data)
+              )
             },
             variant: "solid",
             buttonIcon: "refresh-ccw",

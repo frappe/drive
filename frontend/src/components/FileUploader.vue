@@ -1,5 +1,8 @@
 <template>
-  <div id="fileSelection" class="hidden" />
+  <div
+    id="fileSelection"
+    class="hidden"
+  />
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue"

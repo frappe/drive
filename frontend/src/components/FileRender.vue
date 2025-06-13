@@ -8,12 +8,19 @@
     <span class="text-base text-center text-gray-700">
       {{ error }}
     </span>
-    <Button class="mt-4 w-full" variant="solid" @click="download">
+    <Button
+      class="mt-4 w-full"
+      variant="solid"
+      @click="download"
+    >
       Download
     </Button>
   </div>
   <template v-else>
-    <component :is="previewComponent" :preview-entity="previewEntity" />
+    <component
+      :is="previewComponent"
+      :preview-entity="previewEntity"
+    />
   </template>
 </template>
 <script setup>

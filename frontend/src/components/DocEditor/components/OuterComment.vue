@@ -51,7 +51,11 @@
         ]"
       >
         <div class="flex items-center gap-1 mt-2 mb-4">
-          <Avatar :label="fullName" :image="imageURL" class="h-7 w-7 mr-1" />
+          <Avatar
+            :label="fullName"
+            :image="imageURL"
+            class="h-7 w-7 mr-1"
+          />
           <div
             class="flex items-center mx-auto border w-full bg-transparent rounded max-w-[87%] focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
           >

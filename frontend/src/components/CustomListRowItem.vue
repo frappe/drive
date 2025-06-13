@@ -1,6 +1,14 @@
 <template>
-  <ListRowItem :column="column" :row="row" :item="item" :align="column.align">
-    <template v-if="column.key === 'title'" #prefix>
+  <ListRowItem
+    :column="column"
+    :row="row"
+    :item="item"
+    :align="column.align"
+  >
+    <template
+      v-if="column.key === 'title'"
+      #prefix
+    >
       <img
         v-if="!imgLoaded"
         loading="lazy"
@@ -18,12 +26,23 @@
       />
     </template>
     <template #default="{ label }">
-      <transition v-if="column.key === 'title'" name="fade-in" mode="out-in">
-        <div :key="label" class="truncate text-base">
+      <transition
+        v-if="column.key === 'title'"
+        name="fade-in"
+        mode="out-in"
+      >
+        <div
+          :key="label"
+          class="truncate text-base"
+        >
           {{ column?.getLabel ? column.getLabel({ row }) : label }}
         </div>
       </transition>
-      <div v-else :key="label" class="truncate text-base">
+      <div
+        v-else
+        :key="label"
+        class="truncate text-base"
+      >
         {{ column?.getLabel ? column.getLabel({ row }) : label }}
       </div>
 
@@ -35,7 +54,10 @@
         <LucideMoreHorizontal class="size-4" />
       </Button>
     </template>
-    <template v-if="idx === 0" #suffix>
+    <template
+      v-if="idx === 0"
+      #suffix
+    >
       <div class="flex flex-row grow justify-end gap-2 w-[20px]">
         <LucideStar
           v-if="row.is_favourite && $route.name !== 'Favourites'"
@@ -51,7 +73,11 @@
           "
           text="This is from your Home."
         >
-          <LucideEyeOff width="16" height="16" class="my-auto" />
+          <LucideEyeOff
+            width="16"
+            height="16"
+            class="my-auto"
+          />
         </Tooltip>
       </div>
     </template>

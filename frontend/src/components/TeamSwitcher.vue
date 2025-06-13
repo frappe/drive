@@ -1,5 +1,8 @@
 <template>
-  <Popover placement="right-start" class="flex w-full">
+  <Popover
+    placement="right-start"
+    class="flex w-full"
+  >
     <template #target="{ togglePopover }">
       <button
         :class="[
@@ -37,7 +40,10 @@
             {{ getTeams.data[team].title }}
           </router-link>
         </div>
-        <div v-else class="w-100 text-center text-sm text-gray-700">
+        <div
+          v-else
+          class="w-100 text-center text-sm text-gray-700"
+        >
           <em>No other teams</em>
         </div>
       </div>

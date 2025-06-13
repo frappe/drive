@@ -27,7 +27,10 @@
       <LoadingIndicator class="w-8" />
     </div>
     <template v-else>
-      <div id="drop-area" class="h-full overflow-y-auto">
+      <div
+        id="drop-area"
+        class="h-full overflow-y-auto"
+      >
         <ListEmptyState v-if="!formattedRows.length" />
         <div
           v-for="group in formattedRows"
@@ -248,6 +251,7 @@ const handleSelections = (sels) => {
 }
 
 // Add keyboard shortcuts here as f-ui selections has to be mutated
+console.log(e.target)
 onKeyDown("a", (e) => {
   // How do I do this nicely?
   if (

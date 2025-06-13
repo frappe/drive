@@ -3,7 +3,10 @@
     <div class="bg-black text-white text-sm text-center py-2 sm:hidden">
       Drive works best on desktop.
     </div>
-    <div v-if="isLoggedIn || $route.meta.allowGuest" class="flex">
+    <div
+      v-if="isLoggedIn || $route.meta.allowGuest"
+      class="flex"
+    >
       <Sidebar
         v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)"
         class="hidden sm:block"
@@ -12,18 +15,31 @@
         id="dropzone"
         class="flex flex-col h-screen flex-grow overflow-hidden"
       >
-        <router-view :key="$route.fullPath" v-slot="{ Component }">
+        <router-view
+          :key="$route.fullPath"
+          v-slot="{ Component }"
+        >
           <component :is="Component" />
         </router-view>
       </div>
 
-      <BottomBar v-if="isLoggedIn" class="fixed bottom-0 w-full sm:hidden" />
+      <BottomBar
+        v-if="isLoggedIn"
+        class="fixed bottom-0 w-full sm:hidden"
+      />
     </div>
-    <router-view v-else :key="$route.fullPath" v-slot="{ Component }">
+    <router-view
+      v-else
+      :key="$route.fullPath"
+      v-slot="{ Component }"
+    >
       <component :is="Component" />
     </router-view>
   </div>
-  <SearchPopup v-if="isLoggedIn && showSearchPopup" v-model="showSearchPopup" />
+  <SearchPopup
+    v-if="isLoggedIn && showSearchPopup"
+    v-model="showSearchPopup"
+  />
   <Transition
     enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
     enter-from-class="translate-y-1 opacity-0"

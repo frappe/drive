@@ -18,7 +18,10 @@
               {{ entity.title }}
             </h2>
           </div>
-          <Button class="bg-white" @click="entity.visible = false">
+          <Button
+            class="bg-white"
+            @click="entity.visible = false"
+          >
             <LucideX class="w-4 w-5" />
           </Button>
         </div>
@@ -76,10 +79,16 @@
           </Button>
         </div>
 
-        <div v-if="!access[i]" class="text-sm text-center italic">
+        <div
+          v-if="!access[i]"
+          class="text-sm text-center italic"
+        >
           Loading...
         </div>
-        <ul v-else class="space-y-3 text-sm py-2">
+        <ul
+          v-else
+          class="space-y-3 text-sm py-2"
+        >
           <li class="flex">
             <span class="inline-block w-24 text-gray-600"
               >{{ __("General") }}:</span
