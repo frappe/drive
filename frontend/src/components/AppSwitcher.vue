@@ -35,7 +35,7 @@
   </Popover>
 </template>
 <script setup>
-import AppsIcon from "@/components/EspressoIcons/Apps.vue"
+import AppsIcon from "@/components/AppsIcon.vue"
 import { Popover, createResource } from "frappe-ui"
 
 const props = defineProps({
