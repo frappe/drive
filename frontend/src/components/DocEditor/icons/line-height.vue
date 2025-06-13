@@ -11,6 +11,6 @@
       fill="currentColor"
       fill-rule="evenodd"
       clip-rule="evenodd"
-    ></path>
+    />
   </svg>
 </template>

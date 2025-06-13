@@ -5,7 +5,9 @@
         <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             Sharing "
-            <div class="truncate max-w-[80%]">{{ entity?.title }}</div>
+            <div class="truncate max-w-[80%]">
+              {{ entity?.title }}
+            </div>
             "
           </div>
           <Button
@@ -50,10 +52,10 @@
             </div>
             <div class="my-auto">
               <Autocomplete
-                class="my-auto"
                 v-if="generalAccessLevel.value !== 'restricted'"
-                :options="accessOptions"
                 v-model="generalAccessType"
+                class="my-auto"
+                :options="accessOptions"
                 :hide-search="true"
                 @update:model-value="
                   (val) => updateGeneralAccess(generalAccessType, val)
@@ -66,7 +68,7 @@
         <div class="text-gray-600 font-medium text-base mb-2">Members</div>
         <div class="flex gap-3">
           <div class="flex-grow">
-            <Combobox multiple v-model="sharedUsers" v-slot="{ open }">
+            <Combobox v-slot="{ open }" v-model="sharedUsers" multiple>
               <div
                 class="flex flex-col items-start justify-start rounded-md bg-gray-100"
               >
@@ -88,15 +90,15 @@
                       </template>
                     </Button>
                     <ComboboxInput
+                      ref="queryInput"
+                      v-focus
                       placeholder="Add people..."
                       class="text-base p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
-                      @change="query = $event.target.value"
-                      ref="queryInput"
                       autocomplete="off"
-                      v-focus
+                      @change="query = $event.target.value"
                     />
                   </div>
-                  <div class="w-[25%] mt-auto"></div>
+                  <div class="w-[25%] mt-auto" />
                 </div>
               </div>
               <transition
@@ -115,10 +117,10 @@
                     class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5"
                   >
                     <ComboboxOption
-                      as="template"
                       v-if="!filteredUsers.length"
-                      :value="baseOption"
                       v-slot="{ selected, active }"
+                      as="template"
+                      :value="baseOption"
                     >
                       <li
                         class="flex items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
@@ -142,10 +144,10 @@
                       :key="person.email"
                     >
                       <ComboboxOption
+                        v-slot="{ selected, active }"
                         as="template"
                         :value="person"
                         :disabled="person.disabled"
-                        v-slot="{ selected, active }"
                       >
                         <li
                           class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7"
@@ -181,9 +183,9 @@
             </Combobox>
           </div>
           <Autocomplete
+            v-model="shareAccess"
             class=""
             placeholder="Access"
-            v-model="shareAccess"
             :hide-search="true"
             :options="
               advancedTweak
@@ -280,8 +282,8 @@
           <Button
             v-if="sharedUsers.length"
             label="Invite"
-            @click="addShares"
             variant="solid"
+            @click="addShares"
           />
         </div>
       </div>

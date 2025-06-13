@@ -1,5 +1,7 @@
 <template>
-  <h1 class="font-semibold mb-8">{{ __("Profile") }}</h1>
+  <h1 class="font-semibold mb-8">
+    {{ __("Profile") }}
+  </h1>
   <div class="flex justify-start w-full items-center gap-x-4">
     <Avatar
       :image="newImageUrl"
@@ -11,9 +13,9 @@
       <span class="text-xl font-semibold">{{ fullName }}</span>
       <span class="text-base text-gray-700">{{ $store.state.user.id }}</span>
     </div>
-    <Button class="ml-auto" @click="editProfileDialog = true">{{
-      __("Edit profile")
-    }}</Button>
+    <Button class="ml-auto" @click="editProfileDialog = true">
+      {{ __("Edit profile") }}
+    </Button>
   </div>
   <Dialog
     v-model="editProfileDialog"
@@ -49,9 +51,11 @@
               newImageUrl
             }}</a>
 
-            <Button @click="newImageUrl = null"
-              ><template #icon> <X class="stroke-1 h-4" /> </template
-            ></Button>
+            <Button @click="newImageUrl = null">
+              <template #icon>
+                <X class="stroke-1 h-4" />
+              </template>
+            </Button>
           </div>
           <FileUploader
             v-else
@@ -65,24 +69,28 @@
             "
           >
             <template #default="{ openFileSelector }">
-              <Button @click="openFileSelector">{{ __("Add Image") }} </Button>
+              <Button @click="openFileSelector">
+                {{ __("Add Image") }}
+              </Button>
             </template>
           </FileUploader>
         </div>
         <div class="w-full flex flex-col gap-y-2 my-2">
           <span class="text-base text-gray-600">{{ __("First Name") }}</span>
-          <Input v-model="newFirstName" v-focus></Input>
+          <Input v-model="newFirstName" v-focus />
           <span class="text-base text-gray-600">{{ __("Last Name") }}</span>
-          <Input v-model="newLastName"></Input>
+          <Input v-model="newLastName" />
         </div>
       </div>
     </template>
   </Dialog>
-  <h1 class="font-semibold mt-12 mb-4">{{ __("Preferences") }}</h1>
+  <h1 class="font-semibold mt-12 mb-4">
+    {{ __("Preferences") }}
+  </h1>
   <Autocomplete
+    v-model="defaultTeam"
     placeholder="Not set"
     :options="teamOptions"
-    v-model="defaultTeam"
     label="Default Team"
     class="mb-3"
   />

@@ -15,8 +15,7 @@
         :image="avatarURL"
         size="sm"
         :class="['mr-2']"
-      >
-      </Avatar>
+      />
       <div>
         <slot>
           <p
@@ -33,8 +32,9 @@
             v-for="button in buttons"
             class="mt-2"
             @click="button.action(), $emit('close')"
-            >{{ button.label }}</Button
           >
+            {{ button.label }}
+          </Button>
         </slot>
       </div>
       <div class="ml-auto mb-auto pl-2">

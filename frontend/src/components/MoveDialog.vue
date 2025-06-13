@@ -4,9 +4,9 @@
       <div class="py-5 px-4 sm:px-6">
         <div class="flex w-full justify-between gap-x-15 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
-            <template v-if="props.entities.length > 1"
-              >Moving {{ props.entities.length }} items</template
-            >
+            <template v-if="props.entities.length > 1">
+              Moving {{ props.entities.length }} items
+            </template>
             <template v-else>
               Moving "
               <div class="truncate max-w-[80%]">
@@ -24,9 +24,9 @@
           </Button>
         </div>
         <Autocomplete
-          class="mb-2"
           v-if="allFolders.data"
           v-model="folderSearch"
+          class="mb-2"
           placeholder="Search for a folder"
           :options="
             allFolders.data.filter((k) =>
@@ -36,13 +36,13 @@
             )
           "
         />
-        <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+        <Tabs v-model="tabIndex" as="div" :tabs="tabs">
           <template #tab-panel>
             <div class="py-1 h-40">
               <Tree
                 v-for="k in tree.children"
                 :key="k.value"
-                nodeKey="value"
+                node-key="value"
                 :node="k"
               >
                 <template
@@ -61,7 +61,7 @@
                         v-else-if="hasChildren"
                         class="size-3.5"
                       />
-                      <div v-else class="ps-3.5"></div>
+                      <div v-else class="ps-3.5" />
                     </div>
                     <div
                       class="flex-grow rounded-sm text-base truncate h-full flex items-center pl-1"
@@ -81,12 +81,12 @@
                       <LucideFolder v-else class="mr-1 size-4" />
                       <div v-if="node.value === null" class="overflow-visible">
                         <Input
+                          v-model="node.label"
+                          v-focus
+                          type="text"
+                          input-class=" !h-6"
                           @click.stop
                           @key.enter="openEntity(node)"
-                          type="text"
-                          v-focus
-                          inputClass=" !h-6"
-                          v-model="node.label"
                         />
                       </div>
                       <span v-else>{{ node.label }}</span>
@@ -109,8 +109,9 @@
                       >
                         <NewFolder />
                       </Button>
-                    </div></div
-                ></template>
+                    </div>
+                  </div>
+                </template>
               </Tree>
               <p
                 v-if="!tree.children.length"

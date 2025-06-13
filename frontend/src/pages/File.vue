@@ -26,7 +26,7 @@
             :variant="'ghost'"
             icon="arrow-left"
             @click="scrollEntity(true)"
-          ></Button>
+          />
           <Button :variant="'ghost'" @click="enterFullScreen">
             <Scan class="w-4" />
           </Button>
@@ -35,7 +35,7 @@
             :variant="'ghost'"
             icon="arrow-right"
             @click="scrollEntity()"
-          ></Button>
+          />
         </div>
       </div>
     </div>

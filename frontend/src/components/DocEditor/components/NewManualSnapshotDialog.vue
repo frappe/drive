@@ -4,7 +4,7 @@
       <Input v-model="snapshotMessage" label="Message" />
     </template>
     <template #actions>
-      <Button :variant="'solid'" class="w-full" @click="save">Create</Button>
+      <Button :variant="'solid'" class="w-full" @click="save"> Create </Button>
     </template>
   </Dialog>
 </template>

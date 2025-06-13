@@ -1,6 +1,8 @@
 <template>
   <div class="flex items-center mb-4">
-    <h1 class="font-semibold">{{ __("Users") }}</h1>
+    <h1 class="font-semibold">
+      {{ __("Users") }}
+    </h1>
     <Button
       v-if="isAdmin?.data"
       variant="solid"
@@ -18,7 +20,7 @@
       <div
         v-if="index > 0"
         class="w-[95%] mx-auto h-px border-t border-gray-200"
-      ></div>
+      />
       <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
         <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
         <div class="flex flex-col">
@@ -27,13 +29,13 @@
         </div>
         <Dropdown
           v-if="isAdmin.data && user.name != $store.state.user.fullName"
-          :options="roleOptions"
           v-slot="{ open }"
+          :options="roleOptions"
           placement="right"
           class="ml-auto text-base text-gray-600"
         >
-          <Button variant="ghost" @click="selectedUser = user"
-            >{{ user.role == "admin" ? __("Manager") : __("User") }}
+          <Button variant="ghost" @click="selectedUser = user">
+            {{ user.role == "admin" ? __("Manager") : __("User") }}
             <template #suffix>
               <LucideChevronDown
                 :class="{ '[transform:rotateX(180deg)]': open }"
@@ -54,10 +56,12 @@
     <LucideUsers class="h-8 stroke-1 text-gray-600" />
     <span class="text-gray-800 text-sm mt-2">No Users</span>
   </div>
-  <h3 class="my-4 text-base font-medium">{{ __("Invites") }}</h3>
+  <h3 class="my-4 text-base font-medium">
+    {{ __("Invites") }}
+  </h3>
   <div
-    class="text-center text-sm"
     v-if="!invites?.data || !invites.data.length"
+    class="text-center text-sm"
   >
     No invites found.
   </div>
@@ -65,7 +69,7 @@
     <div
       v-if="index > 0"
       class="w-[95%] mx-auto h-px border-t border-gray-200"
-    ></div>
+    />
     <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
       <div class="flex justify-between w-full">
         <span class="text-base my-auto">{{ invite.email }}</span>
@@ -82,8 +86,9 @@
               variant="subtle"
               class="my-auto mr-2"
               size="sm"
-              >{{ __(invite.status) }}</Badge
             >
+              {{ __(invite.status) }}
+            </Badge>
           </Tooltip>
           <div class="flex gap-2">
             <Button
@@ -196,8 +201,7 @@
         },
       ],
     }"
-  >
-  </Dialog>
+  />
 </template>
 
 <script setup>

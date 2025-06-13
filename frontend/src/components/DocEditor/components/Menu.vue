@@ -3,7 +3,7 @@
     class="flex items-center justify-center bg-white shadow-lg rounded-[0.45rem] gap-x-1 px-0.5 py-0.5"
   >
     <template v-for="button in buttons" :key="button.label">
-      <div v-if="button.type === 'separator'" class="h-5 border-l"></div>
+      <div v-if="button.type === 'separator'" class="h-5 border-l" />
       <component :is="button.component || 'div'" v-else v-bind="{ editor }">
         <template #default="componentSlotProps">
           <div

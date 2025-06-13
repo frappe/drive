@@ -1,5 +1,5 @@
 <template>
-  <slot v-bind="{ onClick: openDialog }"></slot>
+  <slot v-bind="{ onClick: openDialog }" />
   <Dialog
     v-model="showNewCommentDialog"
     :options="{ title: 'New Comment', size: 'sm' }"
@@ -30,8 +30,8 @@
 </template>
 <script>
 import { Dialog, Button, Input } from "frappe-ui"
-import { ref, inject } from "vue"
-import { useFocus, useTextareaAutosize } from "@vueuse/core"
+import { ref } from "vue"
+import { useFocus } from "@vueuse/core"
 import { v4 as uuidv4 } from "uuid"
 import { DOMSerializer } from "prosemirror-model"
 

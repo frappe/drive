@@ -12,8 +12,9 @@
               : ''
           "
           @click="onlyUnread = true"
-          >Unread</Button
         >
+          Unread
+        </Button>
         <Button
           class="max-h-6"
           :class="
@@ -22,8 +23,9 @@
               : 'bg-white shadow-sm hover:bg-white active:bg-white'
           "
           @click="onlyUnread = false"
-          >All</Button
         >
+          All
+        </Button>
       </div>
       <div>
         <Button
@@ -31,14 +33,15 @@
           icon="refresh-ccw"
           class="mr-2"
           @click="notifications.reload()"
-        ></Button>
+        />
         <Button
           icon-left="check-circle"
           @click="
             markAsRead.submit({ all: true }), (store.state.notifCount = 0)
           "
-          >Mark all as Read</Button
         >
+          Mark all as Read
+        </Button>
       </div>
     </div>
 
@@ -48,7 +51,7 @@
       :options="options"
       :rows="notifications.data"
       row-key="name"
-    ></ListView>
+    />
     <div
       v-else
       class="flex flex-col items-center justify-center m-auto h-full"

@@ -14,15 +14,14 @@
               :entity="entity"
               @click="filterByTag(tag)"
               @success="entityTags.fetch()"
-            >
-            </Tag>
+            />
             <span
               v-if="!entityTags.data?.length"
               class="text-gray-700 text-base"
             >
               This file has no tags
             </span>
-            <Button class="ml-auto" @click="togglePopover()">Manage</Button>
+            <Button class="ml-auto" @click="togglePopover()"> Manage </Button>
           </div>
         </slot>
       </template>

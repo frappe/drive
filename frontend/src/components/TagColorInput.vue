@@ -39,7 +39,7 @@
                 emit('change', value)
               }
             "
-          ></Input>
+          />
         </div>
       </div>
     </template>

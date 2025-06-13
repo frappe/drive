@@ -22,8 +22,8 @@
         class="mx-3 p-1 rounded-lg border border-gray-100 bg-white shadow-xl"
       >
         <div
-          v-if="teams.length"
           v-for="team of teams"
+          v-if="teams.length"
           :key="getTeams.data[team].name"
         >
           <router-link

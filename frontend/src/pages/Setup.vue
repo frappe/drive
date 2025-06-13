@@ -26,7 +26,7 @@
             <div v-if="domainTeams.loading" class="flex justify-center py-8">
               <div
                 class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"
-              ></div>
+              />
             </div>
             <div class="flex flex-col text-md gap-2">
               <p>
@@ -44,9 +44,9 @@
               </p>
               <FormControl
                 v-if="typeof team_name === 'string'"
+                v-model="team_name"
                 label="Team Name"
                 class="py-2"
-                v-model="team_name"
                 type="text"
                 required
               />
@@ -55,8 +55,9 @@
                   variant="subtle"
                   class="w-100"
                   @click="createPersonalTeam.submit()"
-                  >Create Personal</Button
                 >
+                  Create Personal
+                </Button>
                 <Button
                   v-if="domainTeams.data.length"
                   variant="solid"

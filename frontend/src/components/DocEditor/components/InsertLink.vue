@@ -1,5 +1,5 @@
 <template>
-  <slot v-bind="{ onClick: openDialog }"></slot>
+  <slot v-bind="{ onClick: openDialog }" />
   <Dialog
     v-model="setLinkDialog.show"
     :options="{ title: setLinkDialog.title, size: 'sm' }"

@@ -1,8 +1,8 @@
 <template>
   <GenericPage
-    :getEntities="getShared"
+    :get-entities="getShared"
     :icon="LucideUsers"
-    :primaryMessage="'No Shared Files'"
+    :primary-message="'No Shared Files'"
   />
 </template>
 

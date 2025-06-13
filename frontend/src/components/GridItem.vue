@@ -18,9 +18,9 @@
             : 'h-full min-w-full object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)]'
         "
         :src="src"
+        :draggable="false"
         @error="src = backupLink"
         @load="imgLoaded = true"
-        :draggable="false"
       />
     </template>
     <!-- Direct padding doesn't work -->
@@ -29,9 +29,9 @@
       class="overflow-hidden text-ellipsis whitespace-nowrap h-full w-[calc(100%-1rem)] object-cover rounded-t-[calc(theme(borderRadius.lg)-1px)] py-2"
     >
       <div
-        v-html="getThumbnail.data"
         class="prose prose-sm pointer-events-none scale-[.39] ml-0 origin-top-left"
-      ></div>
+        v-html="getThumbnail.data"
+      />
     </div>
   </div>
   <div

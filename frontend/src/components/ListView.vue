@@ -5,8 +5,6 @@
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
-    @update:selections="handleSelections"
-    @update:active-row="setActive"
     :options="{
       selectable: true,
       enableActive: true,
@@ -18,6 +16,8 @@
         description: 'Nothing found - try something else?',
       },
     }"
+    @update:selections="handleSelections"
+    @update:active-row="setActive"
   >
     <ListHeader class="mb-[1px] rounded-sm" />
     <div
@@ -30,8 +30,8 @@
       <div id="drop-area" class="h-full overflow-y-auto">
         <ListEmptyState v-if="!formattedRows.length" />
         <div
-          v-else-if="formattedRows[0].group"
           v-for="group in formattedRows"
+          v-else-if="formattedRows[0].group"
           :key="group.group"
         >
           <ListGroupHeader :group="group">

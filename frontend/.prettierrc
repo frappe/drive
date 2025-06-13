@@ -1,3 +1,4 @@
 {
-  "semi": false
+  "semi": false,
+  "htmlSingleAttributePerLine": true
 }

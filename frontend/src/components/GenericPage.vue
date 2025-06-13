@@ -21,7 +21,7 @@
     :error="verify?.error || getEntities.error"
   />
 
-  <div class="flex flex-col overflow-scroll min-h-full" ref="container" v-else>
+  <div v-else ref="container" class="flex flex-col overflow-scroll min-h-full">
     <DriveToolBar
       v-model="rows"
       :action-items="actionItems"

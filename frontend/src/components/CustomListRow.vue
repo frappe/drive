@@ -9,9 +9,9 @@
           : '',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
       ]"
+      :draggable="true"
       @contextmenu="(e) => contextMenu(e, row)"
       @[action]="open(row)"
-      :draggable="true"
       @dragstart="draggedItem = row.name"
       @dragend="draggedItem = null"
       @dragover="row.is_group && $event.preventDefault()"
@@ -23,7 +23,7 @@
           :row="row"
           :item="item"
           :idx="idx"
-          :contextMenu="contextMenu"
+          :context-menu="contextMenu"
         />
       </template>
     </ListRow>

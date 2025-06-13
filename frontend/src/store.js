@@ -1,7 +1,6 @@
 import { createStore } from "vuex"
 import { call } from "frappe-ui"
 import { clear } from "idb-keyval"
-import { get, set } from "idb-keyval"
 
 let getCookies = () => {
   return Object.fromEntries(

@@ -34,14 +34,16 @@
       </Button>
     </div>
     <TextInput
-      :disabled="!getEntities.data?.length"
-      :class="selections.length ? 'hidden' : 'block'"
       ref="search-input"
       v-model="search"
+      :disabled="!getEntities.data?.length"
+      :class="selections.length ? 'hidden' : 'block'"
       :placeholder="__('Search')"
       class="w-[30%]"
     >
-      <template #prefix><LucideSearch class="size-4" /></template>
+      <template #prefix>
+        <LucideSearch class="size-4" />
+      </template>
     </TextInput>
 
     <div class="flex gap-2 ml-auto">
@@ -106,8 +108,8 @@
           <div class="flex items-center whitespace-nowrap">
             <Button
               class="text-sm h-7 border-r border-slate-200 rounded-r-none"
-              @click.stop="toggleAscending"
               :disabled="!getEntities.data?.length"
+              @click.stop="toggleAscending"
             >
               <LucideArrowUpZa
                 v-if="sortOrder.ascending"

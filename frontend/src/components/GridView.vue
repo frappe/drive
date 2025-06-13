@@ -37,13 +37,13 @@
       />
       <Button
         :variant="'subtle'"
-        @click.stop="contextMenu($event, file)"
         class="z-10 duration-300 absolute invisible top-2 right-2"
         :class="[
           selections.size > 0
             ? ''
             : '!bg-gray-300 hover:bg-gray-400 group-hover:visible',
         ]"
+        @click.stop="contextMenu($event, file)"
       >
         <LucideMoreHorizontal class="size-4" />
       </Button>

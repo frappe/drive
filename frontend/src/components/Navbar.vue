@@ -23,7 +23,7 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
-      <Dropdown :options="dropdownAction" v-if="dropdownAction">
+      <Dropdown v-if="dropdownAction" :options="dropdownAction">
         <Button variant="ghost" @click="triggerRoot">
           <LucideMoreHorizontal name="more-horizontal" class="size-4" />
         </Button>
@@ -112,7 +112,6 @@ import {
   LucideSquarePen,
   LucideInfo,
   LucideFileUp,
-  LucideUpload,
   LucideFolderUp,
   LucideFilePlus2,
   LucideFolderPlus,

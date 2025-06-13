@@ -45,7 +45,7 @@
       >
         Insert Video
       </Button>
-      <Button @click="reset">Cancel</Button>
+      <Button @click="reset"> Cancel </Button>
     </template>
   </Dialog>
 </template>

@@ -31,9 +31,9 @@
               </p>
               <ul v-else class="ms-1">
                 <li
-                  class="mb-3"
                   v-for="team in Object.values(getTeams?.data)"
                   :key="team.id"
+                  class="mb-3"
                 >
                   <div class="flex justify-between">
                     <div class="flex flex-col">
@@ -45,15 +45,16 @@
                     <router-link
                       class="my-auto"
                       :to="{ name: 'Team', params: { team: team.name } }"
-                      ><LucideFolderOpenDot class="size-4"
-                    /></router-link>
+                    >
+                      <LucideFolderOpenDot class="size-4" />
+                    </router-link>
                   </div>
                 </li>
               </ul>
             </div>
             <div class="py-3">
               <p class="font-bold text-lg mb-3">Invites</p>
-              <p class="text-center text-sm" v-if="!getInvites?.data?.length">
+              <p v-if="!getInvites?.data?.length" class="text-center text-sm">
                 No invites found.
               </p>
               <li
@@ -73,11 +74,12 @@
                 <div class="flex gap-2">
                   <Tooltip text="You requested an invite from this team.">
                     <Badge
-                      class="my-auto mr-2"
                       v-if="invite.status === 'Proposed'"
+                      class="my-auto mr-2"
                       theme="orange"
-                      >Requested</Badge
                     >
+                      Requested
+                    </Badge>
                   </Tooltip>
                   <Button
                     :variant="invite.status === 'Pending' ? 'ghost' : 'outline'"

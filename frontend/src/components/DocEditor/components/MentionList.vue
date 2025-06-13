@@ -29,6 +29,9 @@
 <script>
 import { Avatar } from "frappe-ui"
 export default {
+  components: {
+    Avatar,
+  },
   props: {
     items: {
       type: Array,
@@ -38,9 +41,6 @@ export default {
       type: Function,
       required: true,
     },
-  },
-  components: {
-    Avatar,
   },
   data() {
     return {

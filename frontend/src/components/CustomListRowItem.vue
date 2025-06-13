@@ -12,9 +12,9 @@
         v-show="imgLoaded"
         class="h-[16px] w-[16px] object-cover"
         :src="src"
+        :draggable="false"
         @error="src = backupLink"
         @load="imgLoaded = true"
-        :draggable="false"
       />
     </template>
     <template #default="{ label }">

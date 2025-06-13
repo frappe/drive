@@ -27,8 +27,8 @@
       <Button
         class="mt-4 w-full"
         variant="subtle"
-        @click="warned = true"
         :loading="jwt_token === ''"
+        @click="warned = true"
       >
         View anyway
       </Button>

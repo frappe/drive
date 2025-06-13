@@ -1,6 +1,6 @@
 <template>
   <div>
-    <slot v-bind="{ onClick: openDialog }"></slot>
+    <slot v-bind="{ onClick: openDialog }" />
     <Dialog
       v-model="showNewCommentDialog"
       :options="{ title: 'New Annotation', size: 'sm' }"

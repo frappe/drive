@@ -42,8 +42,8 @@
                     class="-mr-[3px] outline outline-white"
                   />
                   <span
-                    class="text-base text-gray-700 ms-1"
                     v-if="userList.data.slice(3).length"
+                    class="text-base text-gray-700 ms-1"
                   >
                     +{{ userList.data.slice(3).length }}
                   </span>
@@ -60,11 +60,15 @@
             </div>
           </div>
           <div v-if="userId !== 'Guest'">
-            <div class="text-base font-medium mb-4">{{ __("Tags") }}</div>
+            <div class="text-base font-medium mb-4">
+              {{ __("Tags") }}
+            </div>
             <TagInput class="min-w-full" :entity="entity" />
           </div>
           <div>
-            <div class="text-base font-medium mb-4">{{ __("Properties") }}</div>
+            <div class="text-base font-medium mb-4">
+              {{ __("Properties") }}
+            </div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">{{ __("Type") }}</span>
               <span class="col-span-1" :title="entity.mime_type">
@@ -146,7 +150,7 @@
                 icon="arrow-up-circle"
                 :disabled="!newComment.length"
                 @click="postComment"
-              ></Button>
+              />
             </div>
           </div>
         </div>
@@ -200,7 +204,7 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
-import { Avatar, call, createResource, Tooltip } from "frappe-ui"
+import { Avatar, call, createResource } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"

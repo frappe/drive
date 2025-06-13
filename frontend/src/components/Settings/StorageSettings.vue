@@ -1,5 +1,7 @@
 <template>
-  <h1 class="font-semibold mb-4">{{ __("Storage") }}</h1>
+  <h1 class="font-semibold mb-4">
+    {{ __("Storage") }}
+  </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
     <span class="text-base font-medium text-gray-900"
@@ -60,7 +62,7 @@
           width: i.percentageFormat,
           paddingRight: `${1 + i.percentageRaw}px`,
         }"
-      ></div>
+      />
     </Tooltip>
   </div>
   <div
@@ -96,7 +98,8 @@
           variant="ghost"
           class="self-center"
           @click="openEntity($route.params.team, i), $emit('close')"
-          ><LucideArrowRight class="size-4 text-gray-600" />
+        >
+          <LucideArrowRight class="size-4 text-gray-600" />
         </Button>
         {{ formatSize(i.file_size) }}
       </div>

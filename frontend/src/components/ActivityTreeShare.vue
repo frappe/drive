@@ -65,7 +65,7 @@
       }}</span>
     </span>
   </div>
-  <slot name="nested"></slot>
+  <slot name="nested" />
 </template>
 <script setup>
 import { Avatar } from "frappe-ui"

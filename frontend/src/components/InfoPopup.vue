@@ -1,8 +1,8 @@
 <template>
   <TransitionGroup
-    name="fade-in"
     v-for="(entity, i) in entities"
     :key="entity.name"
+    name="fade-in"
   >
     <UseDraggable
       v-if="entity.visible !== false"
@@ -14,9 +14,11 @@
       >
         <div class="cursor-move flex justify-between items-center mb-4">
           <div class="flex gap-2">
-            <h2 class="text-lg font-semibold">{{ entity.title }}</h2>
+            <h2 class="text-lg font-semibold">
+              {{ entity.title }}
+            </h2>
           </div>
-          <Button @click="entity.visible = false" class="bg-white">
+          <Button class="bg-white" @click="entity.visible = false">
             <LucideX class="w-4 w-5" />
           </Button>
         </div>

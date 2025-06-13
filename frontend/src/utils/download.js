@@ -2,7 +2,6 @@ import JSZip from "jszip"
 import { toast } from "./toasts"
 import { printDoc } from "./files"
 import html2pdf from "html2pdf.js"
-import { jsPDF } from "jspdf"
 import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 

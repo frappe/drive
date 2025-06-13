@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { MIME_LIST_MAP } from "./files"
 export function formatSize(size, nDigits = 1) {
   if (size === 0) return ""
   const k = 1000 // Change base to 1000 for decimal prefixes

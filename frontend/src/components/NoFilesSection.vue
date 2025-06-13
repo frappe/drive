@@ -20,8 +20,12 @@
         stroke="#454545"
       />
     </svg>
-    <p class="text-base text-gray-600 font-medium">{{ primaryMessage }}</p>
-    <p class="text-sm text-gray-600 mt-3">{{ secondaryMessage }}</p>
+    <p class="text-base text-gray-600 font-medium">
+      {{ primaryMessage }}
+    </p>
+    <p class="text-sm text-gray-600 mt-3">
+      {{ secondaryMessage }}
+    </p>
   </div>
 </template>
 <script>

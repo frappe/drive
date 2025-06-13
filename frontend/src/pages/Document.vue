@@ -9,9 +9,9 @@
   <div class="flex w-full overflow-auto">
     <TextEditor
       v-if="contentLoaded"
-      v-model:yjsContent="yjsContent"
-      v-model:rawContent="rawContent"
-      v-model:lastSaved="lastSaved"
+      v-model:yjs-content="yjsContent"
+      v-model:raw-content="rawContent"
+      v-model:last-saved="lastSaved"
       v-model:settings="settings"
       :user-list="allUsers.data || []"
       :fixed-menu="true"

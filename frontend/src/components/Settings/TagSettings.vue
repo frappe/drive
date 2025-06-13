@@ -1,6 +1,8 @@
 <template>
   <div class="flex items-center mb-6">
-    <h1 class="font-semibold">{{ __("Tags") }}</h1>
+    <h1 class="font-semibold">
+      {{ __("Tags") }}
+    </h1>
     <Button
       class="ml-auto mr-4"
       variant="solid"
@@ -58,8 +60,10 @@
         >
           <Button variant="ghost" @click="selectedTag = tag">
             <template #icon>
-              <LucideMoreHorizontal class="size-4" /> </template></Button
-        ></Dropdown>
+              <LucideMoreHorizontal class="size-4" />
+            </template>
+          </Button>
+        </Dropdown>
       </div>
     </div>
     <div

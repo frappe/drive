@@ -4,10 +4,10 @@
       <div class="flex items-center justify-center">
         <Input
           v-model="newName"
+          v-focus
           class="w-full"
           type="text"
           @keyup.enter="submit"
-          v-focus
         />
         <span
           v-if="entity.file_ext"
@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed } from "vue"
 import { Dialog, Input } from "frappe-ui"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"

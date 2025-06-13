@@ -30,8 +30,8 @@
                 size="md"
                 :label="entity.owner"
                 :image="entity.user_image"
-              ></Avatar>
-              <div class="border-l h-6 mx-1.5"></div>
+              />
+              <div class="border-l h-6 mx-1.5" />
               <GeneralAccess
                 size="lg"
                 class="col-span-1 justify-self-start row-start-1 row-end-1"
@@ -81,7 +81,9 @@
             </div>
           </div>
           <div>
-            <div class="text-base font-medium mb-4">{{ __("Statistics") }}</div>
+            <div class="text-base font-medium mb-4">
+              {{ __("Statistics") }}
+            </div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-gray-600">{{ __("Words") }}</span>
               <span class="col-span-1">
@@ -654,14 +656,14 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path
                   d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5"
-                ></path>
-                <path d="M3 10h18"></path>
-                <path d="M10 3v18"></path>
-                <path d="M16 19h6"></path>
-                <path d="M19 16v6"></path>
+                />
+                <path d="M3 10h18" />
+                <path d="M10 3v18" />
+                <path d="M16 19h6" />
+                <path d="M19 16v6" />
               </svg>
               New Table
             </template>
@@ -862,12 +864,10 @@ import {
   FileText,
   FileClock,
   LucideInfo,
-  LucideMessageCircle,
   Code,
   Code2,
   Table2Icon,
   LucideClock,
-  LucideItalic,
 } from "lucide-vue-next"
 
 import "@fontsource/lora"
@@ -961,7 +961,6 @@ export default {
     ActivityTree,
   },
   inject: ["editor", "document"],
-  emits: ["update:allComments", "update:activeAnnotation"],
   inheritAttrs: false,
   props: {
     settings: {
@@ -977,6 +976,7 @@ export default {
       required: false,
     },
   },
+  emits: ["update:allComments", "update:activeAnnotation"],
   setup() {
     return { getIconUrl }
   },

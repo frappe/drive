@@ -27,7 +27,7 @@
           color: 'text-ink-red-3',
         },
       ]"
-      :hideSearch="true"
+      :hide-search="true"
     />
   </div>
 </template>

@@ -1,8 +1,8 @@
 <template>
   <GenericPage
-    :getEntities="getTrash"
+    :get-entities="getTrash"
     :icon="LucideTrash"
-    primaryMessage="Trash is empty"
+    primary-message="Trash is empty"
   />
 </template>
 

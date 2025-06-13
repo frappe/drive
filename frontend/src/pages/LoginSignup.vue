@@ -34,8 +34,8 @@
 
             <form class="flex flex-col">
               <FormControl
-                label="Email"
                 v-model="email"
+                label="Email"
                 type="email"
                 placeholder="johndoe@mail.com"
                 autocomplete="email"
@@ -45,23 +45,23 @@
               <template v-if="otpValidated && !isLogin">
                 <div class="mt-5 flex flex-row gap-5">
                   <FormControl
+                    v-model="first_name"
                     label="First Name"
                     type="text"
                     placeholder="Robin"
                     variant="outline"
-                    v-model="first_name"
                     required
                   />
                   <FormControl
+                    v-model="last_name"
                     label="Last Name"
                     type="text"
                     placeholder="Hood"
                     variant="outline"
-                    v-model="last_name"
                   />
                 </div>
                 <div class="!mt-6 flex gap-2">
-                  <FormControl type="checkbox" v-model="terms_accepted" />
+                  <FormControl v-model="terms_accepted" type="checkbox" />
                   <label class="text-base">
                     I accept the
                     <Link
@@ -88,13 +88,14 @@
               </template>
               <div v-else-if="otpRequested">
                 <FormControl
+                  v-model="otp"
                   label="Verification code"
                   type="text"
                   class="mt-4"
                   placeholder="123456"
                   :disabled="verifyOTP.loading"
                   maxlength="6"
-                  v-model="otp"
+                  required
                   @keyup="
                     (e) =>
                       e.target.value.length === 6 &&
@@ -103,7 +104,6 @@
                         otp,
                       })
                   "
-                  required
                 />
                 <ErrorMessage
                   class="mt-4 text-center"
@@ -126,8 +126,8 @@
                   class="mt-2 w-full"
                   variant="outline"
                   :loading="sendOTP.loading"
-                  @click="sendOTP.submit()"
                   :disabled="otpResendCountdown > 0"
+                  @click="sendOTP.submit()"
                 >
                   Resend verification code
                   {{
@@ -156,14 +156,14 @@
                   </div>
                 </div>
                 <Button
-                  class="mb-2"
                   v-for="provider in oAuthProviders.data"
                   :key="provider.name"
+                  class="mb-2"
                   :loading="oAuth.loading"
                   :link="provider.auth_url"
                 >
                   <div class="flex items-center">
-                    <div v-html="provider.icon"></div>
+                    <div v-html="provider.icon" />
                     <span class="ml-2"
                       >{{ isLogin ? "Continue" : "Join" }} with
                       {{ provider.provider_name }}</span

@@ -17,7 +17,7 @@
             }"
             class="absolute left-2 top-[6px] z-10 size-4 rounded shadow-sm cursor-pointer"
             @click="togglePopover"
-          ></div>
+          />
           <Input
             type="text"
             class="rounded-md text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:focus:bg-zinc-700"
@@ -30,7 +30,7 @@
                 emit('change', value)
               }
             "
-          ></Input>
+          />
           <div
             v-show="value"
             class="absolute right-1 top-[3px] cursor-pointer p-1 text-gray-700 dark:text-zinc-300"

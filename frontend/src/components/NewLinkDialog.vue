@@ -3,16 +3,16 @@
     <template #body-content>
       <TextInput
         ref="input"
-        class="pb-2"
         v-model="title"
+        class="pb-2"
         placeholder="Link name"
         type="text"
         @keydown="createLink.error = null"
       />
       <TextInput
         ref="input"
-        class="pt-2"
         v-model="link"
+        class="pt-2"
         placeholder="URL"
         type="url"
         @keydown.enter="createLink.submit"

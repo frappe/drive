@@ -11,7 +11,7 @@
       icon="arrow-up-circle"
       :disabled="!modelValue.length"
       @click="$emit('success', modelValue)"
-    ></Button>
+    />
   </div>
 </template>
 <script>

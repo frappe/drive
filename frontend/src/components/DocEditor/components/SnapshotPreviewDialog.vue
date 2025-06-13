@@ -25,7 +25,7 @@
             :variant="'ghost'"
             class="absolute top-3 right-3"
             @click="$emit('update:modelValue', false)"
-          ></Button>
+          />
         </div>
         <div class="mb-3">
           <PreviewEditor
@@ -36,9 +36,9 @@
           />
         </div>
         <div class="flex">
-          <Button class="ml-auto" :variant="'solid'" @click="applySnapshot"
-            >Restore</Button
-          >
+          <Button class="ml-auto" :variant="'solid'" @click="applySnapshot">
+            Restore
+          </Button>
         </div>
       </div>
     </template>

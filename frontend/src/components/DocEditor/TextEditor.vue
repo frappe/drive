@@ -42,8 +42,8 @@
   <DocMenuAndInfoBar
     v-if="editor && initComplete"
     ref="MenuBar"
-    v-model:allAnnotations="allAnnotations"
-    v-model:activeAnnotation="activeAnnotation"
+    v-model:all-annotations="allAnnotations"
+    v-model:active-annotation="activeAnnotation"
     :editor="editor"
     :versions="versions"
     :settings="settings"

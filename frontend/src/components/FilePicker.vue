@@ -62,7 +62,9 @@
                 variant="solid"
                 @click="emitter.emit('uploadFile')"
               >
-                <template #prefix><Upload class="w-4 stroke-1.5" /></template>
+                <template #prefix>
+                  <Upload class="w-4 stroke-1.5" />
+                </template>
                 Upload
               </Button>
               <!-- <span class="text-gray-700 text-base mt-2" >Or drag a file here to upload</span> -->
@@ -82,7 +84,7 @@
                   >
                     Folders
                   </span>
-                  <span v-else></span>
+                  <span v-else />
                   <Button
                     v-if="folderStack.length > 1"
                     variant="ghost"
@@ -183,7 +185,6 @@ import {
   LucidePlus,
   LucideStar,
   LucideUsers,
-  Plus,
   Upload,
 } from "lucide-vue-next"
 

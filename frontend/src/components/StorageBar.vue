@@ -22,7 +22,7 @@
           width: calculatePercent,
           maxWidth: '100%',
         }"
-      ></div>
+      />
     </div>
     <span
       class="mx-2 text-xs text-gray-600 transition-all duration-500 ease-in-out line-clamp-1"
