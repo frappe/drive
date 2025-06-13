@@ -81,7 +81,7 @@
             <div
               v-for="color in colors"
               :key="color"
-              class="h-3.5 w-3.5 cursor-pointer rounded-full shadow-sm"
+              class="size-3.5 cursor-pointer rounded-full shadow-sm"
               @click="
                 () => {
                   setSelectorPosition(color)

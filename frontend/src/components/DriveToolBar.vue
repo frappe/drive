@@ -41,7 +41,7 @@
       :placeholder="__('Search')"
       class="w-[30%]"
     >
-      <template #prefix><LucideSearch class="w-4 h-4" /></template>
+      <template #prefix><LucideSearch class="size-4" /></template>
     </TextInput>
 
     <div class="flex gap-2 ml-auto">
@@ -54,11 +54,11 @@
             <div
               class="flex items-center border rounded pl-2 py-1 h-7 text-base"
             >
-              <component :is="ICON_TYPES[item]"></component>
+              <component :is="ICON_TYPES[item]" />
               <span class="text-sm ml-2">{{ item }}</span>
               <Button variant="minimal" @click="activeFilters.splice(index, 1)">
                 <template #icon>
-                  <FeatherIcon class="h-3 w-3" name="x" />
+                  <LucideX class="size-3" />
                 </template>
               </Button>
             </div>
@@ -91,7 +91,7 @@
                 @click="store.state.activeTags.splice(index, 1)"
               >
                 <template #icon>
-                  <FeatherIcon class="h-3 w-3" name="x" />
+                  <LucideX class="size-3" />
                 </template>
               </Button>
             </div>
@@ -185,16 +185,9 @@
           <Tooltip :text="item.label">
             <Button variant="outline" @click.once="item.action(selections)">
               <div class="flex">
-                <FeatherIcon
-                  v-if="typeof item.icon === 'string'"
-                  :name="item.icon"
-                  class="w-4 h-4 text-gray-800"
-                  :class="[item.class, item.danger ? 'text-red-500' : '']"
-                />
                 <component
                   :is="item.icon"
-                  v-else
-                  class="h-4 w-4 text-gray-800"
+                  class="size-4 text-ink-gray-6"
                   :class="[item.class, item.danger ? 'text-red-500' : '']"
                 />
               </div>
@@ -206,20 +199,11 @@
   </div>
 </template>
 <script setup>
-import { Button, FeatherIcon, Tooltip, Dropdown, TextInput } from "frappe-ui"
+import { Button, Tooltip, Dropdown, TextInput } from "frappe-ui"
 import { ref, computed, watch, useTemplateRef } from "vue"
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
-import {
-  LucideArrowDown,
-  LucideArrowDownAz,
-  LucideArrowDownZa,
-  LucideArrowUpAz,
-  LucideFilter,
-  LucideLayoutGrid,
-  LucideLayoutList,
-} from "lucide-vue-next"
 
 const rows = defineModel(Array)
 const props = defineProps({

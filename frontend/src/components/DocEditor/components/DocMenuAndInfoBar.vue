@@ -292,7 +292,7 @@
             "
             @click="editor.chain().focus().toggleItalic().run()"
           >
-            <FeatherIcon name="italic" class="w-4 stroke-2" />
+            <LucideItalic class="w-4 stroke-2" />
           </Button>
           <Button
             class="w-full"
@@ -805,7 +805,7 @@
           :class="[
             tab === 1 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
           ]"
-          class="mx-auto stroke-[1.5] text-gray-600 w-4 h-4"
+          class="mx-auto stroke-[1.5] text-gray-600 size-4"
         />
       </button>
     </template>
@@ -838,15 +838,7 @@
 </template>
 
 <script>
-import {
-  FeatherIcon,
-  Avatar,
-  Input,
-  Popover,
-  Badge,
-  Dropdown,
-  Switch,
-} from "frappe-ui"
+import { Avatar, Input, Popover, Badge, Dropdown, Switch } from "frappe-ui"
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
 import { getIconUrl } from "@/utils/getIconUrl"
@@ -875,6 +867,7 @@ import {
   Code2,
   Table2Icon,
   LucideClock,
+  LucideItalic,
 } from "lucide-vue-next"
 
 import "@fontsource/lora"
@@ -914,7 +907,6 @@ export default {
   components: {
     Switch,
     Input,
-    FeatherIcon,
     Avatar,
     TagInput,
     Tag,

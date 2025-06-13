@@ -28,21 +28,14 @@
       icon="x"
       @click="$resources.removeTag.submit()"
     >
-      <FeatherIcon class="my-auto h-3.5 w-3.5 stroke-2" name="x" />
+      <LucideX class="my-auto size-3.5 stroke-2" />
     </button>
   </div>
 </template>
 
 <script>
-import { FeatherIcon } from "frappe-ui"
-
 export default {
   name: "Tag",
-
-  components: {
-    FeatherIcon,
-  },
-
   props: {
     entity: {
       type: Object,

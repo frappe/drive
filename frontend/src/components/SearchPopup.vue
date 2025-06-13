@@ -27,7 +27,7 @@
           <div class="flex items-center gap-2 w-full col-span-6">
             <svg
               v-if="entity.is_group"
-              class="h-4 w-4"
+              class="size-4"
               :draggable="false"
               :style="{ fill: entity.color }"
               width="16"
@@ -47,7 +47,7 @@
                 </clipPath>
               </defs>
             </svg>
-            <img v-else class="w-4 h-4" :src="getIconUrl(entity.file_type)" />
+            <img v-else class="size-4" :src="getIconUrl(entity.file_type)" />
             <span class="truncate">{{ entity.title }}</span>
           </div>
           <div
@@ -86,7 +86,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <LucideHome class="mr-2 h-4 w-4 text-gray-700" />
+            <LucideHome class="mr-2 size-4 text-gray-700" />
             Home
           </div>
           <div
@@ -96,7 +96,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <LucideClock class="mr-2 h-4 w-4 text-gray-700" />
+            <LucideClock class="mr-2 size-4 text-gray-700" />
             Recents
           </div>
           <div
@@ -106,7 +106,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <LucideStar class="mr-2 h-4 w-4 text-gray-700" />
+            <LucideStar class="mr-2 size-4 text-gray-700" />
             Favourites
           </div>
         </div>
@@ -118,7 +118,7 @@
               emitter.emit('uploadFile'), emitter.emit('showSearchPopup', false)
             "
           >
-            <LucideFilePlus2 class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
+            <LucideFilePlus2 class="stroke-[1.35] mr-2 size-4 text-gray-700" />
             Upload File
           </div>
           <div
@@ -128,9 +128,7 @@
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <LucideFolderPlus
-              class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700"
-            />
+            <LucideFolderPlus class="stroke-[1.35] mr-2 size-4 text-gray-700" />
             Upload Folder
           </div>
         </div>

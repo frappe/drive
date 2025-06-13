@@ -3,10 +3,7 @@
     v-if="error"
     class="max-w-[450px] px-16 py-8 z-10 bg-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
   >
-    <FeatherIcon
-      class="h-12 mb-4 fill-blue-500 stroke-white"
-      name="alert-circle"
-    />
+    <LucideAlertCircle class="h-12 mb-4 fill-blue-500 stroke-white" />
     <span class="mb-4">Cannot open file</span>
     <span class="text-base text-center text-gray-700">
       {{ error }}
@@ -20,7 +17,6 @@
   </template>
 </template>
 <script setup>
-import { FeatherIcon } from "frappe-ui"
 import MSOfficePreview from "@/components/FileTypePreview/MSOfficePreview.vue"
 import ImagePreview from "@/components/FileTypePreview/ImagePreview.vue"
 import PDFPreview from "./FileTypePreview/PDFPreview.vue"
@@ -28,7 +24,7 @@ import VideoPreview from "./FileTypePreview/VideoPreview.vue"
 import TextPreview from "./FileTypePreview/TextPreview.vue"
 import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue"
 import { computed } from "vue"
-import Presentation from "./MimeIcons/Presentation.vue"
+import { LucideAlertCircle } from "lucide-vue-next"
 
 const props = defineProps({
   previewEntity: {

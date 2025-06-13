@@ -9,7 +9,7 @@
           <Dropdown v-if="dropDownItems.length" :options="dropDownItems">
             <button class="flex">
               <svg
-                class="w-4 h-4 m-auto text-gray-600"
+                class="size-4 m-auto text-gray-600"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -238,24 +238,24 @@ const open = computed({
 const tabs = [
   {
     label: "Home",
-    icon: h(LucideHome, { class: "w-4 h-4" }),
+    icon: h(LucideHome, { class: "size-4" }),
     component: NoFilesSection,
   },
   {
     label: "Recents",
-    icon: h(LucideClock, { class: "w-4 h-4" }),
+    icon: h(LucideClock, { class: "size-4" }),
   },
   {
     label: "Favourite",
-    icon: h(LucideStar, { class: "w-4 h-4" }),
+    icon: h(LucideStar, { class: "size-4" }),
   },
   {
     label: "Shared",
-    icon: h(LucideUsers, { class: "w-4 h-4" }),
+    icon: h(LucideUsers, { class: "size-4" }),
   },
   {
     label: "Upload",
-    icon: h(LucidePlus, { class: "w-4 h-4 stroke-[1.5]" }),
+    icon: h(LucidePlus, { class: "size-4 stroke-[1.5]" }),
   },
 ]
 

@@ -54,7 +54,7 @@
       class="flex flex-col items-center justify-center m-auto h-full"
       style="transform: translate(0, -42px)"
     >
-      <FeatherIcon name="inbox" class="w-14 h-auto text-gray-500 pb-4" />
+      <LucideInbox class="w-14 h-auto text-gray-500 pb-4" />
       <span class="text-base text-gray-600 font-medium">No Notifications</span>
     </div>
   </div>
@@ -62,10 +62,11 @@
 <script setup>
 import { ref, h, watch } from "vue"
 import { formatTimeAgo } from "@vueuse/core"
-import { createResource, Avatar, ListView, FeatherIcon } from "frappe-ui"
+import { createResource, Avatar, ListView } from "frappe-ui"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
 import emitter from "@/emitter"
+import { LucideInbox } from "lucide-vue-next"
 
 const store = useStore()
 const onlyUnread = ref(true)

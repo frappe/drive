@@ -306,7 +306,7 @@ const tabs = [
   },
   // {
   //   label: "Favourites",
-  //   icon: h(Star, { class: "w-4 h-4" }),
+  //   icon: h(Star, { class: "size-4" }),
   // },
 ]
 

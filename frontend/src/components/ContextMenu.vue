@@ -28,7 +28,7 @@
       >
         <component
           :is="item.icon"
-          class="mr-2 h-4 w-4 flex-shrink-0"
+          class="mr-2 size-4 flex-shrink-0"
           :class="item.danger ? 'text-[#E03636]' : 'text-ink-gray-7'"
         />
         <span
@@ -44,7 +44,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted, onUpdated, ref } from "vue"
 import disableScroll from "@/utils/disable-scroll"
-import { FeatherIcon } from "frappe-ui"
 
 const props = defineProps({
   actionItems: Array,

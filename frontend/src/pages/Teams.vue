@@ -45,7 +45,7 @@
                     <router-link
                       class="my-auto"
                       :to="{ name: 'Team', params: { team: team.name } }"
-                      ><LucideFolderOpenDot class="w-4 h-4"
+                      ><LucideFolderOpenDot class="size-4"
                     /></router-link>
                   </div>
                 </li>
@@ -89,9 +89,9 @@
                   >
                     <LucideX
                       v-if="invite.status === 'Pending'"
-                      class="w-4 h-4"
+                      class="size-4"
                     />
-                    <LucideTrash v-else class="w-4 h-4" />
+                    <LucideTrash v-else class="size-4" />
                   </Button>
 
                   <Button
@@ -102,7 +102,7 @@
                       acceptInvite.submit({ key: invite.name, redirect: 0 })
                     "
                   >
-                    <LucideCheck class="w-4 h-4" />
+                    <LucideCheck class="size-4" />
                   </Button>
                 </div>
               </li>

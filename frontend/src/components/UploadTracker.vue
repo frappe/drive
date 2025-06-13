@@ -34,10 +34,10 @@
           class="focus:outline-none"
           @click.stop="toggleCollapsed"
         >
-          <FeatherIcon name="minus" class="h-4 w-4 text-gray-800" />
+          <LucideMinus class="size-4 text-gray-800" />
         </button>
         <button class="focus:outline-none" @click="close">
-          <FeatherIcon name="x" class="h-4 w-4 text-gray-800" />
+          <LucideX class="size-4 text-gray-800" />
         </button>
       </div>
     </div>
@@ -106,23 +106,14 @@
                 {{ upload.name }}
               </p>
             </div>
-            <div
-              v-if="upload.completed && hoverIndex !== index"
-              class="grid h-5 w-5 place-items-center rounded-full text-white bg-black"
-              :class="upload.error ? 'bg-red-500' : 'bg-black'"
-            >
-              <FeatherIcon
-                :name="upload.error ? 'x' : 'check'"
-                class="h-3 w-3"
-                :stroke-width="3"
+            <LucideX v-if="upload.completed && upload.error" class="h-3 w-3" />
+            <Button variant="ghost">
+              <LucideFolderOpenDot
+                v-if="upload.completed"
+                class="h-4.5 w-4.5 place-items-center"
+                :stroke-width="1.5"
               />
-            </div>
-            <FeatherIcon
-              v-if="upload.completed && hoverIndex === index"
-              class="h-4.5 w-4.5 place-items-center"
-              name="external-link"
-              :stroke-width="1.5"
-            />
+            </Button>
             <button
               v-if="hoverIndex === index"
               v-show="!upload.completed && hoverIndex === index"
@@ -130,7 +121,7 @@
               variant="'ghost'"
               @click="emitter.emit('cancelUpload', upload.uuid)"
             >
-              <FeatherIcon name="x" class="h-6 w-6 p-1" />
+              <LucideX class="h-6 w-6 p-1" />
             </button>
             <div
               v-if="hoverIndex !== index"
@@ -186,17 +177,14 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import { FeatherIcon, Dialog } from "frappe-ui"
+import { Dialog } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
-import { LucideFile } from "lucide-vue-next"
 
 export default {
   name: "UploadTracker",
   components: {
-    FeatherIcon,
     ProgressRing,
     Dialog,
-    LucideFile,
   },
   data() {
     return {

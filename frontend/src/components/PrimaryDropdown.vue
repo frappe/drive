@@ -60,7 +60,7 @@
 
 <script setup>
 import { markRaw } from "vue"
-import { Dropdown, FeatherIcon } from "frappe-ui"
+import { Dropdown } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"

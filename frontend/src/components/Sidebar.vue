@@ -66,7 +66,7 @@
         <template #icon>
           <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
             <ArrowLeftFromLine
-              class="stroke-[1.5] h-4 w-4 text-gray-700 duration-300 ease-in-out"
+              class="stroke-[1.5] size-4 text-gray-700 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': !isExpanded }"
             />
           </span>

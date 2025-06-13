@@ -32,12 +32,12 @@
         class="!bg-inherit"
         @click="(e) => contextMenu(e, row)"
       >
-        <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+        <LucideMoreHorizontal class="size-4" />
       </Button>
     </template>
     <template v-if="idx === 0" #suffix>
       <div class="flex flex-row grow justify-end gap-2 w-[20px]">
-        <FeatherIcon
+        <LucideStar
           v-if="row.is_favourite && $route.name !== 'Favourites'"
           name="star"
           width="16"
@@ -58,8 +58,9 @@
   </ListRowItem>
 </template>
 <script setup>
-import { FeatherIcon, ListRowItem, Tooltip, createResource } from "frappe-ui"
+import { ListRowItem, Tooltip } from "frappe-ui"
 import { ref } from "vue"
+
 const props = defineProps({
   idx: Number,
   column: Object,

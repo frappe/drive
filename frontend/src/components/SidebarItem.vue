@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { Tooltip, FeatherIcon } from "frappe-ui"
+import { Tooltip } from "frappe-ui"
 import { computed } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"

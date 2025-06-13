@@ -17,7 +17,7 @@
           @click="selectItem(index)"
           @mouseenter="selectedIndex = index"
         >
-          <component :is="item.icon" class="mr-2 h-4 w-4 text-gray-600" />
+          <component :is="item.icon" class="mr-2 size-4 text-gray-600" />
           {{ item.title }}
           <component
             :is="item.component"

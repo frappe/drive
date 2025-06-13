@@ -159,7 +159,7 @@
                             v-if="selected"
                             class="size-4 text-ink-gray-7"
                           />
-                          <div v-else class="h-4 w-4" />
+                          <div v-else class="size-4" />
                           <span
                             class="block truncate"
                             :class="{

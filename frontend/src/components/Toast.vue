@@ -43,7 +43,7 @@
             class="grid h-5 w-5 place-items-center rounded hover:bg-gray-100"
             @click="$emit('close')"
           >
-            <FeatherIcon name="x" class="h-4 w-4 text-gray-700" />
+            <LucideX class="size-4 text-gray-700" />
           </button>
         </slot>
       </div>
@@ -51,7 +51,7 @@
   </div>
 </template>
 <script>
-import { FeatherIcon, Button, Avatar } from "frappe-ui"
+import { FeatherIcon, Avatar } from "frappe-ui"
 
 export default {
   name: "Toast",

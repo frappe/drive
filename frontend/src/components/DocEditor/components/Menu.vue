@@ -61,14 +61,13 @@
   </div>
 </template>
 <script>
-import { Popover, FeatherIcon } from "frappe-ui"
+import { Popover } from "frappe-ui"
 import { Edit2, Unlink2 } from "lucide-vue-next"
 
 export default {
   name: "TipTapMenu",
   components: {
     Popover,
-    FeatherIcon,
     Unlink2,
     Edit2,
   },

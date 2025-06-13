@@ -20,7 +20,7 @@
             >
               <component
                 :is="tab.icon"
-                class="h-4 w-4 text-gray-700 stroke-[1.5]"
+                class="size-4 text-gray-700 stroke-[1.5]"
               />
               <span class="text-base text-gray-800">
                 {{ __(tab.label) }}
@@ -36,7 +36,7 @@
           variant="ghost"
           @click="$emit('update:modelValue', false)"
         >
-          <LucideX class="ml-auto w-4 h-4" />
+          <LucideX class="ml-auto size-4" />
         </Button>
       </div>
     </template>

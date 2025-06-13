@@ -289,14 +289,6 @@ const addReply = (parentID) => {
 
 const commentOptions = computed(() =>
   [
-    /*     {
-      label: "Edit",
-      onClick: () => {},
-      //icon: () => h(FeatherIcon, { name: "edit-2" }),
-      isEnabled: () => {
-        return true
-      },
-    }, */
     {
       label: "Mark as Resolved",
       onClick: () => {

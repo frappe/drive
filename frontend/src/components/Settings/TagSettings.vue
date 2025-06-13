@@ -58,10 +58,7 @@
         >
           <Button variant="ghost" @click="selectedTag = tag">
             <template #icon>
-              <FeatherIcon
-                name="more-horizontal"
-                class="h-4 w-4"
-              /> </template></Button
+              <LucideMoreHorizontal class="size-4" /> </template></Button
         ></Dropdown>
       </div>
     </div>
@@ -105,7 +102,7 @@
   />
 </template>
 <script>
-import { Dropdown, Button, FeatherIcon, Dialog } from "frappe-ui"
+import { Dropdown, Button, Dialog } from "frappe-ui"
 import NewTagDialog from "./NewTagDialog.vue"
 import EditTagDialog from "./EditTagDialog.vue"
 
@@ -114,7 +111,6 @@ export default {
   components: {
     Dropdown,
     Button,
-    FeatherIcon,
     NewTagDialog,
     EditTagDialog,
     Dialog,

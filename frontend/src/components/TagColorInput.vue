@@ -8,7 +8,7 @@
       <div class="flex items-stretch">
         <div class="relative w-full">
           <div
-            class="absolute left-2 top-[6px] z-10 h-4 w-4 rounded shadow-sm cursor-pointer"
+            class="absolute left-2 top-[6px] z-10 size-4 rounded shadow-sm cursor-pointer"
             @click="togglePopover"
           >
             <svg

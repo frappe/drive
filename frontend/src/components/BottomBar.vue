@@ -27,17 +27,10 @@
           />
         </a>
       </router-link>
-      <!--  <span
-        class="mt-auto w-[256px] h-7 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center">
-        <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
-        Used :
-        {{ $resources.getRootFolderSize.data + "B" }}
-      </span> -->
     </div>
   </div>
 </template>
 <script>
-import { FeatherIcon } from "frappe-ui"
 import {
   LucideBuilding2,
   LucideClock,
@@ -49,7 +42,6 @@ import {
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon },
   emits: ["toggleMobileSidebar"],
   data() {
     return {

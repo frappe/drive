@@ -9,12 +9,12 @@
         @click.prevent="togglePopover()"
       >
         <div class="flex gap-2">
-          <FeatherIcon name="user" class="size-4 text-ink-gray-6" />
+          <LucideUser class="size-4 text-ink-gray-6" />
           <span class="whitespace-nowrap"
             >{{ $route.params.team ? "Change Team" : "Go to" }}
           </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-6" />
+        <LucideChevronRight class="size-4 text-ink-gray-6" />
       </button>
     </template>
     <template #body>
@@ -46,7 +46,6 @@
 </template>
 <script setup>
 import { Popover } from "frappe-ui"
-import { FeatherIcon } from "frappe-ui"
 import { getTeams } from "@/resources/files"
 import { computed } from "vue"
 import { useRoute } from "vue-router"

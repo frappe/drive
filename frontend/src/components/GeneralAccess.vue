@@ -54,7 +54,7 @@ const colorClasses = computed(() => {
 const sizeClasses = computed(() => {
   return {
     xs: "w-3 h-3",
-    sm: "w-4 h-4",
+    sm: "size-4",
     md: "w-6 h-6",
     lg: "w-7 h-7",
     xl: "w-8 h-8",

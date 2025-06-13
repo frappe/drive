@@ -12,7 +12,7 @@
           <AppsIcon class="size-4" />
           <span class="whitespace-nowrap"> Apps </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-6" />
+        <LucideChevronRight class="size-4 text-ink-gray-6" />
       </button>
     </template>
     <template #body>
@@ -37,7 +37,6 @@
 <script setup>
 import AppsIcon from "@/components/EspressoIcons/Apps.vue"
 import { Popover, createResource } from "frappe-ui"
-import { FeatherIcon } from "frappe-ui"
 
 const props = defineProps({
   active: Boolean,

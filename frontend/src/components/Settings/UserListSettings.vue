@@ -51,7 +51,7 @@
     v-if="!allUsers?.data?.length"
     class="flex flex-col items-center justify-center h-1/2"
   >
-    <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
+    <LucideUsers class="h-8 stroke-1 text-gray-600" />
     <span class="text-gray-800 text-sm mt-2">No Users</span>
   </div>
   <h3 class="my-4 text-base font-medium">{{ __("Invites") }}</h3>
@@ -94,8 +94,8 @@
                   invites.data.splice(index, 1)
               "
             >
-              <LucideX v-if="invite.status === 'Proposed'" class="w-4 h-4" />
-              <LucideTrash v-else class="w-4 h-4" />
+              <LucideX v-if="invite.status === 'Proposed'" class="size-4" />
+              <LucideTrash v-else class="size-4" />
             </Button>
 
             <Button
@@ -107,7 +107,7 @@
                   invites.data.splice(index, 1)
               "
             >
-              <LucideCheck class="w-4 h-4" />
+              <LucideCheck class="size-4" />
             </Button>
           </div>
         </div>
@@ -206,7 +206,6 @@ import { getTeams } from "@/resources/files"
 import { rejectInvite, acceptInvite } from "@/resources/permissions"
 import {
   Avatar,
-  FeatherIcon,
   Dropdown,
   Dialog,
   Badge,
@@ -217,6 +216,7 @@ import { allUsers } from "@/resources/permissions"
 import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
+import { LucideUsers } from "lucide-vue-next"
 const route = useRoute()
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")

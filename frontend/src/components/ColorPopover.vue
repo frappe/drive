@@ -14,10 +14,7 @@
       >
         <LucidePalette class="h-4 w-auto mr-2 text-gray-800" />
         <div class="text-gray-800">Color</div>
-        <FeatherIcon
-          :name="'chevron-right'"
-          class="h-3.5 text-gray-900 ml-auto"
-        />
+        <LucideChevronRight class="size-3.5 text-gray-900 ml-auto" />
       </div>
     </template>
     <template #body-main>
@@ -41,11 +38,11 @@
 </template>
 
 <script>
-import { Popover, FeatherIcon } from "frappe-ui"
+import { Popover } from "frappe-ui"
 
 export default {
   name: "ColorPopover",
-  components: { Popover, FeatherIcon },
+  components: { Popover },
   props: {
     entityName: {
       type: String,

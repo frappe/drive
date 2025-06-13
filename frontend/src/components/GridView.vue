@@ -29,10 +29,9 @@
       @contextmenu="contextMenu($event, file)"
       @mousedown.stop
     >
-      <FeatherIcon
+      <LucideStar
         v-if="$route.name !== 'Favourites' && file.is_favourite"
         class="stroke-amber-500 fill-amber-500 z-10 absolute top-2 left-2 h-4"
-        name="star"
         width="16"
         height="16"
       />
@@ -46,7 +45,7 @@
             : '!bg-gray-300 hover:bg-gray-400 group-hover:visible',
         ]"
       >
-        <FeatherIcon class="h-4" name="more-horizontal" />
+        <LucideMoreHorizontal class="size-4" />
       </Button>
       <GridItem :file="file" />
     </div>
@@ -64,7 +63,7 @@
 <script setup>
 import GridItem from "@/components/GridItem.vue"
 import emitter from "@/emitter"
-import { FeatherIcon, Button } from "frappe-ui"
+import { Button } from "frappe-ui"
 import { ref, computed } from "vue"
 import { openEntity } from "@/utils/files"
 import { useRoute } from "vue-router"

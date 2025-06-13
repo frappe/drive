@@ -17,16 +17,15 @@
     </Breadcrumbs>
 
     <div class="flex gap-2">
-      <FeatherIcon
+      <LucideStar
         v-if="rootEntity?.is_favourite"
-        name="star"
         width="16"
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
       <Dropdown :options="dropdownAction" v-if="dropdownAction">
         <Button variant="ghost" @click="triggerRoot">
-          <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+          <LucideMoreHorizontal name="more-horizontal" class="size-4" />
         </Button>
       </Dropdown>
       <Dropdown
@@ -38,7 +37,7 @@
         <Tooltip text="Add or upload">
           <Button variant="solid">
             <div class="flex">
-              <FeatherIcon name="plus" class="w-4 h-4" />
+              <LucidePlus class="size-4" />
             </div>
           </Button>
         </Tooltip>
@@ -52,7 +51,7 @@
         @click="emitter.emit('showCTADelete')"
       >
         <template #prefix>
-          <FeatherIcon :name="button.icon" class="w-4" />
+          <component :is="button.icon" class="size-4" />
         </template>
         {{ button.label }}
       </Button>
@@ -83,7 +82,6 @@ import {
   Button,
   Breadcrumbs,
   LoadingIndicator,
-  FeatherIcon,
   Dropdown,
   Tooltip,
 } from "frappe-ui"
@@ -240,17 +238,22 @@ const newDocument = async () => {
 
 // Constants
 const possibleButtons = [
-  { route: "Recents", label: __("Clear"), icon: "clock", entities: getRecents },
+  {
+    route: "Recents",
+    label: __("Clear"),
+    icon: LucideClock,
+    entities: getRecents,
+  },
   {
     route: "Favourites",
     label: __("Clear"),
-    icon: "star",
+    icon: LucideStar,
     entities: getFavourites,
   },
   {
     route: "Trash",
     label: __("Empty"),
-    icon: "trash",
+    icon: LucideTrash,
     entities: getTrash,
     theme: "red",
   },
