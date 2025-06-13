@@ -38,12 +38,14 @@
 </template>
 <script>
 import { FeatherIcon } from "frappe-ui"
-import Recent from "./EspressoIcons/Recent.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Home from "./EspressoIcons/Home.vue"
-import Trash from "./EspressoIcons/Trash.vue"
-import Team from "./EspressoIcons/Organization.vue"
-import Users from "./EspressoIcons/Users.vue"
+import {
+  LucideBuilding2,
+  LucideClock,
+  LucideHome,
+  LucideStar,
+  LucideTrash,
+  LucideUsers,
+} from "lucide-vue-next"
 
 export default {
   name: "Sidebar",
@@ -72,7 +74,7 @@ export default {
         {
           label: "Home",
           route: "/t/" + this.team,
-          icon: Home,
+          icon: LucideHome,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Home"
           },
@@ -80,7 +82,7 @@ export default {
         {
           label: "Recents",
           route: "/t/" + this.team + "/recents",
-          icon: Recent,
+          icon: LucideClock,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Recents"
           },
@@ -88,7 +90,7 @@ export default {
         {
           label: "Favourites",
           route: "/t/" + this.team + "/favourites",
-          icon: Star,
+          icon: LucideStar,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Favourites"
           },
@@ -96,7 +98,7 @@ export default {
         {
           label: "Team",
           route: "/t/" + this.team + "/team",
-          icon: Team,
+          icon: LucideBuilding2,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Team"
           },
@@ -104,7 +106,7 @@ export default {
         {
           label: "Shared",
           route: "/shared",
-          icon: Users,
+          icon: LucideUsers,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Shared"
           },
@@ -112,7 +114,7 @@ export default {
         {
           label: "Trash",
           route: "/t/" + this.team + "/trash",
-          icon: Trash,
+          icon: LucideTrash,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Trash"
           },

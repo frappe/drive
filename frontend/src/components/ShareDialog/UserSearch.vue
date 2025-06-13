@@ -66,7 +66,7 @@
       >
         <PopoverButton class="flex gap-1 px-2 focus:outline-none">
           {{ newUserAccess.write ? "Can Edit" : "Can View" }}
-          <ChevronDown
+          <LucideChevronDown
             :class="{ '[transform:rotateX(180deg)]': open }"
             class="w-4"
           />
@@ -79,7 +79,7 @@
               @click="newUserAccess = { read: 1, write: 0 }"
             >
               <span class="line-clamp-1">Can View</span>
-              <Check
+              <LucideCheck
                 v-if="newUserAccess.read === 1 && newUserAccess.write === 0"
                 class="h-3 pl-1"
               />
@@ -89,7 +89,7 @@
               @click="newUserAccess = { read: 1, write: 1 }"
             >
               Can Edit
-              <Check v-if="newUserAccess.write === 1" class="h-3 pl-1" />
+              <LucideCheck v-if="newUserAccess.write === 1" class="h-3 pl-1" />
             </li></ul
         ></PopoverPanel>
       </Popover>
@@ -112,10 +112,8 @@
 <script setup>
 import { Float } from "@headlessui-float/vue"
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
-import { defineEmits, ref, watch } from "vue"
+import { defineEmits, ref } from "vue"
 import UserAutoComplete from "./UserAutoComplete.vue"
-import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
-import Check from "@/components/EspressoIcons/Check.vue"
 
 const newUserAccess = ref({ read: 1, write: 0 })
 const newUsers = ref([])

@@ -67,11 +67,11 @@
     v-if="!usedSpace"
     class="w-full flex flex-col items-center justify-center my-10"
   >
-    <Cloud class="h-7 stroke-1 text-gray-600" />
+    <LucideCloud class="h-7 stroke-1 text-gray-600" />
     <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
   </div>
   <div
-    class="mt-1 text-gray-800 text-base py-2"
+    class="mt-1 text-gray-800 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
     Large Files:
@@ -88,16 +88,16 @@
       @mouseleave="hoveredRow = null"
     >
       <img :src="getIconUrl(i.file_type)" />
-      <span class="text-gray-800 text-sm">{{ i.title }}</span>
+      <span class="text-gray-800 text-sm truncate">{{ i.title }}</span>
 
       <div class="text-gray-800 text-sm ml-auto flex gap-2 h-10 leading-10">
-        <div class="my-auto" v-if="hoveredRow === i.name">
-          <Button
-            variant="ghost"
-            @click="openEntity($route.params.team, i), $emit('close')"
-            ><FeatherIcon name="arrow-right" class="w-4 h-4 !p-0 text-gray-600"
-          /></Button>
-        </div>
+        <Button
+          v-if="hoveredRow === i.name"
+          variant="ghost"
+          class="self-center"
+          @click="openEntity($route.params.team, i), $emit('close')"
+          ><LucideArrowRight class="size-4 text-gray-600" />
+        </Button>
         {{ formatSize(i.file_size) }}
       </div>
     </div>
@@ -116,13 +116,13 @@ import {
   COLOR_MAP,
   formatPercent,
 } from "@/utils/format"
-import Cloud from "@/components/EspressoIcons/Cloud.vue"
-import { Tooltip, FeatherIcon } from "frappe-ui"
+import { Tooltip } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createResource } from "frappe-ui"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
+import { LucideCloud } from "lucide-vue-next"
 
 const hoveredRow = ref(null)
 const showFileStorage = ref(true)

@@ -9,7 +9,7 @@
       <Dropdown :options="filterItems" placement="left">
         <Button>
           <template #prefix>
-            <Filter />
+            <LucideFilter class="size-4 text-ink-gray-6" />
           </template>
           {{ currentFilterLabel }}
         </Button>
@@ -146,21 +146,11 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex"
-import {
-  ref,
-  watch,
-  computed,
-  nextTick,
-  onUpdated,
-  onMounted,
-  h,
-  inject,
-} from "vue"
-import { Avatar, Button, Dropdown, createResource } from "frappe-ui"
-import { v4 as uuidv4, v4 } from "uuid"
+import { ref, computed, inject } from "vue"
+import { Avatar, Button, Dropdown } from "frappe-ui"
+import { v4 as uuidv4 } from "uuid"
 import { useTimeAgo } from "@vueuse/core"
 import * as Y from "yjs"
-import Filter from "@/components/EspressoIcons/Filter.vue"
 import TiptapInput from "@/components/TiptapInput.vue"
 
 const store = useStore()

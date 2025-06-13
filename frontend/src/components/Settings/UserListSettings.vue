@@ -35,7 +35,9 @@
           <Button variant="ghost" @click="selectedUser = user"
             >{{ user.role == "admin" ? __("Manager") : __("User") }}
             <template #suffix>
-              <ChevronDown :class="{ '[transform:rotateX(180deg)]': open }" />
+              <LucideChevronDown
+                :class="{ '[transform:rotateX(180deg)]': open }"
+              />
             </template>
           </Button>
         </Dropdown>
@@ -211,8 +213,6 @@ import {
   Tooltip,
   createResource,
 } from "frappe-ui"
-import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
-import { XIcon } from "lucide-vue-next"
 import { allUsers } from "@/resources/permissions"
 import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"

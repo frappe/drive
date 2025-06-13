@@ -34,10 +34,16 @@
                   "
                 >
                   <template #prefix>
-                    <component :is="generalAccessLevel.icon" class="mr-2" />
+                    <component
+                      :is="generalAccessLevel.icon"
+                      class="mr-2 size-4 text-ink-gray-6"
+                    />
                   </template>
                   <template #item-prefix="{ option }">
-                    <component :is="option.icon" />
+                    <component
+                      :is="option.icon"
+                      class="size-4 text-ink-gray-6"
+                    />
                   </template>
                 </Autocomplete>
               </div>
@@ -267,7 +273,7 @@
         <div class="w-full flex items-center justify-end gap-2">
           <Button class="text-base" variant="outline" @click="getLink(entity)">
             <template #prefix>
-              <Link />
+              <LucideLink2 />
             </template>
             Copy Link
           </Button>
@@ -299,17 +305,20 @@ import {
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
-import Lock from "@/components/EspressoIcons/Lock.vue"
-import Globe from "@/components/EspressoIcons/Globe.vue"
-import Team from "@/components/EspressoIcons/Organization.vue"
-import Link from "@/components/EspressoIcons/Link.vue"
 
 import {
   getUsersWithAccess,
   updateAccess,
   allUsers,
 } from "@/resources/permissions"
-import { LucideCheck, LucideDiamond } from "lucide-vue-next"
+
+import {
+  LucideBuilding2,
+  LucideCheck,
+  LucideDiamond,
+  LucideLock,
+  LucideGlobe2,
+} from "lucide-vue-next"
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
@@ -348,7 +357,6 @@ const filteredUsers = computed(() => {
 })
 
 const accessOptions = computed(() => {
-  console.log(props.entity)
   return props.entity.write
     ? [
         { value: "reader", label: "Can view" },
@@ -382,10 +390,14 @@ const generalOptions = [
   {
     label: "Accessible to invited members",
     value: "restricted",
-    icon: markRaw(Lock),
+    icon: markRaw(LucideLock),
   },
-  { label: "Accessible to team only", value: "team", icon: markRaw(Team) },
-  { label: "Accessible to all", value: "public", icon: markRaw(Globe) },
+  {
+    label: "Accessible to team only",
+    value: "team",
+    icon: markRaw(LucideBuilding2),
+  },
+  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
 ]
 const generalAccessLevel = ref(generalOptions[0])
 const generalAccessType = ref({ value: "reader" })

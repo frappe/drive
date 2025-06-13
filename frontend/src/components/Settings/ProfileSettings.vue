@@ -44,7 +44,7 @@
             v-if="newImageUrl"
             class="flex items-center justify-between bg-gray-100 h-7 pl-2 text-base rounded"
           >
-            <Link class="mr-2" />
+            <LucideLink class="mr-2" />
             <a :href="newImageUrl" class="truncate max-w-56 underline">{{
               newImageUrl
             }}</a>
@@ -108,8 +108,7 @@ import {
   Autocomplete,
   createDocumentResource,
 } from "frappe-ui"
-import Link from "../EspressoIcons/Link.vue"
-import { X } from "lucide-vue-next"
+import { LucideLink, X } from "lucide-vue-next"
 import { useStore } from "vuex"
 import { ref, computed, watch } from "vue"
 import { getTeams } from "@/resources/files"

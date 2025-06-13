@@ -7,7 +7,7 @@
       { 'opacity-50 cursor-not-allowed': props.disabled },
     ]"
   >
-    <LucideEarth
+    <LucideGlobe2
       v-if="accessType === 'public'"
       :class="size == 'md' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />

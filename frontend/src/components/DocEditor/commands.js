@@ -1,11 +1,9 @@
 import { defineAsyncComponent } from "vue"
-import { Code } from "lucide-vue-next"
+import { Code, LucideLink2, LucideMessageCirclePlus } from "lucide-vue-next"
 import Bold from "./icons/Bold.vue"
 import Italic from "./icons/Italic.vue"
 import Strikethrough from "./icons/StrikeThrough.vue"
 import Underline from "./icons/Underline.vue"
-import { default as NewCommentIcon } from "../EspressoIcons/Comment.vue"
-import { default as NewLink } from "../EspressoIcons/Link.vue"
 import { TableCellsSplit, TableCellsMerge } from "lucide-vue-next"
 import ToggleHeaderCell from "./icons/ToggleHeaderCell.vue"
 
@@ -42,7 +40,7 @@ export default {
   },
   Link: {
     label: "New Link",
-    icon: NewLink,
+    icon: LucideLink2,
     isActive: (editor) => editor.isActive("link"),
     component: defineAsyncComponent(() =>
       import("./components/InsertLink.vue")
@@ -53,7 +51,7 @@ export default {
   },
   NewAnnotation: {
     label: "New Annotation",
-    icon: NewCommentIcon,
+    icon: LucideMessageCirclePlus,
     isActive: (editor) => editor.isActive("comment"),
     component: defineAsyncComponent(() =>
       import("./components/NewAnnotation.vue")
@@ -61,7 +59,7 @@ export default {
   },
   Comment: {
     label: "New Comment",
-    icon: NewLink,
+    icon: LucideMessageCirclePlus,
     isActive: (editor) => editor.isActive("comment"),
     component: defineAsyncComponent(() =>
       import("./components/NewComment.vue")

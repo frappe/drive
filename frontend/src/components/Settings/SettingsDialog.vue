@@ -47,34 +47,36 @@ import { ref, defineProps, markRaw, computed } from "vue"
 import { Dialog, Button } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
-import User from "@/components/EspressoIcons/User.vue"
-import AddUser from "@/components/EspressoIcons/AddUser.vue"
-import Cloud from "@/components/EspressoIcons/Cloud.vue"
 import UserListSettings from "./UserListSettings.vue"
-import { Tag } from "lucide-vue-next"
+import {
+  LucideCloudCog,
+  LucideTag,
+  LucideUser,
+  LucideUserPlus,
+} from "lucide-vue-next"
 import TagSettings from "./TagSettings.vue"
 
 let tabs = [
   {
     enabled: true,
     label: "Profile",
-    icon: User,
+    icon: LucideUser,
     component: markRaw(ProfileSettings),
   },
   {
     enabled: true,
     label: "Users",
-    icon: AddUser,
+    icon: LucideUserPlus,
     component: markRaw(UserListSettings),
   },
   {
     label: "Storage",
-    icon: Cloud,
+    icon: LucideCloudCog,
     component: markRaw(StorageSettings),
   },
   {
     label: "Tags",
-    icon: Tag,
+    icon: LucideTag,
     component: markRaw(TagSettings),
   },
 ]
