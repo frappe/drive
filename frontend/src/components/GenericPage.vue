@@ -82,16 +82,21 @@ import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import { RotateCcw } from "lucide-vue-next"
+import {
+  LucideClock,
+  LucideDownload,
+  LucideExternalLink,
+  LucideEye,
+  LucideInfo,
+  LucideLink2,
+  LucideMoveUpRight,
+  LucideRotateCcw,
+  LucideShare2,
+  LucideSquarePen,
+  LucideStar,
+  LucideTrash,
+} from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
-import Share from "./EspressoIcons/ShareNew.vue"
-import Download from "./EspressoIcons/Download.vue"
-import Link from "./EspressoIcons/Link.vue"
-import Rename from "./EspressoIcons/Rename.vue"
-import Move from "./EspressoIcons/Move.vue"
-import Info from "./EspressoIcons/Info.vue"
-import Preview from "./EspressoIcons/Preview.vue"
-import Trash from "./EspressoIcons/Trash.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -174,45 +179,45 @@ const actionItems = computed(() => {
     return [
       {
         label: "Restore",
-        icon: RotateCcw,
+        icon: LucideRotateCcw,
         action: () => (dialog.value = "restore"),
         multi: true,
         important: true,
       },
       {
         label: "Delete forever",
-        icon: Trash,
+        icon: LucideTrash,
         action: () => (dialog.value = "d"),
         isEnabled: () => route.name === "Trash",
         multi: true,
-        important: true,
+        danger: true,
       },
     ].filter((a) => !a.isEnabled || a.isEnabled())
   } else {
     return [
       {
         label: __("Preview"),
-        icon: Preview,
+        icon: LucideEye,
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => !e.is_link,
       },
       {
         label: __("Open"),
-        icon: "external-link",
+        icon: LucideExternalLink,
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => e.is_link,
       },
       { divider: true },
       {
         label: __("Share"),
-        icon: Share,
+        icon: LucideShare2,
         action: () => (dialog.value = "s"),
         isEnabled: (e) => e.share,
         important: true,
       },
       {
         label: __("Download"),
-        icon: Download,
+        icon: LucideDownload,
         isEnabled: (e) => !e.is_link,
         action: (entities) => entitiesDownload(team, entities),
         multi: true,
@@ -220,14 +225,14 @@ const actionItems = computed(() => {
       },
       {
         label: __("Copy Link"),
-        icon: Link,
+        icon: LucideLink2,
         action: ([entity]) => getLink(entity),
         important: true,
       },
       { divider: true },
       {
         label: __("Move"),
-        icon: Move,
+        icon: LucideMoveUpRight,
         action: () => (dialog.value = "m"),
         isEnabled: (e) => e.write,
         multi: true,
@@ -235,25 +240,25 @@ const actionItems = computed(() => {
       },
       {
         label: __("Rename"),
-        icon: Rename,
+        icon: LucideSquarePen,
         action: () => (dialog.value = "rn"),
         isEnabled: (e) => e.write,
       },
       {
         label: __("Show Info"),
-        icon: Info,
+        icon: LucideInfo,
         action: () => infoEntities.value.push(store.state.activeEntity),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
         label: __("Hide Info"),
-        icon: Info,
+        icon: LucideInfo,
         action: () => (dialog.value = "info"),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
         label: __("Favourite"),
-        icon: "star",
+        icon: LucideStar,
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = true))
           // Hack to cache
@@ -266,7 +271,7 @@ const actionItems = computed(() => {
       },
       {
         label: __("Unfavourite"),
-        icon: "star",
+        icon: LucideStar,
         class: "stroke-amber-500 fill-amber-500",
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = false))
@@ -279,7 +284,7 @@ const actionItems = computed(() => {
       },
       {
         label: __("Remove from Recents"),
-        icon: "clock",
+        icon: LucideClock,
         action: (entities) => {
           clearRecent.submit({
             entities,
@@ -292,7 +297,7 @@ const actionItems = computed(() => {
       { divider: true, isEnabled: (e) => e.write },
       {
         label: __("Delete"),
-        icon: Trash,
+        icon: LucideTrash,
         action: () => (dialog.value = "remove"),
         isEnabled: (e) => e.write,
         important: true,

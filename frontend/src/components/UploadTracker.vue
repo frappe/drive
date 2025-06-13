@@ -101,7 +101,7 @@
         >
           <div class="flex items-center justify-between w-full">
             <div class="flex justify-start items-center w-full max-w-[80%]">
-              <File class="w-5 mr-2" />
+              <LucideFile class="w-5 mr-2" />
               <p class="truncate text-sm leading-6 col-span-1 row-span-1">
                 {{ upload.name }}
               </p>
@@ -188,7 +188,7 @@
 import { mapGetters } from "vuex"
 import { FeatherIcon, Dialog } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
-import File from "./EspressoIcons/File.vue"
+import { LucideFile } from "lucide-vue-next"
 
 export default {
   name: "UploadTracker",
@@ -196,7 +196,7 @@ export default {
     FeatherIcon,
     ProgressRing,
     Dialog,
-    File,
+    LucideFile,
   },
   data() {
     return {

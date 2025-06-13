@@ -16,13 +16,7 @@
         >
           <slot name="icon">
             <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-              <FeatherIcon
-                v-if="typeof icon == 'string'"
-                :name="icon"
-                class="h-4.5 w-4.5 text-gray-700"
-              />
-
-              <component :is="icon" v-else class="h-4.5 w-4.5 text-gray-700" />
+              <component :is="icon" class="size-4 text-gray-700" />
             </span>
           </slot>
         </Tooltip>

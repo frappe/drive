@@ -9,7 +9,7 @@
       :is-collapsed="!props.isExpanded"
     >
       <template #icon>
-        <Cloud class="w-4" />
+        <LucideCloud class="w-4" />
       </template>
     </SidebarItem>
     <div class="w-auto mx-2 bg-gray-300 rounded-full h-1 my-2">
@@ -40,9 +40,9 @@
 import { ref, computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
-import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
 import { useRoute } from "vue-router"
+import { LucideCloud } from "lucide-vue-next"
 
 const emitter = inject("emitter")
 

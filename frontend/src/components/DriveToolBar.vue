@@ -109,12 +109,11 @@
               @click.stop="toggleAscending"
               :disabled="!getEntities.data?.length"
             >
-              <DownArrow
-                :class="{
-                  '[transform:rotateX(180deg)]': sortOrder.ascending,
-                }"
-                class="h-3.5"
+              <LucideArrowUpZa
+                v-if="sortOrder.ascending"
+                class="size-4 text-ink-gray-6"
               />
+              <LucideArrowDownAz v-else class="size-4 text-ink-gray-6" />
             </Button>
 
             <Button
@@ -137,7 +136,7 @@
         >
           <Tooltip text="Filter">
             <Button :disabled="!getEntities.data?.length">
-              <Filter />
+              <LucideFilter class="size-4 text-ink-gray-6" />
             </Button>
           </Tooltip>
         </Dropdown>
@@ -155,7 +154,7 @@
             ]"
             @click="store.commit('toggleView', 'grid')"
           >
-            <ViewGrid />
+            <LucideLayoutGrid class="size-4 text-ink-gray-6" />
           </Button>
           <Button
             :disabled="!getEntities.data?.length"
@@ -168,7 +167,7 @@
             ]"
             @click="store.commit('toggleView', 'list')"
           >
-            <ViewList />
+            <LucideLayoutList class="size-4 text-ink-gray-6" />
           </Button>
         </div>
       </template>
@@ -211,11 +210,16 @@ import { Button, FeatherIcon, Tooltip, Dropdown, TextInput } from "frappe-ui"
 import { ref, computed, watch, useTemplateRef } from "vue"
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
-import ViewGrid from "@/components/EspressoIcons/ViewGrid.vue"
-import ViewList from "@/components/EspressoIcons/ViewList.vue"
-import DownArrow from "./EspressoIcons/DownArrow.vue"
-import Filter from "./EspressoIcons/Filter.vue"
 import { onKeyDown } from "@vueuse/core"
+import {
+  LucideArrowDown,
+  LucideArrowDownAz,
+  LucideArrowDownZa,
+  LucideArrowUpAz,
+  LucideFilter,
+  LucideLayoutGrid,
+  LucideLayoutList,
+} from "lucide-vue-next"
 
 const rows = defineModel(Array)
 const props = defineProps({

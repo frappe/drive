@@ -26,16 +26,8 @@
         v-else
         class="group flex h-7 w-full items-center rounded px-2 text-base hover:bg-surface-gray-3 text-ink-gray-6"
       >
-        <FeatherIcon
-          v-if="typeof item.icon === 'string'"
-          :name="item.icon"
-          class="mr-2 h-4 w-4 flex-shrink-0"
-          :class="item.danger ? 'stroke-red-600' : 'text-ink-gray-7'"
-          aria-hidden="true"
-        />
         <component
           :is="item.icon"
-          v-else
           class="mr-2 h-4 w-4 flex-shrink-0"
           :class="item.danger ? 'text-[#E03636]' : 'text-ink-gray-7'"
         />

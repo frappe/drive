@@ -29,7 +29,7 @@
       />
       <SidebarItem
         :label="'Inbox'"
-        icon="inbox"
+        :icon="LucideInbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
         :to="'/t/' + team + '/notifications'"
@@ -77,20 +77,27 @@
 </template>
 <script setup>
 import PrimaryDropDown from "./PrimaryDropdown.vue"
-import { ArrowLeftFromLine, LucideCommand } from "lucide-vue-next"
-import Recent from "./EspressoIcons/Recent.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Home from "./EspressoIcons/Home.vue"
-import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
-import Team from "./EspressoIcons/Organization.vue"
 import StorageBar from "./StorageBar.vue"
+
 import { notifCount } from "@/resources/permissions"
+import { getTeams } from "@/resources/files"
+
 import { computed } from "vue"
 import { useStore } from "vuex"
-import Users from "./EspressoIcons/Users.vue"
 import { useRoute } from "vue-router"
-import { getTeams } from "../resources/files"
+
+import {
+  ArrowLeftFromLine,
+  LucideBuilding2,
+  LucideClock,
+  LucideUsers,
+  LucideTrash,
+  LucideHome,
+  LucideStar,
+  LucideCommand,
+  LucideInbox,
+} from "lucide-vue-next"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
@@ -107,32 +114,32 @@ const sidebarItems = computed(() => {
     {
       label: __("Home"),
       route: `/t/${team.value}/`,
-      icon: Home,
+      icon: LucideHome,
     },
     {
       label: __("Recents"),
       route: `/t/${team.value}/recents`,
-      icon: Recent,
+      icon: LucideClock,
     },
     {
       label: __("Favourites"),
       route: `/t/${team.value}/favourites`,
-      icon: Star,
+      icon: LucideStar,
     },
     {
       label: __("Team"),
       route: `/t/${team.value}/team`,
-      icon: Team,
+      icon: LucideBuilding2,
     },
     {
       label: __("Shared"),
       route: `/shared/`,
-      icon: Users,
+      icon: LucideUsers,
     },
     {
       label: __("Trash"),
       route: `/t/${team.value}/trash`,
-      icon: Trash,
+      icon: LucideTrash,
     },
   ]
   if (getTeams.data && getTeams.data[team.value]?.title === "Your Drive")

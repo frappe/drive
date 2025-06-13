@@ -24,7 +24,7 @@
         @keydown="createFolder.error = null"
       >
         <template #prefix>
-          <NewFolder />
+          <LucideFolderClosed class="size-4" />
         </template>
       </TextInput>
       <div
@@ -41,10 +41,9 @@
 import { ref, computed, useTemplateRef, watch } from "vue"
 import store from "@/store"
 import { Dialog, TextInput, createResource } from "frappe-ui"
-import NewFolder from "./EspressoIcons/Folder.vue"
-
 import { useRoute } from "vue-router"
 import { allFolders } from "../resources/files"
+
 const route = useRoute()
 const props = defineProps({
   modelValue: String,

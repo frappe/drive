@@ -42,9 +42,9 @@
               : 'ml-0 w-0 overflow-hidden opacity-0'
           "
         >
-          <FeatherIcon
-            :name="open ? 'chevron-up' : 'chevron-down'"
-            class="h-5 w-5 sm:inline text-gray-700"
+          <component
+            :is="open ? LucideChevronUp : LucideChevronDown"
+            class="size-4 text-gray-700"
           />
         </div>
       </button>
@@ -64,7 +64,6 @@ import { Dropdown, FeatherIcon } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
-import Docs from "@/components/EspressoIcons/Docs.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
@@ -72,6 +71,12 @@ import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import AppSwitcher from "./AppSwitcher.vue"
+import {
+  LucideBook,
+  LucideBadgeHelp,
+  LucideChevronDown,
+  LucideChevronUp,
+} from "lucide-vue-next"
 
 const router = useRouter()
 const route = useRoute()
@@ -109,12 +114,12 @@ const settingsItems = computed(() => {
           component: markRaw(AppSwitcher),
         },
         {
-          icon: Docs,
+          icon: LucideBook,
           label: __("Documentation"),
           onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
         },
         {
-          icon: "life-buoy",
+          icon: LucideBadgeHelp,
           label: __("Support"),
           onClick: () => window.open("https://t.me/frappedrive", "_blank"),
         },

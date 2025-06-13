@@ -74,7 +74,11 @@
                           : 'group',
                       ]"
                     >
-                      <Folder class="mr-1" />
+                      <LucideFolderClosed
+                        v-if="isCollapsed"
+                        class="mr-1 size-4"
+                      />
+                      <LucideFolder v-else class="mr-1 size-4" />
                       <div v-if="node.value === null" class="overflow-visible">
                         <Input
                           @click.stop
@@ -120,31 +124,14 @@
         <div class="flex items-center justify-between max-h-7">
           <div class="flex flex-col">
             <div class="flex items-center my-auto justify-start">
-              <p class="text-sm pr-1">Moving to:</p>
+              <p class="text-sm pr-0.5">Moving to:</p>
               <Dropdown
                 v-if="dropDownBreadcrumbs.length"
                 class="h-7"
                 :options="dropDownBreadcrumbs"
               >
                 <Button variant="ghost">
-                  <template #icon>
-                    <svg
-                      class="w-4 text-gray-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="1" />
-                      <circle cx="19" cy="12" r="1" />
-                      <circle cx="5" cy="12" r="1" />
-                    </svg>
-                  </template>
+                  <LucideEllipsis class="size-3.5" />
                 </Button>
               </Dropdown>
               <span
@@ -192,7 +179,7 @@
             "
           >
             <template #prefix>
-              <Move />
+              <LucideMoveUpRight class="size-4" />
             </template>
             Move
           </Button>
@@ -215,14 +202,16 @@ import {
   Input,
 } from "frappe-ui"
 import { move, allFolders } from "@/resources/files"
-import Home from "./EspressoIcons/Home.vue"
-import Team from "./EspressoIcons/Organization.vue"
-import Move from "./EspressoIcons/Move.vue"
-import Folder from "./EspressoIcons/Folder.vue"
+
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { LucideChevronDown } from "lucide-vue-next"
-import Tooltip from "frappe-ui/src/components/Tooltip/Tooltip.vue"
+import {
+  LucideBuilding2,
+  LucideChevronDown,
+  LucideFolder,
+  LucideHome,
+  LucideMoveUpRight,
+} from "lucide-vue-next"
 
 const route = useRoute()
 const currentFolder = ref("")
@@ -309,11 +298,11 @@ const dropDownBreadcrumbs = computed(() => {
 const tabs = [
   {
     label: "Home",
-    icon: h(Home, { class: "w-4 h-4" }),
+    icon: h(LucideHome, { class: "size-4" }),
   },
   {
     label: "Team",
-    icon: h(Team, { class: "w-4 h-4" }),
+    icon: h(LucideBuilding2, { class: "size-4" }),
   },
   // {
   //   label: "Favourites",

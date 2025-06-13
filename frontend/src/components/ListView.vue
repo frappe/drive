@@ -89,11 +89,10 @@ import ContextMenu from "@/components/ContextMenu.vue"
 import CustomListRow from "./CustomListRow.vue"
 import { openEntity } from "@/utils/files"
 import { formatDate } from "@/utils/format"
-import Users from "./EspressoIcons/Users.vue"
-import Globe from "./EspressoIcons/Globe.vue"
-import Team from "./EspressoIcons/Organization.vue"
+
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import { LucideBuilding2, LucideUsers, LucideGlobe2 } from "lucide-vue-next"
 
 const store = useStore()
 const route = useRoute()
@@ -172,9 +171,10 @@ const selectedColumns = [
       return "-"
     },
     prefix: ({ row }) => {
-      if (row.share_count === -2) return h(Globe)
-      else if (row.share_count === -1) return h(Team)
-      else if (row.share_count > 0) return h(Users)
+      if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
+      else if (row.share_count === -1)
+        return h(LucideBuilding2, { class: "size-4" })
+      else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
     },
     width: "10%",
   },

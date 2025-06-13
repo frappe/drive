@@ -854,9 +854,8 @@ import { v4 as uuidv4 } from "uuid"
 import { defineAsyncComponent, markRaw } from "vue"
 import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
-import Info from "@/components/EspressoIcons/Info.vue"
-import Comment from "@/components/EspressoIcons/Comment.vue"
 import { entitiesDownload } from "@/utils/download"
+
 import {
   Plus,
   Minus,
@@ -870,10 +869,14 @@ import {
   MessageCircle,
   FileText,
   FileClock,
+  LucideInfo,
+  LucideMessageCircle,
+  Code,
+  Code2,
+  Table2Icon,
+  LucideClock,
 } from "lucide-vue-next"
-import { Code } from "lucide-vue-next"
-import { Code2 } from "lucide-vue-next"
-import { Table2Icon } from "lucide-vue-next"
+
 import "@fontsource/lora"
 import "@fontsource/geist-mono"
 import "@fontsource/nunito"
@@ -903,7 +906,6 @@ import { TiptapTransformer } from "@hocuspocus/transformer"
 import { fromUint8Array, toUint8Array } from "js-base64"
 import { formatDate, formatSize } from "@/utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
-import Clock from "../../EspressoIcons/Clock.vue"
 import ActivityTree from "../../ActivityTree.vue"
 import { generalAccess, userList } from "@/resources/permissions"
 
@@ -917,8 +919,6 @@ export default {
     TagInput,
     Tag,
     OuterCommentVue,
-    Info,
-    Comment,
     Popover,
     InsertImage: defineAsyncComponent(() => import("./InsertImage.vue")),
     InsertVideo: defineAsyncComponent(() => import("./InsertVideo.vue")),
@@ -967,7 +967,6 @@ export default {
     GeneralAccess,
     AnnotationList,
     ActivityTree,
-    Clock,
   },
   inject: ["editor", "document"],
   emits: ["update:allComments", "update:activeAnnotation"],
@@ -1020,16 +1019,8 @@ export default {
         },
         {
           name: "Information",
-          icon: markRaw(Info),
+          icon: markRaw(LucideInfo),
           write: false,
-        },
-        {
-          name: "Comments",
-          icon: markRaw(Comment),
-          write: false,
-          disabled:
-            this.$store.state.activeEntity.comment === 0 ||
-            this.$store.state.activeEntity.owner !== this.$store.state.user.id,
         },
         {
           name: "Versions",
@@ -1039,7 +1030,7 @@ export default {
         },
         {
           name: "Clock",
-          icon: markRaw(Clock),
+          icon: markRaw(LucideClock),
           write: false,
           disabled: this.$store.state.user.id === "Guest",
         },

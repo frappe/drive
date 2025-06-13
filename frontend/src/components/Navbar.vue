@@ -5,8 +5,14 @@
     class="bg-white border-b w-full px-4 py-2.5 h-12 flex items-center justify-between"
   >
     <Breadcrumbs :items="store.state.breadcrumbs" :class="'select-none'">
-      <template #prefix="{ item }">
+      <template #prefix="{ item, index }">
         <LoadingIndicator v-if="item.loading" width="20" scale="70" />
+        <div v-if="index == 0" class="mr-1.5">
+          <component
+            :is="COMPONENT_MAP[item.name]"
+            class="size-4 text-ink-gray-6"
+          />
+        </div>
       </template>
     </Breadcrumbs>
 
@@ -82,11 +88,6 @@ import {
   Tooltip,
 } from "frappe-ui"
 import { useStore } from "vuex"
-import NewFolder from "./EspressoIcons/NewFolder.vue"
-import Link from "./EspressoIcons/Link.vue"
-import FileUpload from "./EspressoIcons/File-upload.vue"
-import FolderUpload from "./EspressoIcons/Folder-upload.vue"
-import NewFile from "./EspressoIcons/NewFile.vue"
 import emitter from "@/emitter"
 import { ref, computed } from "vue"
 import { entitiesDownload } from "@/utils/download"
@@ -98,13 +99,35 @@ import {
   toggleFav,
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
-import Share from "./EspressoIcons/ShareNew.vue"
-import Download from "./EspressoIcons/Download.vue"
-import Rename from "./EspressoIcons/Rename.vue"
-import Move from "./EspressoIcons/Move.vue"
-import Info from "./EspressoIcons/Info.vue"
-import Trash from "./EspressoIcons/Trash.vue"
 
+import {
+  LucideClock,
+  LucideHome,
+  LucideTrash,
+  LucideUsers,
+  LucideBuilding2,
+  LucideStar,
+  LucideShare2,
+  LucideDownload,
+  LucideLink,
+  LucideMoveUpRight,
+  LucideSquarePen,
+  LucideInfo,
+  LucideFileUp,
+  LucideUpload,
+  LucideFolderUp,
+  LucideFilePlus2,
+  LucideFolderPlus,
+} from "lucide-vue-next"
+
+const COMPONENT_MAP = {
+  Home: LucideHome,
+  Team: LucideBuilding2,
+  Favourites: LucideStar,
+  Shared: LucideUsers,
+  Trash: LucideTrash,
+  Recents: LucideClock,
+}
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
@@ -125,48 +148,48 @@ const dropdownAction = computed(() => {
   return [
     {
       label: __("Share"),
-      icon: Share,
+      icon: LucideShare2,
       onClick: () => (dialog.value = "s"),
       isEnabled: () => rootEntity.value.share,
     },
     {
       label: __("Download"),
-      icon: Download,
+      icon: LucideDownload,
       onClick: () => entitiesDownload(route.params.team, [rootEntity.value]),
     },
     {
       label: __("Copy Link"),
-      icon: Link,
+      icon: LucideLink,
       onClick: () => getLink(rootEntity.value),
     },
     { divider: true },
     {
       label: __("Move"),
-      icon: Move,
+      icon: LucideMoveUpRight,
       onClick: () => (dialog.value = "m"),
       isEnabled: () => rootEntity.value.write,
     },
     {
       label: __("Rename"),
-      icon: Rename,
+      icon: LucideSquarePen,
       onClick: () => (dialog.value = "rn"),
       isEnabled: () => rootEntity.value.write,
     },
     {
       label: __("Show Info"),
-      icon: Info,
+      icon: LucideInfo,
       onClick: () => infoEntities.value.push(store.state.activeEntity),
       isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
     },
     {
       label: __("Hide Info"),
-      icon: Info,
+      icon: LucideInfo,
       onClick: () => (dialog.value = "info"),
       isEnabled: () => store.state.activeEntity && store.state.showInfo,
     },
     {
       label: __("Favourite"),
-      icon: "star",
+      icon: LucideStar,
       onClick: () => {
         rootEntity.value.is_favourite = true
         toggleFav.submit({
@@ -177,8 +200,8 @@ const dropdownAction = computed(() => {
     },
     {
       label: __("Unfavourite"),
-      icon: "star",
-      class: "stroke-amber-500 fill-amber-500",
+      icon: LucideStar,
+      color: "stroke-amber-500 fill-amber-500",
       onClick: () => {
         rootEntity.value.is_favourite = false
         toggleFav.submit({
@@ -190,7 +213,7 @@ const dropdownAction = computed(() => {
     { divider: true },
     {
       label: __("Delete"),
-      icon: Trash,
+      icon: LucideTrash,
       onClick: () => (dialog.value = "remove"),
       isEnabled: () => rootEntity.value.write,
       color: "text-ink-red-4",
@@ -242,12 +265,12 @@ const newEntityOptions = [
     items: [
       {
         label: "Upload File",
-        icon: FileUpload,
+        icon: LucideFileUp,
         onClick: () => emitter.emit("uploadFile"),
       },
       {
         label: "Upload Folder",
-        icon: FolderUpload,
+        icon: LucideFolderUp,
         onClick: () => emitter.emit("uploadFolder"),
       },
     ],
@@ -257,18 +280,18 @@ const newEntityOptions = [
     items: [
       {
         label: "Document",
-        icon: NewFile,
+        icon: LucideFilePlus2,
         onClick: newDocument,
       },
       {
         label: "Folder",
-        icon: NewFolder,
+        icon: LucideFolderPlus,
         onClick: () => emitter.emit("newFolder"),
       },
 
       {
         label: "New Link",
-        icon: Link,
+        icon: LucideLink,
         onClick: () => emitter.emit("newLink"),
       },
     ],

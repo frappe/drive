@@ -7,15 +7,15 @@
       { 'opacity-50 cursor-not-allowed': props.disabled },
     ]"
   >
-    <Globe
+    <LucideEarth
       v-if="accessType === 'public'"
       :class="size == 'md' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />
-    <Team
+    <LucideBuilding
       v-else-if="accessType === 'team'"
       :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />
-    <Lock
+    <LucideLock
       v-else
       class=""
       :class="size == 'md' ? 'h-[80%] w-[80%]' : 'h-[65%] w-[65%]'"
@@ -23,9 +23,6 @@
   </div>
 </template>
 <script setup>
-import Lock from "@/components/EspressoIcons/Lock.vue"
-import Globe from "./EspressoIcons/Globe.vue"
-import Team from "./EspressoIcons/Organization.vue"
 import { computed } from "vue"
 
 const props = defineProps({

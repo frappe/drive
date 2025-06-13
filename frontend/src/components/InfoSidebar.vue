@@ -9,7 +9,6 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
         >
-          <!-- <Info /> -->
           {{ __("Information") }}
         </span>
         <div v-if="thumbnailUrl[2]" class="h-[210px] w-full mb-4">
@@ -175,7 +174,7 @@
       variant="minimal"
       @click="switchTab(0)"
     >
-      <Info />
+      <LucideInfo />
     </Button>
     <Button
       v-if="entity?.comment"
@@ -184,7 +183,7 @@
       variant="minimal"
       @click="switchTab(1)"
     >
-      <Comment />
+      <LucideMessageCircle />
     </Button>
     <Button
       v-if="entity?.write"
@@ -193,7 +192,7 @@
       variant="minimal"
       @click="switchTab(2)"
     >
-      <Clock />
+      <LucideClock />
     </Button>
   </div>
 </template>
@@ -205,12 +204,10 @@ import { Avatar, call, createResource, Tooltip } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"
-import Info from "./EspressoIcons/Info.vue"
-import Comment from "./EspressoIcons/Comment.vue"
-import Clock from "./EspressoIcons/Clock.vue"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
 import { generalAccess, userList } from "@/resources/permissions"
+import { LucideMessageCircle } from "lucide-vue-next"
 
 const store = useStore()
 const tab = ref(0)

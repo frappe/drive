@@ -177,11 +177,15 @@ import GridItem from "./GridItem.vue"
 import { watch, defineEmits, computed, h, ref } from "vue"
 import { useTimeAgo } from "@vueuse/core"
 import { createResource, Dialog, Button, Tabs, Dropdown } from "frappe-ui"
-import { Plus, Upload } from "lucide-vue-next"
-import Home from "./EspressoIcons/Home.vue"
-import Recent from "./EspressoIcons/Recent.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Users from "./EspressoIcons/Users.vue"
+import {
+  LucideClock,
+  LucideHome,
+  LucidePlus,
+  LucideStar,
+  LucideUsers,
+  Plus,
+  Upload,
+} from "lucide-vue-next"
 
 import { formatSize, formatDate } from "@/utils/format"
 import { useStore } from "vuex"
@@ -234,24 +238,24 @@ const open = computed({
 const tabs = [
   {
     label: "Home",
-    icon: h(Home, { class: "w-4 h-4" }),
+    icon: h(LucideHome, { class: "w-4 h-4" }),
     component: NoFilesSection,
   },
   {
     label: "Recents",
-    icon: h(Recent, { class: "w-4 h-4" }),
+    icon: h(LucideClock, { class: "w-4 h-4" }),
   },
   {
     label: "Favourite",
-    icon: h(Star, { class: "w-4 h-4" }),
+    icon: h(LucideStar, { class: "w-4 h-4" }),
   },
   {
     label: "Shared",
-    icon: h(Users, { class: "w-4 h-4" }),
+    icon: h(LucideUsers, { class: "w-4 h-4" }),
   },
   {
     label: "Upload",
-    icon: h(Plus, { class: "w-4 h-4 stroke-[1.5]" }),
+    icon: h(LucidePlus, { class: "w-4 h-4 stroke-[1.5]" }),
   },
 ]
 

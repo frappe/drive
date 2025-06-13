@@ -12,7 +12,7 @@
         class="h-6 px-2 hover:bg-gray-100 text-sm cursor-pointer rounded-[5px] flex justify-start items-center w-full"
         @click="togglePopover()"
       >
-        <Palette class="h-4 w-auto mr-2 text-gray-800" />
+        <LucidePalette class="h-4 w-auto mr-2 text-gray-800" />
         <div class="text-gray-800">Color</div>
         <FeatherIcon
           :name="'chevron-right'"
@@ -42,11 +42,10 @@
 
 <script>
 import { Popover, FeatherIcon } from "frappe-ui"
-import Palette from "./EspressoIcons/Palette.vue"
 
 export default {
   name: "ColorPopover",
-  components: { Popover, FeatherIcon, Palette },
+  components: { Popover, FeatherIcon },
   props: {
     entityName: {
       type: String,
