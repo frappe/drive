@@ -86,8 +86,14 @@
                       :key="user.name"
                       :label="user.email"
                       variant="outline"
-                      class="shadow-sm m-0.5 h-[24px]"
+                      class="shadow-sm m-0.5 py-1"
                     >
+                      <template #prefix>
+                        <Avatar
+                          :image="user.image"
+                          :label="user.email"
+                        />
+                      </template>
                       <template #suffix>
                         <LucideX
                           class="h-4"
@@ -298,7 +304,7 @@
             @click="getLink(entity)"
           >
             <template #prefix>
-              <LucideLink2 />
+              <LucideLink2 class="w-4 text-ink-gray-6" />
             </template>
             Copy Link
           </Button>
