@@ -6,7 +6,7 @@
     <div v-if="icon">
       <component
         :is="icon"
-        class="w-14 stroke-[0] h-auto text-ink-gray-4 pb-4"
+        class="size-14 text-ink-gray-6 pb-4"
       />
     </div>
     <svg
