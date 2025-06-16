@@ -885,11 +885,10 @@ def move(entity_names, new_parent=None, is_private=None):
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
         res = doc.move(new_parent, is_private)
-
     print(res)
     if res["title"] == "Drive - " + res["team"]:
         res["title"] = "Home" if res["is_private"] else "Team"
-    print(res)
+
     return res
 
 

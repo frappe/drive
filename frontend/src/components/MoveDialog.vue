@@ -113,7 +113,13 @@
                           @keydown.enter="openEntity(node)"
                         />
                       </div>
-                      <span v-else>{{ node.label }}</span>
+                      <span v-else
+                        >{{ node.label }}
+                        <em
+                          v-if="$store.state.currentFolder.name === node.value"
+                          >(current)</em
+                        ></span
+                      >
                       <Button
                         class="shrink hidden group-hover:block ml-auto"
                         :class="{
