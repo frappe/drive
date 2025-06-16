@@ -15,7 +15,7 @@
 }
 
 .prose-sm .tableWrapper {
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .prose-sm table {

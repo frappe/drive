@@ -1,5 +1,8 @@
 <template>
-  <editor-content v-if="editor" :editor="editor" />
+  <editor-content
+    v-if="editor"
+    :editor="editor"
+  />
 </template>
 
 <script setup>
@@ -48,7 +51,7 @@ const diffContent = ref()
 const store = useStore()
 const currentEditor = inject("editor")
 
-const entity = computed(() => store.state.entityInfo[0])
+const entity = computed(() => store.state.activeEntity)
 
 const props = defineProps({
   yjsUpdate: {
@@ -91,19 +94,19 @@ onMounted(() => {
             HTMLAttributes: {
               spellcheck: false,
               class:
-                "not-prose my-5 px-4 py-2 text-[0.9em] font-mono text-black bg-gray-50 rounded border border-gray-300 overflow-x-auto",
+                "not-prose my-5 px-4 py-2 text-[0.9em] font-mono text-black bg-surface-menu-bar rounded border border-outline-gray-2 overflow-x-auto",
             },
           },
           blockquote: {
             HTMLAttributes: {
               class:
-                "prose-quoteless text-black border-l-2 pl-2 border-gray-400 text-[0.9em]",
+                "prose-quoteless text-black border-l-2 pl-2 border-outline-gray-3 text-[0.9em]",
             },
           },
           code: {
             HTMLAttributes: {
               class:
-                "not-prose px-px font-mono bg-gray-50 text-[0.85em] rounded-sm border border-gray-300",
+                "not-prose px-px font-mono bg-surface-menu-bar text-[0.85em] rounded-sm border border-outline-gray-2",
             },
           },
           bulletList: {
@@ -175,7 +178,7 @@ onMounted(() => {
         attributes: {
           /* !p-0 to offset .Prosemirror */
           class: normalizeClass([
-            `text-[14px] !p-0 mx-2 my-4 prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-gray-300 prose-th:border-gray-300 prose-td:relative prose-th:relative prose-th:bg-gray-100 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
+            `text-[14px] !p-0 mx-2 my-4 prose prose-sm prose-table:table-fixed prose-td:p-2 prose-th:p-2 prose-td:border prose-th:border prose-td:border-outline-gray-2 prose-th:border-outline-gray-2 prose-td:relative prose-th:relative prose-th:bg-surface-gray-2 rounded-b-lg max-w-[unset] pb-[50vh] md:px-[70px]`,
           ]),
         },
       },

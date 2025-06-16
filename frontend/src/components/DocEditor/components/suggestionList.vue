@@ -1,23 +1,29 @@
 <template>
   <div
     ref="scrollContainer"
-    class="flex w-44 flex-col rounded-md border bg-white p-1.5 text-base shadow gap-y-0.5 overflow-y-auto"
+    class="flex w-44 flex-col rounded-md border bg-surface-white p-1.5 text-base shadow gap-y-0.5 overflow-y-auto"
   >
     <template v-if="enabledItems.length">
-      <div v-for="(item, index) in enabledItems" :key="index">
+      <div
+        v-for="(item, index) in enabledItems"
+        :key="index"
+      >
         <span
           v-if="item.type"
-          class="flex w-full p-1 text-sm font-medium text-gray-600"
+          class="flex w-full p-1 text-sm font-medium text-ink-gray-5"
           >{{ item.title }}</span
         >
         <button
           v-else
           class="flex h-7 w-full cursor-pointer items-center rounded-[0.4rem] px-1 text-base"
-          :class="{ 'bg-gray-100': index === selectedIndex }"
+          :class="{ 'bg-surface-gray-2': index === selectedIndex }"
           @click="selectItem(index)"
           @mouseenter="selectedIndex = index"
         >
-          <component :is="item.icon" class="mr-2 h-4 w-4 text-gray-600" />
+          <component
+            :is="item.icon"
+            class="mr-2 size-4 text-ink-gray-5"
+          />
           {{ item.title }}
           <component
             :is="item.component"
@@ -31,7 +37,12 @@
         </button>
       </div>
     </template>
-    <div v-else class="item">No result</div>
+    <div
+      v-else
+      class="item"
+    >
+      No result
+    </div>
   </div>
 </template>
 

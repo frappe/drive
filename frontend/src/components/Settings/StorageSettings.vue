@@ -1,8 +1,10 @@
 <template>
-  <h1 class="font-semibold mb-4">Storage</h1>
+  <h1 class="font-semibold mb-4 text-ink-gray-9">
+    {{ __("Storage") }}
+  </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
-    <span class="text-base font-medium text-gray-900"
+    <span class="text-base font-medium text-ink-gray-8"
       >{{ showFileStorage ? "You have" : "Your team has" }} used
       {{ formatSize(usedSpace) ? formatSize(usedSpace) + " out" : "none" }} of
       {{ showFileStorage ? "your" : "" }} {{ base2BlockSize(spaceLimit) }} ({{
@@ -10,43 +12,49 @@
       }})</span
     >
     <div
-      class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
+      class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
     >
       <Button
         variant="ghost"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           showFileStorage === true
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="showFileStorage = true"
       >
-        You
+        {{ __("You") }}
       </Button>
       <Button
         variant="ghost"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           showFileStorage === false
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="showFileStorage = false"
       >
-        Team
+        {{ __("Team") }}
       </Button>
     </div>
   </div>
   <div
     v-if="usedSpace > 0"
-    class="w-full flex justify-start items-start bg-gray-50 border rounded overflow-clip h-7 pl-0 mb-4"
+    class="w-full flex justify-start items-start bg-surface-menu-bar border rounded overflow-clip h-7 pl-0 mb-4"
   >
     <Tooltip
       v-for="[file_kind, i] in storageBreakdown.data?.total"
       :key="file_kind"
-      :text="`${i.kind} <br/>${i.h_size} (${i.percentageFormat})`"
     >
+      <template #body>
+        <div
+          class="text-center rounded bg-surface-gray-7 px-2 py-1 text-xs text-ink-white shadow-xl"
+        >
+          {{ i.kind }} <br />{{ i.h_size }} ({{ i.percentageFormat }})
+        </div>
+      </template>
       <div
         class="h-7"
         :style="{
@@ -54,18 +62,18 @@
           width: i.percentageFormat,
           paddingRight: `${1 + i.percentageRaw}px`,
         }"
-      ></div>
+      />
     </Tooltip>
   </div>
   <div
     v-if="!usedSpace"
     class="w-full flex flex-col items-center justify-center my-10"
   >
-    <Cloud class="h-7 stroke-1 text-gray-600" />
-    <span class="text-gray-800 text-sm mt-2">No Storage Used</span>
+    <LucideCloud class="h-7 stroke-1 text-ink-gray-5" />
+    <span class="text-ink-gray-8 text-sm mt-2">No Storage Used</span>
   </div>
   <div
-    class="mt-1 text-gray-800 text-base py-2"
+    class="mt-1 text-ink-gray-8 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
     Large Files:
@@ -81,18 +89,18 @@
       @mouseenter="hoveredRow = i.name"
       @mouseleave="hoveredRow = null"
     >
-      <img :src="getIconUrl(formatMimeType(i.mime_type))" />
-      <span class="text-gray-800 text-sm">{{ i.title }}</span>
+      <img :src="getIconUrl(i.file_type)" />
+      <span class="text-ink-gray-8 text-sm truncate">{{ i.title }}</span>
 
-      <div class="text-gray-800 text-sm ml-auto flex gap-2 h-10 leading-10">
-        <div v-if="hoveredRow === i.name">
-          <Button
-            class="!p-1 !py-0 !h-6"
-            variant="ghost"
-            @click="openEntity($route.params.team, i), $emit('close')"
-            ><FeatherIcon name="arrow-right" class="w-4 h-4 !p-0 text-gray-600"
-          /></Button>
-        </div>
+      <div class="text-ink-gray-8 text-sm ml-auto flex gap-2 h-10 leading-10">
+        <Button
+          v-if="hoveredRow === i.name"
+          variant="ghost"
+          class="self-center"
+          @click="openEntity($route.params.team, i), $emit('close')"
+        >
+          <LucideArrowRight class="size-4 text-ink-gray-5" />
+        </Button>
         {{ formatSize(i.file_size) }}
       </div>
     </div>
@@ -108,18 +116,16 @@
 import {
   formatSize,
   base2BlockSize,
-  formatMimeType,
   COLOR_MAP,
   formatPercent,
 } from "@/utils/format"
-import Cloud from "@/components/EspressoIcons/Cloud.vue"
-import FeatherIcon from "frappe-ui/src/components/FeatherIcon.vue"
 import { Tooltip } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createResource } from "frappe-ui"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
+import { LucideCloud } from "lucide-vue-next"
 
 const hoveredRow = ref(null)
 const showFileStorage = ref(true)

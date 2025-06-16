@@ -7,25 +7,22 @@
       { 'opacity-50 cursor-not-allowed': props.disabled },
     ]"
   >
-    <Globe
+    <LucideGlobe2
       v-if="accessType === 'public'"
+      :class="size == 'md' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
+    />
+    <LucideBuilding
+      v-else-if="accessType === 'team'"
       :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
     />
-    <!-- <Team
-      v-if="accessType === 'public'"
-      :class="size == 'sm' ? 'h-[90%] w-[90%]' : 'h-[70%] w-[70%]'"
-    /> -->
-    <Lock
+    <LucideLock
       v-else
       class=""
-      :class="size == 'sm' ? 'h-[80%] w-[80%]' : 'h-[65%] w-[65%]'"
+      :class="size == 'md' ? 'h-[80%] w-[80%]' : 'h-[65%] w-[65%]'"
     />
   </div>
 </template>
 <script setup>
-import Lock from "@/components/EspressoIcons/Lock.vue"
-import Globe from "./EspressoIcons/Globe.vue"
-import Team from "./EspressoIcons/Organization.vue"
 import { computed } from "vue"
 
 const props = defineProps({
@@ -45,17 +42,19 @@ const props = defineProps({
 
 const colorClasses = computed(() => {
   if (props.disabled) {
-    return "bg-gray-300 text-gray-500"
+    return "bg-surface-gray-4 text-ink-gray-4"
+  } else if (props.accessType === "team") {
+    return "bg-surface-blue-2 text-ink-blue-2"
   } else if (props.accessType === "public") {
-    return "bg-red-100 text-red-500"
+    return "bg-surface-red-2 text-ink-red-3"
   }
-  return "text-gray-700 bg-gray-300"
+  return "text-ink-gray-7 bg-surface-gray-4"
 })
 
 const sizeClasses = computed(() => {
   return {
     xs: "w-3 h-3",
-    sm: "w-4 h-4",
+    sm: "size-4",
     md: "w-6 h-6",
     lg: "w-7 h-7",
     xl: "w-8 h-8",

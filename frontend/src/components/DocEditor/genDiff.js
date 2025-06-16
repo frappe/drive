@@ -1,6 +1,5 @@
 import { diff, diffCleanupSemantic } from "diff-match-patch-es"
 import { Fragment, Node } from "prosemirror-model"
-import * as JsDiff from "diff"
 import { DiffType } from "./extensions/diffType"
 
 // function to add marks on a document node by node

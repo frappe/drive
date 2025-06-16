@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-
 export function formatSize(size, nDigits = 1) {
   if (size === 0) return ""
   const k = 1000 // Change base to 1000 for decimal prefixes
@@ -24,6 +23,7 @@ export function base2BlockSize(bytes) {
 }
 
 export function formatDate(date) {
+  if (!date) return ""
   const dateObj = new Date(date)
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const hourCycle = navigator.language || "en-US"
@@ -36,45 +36,6 @@ export function formatDate(date) {
     formattedTime = format(dateObj, "HH:mm", { timeZone })
   }
   return `${formattedDate}, ${formattedTime}`
-}
-
-export function formatMimeType(mimeType) {
-  let icon = "unknown"
-  if (!mimeType) return icon
-  const generic = mimeType.split("/")[0]
-  const specific = mimeType.split("/")[1]
-  if (["image", "video", "audio"].includes(generic)) icon = generic
-  else if (generic === "frappe_doc") icon = "Frappe Doc"
-  else if (generic === "link") icon = "Link"
-  else if (generic === "frappe_whiteboard") icon = "Frappe Whiteboard"
-  else
-    switch (specific) {
-      case "pdf":
-        icon = "pdf"
-        break
-      case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        icon = "spreadsheet"
-        break
-      case "vnd.openxmlformats-officedocument.presentationml.presentation":
-        icon = "presentation"
-        break
-      case "vnd.openxmlformats-officedocument.wordprocessingml.document":
-        icon = "word"
-        break
-      case "msword":
-        icon = "word"
-        break
-      case "zip":
-        icon = "zip"
-        break
-      case "x-tar":
-        icon = "zip"
-        break
-      case "x-7z-compressed":
-        icon = "zip"
-        break
-    }
-  return icon
 }
 
 export function getDateDiffInDays(date1, date2) {

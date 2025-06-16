@@ -1,34 +1,35 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden sm:bg-gray-50">
+  <div class="flex h-screen w-full overflow-hidden sm:bg-surface-menu-bar">
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
-          <!-- logo -->
           <div
             class="flex flex-col items-center"
             @dblclick="window.location.href = '/f-login'"
           >
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
-          <!-- card -->
           <div
-            class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
             <div class="mb-7.5 text-center">
-              <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
+              <p class="mb-2 text-2xl font-semibold leading-6 text-ink-gray-9">
                 Welcome to Drive
               </p>
               <p
-                class="break-words text-base font-normal leading-[21px] text-gray-700"
+                class="break-words text-base font-normal leading-[21px] text-ink-gray-7"
               >
                 We're glad you're here.
               </p>
             </div>
 
-            <div v-if="domainTeams.loading" class="flex justify-center py-8">
+            <div
+              v-if="domainTeams.loading"
+              class="flex justify-center py-8"
+            >
               <div
                 class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"
-              ></div>
+              />
             </div>
             <div class="flex flex-col text-md gap-2">
               <p>
@@ -46,9 +47,9 @@
               </p>
               <FormControl
                 v-if="typeof team_name === 'string'"
+                v-model="team_name"
                 label="Team Name"
                 class="py-2"
-                v-model="team_name"
                 type="text"
                 required
               />
@@ -57,8 +58,9 @@
                   variant="subtle"
                   class="w-100"
                   @click="createPersonalTeam.submit()"
-                  >Create Personal</Button
                 >
+                  Create Personal
+                </Button>
                 <Button
                   v-if="domainTeams.data.length"
                   variant="solid"
@@ -102,7 +104,7 @@ import { useStore } from "vuex"
 const route = useRoute()
 const store = useStore()
 const team_name = ref(null)
-const email = computed(() => store.state.auth.user_id)
+const email = computed(() => store.state.user.id)
 
 const domainTeams = createResource({
   url: "drive.api.product.get_domain_teams",
@@ -120,7 +122,7 @@ const createPersonalTeam = createResource({
   }),
   onSuccess: (data) => {
     if (data) {
-      window.location.replace("/t/" + data)
+      window.location.replace("/drive/t/" + data)
     } else {
       window.location.reload()
     }

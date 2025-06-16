@@ -4,8 +4,8 @@
     class="border max-w-[220px] rounded-[7px] px-1 py-1 gap-x-1 flex items-center justify-center overflow-clip text-sm"
     :class="
       activity.action_type === 'share_remove'
-        ? 'strike-div text-gray-500'
-        : 'text-gray-700'
+        ? 'strike-div text-ink-gray-4'
+        : 'text-ink-gray-7'
     "
   >
     <Avatar
@@ -24,7 +24,7 @@
           : activity.new_value
       }}</span>
       <span>∙</span>
-      <span class="text-gray-600">
+      <span class="text-ink-gray-5">
         {{
           activity.meta_value === "1"
             ? "View"
@@ -40,8 +40,8 @@
     class="border max-w-[220px] rounded-[7px] px-1 py-1 gap-x-1 flex items-center justify-center overflow-clip text-sm"
     :class="
       activity.action_type === 'share_remove'
-        ? 'strike-div text-gray-400'
-        : 'text-gray-800'
+        ? 'strike-div text-ink-gray-3'
+        : 'text-ink-gray-8'
     "
   >
     <GeneralAccess
@@ -56,7 +56,7 @@
         activity.document_field === "everyone" ? "Organization" : "Public"
       }}</span>
       <span>∙</span>
-      <span class="text-gray-600">{{
+      <span class="text-ink-gray-5">{{
         activity.meta_value === "1"
           ? "View"
           : activity.meta_value === "2"
@@ -65,7 +65,7 @@
       }}</span>
     </span>
   </div>
-  <slot name="nested"></slot>
+  <slot name="nested" />
 </template>
 <script setup>
 import { Avatar } from "frappe-ui"

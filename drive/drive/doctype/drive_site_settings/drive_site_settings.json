@@ -1,0 +1,43 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2025-05-27 14:25:36.760538",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": ["jwt_key"],
+  "fields": [
+    {
+      "description": "Never share this publicly! This gives complete read access to all files in your site.",
+      "fieldname": "jwt_key",
+      "fieldtype": "Password",
+      "in_list_view": 1,
+      "label": "JWT Key",
+      "reqd": 1
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "issingle": 1,
+  "links": [],
+  "modified": "2025-05-30 15:23:21.155154",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Site Settings",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}

@@ -1,10 +1,22 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New Version', size: 'sm' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'New Version', size: 'sm' }"
+  >
     <template #body-content>
-      <Input v-model="snapshotMessage" label="Message" />
+      <Input
+        v-model="snapshotMessage"
+        label="Message"
+      />
     </template>
     <template #actions>
-      <Button :variant="'solid'" class="w-full" @click="save">Create</Button>
+      <Button
+        :variant="'solid'"
+        class="w-full"
+        @click="save"
+      >
+        Create
+      </Button>
     </template>
   </Dialog>
 </template>

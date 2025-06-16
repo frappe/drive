@@ -2,10 +2,16 @@ import frappe
 from frappe.rate_limiter import rate_limit
 from frappe.utils import escape_html
 from frappe.utils import split_emails, validate_email_address
-from .google import google_oauth_flow
+from drive.api.permissions import is_admin
+from frappe.translate import get_all_translations
+from frappe import _
 
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
+
+
+def access_app():
+    return True
 
 
 @frappe.whitelist()
@@ -67,7 +73,7 @@ def get_team_invites(team):
 
 
 @frappe.whitelist(allow_guest=True)
-def signup(account_request, first_name, last_name=None, team=None, referrer=None):
+def signup(account_request, first_name, last_name=None, team=None):
     account_request = frappe.get_doc("Account Request", account_request)
     if not account_request.login_count:
         frappe.throw("Email not verified")
@@ -82,6 +88,7 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
             "user_type": "Website User",
         }
     )
+
     user.flags.no_welcome_mail = True
     user.flags.ignore_password_policy = True
     try:
@@ -91,6 +98,7 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
     account_request.signed_up = 1
 
     team = None
+
     if account_request.invite:
         invite = frappe.get_doc("Drive User Invitation", account_request.invite)
         invite.status = "Accepted"
@@ -103,15 +111,23 @@ def signup(account_request, first_name, last_name=None, team=None, referrer=None
 
     account_request.save(ignore_permissions=True)
     frappe.local.login_manager.login_as(user.email)
-
+    doc = frappe.get_doc(
+        {
+            "doctype": "Drive Settings",
+            "user": account_request.email,
+            "single_click": 1,
+        }
+    )
+    doc.insert()
+    print(team)
     # Check invites for this user
-    if not team:
-        # Create team for this user
-        domain = user.email.split("@")[-1]
-        if domain in CORPORATE_DOMAINS:
-            team = create_personal_team(user.email)
-        else:
-            return get_domain_teams(domain)
+    # if not team:
+    #     # Create team for this user
+    #     domain = user.email.split("@")[-1]
+    #     if domain in CORPORATE_DOMAINS:
+    #         team = create_personal_team(user.email)
+    #     else:
+    #         return get_domain_teams(domain)
 
     return {"location": "/drive/t/" + team}
 
@@ -192,7 +208,32 @@ def verify_otp(account_request, otp):
     if req.signed_up:
         frappe.local.login_manager.login_as(req.email)
         return {"location": "/drive"}
-    req.save(ignore_permissions=True)
+
+
+@frappe.whitelist(allow_guest=True)
+def get_settings():
+    if frappe.session.user == "Guest":
+        return {}
+    try:
+        return frappe.get_cached_doc("Drive Settings", frappe.session.user)
+    except:
+        return {}
+
+
+@frappe.whitelist()
+def set_settings(updates):
+    try:
+        settings = frappe.get_doc("Drive Settings", frappe.session.user)
+    except:
+        settings = frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user})
+        settings.insert()
+    if "single_click" in updates:
+        settings.single_click = int(updates["single_click"])
+    if "auto_detect_links" in updates:
+        settings.auto_detect_links = int(updates["auto_detect_links"])
+    if "default_team" in updates:
+        settings.default_team = updates["default_team"]
+    settings.save()
 
 
 @frappe.whitelist(allow_guest=True)
@@ -250,12 +291,6 @@ def set_role(team, user_id, role):
 
 
 @frappe.whitelist()
-def is_admin(team):
-    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].is_admin
-
-
-@frappe.whitelist()
 def remove_user(team, user_id):
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
     if frappe.session.user not in drive_team:
@@ -302,3 +337,15 @@ def reject_invite(key):
 
     invitation.status = "Expired"
     invitation.save(ignore_permissions=True)
+
+
+@frappe.whitelist(allow_guest=True)
+def get_translations():
+    if frappe.session.user != "Guest":
+        language = frappe.db.get_value("User", frappe.session.user, "language")
+        if not language:
+            language = frappe.db.get_single_value("System Settings", "language")
+    else:
+        language = frappe.db.get_single_value("System Settings", "language")
+
+    return get_all_translations(language)

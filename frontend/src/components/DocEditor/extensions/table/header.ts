@@ -53,7 +53,7 @@ export const TableHeader = TiptapTableHeader.extend<TableHeaderOptions>({
                   Decoration.widget(pos + 1, () => {
                     const colSelected = isColumnSelected(index)(selection)
                     let className =
-                      "grip-column align-middle absolute left-1/2  bg-white border rounded-sm w-4 h-4 -top-5  cursor-pointer z-10"
+                      "grip-column align-middle absolute left-1/2  bg-surface-white border rounded-sm size-4 -top-5  cursor-pointer z-10"
 
                     if (colSelected) {
                       className += " selected"

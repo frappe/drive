@@ -1,5 +1,8 @@
 <template>
-  <svg :height="radius * 2" :width="radius * 2">
+  <svg
+    :height="radius * 2"
+    :width="radius * 2"
+  >
     <circle
       class="fill-transparent stroke-current"
       :class="secondaryClass"
@@ -43,7 +46,7 @@ export default {
     },
     secondaryClass: {
       type: String,
-      default: "text-gray-200",
+      default: "text-ink-gray-1",
     },
   },
   computed: {

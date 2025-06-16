@@ -2,7 +2,10 @@
   <div class="min-w-full">
     <Popover>
       <template #target="{ isOpen, open: openPopover, togglePopover }">
-        <slot name="target" v-bind="{ open: openPopover, togglePopover }">
+        <slot
+          name="target"
+          v-bind="{ open: openPopover, togglePopover }"
+        >
           <div
             class="flex items-center justify-start min-w-full flex-wrap gap-2"
           >
@@ -14,29 +17,33 @@
               :entity="entity"
               @click="filterByTag(tag)"
               @success="entityTags.fetch()"
-            >
-            </Tag>
+            />
             <span
               v-if="!entityTags.data?.length"
-              class="text-gray-700 text-base"
+              class="text-ink-gray-7 text-base"
             >
               This file has no tags
             </span>
-            <Button class="ml-auto" @click="togglePopover()">Manage</Button>
+            <Button
+              class="ml-auto"
+              @click="togglePopover()"
+            >
+              Manage
+            </Button>
           </div>
         </slot>
       </template>
       <template #body="{ isOpen, togglePopover }">
         <div
           v-if="isOpen"
-          class="relative mt-1 rounded-lg bg-white text-base shadow-2xl min-h-auto"
+          class="relative mt-1 rounded-lg bg-surface-white text-base shadow-2xl min-h-auto"
         >
           <div class="px-1.5 pb-1.5">
             <Input
               v-model="tagInputText"
               v-focus
               v-on-outside-click="closeInput"
-              class="bg-white py-1.5"
+              class="bg-surface-white py-1.5"
               placeholder="Search"
               type="text"
               @input="tagInputText = $event"
@@ -55,7 +62,7 @@
               <li
                 v-for="item in filteredTags"
                 :key="item"
-                class="flex items-center justify-start px-1.5 py-1 hover:bg-gray-100 w-full rounded cursor-pointer"
+                class="flex items-center justify-start px-1.5 py-1 hover:bg-surface-gray-2 w-full rounded cursor-pointer"
                 @click="
                   addTag.submit({
                     entity: entity.name,
@@ -83,7 +90,10 @@
                       stroke-width="3"
                     />
                   </svg>
-                  <span class="text-base" :class="`text-${item.color}-700`">
+                  <span
+                    class="text-base"
+                    :class="`text-${item.color}-700`"
+                  >
                     {{ item.title }}
                   </span>
                 </div>
@@ -91,14 +101,14 @@
             </ul>
             <span
               v-else
-              class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
+              class="rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
               >No tags found</span
             >
           </div>
           <div class="flex items-center justify-end border-t p-1">
             <Button
               v-if="tagInputText"
-              class="mr-auto px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
+              class="mr-auto px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
               @click="
                 (e) =>
                   createTag.submit({
@@ -110,7 +120,7 @@
               Create tag "{{ tagInputText }}"
             </Button>
             <Button
-              class="px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
+              class="px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
               @click="removeTag.submit()"
             >
               Clear all

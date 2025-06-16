@@ -6,9 +6,9 @@
         :class="[
           isExpanded ? 'p-2' : 'py-2',
           open && isExpanded
-            ? 'bg-white shadow-sm'
+            ? 'bg-surface-white shadow-sm'
             : isExpanded
-            ? 'hover:bg-gray-200'
+            ? 'hover:bg-surface-gray-3'
             : 'bg-transparent hover:bg-transparent shadow-none',
         ]"
         :style="{
@@ -24,11 +24,11 @@
               : 'ml-0 w-0 opacity-0 overflow-hidden'
           "
         >
-          <div class="text-base font-medium leading-none text-gray-900">
-            {{ teamName }}
+          <div class="text-base font-medium leading-none text-ink-gray-9">
+            {{ $route.params.team ? teamName : __(route.name) }}
           </div>
           <div
-            class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
+            class="line-clamp-1 overflow-hidden text-sm leading-none text-ink-gray-7"
             :class="teamName ? 'mt-1' : 'mb-1'"
           >
             {{ fullName }}
@@ -42,9 +42,9 @@
               : 'ml-0 w-0 overflow-hidden opacity-0'
           "
         >
-          <FeatherIcon
-            :name="open ? 'chevron-up' : 'chevron-down'"
-            class="h-5 w-5 sm:inline text-gray-700"
+          <component
+            :is="open ? LucideChevronUp : LucideChevronDown"
+            class="size-4 text-ink-gray-7"
           />
         </div>
       </button>
@@ -55,32 +55,41 @@
     v-model="showSettings"
     :suggested-tab="suggestedTab"
   />
+  <ShortcutsDialog
+    v-if="showShortcuts"
+    v-model="showShortcuts"
+  />
 </template>
 
 <script setup>
-import { markRaw, onMounted } from "vue"
-import { Dropdown, FeatherIcon } from "frappe-ui"
+import { Dropdown } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
+import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
-import Docs from "@/components/EspressoIcons/Docs.vue"
-import AppSwitcher from "@/components/AppSwitcher.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, markRaw, onMounted } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
+import AppSwitcher from "./AppSwitcher.vue"
+import {
+  LucideBook,
+  LucideBadgeHelp,
+  LucideChevronDown,
+  LucideChevronUp,
+  LucideMoon,
+} from "lucide-vue-next"
 
 const router = useRouter()
 const route = useRoute()
-const team = computed(() => route.params?.team)
 const teamName = ref("loading...")
 watch(
-  team,
+  route,
   async (v) => {
-    if (!v) return
+    if (!route.params.team) return
     await getTeams.fetch()
-    teamName.value = getTeams.data[v]?.title
+    teamName.value = getTeams.data[v.params.team]?.title
   },
   { immediate: true }
 )
@@ -90,6 +99,7 @@ defineProps({
   isExpanded: Boolean,
 })
 const showSettings = ref(false)
+const showShortcuts = ref(false)
 const suggestedTab = ref(0)
 
 const fullName = computed(() => store.state.user.fullName)
@@ -97,36 +107,44 @@ const fullName = computed(() => store.state.user.fullName)
 const settingsItems = computed(() => {
   return [
     {
-      group: "Manage",
+      group: __("Manage"),
       hideLabel: true,
       items: [
         {
           component: markRaw(TeamSwitcher),
         },
         {
-          icon: Docs,
-          label: "Documentation",
+          component: markRaw(AppSwitcher),
+        },
+        {
+          icon: LucideBook,
+          label: __("Documentation"),
           onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
         },
         {
-          icon: "life-buoy",
-          label: "Support",
+          icon: LucideBadgeHelp,
+          label: __("Support"),
           onClick: () => window.open("https://t.me/frappedrive", "_blank"),
+        },
+        {
+          icon: LucideMoon,
+          label: "Toggle theme",
+          onClick: toggleTheme,
         },
       ],
     },
     {
-      group: "Others",
+      group: __("Others"),
       hideLabel: true,
       items: [
         {
           icon: "settings",
-          label: "Settings",
+          label: __("Settings"),
           onClick: () => (showSettings.value = true),
         },
         {
           icon: "log-out",
-          label: "Log out",
+          label: __("Log out"),
           onClick: logout,
         },
       ],
@@ -134,11 +152,26 @@ const settingsItems = computed(() => {
   ]
 })
 
-emitter.on("showSettings", (val) => {
-  showSettings.value = true
-  suggestedTab.value = val || 0
-})
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme")
+  let theme = currentTheme === "dark" ? "light" : "dark"
+  document.documentElement.setAttribute("data-theme", theme)
+  localStorage.setItem("theme", theme)
+}
 
+onMounted(() => {
+  const theme = localStorage.getItem("theme")
+  if (["light", "dark"].includes(theme)) {
+    document.documentElement.setAttribute("data-theme", theme)
+  }
+})
+emitter.on("showSettings", (val = 0) => {
+  showSettings.value = true
+  suggestedTab.value = val
+})
+emitter.on("toggleShortcuts", () => {
+  showShortcuts.value = !showShortcuts.value
+})
 function logout() {
   store.dispatch("logout")
   router.redirect("/")

@@ -2,13 +2,13 @@
   <div>
     <div
       v-if="items.length"
-      class="min-w-40 rounded-lg border bg-white p-1.5 text-base shadow-lg"
+      class="min-w-40 rounded-lg border bg-surface-white p-1.5 text-base shadow-lg"
     >
       <button
         v-for="(item, index) in items"
         :key="index"
         :class="[
-          index === selectedIndex ? 'bg-gray-100' : 'text-gray-900',
+          index === selectedIndex ? 'bg-surface-gray-2' : 'text-ink-gray-9',
           'flex w-full items-center whitespace-nowrap rounded p-1 text-sm',
         ]"
         @click="selectItem(index)"
@@ -29,6 +29,9 @@
 <script>
 import { Avatar } from "frappe-ui"
 export default {
+  components: {
+    Avatar,
+  },
   props: {
     items: {
       type: Array,
@@ -39,9 +42,6 @@ export default {
       required: true,
     },
   },
-  components: {
-    Avatar,
-  },
   data() {
     return {
       selectedIndex: 0,
@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     currentUserName() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
   },
   watch: {

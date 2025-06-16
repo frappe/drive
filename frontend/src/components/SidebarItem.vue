@@ -1,7 +1,7 @@
 <template>
   <button
-    class="flex h-7 w-full cursor-pointer items-center rounded text-gray-700 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-gray-400"
-    :class="isActive ? 'bg-white shadow-sm' : 'hover:bg-gray-100'"
+    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+    :class="isActive ? 'bg-surface-white shadow-sm' : 'hover:bg-surface-gray-2'"
     @click="handleClick"
   >
     <div
@@ -16,13 +16,10 @@
         >
           <slot name="icon">
             <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-              <FeatherIcon
-                v-if="typeof icon == 'string'"
-                :name="icon"
-                class="h-4.5 w-4.5 text-gray-700"
+              <component
+                :is="icon"
+                class="size-4 text-ink-gray-7"
               />
-
-              <component :is="icon" v-else class="h-4.5 w-4.5 text-gray-700" />
             </span>
           </slot>
         </Tooltip>
@@ -43,7 +40,7 @@
 </template>
 
 <script setup>
-import { Tooltip, FeatherIcon } from "frappe-ui"
+import { Tooltip } from "frappe-ui"
 import { computed } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
@@ -75,6 +72,7 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  return router.currentRoute.value.name === props.label
+  const first = store.state.breadcrumbs[0]
+  return first.label === props.label || first.name === props.label
 })
 </script>

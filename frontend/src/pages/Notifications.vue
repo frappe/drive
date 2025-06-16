@@ -1,29 +1,31 @@
 <template>
-  <div class="h-full overflow-y-auto mt-3.5 px-4 w-full">
+  <div class="h-full overflow-y-auto mt-3.5 px-4 w-full bg-surface-white">
     <div class="w-full h-7 mb-6 flex items-start justify-between">
       <div
-        class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
+        class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
       >
         <Button
           class="max-h-6"
           :class="
             onlyUnread
-              ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+              ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
               : ''
           "
           @click="onlyUnread = true"
-          >Unread</Button
         >
+          Unread
+        </Button>
         <Button
           class="max-h-6"
           :class="
             onlyUnread
               ? ''
-              : 'bg-white shadow-sm hover:bg-white active:bg-white'
+              : 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
           "
           @click="onlyUnread = false"
-          >All</Button
         >
+          All
+        </Button>
       </div>
       <div>
         <Button
@@ -31,14 +33,15 @@
           icon="refresh-ccw"
           class="mr-2"
           @click="notifications.reload()"
-        ></Button>
+        />
         <Button
           icon-left="check-circle"
           @click="
             markAsRead.submit({ all: true }), (store.state.notifCount = 0)
           "
-          >Mark all as Read</Button
         >
+          Mark all as Read
+        </Button>
       </div>
     </div>
 
@@ -48,20 +51,27 @@
       :options="options"
       :rows="notifications.data"
       row-key="name"
-    ></ListView>
-    <div v-else class="flex flex-col items-center justify-center m-auto h-full">
-      <FeatherIcon name="inbox" class="w-14 h-auto text-gray-500 pb-4" />
-      <span class="text-base text-gray-600 font-medium">No Notifications</span>
+    />
+    <div
+      v-else
+      class="flex flex-col items-center justify-center m-auto h-full"
+      style="transform: translate(0, -42px)"
+    >
+      <LucideInbox class="w-14 h-auto text-ink-gray-4 pb-4" />
+      <span class="text-base text-ink-gray-5 font-medium"
+        >No Notifications</span
+      >
     </div>
   </div>
 </template>
 <script setup>
 import { ref, h, watch } from "vue"
 import { formatTimeAgo } from "@vueuse/core"
-import { createResource, Avatar, ListView, FeatherIcon } from "frappe-ui"
+import { createResource, Avatar, ListView } from "frappe-ui"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
 import emitter from "@/emitter"
+import { LucideInbox } from "lucide-vue-next"
 
 const store = useStore()
 const onlyUnread = ref(true)

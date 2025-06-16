@@ -11,10 +11,6 @@ jobs:
   build:
     name: Build
 
-    permissions:
-      contents: read
-      packages: write
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -44,11 +40,12 @@ jobs:
         run: |
           export APPS_JSON='[{"url": "https://github.com/${{ github.repository }}","branch": "${{ github.ref_name }}"}]'
           echo "APPS_JSON_BASE64=$(echo $APPS_JSON | base64 -w 0)" >> $GITHUB_ENV
-          echo "FRAPPE_BRANCH=${{ github.ref_type == 'tag' || github.ref_name == 'main' && 'version-15' || 'develop' }}" >> $GITHUB_ENV
+          echo "FRAPPE_BRANCH=${{ github.ref_type == 'tag' || github.ref_name == 'master' && 'version-15' || 'develop' }}" >> $GITHUB_ENV
 
       - name: Set Image Tag
         run: |
           echo "IMAGE_TAG=${{ github.ref_name == 'develop' && 'latest' || 'v15' }}" >> $GITHUB_ENV
+          echo "STABLE_TAG=${{ github.ref_name == 'develop' && 'nightly' || 'stable' }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         with:
@@ -63,7 +60,9 @@ jobs:
           file: builds/images/layered/Containerfile
           tags: >
             ghcr.io/${{ github.repository }}:${{ github.ref_name }},
-            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
+            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }},
+            ghcr.io/${{ github.repository }}:${{ env.STABLE_TAG }}
+
           build-args: |
             "FRAPPE_BRANCH=${{ env.FRAPPE_BRANCH }}"
             "APPS_JSON_BASE64=${{ env.APPS_JSON_BASE64 }}"

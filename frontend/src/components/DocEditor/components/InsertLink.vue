@@ -1,14 +1,15 @@
 <template>
-  <slot v-bind="{ onClick: openDialog }"></slot>
+  <slot v-bind="{ onClick: openDialog }" />
   <Dialog
     v-model="setLinkDialog.show"
     :options="{ title: setLinkDialog.title, size: 'sm' }"
     @after-leave="reset"
   >
     <template #body-content>
-      <span class="text-sm italic font-medium leading-relaxed text-gray-800">{{
-        `"${linkRootContent}"`
-      }}</span>
+      <span
+        class="text-sm italic font-medium leading-relaxed text-ink-gray-8"
+        >{{ `"${linkRootContent}"` }}</span
+      >
       <Input
         ref="input"
         v-model="setLinkDialog.url"

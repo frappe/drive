@@ -1,18 +1,18 @@
 <template>
   <div>
-    <slot v-bind="{ onClick: openDialog }"></slot>
+    <slot v-bind="{ onClick: openDialog }" />
     <Dialog
       v-model="showNewCommentDialog"
       :options="{ title: 'New Annotation', size: 'sm' }"
       @after-leave="reset"
     >
       <template #body-content>
-        <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
+        <!-- <span class="text-sm italic font-medium leading-relaxed text-ink-gray-7">{{ `"${commentRootContent}"` }}</span> -->
         <!-- <span class="text-sm prose prose-xs overflow-auto" v-html="commentRootContent"></span> -->
-        <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-gray-700">Comment</span> -->
+        <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-ink-gray-7">Comment</span> -->
         <TiptapInput
           v-model="commentText"
-          class="border border-gray-300"
+          class="border border-outline-gray-2"
           :show-inline-button="false"
           @keyup.ctrl.enter="setComment(commentText)"
         />
@@ -67,7 +67,7 @@ export default {
       return this.$store.state.user.imageURL
     },
     currentUserEmail() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
     commentRootContent() {
       const { view, state } = this.editor
@@ -127,7 +127,7 @@ export default {
       newCommentYmap.set("resolved", 0)
       //newCommentYmap.set('synced', 1)
       newCommentYmap.set("owner", this.currentUserName)
-      newCommentYmap.set("ownerEmail", this.$store.state.auth.user_id)
+      newCommentYmap.set("ownerEmail", this.$store.state.user.id)
       newCommentYmap.set("ownerImage", this.currentUserImage)
       newCommentYmap.set("replies", newCommentRepliesYarray)
       newCommentYmap.set("createdAt", Date.now())

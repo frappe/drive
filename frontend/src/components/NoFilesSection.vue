@@ -1,7 +1,13 @@
 <template>
-  <div class="flex flex-col items-center m-auto">
+  <div
+    class="flex flex-col items-center m-auto"
+    style="transform: translate(0, -88.5px)"
+  >
     <div v-if="icon">
-      <component :is="icon" class="w-14 stroke-[0] h-auto text-gray-500 pb-4" />
+      <component
+        :is="icon"
+        class="w-14 stroke-[0] h-auto text-ink-gray-4 pb-4"
+      />
     </div>
     <svg
       v-else
@@ -17,8 +23,12 @@
         stroke="#454545"
       />
     </svg>
-    <p class="text-base text-gray-600 font-medium">{{ primaryMessage }}</p>
-    <p class="text-sm text-gray-600 mt-3">{{ secondaryMessage }}</p>
+    <p class="text-base text-ink-gray-5 font-medium">
+      {{ primaryMessage }}
+    </p>
+    <p class="text-sm text-ink-gray-5 mt-3">
+      {{ secondaryMessage }}
+    </p>
   </div>
 </template>
 <script>

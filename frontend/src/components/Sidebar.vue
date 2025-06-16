@@ -1,7 +1,7 @@
 <template>
   <div
     :class="isExpanded ? 'w-[220px]' : 'w-[50px]'"
-    class="border-r bg-gray-50 relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out p-2"
+    class="border-r bg-surface-menu-bar relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out p-2"
   >
     <PrimaryDropDown :is-expanded="isExpanded" />
     <div
@@ -11,21 +11,13 @@
       ondrop="return false;"
     >
       <SidebarItem
-        label="Search"
+        :label="__('Go')"
         class="mb-1"
         :is-collapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)"
       >
         <template #icon>
-          <LucideSearch class="size-4" />
-        </template>
-        <template #right>
-          <div
-            class="flex items-center justify-start w-full duration-300 ease-in-out"
-            :class="
-              isExpanded ? 'ml-2 opacity-100' : 'ml-0 overflow-hidden opacity-0'
-            "
-          ></div>
+          <LucideCommand class="size-4" />
         </template>
       </SidebarItem>
       <SidebarItem
@@ -37,7 +29,7 @@
       />
       <SidebarItem
         :label="'Inbox'"
-        icon="inbox"
+        :icon="LucideInbox"
         class="mb-0.5"
         :is-collapsed="!isExpanded"
         :to="'/t/' + team + '/notifications'"
@@ -47,7 +39,7 @@
             v-if="isExpanded && notifCount.data > 0"
             class="flex items-center justify-start w-full duration-300 ease-in-out ml-2"
           >
-            <span class="text-sm text-gray-500 ease-in ml-auto">
+            <span class="text-xs text-ink-gray-4 ease-in ml-auto">
               {{ notifCount.data }}
             </span>
           </div>
@@ -74,7 +66,7 @@
         <template #icon>
           <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
             <ArrowLeftFromLine
-              class="stroke-[1.5] h-4 w-4 text-gray-700 duration-300 ease-in-out"
+              class="stroke-[1.5] size-4 text-ink-gray-7 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': !isExpanded }"
             />
           </span>
@@ -85,20 +77,27 @@
 </template>
 <script setup>
 import PrimaryDropDown from "./PrimaryDropdown.vue"
-import { ArrowLeftFromLine } from "lucide-vue-next"
-import Recent from "./EspressoIcons/Recent.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Home from "./EspressoIcons/Home.vue"
-import Trash from "./EspressoIcons/Trash.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
-import Team from "./EspressoIcons/Organization.vue"
 import StorageBar from "./StorageBar.vue"
+
 import { notifCount } from "@/resources/permissions"
+import { getTeams } from "@/resources/files"
+
 import { computed } from "vue"
 import { useStore } from "vuex"
-import Users from "./EspressoIcons/Users.vue"
 import { useRoute } from "vue-router"
-import { getTeams } from "../resources/files"
+
+import {
+  ArrowLeftFromLine,
+  LucideBuilding2,
+  LucideClock,
+  LucideUsers,
+  LucideTrash,
+  LucideHome,
+  LucideStar,
+  LucideCommand,
+  LucideInbox,
+} from "lucide-vue-next"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
@@ -113,34 +112,34 @@ const team = computed(
 const sidebarItems = computed(() => {
   const items = [
     {
-      label: "Home",
+      label: __("Home"),
       route: `/t/${team.value}/`,
-      icon: Home,
+      icon: LucideHome,
     },
     {
-      label: "Recents",
+      label: __("Recents"),
       route: `/t/${team.value}/recents`,
-      icon: Recent,
+      icon: LucideClock,
     },
     {
-      label: "Favourites",
+      label: __("Favourites"),
       route: `/t/${team.value}/favourites`,
-      icon: Star,
+      icon: LucideStar,
     },
     {
-      label: "Team",
+      label: __("Team"),
       route: `/t/${team.value}/team`,
-      icon: Team,
+      icon: LucideBuilding2,
     },
     {
-      label: "Shared",
+      label: __("Shared"),
       route: `/shared/`,
-      icon: Users,
+      icon: LucideUsers,
     },
     {
-      label: "Trash",
+      label: __("Trash"),
       route: `/t/${team.value}/trash`,
-      icon: Trash,
+      icon: LucideTrash,
     },
   ]
   if (getTeams.data && getTeams.data[team.value]?.title === "Your Drive")

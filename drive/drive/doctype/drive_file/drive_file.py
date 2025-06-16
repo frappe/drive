@@ -2,15 +2,12 @@ import frappe
 from frappe.model.document import Document
 from pathlib import Path
 import shutil
-import uuid
 from drive.utils.files import (
     get_home_folder,
-    get_user_directory,
-    create_user_directory,
     get_new_title,
     get_team_thumbnails_directory,
-    create_thumbnail,
     update_file_size,
+    FileManager,
 )
 from drive.api.files import get_ancestors_of
 from drive.utils.files import generate_upward_path
@@ -47,28 +44,13 @@ class DriveFile(Document):
                 child.delete(ignore_permissions=has_write_access)
 
     def after_delete(self):
+        """Cleanup after entity is deleted"""
         if self.document:
             frappe.delete_doc("Drive Document", self.document)
-        """Remove file once document is deleted"""
+
         if self.path:
-            max_attempts = 3
-            for attempt in range(max_attempts):
-                try:
-                    Path(frappe.get_site_path("private/files"), self.path).unlink()
-                    break
-                except Exception as e:
-                    print(f"Attempt {attempt + 1}: Failed to delete file - {e}")
-        if self.mime_type:
-            if self.mime_type.startswith("image") or self.mime_type.startswith("video"):
-                max_attempts = 3
-                for attempt in range(max_attempts):
-                    try:
-                        thumbnails_directory = get_team_thumbnails_directory(self.team)
-                        thumbnail_getpath = Path(thumbnails_directory, self.name)
-                        Path(str(thumbnail_getpath) + ".thumbnail").unlink()
-                        break
-                    except Exception as e:
-                        print(f"Attempt {attempt + 1}: Failed to delete thumbnail - {e}")
+            manager = FileManager()
+            manager.delete_file(self.team, self.name, self.path)
 
     def on_rollback(self):
         if self.flags.file_created:
@@ -82,9 +64,10 @@ class DriveFile(Document):
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)
 
-    def move(self, new_parent=None):
+    def move(self, new_parent=None, is_private=None):
         """
         Move file or folder to the new parent folder
+        If not owned by current user, copies it.
 
         :param new_parent: Document-name of the new parent folder. Defaults to the user directory
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
@@ -93,7 +76,16 @@ class DriveFile(Document):
         """
         new_parent = new_parent or get_home_folder(self.team).name
         if new_parent == self.parent_entity:
-            return self
+            if is_private is not None:
+                self.is_private = int(is_private)
+                self.save()
+            return frappe.get_value(
+                "Drive File",
+                self.parent_entity,
+                ["title", "team", "name", "is_private"],
+                as_dict=True,
+            )
+
         if new_parent == self.name:
             frappe.throw(
                 "Cannot move into itself",
@@ -110,7 +102,13 @@ class DriveFile(Document):
                     "Cannot move into itself",
                     frappe.PermissionError,
                 )
-                return
+                return frappe.get_value(
+                    "Drive File",
+                    self.parent_entity,
+                    ["title", "team", "name", "is_private"],
+                    as_dict=True,
+                )
+
         update_file_size(self.parent_entity, -self.file_size)
         update_file_size(new_parent, +self.file_size)
 
@@ -121,7 +119,10 @@ class DriveFile(Document):
         if title != self.title:
             self.rename(title)
         self.save()
-        return self
+
+        return frappe.get_value(
+            "Drive File", new_parent, ["title", "team", "name", "is_private"], as_dict=True
+        )
 
     @frappe.whitelist()
     def copy(self, new_parent=None, parent_user_directory=None):
@@ -132,7 +133,6 @@ class DriveFile(Document):
         :raises NotADirectoryError: If the new_parent is not a folder, or does not exist
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         """
-        # BROKEN
         title = self.title
 
         if not parent_user_directory:
@@ -141,10 +141,7 @@ class DriveFile(Document):
                 if new_parent
                 else frappe.session.user
             )
-            try:
-                parent_user_directory = get_user_directory(parent_owner)
-            except FileNotFoundError:
-                parent_user_directory = create_user_directory()
+            # BROKEN - parent dir is team
             new_parent = new_parent or parent_user_directory.name
             parent_is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
             if not parent_is_group:
@@ -163,8 +160,6 @@ class DriveFile(Document):
                 frappe.throw("You cannot copy a folder into itself")
 
             title = get_new_title(title, new_parent)
-
-        name = uuid.uuid4().hex
 
         if self.is_group:
             drive_entity = frappe.get_doc(
@@ -317,15 +312,25 @@ class DriveFile(Document):
         self.save()
         return self.name
 
+    def permanent_delete(self):
+        write_access = frappe.has_permission(doctype="Drive File", doc=self, ptype="write")
+        parent_write_access = frappe.has_permission(
+            doctype="Drive File",
+            doc=frappe.get_value("Drive File", self, "parent_entity"),
+            ptype="write",
+        )
+
+        if not (write_access or parent_write_access):
+            frappe.throw("Not permitted", frappe.PermissionError)
+
+        self.is_active = -1
+        if self.is_group:
+            for child in self.get_children():
+                child.permanent_delete()
+        self.save()
+
     @frappe.whitelist()
-    def share(
-        self,
-        user=None,
-        read=None,
-        comment=None,
-        share=None,
-        write=None,
-    ):
+    def share(self, user=None, read=None, comment=None, share=None, write=None, valid_until=""):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -368,6 +373,7 @@ class DriveFile(Document):
             {
                 "user": user,
                 "entity": self.name,
+                "valid_until": valid_until,
             }
             | {l[0]: l[1] for l in levels if l[1] is not None}
         )

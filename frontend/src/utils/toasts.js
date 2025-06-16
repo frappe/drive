@@ -74,7 +74,11 @@ function getToastsGroup(position) {
         .map((toast) => {
           return h(
             "div",
-            { id: toast.key, class: "pointer-events-auto flex" },
+            {
+              id: toast.key,
+              key: toast.key,
+              class: "pointer-events-auto flex",
+            },
             h(Toast, {
               ...toast,
               onClose: () => {
@@ -102,7 +106,7 @@ export function toastError(title) {
   toast({
     title,
     icon: "alert-circle",
-    background: "bg-red-200",
+    background: "bg-surface-red-3",
     text: "Reload page",
     timeout: 50,
   })

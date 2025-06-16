@@ -4,7 +4,12 @@
     class="w-10 h-full text-neutral-100 mx-auto"
   />
   <template v-else>
-    <img draggable="false" class="w-auto max-h-full" :src="previewURL" id-="" />
+    <img
+      draggable="false"
+      class="w-4/5 max-h-full"
+      :src="previewURL"
+      id-=""
+    />
   </template>
 </template>
 

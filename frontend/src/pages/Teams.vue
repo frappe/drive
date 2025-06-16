@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden sm:bg-gray-50">
+  <div class="flex h-screen w-full overflow-hidden sm:bg-surface-menu-bar">
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
@@ -11,11 +11,15 @@
           </div>
 
           <div
-            class="relative mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="relative mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
             <div class="text-sm absolute top-3 right-3 flex gap-1.5">
               <LucideLogOut class="w-3 h-3 my-auto" />
-              <a href="#" @click="$store.dispatch('logout')">Log out</a>
+              <a
+                href="#"
+                @click="$store.dispatch('logout')"
+                >Log out</a
+              >
             </div>
             <h2 class="grow font-bold font-xl text-center mb-4">
               Welcome, {{ $store.state.user.fullName }}
@@ -29,11 +33,14 @@
               >
                 You haven't joined any teams yet.
               </p>
-              <ul v-else class="ms-1">
+              <ul
+                v-else
+                class="ms-1"
+              >
                 <li
-                  class="mb-3"
                   v-for="team in Object.values(getTeams?.data)"
                   :key="team.id"
+                  class="mb-3"
                 >
                   <div class="flex justify-between">
                     <div class="flex flex-col">
@@ -45,15 +52,19 @@
                     <router-link
                       class="my-auto"
                       :to="{ name: 'Team', params: { team: team.name } }"
-                      ><LucideFolderOpenDot class="w-4 h-4"
-                    /></router-link>
+                    >
+                      <LucideFolderOpenDot class="size-4" />
+                    </router-link>
                   </div>
                 </li>
               </ul>
             </div>
             <div class="py-3">
               <p class="font-bold text-lg mb-3">Invites</p>
-              <p class="text-center text-sm" v-if="!getInvites?.data?.length">
+              <p
+                v-if="!getInvites?.data?.length"
+                class="text-center text-sm"
+              >
                 No invites found.
               </p>
               <li
@@ -73,11 +84,12 @@
                 <div class="flex gap-2">
                   <Tooltip text="You requested an invite from this team.">
                     <Badge
-                      class="my-auto mr-2"
                       v-if="invite.status === 'Proposed'"
+                      class="my-auto mr-2"
                       theme="orange"
-                      >Requested</Badge
                     >
+                      Requested
+                    </Badge>
                   </Tooltip>
                   <Button
                     :variant="invite.status === 'Pending' ? 'ghost' : 'outline'"
@@ -89,9 +101,12 @@
                   >
                     <LucideX
                       v-if="invite.status === 'Pending'"
-                      class="w-4 h-4"
+                      class="size-4"
                     />
-                    <LucideTrash v-else class="w-4 h-4" />
+                    <LucideTrash
+                      v-else
+                      class="size-4"
+                    />
                   </Button>
 
                   <Button
@@ -102,7 +117,7 @@
                       acceptInvite.submit({ key: invite.name, redirect: 0 })
                     "
                   >
-                    <LucideCheck class="w-4 h-4" />
+                    <LucideCheck class="size-4" />
                   </Button>
                 </div>
               </li>
@@ -110,6 +125,7 @@
             <div
               v-if="
                 !getInvites?.data?.length &&
+                getTeams.data &&
                 !Object.values(getTeams.data).length
               "
               class="text-sm font-semibold mt-2"
@@ -142,7 +158,7 @@ import { LucideFolderOpenDot, LucidePlaneTakeoff } from "lucide-vue-next"
 import { computed } from "vue"
 
 const store = useStore()
-const email = computed(() => store.state.auth.user_id)
+const email = computed(() => store.state.user.id)
 getTeams.fetch()
 getInvites.fetch({ email: email.value })
 </script>

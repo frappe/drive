@@ -19,6 +19,7 @@ add_to_apps_screen = [
         "logo": "/assets/drive/frontend/favicon-310x310.png",
         "title": "Drive",
         "route": "/drive",
+        "has_permission": "drive.api.product.access_app",
     }
 ]
 
@@ -133,8 +134,8 @@ has_permission = {
 # ---------------
 
 scheduler_events = {
-    "daily": ["drive.api.files.auto_delete_from_trash"],
-    "daily": ["drive.api.permissions.auto_delete_expired_docshares"],
+    "daily": ["drive.api.files.auto_delete_from_trash", "drive.api.files.clear_deleted_files"],
+    "hourly": ["drive.api.permissions.auto_delete_expired_perms"],
 }
 
 # Testing

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-10 rounded-2xl overflow-hidden shadow-2xl 500 bg-white p-4"
+    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-10 rounded-2xl overflow-hidden shadow-2xl 500 bg-surface-white p-4"
   >
     <div
       class="flex items-center justify-between w-full mb-4 pr-1.5"
@@ -34,22 +34,25 @@
           class="focus:outline-none"
           @click.stop="toggleCollapsed"
         >
-          <FeatherIcon name="minus" class="h-4 w-4 text-gray-800" />
+          <LucideMinus class="size-4 text-ink-gray-8" />
         </button>
-        <button class="focus:outline-none" @click="close">
-          <FeatherIcon name="x" class="h-4 w-4 text-gray-800" />
+        <button
+          class="focus:outline-none"
+          @click="close"
+        >
+          <LucideX class="size-4 text-ink-gray-8" />
         </button>
       </div>
     </div>
     <div
-      class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1 mb-2"
+      class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1 mb-2"
     >
       <Button
         variant="ghost"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           currentTab === 1
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="currentTab = 1"
@@ -61,7 +64,7 @@
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           currentTab === 2
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="currentTab = 2"
@@ -74,7 +77,7 @@
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           currentTab === 3
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="currentTab = 3"
@@ -82,16 +85,19 @@
         Failed
       </Button>
     </div>
-    <div v-if="!collapsed" class="max-h-64 overflow-y-auto bg-white w-full">
+    <div
+      v-if="!collapsed"
+      class="max-h-64 overflow-y-auto bg-surface-white w-full"
+    >
       <span
         v-if="!currentTabGetter().length"
-        class="px-1.5 text-base font-medium text-gray-800"
+        class="px-1.5 text-base font-medium text-ink-gray-8"
         >{{ emptyMessage }}</span
       >
       <div
         v-for="(upload, index) in currentTabGetter()"
         :key="upload.uuid"
-        class="cursor-pointer truncate hover:bg-gray-50 rounded px-1 group"
+        class="cursor-pointer truncate hover:bg-surface-menu-bar rounded px-1 group"
         @mouseover="hoverIndex = index"
         @mouseout="hoverIndex = null"
       >
@@ -101,43 +107,40 @@
         >
           <div class="flex items-center justify-between w-full">
             <div class="flex justify-start items-center w-full max-w-[80%]">
-              <File class="w-5 mr-2" />
+              <LucideFile class="w-5 mr-2" />
               <p class="truncate text-sm leading-6 col-span-1 row-span-1">
                 {{ upload.name }}
               </p>
             </div>
-            <div
-              v-if="upload.completed && hoverIndex !== index"
-              class="grid h-5 w-5 place-items-center rounded-full text-white bg-black"
-              :class="upload.error ? 'bg-red-500' : 'bg-black'"
-            >
-              <FeatherIcon
-                :name="upload.error ? 'x' : 'check'"
-                class="h-3 w-3"
-                :stroke-width="3"
-              />
-            </div>
-            <FeatherIcon
-              v-if="upload.completed && hoverIndex === index"
-              class="h-4.5 w-4.5 place-items-center"
-              name="external-link"
-              :stroke-width="1.5"
+            <LucideX
+              v-if="upload.completed && upload.error"
+              class="h-3 w-3"
             />
+            <Button variant="ghost">
+              <LucideFolderOpenDot
+                v-if="upload.completed"
+                class="h-4.5 w-4.5 place-items-center"
+                :stroke-width="1.5"
+              />
+            </Button>
             <button
               v-if="hoverIndex === index"
               v-show="!upload.completed && hoverIndex === index"
-              class="rounded-full hover:bg-red-300"
+              class="rounded-full hover:bg-surface-red-4"
               variant="'ghost'"
               @click="emitter.emit('cancelUpload', upload.uuid)"
             >
-              <FeatherIcon name="x" class="h-6 w-6 p-1" />
+              <LucideX class="h-6 w-6 p-1" />
             </button>
             <div
               v-if="hoverIndex !== index"
               v-show="!upload.completed && !upload.error"
               class="h-6 w-6"
             >
-              <ProgressRing :radius="14" :progress="upload.progress" />
+              <ProgressRing
+                :radius="14"
+                :progress="upload.progress"
+              />
             </div>
           </div>
         </div>
@@ -153,6 +156,7 @@
         actions: [
           {
             label: 'OK',
+            variant: 'solid',
             onClick: () => {
               showErrorDialog = false
             },
@@ -185,18 +189,14 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import { FeatherIcon } from "frappe-ui"
+import { Dialog } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
-import Dialog from "frappe-ui/src/components/Dialog.vue"
-import File from "./EspressoIcons/File.vue"
 
 export default {
   name: "UploadTracker",
   components: {
-    FeatherIcon,
     ProgressRing,
     Dialog,
-    File,
   },
   data() {
     return {

@@ -1,11 +1,14 @@
 <template>
-  <template v-for="(group, i) in groupedActivityLog" :key="i">
+  <template
+    v-for="(group, i) in groupedActivityLog"
+    :key="i"
+  >
     <div
       v-if="group.length && Object.keys(groupedActivityLog).length > 1"
       class="px-5 pb-2 gap-x-2"
     >
-      <span class="text-base text-gray-600 font-medium leading-6">
-        {{ i }}
+      <span class="text-base text-ink-gray-5 font-medium leading-6">
+        {{ __(i) }}
       </span>
       <div
         v-for="activity in group"
@@ -18,8 +21,10 @@
           :label="activity.full_name"
         />
         <div class="flex flex-col items-start justify-center">
-          <span class="text-sm text-gray-900">{{ activity.message }}</span>
-          <span class="text-xs text-gray-600 mb-3">{{
+          <span class="text-sm text-ink-gray-9">{{
+            __(activity.message)
+          }}</span>
+          <span class="text-xs text-ink-gray-5 mb-3">{{
             activity.creation
           }}</span>
 
@@ -32,7 +37,7 @@
                 :strike-through="true"
               />
 
-              <ArrowRight class="text-gray-500 h-4" />
+              <ArrowRight class="text-ink-gray-4 h-4" />
               <ActivityTreeItem
                 :activity="activity"
                 :entity="entity"
@@ -44,9 +49,18 @@
             v-else-if="activity.action_type.startsWith('share')"
             :activity="activity"
           >
-            <template v-if="activity.nested" #nested>
-              <div v-for="nested in activity.nested" :key="nested.name">
-                <ActivityTreeShare v-if="activity.nested" :activity="nested" />
+            <template
+              v-if="activity.nested"
+              #nested
+            >
+              <div
+                v-for="nested in activity.nested"
+                :key="nested.name"
+              >
+                <ActivityTreeShare
+                  v-if="activity.nested"
+                  :activity="nested"
+                />
               </div>
             </template>
           </ActivityTreeShare>
@@ -164,7 +178,7 @@ function groupAndTransform(activities) {
       }
     }
     activity.full_name =
-      activity.owner === store.state.auth.user_id ? "You" : activity.full_name
+      activity.owner === store.state.user.id ? "You" : activity.full_name
     activity.message = generateMessage(activity)
     activity.creation = formatDate(activity.creation)
   }

@@ -1,62 +1,51 @@
 <template>
-  <Popover v-slot="{ open, close }">
-    <Float
-      placement="bottom"
-      :offset="2"
-      portal
-      as="div"
-      class="relative w-full"
-    >
-      <PopoverButton
-        class="flex gap-1 px-2 focus:outline-none bg-gray-100 rounded h-7 items-center text-base"
-      >
-        Manage
-        <span class="hidden">{{
-          open ? disableScroll.on() : disableScroll.off()
-        }}</span>
-
-        <ChevronDown
-          :class="{ '[transform:rotateX(180deg)]': open }"
-          class="w-3.5"
-        />
-      </PopoverButton>
-      <PopoverPanel class="z-10 bg-white p-1 shadow-2xl rounded w-full">
-        <div v-if="open">
-          <ul>
-            <li
-              v-for="access in accessLevels"
-              class="flex items-center justify-between px-1 text-base text-gray-700 line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer"
-              @click="
-                ;(accessObj[access] = !accessObj[access]),
-                  $emit('updateAccess', { [access]: accessObj[access] }),
-                  close()
-              "
-            >
-              Can {{ access }}
-              <Check v-if="accessObj[access]" class="h-3" />
-            </li>
-            <li
-              v-if="accessLevels.find((k) => k === 'write')"
-              class="flex items-center justify-between px-1 text-base line-clamp-1 py-1 gap-x-0.5 hover:bg-gray-100 w-full rounded-[6px] cursor-pointer text-red-500"
-              @click="$emit('removeAccess'), close()"
-            >
-              Remove
-            </li>
-          </ul>
-        </div>
-      </PopoverPanel>
-    </Float>
-  </Popover>
+  <div class="flex gap-1">
+    <Dropdown
+      :button="{
+        label: shareAccess === 'editor' ? 'Can edit' : 'Can view',
+        iconRight: 'chevron-down',
+        variant: 'ghost',
+      }"
+      placement="right"
+      :options="[
+        {
+          value: 'reader',
+          label: 'Can view',
+          onClick: () => (shareAccess = 'reader'),
+          icon: shareAccess === 'reader' && 'check',
+        },
+        {
+          value: 'editor',
+          label: 'Can edit',
+          onClick: () => (shareAccess = 'editor'),
+          icon: shareAccess === 'editor' && 'check',
+        },
+        { divider: true },
+        {
+          label: 'Remove',
+          onClick: () => emit('removeAccess'),
+          color: 'text-ink-red-3',
+        },
+      ]"
+      :hide-search="true"
+    />
+  </div>
 </template>
 <script setup>
-import { Float } from "@headlessui-float/vue"
-import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
-import Check from "@/components/EspressoIcons/Check.vue"
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue"
-import disableScroll from "../../utils/disable-scroll"
-import { ref } from "vue"
+import { Dropdown } from "frappe-ui"
+import { ref, watch } from "vue"
 
 const props = defineProps({ accessLevels: Object, accessObj: Object })
-const accessObj = ref(props.accessObj)
-defineEmits(["updateAccess", "removeAccess"])
+const shareAccess = ref(props.accessObj.write ? "editor" : "reader")
+
+watch(shareAccess, (val) =>
+  emit("updateAccess", {
+    read: 1,
+    comment: 1,
+    share: 1,
+    write: val === "editor" ? 1 : 0,
+  })
+)
+
+const emit = defineEmits(["updateAccess", "removeAccess"])
 </script>

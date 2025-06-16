@@ -14,7 +14,10 @@
     controlslist="nodownload noremoteplayback noplaybackrate"
     @loadedmetadata="handleMediaReady"
   >
-    <source :src="src" :type="type" />
+    <source
+      :src="src"
+      :type="type"
+    />
   </audio>
 </template>
 

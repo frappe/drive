@@ -6,8 +6,28 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <rect x="1" y="1" width="14" height="14" rx="3" fill="#F5BA14" />
-    <rect x="3.5" y="4" width="9" height="8" rx="1.5" fill="white" />
-    <rect x="4.5" y="5.5" width="7" height="5" fill="#F5B90F" />
+    <rect
+      x="1"
+      y="1"
+      width="14"
+      height="14"
+      rx="3"
+      fill="#F5BA14"
+    />
+    <rect
+      x="3.5"
+      y="4"
+      width="9"
+      height="8"
+      rx="1.5"
+      fill="white"
+    />
+    <rect
+      x="4.5"
+      y="5.5"
+      width="7"
+      height="5"
+      fill="#F5B90F"
+    />
   </svg>
 </template>

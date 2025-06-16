@@ -1,5 +1,9 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Add Video' }" @after-leave="reset">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Add Video' }"
+    @after-leave="reset"
+  >
     <template #body-content>
       <FileUploader
         file-types="video/*"
@@ -45,7 +49,7 @@
       >
         Insert Video
       </Button>
-      <Button @click="reset">Cancel</Button>
+      <Button @click="reset"> Cancel </Button>
     </template>
   </Dialog>
 </template>

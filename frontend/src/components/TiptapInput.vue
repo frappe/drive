@@ -1,17 +1,20 @@
 <template>
   <div
-    class="flex items-center min-h-7 justify-start border border-gray-200 rounded pl-2 pr-1 py-0.5 hover:border-gray-200 focus-within:bg-white focus-within:border-gray-500 focus-within:shadow-sm focus-within:ring-2 focus-within:ring-gray-400 text-gray-800 transition-colors w-full"
+    class="flex items-center min-h-7 justify-start border border-outline-gray-modals rounded pl-2 pr-1 py-0.5 hover:border-outline-gray-modals focus-within:bg-surface-white focus-within:border-outline-gray-4 focus-within:shadow-sm focus-within:ring-2 focus-within:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
   >
-    <editor-content class="w-full" :editor="editor" />
+    <editor-content
+      class="w-full"
+      :editor="editor"
+    />
     <!-- Take this out later -->
     <Button
       v-if="showInlineButton"
-      class="mt-auto ml-auto hover:bg-gray-300 min-w-7 aspect-square cursor-pointer"
+      class="mt-auto ml-auto hover:bg-surface-gray-4 min-w-7 aspect-square cursor-pointer"
       :variant="'ghost'"
       icon="arrow-up-circle"
       :disabled="!modelValue.length"
       @click="$emit('success', modelValue)"
-    ></Button>
+    />
   </div>
 </template>
 <script>
@@ -70,7 +73,7 @@ export default {
       editorProps: {
         attributes: {
           class: normalizeClass([
-            `text-sm !p-0 min-w-full placeholder-gray-500 bg-gray-100 !bg-transparent border-0 resize-none focus:outline-0 focus:border-0 active:outline-0 hover:bg-transparent`,
+            `text-sm !p-0 min-w-full placeholder-ink-gray-4 bg-surface-gray-2 !bg-transparent border-0 resize-none focus:outline-0 focus:border-0 active:outline-0 hover:bg-transparent`,
           ]),
         },
       },

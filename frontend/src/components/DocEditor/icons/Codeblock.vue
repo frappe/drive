@@ -16,7 +16,12 @@
     </g>
     <defs>
       <clipPath id="clip0_2344_29258">
-        <rect width="16" height="16" fill="white" transform="translate(0.75)" />
+        <rect
+          width="16"
+          height="16"
+          fill="white"
+          transform="translate(0.75)"
+        />
       </clipPath>
     </defs>
   </svg>

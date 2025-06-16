@@ -15,35 +15,38 @@
         :image="avatarURL"
         size="sm"
         :class="['mr-2']"
-      >
-      </Avatar>
+      />
       <div>
         <slot>
           <p
             v-if="title"
-            class="text-base font-medium text-gray-900"
+            class="text-base font-medium text-ink-gray-9"
             :class="{ 'mb-1': text }"
           >
             {{ title }}
           </p>
-          <p v-if="text" class="text-sm text-gray-600">
+          <p
+            v-if="text"
+            class="text-sm text-ink-gray-5"
+          >
             {{ text }}
           </p>
           <Button
             v-for="button in buttons"
             class="mt-2"
             @click="button.action(), $emit('close')"
-            >{{ button.label }}</Button
           >
+            {{ button.label }}
+          </Button>
         </slot>
       </div>
       <div class="ml-auto mb-auto pl-2">
         <slot name="actions">
           <button
-            class="grid h-5 w-5 place-items-center rounded hover:bg-gray-100"
+            class="grid h-5 w-5 place-items-center rounded hover:bg-surface-gray-2"
             @click="$emit('close')"
           >
-            <FeatherIcon name="x" class="h-4 w-4 text-gray-700" />
+            <LucideX class="size-4 text-ink-gray-7" />
           </button>
         </slot>
       </div>
@@ -51,8 +54,7 @@
   </div>
 </template>
 <script>
-import { FeatherIcon, Button } from "frappe-ui"
-import Avatar from "frappe-ui/src/components/Avatar.vue"
+import { FeatherIcon, Avatar } from "frappe-ui"
 
 export default {
   name: "Toast",
@@ -63,7 +65,7 @@ export default {
   props: {
     background: {
       type: String,
-      default: "bg-white",
+      default: "bg-surface-white",
     },
     buttons: {
       type: Array,

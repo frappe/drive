@@ -1,37 +1,39 @@
 <template>
   <div
     v-if="!totalStorage.loading"
-    class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
+    class="flex flex-col hover:bg-surface-gray-2 rounded cursor-pointer mb-0.5"
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
-      :label="props.isExpanded ? 'Storage' : '- used out of 5GB'"
+      :label="props.isExpanded ? __('Storage') : '- used out of 5GB'"
       :is-collapsed="!props.isExpanded"
     >
       <template #icon>
-        <Cloud class="w-4" />
+        <LucideCloud class="w-4" />
       </template>
     </SidebarItem>
-    <div class="w-auto mx-2 bg-gray-300 rounded-full h-1 my-2">
+    <div class="w-auto mx-2 bg-surface-gray-4 rounded-full h-1 my-2">
       <div
         class="h-1 rounded-full"
         :class="
-          (100 * usedStorage) / storageMax > 100 ? 'bg-red-500' : 'bg-black'
+          (100 * usedStorage) / storageMax > 100
+            ? 'bg-surface-red-500'
+            : 'bg-surface-black'
         "
         :style="{
           width: calculatePercent,
           maxWidth: '100%',
         }"
-      ></div>
+      />
     </div>
     <span
-      class="mx-2 text-xs text-gray-600 transition-all duration-500 ease-in-out line-clamp-1"
+      class="mx-2 text-xs text-ink-gray-5 transition-all duration-500 ease-in-out line-clamp-1"
       :class="
         isExpanded
           ? 'ml-2 w-auto opacity-100 h-auto'
           : 'ml-0 w-0 overflow-hidden opacity-0 h-0'
       "
-      >{{ formatedString }}</span
+      >{{ formattedString }}</span
     >
   </div>
 </template>
@@ -40,9 +42,9 @@
 import { ref, computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
-import Cloud from "./EspressoIcons/Cloud.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
 import { useRoute } from "vue-router"
+import { LucideCloud } from "lucide-vue-next"
 
 const emitter = inject("emitter")
 
@@ -51,7 +53,7 @@ const storageMax = ref(5368709120)
 
 const props = defineProps(["isExpanded"])
 
-const formatedString = computed(() => {
+const formattedString = computed(() => {
   return (
     (formatSize(usedStorage.value) || "-") +
     " used out of " +
@@ -81,5 +83,11 @@ let totalStorage = createResource({
     storageMax.value = data.limit
   },
 })
-watch(team, () => totalStorage.fetch({ team: team.value }), { immediate: true })
+watch(team, (val) => val && totalStorage.fetch({ team: val }), {
+  immediate: true,
+})
+
+emitter.on("recalculate", () => {
+  setTimeout(() => totalStorage.fetch({ team: team.value }), 2000)
+})
 </script>

@@ -1,39 +1,49 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New Folder', size: 'xs' }">
+  <Dialog
+    v-model="open"
+    :options="{
+      title: 'Create new folder',
+      size: 'xs',
+      actions: [
+        {
+          label: 'Create',
+          variant: 'solid',
+          disabled: folderName.length === 0,
+          loading: submit.loading,
+          onClick: submit,
+        },
+      ],
+    }"
+  >
     <template #body-content>
-      <Input
-        ref="input"
+      <p class="text-ink-gray-5 text-sm mb-2">Folder name:</p>
+      <TextInput
+        ref="my-input"
         v-model="folderName"
-        placeholder="folder name..."
-        type="text"
         @keyup.enter="submit"
         @keydown="createFolder.error = null"
-      />
+      >
+        <template #prefix>
+          <LucideFolderClosed class="size-4" />
+        </template>
+      </TextInput>
       <div
         v-if="createFolder.error"
-        class="pt-4 text-base font-sm text-red-500"
+        class="pt-4 text-base font-sm text-ink-red-3"
       >
         This folder already exists.
-      </div>
-      <div class="flex" :class="createFolder.error ? 'mt-5' : 'mt-8'">
-        <Button
-          variant="solid"
-          class="w-full"
-          :loading="createFolder.loading"
-          @click="submit"
-        >
-          Create
-        </Button>
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, useTemplateRef, watch } from "vue"
 import store from "@/store"
-import { Dialog, Input, createResource } from "frappe-ui"
+import { Dialog, TextInput, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
+import { allFolders } from "../resources/files"
+
 const route = useRoute()
 const props = defineProps({
   modelValue: String,
@@ -41,6 +51,10 @@ const props = defineProps({
 })
 const emit = defineEmits(["update:modelValue", "success", "mutate"])
 const folderName = ref("")
+const text = useTemplateRef("my-input")
+watch(text, (val) => {
+  val.el.focus()
+})
 
 const createFolder = createResource({
   url: "drive.api.files.create_folder",
@@ -49,7 +63,7 @@ const createFolder = createResource({
       title,
       team: route.params.team,
       parent: props.parent,
-      personal: store.state.breadcrumbs[0].label == "Home" ? 1 : 0,
+      personal: store.state.breadcrumbs[0].name == "Home" ? 1 : 0,
     }
   },
   validate(params) {
@@ -57,9 +71,9 @@ const createFolder = createResource({
       return "Folder name is required"
     }
   },
-  onError(data) {},
   onSuccess(data) {
     folderName.value = ""
+    allFolders.fetch()
     emit("success", data)
   },
 })
@@ -69,8 +83,10 @@ const open = computed({
     return props.modelValue === "f"
   },
   set: (value) => {
-    emit("update:modelValue", value)
-    if (!value) folderName.value = ""
+    if (!value) {
+      emit("update:modelValue", "")
+      folderName.value = ""
+    }
   },
 })
 

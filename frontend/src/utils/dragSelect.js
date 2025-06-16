@@ -27,10 +27,10 @@ export function handleDragSelect(entityElements, coordinates) {
         (elementRect.right >= minX && elementRect.right <= maxX) ||
         (minX >= elementRect.left && minX <= elementRect.right))
     ) {
-      //element.classList.add("bg-gray-100", "border-gray-300");
+      //element.classList.add("bg-surface-gray-2", "border-outline-gray-2");
       selectedEntities.add(element.id)
     } else {
-      // element.classList.remove("bg-gray-100", "border-gray-300");
+      // element.classList.remove("bg-surface-gray-2", "border-outline-gray-2");
     }
   })
   return selectedEntities

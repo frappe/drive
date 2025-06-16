@@ -1,27 +1,36 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'New Link', size: 'xs' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'New Link', size: 'xs' }"
+  >
     <template #body-content>
       <TextInput
         ref="input"
-        class="pb-2"
         v-model="title"
+        class="pb-2"
         placeholder="Link name"
         type="text"
         @keydown="createLink.error = null"
       />
       <TextInput
         ref="input"
-        class="pt-2"
         v-model="link"
+        class="pt-2"
         placeholder="URL"
         type="url"
         @keydown.enter="createLink.submit"
         @keydown="createLink.error = null"
       />
-      <div v-if="createLink.error" class="pt-4 text-base font-sm text-red-500">
+      <div
+        v-if="createLink.error"
+        class="pt-4 text-base font-sm text-ink-red-3"
+      >
         This file already exists.
       </div>
-      <div class="flex" :class="createLink.error ? 'mt-5' : 'mt-8'">
+      <div
+        class="flex"
+        :class="createLink.error ? 'mt-5' : 'mt-8'"
+      >
         <Button
           variant="solid"
           class="w-full"
@@ -58,7 +67,7 @@ const createLink = createResource({
       link: link.value.trim(),
       team: route.params.team,
       parent: props.parent,
-      personal: store.state.breadcrumbs[0].label == "Home" ? 1 : 0,
+      personal: store.state.breadcrumbs[0].name == "Home" ? 1 : 0,
     }
   },
   validate(params) {

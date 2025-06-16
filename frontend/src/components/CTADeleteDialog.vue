@@ -1,7 +1,10 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Are you sure?', size: 'sm' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Are you sure?', size: 'sm' }"
+  >
     <template #body-content>
-      <p class="text-gray-600">
+      <p class="text-ink-gray-5">
         {{ current.message }}
       </p>
       <div class="flex mt-5">

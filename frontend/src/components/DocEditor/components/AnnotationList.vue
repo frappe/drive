@@ -2,14 +2,17 @@
   <div class="select-text">
     <div class="flex items-center justify-start mb-6">
       <span
-        class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
+        class="inline-flex items-center gap-2.5 text-ink-gray-8 font-medium text-lg w-full"
       >
         Annotations
       </span>
-      <Dropdown :options="filterItems" placement="left">
+      <Dropdown
+        :options="filterItems"
+        placement="left"
+      >
         <Button>
           <template #prefix>
-            <Filter />
+            <LucideFilter class="size-4 text-ink-gray-6" />
           </template>
           {{ currentFilterLabel }}
         </Button>
@@ -38,15 +41,15 @@
           />
           <div class="flex flex-col gap-y-0.5 mb-1">
             <div class="flex items-center gap-x-0.5">
-              <span class="text-gray-800 text-sm font-medium">
+              <span class="text-ink-gray-8 text-sm font-medium">
                 {{ comment.get("owner") }}
               </span>
-              <span class="text-gray-700 text-sm">{{ " ∙ " }}</span>
-              <span class="text-gray-700 text-sm">
+              <span class="text-ink-gray-7 text-sm">{{ " ∙ " }}</span>
+              <span class="text-ink-gray-7 text-sm">
                 {{ useTimeAgo(comment.get("createdAt")) }}
               </span>
             </div>
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-ink-gray-7">
               {{ comment.get("replies").length }}
               {{ comment.get("replies").length === 1 ? " reply" : "replies" }}
             </span>
@@ -62,21 +65,28 @@
             placement="right"
             class="ml-auto mb-auto"
           >
-            <Button size="sm" variant="ghost" icon="more-horizontal" />
+            <Button
+              size="sm"
+              variant="ghost"
+              icon="more-horizontal"
+            />
           </Dropdown>
         </div>
         <div class="pl-10 text-sm leading-5">
           <span
             id="injected"
             v-html="comment.get('content')"
-            class="max-w-full break-word text-sm text-gray-700"
+            class="max-w-full break-word text-sm text-ink-gray-7"
           >
           </span>
         </div>
 
         <!-- replies for current annotation -->
         <div v-if="comment.get('id') === activeAnnotation">
-          <div class="mt-6" v-for="(reply, j) in comment.get('replies')">
+          <div
+            class="mt-6"
+            v-for="(reply, j) in comment.get('replies')"
+          >
             <div
               class="flex py-0.5 gap-x-0.5 text-sm justify-start items-center mb-1.5"
             >
@@ -86,11 +96,11 @@
                 :image="reply.get('ownerImage')"
                 class="mr-2"
               />
-              <span class="text-gray-800 text-sm font-medium">
+              <span class="text-ink-gray-8 text-sm font-medium">
                 {{ reply.get("owner") }}
               </span>
-              <span class="text-gray-700 text-sm">{{ " ∙ " }}</span>
-              <span class="text-gray-700 text-sm">
+              <span class="text-ink-gray-7 text-sm">{{ " ∙ " }}</span>
+              <span class="text-ink-gray-7 text-sm">
                 {{ useTimeAgo(reply.get("createdAt")) }}
               </span>
               <Dropdown
@@ -114,7 +124,7 @@
               <span
                 id="injected"
                 v-html="reply.get('content')"
-                class="max-w-full break-word text-gray-700"
+                class="max-w-full break-word text-ink-gray-7"
               >
               </span>
             </div>
@@ -125,7 +135,12 @@
             class="flex flex-col gap-2"
           >
             <div class="flex items-center justify-start gap-2 mt-6 mb-2">
-              <Avatar size="md" :label="fullName" :image="imageURL" class="" />
+              <Avatar
+                size="md"
+                :label="fullName"
+                :image="imageURL"
+                class=""
+              />
 
               <TiptapInput
                 v-model="commentText"
@@ -137,7 +152,10 @@
         </div>
       </div>
 
-      <div v-else class="text-gray-600 text-sm my-5">
+      <div
+        v-else
+        class="text-ink-gray-5 text-sm my-5"
+      >
         There are annotations for the current document or category
       </div>
     </div>
@@ -146,21 +164,11 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex"
-import {
-  ref,
-  watch,
-  computed,
-  nextTick,
-  onUpdated,
-  onMounted,
-  h,
-  inject,
-} from "vue"
-import { Avatar, Button, Dropdown, createResource } from "frappe-ui"
-import { v4 as uuidv4, v4 } from "uuid"
+import { ref, computed, inject } from "vue"
+import { Avatar, Button, Dropdown } from "frappe-ui"
+import { v4 as uuidv4 } from "uuid"
 import { useTimeAgo } from "@vueuse/core"
 import * as Y from "yjs"
-import Filter from "@/components/EspressoIcons/Filter.vue"
 import TiptapInput from "@/components/TiptapInput.vue"
 
 const store = useStore()
@@ -187,10 +195,10 @@ const currentFilterState = ref(0)
 const commentText = ref<string>("")
 
 const fullName = computed(() => store.state.user.fullName)
-const email = computed(() => store.state.auth.user_id)
+const email = computed(() => store.state.user.id)
 const imageURL = computed(() => store.state.user.imageURL)
-const currentUserEmail = computed(() => store.state.auth.user_id)
-const entity = computed(() => store.state.entityInfo[0])
+const currentUserEmail = computed(() => store.state.user.id)
+const entity = computed(() => store.state.activeEntity)
 
 const openAndAnchoredAnnotations = computed(() => {
   let arr = allAnnotations.toArray()
@@ -299,14 +307,6 @@ const addReply = (parentID) => {
 
 const commentOptions = computed(() =>
   [
-    /*     {
-      label: "Edit",
-      onClick: () => {},
-      //icon: () => h(FeatherIcon, { name: "edit-2" }),
-      isEnabled: () => {
-        return true
-      },
-    }, */
     {
       label: "Mark as Resolved",
       onClick: () => {

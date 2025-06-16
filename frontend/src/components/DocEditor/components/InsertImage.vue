@@ -1,5 +1,9 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Add Image' }" @after-leave="reset">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Add Image' }"
+    @after-leave="reset"
+  >
     <template #body-content>
       <FileUploader
         file-types="image/*"
@@ -44,7 +48,7 @@
       >
         Insert Image
       </Button>
-      <Button @click="reset">Cancel</Button>
+      <Button @click="reset"> Cancel </Button>
     </template>
   </Dialog>
 </template>

@@ -1,17 +1,27 @@
 <template>
   <div
-    class="flex items-center justify-center bg-white shadow-lg rounded-[0.45rem] gap-x-1 px-0.5 py-0.5"
+    class="flex items-center justify-center bg-surface-white shadow-lg rounded-[0.45rem] gap-x-1 px-0.5 py-0.5"
   >
-    <template v-for="button in buttons" :key="button.label">
-      <div v-if="button.type === 'separator'" class="h-5 border-l"></div>
-      <component :is="button.component || 'div'" v-else v-bind="{ editor }">
+    <template
+      v-for="button in buttons"
+      :key="button.label"
+    >
+      <div
+        v-if="button.type === 'separator'"
+        class="h-5 border-l"
+      />
+      <component
+        :is="button.component || 'div'"
+        v-else
+        v-bind="{ editor }"
+      >
         <template #default="componentSlotProps">
           <div
             v-if="button.label === 'New Link' && button.isActive(editor)"
             class="flex items-center justify-start"
           >
             <a
-              class="text-gray-800 text-sm underline hover:bg-gray-100 rounded-[0.35rem] px-1 py-0.5 gap-x-1 line-clamp-1 max-w-44"
+              class="text-ink-gray-8 text-sm underline hover:bg-surface-gray-2 rounded-[0.35rem] px-1 py-0.5 gap-x-1 line-clamp-1 max-w-44"
               :href="editor.getAttributes('link').href"
               :title="editor.getAttributes('link').href"
               target="_blank"
@@ -19,7 +29,7 @@
               {{ editor.getAttributes("link").href }}</a
             >
             <button
-              class="hover:bg-gray-100 text-gray-800 rounded-[0.35rem] p-1"
+              class="hover:bg-surface-gray-2 text-ink-gray-8 rounded-[0.35rem] p-1"
             >
               <Edit2
                 class="h-3.5 w-auto stroke-[1.5]"
@@ -30,11 +40,11 @@
           </div>
           <button
             v-else
-            class="flex items-center rounded-[0.35rem] p-1 text-gray-800 transition-colors gap-1"
+            class="flex items-center rounded-[0.35rem] p-1 text-ink-gray-8 transition-colors gap-1"
             :class="
               button.isActive(editor) || componentSlotProps?.isActive
-                ? 'bg-gray-200 text-gray-400'
-                : 'hover:bg-gray-100'
+                ? 'bg-surface-gray-3 text-ink-gray-3'
+                : 'hover:bg-surface-gray-2'
             "
             :title="button.label"
             @click="
@@ -61,14 +71,13 @@
   </div>
 </template>
 <script>
-import { Popover, FeatherIcon } from "frappe-ui"
+import { Popover } from "frappe-ui"
 import { Edit2, Unlink2 } from "lucide-vue-next"
 
 export default {
   name: "TipTapMenu",
   components: {
     Popover,
-    FeatherIcon,
     Unlink2,
     Edit2,
   },

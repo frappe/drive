@@ -1,0 +1,81 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2025-04-09 12:48:31.850910",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "enabled",
+    "aws_key",
+    "aws_secret",
+    "bucket",
+    "endpoint_url",
+    "signature_version"
+  ],
+  "fields": [
+    {
+      "depends_on": "enabled",
+      "fieldname": "aws_key",
+      "fieldtype": "Data",
+      "label": "AWS Key"
+    },
+    {
+      "depends_on": "enabled",
+      "fieldname": "aws_secret",
+      "fieldtype": "Password",
+      "label": "AWS Secret"
+    },
+    {
+      "default": "0",
+      "fieldname": "enabled",
+      "fieldtype": "Check",
+      "label": "Enabled"
+    },
+    {
+      "depends_on": "enabled",
+      "fieldname": "bucket",
+      "fieldtype": "Data",
+      "label": "S3 Bucket"
+    },
+    {
+      "depends_on": "enabled",
+      "description": "Example format: https://s3.ap-south-1.amazonaws.com",
+      "fieldname": "endpoint_url",
+      "fieldtype": "Data",
+      "label": "Endpoint URL"
+    },
+    {
+      "default": "s3v4",
+      "depends_on": "enabled",
+      "description": "Defaults to \"s3v4\". Some providers only support \"s3\".",
+      "fieldname": "signature_version",
+      "fieldtype": "Data",
+      "label": "Signature Version"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "issingle": 1,
+  "links": [],
+  "modified": "2025-05-25 19:05:44.366826",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive S3 Settings",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}

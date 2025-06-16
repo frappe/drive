@@ -74,7 +74,7 @@ const Selection = computed(() => {
     }"
   >
     <div
-      class="flex flex-row h-full leading-none gap-0.5 p-0.5 bg-white rounded shadow-sm border border-border"
+      class="flex flex-row h-full leading-none gap-0.5 p-0.5 bg-surface-white rounded shadow-sm border border-border"
     >
       <Button
         variant="ghost"
@@ -96,7 +96,9 @@ const Selection = computed(() => {
         ><template #icon>
           <TableCellsSplit class="w-4 stroke-[1.5]" /> </template
       ></Button>
-      <Button variant="ghost" @click="() => emits('onHeaderCell')"
+      <Button
+        variant="ghost"
+        @click="() => emits('onHeaderCell')"
         ><template #icon>
           <ToggleHeaderCell class="w-4 stroke-[1.5]" /> </template
       ></Button>

@@ -1,120 +1,150 @@
 <template>
   <div class="flex items-center mb-4">
-    <h1 class="font-semibold">Users</h1>
+    <h1 class="font-semibold text-ink-gray-9">
+      {{ __("Users") }}
+    </h1>
     <Button
       v-if="isAdmin?.data"
       variant="solid"
       icon-left="plus"
       class="ml-auto mr-4"
-      @click="
-        () => {
-          showInvite = true
-        }
-      "
+      @click="showInvite = true"
     >
-      Invite
+      {{ __("Invite") }}
     </Button>
   </div>
-  <div class="flex flex-col items-stretch justify-start overflow-y-auto">
-    <div class="flex items-center justify-between"></div>
-    <div v-for="(user, index) in allUsers?.data" :key="user.user_name">
-      <div
-        v-if="index > 0"
-        class="w-[95%] mx-auto h-px border-t border-gray-200"
-      ></div>
-      <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
-        <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
-        <div class="flex flex-col">
-          <span class="text-base">{{ user.full_name }}</span>
-          <span class="text-xs text-gray-700">{{ user.user_name }}</span>
-        </div>
-        <Dropdown
-          v-if="isAdmin.data && user.name != $store.state.user.fullName"
-          :options="roleOptions"
-          v-slot="{ open }"
-          placement="right"
-          class="ml-auto text-base text-gray-600"
-        >
-          <Button variant="ghost" @click="selectedUser = user"
-            >{{ user.role == "admin" ? "Manager" : "User" }}
-            <template #suffix>
-              <ChevronDown :class="{ '[transform:rotateX(180deg)]': open }" />
-            </template>
-          </Button>
-        </Dropdown>
-        <span v-else class="ml-auto text-base text-gray-600">{{
-          user.role == "admin" ? "Manager" : "User"
-        }}</span>
-      </div>
-    </div>
-  </div>
-  <div
-    v-if="!allUsers?.data?.length"
-    class="flex flex-col items-center justify-center h-1/2"
-  >
-    <FeatherIcon class="h-8 stroke-1 text-gray-600" name="users" />
-    <span class="text-gray-800 text-sm mt-2">No Users</span>
-  </div>
-  <h3 class="my-4 text-base font-medium">Invites</h3>
-  <div
-    class="text-center text-sm"
-    v-if="!invites?.data || !invites.data.length"
-  >
-    No invites found.
-  </div>
-  <div v-for="(invite, index) in invites?.data" :key="invite.name">
-    <div
-      v-if="index > 0"
-      class="w-[95%] mx-auto h-px border-t border-gray-200"
-    ></div>
-    <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
-      <div class="flex justify-between w-full">
-        <span class="text-base">{{ invite.email }}</span>
-        <div class="flex">
-          <Tooltip
-            :text="
-              invite.status === 'Proposed'
-                ? 'A person from your domain has joined Drive.'
-                : 'This invite was sent from your team.'
-            "
-          >
-            <Badge
-              :theme="invite.status === 'Pending' ? 'blue' : 'orange'"
-              variant="subtle"
-              class="my-auto mr-2"
-              size="sm"
-              >{{ invite.status }}</Badge
-            >
-          </Tooltip>
-          <div class="flex gap-2">
-            <Button
-              :variant="invite.status === 'Proposed' ? 'ghost' : 'outline'"
-              class="my-auto"
-              @click="
-                rejectInvite.submit({ key: invite.name }),
-                  invites.data.splice(index, 1)
-              "
-            >
-              <LucideX v-if="invite.status === 'Proposed'" class="w-4 h-4" />
-              <LucideTrash v-else class="w-4 h-4" />
-            </Button>
 
-            <Button
-              v-if="invite.status === 'Proposed'"
-              class="my-auto"
-              variant="outline"
-              @click="
-                acceptInvite.submit({ key: invite.name, redirect: 0 }),
-                  invites.data.splice(index, 1)
-              "
-            >
-              <LucideCheck class="w-4 h-4" />
-            </Button>
+  <Tabs :tabs>
+    <template #tab-panel="{ tab }">
+      <template v-if="tab.label === 'Members'">
+        <div
+          class="flex flex-col items-stretch justify-start h-[60%] overflow-y-auto"
+        >
+          <div
+            v-for="(user, index) in allUsers?.data"
+            :key="user.user_name"
+          >
+            <div
+              v-if="index > 0"
+              class="w-[95%] mx-auto h-px border-t border-outline-gray-modals"
+            />
+            <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
+              <Avatar
+                :image="user.user_image"
+                :label="user.full_name"
+                size="lg"
+              />
+              <div class="flex flex-col">
+                <span class="text-base text-ink-gray-8">{{
+                  user.full_name
+                }}</span>
+                <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
+              </div>
+              <Dropdown
+                v-if="isAdmin.data && user.name != $store.state.user.fullName"
+                v-slot="{ open }"
+                :options="roleOptions"
+                placement="right"
+                class="ml-auto text-base text-ink-gray-6"
+              >
+                <Button
+                  variant="ghost"
+                  @click="selectedUser = user"
+                >
+                  {{ user.role == "admin" ? __("Manager") : __("User") }}
+                  <template #suffix>
+                    <LucideChevronDown
+                      :class="{ '[transform:rotateX(180deg)]': open }"
+                    />
+                  </template>
+                </Button>
+              </Dropdown>
+              <span
+                v-else
+                class="ml-auto text-base text-ink-gray-6"
+                >{{ user.role == "admin" ? __("Manager") : __("User") }}</span
+              >
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </template>
+      <template v-else>
+        <div
+          v-if="!invites?.data || !invites.data.length"
+          class="text-center text-sm"
+        >
+          No invites found.
+        </div>
+        <div
+          v-for="(invite, index) in invites?.data"
+          :key="invite.name"
+        >
+          <div
+            v-if="index > 0"
+            class="w-[95%] mx-auto h-px border-t border-outline-gray-modals"
+          />
+          <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
+            <div class="flex justify-between w-full">
+              <span class="text-base my-auto text-ink-gray-8">{{
+                invite.email
+              }}</span>
+              <div class="flex">
+                <Tooltip
+                  :text="
+                    invite.status === 'Proposed'
+                      ? 'A person from your domain has joined Drive.'
+                      : 'This invite was sent from your team.'
+                  "
+                >
+                  <Badge
+                    :theme="invite.status === 'Pending' ? 'blue' : 'orange'"
+                    variant="subtle"
+                    class="my-auto mr-2"
+                    size="sm"
+                  >
+                    {{ __(invite.status) }}
+                  </Badge>
+                </Tooltip>
+                <div class="flex gap-2">
+                  <Button
+                    :variant="
+                      invite.status === 'Proposed' ? 'ghost' : 'outline'
+                    "
+                    class="my-auto"
+                    @click="
+                      rejectInvite.submit({ key: invite.name }),
+                        invites.data.splice(index, 1)
+                    "
+                  >
+                    <LucideX
+                      v-if="invite.status === 'Proposed'"
+                      class="size-4"
+                    />
+                    <LucideTrash
+                      v-else
+                      class="size-4"
+                    />
+                  </Button>
+
+                  <Button
+                    v-if="invite.status === 'Proposed'"
+                    class="my-auto"
+                    variant="outline"
+                    @click="
+                      acceptInvite.submit({ key: invite.name, redirect: 0 }),
+                        invites.data.splice(index, 1)
+                    "
+                  >
+                    <LucideCheck class="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div></div
+      ></template>
+    </template>
+  </Tabs>
+
   <Dialog
     v-model="showInvite"
     :options="{
@@ -125,14 +155,14 @@
           label: 'Send Invitation',
           variant: 'solid',
           disabled: !emailTest().length && !invited.length,
-          loading: () => inviteUsers.loading,
+          loading: inviteUsers.loading,
           onClick: () => {
             extractEmails()
+            showInvite = false
             inviteUsers.submit({
               emails: invited.join(','),
               team,
             })
-            dialog = null
           },
         },
       ],
@@ -140,7 +170,7 @@
   >
     <template #body-content>
       <div class="flex items-start justify-start gap-4">
-        <div class="flex flex-wrap gap-1 rounded w-full bg-gray-100 p-2">
+        <div class="flex flex-wrap gap-1 rounded w-full bg-surface-gray-2 p-2">
           <Button
             v-for="(email, idx) in invited"
             :key="email"
@@ -162,7 +192,7 @@
               type="text"
               autocomplete="off"
               placeholder="Enter email address"
-              class="h-7 w-full rounded border-none bg-gray-100 py-1.5 pl-2 pr-2 text-base text-gray-800 placeholder-gray-500 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+              class="h-7 w-full rounded border-none bg-surface-gray-2 py-1.5 pl-2 pr-2 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               @keydown="isValidEmail"
               @keydown.enter.capture.stop="extractEmails"
               @keydown.space.prevent.stop="extractEmails"
@@ -197,8 +227,7 @@
         },
       ],
     }"
-  >
-  </Dialog>
+  />
 </template>
 
 <script setup>
@@ -207,19 +236,18 @@ import { getTeams } from "@/resources/files"
 import { rejectInvite, acceptInvite } from "@/resources/permissions"
 import {
   Avatar,
-  FeatherIcon,
   Dropdown,
   Dialog,
   Badge,
+  Tabs,
   Tooltip,
   createResource,
 } from "frappe-ui"
-import ChevronDown from "@/components/EspressoIcons/ChevronDown.vue"
-import { XIcon } from "lucide-vue-next"
 import { allUsers } from "@/resources/permissions"
 import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
+import { LucideMail, LucideUsers } from "lucide-vue-next"
 const route = useRoute()
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
@@ -231,6 +259,17 @@ const invited = ref("")
 const emailInput = ref("")
 const showInvite = ref(false)
 const showRemove = ref(false)
+
+const tabs = [
+  {
+    label: "Members",
+    icon: h(LucideUsers, { class: "size-4" }),
+  },
+  {
+    label: "Invites",
+    icon: h(LucideMail, { class: "size-4" }),
+  },
+]
 
 const roleOptions = [
   {
@@ -257,13 +296,13 @@ const roleOptions = [
   },
   {
     label: "Remove",
-    class: "text-red-500",
+    class: "text-ink-red-3",
     component: () =>
       h(
         "button",
         {
           class: [
-            "group flex w-full items-center text-red-500 rounded-md px-2 py-2 text-sm",
+            "group flex w-full items-center text-ink-red-3 rounded-md px-2 py-2 text-sm",
           ],
           onClick: () => (showRemove.value = true),
         },
@@ -287,7 +326,7 @@ function extractEmails() {
 }
 
 const isAdmin = createResource({
-  url: "drive.api.product.is_admin",
+  url: "drive.api.permissions.is_admin",
   params: { team: team.value },
   auto: true,
 })
@@ -295,7 +334,7 @@ const isAdmin = createResource({
 const inviteUsers = createResource({
   url: "drive.api.product.invite_users",
   onSuccess: () => {
-    showInvite.value = false
+    invites.fetch()
     toast("Invite sent!")
   },
 })

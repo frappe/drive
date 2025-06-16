@@ -1,10 +1,9 @@
 <template>
   <GenericPage
-    :recents="true"
     :grouper="groupByTime"
     :get-entities="getRecents"
     :show-sort="false"
-    :icon="Recent"
+    :icon="LucideClock"
     primary-message="No recent files"
     secondary-message="Try opening something!"
   />
@@ -12,8 +11,8 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import Recent from "../components/EspressoIcons/Recent.vue"
 import { getRecents } from "@/resources/files"
+import { LucideClock } from "lucide-vue-next"
 
 function groupByTime(entities) {
   const today = new Date()

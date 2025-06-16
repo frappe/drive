@@ -70,6 +70,7 @@ class DriveUserInvitation(Document):
                 "signed_up": 1,
             },
         )
+
         if redirect:
             frappe.local.response["type"] = "redirect"
 
@@ -85,9 +86,10 @@ class DriveUserInvitation(Document):
             ).insert(ignore_permissions=True)
 
             frappe.db.commit()
-            url = f"/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
+            url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
             frappe.local.response["location"] = url
             return
+
         # Otherwise, add the user to the team
         team = frappe.get_doc("Drive Team", self.team)
         team.append("users", {"user": self.email})

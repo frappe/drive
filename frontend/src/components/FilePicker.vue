@@ -1,15 +1,21 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'Open a file', size: '5xl' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'Open a file', size: '5xl' }"
+  >
     <template #body>
-      <h3 class="text-2xl font-semibold leading-6 text-gray-900 px-6 pt-5">
+      <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9 px-6 pt-5">
         Open a file
       </h3>
       <div class="px-2 pt-2">
         <div class="flex items-center justify-start px-4 my-2">
-          <Dropdown v-if="dropDownItems.length" :options="dropDownItems">
+          <Dropdown
+            v-if="dropDownItems.length"
+            :options="dropDownItems"
+          >
             <button class="flex">
               <svg
-                class="w-4 h-4 m-auto text-gray-600"
+                class="size-4 m-auto text-ink-gray-5"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -20,20 +26,38 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <circle cx="12" cy="12" r="1" />
-                <circle cx="19" cy="12" r="1" />
-                <circle cx="5" cy="12" r="1" />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="1"
+                />
+                <circle
+                  cx="19"
+                  cy="12"
+                  r="1"
+                />
+                <circle
+                  cx="5"
+                  cy="12"
+                  r="1"
+                />
               </svg>
             </button>
           </Dropdown>
 
-          <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
+          <span
+            v-if="dropDownItems.length"
+            class="text-ink-gray-5 mx-0.5"
+          >
             {{ "/" }}
           </span>
-          <div v-for="(crumb, index) in lastFourBreadCrumbs" :key="index">
+          <div
+            v-for="(crumb, index) in lastFourBreadCrumbs"
+            :key="index"
+          >
             <span
               v-if="breadcrumbs.length > 1 && index > 0"
-              class="text-gray-600 mx-0.5"
+              class="text-ink-gray-5 mx-0.5"
             >
               {{ "/" }}
             </span>
@@ -41,8 +65,8 @@
               class="text-base cursor-pointer"
               :class="
                 breadcrumbs.length - 1 === index
-                  ? 'text-gray-900 text-base font-medium p-1'
-                  : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
+                  ? 'text-ink-gray-9 text-base font-medium p-1'
+                  : 'text-ink-gray-5 text-base rounded-[6px] hover:bg-surface-gray-2 p-1'
               "
               @click="closeEntity(crumb.name)"
             >
@@ -51,8 +75,14 @@
           </div>
         </div>
 
-        <div class="flex" :style="{ height: 'calc(100vh - 20rem)' }">
-          <Tabs v-model="tabIndex" :tabs="tabs">
+        <div
+          class="flex"
+          :style="{ height: 'calc(100vh - 20rem)' }"
+        >
+          <Tabs
+            v-model="tabIndex"
+            :tabs="tabs"
+          >
             <div
               v-if="tabIndex === 4"
               class="flex flex-col h-full items-center justify-center p-4"
@@ -62,10 +92,12 @@
                 variant="solid"
                 @click="emitter.emit('uploadFile')"
               >
-                <template #prefix><Upload class="w-4 stroke-1.5" /></template>
+                <template #prefix>
+                  <Upload class="w-4 stroke-1.5" />
+                </template>
                 Upload
               </Button>
-              <!-- <span class="text-gray-700 text-base mt-2" >Or drag a file here to upload</span> -->
+              <!-- <span class="text-ink-gray-7 text-base mt-2" >Or drag a file here to upload</span> -->
             </div>
             <NoFilesSection
               v-else-if="isEmpty"
@@ -73,23 +105,28 @@
               primary-message="No Files"
               secondary-message=" "
             />
-            <div v-else class="h-full p-4">
+            <div
+              v-else
+              class="h-full p-4"
+            >
               <div class="mt-2">
                 <div class="flex py-1 justify-between">
                   <span
                     v-if="folders.length > 0"
-                    class="text-gray-600 font-medium text-base"
+                    class="text-ink-gray-5 font-medium text-base"
                   >
                     Folders
                   </span>
-                  <span v-else></span>
+                  <span v-else />
                   <Button
                     v-if="folderStack.length > 1"
                     variant="ghost"
                     icon="arrow-up"
                     class="border"
                     :class="[
-                      $store.state.view === 'list' ? 'bg-white shadow' : '',
+                      $store.state.view === 'list'
+                        ? 'bg-surface-white shadow'
+                        : '',
                     ]"
                     @click="closeEntity()"
                   />
@@ -99,7 +136,7 @@
                     v-for="folder in folders"
                     :id="folder.name"
                     :key="folder.name"
-                    class="cursor-pointer p-2 w-40 h-26 rounded-lg border group select-none entity border-gray-200 hover:shadow-2xl"
+                    class="cursor-pointer p-2 w-40 h-26 rounded-lg border group select-none entity border-outline-gray-modals hover:shadow-2xl"
                     draggable="false"
                     @click="openEntity(folder)"
                     @dragenter.prevent
@@ -121,10 +158,10 @@
                       </svg>
                     </div>
                     <div class="content-center grid">
-                      <span class="truncate text-sm text-gray-800 mt-2">
+                      <span class="truncate text-sm text-ink-gray-8 mt-2">
                         {{ folder.title }}
                       </span>
-                      <p class="truncate text-xs text-gray-600 mt-0">
+                      <p class="truncate text-xs text-ink-gray-5 mt-0">
                         {{ folder.file_size }}
                         {{ !!folder.file_size ? "∙" : null }}
                         {{ folder.relativeModified }}
@@ -137,13 +174,13 @@
                 v-if="files.length > 0"
                 :class="folders.length > 0 ? 'mt-8' : 'mt-2'"
               >
-                <div class="text-gray-600 font-medium text-base">Files</div>
+                <div class="text-ink-gray-5 font-medium text-base">Files</div>
                 <div class="inline-flex flex-row flex-wrap gap-4 mt-0.5">
                   <div
                     v-for="file in files"
                     :id="file.name"
                     :key="file.name"
-                    class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer relative group border-gray-200 hover:shadow-2xl"
+                    class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer relative group border-outline-gray-modals hover:shadow-2xl"
                     :draggable="false"
                     @click="openEntity(file)"
                     @dragenter.prevent
@@ -177,11 +214,14 @@ import GridItem from "./GridItem.vue"
 import { watch, defineEmits, computed, h, ref } from "vue"
 import { useTimeAgo } from "@vueuse/core"
 import { createResource, Dialog, Button, Tabs, Dropdown } from "frappe-ui"
-import { Plus, Upload } from "lucide-vue-next"
-import Home from "./EspressoIcons/Home.vue"
-import Recent from "./EspressoIcons/Recent.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Users from "./EspressoIcons/Users.vue"
+import {
+  LucideClock,
+  LucideHome,
+  LucidePlus,
+  LucideStar,
+  LucideUsers,
+  Upload,
+} from "lucide-vue-next"
 
 import { formatSize, formatDate } from "@/utils/format"
 import { useStore } from "vuex"
@@ -234,24 +274,24 @@ const open = computed({
 const tabs = [
   {
     label: "Home",
-    icon: h(Home, { class: "w-4 h-4" }),
+    icon: h(LucideHome, { class: "size-4" }),
     component: NoFilesSection,
   },
   {
     label: "Recents",
-    icon: h(Recent, { class: "w-4 h-4" }),
+    icon: h(LucideClock, { class: "size-4" }),
   },
   {
     label: "Favourite",
-    icon: h(Star, { class: "w-4 h-4" }),
+    icon: h(LucideStar, { class: "size-4" }),
   },
   {
     label: "Shared",
-    icon: h(Users, { class: "w-4 h-4" }),
+    icon: h(LucideUsers, { class: "size-4" }),
   },
   {
     label: "Upload",
-    icon: h(Plus, { class: "w-4 h-4 stroke-[1.5]" }),
+    icon: h(LucidePlus, { class: "size-4 stroke-[1.5]" }),
   },
 ]
 
@@ -414,15 +454,7 @@ const fetchFolderContents = createResource({
     })
     folderContents.value = data
   },
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      this.$store.commit("setError", {
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-      this.$router.replace({ name: "Error" })
-    }
-  },
+  // Better error handling
 })
 
 let sharedWithMe = createResource({
@@ -437,9 +469,6 @@ let sharedWithMe = createResource({
       entity.creation = formatDate(entity.creation)
     })
     folderContents.value = data
-  },
-  onError(error) {
-    console.log(error)
   },
 })
 </script>

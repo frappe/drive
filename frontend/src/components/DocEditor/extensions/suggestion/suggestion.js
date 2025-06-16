@@ -5,11 +5,8 @@ import {
   Heading2,
   Table,
   Minus,
-  ArrowLeft,
   ArrowRight,
-  ArrowUp,
   ArrowDown,
-  ArrowUpWideNarrow,
 } from "lucide-vue-next"
 import tippy from "tippy.js"
 import List from "../../icons/List.vue"

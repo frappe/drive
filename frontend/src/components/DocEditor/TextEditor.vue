@@ -1,5 +1,8 @@
 <template>
-  <div v-if="editor && initComplete" class="flex-col w-full overflow-y-auto">
+  <div
+    v-if="editor && initComplete"
+    class="flex-col w-full overflow-y-auto"
+  >
     <div
       :class="[
         settings.docFont,
@@ -21,7 +24,10 @@
         @keydown.enter.passive="handleEnterKey"
       />
     </div>
-    <TableBubbleMenu v-if="isWritable" :editor="editor" />
+    <TableBubbleMenu
+      v-if="isWritable"
+      :editor="editor"
+    />
     <BubbleMenu
       v-if="editor"
       v-show="!forceHideBubbleMenu"
@@ -42,8 +48,8 @@
   <DocMenuAndInfoBar
     v-if="editor && initComplete"
     ref="MenuBar"
-    v-model:allAnnotations="allAnnotations"
-    v-model:activeAnnotation="activeAnnotation"
+    v-model:all-annotations="allAnnotations"
+    v-model:active-annotation="activeAnnotation"
     :editor="editor"
     :versions="versions"
     :settings="settings"
@@ -92,14 +98,13 @@ import { computed, normalizeClass } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebrtcProvider } from "y-webrtc"
 import * as Y from "yjs"
-import { uploadDriveEntity } from "../../utils/chunkFileUpload"
-import { detectMarkdown, markdownToHTML } from "../../utils/markdown"
+import { uploadDriveEntity } from "@/utils/chunkFileUpload"
+import { detectMarkdown, markdownToHTML } from "@/utils/markdown"
 import DocMenuAndInfoBar from "./components/DocMenuAndInfoBar.vue"
 import configureMention from "./extensions/mention/mention"
 import Menu from "./components/Menu.vue"
 import { Table } from "./extensions/table"
 import TableBubbleMenu from "./components/TableBubbleMenu.vue"
-import { Comment } from "./extensions/comment"
 import { PageBreak } from "./extensions/Pagebreak"
 import { Highlight } from "./extensions/backgroundColor"
 import { CharacterCount } from "./extensions/character-count"
@@ -121,8 +126,7 @@ import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 import { DiffMarkExtension } from "./extensions/createDiffMark"
-import editorStyle from "./editor.css?inline"
-import globalStyle from "../../index.css?inline"
+import { printDoc } from "@/utils/files"
 
 export default {
   name: "TextEditor",
@@ -200,7 +204,6 @@ export default {
     "update:lastSaved",
   ],
   data() {
-    console.log(JSON.stringify(this.entity))
     return {
       docWidth: this.settings.docWidth,
       docSize: this.settings.docSize,
@@ -541,7 +544,8 @@ export default {
           types: ["textStyle"],
         }),
         ResizableMedia.configure({
-          uploadFn: (file) => uploadDriveEntity(file, this.entityName),
+          uploadFn: (file) =>
+            uploadDriveEntity(file, this.entity.team, this.entityName),
         }),
         DiffMarkExtension,
       ],
@@ -677,7 +681,7 @@ export default {
           title: "Not a valid DOCX file!",
           position: "bottom-right",
           icon: "alert-triangle",
-          iconClasses: "text-red-500",
+          iconClasses: "text-ink-red-3",
           timeout: 2,
         })
       }
@@ -697,68 +701,10 @@ export default {
         title: "Document saved",
       })
     },
-    printHtml() {
-      const content = `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <style>${globalStyle}</style>
-                <style>${editorStyle}</style>
-              </head>
-              <body>
-                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
-                  ${this.editor.getHTML()}
-                </div>
-              </body>
-            </html>
-          `
-      const iframe = document.createElement("iframe")
-      iframe.id = "el-tiptap-iframe"
-      iframe.setAttribute(
-        "style",
-        "position: absolute; width: 0; height: 0; top: -10px; left: -10px;"
-      )
-      document.body.appendChild(iframe)
-
-      const frameWindow = iframe.contentWindow
-      const doc =
-        iframe.contentDocument ||
-        (iframe.contentWindow && iframe.contentWindow.document)
-
-      if (doc) {
-        doc.open()
-        doc.write(content)
-        doc.close()
-      }
-
-      if (frameWindow) {
-        iframe.onload = function () {
-          try {
-            setTimeout(() => {
-              frameWindow.focus()
-              try {
-                if (!frameWindow.document.execCommand("print", false)) {
-                  frameWindow.print()
-                }
-              } catch (e) {
-                frameWindow.print()
-              }
-              frameWindow.close()
-            }, 500)
-          } catch (err) {
-            console.error(err)
-          }
-
-          setTimeout(function () {
-            // document.body.removeChild(iframe)
-          }, 100)
-        }
-      }
-    },
     printEditorContent() {
-      const editorContent = document.getElementById("editor-capture")
-      if (editorContent) {
-        this.printHtml(editorContent)
+      const html = this.editor.getHTML()
+      if (html) {
+        printDoc(html)
         return true
       }
       return false
@@ -923,7 +869,7 @@ export default {
       )
         return
       if (this.implicitTitle.length) {
-        this.$store.state.entityInfo[0].title = this.implicitTitle
+        this.$store.state.activeEntity.title = this.implicitTitle
         this.$resources.rename.submit({
           entity_name: this.entityName,
           new_title: this.implicitTitle,

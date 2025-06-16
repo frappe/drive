@@ -1,31 +1,26 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden sm:bg-gray-50">
+  <div class="flex h-screen w-full overflow-hidden sm:bg-surface-menu-bar">
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
-          <!-- logo -->
-          <div
-            class="flex flex-col items-center"
-            @dblclick="window.location.href = '/f-login'"
-          >
+          <div class="flex flex-col items-center">
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
-          <!-- card -->
           <div
-            class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
             <div class="mb-7.5 text-center">
-              <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
+              <p class="mb-2 text-2xl font-semibold leading-6 text-ink-gray-9">
                 {{
                   isLogin
-                    ? "Log in to Drive"
+                    ? "Login to Drive"
                     : params.get("t")
                     ? "Join " + params.get("t")
                     : "Create a new account"
                 }}
               </p>
               <p
-                class="break-words text-base font-normal leading-[21px] text-gray-700"
+                class="break-words text-base font-normal leading-[21px] text-ink-gray-7"
               >
                 {{
                   !isLogin
@@ -39,8 +34,8 @@
 
             <form class="flex flex-col">
               <FormControl
-                label="Email"
                 v-model="email"
+                label="Email"
                 type="email"
                 placeholder="johndoe@mail.com"
                 autocomplete="email"
@@ -50,27 +45,30 @@
               <template v-if="otpValidated && !isLogin">
                 <div class="mt-5 flex flex-row gap-5">
                   <FormControl
+                    v-model="first_name"
                     label="First Name"
                     type="text"
                     placeholder="Robin"
                     variant="outline"
-                    v-model="first_name"
                     required
                   />
                   <FormControl
+                    v-model="last_name"
                     label="Last Name"
                     type="text"
                     placeholder="Hood"
                     variant="outline"
-                    v-model="last_name"
                   />
                 </div>
                 <div class="!mt-6 flex gap-2">
-                  <FormControl type="checkbox" v-model="terms_accepted" />
+                  <FormControl
+                    v-model="terms_accepted"
+                    type="checkbox"
+                  />
                   <label class="text-base">
                     I accept the
                     <Link
-                      class="!text-gray-700"
+                      class="!text-ink-gray-7"
                       to="https://frappecloud.com/policies"
                       target="_blank"
                     >
@@ -93,13 +91,14 @@
               </template>
               <div v-else-if="otpRequested">
                 <FormControl
+                  v-model="otp"
                   label="Verification code"
                   type="text"
                   class="mt-4"
                   placeholder="123456"
                   :disabled="verifyOTP.loading"
                   maxlength="6"
-                  v-model="otp"
+                  required
                   @keyup="
                     (e) =>
                       e.target.value.length === 6 &&
@@ -108,7 +107,6 @@
                         otp,
                       })
                   "
-                  required
                 />
                 <ErrorMessage
                   class="mt-4 text-center"
@@ -131,8 +129,8 @@
                   class="mt-2 w-full"
                   variant="outline"
                   :loading="sendOTP.loading"
-                  @click="sendOTP.submit()"
                   :disabled="otpResendCountdown > 0"
+                  @click="sendOTP.submit()"
                 >
                   Resend verification code
                   {{
@@ -154,21 +152,21 @@
                 <div class="mt-6 border-t text-center">
                   <div class="-translate-y-1/2 transform">
                     <span
-                      class="relative bg-white px-2 text-sm font-medium leading-8 text-gray-800"
+                      class="relative bg-surface-white px-2 text-sm font-medium leading-8 text-ink-gray-8"
                     >
                       or
                     </span>
                   </div>
                 </div>
                 <Button
-                  class="mb-2"
                   v-for="provider in oAuthProviders.data"
                   :key="provider.name"
+                  class="mb-2"
                   :loading="oAuth.loading"
                   :link="provider.auth_url"
                 >
                   <div class="flex items-center">
-                    <div v-html="provider.icon"></div>
+                    <div v-html="provider.icon" />
                     <span class="ml-2"
                       >{{ isLogin ? "Continue" : "Join" }} with
                       {{ provider.provider_name }}</span
@@ -180,7 +178,7 @@
 
             <div class="mt-6 text-center">
               <router-link
-                class="text-center text-base font-medium text-gray-900 hover:text-gray-700"
+                class="text-center text-base font-medium text-ink-gray-9 hover:text-ink-gray-7"
                 :to="{
                   name: isLogin ? 'Signup' : 'Login',
                   query: { ...$route.query, forgot: undefined },
@@ -206,6 +204,7 @@ import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute, useRouter } from "vue-router"
+import { settings } from "@/resources/permissions"
 
 const route = useRoute()
 const router = useRouter()
@@ -214,11 +213,12 @@ const email = ref(params.get("e") || "")
 const first_name = ref("")
 const last_name = ref("")
 const terms_accepted = ref(false)
-const otpRequested = ref(false)
-const otpValidated = ref(false)
+
 const otp = ref("")
 const otpResendCountdown = ref(0)
 const account_request = ref(params.get("r") || "")
+const otpRequested = ref(account_request.value !== "")
+const otpValidated = ref(account_request.value !== "")
 const isLogin = computed(() => route.name === "Login")
 
 onMounted(() => {
@@ -246,11 +246,8 @@ const signup = createResource({
       throw new Error("Please accept the terms of service")
     }
   },
-  onSuccess() {
-    otpValidated.value = true
-    router.push({
-      name: "Setup",
-    })
+  onSuccess(data) {
+    window.location.href = data.location
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
@@ -292,6 +289,7 @@ const verifyOTP = createResource({
   url: "drive.api.product.verify_otp",
   onSuccess: (data) => {
     otpValidated.value = true
+    settings.fetch()
     if (data.location) {
       window.location.replace(data.location)
     }

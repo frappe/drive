@@ -16,7 +16,10 @@
     draggable="false"
     @loadedmetadata="handleMediaReady"
   >
-    <source :src="src" :type="type" />
+    <source
+      :src="src"
+      :type="type"
+    />
   </video>
 </template>
 

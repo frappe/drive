@@ -1,163 +1,230 @@
 <template>
-  <Dialog v-model="open" :options="{ title: DialogTitle, size: '2xl' }">
-    <template #body-content>
-      <Autocomplete
-        v-if="fetchAllFolders.data"
-        v-model="folderSearch"
-        label="Go to..."
-        :options="
-          fetchAllFolders.data.filter((k) =>
-            currentFolder === ''
-              ? k.label !== 'Home'
-              : k.value !== currentFolder
-          )
-        "
-      ></Autocomplete>
-      <div class="flex items-center justify-between max-h-7 my-4">
-        <div class="flex flex-col">
-          <div class="flex items-center my-2 justify-start">
-            <p class="text-sm">Moving to:</p>
-            <Dropdown
-              v-if="dropDownItems.length"
-              class="h-7"
-              :options="dropDownItems"
-            >
-              <Button variant="ghost">
-                <template #icon>
-                  <svg
-                    class="w-4 text-gray-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+  <Dialog
+    v-model="open"
+    :options="{ size: '2xl' }"
+  >
+    <template #body-main>
+      <div
+        v-focus
+        class="py-5 px-4 sm:px-6"
+      >
+        <div class="flex w-full justify-between gap-x-15 mb-4">
+          <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
+            <template v-if="props.entities.length > 1">
+              Moving {{ props.entities.length }} items
+            </template>
+            <template v-else>
+              Moving "
+              <div class="truncate max-w-[80%]">
+                {{ props.entities[0].title }}
+              </div>
+              "
+            </template>
+          </div>
+          <Button
+            class="ml-auto"
+            variant="ghost"
+            @click="$emit('update:modelValue', false)"
+          >
+            <template #icon>
+              <LucideX class="size-4" />
+            </template>
+          </Button>
+        </div>
+        <Autocomplete
+          v-if="allFolders.data"
+          v-model="folderSearch"
+          class="mb-2"
+          placeholder="Search for a folder"
+          :options="
+            allFolders.data.filter((k) =>
+              currentFolder === ''
+                ? k.label !== 'Home'
+                : k.value !== currentFolder
+            )
+          "
+        />
+        <Tabs
+          v-model="tabIndex"
+          as="div"
+          :tabs="tabs"
+        >
+          <template #tab-panel>
+            <div class="py-1 h-40">
+              <Tree
+                v-for="k in tree.children"
+                :key="k.value"
+                node-key="value"
+                :node="k"
+              >
+                <template
+                  #node="{ node, hasChildren, isCollapsed, toggleCollapsed }"
+                >
+                  <div
+                    class="flex items-center cursor-pointer select-none gap-1 h-[28px]"
+                    @click="openEntity(node)"
                   >
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="19" cy="12" r="1" />
-                    <circle cx="5" cy="12" r="1" />
-                  </svg>
+                    <div
+                      ref="iconRef"
+                      @click="toggleCollapsed($event)"
+                    >
+                      <LucideChevronDown
+                        v-if="hasChildren && !isCollapsed"
+                        class="size-3.5"
+                      />
+                      <LucideChevronRight
+                        v-else-if="hasChildren"
+                        class="size-3.5"
+                      />
+                      <div
+                        v-else
+                        class="ps-3.5"
+                      />
+                    </div>
+                    <div
+                      class="flex-grow rounded-sm text-base truncate h-full flex items-center pl-1"
+                      :class="[
+                        currentFolder === node.value
+                          ? 'bg-surface-gray-3'
+                          : 'hover:bg-surface-gray-2',
+                        $store.state.currentFolder.name === node.value
+                          ? 'cursor-not-allowed hover:bg-surface-white'
+                          : 'group',
+                      ]"
+                    >
+                      <LucideFolderClosed
+                        v-if="isCollapsed"
+                        class="mr-1 size-4"
+                      />
+                      <LucideFolder
+                        v-else
+                        class="mr-1 size-4"
+                      />
+                      <div
+                        v-if="node.value === null"
+                        class="overflow-visible"
+                      >
+                        <Input
+                          v-model="node.label"
+                          v-focus
+                          type="text"
+                          input-class=" !h-6"
+                          @click.stop
+                          @keydown.enter="openEntity(node)"
+                        />
+                      </div>
+                      <span v-else
+                        >{{ node.label }}
+                        <em
+                          v-if="$store.state.currentFolder.name === node.value"
+                          >(current)</em
+                        ></span
+                      >
+                      <Button
+                        class="shrink hidden group-hover:block ml-auto"
+                        :class="{
+                          '!bg-surface-gray-3': currentFolder === node.value,
+                        }"
+                        @click.stop="
+                          (e) => {
+                            let obj = {
+                              parent: node.value,
+                              value: null,
+                              label: 'New folder',
+                            }
+                            node.children.push(obj)
+                            if (isCollapsed) toggleCollapsed(e)
+                          }
+                        "
+                      >
+                        <LucideFolderPlus class="size-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </template>
-              </Button>
-            </Dropdown>
-            <span v-if="dropDownItems.length" class="text-gray-600 mx-0.5">
-              {{ "/" }}
-            </span>
-            <div v-for="(crumb, index) in lastTwoBreadCrumbs" :key="index">
+              </Tree>
+              <p
+                v-if="!tree.children.length"
+                class="text-base text-center pt-5"
+              >
+                No folders yet.
+              </p>
+            </div>
+          </template>
+        </Tabs>
+        <div class="flex items-center justify-between max-h-7">
+          <div class="flex flex-col">
+            <div class="flex items-center my-auto justify-start">
+              <p class="text-sm pr-0.5">Moving to:</p>
+              <Dropdown
+                v-if="dropDownBreadcrumbs.length"
+                class="h-7"
+                :options="dropDownBreadcrumbs"
+              >
+                <Button variant="ghost">
+                  <LucideEllipsis class="size-3.5" />
+                </Button>
+              </Dropdown>
               <span
-                v-if="breadcrumbs.length > 1 && index > 0"
-                class="text-gray-600 mx-0.5"
+                v-if="dropDownBreadcrumbs.length"
+                class="text-ink-gray-5 mx-0.5"
               >
                 {{ "/" }}
               </span>
-              <button
-                class="text-base cursor-pointer"
-                :class="
-                  index === lastTwoBreadCrumbs.length - 1
-                    ? 'text-gray-900 text-base font-medium p-1'
-                    : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
-                "
-                @click="closeEntity(crumb.name)"
-              >
-                {{ crumb.title }}
-              </button>
-            </div>
-          </div>
-        </div>
-        <Button
-          variant="solid"
-          class="ml-auto"
-          :loading="move.loading"
-          @click="
-            move.submit({
-              entity_names: entities.map((obj) => obj.name),
-              new_parent: currentFolder,
-              is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
-            })
-          "
-        >
-          <template #prefix>
-            <Move />
-          </template>
-          Move
-        </Button>
-      </div>
-      <Tabs as="div" v-model="tabIndex" :tabs="tabs">
-        <template #tab-panel>
-          <div class="py-1">
-            <div
-              v-if="folderContents.data?.length"
-              class="flex flex-col justify-items-start h-[45vh] overflow-y-auto justify-start my-2"
-            >
               <div
-                v-for="(item, index) in folderContents.data"
-                :id="item.name"
-                :key="item.name"
-                class=""
+                v-for="(crumb, index) in slicedBreadcrumbs"
+                :key="index"
               >
-                <div
-                  v-show="index > 0"
-                  class="border-t w-full mx-auto max-w-[96%]"
-                ></div>
-                <div
-                  class="px-3 grid items-center rounded h-9 group select-none"
-                  :class="
-                    !item.write
-                      ? 'cursor-not-allowed opacity-75'
-                      : 'cursor-pointer hover:bg-gray-100'
-                  "
-                  :draggable="false"
-                  @click="item.write ? openEntity(item) : null"
-                  @dragenter.prevent
-                  @dragover.prevent
-                  @mousedown.stop
+                <span
+                  v-if="breadcrumbs.length > 1 && index > 0"
+                  class="text-ink-gray-5 mx-0.5"
                 >
-                  <div
-                    class="flex items-center text-gray-800 text-base font-medium truncate"
-                    :draggable="false"
-                  >
-                    <svg
-                      v-if="item.is_group"
-                      :style="{ fill: item.color }"
-                      :draggable="false"
-                      class="h-4.5 mr-2"
-                      viewBox="0 0 30 30"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M14.8341 5.40865H2.375C2.09886 5.40865 1.875 5.63251 1.875 5.90865V25.1875C1.875 26.2921 2.77043 27.1875 3.875 27.1875H26.125C27.2296 27.1875 28.125 26.2921 28.125 25.1875V3.3125C28.125 3.03636 27.9011 2.8125 27.625 2.8125H18.5651C18.5112 2.8125 18.4588 2.82989 18.4156 2.86207L15.133 5.30951C15.0466 5.37388 14.9418 5.40865 14.8341 5.40865Z"
-                      />
-                    </svg>
-                    <img
-                      v-else
-                      :src="getIconUrl(formatMimeType(item.mime_type))"
-                      :draggable="false"
-                      class="h-[20px] mr-3"
-                    />
-                    {{ item.title }}
-                  </div>
-                </div>
+                  {{ "/" }}
+                </span>
+                <button
+                  class="text-base cursor-pointer"
+                  :class="
+                    index === slicedBreadcrumbs.length - 1
+                      ? 'text-ink-gray-9 text-base font-medium p-1'
+                      : 'text-ink-gray-5 text-base rounded-[6px] hover:bg-surface-gray-2 p-1'
+                  "
+                  @click="closeEntity(crumb.name)"
+                >
+                  {{ crumb.title }}
+                </button>
               </div>
             </div>
-            <div
-              v-else
-              class="flex flex-col items-center justify-center h-[45vh] my-2"
-            >
-              <Folder class="text-gray-600 h-10 w-auto" />
-              <span class="text-gray-600 text-base mt-2">Folder is Empty</span>
-            </div>
           </div>
-        </template>
-      </Tabs>
+          <Button
+            variant="solid"
+            class="ml-auto"
+            size="sm"
+            :disabled="
+              currentFolder === '' && breadcrumbs[0].title == $route.name
+            "
+            :loading="move.loading"
+            @click="
+              $emit('success'),
+                move.submit({
+                  entity_names: entities.map((obj) => obj.name),
+                  new_parent: currentFolder,
+                  is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
+                })
+            "
+          >
+            <template #prefix>
+              <LucideMoveUpRight class="size-4" />
+            </template>
+            Move
+          </Button>
+        </div>
+      </div>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { watch, computed, h, ref } from "vue"
-import { getIconUrl } from "@/utils/getIconUrl"
+import { watch, computed, h, ref, reactive } from "vue"
+
 import {
   createResource,
   Dialog,
@@ -165,13 +232,20 @@ import {
   Tabs,
   Dropdown,
   Autocomplete,
+  Tree,
+  Input,
 } from "frappe-ui"
-import { formatMimeType } from "@/utils/format"
-import Home from "./EspressoIcons/Home.vue"
-import Team from "./EspressoIcons/Organization.vue"
-import Move from "./EspressoIcons/Move.vue"
-import Folder from "./EspressoIcons/Folder.vue"
+import { move, allFolders } from "@/resources/files"
+
 import { useRoute } from "vue-router"
+import { useStore } from "vuex"
+import {
+  LucideBuilding2,
+  LucideChevronDown,
+  LucideFolder,
+  LucideHome,
+  LucideMoveUpRight,
+} from "lucide-vue-next"
 
 const route = useRoute()
 const currentFolder = ref("")
@@ -188,32 +262,63 @@ const props = defineProps({
   },
 })
 
+const homeMap = {}
+const teamMap = {}
+allFolders.data.forEach((item) => {
+  ;(item.is_private ? homeMap : teamMap)[item.value] = {
+    ...item,
+    children: [],
+  }
+})
+
+const homeRoot = reactive({
+  name: "",
+  label: "Home",
+  children: [],
+  isCollapsed: true,
+})
+
+const teamRoot = reactive({
+  name: "",
+  label: "Team",
+  children: [],
+  isCollapsed: true,
+})
+
+allFolders.data.forEach((item) => {
+  let map = item.is_private ? homeMap : teamMap
+  const node = map[item.value]
+  node.isCollapsed = true
+  if (map[item.parent]) {
+    map[item.parent].children.push(node)
+  } else {
+    ;(item.is_private ? homeRoot : teamRoot).children.push(node)
+  }
+})
+
+const store = useStore()
+const in_home = store.state.breadcrumbs[0].name == "Home"
+const tabIndex = ref(in_home ? 0 : 1)
+const tree = ref(tabIndex.value === 0 ? homeRoot : teamRoot)
+
 const open = computed({
   get() {
     return props.modelValue === "m"
   },
   set(newValue) {
-    emit("update:modelValue", newValue)
+    emit("update:modelValue", newValue || "")
   },
 })
 
-const DialogTitle = computed(() => {
-  if (props.entities.length > 1) {
-    return `Moving ${props.entities.length} items`
-  } else {
-    return `Moving "${props.entities[0].title}"`
-  }
-})
-
-const lastTwoBreadCrumbs = computed(() => {
-  if (breadcrumbs.value.length > 2) {
-    return breadcrumbs.value.slice(-2)
+const slicedBreadcrumbs = computed(() => {
+  if (breadcrumbs.value.length > 3) {
+    return breadcrumbs.value.slice(-3)
   }
   return breadcrumbs.value
 })
 
-const dropDownItems = computed(() => {
-  let allExceptLastTwo = breadcrumbs.value.slice(0, -2)
+const dropDownBreadcrumbs = computed(() => {
+  let allExceptLastTwo = breadcrumbs.value.slice(0, -3)
   return allExceptLastTwo.map((item) => {
     return {
       ...item,
@@ -227,21 +332,22 @@ const dropDownItems = computed(() => {
 const tabs = [
   {
     label: "Home",
-    icon: h(Home, { class: "w-4 h-4" }),
+    icon: h(LucideHome, { class: "size-4" }),
   },
   {
     label: "Team",
-    icon: h(Team, { class: "w-4 h-4" }),
+    icon: h(LucideBuilding2, { class: "size-4" }),
   },
   // {
   //   label: "Favourites",
-  //   icon: h(Star, { class: "w-4 h-4" }),
+  //   icon: h(Star, { class: "size-4" }),
   // },
 ]
 
-const tabIndex = ref(0)
-const breadcrumbs = ref([{ name: "", title: "Home", is_private: 1 }])
-const folderSearch = ref({})
+const breadcrumbs = ref([
+  { name: "", title: in_home ? "Home" : "Team", is_private: in_home ? 1 : 0 },
+])
+const folderSearch = ref(null)
 
 const folderPermissions = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
@@ -249,14 +355,12 @@ const folderPermissions = createResource({
     entity_name: currentFolder.value,
   },
   onSuccess: (data) => {
-    console.log(data)
     let first = [{ name: "", title: data.is_private ? "Home" : "Team" }]
     breadcrumbs.value = first.concat(data.breadcrumbs.slice(1))
   },
 })
 
 const folderContents = createResource({
-  method: "GET",
   url: "drive.api.list.files",
   makeParams: (params) => ({
     team: route.params.team,
@@ -269,6 +373,8 @@ const folderContents = createResource({
 watch(
   tabIndex,
   (newValue) => {
+    currentFolder.value = ""
+    tree.value = tabIndex.value === 0 ? homeRoot : teamRoot
     switch (newValue) {
       case 0:
         breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }]
@@ -294,17 +400,73 @@ watch(
   },
   { immediate: true }
 )
-watch(folderSearch, openEntity)
 
-function openEntity(value) {
-  currentFolder.value = value.name || value.value
-  folderPermissions.fetch({
-    entity_name: currentFolder.value,
-  })
-  folderContents.fetch({
-    entity_name: currentFolder.value,
-  })
+const createdNode = ref(null)
+const createFolder = createResource({
+  url: "drive.api.files.create_folder",
+  makeParams(params) {
+    return {
+      ...params,
+      team: route.params.team,
+    }
+  },
+  validate(params) {
+    if (!params?.title) return false
+  },
+  onSuccess(data) {
+    createdNode.value.value = data.name
+    currentFolder.value = data.name
+    allFolders.data.push(createdNode.value)
+    folderPermissions.fetch({
+      entity_name: data.name,
+    })
+    createdNode.value = null
+  },
+})
+
+function openEntity(node) {
+  if (store.state.currentFolder.name === node.value) return
+  if (!node.value) {
+    createdNode.value = node
+    createFolder.fetch({
+      title: node.label,
+      personal: tabIndex.value === 0,
+      parent: node.parent,
+    })
+  } else {
+    currentFolder.value = node.value
+    folderPermissions.fetch({
+      entity_name: currentFolder.value,
+    })
+  }
+
+  folderSearch.value = null
 }
+
+const expandNode = (obj, name) => {
+  if (obj.value === name) {
+    return obj
+  }
+
+  for (let k of obj.children) {
+    let res = expandNode(k, name)
+    if (res) {
+      obj.isCollapsed = false
+      return res
+    }
+  }
+  return false
+}
+
+watch(folderSearch, (val) => {
+  if (!val) return
+  tree.value = val.is_private ? homeRoot : teamRoot
+  tabIndex.value = val.is_private ? 0 : 1
+  expandNode(tree.value, val.value)
+
+  currentFolder.value = val.value
+  openEntity(val)
+})
 
 function closeEntity(name) {
   const index = breadcrumbs.value.findIndex((obj) => obj.name === name)
@@ -317,30 +479,4 @@ function closeEntity(name) {
     })
   }
 }
-
-const fetchAllFolders = createResource({
-  method: "GET",
-  url: "drive.api.list.files",
-  cache: "all-folders",
-  auto: true,
-  params: {
-    team: route.params.team,
-    is_active: 1,
-    folders: 1,
-    personal: -1,
-    only_parent: 0,
-  },
-  transform: (d) =>
-    d.map((k) => ({
-      value: k.name,
-      label: k.title,
-    })),
-})
-
-const move = createResource({
-  url: "drive.api.files.move",
-  onSuccess() {
-    emit("success", currentFolder.value)
-  },
-})
 </script>

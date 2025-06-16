@@ -1,33 +1,39 @@
 <template>
-  <Dialog v-model:open="open" :options="{ size: '2xl', position: 'top' }">
+  <Dialog
+    v-model:open="open"
+    :options="{ size: '2xl', position: 'top' }"
+  >
     <template #body>
       <div class="flex px-4 py-3 gap-1 items-center border-b">
-        <Search class="w-4 mr-1 h-auto" name="search" />
+        <LucideSearch
+          class="w-4 mr-1 h-auto"
+          name="search"
+        />
         <input
           v-model="search"
           icon-left="search"
           type="text"
-          class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-gray-800 placeholder-gray-500 focus:ring-0"
+          class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
           placeholder="Search"
         />
       </div>
       <div
-        v-if="$resources.entities.data?.length"
+        v-if="searchResults.data?.length"
         class="flex flex-col py-4 px-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
       >
-        <span class="mb-2 pl-1 text-base text-gray-600"
+        <span class="mb-2 pl-1 text-base text-ink-gray-5"
           >Search results for <strong>{{ search }}:</strong></span
         >
         <div
-          v-for="entity in $resources.entities.data"
+          v-for="entity in searchResults.data"
           :key="entity.name"
-          class="grid grid-flow-col grid-cols-8 gap-2 w-full items-center rounded px-2 py-2 text-base cursor-pointer hover:bg-gray-100"
-          @click="openEntity(entity)"
+          class="grid grid-flow-col grid-cols-8 gap-2 w-full items-center rounded px-2 py-2 text-base cursor-pointer hover:bg-surface-gray-2"
+          @click="openEntity(null, entity)"
         >
           <div class="flex items-center gap-2 w-full col-span-6">
             <svg
               v-if="entity.is_group"
-              class="h-4 w-4"
+              class="size-4"
               :draggable="false"
               :style="{ fill: entity.color }"
               width="16"
@@ -43,14 +49,18 @@
               </g>
               <defs>
                 <clipPath id="clip0_1942_59507">
-                  <rect width="16" height="16" fill="white" />
+                  <rect
+                    width="16"
+                    height="16"
+                    fill="white"
+                  />
                 </clipPath>
               </defs>
             </svg>
             <img
               v-else
-              class="w-4 h-4"
-              :src="getIconUrl(formatMimeType(entity.mime_type))"
+              class="size-4"
+              :src="getIconUrl(entity.file_type)"
             />
             <span class="truncate">{{ entity.title }}</span>
           </div>
@@ -63,196 +73,124 @@
               class="relative mr-2"
               size="xs"
             />
-            <span class="text-base text-gray-800">{{
+            <span class="text-base text-ink-gray-8">{{
               entity.full_name || entity.user_name
             }}</span>
           </div>
         </div>
       </div>
       <div
-        v-if="search.length > 3 && !$resources.entities.data?.length"
+        v-if="search.length > 3 && searchResults.data?.length"
         class="flex flex-col py-4 px-2.5"
       >
-        <span class="mb-1 pl-2 text-base text-gray-600"
+        <span class="mb-1 pl-2 text-base text-ink-gray-5"
           >No results for <strong>"{{ search }}"</strong></span
         >
       </div>
       <div
-        v-if="!$resources.entities.data?.length && !search.length"
+        v-if="searchResults.data?.length && !search.length"
         class="flex flex-col mb-2 mt-4 first:mt-3"
       >
-        <span class="mb-1 px-4.5 text-base text-gray-600">Jump to</span>
+        <span class="mb-1 px-4.5 text-base text-ink-gray-5">Jump to</span>
         <div class="px-2.5">
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               $router.push({ name: 'Home' }),
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <Home class="mr-2 h-4 w-4 text-gray-700" />
+            <LucideHome class="mr-2 size-4 text-ink-gray-7" />
             Home
           </div>
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               $router.push({ name: 'Recents' }),
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <Recent class="mr-2 h-4 w-4 text-gray-700" />
+            <LucideClock class="mr-2 size-4 text-ink-gray-7" />
             Recents
           </div>
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               $router.push({ name: 'Favourites' }),
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <Star class="mr-2 h-4 w-4 text-gray-700" />
+            <LucideStar class="mr-2 size-4 text-ink-gray-7" />
             Favourites
           </div>
         </div>
-        <span class="mt-3 mb-1 px-4.5 text-base text-gray-600">Actions</span>
+        <span class="mt-3 mb-1 px-4.5 text-base text-ink-gray-5">Actions</span>
         <div class="px-2.5">
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               emitter.emit('uploadFile'), emitter.emit('showSearchPopup', false)
             "
           >
-            <FileUpload class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
+            <LucideFilePlus2
+              class="stroke-[1.35] mr-2 size-4 text-ink-gray-7"
+            />
             Upload File
           </div>
           <div
-            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+            class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               emitter.emit('uploadFolder'),
                 emitter.emit('showSearchPopup', false)
             "
           >
-            <FolderUpload class="stroke-[1.35] mr-2 h-4 w-4 text-gray-700" />
+            <LucideFolderPlus
+              class="stroke-[1.35] mr-2 size-4 text-ink-gray-7"
+            />
             Upload Folder
           </div>
-          <!--       <div class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
-        <FeatherIcon name="folder-plus" class="mr-2 h-4 w-4 text-gray-700"/>
-        New Folder
-      </div>
-      <div class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
-        <FeatherIcon name="file-text" class="mr-2 h-4 w-4 text-gray-700"/>
-        New Document
-      </div> -->
         </div>
       </div>
     </template>
   </Dialog>
 </template>
-<script>
-import Home from "./EspressoIcons/Home.vue"
-import Recent from "./EspressoIcons/Recent.vue"
-import Search from "./EspressoIcons/Search.vue"
-import FileUpload from "./EspressoIcons/File-upload.vue"
-import FolderUpload from "./EspressoIcons/Folder-upload.vue"
-import { Dialog, Avatar } from "frappe-ui"
-import { formatMimeType } from "@/utils/format"
+<script setup>
+import { Dialog, Avatar, createResource } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
-import Star from "./EspressoIcons/Star.vue"
+import { LucideFilePlus2, LucideFolderPlus, LucideStar } from "lucide-vue-next"
+import { openEntity } from "../utils/files"
+import { ref, computed, watch } from "vue"
+import { useRoute } from "vue-router"
 
-export default {
-  name: "SearchPopup",
-  components: {
-    Dialog,
-    Avatar,
-    Home,
-    Recent,
-    Search,
-    Star,
-    FileUpload,
-    FolderUpload,
+const emit = defineEmits(["openEntity", "update:open"])
+const search = ref("")
+const route = useRoute()
+
+const open = computed({
+  get() {
+    return this.open
   },
-  emits: ["openEntity", "update:open"],
-  setup() {
-    return { formatMimeType, getIconUrl }
+  set(value) {
+    emit("update:open", value)
   },
-  data() {
-    return {
-      isOpen: false,
-      search: "",
-      selectedEntity: "",
-    }
-  },
-  computed: {
-    fullName() {
-      return this.$store.state.user.fullName
-    },
-    open: {
-      get() {
-        return this.open
-      },
-      set(value) {
-        this.$emit("update:open", value)
-      },
-    },
-  },
-  watch: {
-    search: {
-      handler(value) {
-        if (value.length >= 3) {
-          this.search = value
-          this.$resources.entities.submit({
-            query: value,
-            team: this.$route.params.team(),
-          })
-        } else {
-          this.$resources.entities.reset()
-        }
-      },
-    },
-  },
-  methods: {
-    openEntity(entity) {
-      this.$resources.upwardPath
-        .fetch({ entity_name: entity.name })
-        .then(() => {
-          if (entity.is_group) {
-            this.selectedEntities = []
-            this.$router.push({
-              name: "Folder",
-              params: { entityName: entity.name },
-            })
-          } else if (entity.document) {
-            this.$router.push({
-              name: "Document",
-              params: { entityName: entity.name },
-            })
-          } else {
-            this.$router.push({
-              name: "File",
-              params: { entityName: entity.name },
-            })
-          }
-        })
-      this.emitter.emit("showSearchPopup", false)
-    },
-  },
-  resources: {
-    entities() {
-      return {
-        auto: false,
-        method: "POST",
-        url: "drive.api.files.search",
-      }
-    },
-    upwardPath() {
-      return {
-        auto: false,
-        method: "POST",
-        url: "drive.utils.files.generate_upward_path",
-      }
-    },
-  },
-}
+})
+
+const searchResults = createResource({
+  auto: false,
+  method: "POST",
+  url: "drive.api.files.search",
+})
+
+watch(search, (val) => {
+  if (val.length >= 3) {
+    searchResults.submit({
+      query: val,
+      team: route.params.team,
+    })
+  } else {
+    searchResults.reset()
+  }
+})
 </script>
 
 <style scoped>

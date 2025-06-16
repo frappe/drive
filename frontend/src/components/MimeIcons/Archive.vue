@@ -16,7 +16,10 @@
         width="16"
         height="16"
       >
-        <path d="M16 0H0V16H16V0Z" fill="white" />
+        <path
+          d="M16 0H0V16H16V0Z"
+          fill="white"
+        />
       </mask>
       <g mask="url(#mask0_315_271)">
         <mask
@@ -28,7 +31,10 @@
           width="14"
           height="14"
         >
-          <path d="M15 1H1V15H15V1Z" fill="white" />
+          <path
+            d="M15 1H1V15H15V1Z"
+            fill="white"
+          />
         </mask>
         <g mask="url(#mask1_315_271)">
           <path
@@ -56,7 +62,10 @@
         filterUnits="userSpaceOnUse"
         color-interpolation-filters="sRGB"
       >
-        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+        <feFlood
+          flood-opacity="0"
+          result="BackgroundImageFix"
+        />
         <feBlend
           mode="normal"
           in="SourceGraphic"
@@ -71,7 +80,12 @@
         />
         <feOffset dy="0.5" />
         <feGaussianBlur stdDeviation="0.5" />
-        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+        <feComposite
+          in2="hardAlpha"
+          operator="arithmetic"
+          k2="-1"
+          k3="1"
+        />
         <feColorMatrix
           type="matrix"
           values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
@@ -83,7 +97,11 @@
         />
       </filter>
       <clipPath id="clip0_315_271">
-        <rect width="16" height="16" fill="white" />
+        <rect
+          width="16"
+          height="16"
+          fill="white"
+        />
       </clipPath>
     </defs>
   </svg>

@@ -1,22 +1,21 @@
 <template>
   <GenericPage
     :get-entities="getHome"
-    :icon="Team"
-    :primary-message="'Team is empty'"
-    :secondary-message="'Add files by dropping them here.'"
+    :icon="LucideBuilding2"
+    primary-message="Team is empty"
+    secondary-message="Add files by dropping them here."
   />
 </template>
 
 <script setup>
-import Team from "../components/EspressoIcons/Organization.vue"
 import GenericPage from "@/components/GenericPage.vue"
 import { getHome, getTeams } from "@/resources/files"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
+import { LucideBuilding2 } from "lucide-vue-next"
 
 const store = useStore()
-store.commit("setCurrentFolder", "")
-store.commit("setCurrentFolderID", "")
+store.commit("setCurrentFolder", { name: "" })
 if (getTeams.data)
   store.commit("setBreadcrumbs", [
     {

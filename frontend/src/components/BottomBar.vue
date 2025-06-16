@@ -1,9 +1,9 @@
 <template>
-  <div class="border-r bg-gray-50 transition-all">
+  <div class="border-r bg-surface-menu-bar transition-all">
     <div
       ondragstart="return false;"
       ondrop="return false;"
-      class="grid grid-cols-6 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
+      class="grid grid-cols-6 h-14 items-center border-y border-outline-gray-2 standalone:pb-4 px-1"
     >
       <router-link
         v-for="item in sidebarItems"
@@ -15,39 +15,33 @@
           class="flex flex-col items-center justify-center py-3 transition active:scale-95 rounded"
           :class="[
             item.highlight()
-              ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
-              : ' hover:bg-gray-100',
+              ? 'bg-surface-white shadow-sm border-[0.5px] border-outline-gray-2'
+              : ' hover:bg-surface-gray-2',
           ]"
           :href="href"
           @click="navigate && $emit('toggleMobileSidebar')"
         >
           <component
             :is="item.icon"
-            class="stroke-1.5 self-center w-auto h-5.5 text-gray-800"
+            class="stroke-1.5 self-center w-auto h-5.5 text-ink-gray-8"
           />
         </a>
       </router-link>
-      <!--  <span
-        class="mt-auto w-[256px] h-7 px-3 py-4 gap-3 rounded-lg focus:outline-none flex items-center">
-        <FeatherIcon name="cloud" class="stroke-1.5 w-4 h-4" />
-        Used :
-        {{ $resources.getRootFolderSize.data + "B" }}
-      </span> -->
     </div>
   </div>
 </template>
 <script>
-import { FeatherIcon } from "frappe-ui"
-import Recent from "./EspressoIcons/Recent.vue"
-import Star from "./EspressoIcons/Star.vue"
-import Home from "./EspressoIcons/Home.vue"
-import Trash from "./EspressoIcons/Trash.vue"
-import Team from "./EspressoIcons/Organization.vue"
-import Users from "./EspressoIcons/Users.vue"
+import {
+  LucideBuilding2,
+  LucideClock,
+  LucideHome,
+  LucideStar,
+  LucideTrash,
+  LucideUsers,
+} from "lucide-vue-next"
 
 export default {
   name: "Sidebar",
-  components: { FeatherIcon },
   emits: ["toggleMobileSidebar"],
   data() {
     return {
@@ -72,31 +66,31 @@ export default {
         {
           label: "Home",
           route: "/t/" + this.team,
-          icon: Home,
+          icon: LucideHome,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].label === "Home"
+            return this.$store.state.breadcrumbs[0].name === "Home"
           },
         },
         {
           label: "Recents",
           route: "/t/" + this.team + "/recents",
-          icon: Recent,
+          icon: LucideClock,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].label === "Recents"
+            return this.$store.state.breadcrumbs[0].name === "Recents"
           },
         },
         {
           label: "Favourites",
           route: "/t/" + this.team + "/favourites",
-          icon: Star,
+          icon: LucideStar,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].label === "Favourites"
+            return this.$store.state.breadcrumbs[0].name === "Favourites"
           },
         },
         {
           label: "Team",
           route: "/t/" + this.team + "/team",
-          icon: Team,
+          icon: LucideBuilding2,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Team"
           },
@@ -104,17 +98,17 @@ export default {
         {
           label: "Shared",
           route: "/shared",
-          icon: Users,
+          icon: LucideUsers,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].label === "Shared"
+            return this.$store.state.breadcrumbs[0].name === "Shared"
           },
         },
         {
           label: "Trash",
           route: "/t/" + this.team + "/trash",
-          icon: Trash,
+          icon: LucideTrash,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].label === "Trash"
+            return this.$store.state.breadcrumbs[0].name === "Trash"
           },
         },
       ]
@@ -160,6 +154,7 @@ export default {
   resources: {
     getRootFolderSize() {
       return {
+        // BROKEN
         url: "drive.api.files.get_user_directory_size",
         onError(error) {
           console.log(error)

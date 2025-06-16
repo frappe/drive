@@ -1,13 +1,13 @@
 <template>
   <GenericPage
-    :getEntities="getTrash"
-    :icon="Trash"
-    primaryMessage="Trash is empty"
+    :get-entities="getTrash"
+    :icon="LucideTrash"
+    primary-message="Trash is empty"
   />
 </template>
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import Trash from "../components/EspressoIcons/Trash.vue"
 import { getTrash } from "@/resources/files"
+import { LucideTrash } from "lucide-vue-next"
 </script>

@@ -1,20 +1,26 @@
 <template>
-  <Dialog v-model="open" :options="{ title: 'none', size: '4xl' }">
+  <Dialog
+    v-model="open"
+    :options="{ title: 'none', size: '4xl' }"
+  >
     <template #body>
-      <div v-if="snapshotData" class="px-4 pb-6 pt-5 sm:px-6">
+      <div
+        v-if="snapshotData"
+        class="px-4 pb-6 pt-5 sm:px-6"
+      >
         <div class="w-full mb-4">
-          <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
             {{ snapshotData.snapshot_message }}
           </h3>
           <div class="flex items-center justify-start mt-1 mb-4">
-            <span class="text-gray-700 text-sm"
+            <span class="text-ink-gray-7 text-sm"
               >Created on {{ snapshotData.creation }} by
               {{ snapshotData.owner }}</span
             >
             <div
-              class="ml-auto flex items-center justify-end rounded cursor-pointer hover:bg-gray-200 pl-2 pr-1 py-1.5"
+              class="ml-auto flex items-center justify-end rounded cursor-pointer hover:bg-surface-gray-3 pl-2 pr-1 py-1.5"
             >
-              <span class="font-medium text-gray-800 text-sm mr-2"
+              <span class="font-medium text-ink-gray-8 text-sm mr-2"
                 >Highlight changes</span
               >
               <Switch v-model="showChanges" />
@@ -25,7 +31,7 @@
             :variant="'ghost'"
             class="absolute top-3 right-3"
             @click="$emit('update:modelValue', false)"
-          ></Button>
+          />
         </div>
         <div class="mb-3">
           <PreviewEditor
@@ -36,9 +42,13 @@
           />
         </div>
         <div class="flex">
-          <Button class="ml-auto" :variant="'solid'" @click="applySnapshot"
-            >Restore</Button
+          <Button
+            class="ml-auto"
+            :variant="'solid'"
+            @click="applySnapshot"
           >
+            Restore
+          </Button>
         </div>
       </div>
     </template>

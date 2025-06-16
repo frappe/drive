@@ -21,7 +21,11 @@
       </g>
       <defs>
         <clipPath id="clip0_1942_59507">
-          <rect width="16" height="16" fill="white" />
+          <rect
+            width="16"
+            height="16"
+            fill="white"
+          />
         </clipPath>
       </defs>
     </svg>
@@ -29,19 +33,18 @@
       v-else-if="!strikeThrough"
       loading="lazy"
       class="h-full"
-      :src="getIconUrl(formatMimeType(entity.mime_type))"
+      :src="getIconUrl(entity.file_type)"
       :draggable="false"
     />
     <span
-      class="text-sm line-clamp-1"
-      :class="strikeThrough ? 'line-through text-gray-600' : ''"
+      class="text-sm line-clamp-1 text-ink-gray-6"
+      :class="strikeThrough ? 'line-through ' : ' '"
       >{{ title ? title : entity.title }}</span
     >
   </div>
 </template>
 <script setup>
 import { getIconUrl } from "../utils/getIconUrl"
-import { formatMimeType } from "../utils/format"
 
 defineProps({
   title: {

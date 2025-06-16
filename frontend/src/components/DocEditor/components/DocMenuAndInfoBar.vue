@@ -7,7 +7,10 @@
         : 'w-0 min-w-0 max-w-0 overflow-hidden opacity-0'
     "
   >
-    <div v-if="entity" class="w-full border-b px-5 py-4">
+    <div
+      v-if="entity"
+      class="w-full border-b px-5 py-4"
+    >
       <div class="flex items-center">
         <div class="font-medium truncate text-lg">
           {{ entity.title }}
@@ -16,11 +19,14 @@
     </div>
     <div v-if="entity && editor">
       <!-- Info -->
-      <div v-if="tab === 4" class="px-5 py-4 border-b">
+      <div
+        v-if="tab === 4"
+        class="px-5 py-4 border-b"
+      >
         <span
-          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+          class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
-          Information
+          {{ __("Information") }}
         </span>
         <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
           <div v-if="entity.owner === 'You'">
@@ -30,8 +36,8 @@
                 size="md"
                 :label="entity.owner"
                 :image="entity.user_image"
-              ></Avatar>
-              <div class="border-l h-6 mx-1.5"></div>
+              />
+              <div class="border-l h-6 mx-1.5" />
               <GeneralAccess
                 size="lg"
                 class="col-span-1 justify-self-start row-start-1 row-end-1"
@@ -63,41 +69,54 @@
             v-if="$resources.entityTags.data?.length || entity.owner === 'You'"
           >
             <div class="text-base font-medium mb-4">Tags</div>
-            <TagInput class="min-w-full" :entity="entity" />
+            <TagInput
+              class="min-w-full"
+              :entity="entity"
+            />
           </div>
           <div>
             <div class="text-base font-medium mb-4">Properties</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-              <span class="col-span-1 text-gray-600">Type</span>
+              <span class="col-span-1 text-ink-gray-5">{{ __("Type") }}</span>
               <span class="col-span-1">Frappe Doc</span>
-              <span class="col-span-1 text-gray-600">Size</span>
-              <span class="col-span-1">{{ entity.file_size }}</span>
-              <span class="col-span-1 text-gray-600">Modified</span>
-              <span class="col-span-1">{{ entity.modified }}</span>
-              <span class="col-span-1 text-gray-600">Created</span>
-              <span class="col-span-1">{{ entity.creation }}</span>
-              <span class="col-span-1 text-gray-600">Owner</span>
+              <span class="col-span-1 text-ink-gray-5">{{ __("Size") }}</span>
+              <span class="col-span-1">{{ formatSize(entity.file_size) }}</span>
+              <span class="col-span-1 text-ink-gray-5">{{
+                __("Modified")
+              }}</span>
+              <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
+              <span class="col-span-1 text-ink-gray-5">{{
+                __("Created")
+              }}</span>
+              <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
+              <span class="col-span-1 text-ink-gray-5">{{ __("Owner") }}</span>
               <span class="col-span-1">{{ entity.full_name }}</span>
             </div>
           </div>
           <div>
-            <div class="text-base font-medium mb-4">Stats</div>
+            <div class="text-base font-medium mb-4">
+              {{ __("Statistics") }}
+            </div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
-              <span class="col-span-1 text-gray-600">Words</span>
+              <span class="col-span-1 text-ink-gray-5">{{ __("Words") }}</span>
               <span class="col-span-1">
                 {{ editor.storage.characterCount.words() }}
               </span>
-              <span class="col-span-1 text-gray-600">Characters</span>
+              <span class="col-span-1 text-ink-gray-5">{{
+                __("Characters")
+              }}</span>
               <span class="col-span-1">
                 {{ editor.storage.characterCount.characters() }}
               </span>
-              <span class="col-span-1 text-gray-600">Reading Time</span>
+              <span class="col-span-1 text-ink-gray-5">{{
+                __("Reading Time")
+              }}</span>
               <span class="col-span-1">
                 {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
                 {{
                   Math.ceil(editor.storage.characterCount.words() / 200) > 1
-                    ? "mins"
-                    : "min"
+                    ? __("minutes")
+                    : __("minute")
                 }}
               </span>
             </div>
@@ -106,7 +125,10 @@
       </div>
 
       <!-- Comments -->
-      <div v-if="tab === 5" class="px-5 py-4 border-b">
+      <div
+        v-if="tab === 5"
+        class="px-5 py-4 border-b"
+      >
         <AnnotationList
           v-if="allAnnotations"
           :active-annotation="activeAnnotation"
@@ -117,12 +139,19 @@
       </div>
 
       <!-- Versions -->
-      <div v-if="tab === 6" class="px-2 py-4 border-b">
+      <div
+        v-if="tab === 6"
+        class="px-2 py-4 border-b"
+      >
         <span
-          class="px-3 inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
+          class="px-3 inline-flex items-center gap-2.5 text-ink-gray-8 font-medium text-lg w-full"
         >
           Versions
-          <Button class="ml-auto" @click="generateSnapshot">New</Button>
+          <Button
+            class="ml-auto"
+            @click="generateSnapshot"
+            >New</Button
+          >
         </span>
         <div
           v-if="
@@ -133,21 +162,24 @@
           <div
             v-for="(version, i) in $resources.getversionList.data"
             :key="version.name"
-            class="flex flex-col gap-y-1.5 p-2 m-2 hover:bg-gray-100 cursor-pointer rounded"
+            class="flex flex-col gap-y-1.5 p-2 m-2 hover:bg-surface-gray-2 cursor-pointer rounded"
             @click.stop="previewSnapshot(i)"
           >
             <span
               :title="version.creation"
-              class="font-medium text-base text-gray-800"
+              class="font-medium text-base text-ink-gray-8"
             >
               {{ version.relativeTime }}
             </span>
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-ink-gray-7">
               {{ version.snapshot_message }}
             </span>
           </div>
         </div>
-        <div v-else class="text-gray-600 text-sm my-5 px-3">
+        <div
+          v-else
+          class="text-ink-gray-5 text-sm my-5 px-3"
+        >
           No previous versions available for the current document
         </div>
       </div>
@@ -158,7 +190,7 @@
         class="max-h-[90vh] pt-4 pb-5 border-b overflow-y-auto overflow-x-hidden"
       >
         <span
-          class="inline-flex items-center gap-2.5 px-5 mb-5 text-gray-800 font-medium text-lg w-full"
+          class="inline-flex items-center gap-2.5 px-5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
           Activity
         </span>
@@ -166,13 +198,16 @@
       </div>
 
       <!-- Typography -->
-      <div v-if="tab === 0" class="flex flex-col px-5 py-4 border-b">
+      <div
+        v-if="tab === 0"
+        class="flex flex-col px-5 py-4 border-b"
+      >
         <span
-          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+          class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
           Style
         </span>
-        <span class="font-medium text-gray-600 text-xs my-2">TITLE</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">TITLE</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-1/3 font-semibold"
@@ -218,7 +253,7 @@
           </Button>
         </div>
 
-        <span class="font-medium text-gray-600 text-xs my-2">CONTENT</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">CONTENT</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-1/3 font-bold"
@@ -266,14 +301,16 @@
             Caption
           </Button>
         </div>
-        <span class="font-medium text-gray-600 text-xs my-2">GROUPS</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">GROUPS</span>
         <div
-          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
+          class="flex flex-row w-full bg-surface-gray-2 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
         >
           <Button
             class="w-full"
             :class="
-              editor.isActive('bold') ? 'bg-white border' : 'bg-transparent'
+              editor.isActive('bold')
+                ? 'bg-surface-white border'
+                : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleBold().run()"
           >
@@ -283,18 +320,18 @@
             class="w-full"
             :class="
               editor.isActive('italic')
-                ? 'bg-white shadow-sm'
+                ? 'bg-surface-white shadow-sm'
                 : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleItalic().run()"
           >
-            <FeatherIcon name="italic" class="w-4 stroke-2" />
+            <LucideItalic class="w-4 stroke-2" />
           </Button>
           <Button
             class="w-full"
             :class="
               editor.isActive('underline')
-                ? 'bg-white shadow-sm'
+                ? 'bg-surface-white shadow-sm'
                 : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleUnderline().run()"
@@ -305,7 +342,7 @@
             class="w-full"
             :class="
               editor.isActive('strike')
-                ? 'bg-white shadow-sm'
+                ? 'bg-surface-white shadow-sm'
                 : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleStrike().run()"
@@ -315,7 +352,9 @@
           <Button
             class="w-full"
             :class="
-              editor.isActive('code') ? 'bg-white shadow-sm' : 'bg-transparent'
+              editor.isActive('code')
+                ? 'bg-surface-white shadow-sm'
+                : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleCode().run()"
           >
@@ -323,13 +362,13 @@
           </Button>
         </div>
         <div
-          class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
+          class="flex flex-row w-full bg-surface-gray-2 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
         >
           <Button
             class="w-full"
             :class="
               editor.isActive('bulletList')
-                ? 'bg-white shadow-sm'
+                ? 'bg-surface-white shadow-sm'
                 : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleBulletList().run()"
@@ -342,7 +381,7 @@
               class="w-full"
               :class="
                 editor.isActive('details')
-                  ? 'bg-white shadow-sm'
+                  ? 'bg-surface-white shadow-sm'
                   : 'bg-transparent'
               "
               @click="
@@ -359,7 +398,7 @@
             class="w-full"
             :class="
               editor.isActive('orderedList')
-                ? 'bg-white shadow-sm'
+                ? 'bg-surface-white shadow-sm'
                 : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleOrderedList().run()"
@@ -372,7 +411,7 @@
             class="w-full"
             :class="
               editor.isActive('taskList')
-                ? 'bg-white shadow-sm'
+                ? 'bg-surface-white shadow-sm'
                 : 'bg-transparent'
             "
             @click="editor.chain().focus().toggleTaskList().run()"
@@ -384,7 +423,7 @@
         </div>
         <div class="flex gap-x-1.5 mb-6">
           <div
-            class="flex flex-row bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
+            class="flex flex-row bg-surface-gray-2 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
           >
             <Button
               :variant="'subtle'"
@@ -400,13 +439,13 @@
             </Button>
           </div>
           <div
-            class="flex flex-row w-full bg-gray-100 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
+            class="flex flex-row w-full bg-surface-gray-2 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8"
           >
             <Button
               class="w-full"
               :class="
                 editor.isActive({ textAlign: 'left' })
-                  ? 'bg-white shadow-sm'
+                  ? 'bg-surface-white shadow-sm'
                   : 'bg-transparent'
               "
               @click="editor.chain().focus().setTextAlign('left').run()"
@@ -417,7 +456,7 @@
               class="w-full"
               :class="
                 editor.isActive({ textAlign: 'center' })
-                  ? 'bg-white shadow-sm'
+                  ? 'bg-surface-white shadow-sm'
                   : 'bg-transparent'
               "
               @click="editor.chain().focus().setTextAlign('center').run()"
@@ -428,7 +467,7 @@
               class="w-full"
               :class="
                 editor.isActive({ textAlign: 'right' })
-                  ? 'bg-white shadow-sm'
+                  ? 'bg-surface-white shadow-sm'
                   : 'bg-transparent'
               "
               @click="editor.chain().focus().setTextAlign('right').run()"
@@ -439,7 +478,7 @@
               class="w-full"
               :class="
                 editor.isActive({ textAlign: 'justify' })
-                  ? 'bg-white shadow-sm'
+                  ? 'bg-surface-white shadow-sm'
                   : 'bg-transparent'
               "
               @click="editor.chain().focus().setTextAlign('justify').run()"
@@ -449,7 +488,7 @@
           </div>
         </div>
 
-        <span class="font-medium text-gray-600 text-xs my-2">
+        <span class="font-medium text-ink-gray-5 text-xs my-2">
           DECORATIONS
         </span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
@@ -458,7 +497,10 @@
             @click="editor.chain().focus().toggleCodeBlock().run()"
           >
             <template #prefix>
-              <Codeblock name="code" class="w-4" />
+              <Codeblock
+                name="code"
+                class="w-4"
+              />
             </template>
             Block
           </Button>
@@ -467,13 +509,16 @@
             @click="editor.chain().focus().toggleBlockquote().run()"
           >
             <template #prefix>
-              <BlockQuote name="quote" class="w-4" />
+              <BlockQuote
+                name="quote"
+                class="w-4"
+              />
             </template>
             Focus
           </Button>
         </div>
 
-        <span class="font-medium text-gray-600 text-xs mt-2 mb-1">
+        <span class="font-medium text-ink-gray-5 text-xs mt-2 mb-1">
           TEXT COLOR
         </span>
         <ColorInput
@@ -481,7 +526,7 @@
           :value="editor.getAttributes('textStyle').color"
           @change="(value) => editor.chain().focus().setColor(value).run()"
         />
-        <span class="font-medium text-gray-600 text-xs mt-2 mb-1">
+        <span class="font-medium text-ink-gray-5 text-xs mt-2 mb-1">
           BACKGROUND COLOR
         </span>
         <ColorInput
@@ -491,7 +536,7 @@
             (value) => editor.chain().focus().toggleHighlight(value).run()
           "
         />
-        <span class="font-medium text-gray-600 text-xs my-2">FONT</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">FONT</span>
         <div class="w-full flex justify-between gap-x-1.5">
           <Button
             class="w-1/3"
@@ -542,38 +587,47 @@
       </div>
 
       <!-- Insert -->
-      <div v-if="tab === 1" class="flex flex-col px-5 py-4 border-b">
+      <div
+        v-if="tab === 1"
+        class="flex flex-col px-5 py-4 border-b"
+      >
         <span
-          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+          class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
           Insert
         </span>
         <div>
-          <span class="font-medium text-gray-600 text-base mb-1">Media</span>
+          <span class="font-medium text-ink-gray-5 text-base mb-1">Media</span>
           <div class="w-full flex justify-between gap-x-1.5 mb-6">
-            <Button class="w-full justify-start" @click="addImageDialog = true">
+            <Button
+              class="w-full justify-start"
+              @click="addImageDialog = true"
+            >
               <template #prefix>
-                <Image class="text-gray-700 w-4" />
+                <Image class="text-ink-gray-7 w-4" />
                 Image
               </template>
             </Button>
 
-            <Button class="w-full justify-start" @click="addVideoDialog = true">
+            <Button
+              class="w-full justify-start"
+              @click="addVideoDialog = true"
+            >
               <template #prefix>
-                <Video class="text-gray-700 w-4" />
+                <Video class="text-ink-gray-7 w-4" />
                 Video
               </template>
             </Button>
           </div>
         </div>
-        <span class="font-medium text-gray-600 text-base mb-1">Break</span>
+        <span class="font-medium text-ink-gray-5 text-base mb-1">Break</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-full px-2"
             @click="editor.chain().focus().setHorizontalRule().run()"
           >
             <template #prefix>
-              <Minus class="stroke-[1] text-gray-700" />
+              <Minus class="stroke-[1] text-ink-gray-7" />
             </template>
             Rule
           </Button>
@@ -624,7 +678,7 @@
             Page Break
           </Button>
         </div>
-        <span class="font-medium text-gray-600 text-base">Table</span>
+        <span class="font-medium text-ink-gray-5 text-base">Table</span>
         <div class="flex space-x-2 my-2">
           <Button
             :disabled="editor.isActive('table')"
@@ -650,14 +704,18 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  stroke="none"
+                  d="M0 0h24v24H0z"
+                  fill="none"
+                />
                 <path
                   d="M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5"
-                ></path>
-                <path d="M3 10h18"></path>
-                <path d="M10 3v18"></path>
-                <path d="M16 19h6"></path>
-                <path d="M19 16v6"></path>
+                />
+                <path d="M3 10h18" />
+                <path d="M10 3v18" />
+                <path d="M16 19h6" />
+                <path d="M19 16v6" />
               </svg>
               New Table
             </template>
@@ -666,17 +724,29 @@
       </div>
 
       <!-- Document Settings -->
-      <div v-if="tab === 2" class="flex flex-col px-3 py-4 border-b">
+      <div
+        v-if="tab === 2"
+        class="flex flex-col px-3 py-4 border-b"
+      >
         <span
-          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full px-2"
+          class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full px-2"
         >
           Settings
         </span>
-        <Switch v-model="settings.docSize" label="Small Text" />
-        <Switch v-model="settings.docSpellcheck" label="Spellcheck" />
+        <Switch
+          v-model="settings.docSize"
+          label="Small Text"
+        />
+        <Switch
+          v-model="settings.docSpellcheck"
+          label="Spellcheck"
+        />
         <!-- <Switch v-model="settings.docSize" label="Highlight Check" /> -->
-        <Switch v-model="settings.docWidth" label="Full Width" />
-        <span class="font-medium text-gray-700 text-base my-2.5 px-2.5">
+        <Switch
+          v-model="settings.docWidth"
+          label="Full Width"
+        />
+        <span class="font-medium text-ink-gray-7 text-base my-2.5 px-2.5">
           Default Font
         </span>
         <div class="w-full flex justify-between gap-1 px-3">
@@ -729,16 +799,19 @@
       </div>
 
       <!-- Transform -->
-      <div v-if="tab === 3" class="px-5 py-4 border-b">
+      <div
+        v-if="tab === 3"
+        class="px-5 py-4 border-b"
+      >
         <span
-          class="inline-flex items-center gap-2.5 mb-5 text-gray-800 font-medium text-lg w-full"
+          class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
           Transform
         </span>
         <div>
           <span
             v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
-            class="font-medium text-gray-700 text-base"
+            class="font-medium text-ink-gray-7 text-base"
           >
             Import
           </span>
@@ -748,23 +821,32 @@
             @click="() => emitter.emit('importDocFromWord')"
           >
             <template #prefix>
-              <FileUp class="text-gray-700 w-4 stroke-[1.5]" />
+              <FileUp class="text-ink-gray-7 w-4 stroke-[1.5]" />
               Import DOCX
             </template>
           </Button>
-          <span class="font-medium text-gray-700 text-base">Export</span>
+          <span class="font-medium text-ink-gray-7 text-base">Export</span>
           <Button
             class="w-full justify-start"
             @click="() => emitter.emit('printFile')"
           >
             <template #prefix>
-              <FileDown class="text-gray-700 w-4 stroke-[1.5]" />
+              <FileDown class="text-ink-gray-7 w-4 stroke-[1.5]" />
               Export PDF
+            </template>
+          </Button>
+          <Button
+            class="w-full justify-start"
+            @click="() => $resources.exportMedia.submit()"
+          >
+            <template #prefix>
+              <LucideImage class="text-ink-gray-7 w-4 stroke-[1.5]" />
+              Export Media
             </template>
           </Button>
           <!-- <Button class="w-full justify-start">
             <template #prefix>
-              <FileDown class="text-gray-700 w-4" />
+              <FileDown class="text-ink-gray-7 w-4" />
               Export to DOCX
             </template>
           </Button> -->
@@ -773,26 +855,31 @@
     </div>
   </div>
   <div
-    class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-white"
+    class="hidden sm:flex flex-col items-center overflow-hidden h-full min-w-[48px] gap-1 pt-3 px-0 border-l z-0 bg-surface-white"
   >
-    <template v-for="(item, index) in tabs" :key="item.label">
+    <template
+      v-for="(item, index) in tabs"
+      :key="item.label"
+    >
       <button
         v-if="item.write === $store.state.hasWriteAccess || !item.write"
         variant="'ghost'"
         :class="[
           tab === index && showInfoSidebar
-            ? 'text-black bg-gray-200'
-            : ' hover:bg-gray-50',
+            ? 'text-black bg-surface-gray-3'
+            : ' hover:bg-surface-menu-bar',
         ]"
-        class="h-7 w-7 text-gray-600 rounded"
+        class="h-7 w-7 text-ink-gray-5 rounded"
         @click="switchTab(index)"
       >
         <component
           :is="item.icon"
           :class="[
-            tab === 1 && showInfoSidebar ? 'text-gray-700' : 'text-gray-600',
+            tab === 1 && showInfoSidebar
+              ? 'text-ink-gray-7'
+              : 'text-ink-gray-5',
           ]"
-          class="mx-auto stroke-[1.5] text-gray-600 w-4 h-4"
+          class="mx-auto stroke-[1.5] text-ink-gray-5 size-4"
         />
       </button>
     </template>
@@ -800,8 +887,14 @@
       Might spawn from emits 
       so they fall outside of tabs scope
     -->
-    <InsertImage v-model="addImageDialog" :editor="editor" />
-    <InsertVideo v-model="addVideoDialog" :editor="editor" />
+    <InsertImage
+      v-model="addImageDialog"
+      :editor="editor"
+    />
+    <InsertVideo
+      v-model="addVideoDialog"
+      :editor="editor"
+    />
     <NewManualSnapshotDialog
       v-if="newSnapshotDialog"
       v-model="newSnapshotDialog"
@@ -825,25 +918,16 @@
 </template>
 
 <script>
-import {
-  FeatherIcon,
-  Avatar,
-  Input,
-  Popover,
-  Badge,
-  Dropdown,
-  Switch,
-} from "frappe-ui"
+import { Avatar, Input, Popover, Badge, Dropdown, Switch } from "frappe-ui"
 import TagInput from "@/components/TagInput.vue"
 import Tag from "@/components/Tag.vue"
-import { formatMimeType } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { v4 as uuidv4 } from "uuid"
 import { defineAsyncComponent, markRaw } from "vue"
 import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
-import Info from "@/components/EspressoIcons/Info.vue"
-import Comment from "@/components/EspressoIcons/Comment.vue"
+import { entitiesDownload } from "@/utils/download"
+
 import {
   Plus,
   Minus,
@@ -857,10 +941,13 @@ import {
   MessageCircle,
   FileText,
   FileClock,
+  LucideInfo,
+  Code,
+  Code2,
+  Table2Icon,
+  LucideClock,
 } from "lucide-vue-next"
-import { Code } from "lucide-vue-next"
-import { Code2 } from "lucide-vue-next"
-import { Table2Icon } from "lucide-vue-next"
+
 import "@fontsource/lora"
 import "@fontsource/geist-mono"
 import "@fontsource/nunito"
@@ -888,9 +975,8 @@ import { useTimeAgo } from "@vueuse/core"
 import * as Y from "yjs"
 import { TiptapTransformer } from "@hocuspocus/transformer"
 import { fromUint8Array, toUint8Array } from "js-base64"
-import { formatDate } from "../../../utils/format"
+import { formatDate, formatSize } from "@/utils/format"
 import AnnotationList from "../components/AnnotationList.vue"
-import Clock from "../../EspressoIcons/Clock.vue"
 import ActivityTree from "../../ActivityTree.vue"
 import { generalAccess, userList } from "@/resources/permissions"
 
@@ -899,13 +985,10 @@ export default {
   components: {
     Switch,
     Input,
-    FeatherIcon,
     Avatar,
     TagInput,
     Tag,
     OuterCommentVue,
-    Info,
-    Comment,
     Popover,
     InsertImage: defineAsyncComponent(() => import("./InsertImage.vue")),
     InsertVideo: defineAsyncComponent(() => import("./InsertVideo.vue")),
@@ -954,10 +1037,8 @@ export default {
     GeneralAccess,
     AnnotationList,
     ActivityTree,
-    Clock,
   },
   inject: ["editor", "document"],
-  emits: ["update:allComments", "update:activeAnnotation"],
   inheritAttrs: false,
   props: {
     settings: {
@@ -973,14 +1054,17 @@ export default {
       required: false,
     },
   },
+  emits: ["update:allComments", "update:activeAnnotation"],
   setup() {
-    return { formatMimeType, getIconUrl }
+    return { getIconUrl }
   },
   data() {
     return {
       generalAccess: generalAccess.data,
       sharedWithList: userList.data,
       tab: this.entity?.write ? 0 : 4,
+      formatDate,
+      formatSize,
       docFont: this.settings.docFont,
       tabs: [
         {
@@ -1005,29 +1089,20 @@ export default {
         },
         {
           name: "Information",
-          icon: markRaw(Info),
+          icon: markRaw(LucideInfo),
           write: false,
-        },
-        {
-          name: "Comments",
-          icon: markRaw(Comment),
-          write: false,
-          disabled:
-            this.$store.state.entityInfo[0].comment === 0 ||
-            this.$store.state.entityInfo[0].owner !==
-              this.$store.state.auth.userId,
         },
         {
           name: "Versions",
           icon: markRaw(FileClock),
           write: false,
-          disabled: this.$store.state.entityInfo[0].write === 0,
+          disabled: this.$store.state.activeEntity.write === 0,
         },
         {
           name: "Clock",
-          icon: markRaw(Clock),
+          icon: markRaw(LucideClock),
           write: false,
-          disabled: this.$store.state.auth.user_id === "Guest",
+          disabled: this.$store.state.user.id === "Guest",
         },
       ].filter((item) => !item.disabled),
       newComment: "",
@@ -1043,7 +1118,7 @@ export default {
   },
   computed: {
     userId() {
-      return this.$store.state.auth.user_id
+      return this.$store.state.user.id
     },
     fullName() {
       return this.$store.state.user.fullName
@@ -1055,7 +1130,7 @@ export default {
       return this.$store.state.user.imageURL
     },
     entity() {
-      return this.$store.state.entityInfo[0]
+      return this.$store.state.activeEntity
     },
     unaddedTags() {
       return this.$resources.userTags.data.filter(
@@ -1316,6 +1391,18 @@ export default {
     },
   },
   resources: {
+    exportMedia() {
+      return {
+        url: "drive.api.files.export_media",
+        params: {
+          entity_name: this.entity.name,
+        },
+        auto: false,
+        onSuccess(data) {
+          entitiesDownload(null, data)
+        },
+      }
+    },
     storeVersion() {
       return {
         url: "drive.api.files.create_doc_version",
@@ -1340,6 +1427,7 @@ export default {
           data.forEach((element) => {
             element.relativeTime = useTimeAgo(element.creation)
             element.creation = formatDate(element.creation)
+            element.modified = formatDate(element.modified)
             element.snapshot_data = toUint8Array(element.snapshot_data)
           })
         },

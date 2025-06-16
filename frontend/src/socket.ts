@@ -15,9 +15,9 @@ export function initSocket(options = {}) {
     transports: ["websocket", "polling"],
   })
 
-  socket.on("connect_error", (data) => {
-    console.log(data)
-  })
+  // socket.on("connect_error", (data) => {
+  //   console.log(data)
+  // })
   return socket
 }
 

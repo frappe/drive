@@ -196,13 +196,13 @@ const alignClass = computed(() => {
       data-drag-handle
     >
       <div
-        class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute -top-10 right-0 bg-white border flex items-center justify-center shadow-lg rounded-[0.55rem] gap-x-1 p-0.5"
+        class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute -top-10 right-0 bg-surface-white border flex items-center justify-center shadow-lg rounded-[0.55rem] gap-x-1 p-0.5"
       >
         <button
           class="rounded p-1"
           :class="
             props.node.attrs.dataAlign === 'left'
-              ? 'bg-gray-200 text-gray-600'
+              ? 'bg-surface-gray-3 text-ink-gray-5'
               : ''
           "
           :variant="'ghost'"
@@ -219,7 +219,7 @@ const alignClass = computed(() => {
           class="rounded p-1"
           :class="
             props.node.attrs.dataAlign === 'center'
-              ? 'bg-gray-200 text-gray-600'
+              ? 'bg-surface-gray-3 text-ink-gray-5'
               : ''
           "
           :variant="'ghost'"
@@ -236,7 +236,7 @@ const alignClass = computed(() => {
           class="rounded p-1"
           :class="
             props.node.attrs.dataAlign === 'right'
-              ? 'bg-gray-200 text-gray-600'
+              ? 'bg-surface-gray-3 text-ink-gray-5'
               : ''
           "
           :variant="'ghost'"
@@ -253,7 +253,7 @@ const alignClass = computed(() => {
           class="rounded p-1"
           :class="
             props.node.attrs.dataFloat === 'left'
-              ? 'bg-gray-200 text-gray-600'
+              ? 'bg-surface-gray-3 text-ink-gray-5'
               : ''
           "
           :variant="'ghost'"
@@ -270,7 +270,7 @@ const alignClass = computed(() => {
           class="rounded p-1"
           :class="
             props.node.attrs.dataFloat === 'right'
-              ? 'bg-gray-200 text-gray-600'
+              ? 'bg-surface-gray-3 text-ink-gray-5'
               : ''
           "
           :variant="'ghost'"
@@ -291,7 +291,7 @@ const alignClass = computed(() => {
         @mouseup.lazy.prevent="stopHorizontalResize"
       >
         <div
-          class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute w-2 bg-white bg-opacity-80 rounded h-[55px] shadow-xl"
+          class="transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 absolute w-2 bg-surface-white bg-opacity-80 rounded h-[55px] shadow-xl"
         />
       </div>
       <img
@@ -322,12 +322,15 @@ const alignClass = computed(() => {
         @mouseup.lazy.prevent="stopHorizontalResize"
       >
         <div
-          class="absolute w-2 bg-white bg-opacity-80 rounded h-[55px] transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 shadow-xl"
+          class="absolute w-2 bg-surface-white bg-opacity-80 rounded h-[55px] transition-opacity duration-100 ease-in-out opacity-0 group-hover:opacity-100 shadow-xl"
         />
       </div>
     </div>
 
-    <div v-else class="w-fit flex relative">
+    <div
+      v-else
+      class="w-fit flex relative"
+    >
       <img
         v-if="mediaType === 'img'"
         loading="lazy"
