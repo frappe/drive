@@ -64,7 +64,7 @@ class DriveFile(Document):
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)
 
-    def move(self, new_parent=None):
+    def move(self, new_parent=None, is_private=None):
         """
         Move file or folder to the new parent folder
         If not owned by current user, copies it.
@@ -76,12 +76,15 @@ class DriveFile(Document):
         """
         new_parent = new_parent or get_home_folder(self.team).name
         if new_parent == self.parent_entity:
-            return {
-                "title": self.title,
-                "team": self.team,
-                "name": self.name,
-                "is_private": self.is_private,
-            }
+            if is_private is not None:
+                self.is_private = int(is_private)
+                self.save()
+            return frappe.get_value(
+                "Drive File",
+                self.parent_entity,
+                ["title", "team", "name", "is_private"],
+                as_dict=True,
+            )
 
         if new_parent == self.name:
             frappe.throw(
@@ -99,7 +102,12 @@ class DriveFile(Document):
                     "Cannot move into itself",
                     frappe.PermissionError,
                 )
-                return
+                return frappe.get_value(
+                    "Drive File",
+                    self.parent_entity,
+                    ["title", "team", "name", "is_private"],
+                    as_dict=True,
+                )
 
         update_file_size(self.parent_entity, -self.file_size)
         update_file_size(new_parent, +self.file_size)

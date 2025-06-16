@@ -19,10 +19,12 @@
             </h2>
           </div>
           <Button
-            class="bg-white"
+            variant="ghost"
             @click="entity.visible = false"
           >
-            <LucideX class="w-4 w-5" />
+            <template #icon>
+              <LucideX class="size-4" />
+            </template>
           </Button>
         </div>
         <ul class="space-y-3 text-sm pb-2">

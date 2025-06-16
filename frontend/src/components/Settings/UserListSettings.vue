@@ -13,133 +13,141 @@
       {{ __("Invite") }}
     </Button>
   </div>
-  <div
-    class="flex flex-col items-stretch justify-start h-[60%] overflow-y-auto"
-  >
-    <div
-      v-for="(user, index) in allUsers?.data"
-      :key="user.user_name"
-    >
-      <div
-        v-if="index > 0"
-        class="w-[95%] mx-auto h-px border-t border-gray-200"
-      />
-      <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
-        <Avatar
-          :image="user.user_image"
-          :label="user.full_name"
-          size="lg"
-        />
-        <div class="flex flex-col">
-          <span class="text-base">{{ user.full_name }}</span>
-          <span class="text-xs text-gray-700">{{ user.user_name }}</span>
-        </div>
-        <Dropdown
-          v-if="isAdmin.data && user.name != $store.state.user.fullName"
-          v-slot="{ open }"
-          :options="roleOptions"
-          placement="right"
-          class="ml-auto text-base text-gray-600"
-        >
-          <Button
-            variant="ghost"
-            @click="selectedUser = user"
-          >
-            {{ user.role == "admin" ? __("Manager") : __("User") }}
-            <template #suffix>
-              <LucideChevronDown
-                :class="{ '[transform:rotateX(180deg)]': open }"
-              />
-            </template>
-          </Button>
-        </Dropdown>
-        <span
-          v-else
-          class="ml-auto text-base text-gray-600"
-          >{{ user.role == "admin" ? __("Manager") : __("User") }}</span
-        >
-      </div>
-    </div>
-  </div>
-  <div
-    v-if="!allUsers?.data?.length"
-    class="flex flex-col items-center justify-center h-1/2"
-  >
-    <LucideUsers class="h-8 stroke-1 text-gray-600" />
-    <span class="text-gray-800 text-sm mt-2">No Users</span>
-  </div>
-  <h3 class="my-4 text-base font-medium">
-    {{ __("Invites") }}
-  </h3>
-  <div
-    v-if="!invites?.data || !invites.data.length"
-    class="text-center text-sm"
-  >
-    No invites found.
-  </div>
-  <div
-    v-for="(invite, index) in invites?.data"
-    :key="invite.name"
-  >
-    <div
-      v-if="index > 0"
-      class="w-[95%] mx-auto h-px border-t border-gray-200"
-    />
-    <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
-      <div class="flex justify-between w-full">
-        <span class="text-base my-auto">{{ invite.email }}</span>
-        <div class="flex">
-          <Tooltip
-            :text="
-              invite.status === 'Proposed'
-                ? 'A person from your domain has joined Drive.'
-                : 'This invite was sent from your team.'
-            "
-          >
-            <Badge
-              :theme="invite.status === 'Pending' ? 'blue' : 'orange'"
-              variant="subtle"
-              class="my-auto mr-2"
-              size="sm"
-            >
-              {{ __(invite.status) }}
-            </Badge>
-          </Tooltip>
-          <div class="flex gap-2">
-            <Button
-              :variant="invite.status === 'Proposed' ? 'ghost' : 'outline'"
-              class="my-auto"
-              @click="
-                rejectInvite.submit({ key: invite.name }),
-                  invites.data.splice(index, 1)
-              "
-            >
-              <LucideX
-                v-if="invite.status === 'Proposed'"
-                class="size-4"
-              />
-              <LucideTrash
-                v-else
-                class="size-4"
-              />
-            </Button>
 
-            <Button
-              v-if="invite.status === 'Proposed'"
-              class="my-auto"
-              variant="outline"
-              @click="
-                acceptInvite.submit({ key: invite.name, redirect: 0 }),
-                  invites.data.splice(index, 1)
-              "
-            >
-              <LucideCheck class="size-4" />
-            </Button>
+  <Tabs :tabs>
+    <template #tab-panel="{ tab }">
+      <template v-if="tab.label === 'Members'">
+        <div
+          class="flex flex-col items-stretch justify-start h-[60%] overflow-y-auto"
+        >
+          <div
+            v-for="(user, index) in allUsers?.data"
+            :key="user.user_name"
+          >
+            <div
+              v-if="index > 0"
+              class="w-[95%] mx-auto h-px border-t border-gray-200"
+            />
+            <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
+              <Avatar
+                :image="user.user_image"
+                :label="user.full_name"
+                size="lg"
+              />
+              <div class="flex flex-col">
+                <span class="text-base">{{ user.full_name }}</span>
+                <span class="text-xs text-gray-700">{{ user.user_name }}</span>
+              </div>
+              <Dropdown
+                v-if="isAdmin.data && user.name != $store.state.user.fullName"
+                v-slot="{ open }"
+                :options="roleOptions"
+                placement="right"
+                class="ml-auto text-base text-gray-600"
+              >
+                <Button
+                  variant="ghost"
+                  @click="selectedUser = user"
+                >
+                  {{ user.role == "admin" ? __("Manager") : __("User") }}
+                  <template #suffix>
+                    <LucideChevronDown
+                      :class="{ '[transform:rotateX(180deg)]': open }"
+                    />
+                  </template>
+                </Button>
+              </Dropdown>
+              <span
+                v-else
+                class="ml-auto text-base text-gray-600"
+                >{{ user.role == "admin" ? __("Manager") : __("User") }}</span
+              >
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+        <div
+          v-if="!allUsers?.data?.length"
+          class="flex flex-col items-center justify-center h-1/2"
+        >
+          <LucideUsers class="h-8 stroke-1 text-gray-600" />
+          <span class="text-gray-800 text-sm mt-2">No Users</span>
+        </div>
+      </template>
+      <template v-else>
+        <div
+          v-if="!invites?.data || !invites.data.length"
+          class="text-center text-sm"
+        >
+          No invites found.
+        </div>
+        <div
+          v-for="(invite, index) in invites?.data"
+          :key="invite.name"
+        >
+          <div
+            v-if="index > 0"
+            class="w-[95%] mx-auto h-px border-t border-gray-200"
+          />
+          <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
+            <div class="flex justify-between w-full">
+              <span class="text-base my-auto">{{ invite.email }}</span>
+              <div class="flex">
+                <Tooltip
+                  :text="
+                    invite.status === 'Proposed'
+                      ? 'A person from your domain has joined Drive.'
+                      : 'This invite was sent from your team.'
+                  "
+                >
+                  <Badge
+                    :theme="invite.status === 'Pending' ? 'blue' : 'orange'"
+                    variant="subtle"
+                    class="my-auto mr-2"
+                    size="sm"
+                  >
+                    {{ __(invite.status) }}
+                  </Badge>
+                </Tooltip>
+                <div class="flex gap-2">
+                  <Button
+                    :variant="
+                      invite.status === 'Proposed' ? 'ghost' : 'outline'
+                    "
+                    class="my-auto"
+                    @click="
+                      rejectInvite.submit({ key: invite.name }),
+                        invites.data.splice(index, 1)
+                    "
+                  >
+                    <LucideX
+                      v-if="invite.status === 'Proposed'"
+                      class="size-4"
+                    />
+                    <LucideTrash
+                      v-else
+                      class="size-4"
+                    />
+                  </Button>
+
+                  <Button
+                    v-if="invite.status === 'Proposed'"
+                    class="my-auto"
+                    variant="outline"
+                    @click="
+                      acceptInvite.submit({ key: invite.name, redirect: 0 }),
+                        invites.data.splice(index, 1)
+                    "
+                  >
+                    <LucideCheck class="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div></div
+      ></template>
+    </template>
+  </Tabs>
+
   <Dialog
     v-model="showInvite"
     :options="{
@@ -234,6 +242,7 @@ import {
   Dropdown,
   Dialog,
   Badge,
+  Tabs,
   Tooltip,
   createResource,
 } from "frappe-ui"
@@ -241,7 +250,7 @@ import { allUsers } from "@/resources/permissions"
 import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
-import { LucideUsers } from "lucide-vue-next"
+import { LucideMail, LucideUsers } from "lucide-vue-next"
 const route = useRoute()
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
@@ -253,6 +262,17 @@ const invited = ref("")
 const emailInput = ref("")
 const showInvite = ref(false)
 const showRemove = ref(false)
+
+const tabs = [
+  {
+    label: "Members",
+    icon: h(LucideUsers, { class: "size-4" }),
+  },
+  {
+    label: "Invites",
+    icon: h(LucideMail, { class: "size-4" }),
+  },
+]
 
 const roleOptions = [
   {

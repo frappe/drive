@@ -4,7 +4,7 @@
     :options="{ size: 'lg' }"
   >
     <template #body-main>
-      <div class="py-5 px-4 sm:px-6">
+      <div class="p-4 sm:px-6">
         <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             Sharing "
@@ -245,9 +245,12 @@
                 v-if="user.user == $store.state.user.id"
                 class="ml-auto mr-1 text-gray-700"
               >
-                <template v-if="user.user === entity.owner"
-                  >Owner (you)</template
+                <div
+                  v-if="user.user === entity.owner"
+                  class="flex gap-1"
                 >
+                  Owner (you)<LucideDiamond class="size-3 my-auto" />
+                </div>
                 <template v-else>You</template>
               </span>
               <AccessButton

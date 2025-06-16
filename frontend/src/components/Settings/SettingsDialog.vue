@@ -9,7 +9,7 @@
         :style="{ height: '80vh' }"
       >
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
-          <h1 class="text-xl font-semibold leading-6 text-gray-900 px-2">
+          <h1 class="text-xl font-semibold leading-6 text-gray-900 pr-2">
             {{ __("Settings") }}
           </h1>
           <div class="mt-3 space-y-1">
@@ -41,11 +41,13 @@
           />
         </div>
         <Button
-          class="my-2 mr-2 absolute right-0"
+          class="m-3 absolute right-0"
           variant="ghost"
           @click="$emit('update:modelValue', false)"
         >
-          <LucideX class="ml-auto size-4" />
+          <template #icon>
+            <LucideX class="size-4" />
+          </template>
         </Button>
       </div>
     </template>

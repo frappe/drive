@@ -26,7 +26,9 @@
             variant="ghost"
             @click="$emit('update:modelValue', false)"
           >
-            <LucideX class="size-4" />
+            <template #icon>
+              <LucideX class="size-4" />
+            </template>
           </Button>
         </div>
         <Autocomplete
