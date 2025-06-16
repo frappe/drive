@@ -2,21 +2,21 @@
   <div class="flex p-3 pb-0">
     <div
       v-if="selections?.length"
-      class="my-auto w-[40%] text-base"
+      class="my-auto w-[40%] text-base text-ink-gray-8"
     >
       {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
       selected
     </div>
     <div
       v-else-if="$route.name === 'Shared'"
-      class="bg-gray-100 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 mr-4 py-1"
+      class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 mr-4 py-1"
     >
       <Button
         variant="ghost"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           store.state.shareView === 'with'
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="getEntities.reset(), store.commit('toggleShareView', 'with')"
@@ -28,7 +28,7 @@
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           store.state.shareView === 'by'
-            ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
         @click="getEntities.reset(), store.commit('toggleShareView', 'by')"
@@ -158,7 +158,7 @@
           </Tooltip>
         </Dropdown>
         <div
-          class="bg-gray-100 rounded-md space-x-0.5 h-7 px-0.5 py-1 flex items-center"
+          class="bg-surface-gray-2 rounded-md space-x-0.5 h-7 px-0.5 py-1 flex items-center"
         >
           <Button
             :disabled="!getEntities.data?.length"
@@ -166,7 +166,7 @@
             class="max-h-6 leading-none transition-colors focus:outline-none"
             :class="[
               store.state.view === 'grid'
-                ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+                ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
                 : '',
             ]"
             @click="store.commit('toggleView', 'grid')"
@@ -179,7 +179,7 @@
             class="max-h-6 leading-none transition-colors focus:outline-none"
             :class="[
               store.state.view === 'list'
-                ? 'bg-white shadow-sm hover:bg-white active:bg-white'
+                ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
                 : '',
             ]"
             @click="store.commit('toggleView', 'list')"
@@ -211,7 +211,7 @@
                 <component
                   :is="item.icon"
                   class="size-4 text-ink-gray-6"
-                  :class="[item.class, item.danger ? 'text-red-500' : '']"
+                  :class="[item.class, item.danger ? 'text-ink-red-3' : '']"
                 />
               </div>
             </Button>

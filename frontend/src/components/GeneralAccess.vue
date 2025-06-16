@@ -42,13 +42,13 @@ const props = defineProps({
 
 const colorClasses = computed(() => {
   if (props.disabled) {
-    return "bg-gray-300 text-gray-500"
+    return "bg-surface-gray-4 text-ink-gray-4"
   } else if (props.accessType === "team") {
-    return "bg-blue-100 text-blue-500"
+    return "bg-surface-blue-2 text-ink-blue-2"
   } else if (props.accessType === "public") {
-    return "bg-red-100 text-red-500"
+    return "bg-surface-red-2 text-ink-red-3"
   }
-  return "text-gray-700 bg-gray-300"
+  return "text-ink-gray-7 bg-surface-gray-4"
 })
 
 const sizeClasses = computed(() => {

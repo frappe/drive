@@ -2,7 +2,7 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-white border-b w-full px-4 py-2.5 h-12 flex items-center justify-between"
+    class="bg-surface-white border-b w-full px-4 py-2.5 h-12 flex items-center justify-between"
   >
     <Breadcrumbs
       :items="store.state.breadcrumbs"
@@ -80,7 +80,7 @@
 
       <div
         v-if="connectedUsers.length > 1 && isLoggedIn"
-        class="hidden sm:flex bg-gray-200 rounded justify-center items-center px-1"
+        class="hidden sm:flex bg-surface-gray-3 rounded justify-center items-center px-1"
       >
         <UsersBar />
       </div>

@@ -86,7 +86,7 @@ function onDeleteRow() {
     }"
   >
     <div
-      class="flex flex-col h-full leading-none bg-white gap-0.5 p-0.5 rounded shadow-sm border border-border"
+      class="flex flex-col h-full leading-none bg-surface-white gap-0.5 p-0.5 rounded shadow-sm border border-border"
     >
       <Button
         title="Add Row Above"

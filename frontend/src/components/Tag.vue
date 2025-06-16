@@ -1,6 +1,6 @@
 <template>
   <div
-    class="inline-flex gap-1 items-center justify-center text-gray-800 border hover:bg-gray-200 h-7 px-2 rounded group cursor-pointer"
+    class="inline-flex gap-1 items-center justify-center text-ink-gray-8 border hover:bg-surface-gray-3 h-7 px-2 rounded group cursor-pointer"
   >
     <svg
       v-if="entity.owner === 'You' && !allowDelete"
@@ -20,7 +20,7 @@
       />
     </svg>
 
-    <span class="text-sm text-gray-800">
+    <span class="text-sm text-ink-gray-8">
       {{ tag.title }}
     </span>
     <button

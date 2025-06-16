@@ -106,7 +106,7 @@ export function toastError(title) {
   toast({
     title,
     icon: "alert-circle",
-    background: "bg-red-200",
+    background: "bg-surface-red-3",
     text: "Reload page",
     timeout: 50,
   })

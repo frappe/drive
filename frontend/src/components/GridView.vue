@@ -8,11 +8,11 @@
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg group select-none entity cursor-pointer relative w-[172px] h-[172px] border bg-white"
+      class="grid-item rounded-lg group select-none entity cursor-pointer relative w-[172px] h-[172px] border bg-surface-white"
       :class="[
         selections.has(file.name) || selectedRow?.name === file.name
-          ? 'bg-gray-100 shadow-gray'
-          : 'border-gray-200 hover:shadow-lg',
+          ? 'bg-surface-gray-2 shadow-gray'
+          : 'border-outline-gray-modals hover:shadow-lg',
         draggedItem === file.name ? 'opacity-60 hover:shadow-none' : '',
       ]"
       :draggable="true"
@@ -41,7 +41,7 @@
         :class="[
           selections.size > 0
             ? ''
-            : '!bg-gray-300 hover:bg-gray-400 group-hover:visible',
+            : '!bg-surface-gray-4 hover:bg-gray-400 group-hover:visible',
         ]"
         @click.stop="contextMenu($event, file)"
       >

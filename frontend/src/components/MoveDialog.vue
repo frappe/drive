@@ -85,10 +85,10 @@
                       class="flex-grow rounded-sm text-base truncate h-full flex items-center pl-1"
                       :class="[
                         currentFolder === node.value
-                          ? 'bg-gray-200'
-                          : 'hover:bg-gray-100',
+                          ? 'bg-surface-gray-3'
+                          : 'hover:bg-surface-gray-2',
                         $store.state.currentFolder.name === node.value
-                          ? 'cursor-not-allowed hover:bg-white'
+                          ? 'cursor-not-allowed hover:bg-surface-white'
                           : 'group',
                       ]"
                     >
@@ -123,7 +123,7 @@
                       <Button
                         class="shrink hidden group-hover:block ml-auto"
                         :class="{
-                          '!bg-gray-200': currentFolder === node.value,
+                          '!bg-surface-gray-3': currentFolder === node.value,
                         }"
                         @click.stop="
                           (e) => {
@@ -167,7 +167,7 @@
               </Dropdown>
               <span
                 v-if="dropDownBreadcrumbs.length"
-                class="text-gray-600 mx-0.5"
+                class="text-ink-gray-5 mx-0.5"
               >
                 {{ "/" }}
               </span>
@@ -177,7 +177,7 @@
               >
                 <span
                   v-if="breadcrumbs.length > 1 && index > 0"
-                  class="text-gray-600 mx-0.5"
+                  class="text-ink-gray-5 mx-0.5"
                 >
                   {{ "/" }}
                 </span>
@@ -185,8 +185,8 @@
                   class="text-base cursor-pointer"
                   :class="
                     index === slicedBreadcrumbs.length - 1
-                      ? 'text-gray-900 text-base font-medium p-1'
-                      : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
+                      ? 'text-ink-gray-9 text-base font-medium p-1'
+                      : 'text-ink-gray-5 text-base rounded-[6px] hover:bg-surface-gray-2 p-1'
                   "
                   @click="closeEntity(crumb.name)"
                 >

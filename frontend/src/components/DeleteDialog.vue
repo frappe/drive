@@ -4,7 +4,7 @@
     :options="{ title: 'Delete Forever?', size: 'sm' }"
   >
     <template #body-content>
-      <p class="text-gray-600">
+      <p class="text-ink-gray-5">
         {{ entities.length === 1 ? `This item` : `${entities.length} items` }}
         will be deleted forever. This is an irreversible process.
       </p>

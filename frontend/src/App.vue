@@ -1,6 +1,11 @@
 <template>
-  <div class="w-screen h-screen antialiased">
-    <div class="bg-black text-white text-sm text-center py-2 sm:hidden">
+  <div
+    class="w-screen h-screen antialiased"
+    dark
+  >
+    <div
+      class="bg-surface-black text-ink-white text-sm text-center py-2 sm:hidden"
+    >
       Drive works best on desktop.
     </div>
     <div
@@ -13,7 +18,7 @@
       />
       <div
         id="dropzone"
-        class="flex flex-col h-screen flex-grow overflow-hidden"
+        class="flex flex-col h-screen flex-grow overflow-hidden bg-surface-white"
       >
         <router-view
           :key="$route.fullPath"

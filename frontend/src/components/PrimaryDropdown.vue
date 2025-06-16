@@ -6,9 +6,9 @@
         :class="[
           isExpanded ? 'p-2' : 'py-2',
           open && isExpanded
-            ? 'bg-white shadow-sm'
+            ? 'bg-surface-white shadow-sm'
             : isExpanded
-            ? 'hover:bg-gray-200'
+            ? 'hover:bg-surface-gray-3'
             : 'bg-transparent hover:bg-transparent shadow-none',
         ]"
         :style="{
@@ -24,11 +24,11 @@
               : 'ml-0 w-0 opacity-0 overflow-hidden'
           "
         >
-          <div class="text-base font-medium leading-none text-gray-900">
+          <div class="text-base font-medium leading-none text-ink-gray-9">
             {{ $route.params.team ? teamName : __(route.name) }}
           </div>
           <div
-            class="line-clamp-1 overflow-hidden text-sm leading-none text-gray-700"
+            class="line-clamp-1 overflow-hidden text-sm leading-none text-ink-gray-7"
             :class="teamName ? 'mt-1' : 'mb-1'"
           >
             {{ fullName }}
@@ -44,7 +44,7 @@
         >
           <component
             :is="open ? LucideChevronUp : LucideChevronDown"
-            class="size-4 text-gray-700"
+            class="size-4 text-ink-gray-7"
           />
         </div>
       </button>
@@ -62,7 +62,6 @@
 </template>
 
 <script setup>
-import { markRaw } from "vue"
 import { Dropdown } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
@@ -70,7 +69,7 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, markRaw, onMounted } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import AppSwitcher from "./AppSwitcher.vue"
@@ -79,6 +78,7 @@ import {
   LucideBadgeHelp,
   LucideChevronDown,
   LucideChevronUp,
+  LucideMoon,
 } from "lucide-vue-next"
 
 const router = useRouter()
@@ -126,6 +126,11 @@ const settingsItems = computed(() => {
           label: __("Support"),
           onClick: () => window.open("https://t.me/frappedrive", "_blank"),
         },
+        {
+          icon: LucideMoon,
+          label: "Toggle theme",
+          onClick: toggleTheme,
+        },
       ],
     },
     {
@@ -147,6 +152,19 @@ const settingsItems = computed(() => {
   ]
 })
 
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme")
+  let theme = currentTheme === "dark" ? "light" : "dark"
+  document.documentElement.setAttribute("data-theme", theme)
+  localStorage.setItem("theme", theme)
+}
+
+onMounted(() => {
+  const theme = localStorage.getItem("theme")
+  if (["light", "dark"].includes(theme)) {
+    document.documentElement.setAttribute("data-theme", theme)
+  }
+})
 emitter.on("showSettings", (val = 0) => {
   showSettings.value = true
   suggestedTab.value = val

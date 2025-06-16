@@ -5,7 +5,7 @@
   >
     <template #body-content>
       <div class="flex items-center justify-start">
-        <p class="text-base text-gray-600 leading-5">
+        <p class="text-base text-ink-gray-5 leading-5">
           {{ dialogData.message }}
         </p>
       </div>

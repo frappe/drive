@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white px-1.5 pt-1.5 shadow-2xl rounded-lg w-full">
+  <div class="bg-surface-white px-1.5 pt-1.5 shadow-2xl rounded-lg w-full">
     <Input
       v-model="searchUserText"
-      class="bg-white pb-1.5"
+      class="bg-surface-white pb-1.5"
       placeholder="Search users"
       type="text"
       @input="searchUserText = $event"
@@ -14,7 +14,7 @@
       <li
         v-for="user in searchFilterUsers"
         :key="user.email"
-        class="flex items-center justify-start px-1.5 py-1 hover:bg-gray-100 w-full rounded cursor-pointer"
+        class="flex items-center justify-start px-1.5 py-1 hover:bg-surface-gray-2 w-full rounded cursor-pointer"
         @click="addNewUser(user)"
       >
         <Avatar
@@ -23,17 +23,17 @@
           :image="user.user_image"
           class="mr-2"
         />
-        <span class="text-base text-gray-700">{{ user.full_name }}</span>
+        <span class="text-base text-ink-gray-7">{{ user.full_name }}</span>
       </li>
     </ul>
     <span
       v-else
-      class="rounded-md px-2.5 py-1.5 text-base text-gray-600"
+      class="rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
       >No users found</span
     >
     <div class="flex items-center justify-end border-t py-1 mt-1">
       <Button
-        class="px-2 py-1.5 hover:bg-gray-100 rounded cursor-pointer"
+        class="px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
         @click="resetAll"
       >
         Clear all

@@ -1,5 +1,5 @@
 <template>
-  <h1 class="font-semibold mb-8">
+  <h1 class="font-semibold mb-8 text-ink-gray-9">
     {{ __("Profile") }}
   </h1>
   <div class="flex justify-start w-full items-center gap-x-4">
@@ -10,8 +10,8 @@
       class="w-20 h-20"
     />
     <div class="flex flex-col">
-      <span class="text-xl font-semibold">{{ fullName }}</span>
-      <span class="text-base text-gray-700">{{ $store.state.user.id }}</span>
+      <span class="text-xl font-semibold text-ink-gray-8">{{ fullName }}</span>
+      <span class="text-base text-ink-gray-6">{{ $store.state.user.id }}</span>
     </div>
     <Button
       class="ml-auto"
@@ -36,7 +36,7 @@
   >
     <template #body-content>
       <div class="flex flex-col items-start justify-start gap-y-2">
-        <span class="text-base text-gray-600">Profile Photo</span>
+        <span class="text-base text-ink-gray-5">Profile Photo</span>
         <div class="flex items-center justify-between w-full">
           <Avatar
             :image="newImageUrl"
@@ -47,7 +47,7 @@
 
           <div
             v-if="newImageUrl"
-            class="flex items-center justify-between bg-gray-100 h-7 pl-2 text-base rounded"
+            class="flex items-center justify-between bg-surface-gray-2 h-7 pl-2 text-base rounded"
           >
             <LucideLink class="mr-2" />
             <a
@@ -81,18 +81,18 @@
           </FileUploader>
         </div>
         <div class="w-full flex flex-col gap-y-2 my-2">
-          <span class="text-base text-gray-600">{{ __("First Name") }}</span>
+          <span class="text-base text-ink-gray-5">{{ __("First Name") }}</span>
           <Input
             v-model="newFirstName"
             v-focus
           />
-          <span class="text-base text-gray-600">{{ __("Last Name") }}</span>
+          <span class="text-base text-ink-gray-5">{{ __("Last Name") }}</span>
           <Input v-model="newLastName" />
         </div>
       </div>
     </template>
   </Dialog>
-  <h1 class="font-semibold mt-12 mb-4">
+  <h1 class="font-semibold mt-12 mb-4 text-ink-gray-8">
     {{ __("Preferences") }}
   </h1>
   <Autocomplete

@@ -20,7 +20,7 @@
       "
     >
       <div v-if="item.divider">
-        <hr class="my-1 bg-gray-300" />
+        <hr class="my-1 bg-surface-gray-4" />
       </div>
       <button
         v-else
@@ -33,7 +33,7 @@
         />
         <span
           class="whitespace-nowrap"
-          :class="item.danger ? 'text-red-600' : 'text-ink-gray-7'"
+          :class="item.danger ? 'text-ink-red-4' : 'text-ink-gray-7'"
         >
           {{ item.label }}
         </span>

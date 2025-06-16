@@ -28,7 +28,7 @@
           />
         </div>
         <div
-          class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-white"
+          class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-surface-white"
         >
           <Button
             :disabled="!prevEntity?.name"

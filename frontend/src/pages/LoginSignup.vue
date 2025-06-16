@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden sm:bg-gray-50">
+  <div class="flex h-screen w-full overflow-hidden sm:bg-surface-menu-bar">
     <div class="w-full overflow-auto">
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
@@ -7,10 +7,10 @@
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
           <div
-            class="mx-auto w-full bg-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
           >
             <div class="mb-7.5 text-center">
-              <p class="mb-2 text-2xl font-semibold leading-6 text-gray-900">
+              <p class="mb-2 text-2xl font-semibold leading-6 text-ink-gray-9">
                 {{
                   isLogin
                     ? "Login to Drive"
@@ -20,7 +20,7 @@
                 }}
               </p>
               <p
-                class="break-words text-base font-normal leading-[21px] text-gray-700"
+                class="break-words text-base font-normal leading-[21px] text-ink-gray-7"
               >
                 {{
                   !isLogin
@@ -68,7 +68,7 @@
                   <label class="text-base">
                     I accept the
                     <Link
-                      class="!text-gray-700"
+                      class="!text-ink-gray-7"
                       to="https://frappecloud.com/policies"
                       target="_blank"
                     >
@@ -152,7 +152,7 @@
                 <div class="mt-6 border-t text-center">
                   <div class="-translate-y-1/2 transform">
                     <span
-                      class="relative bg-white px-2 text-sm font-medium leading-8 text-gray-800"
+                      class="relative bg-surface-white px-2 text-sm font-medium leading-8 text-ink-gray-8"
                     >
                       or
                     </span>
@@ -178,7 +178,7 @@
 
             <div class="mt-6 text-center">
               <router-link
-                class="text-center text-base font-medium text-gray-900 hover:text-gray-700"
+                class="text-center text-base font-medium text-ink-gray-9 hover:text-ink-gray-7"
                 :to="{
                   name: isLogin ? 'Signup' : 'Login',
                   query: { ...$route.query, forgot: undefined },

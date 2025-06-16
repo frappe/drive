@@ -3,7 +3,7 @@
     <article
       v-for="(comment, i) in allComments"
       :key="i + ''"
-      class="current-comment pt-2 bg-white flex flex-col border-b last:border-b-0"
+      class="current-comment pt-2 bg-surface-white flex flex-col border-b last:border-b-0"
       :class="[
         `${
           comment.jsonComments.uuid === activeCommentsInstance.uuid
@@ -28,14 +28,15 @@
             <span class="font-medium">
               {{ jsonComment.userName }}
             </span>
-            <span class="text-gray-500">{{ " ∙ " }}</span>
-            <span class="text-gray-600">
+            <span class="text-ink-gray-4">{{ " ∙ " }}</span>
+            <span class="text-ink-gray-5">
               {{ formatDate(jsonComment.time) }}
             </span>
           </div>
-          <span class="my-2 text-base text-gray-700 break-word leading-snug">{{
-            jsonComment.content
-          }}</span>
+          <span
+            class="my-2 text-base text-ink-gray-7 break-word leading-snug"
+            >{{ jsonComment.content }}</span
+          >
         </div>
       </div>
 
@@ -57,7 +58,7 @@
             class="h-7 w-7 mr-1"
           />
           <div
-            class="flex items-center mx-auto border w-full bg-transparent rounded max-w-[87%] focus-within:ring-2 ring-gray-400 hover:bg-gray-100 focus-within:bg-gray-100 group"
+            class="flex items-center mx-auto border w-full bg-transparent rounded max-w-[87%] focus-within:ring-2 ring-outline-gray-3 hover:bg-surface-gray-2 focus-within:bg-surface-gray-2 group"
           >
             <textarea
               v-model="commentText"

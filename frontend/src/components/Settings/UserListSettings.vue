@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center mb-4">
-    <h1 class="font-semibold">
+    <h1 class="font-semibold text-ink-gray-9">
       {{ __("Users") }}
     </h1>
     <Button
@@ -26,7 +26,7 @@
           >
             <div
               v-if="index > 0"
-              class="w-[95%] mx-auto h-px border-t border-gray-200"
+              class="w-[95%] mx-auto h-px border-t border-outline-gray-modals"
             />
             <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
               <Avatar
@@ -35,15 +35,17 @@
                 size="lg"
               />
               <div class="flex flex-col">
-                <span class="text-base">{{ user.full_name }}</span>
-                <span class="text-xs text-gray-700">{{ user.user_name }}</span>
+                <span class="text-base text-ink-gray-8">{{
+                  user.full_name
+                }}</span>
+                <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
               </div>
               <Dropdown
                 v-if="isAdmin.data && user.name != $store.state.user.fullName"
                 v-slot="{ open }"
                 :options="roleOptions"
                 placement="right"
-                class="ml-auto text-base text-gray-600"
+                class="ml-auto text-base text-ink-gray-6"
               >
                 <Button
                   variant="ghost"
@@ -59,18 +61,11 @@
               </Dropdown>
               <span
                 v-else
-                class="ml-auto text-base text-gray-600"
+                class="ml-auto text-base text-ink-gray-6"
                 >{{ user.role == "admin" ? __("Manager") : __("User") }}</span
               >
             </div>
           </div>
-        </div>
-        <div
-          v-if="!allUsers?.data?.length"
-          class="flex flex-col items-center justify-center h-1/2"
-        >
-          <LucideUsers class="h-8 stroke-1 text-gray-600" />
-          <span class="text-gray-800 text-sm mt-2">No Users</span>
         </div>
       </template>
       <template v-else>
@@ -86,11 +81,13 @@
         >
           <div
             v-if="index > 0"
-            class="w-[95%] mx-auto h-px border-t border-gray-200"
+            class="w-[95%] mx-auto h-px border-t border-outline-gray-modals"
           />
           <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
             <div class="flex justify-between w-full">
-              <span class="text-base my-auto">{{ invite.email }}</span>
+              <span class="text-base my-auto text-ink-gray-8">{{
+                invite.email
+              }}</span>
               <div class="flex">
                 <Tooltip
                   :text="
@@ -173,7 +170,7 @@
   >
     <template #body-content>
       <div class="flex items-start justify-start gap-4">
-        <div class="flex flex-wrap gap-1 rounded w-full bg-gray-100 p-2">
+        <div class="flex flex-wrap gap-1 rounded w-full bg-surface-gray-2 p-2">
           <Button
             v-for="(email, idx) in invited"
             :key="email"
@@ -195,7 +192,7 @@
               type="text"
               autocomplete="off"
               placeholder="Enter email address"
-              class="h-7 w-full rounded border-none bg-gray-100 py-1.5 pl-2 pr-2 text-base text-gray-800 placeholder-gray-500 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+              class="h-7 w-full rounded border-none bg-surface-gray-2 py-1.5 pl-2 pr-2 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               @keydown="isValidEmail"
               @keydown.enter.capture.stop="extractEmails"
               @keydown.space.prevent.stop="extractEmails"
@@ -299,13 +296,13 @@ const roleOptions = [
   },
   {
     label: "Remove",
-    class: "text-red-500",
+    class: "text-ink-red-3",
     component: () =>
       h(
         "button",
         {
           class: [
-            "group flex w-full items-center text-red-500 rounded-md px-2 py-2 text-sm",
+            "group flex w-full items-center text-ink-red-3 rounded-md px-2 py-2 text-sm",
           ],
           onClick: () => (showRemove.value = true),
         },

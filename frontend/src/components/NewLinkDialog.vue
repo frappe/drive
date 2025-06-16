@@ -23,7 +23,7 @@
       />
       <div
         v-if="createLink.error"
-        class="pt-4 text-base font-sm text-red-500"
+        class="pt-4 text-base font-sm text-ink-red-3"
       >
         This file already exists.
       </div>

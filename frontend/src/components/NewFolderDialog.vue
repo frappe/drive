@@ -16,7 +16,7 @@
     }"
   >
     <template #body-content>
-      <p class="text-gray-600 text-sm mb-2">Folder name:</p>
+      <p class="text-ink-gray-5 text-sm mb-2">Folder name:</p>
       <TextInput
         ref="my-input"
         v-model="folderName"
@@ -29,7 +29,7 @@
       </TextInput>
       <div
         v-if="createFolder.error"
-        class="pt-4 text-base font-sm text-red-500"
+        class="pt-4 text-base font-sm text-ink-red-3"
       >
         This folder already exists.
       </div>

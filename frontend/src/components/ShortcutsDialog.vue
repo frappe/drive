@@ -10,7 +10,7 @@
           :key="group.title"
           class="border-b pb-4"
         >
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">
+          <h2 class="text-lg font-semibold text-ink-gray-8 mb-4">
             {{ group.title }}
           </h2>
           <ul class="space-y-2">
@@ -19,14 +19,14 @@
               :key="index"
               class="flex items-start justify-between"
             >
-              <div class="text-gray-700 text-base">
+              <div class="text-ink-gray-7 text-base">
                 {{ shortcut[1] }}
               </div>
               <div class="flex space-x-1 w-[7rem] gap-1 justify-start">
                 <span
                   v-for="(key, kIndex) in shortcut[0]"
                   :key="kIndex"
-                  class="px-2 py-0.5 bg-gray-100 border border-gray-300 text-xs rounded-sm font-mono text-gray-800 shadow-sm"
+                  class="px-2 py-0.5 bg-surface-gray-2 border border-outline-gray-2 text-xs rounded-sm font-mono text-ink-gray-8 shadow-sm"
                 >
                   {{ key }}
                 </span>

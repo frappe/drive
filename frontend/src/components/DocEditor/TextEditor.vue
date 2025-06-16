@@ -681,7 +681,7 @@ export default {
           title: "Not a valid DOCX file!",
           position: "bottom-right",
           icon: "alert-triangle",
-          iconClasses: "text-red-500",
+          iconClasses: "text-ink-red-3",
           timeout: 2,
         })
       }

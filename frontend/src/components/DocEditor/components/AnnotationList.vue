@@ -2,7 +2,7 @@
   <div class="select-text">
     <div class="flex items-center justify-start mb-6">
       <span
-        class="inline-flex items-center gap-2.5 text-gray-800 font-medium text-lg w-full"
+        class="inline-flex items-center gap-2.5 text-ink-gray-8 font-medium text-lg w-full"
       >
         Annotations
       </span>
@@ -41,15 +41,15 @@
           />
           <div class="flex flex-col gap-y-0.5 mb-1">
             <div class="flex items-center gap-x-0.5">
-              <span class="text-gray-800 text-sm font-medium">
+              <span class="text-ink-gray-8 text-sm font-medium">
                 {{ comment.get("owner") }}
               </span>
-              <span class="text-gray-700 text-sm">{{ " ∙ " }}</span>
-              <span class="text-gray-700 text-sm">
+              <span class="text-ink-gray-7 text-sm">{{ " ∙ " }}</span>
+              <span class="text-ink-gray-7 text-sm">
                 {{ useTimeAgo(comment.get("createdAt")) }}
               </span>
             </div>
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-ink-gray-7">
               {{ comment.get("replies").length }}
               {{ comment.get("replies").length === 1 ? " reply" : "replies" }}
             </span>
@@ -76,7 +76,7 @@
           <span
             id="injected"
             v-html="comment.get('content')"
-            class="max-w-full break-word text-sm text-gray-700"
+            class="max-w-full break-word text-sm text-ink-gray-7"
           >
           </span>
         </div>
@@ -96,11 +96,11 @@
                 :image="reply.get('ownerImage')"
                 class="mr-2"
               />
-              <span class="text-gray-800 text-sm font-medium">
+              <span class="text-ink-gray-8 text-sm font-medium">
                 {{ reply.get("owner") }}
               </span>
-              <span class="text-gray-700 text-sm">{{ " ∙ " }}</span>
-              <span class="text-gray-700 text-sm">
+              <span class="text-ink-gray-7 text-sm">{{ " ∙ " }}</span>
+              <span class="text-ink-gray-7 text-sm">
                 {{ useTimeAgo(reply.get("createdAt")) }}
               </span>
               <Dropdown
@@ -124,7 +124,7 @@
               <span
                 id="injected"
                 v-html="reply.get('content')"
-                class="max-w-full break-word text-gray-700"
+                class="max-w-full break-word text-ink-gray-7"
               >
               </span>
             </div>
@@ -154,7 +154,7 @@
 
       <div
         v-else
-        class="text-gray-600 text-sm my-5"
+        class="text-ink-gray-5 text-sm my-5"
       >
         There are annotations for the current document or category
       </div>

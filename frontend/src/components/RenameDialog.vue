@@ -17,7 +17,7 @@
           :variant="'subtle'"
           theme="gray"
           size="sm"
-          class="form-input font-medium ml-2 text-gray-700 border-gray-100"
+          class="form-input font-medium ml-2 text-ink-gray-7 border-gray-100"
         >
           {{ entity.file_ext.toUpperCase().slice(1) }}
         </span>

@@ -20,14 +20,14 @@
         <slot>
           <p
             v-if="title"
-            class="text-base font-medium text-gray-900"
+            class="text-base font-medium text-ink-gray-9"
             :class="{ 'mb-1': text }"
           >
             {{ title }}
           </p>
           <p
             v-if="text"
-            class="text-sm text-gray-600"
+            class="text-sm text-ink-gray-5"
           >
             {{ text }}
           </p>
@@ -43,10 +43,10 @@
       <div class="ml-auto mb-auto pl-2">
         <slot name="actions">
           <button
-            class="grid h-5 w-5 place-items-center rounded hover:bg-gray-100"
+            class="grid h-5 w-5 place-items-center rounded hover:bg-surface-gray-2"
             @click="$emit('close')"
           >
-            <LucideX class="size-4 text-gray-700" />
+            <LucideX class="size-4 text-ink-gray-7" />
           </button>
         </slot>
       </div>
@@ -65,7 +65,7 @@ export default {
   props: {
     background: {
       type: String,
-      default: "bg-white",
+      default: "bg-surface-white",
     },
     buttons: {
       type: Array,

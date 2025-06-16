@@ -8,8 +8,10 @@
         class="flex"
         :style="{ height: '80vh' }"
       >
-        <div class="flex w-52 shrink-0 flex-col bg-gray-50 py-3 p-4 border-r">
-          <h1 class="text-xl font-semibold leading-6 text-gray-900 pr-2">
+        <div
+          class="flex w-52 shrink-0 flex-col bg-surface-menu-bar py-3 p-4 border-r"
+        >
+          <h1 class="text-xl font-semibold leading-6 text-ink-gray-9 pr-2">
             {{ __("Settings") }}
           </h1>
           <div class="mt-3 space-y-1">
@@ -19,16 +21,16 @@
               class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
               :class="[
                 activeTab?.label == tab.label
-                  ? 'bg-gray-300'
-                  : 'hover:bg-gray-100',
+                  ? 'bg-surface-gray-4'
+                  : 'hover:bg-surface-gray-2',
               ]"
               @click="activeTab = tab"
             >
               <component
                 :is="tab.icon"
-                class="size-4 text-gray-700 stroke-[1.5]"
+                class="size-4 text-ink-gray-7 stroke-[1.5]"
               />
-              <span class="text-base text-gray-800">
+              <span class="text-base text-ink-gray-8">
                 {{ __(tab.label) }}
               </span>
             </button>

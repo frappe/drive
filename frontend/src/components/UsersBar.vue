@@ -42,7 +42,7 @@
             :label="user.name"
             :title="user.name"
           />
-          <span class="text-sm text-gray-800 mr-4">{{ user.name }}</span>
+          <span class="text-sm text-ink-gray-8 mr-4">{{ user.name }}</span>
           <svg
             class="ml-auto"
             width="16"

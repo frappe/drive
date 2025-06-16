@@ -6,7 +6,7 @@
     <div v-if="icon">
       <component
         :is="icon"
-        class="w-14 stroke-[0] h-auto text-gray-500 pb-4"
+        class="w-14 stroke-[0] h-auto text-ink-gray-4 pb-4"
       />
     </div>
     <svg
@@ -23,10 +23,10 @@
         stroke="#454545"
       />
     </svg>
-    <p class="text-base text-gray-600 font-medium">
+    <p class="text-base text-ink-gray-5 font-medium">
       {{ primaryMessage }}
     </p>
-    <p class="text-sm text-gray-600 mt-3">
+    <p class="text-sm text-ink-gray-5 mt-3">
       {{ secondaryMessage }}
     </p>
   </div>

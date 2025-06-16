@@ -5,7 +5,7 @@
   >
     <template #target="{ togglePopover }">
       <div class="flex items-stretch">
-        <span class="font-medium uppercase text-gray-600">
+        <span class="font-medium uppercase text-ink-gray-5">
           {{ label }}
         </span>
         <div class="relative w-full">
@@ -20,7 +20,7 @@
           />
           <Input
             type="text"
-            class="rounded-md text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:focus:bg-zinc-700"
+            class="rounded-md text-sm text-ink-gray-7 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:focus:bg-zinc-700"
             placeholder="Set Color"
             input-class="pl-8 pr-6"
             :value="value"
@@ -33,7 +33,7 @@
           />
           <div
             v-show="value"
-            class="absolute right-1 top-[3px] cursor-pointer p-1 text-gray-700 dark:text-zinc-300"
+            class="absolute right-1 top-[3px] cursor-pointer p-1 text-ink-gray-7 dark:text-zinc-300"
             @click="clearValue"
           >
             <svg

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!totalStorage.loading"
-    class="flex flex-col hover:bg-gray-100 rounded cursor-pointer mb-0.5"
+    class="flex flex-col hover:bg-surface-gray-2 rounded cursor-pointer mb-0.5"
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
@@ -12,11 +12,13 @@
         <LucideCloud class="w-4" />
       </template>
     </SidebarItem>
-    <div class="w-auto mx-2 bg-gray-300 rounded-full h-1 my-2">
+    <div class="w-auto mx-2 bg-surface-gray-4 rounded-full h-1 my-2">
       <div
         class="h-1 rounded-full"
         :class="
-          (100 * usedStorage) / storageMax > 100 ? 'bg-red-500' : 'bg-black'
+          (100 * usedStorage) / storageMax > 100
+            ? 'bg-surface-red-500'
+            : 'bg-surface-black'
         "
         :style="{
           width: calculatePercent,
@@ -25,7 +27,7 @@
       />
     </div>
     <span
-      class="mx-2 text-xs text-gray-600 transition-all duration-500 ease-in-out line-clamp-1"
+      class="mx-2 text-xs text-ink-gray-5 transition-all duration-500 ease-in-out line-clamp-1"
       :class="
         isExpanded
           ? 'ml-2 w-auto opacity-100 h-auto'

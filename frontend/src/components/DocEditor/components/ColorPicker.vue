@@ -20,7 +20,7 @@
     <template #body>
       <div
         ref="colorPicker"
-        class="rounded-lg bg-white p-3 shadow-lg dark:bg-zinc-900"
+        class="rounded-lg bg-surface-white p-3 shadow-lg dark:bg-zinc-900"
       >
         <div
           ref="colorMap"
@@ -94,7 +94,7 @@
             ></div>
             <svg
               v-if="isSupported"
-              class="text-gray-700 dark:text-zinc-300"
+              class="text-ink-gray-7 dark:text-zinc-300"
               @click="() => open()"
               xmlns="http://www.w3.org/2000/svg"
               width="16"

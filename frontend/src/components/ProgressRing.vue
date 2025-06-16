@@ -46,7 +46,7 @@ export default {
     },
     secondaryClass: {
       type: String,
-      default: "text-gray-200",
+      default: "text-ink-gray-1",
     },
   },
   computed: {

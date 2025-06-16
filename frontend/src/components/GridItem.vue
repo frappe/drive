@@ -37,10 +37,10 @@
   <div
     class="p-2 h-[35%] border-t border-gray-100 flex flex-col justify-evenly"
   >
-    <div class="truncate w-full w-fit text-base font-medium text-gray-800">
+    <div class="truncate w-full w-fit text-base font-medium text-ink-gray-8">
       {{ file.title }}
     </div>
-    <div class="mt-[5px] text-xs text-gray-600">
+    <div class="mt-[5px] text-xs text-ink-gray-5">
       <div class="flex items-center justify-start gap-1">
         <img
           v-if="

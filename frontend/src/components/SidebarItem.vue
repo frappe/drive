@@ -1,7 +1,7 @@
 <template>
   <button
-    class="flex h-7 w-full cursor-pointer items-center rounded text-gray-700 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-gray-400"
-    :class="isActive ? 'bg-white shadow-sm' : 'hover:bg-gray-100'"
+    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+    :class="isActive ? 'bg-surface-white shadow-sm' : 'hover:bg-surface-gray-2'"
     @click="handleClick"
   >
     <div
@@ -18,7 +18,7 @@
             <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
               <component
                 :is="icon"
-                class="size-4 text-gray-700"
+                class="size-4 text-ink-gray-7"
               />
             </span>
           </slot>

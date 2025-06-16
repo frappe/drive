@@ -7,12 +7,12 @@
       @after-leave="reset"
     >
       <template #body-content>
-        <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
+        <!-- <span class="text-sm italic font-medium leading-relaxed text-ink-gray-7">{{ `"${commentRootContent}"` }}</span> -->
         <!-- <span class="text-sm prose prose-xs overflow-auto" v-html="commentRootContent"></span> -->
-        <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-gray-700">Comment</span> -->
+        <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-ink-gray-7">Comment</span> -->
         <TiptapInput
           v-model="commentText"
-          class="border border-gray-300"
+          class="border border-outline-gray-2"
           :show-inline-button="false"
           @keyup.ctrl.enter="setComment(commentText)"
         />

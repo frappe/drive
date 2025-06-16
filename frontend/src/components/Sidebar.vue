@@ -1,7 +1,7 @@
 <template>
   <div
     :class="isExpanded ? 'w-[220px]' : 'w-[50px]'"
-    class="border-r bg-gray-50 relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out p-2"
+    class="border-r bg-surface-menu-bar relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out p-2"
   >
     <PrimaryDropDown :is-expanded="isExpanded" />
     <div
@@ -39,7 +39,7 @@
             v-if="isExpanded && notifCount.data > 0"
             class="flex items-center justify-start w-full duration-300 ease-in-out ml-2"
           >
-            <span class="text-sm text-gray-500 ease-in ml-auto">
+            <span class="text-xs text-ink-gray-4 ease-in ml-auto">
               {{ notifCount.data }}
             </span>
           </div>
@@ -66,7 +66,7 @@
         <template #icon>
           <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
             <ArrowLeftFromLine
-              class="stroke-[1.5] size-4 text-gray-700 duration-300 ease-in-out"
+              class="stroke-[1.5] size-4 text-ink-gray-7 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': !isExpanded }"
             />
           </span>

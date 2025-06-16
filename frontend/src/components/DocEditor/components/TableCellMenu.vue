@@ -74,7 +74,7 @@ const Selection = computed(() => {
     }"
   >
     <div
-      class="flex flex-row h-full leading-none gap-0.5 p-0.5 bg-white rounded shadow-sm border border-border"
+      class="flex flex-row h-full leading-none gap-0.5 p-0.5 bg-surface-white rounded shadow-sm border border-border"
     >
       <Button
         variant="ghost"

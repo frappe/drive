@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center mb-6">
-    <h1 class="font-semibold">
+    <h1 class="font-semibold text-ink-gray-9">
       {{ __("Tags") }}
     </h1>
     <Button
@@ -38,7 +38,7 @@
             stroke-width="3"
           />
         </svg>
-        <span class="text-sm text-gray-800">{{ tag.title }}</span>
+        <span class="text-sm text-ink-gray-8">{{ tag.title }}</span>
         <Dropdown
           class="ml-auto"
           placement="right"
@@ -76,8 +76,8 @@
       v-if="!$resources.getTagsWithOwner.data?.length"
       class="h-full w-full flex flex-col items-center justify-center my-auto"
     >
-      <LucideTag class="h-7 stroke-1 text-gray-600" />
-      <span class="text-gray-800 text-sm mt-2">No Tags</span>
+      <LucideTag class="h-7 stroke-1 text-ink-gray-5" />
+      <span class="text-ink-gray-8 text-sm mt-2">No Tags</span>
     </div>
   </div>
   <NewTagDialog

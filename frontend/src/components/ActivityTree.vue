@@ -7,7 +7,7 @@
       v-if="group.length && Object.keys(groupedActivityLog).length > 1"
       class="px-5 pb-2 gap-x-2"
     >
-      <span class="text-base text-gray-600 font-medium leading-6">
+      <span class="text-base text-ink-gray-5 font-medium leading-6">
         {{ __(i) }}
       </span>
       <div
@@ -21,8 +21,10 @@
           :label="activity.full_name"
         />
         <div class="flex flex-col items-start justify-center">
-          <span class="text-sm text-gray-900">{{ __(activity.message) }}</span>
-          <span class="text-xs text-gray-600 mb-3">{{
+          <span class="text-sm text-ink-gray-9">{{
+            __(activity.message)
+          }}</span>
+          <span class="text-xs text-ink-gray-5 mb-3">{{
             activity.creation
           }}</span>
 
@@ -35,7 +37,7 @@
                 :strike-through="true"
               />
 
-              <ArrowRight class="text-gray-500 h-4" />
+              <ArrowRight class="text-ink-gray-4 h-4" />
               <ActivityTreeItem
                 :activity="activity"
                 :entity="entity"

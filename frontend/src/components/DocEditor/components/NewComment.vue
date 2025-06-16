@@ -6,9 +6,9 @@
     @after-leave="reset"
   >
     <template #body-content>
-      <!-- <span class="text-sm italic font-medium leading-relaxed text-gray-700">{{ `"${commentRootContent}"` }}</span> -->
+      <!-- <span class="text-sm italic font-medium leading-relaxed text-ink-gray-7">{{ `"${commentRootContent}"` }}</span> -->
       <!-- <span class="text-sm prose prose-xs overflow-auto" v-html="commentRootContent"></span> -->
-      <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-gray-700">Comment</span> -->
+      <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-ink-gray-7">Comment</span> -->
       <textarea
         ref="input"
         v-model="commentText"

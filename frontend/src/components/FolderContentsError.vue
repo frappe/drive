@@ -3,13 +3,13 @@
     class="flex flex-col items-center h-screen p-6 text-center mt-[10%] w-full"
   >
     <div
-      class="bg-red-100 text-red-600 p-4 rounded-full flex items-center justify-center w-16 h-16"
+      class="bg-surface-red-2 text-ink-red-4 p-4 rounded-full flex items-center justify-center w-16 h-16"
     >
       <LucideAxe />
     </div>
-    <h1 class="text-3xl font-bold text-gray-800 mt-4">Uh oh!</h1>
+    <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">Uh oh!</h1>
     <p
-      class="text-lg text-gray-600 mt-2"
+      class="text-lg text-ink-gray-5 mt-2"
       v-html="error.messages?.join?.('\n') || error"
     />
     <div class="w-50 flex gap-10 my-8">

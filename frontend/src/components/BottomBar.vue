@@ -1,9 +1,9 @@
 <template>
-  <div class="border-r bg-gray-50 transition-all">
+  <div class="border-r bg-surface-menu-bar transition-all">
     <div
       ondragstart="return false;"
       ondrop="return false;"
-      class="grid grid-cols-6 h-14 items-center border-y border-gray-300 standalone:pb-4 px-1"
+      class="grid grid-cols-6 h-14 items-center border-y border-outline-gray-2 standalone:pb-4 px-1"
     >
       <router-link
         v-for="item in sidebarItems"
@@ -15,15 +15,15 @@
           class="flex flex-col items-center justify-center py-3 transition active:scale-95 rounded"
           :class="[
             item.highlight()
-              ? 'bg-white shadow-sm border-[0.5px] border-gray-300'
-              : ' hover:bg-gray-100',
+              ? 'bg-surface-white shadow-sm border-[0.5px] border-outline-gray-2'
+              : ' hover:bg-surface-gray-2',
           ]"
           :href="href"
           @click="navigate && $emit('toggleMobileSidebar')"
         >
           <component
             :is="item.icon"
-            class="stroke-1.5 self-center w-auto h-5.5 text-gray-800"
+            class="stroke-1.5 self-center w-auto h-5.5 text-ink-gray-8"
           />
         </a>
       </router-link>

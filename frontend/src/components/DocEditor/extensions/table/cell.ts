@@ -86,7 +86,7 @@ export const TableCell = Node.create<TableCellOptions>({
                   Decoration.widget(pos + 1, () => {
                     const rowSelected = isRowSelected(index)(selection)
                     let className =
-                      "grip-row absolute -left-5 top-[30%] bg-white border rounded-sm size-4 cursor-pointer z-10"
+                      "grip-row absolute -left-5 top-[30%] bg-surface-white border rounded-sm size-4 cursor-pointer z-10"
 
                     if (rowSelected) {
                       className += " selected"

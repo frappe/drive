@@ -10,11 +10,11 @@
       :initial-value="{ x: width - (i + 1) * 330, y: height - 500 }"
     >
       <div
-        class="w-[300px] bg-white/90 border border-gray-300 rounded-xl shadow-xl p-4 backdrop-blur-md z-30"
+        class="w-[300px] bg-surface-white/90 border border-outline-gray-2 rounded-xl shadow-xl p-4 backdrop-blur-md z-30"
       >
         <div class="cursor-move flex justify-between items-center mb-4">
           <div class="flex gap-2">
-            <h2 class="text-lg font-semibold">
+            <h2 class="text-lg font-semibold text-ink-gray-8">
               {{ entity.title }}
             </h2>
           </div>
@@ -27,9 +27,9 @@
             </template>
           </Button>
         </div>
-        <ul class="space-y-3 text-sm pb-2">
+        <ul class="space-y-3 text-sm pb-2 text-ink-gray-5">
           <li>
-            <span class="inline-block w-24 text-gray-600"
+            <span class="inline-block w-24 text-ink-gray-5"
               >{{ __("Owner") }}:
             </span>
             <span class="col-span-1"
@@ -38,33 +38,25 @@
           </li>
 
           <li>
-            <span class="inline-block w-24 text-gray-600"
-              >{{ __("Type") }}:</span
-            >
+            <span class="inline-block w-24">{{ __("Type") }}:</span>
             <span class="col-span-1">{{ entity.file_type }}</span>
           </li>
           <li v-if="entity.file_size">
-            <span class="inline-block w-24 text-gray-600"
-              >{{ __("Size") }}:</span
-            >
+            <span class="inline-block w-24">{{ __("Size") }}:</span>
             <span class="col-span-1">
               {{ entity.file_size_pretty }}{{ ` (${entity.file_size})` }}</span
             >
           </li>
           <li>
-            <span class="inline-block w-24 text-gray-600"
-              >{{ __("Modified") }}:</span
-            >
+            <span class="inline-block w-24">{{ __("Modified") }}:</span>
             <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
           </li>
           <li>
-            <span class="inline-block w-24 text-gray-600"
-              >{{ __("Added") }}:</span
-            >
+            <span class="inline-block w-24">{{ __("Added") }}:</span>
             <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
           </li>
           <!-- <li>
-            <span class="inline-block w-24 text-gray-600">Path:</span>
+            <span class="inline-block w-24">Path:</span>
             <span class="col-span-1">{{ entity.path }}</span>
           </li> -->
         </ul>
@@ -92,7 +84,7 @@
           class="space-y-3 text-sm py-2"
         >
           <li class="flex">
-            <span class="inline-block w-24 text-gray-600"
+            <span class="inline-block w-24 text-ink-gray-5"
               >{{ __("General") }}:</span
             >
             <div class="col-span-1 flex gap-2">
@@ -113,7 +105,7 @@
             </div>
           </li>
           <li>
-            <span class="inline-block w-24 text-gray-600"
+            <span class="inline-block w-24 text-ink-gray-5"
               >{{ __("Shared") }}:</span
             >
             <span class="col-span-1">

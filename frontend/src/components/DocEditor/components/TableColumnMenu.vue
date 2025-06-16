@@ -87,7 +87,7 @@ function onDeleteColumn() {
     }"
   >
     <div
-      class="min-w-32 flex flex-row h-full leading-none gap-0.5 p-0.5 bg-white rounded shadow-sm border"
+      class="min-w-32 flex flex-row h-full leading-none gap-0.5 p-0.5 bg-surface-white rounded shadow-sm border"
     >
       <Button
         title="Insert Row Left"

@@ -4,7 +4,7 @@
     :options="{ title: 'Open a file', size: '5xl' }"
   >
     <template #body>
-      <h3 class="text-2xl font-semibold leading-6 text-gray-900 px-6 pt-5">
+      <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9 px-6 pt-5">
         Open a file
       </h3>
       <div class="px-2 pt-2">
@@ -15,7 +15,7 @@
           >
             <button class="flex">
               <svg
-                class="size-4 m-auto text-gray-600"
+                class="size-4 m-auto text-ink-gray-5"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -47,7 +47,7 @@
 
           <span
             v-if="dropDownItems.length"
-            class="text-gray-600 mx-0.5"
+            class="text-ink-gray-5 mx-0.5"
           >
             {{ "/" }}
           </span>
@@ -57,7 +57,7 @@
           >
             <span
               v-if="breadcrumbs.length > 1 && index > 0"
-              class="text-gray-600 mx-0.5"
+              class="text-ink-gray-5 mx-0.5"
             >
               {{ "/" }}
             </span>
@@ -65,8 +65,8 @@
               class="text-base cursor-pointer"
               :class="
                 breadcrumbs.length - 1 === index
-                  ? 'text-gray-900 text-base font-medium p-1'
-                  : 'text-gray-600 text-base rounded-[6px] hover:bg-gray-100 p-1'
+                  ? 'text-ink-gray-9 text-base font-medium p-1'
+                  : 'text-ink-gray-5 text-base rounded-[6px] hover:bg-surface-gray-2 p-1'
               "
               @click="closeEntity(crumb.name)"
             >
@@ -97,7 +97,7 @@
                 </template>
                 Upload
               </Button>
-              <!-- <span class="text-gray-700 text-base mt-2" >Or drag a file here to upload</span> -->
+              <!-- <span class="text-ink-gray-7 text-base mt-2" >Or drag a file here to upload</span> -->
             </div>
             <NoFilesSection
               v-else-if="isEmpty"
@@ -113,7 +113,7 @@
                 <div class="flex py-1 justify-between">
                   <span
                     v-if="folders.length > 0"
-                    class="text-gray-600 font-medium text-base"
+                    class="text-ink-gray-5 font-medium text-base"
                   >
                     Folders
                   </span>
@@ -124,7 +124,9 @@
                     icon="arrow-up"
                     class="border"
                     :class="[
-                      $store.state.view === 'list' ? 'bg-white shadow' : '',
+                      $store.state.view === 'list'
+                        ? 'bg-surface-white shadow'
+                        : '',
                     ]"
                     @click="closeEntity()"
                   />
@@ -134,7 +136,7 @@
                     v-for="folder in folders"
                     :id="folder.name"
                     :key="folder.name"
-                    class="cursor-pointer p-2 w-40 h-26 rounded-lg border group select-none entity border-gray-200 hover:shadow-2xl"
+                    class="cursor-pointer p-2 w-40 h-26 rounded-lg border group select-none entity border-outline-gray-modals hover:shadow-2xl"
                     draggable="false"
                     @click="openEntity(folder)"
                     @dragenter.prevent
@@ -156,10 +158,10 @@
                       </svg>
                     </div>
                     <div class="content-center grid">
-                      <span class="truncate text-sm text-gray-800 mt-2">
+                      <span class="truncate text-sm text-ink-gray-8 mt-2">
                         {{ folder.title }}
                       </span>
-                      <p class="truncate text-xs text-gray-600 mt-0">
+                      <p class="truncate text-xs text-ink-gray-5 mt-0">
                         {{ folder.file_size }}
                         {{ !!folder.file_size ? "∙" : null }}
                         {{ folder.relativeModified }}
@@ -172,13 +174,13 @@
                 v-if="files.length > 0"
                 :class="folders.length > 0 ? 'mt-8' : 'mt-2'"
               >
-                <div class="text-gray-600 font-medium text-base">Files</div>
+                <div class="text-ink-gray-5 font-medium text-base">Files</div>
                 <div class="inline-flex flex-row flex-wrap gap-4 mt-0.5">
                   <div
                     v-for="file in files"
                     :id="file.name"
                     :key="file.name"
-                    class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer relative group border-gray-200 hover:shadow-2xl"
+                    class="w-40 h-40 rounded-lg border group select-none entity cursor-pointer relative group border-outline-gray-modals hover:shadow-2xl"
                     :draggable="false"
                     @click="openEntity(file)"
                     @dragenter.prevent

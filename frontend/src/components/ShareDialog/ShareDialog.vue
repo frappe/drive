@@ -68,7 +68,7 @@
           </div>
         </div>
         <!-- Members section -->
-        <div class="text-gray-600 font-medium text-base mb-2">Members</div>
+        <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
         <div class="flex gap-3">
           <div class="flex-grow">
             <Combobox
@@ -77,7 +77,7 @@
               multiple
             >
               <div
-                class="flex flex-col items-start justify-start rounded-md bg-gray-100"
+                class="flex flex-col items-start justify-start rounded-md bg-surface-gray-2"
               >
                 <div class="flex flex-wrap justify-between py-0.5 px-2 w-full">
                   <div class="w-[75%] flex flex-wrap">
@@ -237,13 +237,13 @@
                 <span class="font-medium text-base text-ink-gray-9">{{
                   user.full_name || user.user || user.email
                 }}</span>
-                <span class="text-gray-700 text-sm">{{
+                <span class="text-ink-gray-7 text-sm">{{
                   user.full_name ? user.user || user.email : ""
                 }}</span>
               </div>
               <span
                 v-if="user.user == $store.state.user.id"
-                class="ml-auto mr-1 text-gray-700"
+                class="ml-auto mr-1 text-ink-gray-7"
               >
                 <div
                   v-if="user.user === entity.owner"
@@ -255,7 +255,7 @@
               </span>
               <AccessButton
                 v-else-if="user.user !== entity.owner"
-                class="text-gray-700 relative flex-shrink-0 ml-auto"
+                class="text-ink-gray-7 relative flex-shrink-0 ml-auto"
                 :access-obj="user"
                 :access-levels="filteredAccess"
                 @update-access="
@@ -277,7 +277,7 @@
               />
               <span
                 v-else
-                class="ml-auto flex items-center gap-1 text-gray-600"
+                class="ml-auto flex items-center gap-1 text-ink-gray-5"
               >
                 Owner
                 <LucideDiamond class="size-3" />
@@ -289,7 +289,7 @@
           v-else
           class="flex min-h-[19.2vh] w-full"
         >
-          <LoadingIndicator class="w-7 h-auto text-gray-700 mx-auto" />
+          <LoadingIndicator class="w-7 h-auto text-ink-gray-7 mx-auto" />
         </div>
         <div class="w-full flex items-center justify-end gap-2">
           <Button

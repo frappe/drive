@@ -9,7 +9,7 @@
     class="flex items-center justify-center w-full h-full overflow-auto"
   >
     <pre
-      class="bg-gray-50 sm:w-full md:w-2/3 text-gray-800 text-sm border select-text p-3 font-mono overflow-x-auto overflow-y-auto"
+      class="bg-surface-menu-bar sm:w-full md:w-2/3 text-ink-gray-8 text-sm border select-text p-3 font-mono overflow-x-auto overflow-y-auto"
       >{{ blob }}</pre
     >
   </div>
