@@ -68,7 +68,6 @@
             :validate-file="validateFile"
             @success="
               (file) => {
-                console.log(file)
                 newImageUrl = file.file_url
               }
             "
