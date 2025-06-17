@@ -1,3 +1,20 @@
+@import url("../../assets/fonts/fonts.css");
+
+body {
+  --font-inter: "Inter", sans-serif;
+  --font-lora: "Lora", serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-merriweather: "Merriweather", serif;
+  --font-geist: "Geist Mono", monospace;
+  --font-ibm-plex: "IBM Plex Sans", sans-serif;
+  --font-eb-garamond: "EB Garamond", serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+  --font-comfortaa: "Comfortaa", cursive;
+  --font-caveat: "Caveat", cursive;
+  --font-nunito: "Nunito", sans-serif;
+  --font-comic-sans: "Comic Sans MS", sans-serif;
+}
+
 .prose-sm {
   min-width: 100%;
   font-size: 15px;
