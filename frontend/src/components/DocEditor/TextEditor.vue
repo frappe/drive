@@ -11,11 +11,11 @@
           }
         "
         placeholder="Start writing here..."
-        :bubble-menu="true"
+        :bubble-menu="bubbleMenuButtons"
       />
     </div>
   </div>
-  <DocMenuAndInfoBar
+  <!-- <DocMenuAndInfoBar
     v-if="editor && ready"
     ref="MenuBar"
     v-model:all-annotations="allAnnotations"
@@ -23,7 +23,7 @@
     :editor="editor"
     :versions="versions"
     :settings="settings"
-  />
+  /> -->
   <!-- <div
       :class="[
         settings.docFont,
@@ -127,6 +127,9 @@ import { DiffMarkExtension } from "./extensions/createDiffMark"
 import { printDoc } from "@/utils/files"
 import emitter from "@/emitter"
 import { onKeyDown } from "@vueuse/core"
+import H1 from "./icons/h-1.vue"
+import H2 from "./icons/h-2.vue"
+import H3 from "./icons/h-3.vue"
 
 const autosave = debounce(() => emit("saveDocument"), 1000)
 
@@ -156,6 +159,62 @@ const versions = reactive([])
 const selectedSnapshot = ref(null)
 const snapShotDialog = ref(false)
 
+const bubbleMenuButtons = [
+  "Paragraph",
+  [
+    {
+      text: "H1",
+      icon: H1,
+      action: (editor) =>
+        editor.chain().focus().toggleHeading({ level: 1 }).run(),
+      isActive: (editor) => editor.isActive("heading", { level: 1 }),
+    },
+    {
+      text: "H2",
+      icon: H2,
+      action: (editor) =>
+        editor.chain().focus().toggleHeading({ level: 2 }).run(),
+      isActive: (editor) => editor.isActive("heading", { level: 2 }),
+    },
+    {
+      text: "H3",
+      icon: H3,
+      action: (editor) =>
+        editor.chain().focus().toggleHeading({ level: 3 }).run(),
+      isActive: (editor) => editor.isActive("heading", { level: 3 }),
+    },
+  ],
+  "Separator",
+  "Bold",
+  "Italic",
+  "Strikethrough",
+  "FontColor",
+  "Link",
+  "Separator",
+  ["Bullet List", "Numbered List", "Task List"],
+  "Separator",
+  ["Align Left", "Align Center", "Align Right"],
+  "Separator",
+  "Image",
+  "Video",
+  "Blockquote",
+  "Code",
+  [
+    "InsertTable",
+    "AddColumnBefore",
+    "AddColumnAfter",
+    "DeleteColumn",
+    "AddRowBefore",
+    "AddRowAfter",
+    "DeleteRow",
+    "MergeCells",
+    "SplitCell",
+    "ToggleHeaderColumn",
+    "ToggleHeaderRow",
+    "ToggleHeaderCell",
+    "DeleteTable",
+  ],
+]
 // provide() {
 //   return {
 //     editor: computed(() => this.editor),
