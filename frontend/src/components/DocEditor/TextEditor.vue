@@ -10,6 +10,7 @@
             autosave()
           }
         "
+        :mentions="users"
         placeholder="Start writing here..."
         :bubble-menu="bubbleMenuButtons"
         :extensions="editorExtensions"

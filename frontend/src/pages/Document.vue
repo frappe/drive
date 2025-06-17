@@ -15,16 +15,11 @@
   <div class="flex w-full overflow-auto">
     <TextEditor
       v-if="contentLoaded"
-      v-model:yjs-content="yjsContent"
       v-model:raw-content="rawContent"
-      v-model:last-saved="lastSaved"
       v-model:settings="settings"
-      :user-list="allUsers.data || []"
-      :fixed-menu="true"
-      :bubble-menu="true"
+      :users="allUsers.data || []"
       :timeout="timeout"
       :is-writable="isWritable"
-      :entity-name="entityName"
       :entity="entity"
       @mentioned-users="(val) => (mentionedUsers = val)"
       @save-document="saveDocument"
