@@ -183,8 +183,6 @@ declare module 'vue' {
     LucideXLucideFolderOpenDot: typeof import('~icons/lucide/x-lucide-folder-open-dot')['default']
     Mention: typeof import('./src/components/DocEditor/icons/Mention.vue')['default']
     MentionList: typeof import('./src/components/DocEditor/components/MentionList.vue')['default']
-    Menu: typeof import('./src/components/DocEditor/components/Menu.vue')['default']
-    Menu2: typeof import('./src/components/DocEditor/components/Menu2.vue')['default']
     MenuBar: typeof import('./src/components/DocEditor/components/MenuBar.vue')['default']
     MessageCircleOff: typeof import('./src/components/message-circle-off.vue')['default']
     MobileSidebar: typeof import('./src/components/MobileSidebar.vue')['default']
