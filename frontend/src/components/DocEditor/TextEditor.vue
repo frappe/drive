@@ -12,6 +12,7 @@
         "
         placeholder="Start writing here..."
         :bubble-menu="bubbleMenuButtons"
+        :extensions="editorExtensions"
       />
     </div>
   </div>
@@ -159,6 +160,12 @@ const versions = reactive([])
 const selectedSnapshot = ref(null)
 const snapShotDialog = ref(false)
 
+const editorExtensions = [
+  FontFamily.configure({
+    types: ["textStyle"],
+  }),
+]
+
 const bubbleMenuButtons = [
   "Paragraph",
   [
@@ -187,9 +194,89 @@ const bubbleMenuButtons = [
   "Separator",
   "Bold",
   "Italic",
-  "Strikethrough",
-  "FontColor",
   "Link",
+  "Strikethrough",
+  "Separator",
+  [
+    {
+      label: "Sans",
+      class: "font-sans",
+      action: (editor) =>
+        editor.chain().focus().setFontFamily("var(--font-sans)").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "var(--sans)",
+        }),
+    },
+    {
+      label: "Serif",
+      class: "font-serif",
+      action: (editor) =>
+        editor.chain().focus().setFontFamily("var(--font-serif)").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "var(--serif)",
+        }),
+    },
+    {
+      label: "Mono",
+      class: "font-mono",
+      action: (editor) =>
+        editor.chain().focus().setFontFamily("var(--font-mono)").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "var(--mono)",
+        }),
+    },
+    {
+      label: "Nunito",
+      class: "font-round",
+      action: (editor) =>
+        editor.chain().focus().setFontFamily("var(--font-round)").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "var(--round)",
+        }),
+    },
+    {
+      label: "Cursive",
+      class: "font-[cursive]",
+      action: (editor) => editor.chain().focus().setFontFamily("cursive").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "cursive",
+        }),
+    },
+    {
+      label: "Fantasy",
+      class: "font-[fantasy]",
+      action: (editor) => editor.chain().focus().setFontFamily("fantasy").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "fantasy",
+        }),
+    },
+    {
+      label: "Math",
+      class: "font-[math]",
+      action: (editor) => editor.chain().focus().setFontFamily("cursive").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "cursive",
+        }),
+    },
+    {
+      label: "Comic Sans",
+      class: "font-['Comic_Sans_MS']",
+      action: (editor) =>
+        editor.chain().focus().setFontFamily("Comic Sans MS").run(),
+      isActive: (editor) =>
+        editor.isActive("textStyle", {
+          fontFamily: "Comic Sans MS",
+        }),
+    },
+  ],
+  "FontColor",
   "Separator",
   ["Bullet List", "Numbered List", "Task List"],
   "Separator",

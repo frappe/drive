@@ -15,10 +15,10 @@ export default {
   },
   theme: {
     fontFamily: {
-      "fd-sans": ["InterVar", "sans-serif"],
-      "fd-serif": ["Lora", "serif"],
-      "fd-mono": ["Geist Mono", "serif"],
-      "fd-round": ["Nunito", "serif"],
+      sans: ["InterVar", "sans-serif"],
+      serif: ["Lora", "serif"],
+      mono: ["Geist Mono", "serif"],
+      round: ["Nunito", "serif"],
     },
     extend: {
       typography: (theme) => ({
