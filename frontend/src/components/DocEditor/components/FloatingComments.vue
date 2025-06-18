@@ -1,9 +1,14 @@
 <template>
-  <div class="max-w-[35%] border-s-2 py-4 px-6">
+  <div
+    ref="comments-section"
+    class="border-s-2 py-4 px-12 flex flex-col gap-8 justify-start max-h-full overflow-auto"
+  >
     <div
       v-for="comment in formattedComments"
       :key="comment.name"
-      class="rounded border w-52 my-auto comment-group"
+      :id="'comment-' + comment.name"
+      @click="activeComment = comment.name"
+      class="rounded border w-52 comment-group shadow-sm"
       :class="activeComment === comment.name && 'border-yellow-300 shadow-2xl'"
     >
       <div
@@ -135,8 +140,11 @@
               <Button
                 variant="ghost"
                 @click="newReply(comment)"
-                ><LucideCheck class="size-3"
-              /></Button>
+              >
+                <template #icon>
+                  <LucideCheck class="size-3.5" />
+                </template>
+              </Button>
             </div>
           </template>
         </TextEditor>
@@ -145,13 +153,23 @@
   </div>
 </template>
 <script setup>
-import { useTemplateRef, computed, reactive } from "vue"
+import { useTemplateRef, computed, reactive, watch } from "vue"
 import { allUsers } from "@/resources/permissions"
 import { Avatar, Button, TextEditor } from "frappe-ui"
-// const commentsSection = useTemplateRef("comments")
+const commentsSection = useTemplateRef("comments-section")
 
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
+watch(activeComment, (val) => {
+  if (val) {
+    let el = commentsSection.value.querySelector("#comment-" + val)
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    })
+  }
+})
 
 const formattedComments = computed(() => {
   return comments.value.map((comment) => {
