@@ -735,6 +735,11 @@
   resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.36.0.tgz"
   integrity sha512-JQ1Jk5G4bGrD4pWJQzWsD8I1n1mgPXq33+/vP4sk8j/z/C2siRuxZtaUA7yMTf71TCZTZl/4e1bfzwUmFb3+rw==
 
+"@sereneinserenade/tiptap-comment-extension@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@sereneinserenade/tiptap-comment-extension/-/tiptap-comment-extension-0.1.2.tgz"
+  integrity sha512-ExUgTIakb0vRGzOY1ucs8FQd2FvNIW59faYsuL1V45evYeVbwT0pGc1U/AaoXp6a+advkUGQy04ThURH7heOPA==
+
 "@socket.io/component-emitter@~3.1.0":
   version "3.1.2"
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz"
@@ -817,7 +822,7 @@
   dependencies:
     "@tanstack/virtual-core" "3.13.4"
 
-"@tiptap/core@^2.11.7", "@tiptap/core@^2.6.4", "@tiptap/core@^2.6.6", "@tiptap/core@^2.7.0", "@tiptap/core@^2.7.0-pre.0":
+"@tiptap/core@^2.1.7", "@tiptap/core@^2.11.7", "@tiptap/core@^2.6.4", "@tiptap/core@^2.6.6", "@tiptap/core@^2.7.0", "@tiptap/core@^2.7.0-pre.0", "@tiptap/core@^2.x.x":
   version "2.12.0"
   resolved "https://registry.npmjs.org/@tiptap/core/-/core-2.12.0.tgz"
   integrity sha512-3qX8oGVKFFZzQ0vit+ZolR6AJIATBzmEmjAA0llFhWk4vf3v64p1YcXcJsOBsr5scizJu5L6RYWEFatFwqckRg==
@@ -1028,7 +1033,7 @@
   resolved "https://registry.npmjs.org/@tiptap/extension-typography/-/extension-typography-2.11.5.tgz"
   integrity sha512-K+mwkyyH3bhnw8f6dKt0AIIh7ipPPVTY5XiWxm1ZMnS6p7TkXeqSJRU6mT1a47YLX4IGBEMlTQdvDVvJ1hwTjA==
 
-"@tiptap/pm@^2.0.3", "@tiptap/pm@^2.6.4", "@tiptap/pm@^2.6.6", "@tiptap/pm@^2.7.0", "@tiptap/pm@^2.7.0-pre.0":
+"@tiptap/pm@^2.0.3", "@tiptap/pm@^2.1.7", "@tiptap/pm@^2.6.4", "@tiptap/pm@^2.6.6", "@tiptap/pm@^2.7.0", "@tiptap/pm@^2.7.0-pre.0", "@tiptap/pm@^2.x.x":
   version "2.11.5"
   resolved "https://registry.npmjs.org/@tiptap/pm/-/pm-2.11.5.tgz"
   integrity sha512-z9JFtqc5ZOsdQLd9vRnXfTCQ8v5ADAfRt9Nm7SqP6FUHII8E1hs38ACzf5xursmth/VonJYb5+73Pqxk1hGIPw==
@@ -3197,12 +3202,14 @@ frappe-ui@0.1.135:
     "@hocuspocus/transformer" "^2.13.5"
     "@tiptap/core" "^2.7.0"
     "@tiptap/extension-code-block" "2.7.0"
+    "@tiptap/extension-font-family" "^2.14.0"
     "@tiptap/extension-link" "2.6.6"
     "@tiptap/extension-table" "2.6.6"
     "@tiptap/extension-table-header" "2.6.6"
     "@tiptap/extension-table-row" "2.6.6"
     "@tiptap/extension-task-item" "2.6.6"
     "@tiptap/extension-task-list" "2.6.6"
+    "@tiptap/extension-text-style" "^2.14.0"
     "@tiptap/pm" "^2.7.0"
     "@tiptap/starter-kit" "2.6.6"
     "@tiptap/suggestion" "2.6.6"
@@ -3232,6 +3239,7 @@ frappe-ui@0.1.135:
     mitt "^3.0.0"
     sass "^1.62.0"
     socket.io-client "^4.7.5"
+    tiptap-annotation-magic "^2.0.0"
     uuid "^9.0.0"
     veaury "^2.5.1"
     vue "^3.5.14"
@@ -6147,6 +6155,14 @@ tippy.js@^6.3.7:
   integrity sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==
   dependencies:
     "@popperjs/core" "^2.9.0"
+
+tiptap-annotation-magic@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/tiptap-annotation-magic/-/tiptap-annotation-magic-2.0.0.tgz"
+  integrity sha512-ITkdwfqV95oTkmLjynxwOveZp4uVdYSfDeCmOcIUfWdj8UW+9UIjTw/m7tsmiAuNX5+elXZfX+54ZoziJtccqQ==
+  dependencies:
+    "@tiptap/core" "^2.1.7"
+    "@tiptap/pm" "^2.1.7"
 
 tmp@^0.0.33:
   version "0.0.33"

@@ -150,7 +150,7 @@ def get_entity_with_permissions(entity_name):
         frappe.db.get_value(
             "Drive Document",
             entity.document,
-            ["content", "raw_content", "settings", "version"],
+            ["content", "raw_content", "settings", "version", "comments"],
             as_dict=1,
         )
         or {}

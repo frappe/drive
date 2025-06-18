@@ -68,6 +68,18 @@ body {
   border-color: #e2e2e2;
 }
 
+span[data-annotation-id],
+span[data-comment-id] {
+  border-bottom: 2px dashed #facc15;
+  user-select: text;
+  cursor: pointer;
+}
+
+span[data-annotation-id]:hover,
+span[data-comment-id]:hover {
+  background: rgba(250, 204, 21, 0.4);
+}
+
 @media only screen and (max-width: 640px) {
   .prose-sm {
     display: block;

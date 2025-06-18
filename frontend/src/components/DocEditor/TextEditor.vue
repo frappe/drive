@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-col w-full overflow-y-auto">
-    <div class="w-[80%] mx-auto">
+  <div class="flex w-full">
+    <div class="w-[60%] mx-auto overflow-y-auto">
       <FTextEditor
         editor-class="prose-sm min-h-[4rem] p-2"
         :content="rawContent"
@@ -16,7 +16,12 @@
         :extensions="editorExtensions"
       />
     </div>
+    <FloatingComments
+      v-model:active-comment="activeComment"
+      v-model:comments="comments"
+    />
   </div>
+
   <!-- <DocMenuAndInfoBar
     v-if="editor && ready"
     ref="MenuBar"
@@ -112,6 +117,8 @@ import { Collaboration } from "./extensions/collaboration"
 import { CollaborationCursor } from "./extensions/collaborationCursor"
 import { Color } from "./extensions/color"
 import { FontFamily } from "./extensions/font-family"
+import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
+
 import { FontSize } from "./extensions/font-size"
 import { Indent } from "./extensions/indent"
 import { LineHeight } from "./extensions/lineHeight"
@@ -126,15 +133,25 @@ import suggestion from "./extensions/suggestion/suggestion"
 import Commands from "./extensions/suggestion/suggestionExtension"
 import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
 import { DiffMarkExtension } from "./extensions/createDiffMark"
+import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc } from "@/utils/files"
 import emitter from "@/emitter"
 import { onKeyDown } from "@vueuse/core"
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
+import { LucideMessageCircle } from "lucide-vue-next"
 
 const autosave = debounce(() => emit("saveDocument"), 1000)
-
+const comments = ref([
+  {
+    name: "3fdac807-7509-4fe8-b830-71422e1e2eb6",
+    owner: "safwan@frappe.io",
+    content: "fly to, your city, excited, to see your face",
+    created_on: "2:01 PM",
+    replies: [],
+  },
+])
 const props = defineProps({
   settings: Object,
   entity: Object,
@@ -155,7 +172,7 @@ const localStore = ref(null)
 const implicitTitle = ref(null)
 const allComments = reactive([])
 const allAnnotations = reactive([])
-const activeAnnotation = ref("")
+const activeComment = ref(null)
 
 const versions = reactive([])
 const selectedSnapshot = ref(null)
@@ -164,6 +181,14 @@ const snapShotDialog = ref(false)
 const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
+  }),
+  CommentExtension.configure({
+    HTMLAttributes: {
+      class: "",
+    },
+    onCommentActivated: (id) => {
+      if (id) setTimeout(() => (activeComment.value = id), 100)
+    },
   }),
 ]
 
@@ -335,6 +360,12 @@ const bubbleMenuButtons = [
   "Separator",
   ["Align Left", "Align Center", "Align Right"],
   "Separator",
+  {
+    label: "Comment",
+    icon: LucideMessageCircle,
+    action: (editor) => editor.chain().focus().setComment(uuidv4()).run(),
+    isActive: () => false,
+  },
   "Image",
   "Video",
   "Blockquote",
@@ -905,13 +936,6 @@ function evalImplicitTitle() {
 
 <style>
 @import url("./editor.css");
-
-span[data-annotation-id] {
-  background: rgba(255, 215, 0, 0.15);
-  border-bottom: 2px solid rgb(255, 210, 0);
-  user-select: text;
-  padding: 2px;
-}
 
 .collaboration-cursor__caret {
   border-left: 0px solid currentColor;
