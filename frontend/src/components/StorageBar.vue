@@ -44,7 +44,7 @@ import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
 import { useRoute } from "vue-router"
-import { LucideCloud } from "lucide-vue-next"
+import LucideCloud from "~icons/lucide/cloud"
 
 const emitter = inject("emitter")
 

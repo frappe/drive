@@ -31,14 +31,12 @@
   </div>
 </template>
 <script>
-import {
-  LucideBuilding2,
-  LucideClock,
-  LucideHome,
-  LucideStar,
-  LucideTrash,
-  LucideUsers,
-} from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideClock from "~icons/lucide/clock"
+import LucideHome from "~icons/lucide/home"
+import LucideStar from "~icons/lucide/star"
+import LucideTrash from "~icons/lucide/trash"
+import LucideUsers from "~icons/lucide/users"
 
 export default {
   name: "Sidebar",

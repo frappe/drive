@@ -154,8 +154,9 @@ import { Badge, Tooltip } from "frappe-ui"
 import { getInvites, rejectInvite, acceptInvite } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
-import { LucideFolderOpenDot, LucidePlaneTakeoff } from "lucide-vue-next"
 import { computed } from "vue"
+import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
+import LucidePlaneTakeoff from "~icons/lucide/plane-takeoff"
 
 const store = useStore()
 const email = computed(() => store.state.user.id)

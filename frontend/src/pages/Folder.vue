@@ -15,7 +15,7 @@ import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
 import { setBreadCrumbs, prettyData, setCache } from "@/utils/files"
 import router from "@/router"
-import { LucideFolderClosed } from "lucide-vue-next"
+import LucideFolderClosed from "~icons/lucide/folder-closed"
 
 const store = useStore()
 const realtime = inject("realtime")

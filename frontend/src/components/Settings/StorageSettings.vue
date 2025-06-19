@@ -125,7 +125,7 @@ import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createResource } from "frappe-ui"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
-import { LucideCloud } from "lucide-vue-next"
+import LucideCloud from "~icons/lucide/cloud"
 
 const hoveredRow = ref(null)
 const showFileStorage = ref(true)

@@ -40,7 +40,7 @@
             :variant="'ghost'"
             @click="enterFullScreen"
           >
-            <Scan class="w-4" />
+            <LucideScan class="w-4" />
           </Button>
           <Button
             :disabled="!nextEntity?.name"
@@ -70,7 +70,7 @@ import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
-import { Scan } from "lucide-vue-next"
+import LucideScan from "~icons/lucide/scan"
 import { onKeyStroke } from "@vueuse/core"
 import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
 import FolderContentsError from "@/components/FolderContentsError.vue"

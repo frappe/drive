@@ -9,5 +9,5 @@
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getTrash } from "@/resources/files"
-import { LucideTrash } from "lucide-vue-next"
+import LucideTrash from "~icons/lucide/trash"
 </script>

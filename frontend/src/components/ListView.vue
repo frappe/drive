@@ -95,7 +95,9 @@ import { formatDate } from "@/utils/format"
 
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
-import { LucideBuilding2, LucideUsers, LucideGlobe2 } from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideUsers from "~icons/lucide/users"
+import LucideGlobe2 from "~icons/lucide/globe-2"
 
 const store = useStore()
 const route = useRoute()

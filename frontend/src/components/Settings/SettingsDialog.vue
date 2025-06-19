@@ -61,12 +61,10 @@ import { Dialog, Button } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
-import {
-  LucideCloudCog,
-  LucideTag,
-  LucideUser,
-  LucideUserPlus,
-} from "lucide-vue-next"
+import LucideCloudCog from "~icons/lucide/cloud-cog"
+import LucideTag from "~icons/lucide/tag"
+import LucideUser from "~icons/lucide/user"
+import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
 
 let tabs = [

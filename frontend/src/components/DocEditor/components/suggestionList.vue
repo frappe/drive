@@ -47,7 +47,8 @@
 </template>
 
 <script>
-import { Minus } from "lucide-vue-next"
+import Minus from "~icons/lucide/minus"
+
 export default {
   components: {
     Minus,

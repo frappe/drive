@@ -239,13 +239,11 @@ import { move, allFolders } from "@/resources/files"
 
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import {
-  LucideBuilding2,
-  LucideChevronDown,
-  LucideFolder,
-  LucideHome,
-  LucideMoveUpRight,
-} from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideChevronDown from "~icons/lucide/chevron-down"
+import LucideFolder from "~icons/lucide/folder"
+import LucideHome from "~icons/lucide/home"
+import LucideMoveUpRight from "~icons/lucide/move-up-right"
 
 const route = useRoute()
 const currentFolder = ref("")

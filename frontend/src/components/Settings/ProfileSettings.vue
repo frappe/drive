@@ -58,7 +58,7 @@
 
             <Button @click="newImageUrl = null">
               <template #icon>
-                <X class="stroke-1 h-4" />
+                <LucideX class="stroke-1 h-4" />
               </template>
             </Button>
           </div>
@@ -124,7 +124,9 @@ import {
   Autocomplete,
   createDocumentResource,
 } from "frappe-ui"
-import { LucideLink, X } from "lucide-vue-next"
+import LucideLink from "~icons/lucide/link"
+import LucideX from "~icons/lucide/x"
+
 import { useStore } from "vuex"
 import { ref, computed, watch } from "vue"
 import { getTeams } from "@/resources/files"

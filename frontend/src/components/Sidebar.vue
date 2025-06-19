@@ -86,18 +86,15 @@ import { getTeams } from "@/resources/files"
 import { computed } from "vue"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
-
-import {
-  ArrowLeftFromLine,
-  LucideBuilding2,
-  LucideClock,
-  LucideUsers,
-  LucideTrash,
-  LucideHome,
-  LucideStar,
-  LucideCommand,
-  LucideInbox,
-} from "lucide-vue-next"
+import LucideClock from "~icons/lucide/clock"
+import ArrowLeftFromLine from "~icons/lucide/arrow-left-from-line"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideUsers from "~icons/lucide/users"
+import LucideTrash from "~icons/lucide/trash"
+import LucideHome from "~icons/lucide/home"
+import LucideStar from "~icons/lucide/star"
+import LucideCommand from "~icons/lucide/command"
+import LucideInbox from "~icons/lucide/inbox"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()

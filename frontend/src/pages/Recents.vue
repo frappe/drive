@@ -12,7 +12,7 @@
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getRecents } from "@/resources/files"
-import { LucideClock } from "lucide-vue-next"
+import LucideClock from "~icons/lucide/clock"
 
 function groupByTime(entities) {
   const today = new Date()

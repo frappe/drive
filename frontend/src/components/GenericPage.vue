@@ -89,20 +89,6 @@ import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import {
-  LucideClock,
-  LucideDownload,
-  LucideExternalLink,
-  LucideEye,
-  LucideInfo,
-  LucideLink2,
-  LucideMoveUpRight,
-  LucideRotateCcw,
-  LucideShare2,
-  LucideSquarePen,
-  LucideStar,
-  LucideTrash,
-} from "lucide-vue-next"
 import FileUploader from "@/components/FileUploader.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
@@ -112,6 +98,19 @@ import { toast } from "@/utils/toasts"
 import { move, allFolders } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
+
+import LucideClock from "~icons/lucide/clock"
+import LucideDownload from "~icons/lucide/download"
+import LucideExternalLink from "~icons/lucide/external-link"
+import LucideEye from "~icons/lucide/eye"
+import LucideInfo from "~icons/lucide/info"
+import LucideLink2 from "~icons/lucide/link-2"
+import LucideMoveUpRight from "~icons/lucide/move-up-right"
+import LucideRotateCcw from "~icons/lucide/rotate-ccw"
+import LucideShare2 from "~icons/lucide/share-2"
+import LucideSquarePen from "~icons/lucide/square-pen"
+import LucideStar from "~icons/lucide/star"
+import LucideTrash from "~icons/lucide/trash"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },

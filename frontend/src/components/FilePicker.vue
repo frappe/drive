@@ -214,14 +214,12 @@ import GridItem from "./GridItem.vue"
 import { watch, defineEmits, computed, h, ref } from "vue"
 import { useTimeAgo } from "@vueuse/core"
 import { createResource, Dialog, Button, Tabs, Dropdown } from "frappe-ui"
-import {
-  LucideClock,
-  LucideHome,
-  LucidePlus,
-  LucideStar,
-  LucideUsers,
-  Upload,
-} from "lucide-vue-next"
+import LucideClock from "~icons/lucide/clock"
+import LucideHome from "~icons/lucide/home"
+import LucidePlus from "~icons/lucide/plus"
+import LucideStar from "~icons/lucide/star"
+import LucideUsers from "~icons/lucide/users"
+import Upload from "~icons/lucide/upload"
 
 import { formatSize, formatDate } from "@/utils/format"
 import { useStore } from "vuex"

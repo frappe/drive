@@ -157,10 +157,13 @@
 <script setup>
 import { Dialog, Avatar, createResource } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
-import { LucideFilePlus2, LucideFolderPlus, LucideStar } from "lucide-vue-next"
 import { openEntity } from "../utils/files"
 import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
+
+import LucideFilePlus2 from "~icons/lucide/file-plus-2"
+import LucideFolderPlus from "~icons/lucide/folder-plus"
+import LucideStar from "~icons/lucide/star"
 
 const emit = defineEmits(["openEntity", "update:open"])
 const search = ref("")

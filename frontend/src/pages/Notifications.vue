@@ -71,7 +71,7 @@ import { createResource, Avatar, ListView } from "frappe-ui"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
 import emitter from "@/emitter"
-import { LucideInbox } from "lucide-vue-next"
+import LucideInbox from "~icons/lucide/inbox"
 
 const store = useStore()
 const onlyUnread = ref(true)

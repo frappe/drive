@@ -72,7 +72,8 @@
 </template>
 <script>
 import { Popover } from "frappe-ui"
-import { Edit2, Unlink2 } from "lucide-vue-next"
+import Edit2 from "~icons/lucide/edit-2"
+import Unlink2 from "~icons/lucide/unlink-2"
 
 export default {
   name: "TipTapMenu",

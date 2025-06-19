@@ -343,13 +343,12 @@ import {
   allUsers,
 } from "@/resources/permissions"
 
-import {
-  LucideBuilding2,
-  LucideCheck,
-  LucideDiamond,
-  LucideLock,
-  LucideGlobe2,
-} from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideCheck from "~icons/lucide/check"
+import LucideDiamond from "~icons/lucide/diamond"
+import LucideLock from "~icons/lucide/lock"
+import LucideGlobe2 from "~icons/lucide/globe-2"
+
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })

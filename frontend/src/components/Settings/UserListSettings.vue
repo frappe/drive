@@ -247,7 +247,9 @@ import { allUsers } from "@/resources/permissions"
 import { ref, computed } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
-import { LucideMail, LucideUsers } from "lucide-vue-next"
+import LucideMail from "~icons/lucide/mail"
+import LucideUsers from "~icons/lucide/users"
+
 const route = useRoute()
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")

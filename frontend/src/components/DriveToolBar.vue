@@ -236,7 +236,8 @@ import { ref, computed, watch, useTemplateRef } from "vue"
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
-import { LucideLayoutGrid, LucideLayoutList } from "lucide-vue-next"
+import LucideLayoutGrid from "~icons/lucide/layout-grid"
+import LucideLayoutList from "~icons/lucide/layout-list"
 
 const rows = defineModel(Array)
 const props = defineProps({

@@ -73,13 +73,12 @@ import { ref, computed, watch, markRaw, onMounted } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import AppSwitcher from "./AppSwitcher.vue"
-import {
-  LucideBook,
-  LucideBadgeHelp,
-  LucideChevronDown,
-  LucideChevronUp,
-  LucideMoon,
-} from "lucide-vue-next"
+
+import LucideBook from "~icons/lucide/book"
+import LucideBadgeHelp from "~icons/lucide/badge-help"
+import LucideChevronDown from "~icons/lucide/chevron-down"
+import LucideChevronUp from "~icons/lucide/chevron-up"
+import LucideMoon from "~icons/lucide/moon"
 
 const router = useRouter()
 const route = useRoute()

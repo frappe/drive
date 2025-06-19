@@ -12,8 +12,7 @@ import GenericPage from "@/components/GenericPage.vue"
 import { computed, watch } from "vue"
 import { useStore } from "vuex"
 import { getShared } from "@/resources/files"
-
-import { LucideUsers } from "lucide-vue-next"
+import LucideUsers from "~icons/lucide/users"
 
 const store = useStore()
 const shareView = computed(() => store.state.shareView)

@@ -12,7 +12,7 @@ import GenericPage from "@/components/GenericPage.vue"
 import { getHome, getTeams } from "@/resources/files"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
-import { LucideBuilding2 } from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
 
 const store = useStore()
 store.commit("setCurrentFolder", { name: "" })

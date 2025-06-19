@@ -126,24 +126,22 @@ import {
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
 
-import {
-  LucideClock,
-  LucideHome,
-  LucideTrash,
-  LucideUsers,
-  LucideBuilding2,
-  LucideStar,
-  LucideShare2,
-  LucideDownload,
-  LucideLink,
-  LucideMoveUpRight,
-  LucideSquarePen,
-  LucideInfo,
-  LucideFileUp,
-  LucideFolderUp,
-  LucideFilePlus2,
-  LucideFolderPlus,
-} from "lucide-vue-next"
+import LucideClock from "~icons/lucide/clock"
+import LucideHome from "~icons/lucide/home"
+import LucideTrash from "~icons/lucide/trash"
+import LucideUsers from "~icons/lucide/users"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideStar from "~icons/lucide/star"
+import LucideShare2 from "~icons/lucide/share-2"
+import LucideDownload from "~icons/lucide/download"
+import LucideLink from "~icons/lucide/link"
+import LucideMoveUpRight from "~icons/lucide/move-up-right"
+import LucideSquarePen from "~icons/lucide/square-pen"
+import LucideInfo from "~icons/lucide/info"
+import LucideFileUp from "~icons/lucide/file-up"
+import LucideFolderUp from "~icons/lucide/folder-up"
+import LucideFilePlus2 from "~icons/lucide/file-plus-2"
+import LucideFolderPlus from "~icons/lucide/folder-plus"
 
 const COMPONENT_MAP = {
   Home: LucideHome,

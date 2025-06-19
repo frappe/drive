@@ -9,8 +9,8 @@
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getPersonal } from "@/resources/files"
-import { LucideHome } from "lucide-vue-next"
 import { useStore } from "vuex"
+import LucideHome from "~icons/lucide/home"
 
 const store = useStore()
 store.commit("setCurrentFolder", { name: "" })

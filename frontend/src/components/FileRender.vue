@@ -31,7 +31,7 @@ import VideoPreview from "./FileTypePreview/VideoPreview.vue"
 import TextPreview from "./FileTypePreview/TextPreview.vue"
 import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue"
 import { computed } from "vue"
-import { LucideAlertCircle } from "lucide-vue-next"
+import LucideAlertCircle from "~icons/lucide/alert-circle"
 
 const props = defineProps({
   previewEntity: {
