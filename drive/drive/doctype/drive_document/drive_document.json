@@ -10,10 +10,11 @@
   "field_order": [
     "content",
     "settings",
-    "comments",
+    "comments2",
     "raw_content",
     "mentions",
-    "version"
+    "version",
+    "comments"
   ],
   "fields": [
     {
@@ -30,8 +31,9 @@
     },
     {
       "fieldname": "comments",
-      "fieldtype": "JSON",
-      "label": "Comments"
+      "fieldtype": "Table",
+      "label": "Comments",
+      "options": "Drive Comment"
     },
     {
       "fieldname": "raw_content",
@@ -47,10 +49,16 @@
       "fieldname": "version",
       "fieldtype": "Int",
       "label": "Version"
+    },
+    {
+      "fieldname": "comments2",
+      "fieldtype": "JSON",
+      "label": "Comments"
     }
   ],
+  "grid_page_length": 50,
   "links": [],
-  "modified": "2025-03-10 13:14:26.531471",
+  "modified": "2025-06-19 15:53:09.179450",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
@@ -75,6 +83,7 @@
       "write": 1
     }
   ],
+  "row_format": "Dynamic",
   "sort_field": "modified",
   "sort_order": "DESC",
   "states": []

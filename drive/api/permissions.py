@@ -146,16 +146,31 @@ def get_entity_with_permissions(entity_name):
         | breadcrumbs
         | {"is_favourite": favourite, "file_type": file_type}
     )
-    entity_doc_content = (
-        frappe.db.get_value(
-            "Drive Document",
-            entity.document,
-            ["content", "raw_content", "settings", "version", "comments"],
-            as_dict=1,
+    if entity.document:
+        entity_doc_content = (
+            frappe.db.get_value(
+                "Drive Document",
+                entity.document,
+                ["content", "raw_content", "settings", "version"],
+                as_dict=1,
+            )
+            or {}
         )
-        or {}
-    )
-    return return_obj | entity_doc_content
+        comments = frappe.get_list(
+            "Drive Comment",
+            filters={"parenttype": "Drive Document", "parent": entity.document},
+            fields=["content", "owner", "creation", "name"],
+        )
+        print(comments)
+        for k in comments:
+            k["replies"] = frappe.get_list(
+                "Drive Comment",
+                filters={"parenttype": "Drive Comment", "parent": k["name"]},
+                fields=["content", "owner", "creation", "name"],
+            )
+
+        return_obj |= entity_doc_content | {"comments": comments}
+    return return_obj
 
 
 @frappe.whitelist()

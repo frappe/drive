@@ -144,22 +144,6 @@ import { LucideMessageCircle } from "lucide-vue-next"
 import store from "../../store"
 
 const autosave = debounce(() => emit("saveDocument"), 1000)
-const comments = ref([
-  {
-    name: "3fdac807-7509-4fe8-b830-71422e1e2eb6",
-    owner: "safwan@frappe.io",
-    content: `fly to, your city, excited, to see your face.`,
-    created_on: new Date(),
-    replies: [],
-  },
-  {
-    name: "3c566683-6546-466e-8268-52199bc437c1",
-    owner: "four@frappe.io",
-    content: "give me your tired, huddled, masses; yearning to breathe free",
-    created_on: new Date(),
-    replies: [],
-  },
-])
 
 const props = defineProps({
   settings: Object,
@@ -168,6 +152,7 @@ const props = defineProps({
   isWritable: Boolean,
   users: Object,
 })
+const comments = ref(props.entity.comments)
 
 const emit = defineEmits([
   "updateTitle",
