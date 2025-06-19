@@ -231,12 +231,11 @@
   </div>
 </template>
 <script setup>
-import { Button, Tooltip, Dropdown, TextInput } from "frappe-ui"
+import { Button, Tooltip, Dropdown, TextInput, TabButtons } from "frappe-ui"
 import { ref, computed, watch, useTemplateRef } from "vue"
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
-import TabButtons from "frappe-ui/src/components/TabButtons/TabButtons.vue"
 import { LucideLayoutGrid, LucideLayoutList } from "lucide-vue-next"
 
 const rows = defineModel(Array)

@@ -50,7 +50,7 @@ const store = useStore()
 
 const props = defineProps({
   icon: {
-    type: [String, Object],
+    type: Function,
     default: null,
   },
   label: {
