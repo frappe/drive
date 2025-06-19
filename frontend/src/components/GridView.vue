@@ -2,7 +2,7 @@
   <!-- pt-1 to accomodate borders -->
   <div
     v-if="rows?.length"
-    class="grid-container gap-5 p-3 pb-[60px] overflow-scroll select-none"
+    class="grid-container gap-5 py-5 pb-[60px] overflow-scroll select-none"
   >
     <div
       v-for="file in rows"
@@ -165,7 +165,7 @@ onKeyDown("Escape", (e) => {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, 172px);
-  gap: 12px;
+  gap: 20px;
 }
 
 .shadow-gray {

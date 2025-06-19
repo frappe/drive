@@ -1,5 +1,5 @@
 <template>
-  <div class="flex p-3 pb-0">
+  <div class="flex pb-0">
     <div
       v-if="selections?.length"
       class="my-auto w-[40%] text-base text-ink-gray-8"
@@ -11,30 +11,52 @@
       v-else-if="$route.name === 'Shared'"
       class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 mr-4 py-1"
     >
-      <Button
-        variant="ghost"
+      <TabButtons
+        v-model="shareView"
+        :buttons="[
+          {
+            label: 'By',
+            value: 'by',
+            onClick: () => {
+              getEntities.reset()
+              store.commit('toggleShareView', 'by')
+            },
+            disabled: !getEntities.data?.length,
+          },
+          {
+            label: 'With you',
+            value: 'with',
+            onClick: () => {
+              getEntities.reset()
+              store.commit('toggleShareView', 'with')
+            },
+            disabled: !getEntities.data?.length,
+          },
+        ]"
+      />
+      <!-- <Button
+        variant="subtle"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           store.state.shareView === 'with'
             ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
-        @click="getEntities.reset(), store.commit('toggleShareView', 'with')"
+        @click=""
       >
         With you
       </Button>
       <Button
-        variant="ghost"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
           store.state.shareView === 'by'
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
+            ? '!bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
             : '',
         ]"
-        @click="getEntities.reset(), store.commit('toggleShareView', 'by')"
+        @click=""
       >
         By you
-      </Button>
+      </Button> -->
     </div>
     <TextInput
       ref="search-input"
@@ -157,36 +179,23 @@
             </Button>
           </Tooltip>
         </Dropdown>
-        <div
-          class="bg-surface-gray-2 rounded-md space-x-0.5 h-7 px-0.5 py-1 flex items-center"
-        >
-          <Button
-            :disabled="!getEntities.data?.length"
-            variant="ghost"
-            class="max-h-6 leading-none transition-colors focus:outline-none"
-            :class="[
-              store.state.view === 'grid'
-                ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-                : '',
-            ]"
-            @click="store.commit('toggleView', 'grid')"
-          >
-            <LucideLayoutGrid class="size-4 text-ink-gray-6" />
-          </Button>
-          <Button
-            :disabled="!getEntities.data?.length"
-            variant="ghost"
-            class="max-h-6 leading-none transition-colors focus:outline-none"
-            :class="[
-              store.state.view === 'list'
-                ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-                : '',
-            ]"
-            @click="store.commit('toggleView', 'list')"
-          >
-            <LucideLayoutList class="size-4 text-ink-gray-6" />
-          </Button>
-        </div>
+        <TabButtons
+          v-model="viewState"
+          :buttons="[
+            {
+              icon: LucideLayoutGrid,
+              value: 'grid',
+              onClick: () => store.commit('toggleView', 'grid'),
+              disabled: !getEntities.data?.length,
+            },
+            {
+              icon: LucideLayoutList,
+              value: 'list',
+              onClick: () => store.commit('toggleView', 'list'),
+              disabled: !getEntities.data?.length,
+            },
+          ]"
+        />
       </template>
       <div
         v-else-if="actionItems"
@@ -227,6 +236,8 @@ import { ref, computed, watch, useTemplateRef } from "vue"
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
+import TabButtons from "frappe-ui/src/components/TabButtons/TabButtons.vue"
+import { LucideLayoutGrid, LucideLayoutList } from "lucide-vue-next"
 
 const rows = defineModel(Array)
 const props = defineProps({
@@ -241,6 +252,8 @@ const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
 
 const search = ref("")
+const viewState = ref(store.state.view)
+const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef("search-input")
 // Do this as the resource data is updated by a lagging `fetch`
 watch(

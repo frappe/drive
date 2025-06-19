@@ -24,7 +24,7 @@
   <div
     v-else
     ref="container"
-    class="flex flex-col overflow-scroll min-h-full bg-surface-white"
+    class="flex flex-col pt-5 overflow-scroll min-h-full bg-surface-white px-5"
   >
     <DriveToolBar
       v-model="rows"
