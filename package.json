@@ -5,9 +5,8 @@
     "frappe-ui"
   ],
   "scripts": {
-    "postinstall": "cd frontend && yarn install",
-    "dev": "cd frontend && yarn dev",
-    "build": "cd frontend && yarn build"
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
   },
   "dependencies": {}
 }
