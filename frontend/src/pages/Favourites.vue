@@ -10,5 +10,5 @@
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getFavourites } from "@/resources/files"
-import LucideStar from "~/icons/lucide/star"
+import LucideStar from "~icons/lucide/star"
 </script>
