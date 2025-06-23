@@ -52,7 +52,6 @@ const usedStorage = ref(0)
 const storageMax = ref(5368709120)
 
 const props = defineProps(["isExpanded"])
-watch()
 const formattedString = computed(() => {
   return (
     (formatSize(usedStorage.value) || "-") +

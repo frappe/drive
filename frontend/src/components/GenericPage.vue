@@ -116,7 +116,7 @@ const props = defineProps({
   grouper: { type: Function, default: (d) => d },
   showSort: { type: Boolean, default: true },
   verify: { Object, default: null },
-  icon: Function,
+  icon: [Function, Object],
   primaryMessage: String,
   secondaryMessage: { type: String, default: "" },
   getEntities: Object,

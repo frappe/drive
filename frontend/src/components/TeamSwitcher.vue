@@ -23,12 +23,12 @@
     </template>
     <template #body>
       <div
-        class="mx-3 p-1 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
+        class="p-1 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
       >
         <button
           v-if="teams.length"
           v-for="team of teams"
-          class="group flex h-7 w-full items-center rounded px-2 text-base p-1 text-ink-gray-7 hover:bg-surface-gray-2"
+          class="group flex h-7 w-full items-center rounded px-2 text-sm p-1 text-ink-gray-7 hover:bg-surface-gray-2"
           :key="getTeams.data[team].name"
         >
           <router-link

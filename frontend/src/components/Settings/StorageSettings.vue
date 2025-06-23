@@ -14,7 +14,17 @@
     <div
       class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
     >
-      <Button
+      <TabButtons
+        v-model="showFileStorage"
+        :buttons="[
+          {
+            label: __('You'),
+            value: true,
+          },
+          { label: __('Team'), value: false },
+        ]"
+      />
+      <!-- <Button
         variant="ghost"
         class="max-h-6 leading-none transition-colors focus:outline-none"
         :class="[
@@ -24,7 +34,7 @@
         ]"
         @click="showFileStorage = true"
       >
-        {{ __("You") }}
+        {{  }}
       </Button>
       <Button
         variant="ghost"
@@ -36,8 +46,8 @@
         ]"
         @click="showFileStorage = false"
       >
-        {{ __("Team") }}
-      </Button>
+        {{ }}
+      </Button> -->
     </div>
   </div>
   <div
@@ -119,7 +129,7 @@ import {
   COLOR_MAP,
   formatPercent,
 } from "@/utils/format"
-import { Tooltip } from "frappe-ui"
+import { Tooltip, TabButtons } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
 import { createResource } from "frappe-ui"

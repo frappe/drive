@@ -25,28 +25,22 @@
     </template>
     <template #body>
       <div
-        class="grid grid-cols-3 justify-between mx-3 p-2 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
+        class="flex w-full flex-col rounded-lg border border-outline-gray-2 bg-surface-white p-1.5 text-sm text-ink-gray-8 shadow-xl auto-fill-[100px] dark:bg-surface-gray-1"
       >
-        <div
+        <a
+          :href="app.route"
           v-for="app in apps.data"
-          :key="app.name"
+          key="name"
+          class="flex items-center gap-2 rounded p-1 hover:bg-surface-gray-2"
         >
-          <a
-            :href="app.route"
-            class="flex flex-col gap-1.5 rounded justify-center items-center py-2 px-1 hover:bg-surface-gray-2"
-          >
-            <img
-              class="size-8"
-              :src="app.logo"
-            />
-            <div
-              class="text-sm text-ink-gray-7"
-              @click="app.onClick"
-            >
-              {{ app.title }}
-            </div>
-          </a>
-        </div>
+          <img
+            class="size-6"
+            :src="app.logo"
+          />
+          <span class="max-w-18 text-sm w-full truncate">
+            {{ app.title }}
+          </span>
+        </a>
       </div>
     </template>
   </Popover>

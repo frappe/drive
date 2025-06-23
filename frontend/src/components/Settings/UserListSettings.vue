@@ -17,9 +17,7 @@
   <Tabs :tabs>
     <template #tab-panel="{ tab }">
       <template v-if="tab.label === 'Members'">
-        <div
-          class="flex flex-col items-stretch justify-start h-[60%] overflow-y-auto"
-        >
+        <div class="flex flex-col items-stretch justify-start overflow-y-auto">
           <div
             v-for="(user, index) in allUsers?.data"
             :key="user.user_name"
@@ -71,7 +69,7 @@
       <template v-else>
         <div
           v-if="!invites?.data || !invites.data.length"
-          class="text-center text-sm"
+          class="text-center text-p-sm py-4"
         >
           No invites found.
         </div>

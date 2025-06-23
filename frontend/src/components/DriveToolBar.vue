@@ -18,7 +18,6 @@
             label: 'By',
             value: 'by',
             onClick: () => {
-              getEntities.reset()
               store.commit('toggleShareView', 'by')
             },
             disabled: !getEntities.data?.length,
@@ -27,7 +26,6 @@
             label: 'With you',
             value: 'with',
             onClick: () => {
-              getEntities.reset()
               store.commit('toggleShareView', 'with')
             },
             disabled: !getEntities.data?.length,
