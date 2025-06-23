@@ -1,5 +1,5 @@
 <template>
-  <div class="flex pb-0">
+  <div class="flex p-5 pb-0">
     <div
       v-if="selections?.length"
       class="my-auto w-[40%] text-base text-ink-gray-8"
@@ -134,6 +134,22 @@
           </div>
         </div>
         <Dropdown
+          :options="
+            Object.keys(ICON_TYPES).map((k) => ({
+              label: __(k),
+              icon: ICON_TYPES[k],
+              onClick: () => activeFilters.push(k),
+            }))
+          "
+          placement="right"
+        >
+          <Tooltip text="Filter">
+            <Button :disabled="!getEntities.data?.length">
+              <LucideFilter class="size-4 text-ink-gray-6" />
+            </Button>
+          </Tooltip>
+        </Dropdown>
+        <Dropdown
           v-if="$route.name !== 'Recents'"
           :options="orderByItems"
           placement="right"
@@ -163,22 +179,7 @@
             </Button>
           </div>
         </Dropdown>
-        <Dropdown
-          :options="
-            Object.keys(ICON_TYPES).map((k) => ({
-              label: __(k),
-              icon: ICON_TYPES[k],
-              onClick: () => activeFilters.push(k),
-            }))
-          "
-          placement="right"
-        >
-          <Tooltip text="Filter">
-            <Button :disabled="!getEntities.data?.length">
-              <LucideFilter class="size-4 text-ink-gray-6" />
-            </Button>
-          </Tooltip>
-        </Dropdown>
+
         <TabButtons
           v-model="viewState"
           :buttons="[
@@ -199,7 +200,7 @@
       </template>
       <div
         v-else-if="actionItems"
-        class="flex gap-3 ml-4 overflow-scroll"
+        class="flex gap-3 ml-4 overflow-auto"
       >
         <template
           v-for="item in actionItems
@@ -214,15 +215,16 @@
           <Tooltip :text="item.label">
             <Button
               variant="outline"
+              size="md"
               @click.once="item.action(selections)"
             >
-              <div class="flex">
+              <template #icon>
                 <component
                   :is="item.icon"
                   class="size-4 text-ink-gray-6"
                   :class="[item.class, item.danger ? 'text-ink-red-3' : '']"
                 />
-              </div>
+              </template>
             </Button>
           </Tooltip>
         </template>

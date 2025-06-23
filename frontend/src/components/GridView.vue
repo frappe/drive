@@ -2,13 +2,13 @@
   <!-- pt-1 to accomodate borders -->
   <div
     v-if="rows?.length"
-    class="grid-container gap-5 py-5 pb-[60px] overflow-scroll select-none"
+    class="grid-container gap-5 p-5 pb-[60px] overflow-auto select-none"
   >
     <div
       v-for="file in rows"
       :id="file.name"
       :key="file.name"
-      class="grid-item rounded-lg group select-none entity cursor-pointer relative w-[172px] h-[172px] border bg-surface-white"
+      class="grid-item rounded-lg group select-none entity cursor-pointer relative h-[172px] border bg-surface-white"
       :class="[
         selections.has(file.name) || selectedRow?.name === file.name
           ? 'bg-surface-gray-2 shadow-gray'
@@ -37,11 +37,12 @@
       />
       <Button
         :variant="'subtle'"
-        class="z-10 duration-300 absolute invisible top-2 right-2"
+        class="z-10 duration-300 absolute top-2 right-2"
         :class="[
-          selections.size > 0
+          selections.size > 0 ? '' : '!bg-surface-gray-3 hover:shadow-lg',
+          selectedRow?.name === file.name
             ? ''
-            : '!bg-surface-gray-4 hover:bg-gray-400 group-hover:visible',
+            : 'invisible group-hover:visible',
         ]"
         @click.stop="contextMenu($event, file)"
       >
@@ -164,8 +165,8 @@ onKeyDown("Escape", (e) => {
 <style scoped>
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 172px);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-auto-columns: minmax(170px, 1fr);
 }
 
 .shadow-gray {

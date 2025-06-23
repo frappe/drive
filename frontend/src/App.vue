@@ -4,7 +4,7 @@
     dark
   >
     <div
-      class="bg-surface-black text-ink-white text-sm text-center py-2 sm:hidden"
+      class="bg-surface-gray-7 text-ink-white text-sm text-center py-2 sm:hidden"
     >
       Drive works best on desktop.
     </div>

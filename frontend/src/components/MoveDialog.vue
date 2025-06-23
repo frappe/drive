@@ -50,7 +50,7 @@
           :tabs="tabs"
         >
           <template #tab-panel>
-            <div class="py-1 h-40">
+            <div class="py-1 h-40 overflow-auto">
               <Tree
                 v-for="k in tree.children"
                 :key="k.value"
@@ -152,7 +152,7 @@
             </div>
           </template>
         </Tabs>
-        <div class="flex items-center justify-between max-h-7">
+        <div class="flex items-center justify-between pt-4">
           <div class="flex flex-col">
             <div class="flex items-center my-auto justify-start">
               <p class="text-sm pr-0.5">Moving to:</p>

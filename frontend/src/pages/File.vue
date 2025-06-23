@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full">
-    <div class="flex-1 overflow-scroll">
+    <div class="flex-1 overflow-auto">
       <Navbar
         v-if="!file?.error"
         :root-resource="file"

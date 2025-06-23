@@ -18,7 +18,7 @@
         :class="
           (100 * usedStorage) / storageMax > 100
             ? 'bg-surface-red-500'
-            : 'bg-surface-black'
+            : 'bg-surface-gray-7'
         "
         :style="{
           width: calculatePercent,
@@ -52,7 +52,7 @@ const usedStorage = ref(0)
 const storageMax = ref(5368709120)
 
 const props = defineProps(["isExpanded"])
-
+watch()
 const formattedString = computed(() => {
   return (
     (formatSize(usedStorage.value) || "-") +

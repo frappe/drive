@@ -4,19 +4,24 @@
     class="flex w-full"
   >
     <template #target="{ togglePopover }">
-      <button
+      <Button
+        @click="togglePopover"
+        class="w-full !justify-start px-2"
         :class="[
           active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
           'group w-full flex h-7 items-center justify-between rounded px-2 text-base hover:bg-surface-gray-2',
         ]"
-        @click.prevent="togglePopover()"
+        variant="ghost"
       >
-        <div class="flex gap-2">
-          <AppsIcon class="size-4" />
-          <span class="whitespace-nowrap"> Apps </span>
-        </div>
-        <LucideChevronRight class="size-4 text-ink-gray-6" />
-      </button>
+        <template #icon>
+          <AppsIcon class="size-4 text-ink-gray-6" />
+          <span class="whitespace-nowrap text-base">Apps </span>
+        </template>
+
+        <template #suffix>
+          <LucideChevronRight class="size-4 text-ink-gray-6 ml-auto" />
+        </template>
+      </Button>
     </template>
     <template #body>
       <div
@@ -48,7 +53,7 @@
 </template>
 <script setup>
 import AppsIcon from "@/components/AppsIcon.vue"
-import { Popover, createResource } from "frappe-ui"
+import { Popover, createResource, Button } from "frappe-ui"
 
 const props = defineProps({
   active: Boolean,

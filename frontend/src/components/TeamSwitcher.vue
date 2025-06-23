@@ -4,29 +4,31 @@
     class="flex w-full"
   >
     <template #target="{ togglePopover }">
-      <button
-        :class="[
-          active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
-          'group w-full flex h-7 items-center justify-between rounded px-2 text-base hover:bg-surface-gray-2',
-        ]"
-        @click.prevent="togglePopover()"
+      <Button
+        @click="togglePopover"
+        class="w-full px-2 flex justify-between h-7 items-center"
+        variant="ghost"
       >
-        <div class="flex gap-2">
+        <template #icon>
           <LucideUser class="size-4 text-ink-gray-6" />
-          <span class="whitespace-nowrap"
+          <span class="whitespace-nowrap text-base"
             >{{ $route.params.team ? "Change Team" : "Go to" }}
           </span>
-        </div>
-        <LucideChevronRight class="size-4 text-ink-gray-6" />
-      </button>
+        </template>
+
+        <template #suffix>
+          <LucideChevronRight class="size-4 text-ink-gray-6 ml-auto" />
+        </template>
+      </Button>
     </template>
     <template #body>
       <div
         class="mx-3 p-1 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
       >
-        <div
-          v-for="team of teams"
+        <button
           v-if="teams.length"
+          v-for="team of teams"
+          class="group flex h-7 w-full items-center rounded px-2 text-base p-1 text-ink-gray-7 hover:bg-surface-gray-2"
           :key="getTeams.data[team].name"
         >
           <router-link
@@ -34,17 +36,16 @@
               name: 'Home',
               params: { team: getTeams.data[team].name },
             }"
-            class="block w-100 rounded justify-center items-center p-1 text-sm text-ink-gray-7 hover:bg-surface-gray-2"
             @click="LISTS.forEach((k) => k.reset())"
           >
             {{ getTeams.data[team].title }}
           </router-link>
-        </div>
+        </button>
         <div
           v-else
-          class="w-100 text-center text-sm text-ink-gray-7"
+          class="w-full text-sm text-ink-gray-7 h-7 flex justify-center items-center"
         >
-          <em>No other teams</em>
+          <div>No other teams</div>
         </div>
       </div>
     </template>
