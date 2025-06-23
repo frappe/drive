@@ -1,5 +1,5 @@
 <template>
-  <div class="flex p-5 pb-0">
+  <div class="flex p-5 pb-0 h-12">
     <div
       v-if="selections?.length"
       class="my-auto w-[40%] text-base text-ink-gray-8"
@@ -71,7 +71,7 @@
       </template>
     </TextInput>
 
-    <div class="flex gap-2 ml-auto">
+    <div class="flex gap-2 ml-auto my-auto">
       <template v-if="selections && !selections.length">
         <div
           v-if="activeFilters.length"
