@@ -974,3 +974,22 @@ def export_media(entity_name):
     return frappe.get_list(
         "Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"]
     )
+
+
+@frappe.whitelist()
+def create_comment(
+    doc,
+    id,
+    content,
+):
+    doc = frappe.get_doc("Drive Document", doc)
+    comment = frappe.get_doc(
+        {
+            "doctype": "Drive Comment",
+            "name": id,
+            "content": content,
+        }
+    )
+    doc.append("comments", comment)
+    comment.insert()
+    doc.save()

@@ -76,7 +76,8 @@ span[data-comment-id] {
 }
 
 span[data-annotation-id]:hover,
-span[data-comment-id]:hover {
+span[data-comment-id]:hover,
+span[data-comment-id].active {
   background: rgba(250, 204, 21, 0.4);
 }
 

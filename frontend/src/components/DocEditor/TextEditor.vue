@@ -2,6 +2,7 @@
   <div class="flex w-full">
     <div class="w-[60%] mx-auto overflow-y-auto">
       <FTextEditor
+        ref="textEditor"
         editor-class="prose-sm min-h-[4rem] p-2"
         :content="rawContent"
         @change="
@@ -17,6 +18,7 @@
       />
     </div>
     <FloatingComments
+      :doc="entity.document"
       v-model:active-comment="activeComment"
       v-model:comments="comments"
     />
@@ -95,6 +97,8 @@ import StarterKit from "@tiptap/starter-kit"
 import { BubbleMenu, Editor, EditorContent } from "@tiptap/vue-3"
 import {
   onOutsideClickDirective,
+  createDocumentResource,
+  createListResource,
   TextEditor as FTextEditor,
   debounce,
 } from "frappe-ui"
@@ -144,6 +148,10 @@ import { LucideMessageCircle } from "lucide-vue-next"
 import store from "../../store"
 
 const autosave = debounce(() => emit("saveDocument"), 1000)
+const textEditor = ref("textEditor")
+const editor = computed(() => {
+  return textEditor.value?.editor
+})
 
 const props = defineProps({
   settings: Object,
@@ -377,6 +385,7 @@ const bubbleMenuButtons = [
         created_on: new Date(),
         content: "",
         edit: true,
+        new: true,
         replies: [],
       })
       activeComment.value = id
@@ -520,6 +529,12 @@ onMounted(() => {
   // localStore.value.on("synced", () => {
   //   ready.value = true;
   // });
+  const orderedComments = getOrderedComments(editor.value.state.doc)
+  comments.value = props.entity.comments.toSorted((a, b) => {
+    const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+    const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+    return pos1 - pos2
+  })
 })
 
 onKeyDown("s", (e) => {
@@ -535,6 +550,19 @@ onKeyDown("s", (e) => {
     title: "Document saved",
   })
 })
+
+function getOrderedComments(doc) {
+  const comments = []
+  doc.descendants((node, pos) => {
+    node.marks.forEach((mark) => {
+      if (mark.type.name === "comment" && mark.attrs.commentId) {
+        comments.push({ id: mark.attrs.commentId, pos })
+      }
+    })
+  })
+
+  return comments.sort((a, b) => a.pos - b.pos)
+}
 // this.editor = new Editor({
 //   editable: this.editable,
 //   autofocus: "start",

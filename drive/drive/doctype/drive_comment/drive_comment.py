@@ -3,7 +3,10 @@
 
 # import frappe
 from frappe.model.document import Document
+from datetime import datetime
 
 
 class DriveComment(Document):
-    pass
+    def edit(self, content):
+        self.content = content
+        self.save()
