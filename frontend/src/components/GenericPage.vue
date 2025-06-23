@@ -38,7 +38,7 @@
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
-      <LoadingIndicator class="size-10" />
+      <LoadingIndicator class="size-10 text-ink-gray-9" />
     </div>
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"

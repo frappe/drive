@@ -32,6 +32,7 @@
     </div>
   </div>
   <ListView
+    class="px-5 pt-5"
     v-if="!notifications.loading && notifications.data.length"
     :columns="columns"
     :options="options"
