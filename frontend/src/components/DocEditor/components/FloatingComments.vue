@@ -76,48 +76,57 @@
                 ]"
               />
 
-              <div
-                v-if="!reply.edit"
-                class="flex gap-1 mt-2"
-                :class="index && 'hidden group-hover:flex'"
-              >
-                <Button
-                  variant="subtle"
-                  size="xs"
-                  class="font-medium"
-                  @click="reply.edit = true"
+              <div class="flex gap-2 mt-2">
+                <template
+                  v-if="!reply.edit"
+                  v-show="index"
                 >
-                  Edit
-                </Button>
-                <Button
-                  variant="subtle"
-                  size="xs"
-                  class="font-medium"
-                  >Delete</Button
-                >
+                  <Button
+                    variant="subtle"
+                    size="xs"
+                    class="font-medium"
+                    @click="reply.edit = true"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="subtle"
+                    size="xs"
+                    class="font-medium"
+                    >Delete</Button
+                  >
+                </template>
+                <template v-else>
+                  <Button
+                    variant="solid"
+                    size="xs"
+                    class="font-medium"
+                    @click="
+                      () => {
+                        reply.content = commentContents[reply.name]
+                        reply.edit = false
+                        if (reply.new) {
+                          createComment.submit({
+                            doc,
+                            content: reply.content,
+                            name: reply.name,
+                          })
+                        } else {
+                          editComment.submit({ ...reply })
+                        }
+                      }
+                    "
+                  >
+                    Submit
+                  </Button>
+                  <Button
+                    size="xs"
+                    class="font-medium"
+                    @click="reply.edit = false"
+                    >Cancel</Button
+                  >
+                </template>
               </div>
-              <Button
-                v-else
-                variant="solid"
-                size="xs"
-                class="font-medium mt-2"
-                @click="
-                  () => {
-                    reply.content = commentContents[reply.name]
-                    reply.edit = false
-                    if (reply.new) {
-                      createComment.submit({
-                        doc,
-                        content: reply.content,
-                        id: reply.name,
-                      })
-                    } else {
-                    }
-                  }
-                "
-              >
-                Submit
-              </Button>
             </div>
           </template>
           <div
@@ -177,13 +186,16 @@ const createComment = createResource({
   url: "drive.api.files.create_comment",
 })
 
+const editComment = createResource({
+  url: "drive.api.files.edit_comment",
+})
+
 const formattedComments = computed(() => {
   comments.value.forEach((comment) => {
     let user = allUsers.data.find((k) => k.name == comment.owner)
     comment.full_name = user.full_name
     comment.user_image = user.user_image
   })
-  // comments.value.sort((a, b) => {})
   return comments.value
 })
 
@@ -208,4 +220,3 @@ watch(activeComment, (val) => {
   else setTimeout(() => el.classList.add("active"), 300)
 })
 </script>
-<style></style>
