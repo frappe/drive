@@ -19,6 +19,7 @@
     </div>
     <FloatingComments
       :doc="entity.document"
+      :editor
       v-model:active-comment="activeComment"
       v-model:comments="comments"
     />

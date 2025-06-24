@@ -977,12 +977,8 @@ def export_media(entity_name):
 
 
 @frappe.whitelist()
-def create_comment(
-    doc,
-    name,
-    content,
-):
-    doc = frappe.get_doc("Drive Document", doc)
+def create_comment(parent, name, content, is_reply):
+    doc = frappe.get_doc("Drive Comment" if is_reply else "Drive Document", parent)
     comment = frappe.get_doc(
         {
             "doctype": "Drive Comment",
@@ -990,7 +986,7 @@ def create_comment(
             "content": content,
         }
     )
-    doc.append("comments", comment)
+    doc.append("replies" if is_reply else "comments", comment)
     comment.insert()
     doc.save()
     return comment.name
@@ -998,7 +994,16 @@ def create_comment(
 
 @frappe.whitelist()
 def edit_comment(name, content):
-    doc = frappe.get_doc("Drive Comment", name)
-    doc.content = content
-    doc.save()
+    comment = frappe.get_doc("Drive Comment", name)
+    comment.content = content
+    comment.save()
     return name
+
+
+@frappe.whitelist()
+def delete_comment(name, entire=True):
+    comment = frappe.get_doc("Drive Comment", name)
+    if entire:
+        for r in comment.replies:
+            r.delete()
+    comment.delete()
