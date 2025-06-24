@@ -41,7 +41,7 @@
               <Dropdown
                 v-if="isAdmin.data && user.name != $store.state.user.fullName"
                 v-slot="{ open }"
-                :options="roleOptions"
+                :options="accessOptions"
                 placement="right"
                 class="ml-auto text-base text-ink-gray-6"
               >
@@ -49,9 +49,18 @@
                   variant="ghost"
                   @click="selectedUser = user"
                 >
-                  {{ user.role == "admin" ? __("Manager") : __("User") }}
+                  {{
+                    __(
+                      user.access_level == 2
+                        ? "Manager"
+                        : user.access_level == 1
+                        ? "User"
+                        : "Guest"
+                    )
+                  }}
                   <template #suffix>
                     <LucideChevronDown
+                      class="size-4 text-ink-gray-6"
                       :class="{ '[transform:rotateX(180deg)]': open }"
                     />
                   </template>
@@ -60,7 +69,15 @@
               <span
                 v-else
                 class="ml-auto text-base text-ink-gray-6"
-                >{{ user.role == "admin" ? __("Manager") : __("User") }}</span
+                >{{
+                  __(
+                    user.access_level == 2
+                      ? "Manager"
+                      : user.access_level == 1
+                      ? "User"
+                      : "Guest"
+                  )
+                }}</span
               >
             </div>
           </div>
@@ -177,7 +194,7 @@
             class="shadow-sm"
           >
             <template #suffix>
-              <XIcon
+              <LucideX
                 class="h-4"
                 stroke-width="1.5"
                 @click.stop="() => invited.splice(idx, 1)"
@@ -271,28 +288,26 @@ const tabs = [
   },
 ]
 
-const roleOptions = [
+const updateAccess = (level) => {
+  selectedUser.value.access_level = level
+  updateUserAccess.submit({
+    team: team.value,
+    user_id: selectedUser.value.name,
+    access_level: level,
+  })
+}
+const accessOptions = [
   {
     label: "Manager",
-    onClick: () => {
-      selectedUser.value.role = "admin"
-      updateUserRole.submit({
-        team: team.value,
-        user_id: selectedUser.value.name,
-        role: 1,
-      })
-    },
+    onClick: () => updateAccess(2),
   },
   {
     label: "User",
-    onClick: () => {
-      selectedUser.value.role = "user"
-      updateUserRole.submit({
-        team: team.value,
-        user_id: selectedUser.value.name,
-        role: 0,
-      })
-    },
+    onClick: () => updateAccess(1),
+  },
+  {
+    label: "Guest",
+    onClick: () => updateAccess(0),
   },
   {
     label: "Remove",
@@ -349,7 +364,7 @@ const removeUser = createResource({
   url: "drive.api.product.remove_user",
 })
 
-const updateUserRole = createResource({
-  url: "drive.api.product.set_role",
+const updateUserAccess = createResource({
+  url: "drive.api.product.set_user_access",
 })
 </script>

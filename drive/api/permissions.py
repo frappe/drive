@@ -81,7 +81,7 @@ def get_user_access(entity, user=frappe.session.user):
 @frappe.whitelist()
 def is_admin(team):
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].is_admin
+    return drive_team[frappe.session.user].access_level == 2
 
 
 @frappe.whitelist()

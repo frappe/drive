@@ -33,7 +33,7 @@ def create_personal_team(email=frappe.session.user, team_name=None):
             "team_domain": email.split("@")[-1] if team_name else "",
         }
     ).insert(ignore_permissions=True)
-    team.append("users", {"user": email, "is_admin": 1})
+    team.append("users", {"user": email, "access_level": 2})
     team.save()
     return team.name
 
@@ -282,11 +282,11 @@ def invite_users(team, emails):
 
 
 @frappe.whitelist()
-def set_role(team, user_id, role):
+def set_user_access(team, user_id, access_level):
     if not is_admin(team):
         frappe.throw("You don't have the permissions for this action.")
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    drive_team[user_id].is_admin = role
+    drive_team[user_id].access_level = access_level
     drive_team[user_id].save()
 
 
@@ -300,7 +300,7 @@ def remove_user(team, user_id):
 
 @frappe.whitelist()
 def get_all_users(team):
-    team_users = {k.user: k.is_admin for k in frappe.get_doc("Drive Team", team).users}
+    team_users = {k.user: k.access_level for k in frappe.get_doc("Drive Team", team).users}
     users = frappe.get_all(
         doctype="User",
         filters=[
@@ -314,7 +314,7 @@ def get_all_users(team):
         ],
     )
     for u in users:
-        u["role"] = "admin" if team_users[u["name"]] else "user"
+        u["access_level"] = team_users[u["name"]]
     return users
 
 
