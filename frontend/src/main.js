@@ -14,11 +14,15 @@ import emitter from "@/emitter"
 import "./index.css"
 import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
-
+import { allUsers } from "@/resources/permissions"
 const app = createApp(App)
 setConfig("resourceFetcher", frappeRequest)
 app.config.unwrapInjectedRef = true
 app.config.globalProperties.emitter = emitter
+app.config.globalProperties.$user = (user) => {
+  return allUsers.data.find((k) => k.name === user)
+}
+
 app.provide("emitter", emitter)
 app.use(translationPlugin)
 app.use(router)

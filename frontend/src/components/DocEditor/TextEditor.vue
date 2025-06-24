@@ -383,7 +383,7 @@ const bubbleMenuButtons = [
       comments.value.push({
         name: id,
         owner: store.state.user.id,
-        created_on: new Date(),
+        creation: new Date(),
         content: "",
         edit: true,
         new: true,

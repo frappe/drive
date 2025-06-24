@@ -23,6 +23,7 @@ export function base2BlockSize(bytes) {
 }
 
 export function formatDate(date) {
+  console.log(date)
   if (!date) return ""
   const dateObj = new Date(date)
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
