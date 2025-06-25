@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model:open="open"
+    v-model="open"
     :options="{ size: '2xl', position: 'top' }"
   >
     <template #body>
@@ -28,7 +28,7 @@
           v-for="entity in searchResults.data"
           :key="entity.name"
           class="grid grid-flow-col grid-cols-8 gap-2 w-full items-center rounded px-2 py-2 text-base cursor-pointer hover:bg-surface-gray-2"
-          @click="openEntity(null, entity)"
+          @click="openEntity(null, entity), (open = false)"
         >
           <div class="flex items-center gap-2 w-full col-span-6">
             <svg
@@ -80,11 +80,19 @@
         </div>
       </div>
       <div
-        v-if="search.length > 3 && searchResults.data?.length"
+        v-if="!searchResults.data?.length"
         class="flex flex-col py-4 px-2.5"
       >
-        <span class="mb-1 pl-2 text-base text-ink-gray-5"
-          >No results for <strong>"{{ search }}"</strong></span
+        <span
+          v-if="search.length > 3"
+          class="pl-2 text-base text-ink-gray-5"
+        >
+          No results for <strong>"{{ search }}"</strong></span
+        >
+        <span
+          v-else
+          class="pl-2 text-sm"
+          >Type more...</span
         >
       </div>
       <div
@@ -158,7 +166,7 @@
 import { Dialog, Avatar, createResource } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity } from "../utils/files"
-import { ref, computed, watch } from "vue"
+import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
@@ -169,14 +177,8 @@ const emit = defineEmits(["openEntity", "update:open"])
 const search = ref("")
 const route = useRoute()
 
-const open = computed({
-  get() {
-    return this.open
-  },
-  set(value) {
-    emit("update:open", value)
-  },
-})
+const open = defineModel()
+console.log(open.value)
 
 const searchResults = createResource({
   auto: false,
