@@ -168,8 +168,12 @@ const dialog = ref("")
 const rootEntity = computed(() => props.rootResource?.data)
 
 const dropdownAction = computed(() => {
-  if (props.actions) return props.actions
   if (!rootEntity.value) return
+  let actions = []
+  if (props.actions) {
+    if (props.actions[0] === "extend") actions = props.actions.slice(1)
+    else return props.actions
+  }
   return [
     {
       label: __("Share"),
@@ -243,6 +247,7 @@ const dropdownAction = computed(() => {
       isEnabled: () => rootEntity.value.write,
       color: "text-ink-red-4",
     },
+    ...actions,
   ].filter((k) => !k.isEnabled || k.isEnabled())
 })
 

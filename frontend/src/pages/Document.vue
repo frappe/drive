@@ -2,6 +2,21 @@
   <Navbar
     v-if="!document.error"
     :root-resource="document"
+    :actions="[
+      'extend',
+      {
+        icon: MessagesSquare,
+        label: 'Show Resolved',
+        onClick: () => (showResolved = true),
+        isEnabled: () => !showResolved,
+      },
+      {
+        icon: MessagesSquare,
+        label: 'Hide Resolved',
+        onClick: () => (showResolved = false),
+        isEnabled: () => showResolved,
+      },
+    ]"
   />
   <FolderContentsError
     v-if="document.error"
@@ -14,6 +29,7 @@
   />
   <div class="flex w-full overflow-auto">
     <TextEditor
+      ref="editor"
       v-if="contentLoaded"
       v-model:raw-content="rawContent"
       v-model:settings="settings"
@@ -36,6 +52,8 @@ import {
   inject,
   onMounted,
   defineAsyncComponent,
+  useTemplateRef,
+  provide,
   onBeforeUnmount,
 } from "vue"
 import { useRoute } from "vue-router"
@@ -44,11 +62,16 @@ import { createResource, LoadingIndicator } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs, prettyData } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
+import MessagesSquare from "~icons/lucide/messages-square"
 import router from "@/router"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
 )
+
+// const editor = useTemplateRef("editor")
+const showResolved = ref(false)
+provide("showResolved", showResolved)
 
 const store = useStore()
 const route = useRoute()
@@ -162,6 +185,7 @@ const updateDocument = createResource({
 
 onMounted(() => {
   allUsers.fetch({ team: route.params?.team })
+  setTimeout(() => console.log(editor.value), 5000)
   if (saveCount.value > 0) {
     intervalId.value = setInterval(() => {
       emitter.emit("triggerAutoSnapshot")

@@ -9,13 +9,16 @@
       :id="'comment-' + comment.name"
       @click="activeComment = comment.name"
       class="rounded border w-52 comment-group shadow-sm"
-      :class="activeComment === comment.name && 'border-yellow-300 shadow-2xl'"
+      :class="[
+        activeComment === comment.name && 'border-outline-amber-2 shadow-2xl',
+      ]"
     >
       <div
         v-show="activeComment === comment.name"
         class="px-2 py-1 text-sm flex gap-1 border-b text-ink-gray-9"
       >
         <Button
+          v-if="!comment.resolved"
           variant="ghost"
           size="xs"
           @click="resolve(comment)"
@@ -24,6 +27,17 @@
             <LucideCheck class="size-3.5" />
           </template>
           Resolve
+        </Button>
+        <Button
+          v-if="comment.resolved"
+          variant="ghost"
+          size="xs"
+          @click="resolve(comment, false)"
+        >
+          <template #prefix>
+            <LucideMessageCircleCode class="size-3.5" />
+          </template>
+          Unresolve
         </Button>
         <Button
           variant="ghost"
@@ -66,7 +80,9 @@
               </div>
             </div>
             <Dropdown
-              v-if="activeComment === comment.name && !reply.edit"
+              v-if="
+                activeComment === comment.name && !reply.edit && !reply.resolved
+              "
               :options="
                 index === 0
                   ? [{ onClick: () => (reply.edit = true), label: 'Edit' }]
@@ -87,6 +103,10 @@
                 <LucideMoreVertical class="size-3" />
               </Button>
             </Dropdown>
+            <LucideBadgeCheck
+              v-else-if="comment.resolved"
+              class="text-ink-gray-6 size-4"
+            />
           </div>
           <div class="comment-content text-sm">
             <TextEditor
@@ -165,11 +185,14 @@
           {{ comment.replies.length }}
           {{ comment.replies.length === 1 ? "reply" : "replies" }}
         </div>
-        <div v-if="activeComment === comment.name && !comment.edit">
+        <div
+          v-if="
+            activeComment === comment.name && !comment.edit && !comment.resolved
+          "
+        >
           <TextEditor
-            class="border rounded"
             :mentions="allUsers.data"
-            editor-class="text-sm p-2"
+            editor-class="border rounded text-sm p-2"
             placeholder="Reply"
             @change="(val) => (newReplies[comment.name] = val)"
             :bubble-menu="[
@@ -182,29 +205,38 @@
               'Separator',
               ['Bullet List', 'Numbered List'],
             ]"
-          />
-          <Button
-            v-if="newReplies[comment.name]?.length"
-            variant="solid"
-            size="xs"
-            class="font-medium mt-2"
-            @click="newReply(comment)"
           >
-            Submit
-          </Button>
+            <template #bottom="{ editor }">
+              <Button
+                v-if="newReplies[comment.name]?.length"
+                variant="solid"
+                size="xs"
+                class="font-medium mt-2"
+                @click="newReply(comment, editor)"
+              >
+                Submit
+              </Button></template
+            >
+          </TextEditor>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { useTemplateRef, computed, reactive, watch, onMounted } from "vue"
+import {
+  useTemplateRef,
+  computed,
+  reactive,
+  watch,
+  inject,
+  onMounted,
+} from "vue"
 import { allUsers } from "@/resources/permissions"
 import { Avatar, Button, TextEditor, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
 import { comment } from "postcss"
-import { LucideMoreVertical } from "lucide-vue-next"
 
 const props = defineProps({
   doc: String,
@@ -214,8 +246,11 @@ const props = defineProps({
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
 
+const showResolved = inject("showResolved")
 const filteredComments = computed(() =>
-  props.comments.filter((k) => !k.resolved)
+  showResolved.value
+    ? props.comments
+    : props.comments.filter((k) => !k.resolved)
 )
 
 const createComment = createResource({
@@ -234,7 +269,7 @@ const resolveComment = createResource({
 const newReplies = reactive({})
 const commentContents = reactive({})
 
-const newReply = (comment) => {
+const newReply = (comment, editor) => {
   const name = v4()
   createComment.submit({
     parent: comment.name,
@@ -249,7 +284,8 @@ const newReply = (comment) => {
     owner: comment.owner,
     creation: new Date(),
   })
-  activeComment.value = ""
+  newReplies[comment.name] = ""
+  editor.commands.setContent("")
 }
 
 const removeComment = (name, entire, server = true) => {
@@ -268,10 +304,10 @@ const removeComment = (name, entire, server = true) => {
   }
 }
 
-const resolve = (comment) => {
-  resolveComment.submit({ name: comment.name })
+const resolve = (comment, value = true) => {
+  resolveComment.submit({ name: comment.name, value })
   props.editor.commands.resolveComment(comment.name)
-  comment.resolved = true
+  comment.resolved = value
 }
 
 watch(activeComment, (val) => {
