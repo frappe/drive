@@ -36,7 +36,7 @@
           Delete
         </Button>
       </div>
-      <div class="flex flex-col p-3 gap-3">
+      <div class="flex flex-col p-2.5 gap-2.5">
         <div
           v-for="(reply, index) in activeComment === comment.name
             ? [
@@ -47,22 +47,46 @@
               ]
             : [comment]"
           :key="reply.name"
-          class="group flex flex-col gap-2"
+          class="group flex flex-col gap-2.5"
         >
-          <div class="flex gap-2 items-center">
-            <Avatar
-              :label="reply.owner"
-              :image="$user(reply.owner).user_image"
-            />
-            <div class="label-group flex flex-col gap-1 text-sm items-start">
-              <label class="font-medium text-ink-gray-8">{{
-                $user(reply.owner).full_name
-              }}</label>
+          <div class="flex justify-between">
+            <div class="flex gap-2.5 items-center">
+              <Avatar
+                :label="reply.owner"
+                :image="$user(reply.owner).user_image"
+              />
+              <div class="label-group flex flex-col gap-1 text-sm items-start">
+                <label class="font-medium text-ink-gray-8">{{
+                  $user(reply.owner).full_name
+                }}</label>
 
-              <label class="text-ink-gray-6">{{
-                formatDate(reply.creation)
-              }}</label>
+                <label class="text-ink-gray-6">{{
+                  formatDate(reply.creation)
+                }}</label>
+              </div>
             </div>
+            <Dropdown
+              v-if="activeComment === comment.name && !reply.edit"
+              :options="
+                index === 0
+                  ? [{ onClick: () => (reply.edit = true), label: 'Edit' }]
+                  : [
+                      { onClick: () => (reply.edit = true), label: 'Edit' },
+                      {
+                        label: 'Delete',
+                        onClick: () => removeComment(reply.name, false),
+                      },
+                    ]
+              "
+            >
+              <Button
+                size="xs"
+                variant="ghost"
+                @click="triggerRoot"
+              >
+                <LucideMoreVertical class="size-3" />
+              </Button>
+            </Dropdown>
           </div>
           <div class="comment-content text-sm">
             <TextEditor
@@ -87,67 +111,48 @@
               ]"
             >
               <template #bottom="{ editor }">
-                <div class="flex gap-2 mt-2">
-                  <template
-                    v-if="!reply.edit"
-                    v-show="index"
+                <div
+                  v-if="reply.edit"
+                  class="flex gap-2 mt-2"
+                >
+                  <Button
+                    variant="solid"
+                    size="xs"
+                    class="font-medium"
+                    @click="
+                      () => {
+                        reply.content = commentContents[reply.name]
+                        reply.edit = false
+                        if (reply.new) {
+                          createComment.submit({
+                            parent: doc,
+                            content: reply.content,
+                            name: reply.name,
+                            is_reply: false,
+                          })
+                        } else {
+                          editComment.submit(reply)
+                        }
+                      }
+                    "
                   >
-                    <Button
-                      variant="subtle"
-                      size="xs"
-                      class="font-medium"
-                      @click="reply.edit = true"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="subtle"
-                      size="xs"
-                      class="font-medium"
-                      @click="removeComment(reply.name, false)"
-                      >Delete</Button
-                    >
-                  </template>
-                  <template v-else>
-                    <Button
-                      variant="solid"
-                      size="xs"
-                      class="font-medium"
-                      @click="
-                        () => {
-                          reply.content = commentContents[reply.name]
+                    Submit
+                  </Button>
+                  <Button
+                    size="xs"
+                    class="font-medium"
+                    @click="
+                      () => {
+                        if (reply.new) {
+                          removeComment(reply.name, false, false)
+                        } else {
+                          editor.commands.setContent(reply.content)
                           reply.edit = false
-                          if (reply.new) {
-                            createComment.submit({
-                              parent: doc,
-                              content: reply.content,
-                              name: reply.name,
-                              is_reply: false,
-                            })
-                          } else {
-                            editComment.submit(reply)
-                          }
                         }
-                      "
-                    >
-                      Submit
-                    </Button>
-                    <Button
-                      size="xs"
-                      class="font-medium"
-                      @click="
-                        () => {
-                          if (reply.new) {
-                            removeComment(reply.name, false, false)
-                          } else {
-                            editor.commands.setContent(reply.content)
-                            reply.edit = false
-                          }
-                        }
-                      "
-                      >Cancel</Button
-                    >
-                  </template>
+                      }
+                    "
+                    >Cancel</Button
+                  >
                 </div></template
               >
             </TextEditor>
@@ -195,10 +200,11 @@
 <script setup>
 import { useTemplateRef, computed, reactive, watch, onMounted } from "vue"
 import { allUsers } from "@/resources/permissions"
-import { Avatar, Button, TextEditor, createResource } from "frappe-ui"
+import { Avatar, Button, TextEditor, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
 import { comment } from "postcss"
+import { LucideMoreVertical } from "lucide-vue-next"
 
 const props = defineProps({
   doc: String,

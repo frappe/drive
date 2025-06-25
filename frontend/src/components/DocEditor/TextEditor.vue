@@ -212,7 +212,7 @@ const ExtendedCommentExtension = CommentExtension.extend({
           const markType = state.schema.marks[this.name]
 
           doc.descendants((node, pos) => {
-            if (!node.isText) return true // Only check marks on text nodes
+            if (!node.isText) return true
             node.marks.forEach((mark) => {
               if (
                 mark.type === markType &&
