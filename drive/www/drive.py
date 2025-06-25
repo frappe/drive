@@ -7,7 +7,14 @@ no_cache = 1
 TITLES = {"login": "Login", "signup": "Create an Account", "setup": "Set up your Account"}
 
 
-def get_context():
+def get_context():    
+    # Check if user is Website User and redirect
+    if frappe.session.user and frappe.session.user != "Guest":
+        user_type = frappe.db.get_value("User", frappe.session.user, "user_type")
+        if user_type == "Website User":
+            frappe.local.flags.redirect_location = "/"
+            raise frappe.Redirect
+    
     csrf_token = frappe.sessions.get_csrf_token()
     frappe.db.commit()
     context = frappe._dict()
