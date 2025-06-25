@@ -210,6 +210,14 @@ def verify_otp(account_request, otp):
         return {"location": "/drive"}
 
 
+@frappe.whitelist()
+def get_user_type():
+    """Get the user type of the current user"""
+    if frappe.session.user == "Guest":
+        return "Guest"
+    return frappe.db.get_value("User", frappe.session.user, "user_type")
+
+
 @frappe.whitelist(allow_guest=True)
 def get_settings():
     if frappe.session.user == "Guest":

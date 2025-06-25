@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { manageBreadcrumbs } from "./utils/files"
-import { createResource } from "frappe-ui"
+import { createResource, call } from "frappe-ui"
 
 function clearStore() {
   store.commit("setActiveEntity", null)
@@ -23,6 +23,19 @@ const routes = [
     component: () => null,
     beforeEnter: async () => {
       if (!store.getters.isLoggedIn) return "/login"
+      
+      // Check if user is Website User
+      try {
+        const userType = await call("/api/method/drive.api.product.get_user_type")
+        if (userType === "Website User") {
+          // Website Users should stay on home page, not go to Drive
+          window.location.href = "/"
+          return false
+        }
+      } catch (error) {
+        console.error("Error checking user type:", error)
+      }
+      
       const settings = createResource({
         url: "/api/method/drive.api.product.get_settings",
         method: "GET",
