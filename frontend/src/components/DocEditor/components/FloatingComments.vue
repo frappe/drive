@@ -1,5 +1,6 @@
 <template>
   <div
+    v-show="comments.length > 0"
     class="border-s-2 px-12 pt-6 pb-[100%] flex flex-col gap-8 justify-start max-h-full overflow-auto"
   >
     <div
@@ -135,8 +136,12 @@
                       class="font-medium"
                       @click="
                         () => {
-                          editor.commands.setContent(reply.content)
-                          reply.edit = false
+                          if (reply.new) {
+                            removeComment(reply.name, false, false)
+                          } else {
+                            editor.commands.setContent(reply.content)
+                            reply.edit = false
+                          }
                         }
                       "
                       >Cancel</Button
@@ -232,9 +237,9 @@ const newReply = (comment) => {
   activeComment.value = ""
 }
 
-const removeComment = (name, entire) => {
+const removeComment = (name, entire, server = true) => {
   props.editor.commands.unsetComment(name)
-  deleteComment.submit({ name, entire })
+  if (server) deleteComment.submit({ name, entire })
   for (let [i, val] of Object.entries(comments.value)) {
     if (val.name === name) {
       comments.value.splice(i, 1)
@@ -252,8 +257,13 @@ const removeComment = (name, entire) => {
 watch(activeComment, (val) => {
   if (!val) return
   document.querySelector(".active")?.classList?.remove?.("active")
-  document
-    .querySelector(`span[data-comment-id="${val}"]`)
-    .classList.add("active")
+  // Sometimes remove runs after adding the class :woozy:
+  setTimeout(
+    () =>
+      document
+        .querySelector(`span[data-comment-id="${val}"]`)
+        .classList.add("active"),
+    100
+  )
 })
 </script>

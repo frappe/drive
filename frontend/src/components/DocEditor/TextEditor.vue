@@ -1,6 +1,9 @@
 <template>
   <div class="flex w-full">
-    <div class="w-[60%] mx-auto overflow-y-auto">
+    <div
+      class="mx-auto overflow-y-auto"
+      :class="comments.length ? 'w-[60%]' : 'w-[80%]'"
+    >
       <FTextEditor
         ref="textEditor"
         editor-class="prose-sm min-h-[4rem] p-2"
@@ -105,7 +108,7 @@ import {
 } from "frappe-ui"
 import { DOMParser } from "prosemirror-model"
 import { v4 as uuidv4 } from "uuid"
-import { computed, watch, onMounted, reactive, ref } from "vue"
+import { computed, watch, onMounted, reactive, ref, onBeforeUnmount } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebrtcProvider } from "y-webrtc"
 import * as Y from "yjs"
@@ -176,9 +179,6 @@ const implicitTitle = ref(null)
 const allComments = reactive([])
 const allAnnotations = reactive([])
 const activeComment = ref(null)
-// watch(activeComment, (val) => {
-//   console.log(document.querySelector(`span[data-comment-id=${val}]`))
-// })
 
 const versions = reactive([])
 const selectedSnapshot = ref(null)
@@ -536,6 +536,11 @@ onMounted(() => {
     const pos2 = orderedComments.findIndex((k) => k.id === b.name)
     return pos1 - pos2
   })
+})
+onBeforeUnmount(() => {
+  comments.value
+    .filter((k) => k.new)
+    .filter(({ name }) => editor.value.commands.unsetComment(name))
 })
 
 onKeyDown("s", (e) => {
