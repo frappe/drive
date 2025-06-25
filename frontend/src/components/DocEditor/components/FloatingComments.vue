@@ -1,10 +1,10 @@
 <template>
   <div
-    v-show="comments.length > 0"
+    v-show="filteredComments.length > 0"
     class="border-s-2 px-12 pt-6 pb-[100%] flex flex-col gap-8 justify-start max-h-full overflow-auto"
   >
     <div
-      v-for="comment in comments"
+      v-for="comment in filteredComments"
       :key="comment.name"
       :id="'comment-' + comment.name"
       @click="activeComment = comment.name"
@@ -18,6 +18,7 @@
         <Button
           variant="ghost"
           size="xs"
+          @click="resolve(comment)"
         >
           <template #prefix>
             <LucideCheck class="size-3.5" />
@@ -197,6 +198,7 @@ import { allUsers } from "@/resources/permissions"
 import { Avatar, Button, TextEditor, createResource } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
+import { comment } from "postcss"
 
 const props = defineProps({
   doc: String,
@@ -206,6 +208,10 @@ const props = defineProps({
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
 
+const filteredComments = computed(() =>
+  props.comments.filter((k) => !k.resolved)
+)
+
 const createComment = createResource({
   url: "drive.api.files.create_comment",
 })
@@ -214,6 +220,9 @@ const editComment = createResource({
 })
 const deleteComment = createResource({
   url: "drive.api.files.delete_comment",
+})
+const resolveComment = createResource({
+  url: "drive.api.files.resolve_comment",
 })
 
 const newReplies = reactive({})
@@ -238,7 +247,6 @@ const newReply = (comment) => {
 }
 
 const removeComment = (name, entire, server = true) => {
-  props.editor.commands.unsetComment(name)
   if (server) deleteComment.submit({ name, entire })
   for (let [i, val] of Object.entries(comments.value)) {
     if (val.name === name) {
@@ -252,6 +260,12 @@ const removeComment = (name, entire, server = true) => {
       }
     }
   }
+}
+
+const resolve = (comment) => {
+  resolveComment.submit({ name: comment.name })
+  props.editor.commands.resolveComment(comment.name)
+  comment.resolved = true
 }
 
 watch(activeComment, (val) => {

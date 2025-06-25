@@ -2,7 +2,11 @@
   <div class="flex w-full">
     <div
       class="mx-auto overflow-y-auto"
-      :class="comments.length ? 'w-[60%]' : 'w-[80%]'"
+      :class="
+        comments.filter((k) => !k.resolved).length
+          ? 'w-[60%]'
+          : 'w-[90%] sm:w-[80%]'
+      "
     >
       <FTextEditor
         ref="textEditor"
@@ -184,11 +188,63 @@ const versions = reactive([])
 const selectedSnapshot = ref(null)
 const snapShotDialog = ref(false)
 
+const ExtendedCommentExtension = CommentExtension.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+
+      resolved: {
+        default: false,
+        parseHTML: (el) => el.hasAttribute("data-resolved"),
+        renderHTML: (attrs) =>
+          attrs.resolved ? { "data-resolved": "true" } : {},
+      },
+    }
+  },
+  addCommands() {
+    return {
+      ...this.parent?.(),
+
+      resolveComment:
+        (commentId) =>
+        ({ state, tr, dispatch }) => {
+          const { doc } = state
+          const markType = state.schema.marks[this.name]
+
+          doc.descendants((node, pos) => {
+            if (!node.isText) return true // Only check marks on text nodes
+            node.marks.forEach((mark) => {
+              if (
+                mark.type === markType &&
+                mark.attrs.commentId === commentId &&
+                !mark.attrs.resolved
+              ) {
+                const updatedMark = markType.create({
+                  ...mark.attrs,
+                  resolved: true,
+                })
+
+                tr.removeMark(pos, pos + node.nodeSize, markType)
+                tr.addMark(pos, pos + node.nodeSize, updatedMark)
+              }
+            })
+          })
+
+          if (tr.docChanged && dispatch) {
+            dispatch(tr)
+            return true
+          }
+
+          return false
+        },
+    }
+  },
+})
 const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
   }),
-  CommentExtension.configure({
+  ExtendedCommentExtension.configure({
     HTMLAttributes: {
       class: "",
     },

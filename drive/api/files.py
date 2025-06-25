@@ -1007,3 +1007,10 @@ def delete_comment(name, entire=True):
         for r in comment.replies:
             r.delete()
     comment.delete()
+
+
+@frappe.whitelist()
+def resolve_comment(name):
+    comment = frappe.get_doc("Drive Comment", name)
+    comment.resolved = True
+    comment.save()

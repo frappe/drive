@@ -69,15 +69,15 @@ body {
 }
 
 span[data-annotation-id],
-span[data-comment-id] {
+span[data-comment-id]:not([data-resolved="true"]) {
   border-bottom: 2px dashed #facc15;
   user-select: text;
   cursor: pointer;
 }
 
 span[data-annotation-id]:hover,
-span[data-comment-id]:hover,
-span[data-comment-id].active {
+span[data-comment-id]:not([data-resolved="true"]):hover,
+span[data-comment-id]:not([data-resolved="true"]).active {
   background: rgba(250, 204, 21, 0.4);
 }
 
