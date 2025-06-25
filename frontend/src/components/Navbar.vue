@@ -48,7 +48,11 @@
         </Button>
       </Dropdown>
       <Dropdown
-        v-if="['Folder', 'Home', 'Team'].includes($route.name) && isLoggedIn"
+        v-if="
+          ['Folder', 'Home', 'Team'].includes($route.name) &&
+          isLoggedIn &&
+          props.rootResource?.data?.write
+        "
         :options="newEntityOptions"
         placement="left"
         class="basis-5/12 lg:basis-auto"

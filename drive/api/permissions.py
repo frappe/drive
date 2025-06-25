@@ -40,15 +40,15 @@ def get_user_access(entity, user=frappe.session.user):
 
     # Default access based on public or team view
     teams = get_teams(user)
+    access = get_access(entity.team)
     if entity.team in teams and entity.is_private == 0:
-        # Everyone can upload to team folders
-        admin = is_admin(entity.team)
+        # Everyone can upload to team folders, and admins can edit all files
         access = {
             "read": 1,
             "comment": 1,
             "share": 1,
-            "write": 1 if (entity.is_group or admin) else 0,
-            "type": "team-admin" if not admin else "team",
+            "write": 1 if ((entity.is_group and access) or access == 2) else 0,
+            "type": {2: "team-admin", 1: "team", 0: "guest"}[access],
         }
     else:
         access = {
@@ -82,6 +82,11 @@ def get_user_access(entity, user=frappe.session.user):
 def is_admin(team):
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
     return drive_team[frappe.session.user].access_level == 2
+
+
+def get_access(team):
+    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
+    return drive_team[frappe.session.user].access_level
 
 
 @frappe.whitelist()

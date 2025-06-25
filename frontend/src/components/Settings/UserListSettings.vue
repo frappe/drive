@@ -39,7 +39,7 @@
                 <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
               </div>
               <Dropdown
-                v-if="isAdmin.data && user.name != $store.state.user.fullName"
+                v-if="isAdmin.data && user.name != $store.state.user.id"
                 v-slot="{ open }"
                 :options="accessOptions"
                 placement="right"
@@ -77,8 +77,11 @@
                       ? "User"
                       : "Guest"
                   )
-                }}</span
-              >
+                }}
+                <template v-if="user.name === $store.state.user.id"
+                  >(you)</template
+                >
+              </span>
             </div>
           </div>
         </div>

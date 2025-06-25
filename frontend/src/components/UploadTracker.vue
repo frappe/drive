@@ -47,43 +47,21 @@
     <div
       class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1 mb-2"
     >
-      <Button
-        variant="ghost"
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          currentTab === 1
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click="currentTab = 1"
-      >
-        In Progress
-      </Button>
-      <Button
-        variant="ghost"
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          currentTab === 2
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click="currentTab = 2"
-      >
-        Completed
-      </Button>
-      <Button
-        v-show="uploadsFailed.length > 0"
-        variant="ghost"
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          currentTab === 3
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click="currentTab = 3"
-      >
-        Failed
-      </Button>
+      <TabButtons
+        v-model="currentTab"
+        :buttons="
+          uploadsFailed.length > 0
+            ? [
+                { value: 1, label: 'In Progress' },
+                { value: 2, label: 'Completed' },
+                { value: 3, label: 'Failed' },
+              ]
+            : [
+                { value: 1, label: 'In Progress' },
+                { value: 2, label: 'Completed' },
+              ]
+        "
+      />
     </div>
     <div
       v-if="!collapsed"
@@ -112,26 +90,28 @@
                 {{ upload.name }}
               </p>
             </div>
-            <LucideX
-              v-if="upload.completed && upload.error"
-              class="h-3 w-3"
-            />
-            <Button variant="ghost">
+            <Button
+              variant="ghost"
+              v-if="upload.completed"
+            >
+              <LucideInfo
+                v-if="upload.error"
+                class="size-4 text-ink-gray-6"
+              />
               <LucideFolderOpenDot
-                v-if="upload.completed"
-                class="h-4.5 w-4.5 place-items-center"
-                :stroke-width="1.5"
+                v-else
+                class="size-4 text-ink-gray-6 place-items-center"
               />
             </Button>
-            <button
+            <Button
               v-if="hoverIndex === index"
               v-show="!upload.completed && hoverIndex === index"
+              variant="ghost"
               class="rounded-full hover:bg-surface-red-4"
-              variant="'ghost'"
               @click="emitter.emit('cancelUpload', upload.uuid)"
             >
               <LucideX class="h-6 w-6 p-1" />
-            </button>
+            </Button>
             <div
               v-if="hoverIndex !== index"
               v-show="!upload.completed && !upload.error"
@@ -189,7 +169,7 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import { Dialog } from "frappe-ui"
+import { Dialog, TabButtons } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
 
 export default {
@@ -197,6 +177,7 @@ export default {
   components: {
     ProgressRing,
     Dialog,
+    TabButtons,
   },
   data() {
     return {

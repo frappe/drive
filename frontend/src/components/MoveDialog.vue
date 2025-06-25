@@ -43,7 +43,9 @@
                 : k.value !== currentFolder
             )
           "
-        />
+        >
+          <template #suffix-icon>&#8203;</template>
+        </Autocomplete>
         <Tabs
           v-model="tabIndex"
           as="div"
@@ -61,7 +63,7 @@
                   #node="{ node, hasChildren, isCollapsed, toggleCollapsed }"
                 >
                   <div
-                    class="flex items-center cursor-pointer select-none gap-1 h-[28px]"
+                    class="flex items-center cursor-pointer select-none gap-1 h-7"
                     @click="openEntity(node)"
                   >
                     <div
