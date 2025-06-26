@@ -1,56 +1,52 @@
 <template>
   <div class="flex w-full">
-    <div class="flex-1 overflow-auto">
+    <div class="w-full">
       <Navbar
         v-if="!file?.error"
         :root-resource="file"
       />
-      <FolderContentsError
+      <ErrorPage
         v-if="file.error"
         :error="file.error"
       />
-
       <div
-        class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
+        id="renderContainer"
+        :draggable="false"
+        class="h-[100vh] overflow-y-auto pt-8 pb-24"
       >
-        <div
-          id="renderContainer"
-          :draggable="false"
-          class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh] mt-3"
+        <LoadingIndicator
+          v-if="file.loading"
+          class="w-10 h-full text-neutral-100 mx-auto"
+        />
+        <FileRender
+          v-else-if="file.data"
+          :preview-entity="file.data"
+        />
+      </div>
+      <div
+        class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-surface-white"
+      >
+        <Button
+          :disabled="!prevEntity?.name"
+          :variant="'ghost'"
+          icon="arrow-left"
+          @click="scrollEntity(true)"
+        />
+        <Button
+          :variant="'ghost'"
+          @click="enterFullScreen"
         >
-          <LoadingIndicator
-            v-if="file.loading"
-            class="w-10 h-full text-neutral-100 mx-auto"
-          />
-          <FileRender
-            v-else-if="file.data"
-            :preview-entity="file.data"
-          />
-        </div>
-        <div
-          class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-surface-white"
-        >
-          <Button
-            :disabled="!prevEntity?.name"
-            :variant="'ghost'"
-            icon="arrow-left"
-            @click="scrollEntity(true)"
-          />
-          <Button
-            :variant="'ghost'"
-            @click="enterFullScreen"
-          >
-            <LucideScan class="w-4" />
-          </Button>
-          <Button
-            :disabled="!nextEntity?.name"
-            :variant="'ghost'"
-            icon="arrow-right"
-            @click="scrollEntity()"
-          />
-        </div>
+          <LucideScan class="w-4" />
+        </Button>
+        <Button
+          :disabled="!nextEntity?.name"
+          :variant="'ghost'"
+          icon="arrow-right"
+          @click="scrollEntity()"
+        />
       </div>
     </div>
+
     <InfoSidebar />
   </div>
 </template>
@@ -73,7 +69,7 @@ import { useRouter } from "vue-router"
 import LucideScan from "~icons/lucide/scan"
 import { onKeyStroke } from "@vueuse/core"
 import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
-import FolderContentsError from "@/components/FolderContentsError.vue"
+import ErrorPage from "@/components/ErrorPage.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
 
 const router = useRouter()

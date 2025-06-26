@@ -3,16 +3,13 @@
     v-if="loading"
     class="w-10 h-full z-10 text-neutral-100 mx-auto"
   />
-  <div
+  <pre
     v-else
-    id="container"
-    class="flex items-center justify-center w-full h-full overflow-auto"
+    class="font-[InterVar] font-normal text-p-base text-ink-gray-8 sm:w-full md:w-2/3 mx-auto border p-3 rounded overflow-x-auto"
   >
-    <pre
-      class="bg-surface-menu-bar sm:w-full md:w-2/3 text-ink-gray-8 text-sm border select-text p-3 font-mono overflow-x-auto overflow-y-auto"
-      >{{ blob }}</pre
-    >
-  </div>
+      {{ blob }}
+    </pre
+  >
 </template>
 
 <script setup>

@@ -3,7 +3,7 @@
     v-if="!document.error"
     :root-resource="document"
   />
-  <FolderContentsError
+  <ErrorPage
     v-if="document.error"
     :error="document.error"
   />

@@ -16,7 +16,7 @@
     :root-resource="verify"
   />
 
-  <FolderContentsError
+  <ErrorPage
     v-if="verify?.error || getEntities.error"
     :error="verify?.error || getEntities.error"
   />
@@ -83,7 +83,7 @@ import DriveToolBar from "@/components/DriveToolBar.vue"
 import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
-import FolderContentsError from "@/components/FolderContentsError.vue"
+import ErrorPage from "@/components/ErrorPage.vue"
 import InfoPopup from "@/components/InfoPopup.vue"
 import { getLink } from "@/utils/getLink"
 import { toggleFav, clearRecent } from "@/resources/files"
@@ -166,7 +166,8 @@ if (!settings.fetched) settings.fetch()
 
 // Drag and drop
 const onDrop = (targetFile, draggedItem) => {
-  if (!targetFile.is_group || draggedItem === targetFile.name) return
+  if (!targetFile.is_group || draggedItem === targetFile.name || !draggedItem)
+    return
   move.submit({
     entity_names: [draggedItem],
     new_parent: targetFile.name,
