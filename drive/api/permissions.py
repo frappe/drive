@@ -65,6 +65,12 @@ def get_user_access(entity, user=frappe.session.user):
     public_path = generate_upward_path(entity.name, "Guest")
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
 
+    # If file has public read access, grant it to all users
+    if public_access.get("read"):
+        access.update(public_access)
+        access["type"] = "public"
+        return access
+
     valid_accesses = [user_access, public_access]
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
@@ -81,12 +87,14 @@ def get_user_access(entity, user=frappe.session.user):
 @frappe.whitelist()
 def is_admin(team):
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level == 2
+    team_member = drive_team.get(frappe.session.user)
+    return team_member and team_member.access_level == 2
 
 
 def get_access(team):
     drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
-    return drive_team[frappe.session.user].access_level
+    # Return 0 (guest level) if user is not a team member
+    return drive_team.get(frappe.session.user, frappe._dict(access_level=0)).access_level
 
 
 @frappe.whitelist()
