@@ -8,11 +8,11 @@
       :key="comment.name"
     >
       <div
-        v-show="comment.top"
+        ref="commentRefs"
         :id="'comment-' + comment.name"
         @click="activeComment = comment.name"
-        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 left-1/2 -translate-x-1/2"
-        :class="[activeComment === comment.name && 'shadow-xl ']"
+        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 bg-surface-white left-1/2 -translate-x-1/2"
+        :class="[activeComment === comment.name && 'shadow-xl z-[1000]']"
         :style="`top: ${comment.top}px;`"
       >
         <div
@@ -222,16 +222,7 @@ const props = defineProps({
 
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
-
-onMounted(() => {
-  for (let comment of comments.value)
-    setTimeout(() => {
-      const top = document
-        .querySelector(`[data-comment-id="${comment.name}"]`)
-        .getBoundingClientRect().top
-      comment.top = top - 72
-    }, 100)
-})
+const commentRefs = ref([])
 
 const newReplies = reactive({})
 const commentContents = reactive({})
@@ -245,6 +236,7 @@ const filteredComments = computed(() =>
 
 watch(activeComment, (val) => {
   if (!val) return
+  setCommentHeights()
   document.querySelector(".active")?.classList?.remove?.("active")
   // Sometimes remove runs after adding the class :woozy:
   setTimeout(
@@ -330,4 +322,20 @@ const formatDateOrTime = (datetimeStr) => {
   const [dateStr, timeStr] = formatDate(datetime).split(", ")
   return isToday ? timeStr : dateStr
 }
+
+const setCommentHeights = () => {
+  let lastBottom = 0
+  for (let [index, comment] of Object.entries(filteredComments.value))
+    setTimeout(() => {
+      const anchorTop =
+        document
+          .querySelector(`[data-comment-id="${comment.name}"]`)
+          .getBoundingClientRect().top - 72
+      const adjustedTop = Math.max(anchorTop, lastBottom)
+      comment.top = adjustedTop
+      const commentHeight = commentRefs.value[index].offsetHeight
+      lastBottom = adjustedTop + commentHeight + 12
+    }, 100)
+}
+onMounted(setCommentHeights)
 </script>

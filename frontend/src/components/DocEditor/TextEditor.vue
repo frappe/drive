@@ -25,6 +25,7 @@
       />
     </div>
     <FloatingComments
+      v-if="comments.length"
       :entity-name="entity.name"
       :editor
       v-model:active-comment="activeComment"
@@ -170,7 +171,7 @@ const props = defineProps({
   isWritable: Boolean,
   users: Object,
 })
-const comments = ref(props.entity.comments)
+const comments = ref([])
 
 const emit = defineEmits([
   "updateTitle",
