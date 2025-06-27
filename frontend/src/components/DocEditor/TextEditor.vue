@@ -1,7 +1,7 @@
 <template>
-  <div class="flex w-full">
+  <div class="flex w-full h-100 overflow-y-auto">
     <div
-      class="mx-auto overflow-y-auto"
+      class="mx-auto"
       :class="
         comments.filter((k) => !k.resolved).length
           ? 'w-[60%]'
@@ -158,7 +158,9 @@ import store from "../../store"
 const autosave = debounce(() => emit("saveDocument"), 1000)
 const textEditor = ref("textEditor")
 const editor = computed(() => {
-  return textEditor.value?.editor
+  let editor = textEditor.value?.editor
+  if (editor?.options?.element) editor.options.element.onscroll = console.log
+  return editor
 })
 
 const props = defineProps({
@@ -579,13 +581,6 @@ emitter.on("importDocFromWord", () => {
 })
 
 onMounted(() => {
-  // localStore.value = new IndexeddbPersistence(
-  //   "fdoc-" + JSON.stringify(props.entity.name),
-  //   doc
-  // );
-  // localStore.value.on("synced", () => {
-  //   ready.value = true;
-  // });
   const orderedComments = getOrderedComments(editor.value.state.doc)
   comments.value = props.entity.comments.toSorted((a, b) => {
     const pos1 = orderedComments.findIndex((k) => k.id === a.name)
