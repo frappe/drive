@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "debug": "vite build --mode=development --base=/assets/drive/frontend/ && yarn copy-html-entry",
-    "build": "NODE_OPTIONS=--max-old-space-size=4096 vite build --base=/assets/drive/frontend/ && yarn copy-html-entry",
+    "build": "NODE_OPTIONS=--max-old-space-size=2048 vite build --base=/assets/drive/frontend/ && yarn copy-html-entry",
     "copy-html-entry": "cp ../drive/public/frontend/index.html ../drive/www/drive.html",
     "preview": "vite preview",
     "precommit": "pretty-quick --staged",
