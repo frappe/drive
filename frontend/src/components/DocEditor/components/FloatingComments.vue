@@ -1,17 +1,15 @@
 <template>
   <div
     v-show="filteredComments.length > 0"
-    class="border-s-2 px-12 pt-6 pb-[100%] flex flex-col gap-8 justify-start max-h-full overflow-auto"
+    class="border-s-2 p-6 pb-[100%] flex flex-col gap-8 justify-start max-h-full overflow-auto"
   >
     <div
       v-for="comment in filteredComments"
       :key="comment.name"
       :id="'comment-' + comment.name"
       @click="activeComment = comment.name"
-      class="rounded border w-52 comment-group shadow-sm"
-      :class="[
-        activeComment === comment.name && 'border-outline-amber-2 shadow-2xl',
-      ]"
+      class="rounded shadow w-72 comment-group scroll-m-8 opacity-90"
+      :class="[activeComment === comment.name && 'shadow-xl !opacity-100']"
     >
       <div
         v-show="activeComment === comment.name"
@@ -50,7 +48,7 @@
           Delete
         </Button>
       </div>
-      <div class="flex flex-col p-2.5 gap-2.5">
+      <div class="flex flex-col p-3 gap-5">
         <div
           v-for="(reply, index) in activeComment === comment.name
             ? [
@@ -61,190 +59,158 @@
               ]
             : [comment]"
           :key="reply.name"
-          class="group flex flex-col gap-2.5"
+          class="group w-full flex gap-3"
         >
-          <div class="flex justify-between">
-            <div class="flex gap-2.5 items-center">
-              <Avatar
-                :label="reply.owner"
-                :image="$user(reply.owner).user_image"
-              />
-              <div class="label-group flex flex-col gap-1 text-sm items-start">
+          <div class="w-8 flex justify-center">
+            <Avatar
+              size="xl"
+              class="bg-surface-white"
+              :label="reply.owner"
+              :image="$user(reply.owner).user_image"
+            />
+          </div>
+          <div class="grow flex flex-col">
+            <div class="w-full flex justify-between items-start">
+              <div class="label-group flex gap-1 text-sm w-full">
                 <label class="font-medium text-ink-gray-8">{{
                   $user(reply.owner).full_name
                 }}</label>
 
-                <label class="text-ink-gray-6">{{
-                  formatDate(reply.creation)
-                }}</label>
-              </div>
-            </div>
-            <Dropdown
-              v-if="
-                activeComment === comment.name && !reply.edit && !reply.resolved
-              "
-              :options="
-                index === 0
-                  ? [{ onClick: () => (reply.edit = true), label: 'Edit' }]
-                  : [
-                      { onClick: () => (reply.edit = true), label: 'Edit' },
-                      {
-                        label: 'Delete',
-                        onClick: () => removeComment(reply.name, false),
-                      },
-                    ]
-              "
-            >
-              <Button
-                size="xs"
-                variant="ghost"
-                @click="triggerRoot"
-              >
-                <LucideMoreVertical class="size-3" />
-              </Button>
-            </Dropdown>
-            <LucideBadgeCheck
-              v-else-if="comment.resolved"
-              class="text-ink-gray-6 size-4"
-            />
-          </div>
-          <div class="comment-content text-sm">
-            <TextEditor
-              :editable="reply.edit === true"
-              :content="reply.content"
-              :mentions="allUsers.data"
-              :editor-class="[
-                'text-p-sm',
-                reply.edit && 'p-1.5 border rounded',
-              ]"
-              placeholder="Reply"
-              @change="(val) => (commentContents[reply.name] = val)"
-              :bubble-menu="[
-                'Bold',
-                'Italic',
-                'Strikethrough',
-                'Separator',
-                'Code',
-                'Blockquote',
-                'Separator',
-                ['Bullet List', 'Numbered List'],
-              ]"
-            >
-              <template #bottom="{ editor }">
-                <div
-                  v-if="reply.edit"
-                  class="flex gap-2 mt-2"
+                <label class="text-ink-gray-6">
+                  &#183;
+                  {{ formatDateOrTime(reply.creation) }}</label
+                >
+                <Dropdown
+                  class="ml-auto opacity-0"
+                  :class="
+                    activeComment === comment.name &&
+                    !reply.edit &&
+                    !reply.resolved &&
+                    'opacity-100'
+                  "
+                  :options="
+                    index === 0
+                      ? [
+                          {
+                            onClick: () => (reply.edit = true),
+                            label: 'Edit',
+                          },
+                        ]
+                      : [
+                          {
+                            onClick: () => (reply.edit = true),
+                            label: 'Edit',
+                          },
+                          {
+                            label: 'Delete',
+                            onClick: () => removeComment(reply.name, false),
+                          },
+                        ]
+                  "
                 >
                   <Button
-                    variant="solid"
                     size="xs"
-                    class="font-medium"
-                    @click="
-                      () => {
-                        reply.content = commentContents[reply.name]
-                        reply.edit = false
-                        if (reply.new) {
-                          createComment.submit({
-                            parent: doc,
-                            content: reply.content,
-                            name: reply.name,
-                            is_reply: false,
-                          })
-                        } else {
-                          editComment.submit(reply)
-                        }
-                      }
-                    "
+                    variant="ghost"
+                    @click="triggerRoot"
                   >
-                    Submit
+                    <LucideMoreVertical class="size-3" />
                   </Button>
-                  <Button
-                    size="xs"
-                    class="font-medium"
-                    @click="
-                      () => {
-                        if (reply.new) {
-                          removeComment(reply.name, false, false)
-                        } else {
-                          editor.commands.setContent(reply.content)
-                          reply.edit = false
-                        }
-                      }
-                    "
-                    >Cancel</Button
-                  >
-                </div></template
-              >
-            </TextEditor>
+                </Dropdown>
+                <LucideBadgeCheck
+                  v-if="comment.resolved"
+                  class="text-ink-gray-6 size-4"
+                />
+              </div>
+            </div>
+            <div class="comment-content text-sm">
+              <CommentEditor
+                v-model="commentContents[comment.name]"
+                placeholder="Edit"
+                :disabled="
+                  isEmpty(commentContents[comment.name]) ||
+                  commentContents[comment.name] == reply.content
+                "
+                :editable="reply.edit === true"
+                :content="reply.content"
+                @submit="
+                  () => {
+                    reply.content = commentContents[reply.name]
+                    reply.edit = false
+                    if (reply.new) {
+                      createComment.submit({
+                        parent: entityName,
+                        content: reply.content,
+                        name: reply.name,
+                        is_reply: false,
+                      })
+                    } else {
+                      editComment.submit(reply)
+                    }
+                  }
+                "
+                @cancel="
+                  (editor) => {
+                    if (reply.new) {
+                      removeComment(reply.name, false, false)
+                    } else {
+                      editor.commands.setContent(reply.content)
+                      reply.edit = false
+                    }
+                  }
+                "
+              />
+            </div>
           </div>
         </div>
+
         <div
-          v-if="activeComment !== comment.name"
-          class="text-ink-gray-6 font-base text-xs"
-        >
-          {{ comment.replies.length }}
-          {{ comment.replies.length === 1 ? "reply" : "replies" }}
-        </div>
-        <div
-          v-if="
+          class="flex gap-3"
+          v-show="
             activeComment === comment.name && !comment.edit && !comment.resolved
           "
         >
-          <TextEditor
-            :mentions="allUsers.data"
-            editor-class="border rounded text-sm p-2"
+          <Avatar
+            size="xl"
+            class="self-center"
+            :label="$user($store.state.user.id).full_name"
+            :image="$user($store.state.user.id).user_image"
+          />
+
+          <CommentEditor
+            v-model="newReplies[comment.name]"
             placeholder="Reply"
-            @change="(val) => (newReplies[comment.name] = val)"
-            :bubble-menu="[
-              'Bold',
-              'Italic',
-              'Strikethrough',
-              'Separator',
-              'Code',
-              'Blockquote',
-              'Separator',
-              ['Bullet List', 'Numbered List'],
-            ]"
-          >
-            <template #bottom="{ editor }">
-              <Button
-                v-if="newReplies[comment.name]?.length"
-                variant="solid"
-                size="xs"
-                class="font-medium mt-2"
-                @click="newReply(comment, editor)"
-              >
-                Submit
-              </Button></template
-            >
-          </TextEditor>
+            :is-empty="isEmpty(newReplies[comment.name])"
+            @submit="(editor) => newReply(comment, editor)"
+          />
         </div>
+      </div>
+      <div
+        v-if="activeComment !== comment.name"
+        class="text-ink-gray-6 font-base text-xs p-2.5 pt-0"
+      >
+        {{ comment.replies.length }}
+        {{ comment.replies.length === 1 ? "reply" : "replies" }}
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import {
-  useTemplateRef,
-  computed,
-  reactive,
-  watch,
-  inject,
-  onMounted,
-} from "vue"
-import { allUsers } from "@/resources/permissions"
-import { Avatar, Button, TextEditor, createResource, Dropdown } from "frappe-ui"
+import { computed, reactive, watch, inject } from "vue"
+import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
-import { comment } from "postcss"
+import CommentEditor from "./CommentEditor.vue"
 
 const props = defineProps({
-  doc: String,
+  entityName: String,
   editor: Object,
 })
 
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
+
+const newReplies = reactive({})
+const commentContents = reactive({})
 
 const showResolved = inject("showResolved")
 const filteredComments = computed(() =>
@@ -253,6 +219,20 @@ const filteredComments = computed(() =>
     : props.comments.filter((k) => !k.resolved)
 )
 
+watch(activeComment, (val) => {
+  if (!val) return
+  document.querySelector(".active")?.classList?.remove?.("active")
+  // Sometimes remove runs after adding the class :woozy:
+  setTimeout(
+    () =>
+      document
+        .querySelector(`span[data-comment-id="${val}"]`)
+        .classList.add("active"),
+    100
+  )
+})
+
+// Resources
 const createComment = createResource({
   url: "drive.api.files.create_comment",
 })
@@ -266,9 +246,7 @@ const resolveComment = createResource({
   url: "drive.api.files.resolve_comment",
 })
 
-const newReplies = reactive({})
-const commentContents = reactive({})
-
+// Functions
 const newReply = (comment, editor) => {
   const name = v4()
   createComment.submit({
@@ -310,16 +288,22 @@ const resolve = (comment, value = true) => {
   comment.resolved = value
 }
 
-watch(activeComment, (val) => {
-  if (!val) return
-  document.querySelector(".active")?.classList?.remove?.("active")
-  // Sometimes remove runs after adding the class :woozy:
-  setTimeout(
-    () =>
-      document
-        .querySelector(`span[data-comment-id="${val}"]`)
-        .classList.add("active"),
-    100
+const isEmpty = (editorContent) => {
+  return (
+    !editorContent ||
+    !editorContent.length ||
+    editorContent.replace(/\s/g, "") == "<p></p>"
   )
-})
+}
+
+const formatDateOrTime = (datetimeStr) => {
+  const now = new Date()
+  const datetime = new Date(datetimeStr)
+  const isToday =
+    datetime.getDate() === now.getDate() &&
+    datetime.getMonth() === now.getMonth() &&
+    datetime.getFullYear() === now.getFullYear()
+  const [dateStr, timeStr] = formatDate(datetime).split(", ")
+  return isToday ? timeStr : dateStr
+}
 </script>

@@ -185,7 +185,6 @@ const updateDocument = createResource({
 
 onMounted(() => {
   allUsers.fetch({ team: route.params?.team })
-  setTimeout(() => console.log(editor.value), 5000)
   if (saveCount.value > 0) {
     intervalId.value = setInterval(() => {
       emitter.emit("triggerAutoSnapshot")
