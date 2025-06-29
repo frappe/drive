@@ -32,29 +32,6 @@
           },
         ]"
       />
-      <!-- <Button
-        variant="subtle"
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          store.state.shareView === 'with'
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click=""
-      >
-        With you
-      </Button>
-      <Button
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          store.state.shareView === 'by'
-            ? '!bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click=""
-      >
-        By you
-      </Button> -->
     </div>
     <TextInput
       ref="search-input"
@@ -182,15 +159,13 @@
           v-model="viewState"
           :buttons="[
             {
-              icon: LucideLayoutGrid,
+              icon: 'grid',
               value: 'grid',
-              onClick: () => store.commit('toggleView', 'grid'),
               disabled: !getEntities.data?.length,
             },
             {
-              icon: LucideLayoutList,
+              icon: 'list',
               value: 'list',
-              onClick: () => store.commit('toggleView', 'list'),
               disabled: !getEntities.data?.length,
             },
           ]"
@@ -253,6 +228,7 @@ const activeTags = computed(() => store.state.activeTags)
 
 const search = ref("")
 const viewState = ref(store.state.view)
+watch(viewState, (val) => store.commit("toggleView", val))
 const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef("search-input")
 // Do this as the resource data is updated by a lagging `fetch`

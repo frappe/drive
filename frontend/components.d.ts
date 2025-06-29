@@ -165,6 +165,7 @@ declare module 'vue' {
     LucideLock: typeof import('~icons/lucide/lock')['default']
     LucideLogOut: typeof import('~icons/lucide/log-out')['default']
     LucideMessageCircleCode: typeof import('~icons/lucide/message-circle-code')['default']
+    LucideMessageCircleReply: typeof import('~icons/lucide/message-circle-reply')['default']
     LucideMinus: typeof import('~icons/lucide/minus')['default']
     LucideMore: typeof import('~icons/lucide/more')['default']
     LucideMoreHorizontal: typeof import('~icons/lucide/more-horizontal')['default']

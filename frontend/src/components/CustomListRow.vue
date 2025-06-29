@@ -8,8 +8,8 @@
       class="group"
       :class="[
         row.name === selectedName
-          ? 'bg-surface-gray-3 hover:!bg-surface-gray-3'
-          : '',
+          ? 'bg-surface-gray-2 hover:!bg-surface-gray-3'
+          : 'bg-surface-white',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
       ]"
       :draggable="true"

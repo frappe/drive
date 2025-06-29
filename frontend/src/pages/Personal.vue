@@ -3,6 +3,11 @@
     :get-entities="getPersonal"
     :icon="LucideHome"
     primary-message="No personal files"
+    :verify="{
+      data: {
+        write: 1,
+      },
+    }"
   />
 </template>
 
