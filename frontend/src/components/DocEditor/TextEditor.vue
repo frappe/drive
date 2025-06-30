@@ -160,7 +160,6 @@ const autosave = debounce(() => emit("saveDocument"), 1000)
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
-  if (editor?.options?.element) editor.options.element.onscroll = console.log
   return editor
 })
 
@@ -439,7 +438,8 @@ const bubbleMenuButtons = [
     action: (editor) => {
       const id = uuidv4()
       editor.chain().focus().setComment(id).run()
-      comments.value.push({
+      const orderedComments = getOrderedComments(editor.state.doc)
+      const newComment = {
         name: id,
         owner: store.state.user.id,
         creation: new Date(),
@@ -447,6 +447,12 @@ const bubbleMenuButtons = [
         edit: true,
         new: true,
         replies: [],
+      }
+
+      comments.value = [...comments.value, newComment].toSorted((a, b) => {
+        const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+        const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+        return pos1 - pos2
       })
       activeComment.value = id
     },

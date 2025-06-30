@@ -1,22 +1,34 @@
 <template>
   <div
     v-show="filteredComments.length > 0"
-    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start"
+    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start min-h-[100vh] h-full"
   >
     <template
       v-for="comment in filteredComments"
       :key="comment.name"
     >
       <div
+        v-on-outside-click="
+          (e) => {
+            if (
+              activeComment === comment.name &&
+              e.target.nodeName !== 'BUTTON'
+            )
+              activeComment = null
+          }
+        "
         ref="commentRefs"
         :id="'comment-' + comment.name"
         @click="activeComment = comment.name"
-        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 bg-surface-white left-1/2 -translate-x-1/2"
-        :class="[activeComment === comment.name && 'shadow-xl z-[1000]']"
+        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 bg-surface-white left-1/2 -translate-x-1/2 opacity-0 transition-[top] duration-100 ease-in-out"
+        :class="[
+          activeComment === comment.name && 'shadow-xl ',
+          comment.top && 'opacity-100',
+        ]"
         :style="`top: ${comment.top}px;`"
       >
         <div
-          v-show="activeComment === comment.name"
+          v-show="activeComment === comment.name && !comment.new"
           class="p-1.5 text-sm flex gap-1 border-b text-ink-gray-9"
         >
           <Button
@@ -73,58 +85,66 @@
                 :image="$user(reply.owner).user_image"
               />
             </div>
-            <div class="grow flex flex-col">
-              <div class="w-full flex justify-between items-start">
-                <div class="label-group flex gap-1 text-sm w-full">
-                  <label class="font-medium text-ink-gray-8">{{
-                    $user(reply.owner).full_name
-                  }}</label>
+            <div
+              class="grow flex flex-col"
+              :class="reply.edit && 'gap-1'"
+            >
+              <div
+                class="w-full flex justify-between items-start label-group gap-1 text-sm"
+              >
+                <label class="font-medium text-ink-gray-8">{{
+                  $user(reply.owner).full_name
+                }}</label>
 
-                  <label class="text-ink-gray-6 truncate">
-                    &#183;
-                    {{ formatDateOrTime(reply.creation) }}</label
-                  >
-                  <Dropdown
-                    class="ml-auto opacity-0"
-                    :class="
-                      activeComment === comment.name &&
-                      !reply.edit &&
-                      !reply.resolved &&
-                      'opacity-100'
+                <label class="text-ink-gray-6 truncate">
+                  &#183;
+                  {{ formatDateOrTime(reply.creation) }}</label
+                >
+                <Dropdown
+                  class="ml-auto opacity-0 disabled"
+                  :class="
+                    activeComment === comment.name &&
+                    !reply.edit &&
+                    !reply.resolved &&
+                    'opacity-100'
+                  "
+                  :options="
+                    index === 0
+                      ? [
+                          {
+                            onClick: () => (reply.edit = true),
+                            label: 'Edit',
+                          },
+                        ]
+                      : [
+                          {
+                            onClick: () => (reply.edit = true),
+                            label: 'Edit',
+                          },
+                          {
+                            label: 'Delete',
+                            onClick: () => removeComment(reply.name, false),
+                          },
+                        ]
+                  "
+                >
+                  <Button
+                    :disabled="
+                      activeComment !== comment.name ||
+                      reply.edit ||
+                      reply.resolved
                     "
-                    :options="
-                      index === 0
-                        ? [
-                            {
-                              onClick: () => (reply.edit = true),
-                              label: 'Edit',
-                            },
-                          ]
-                        : [
-                            {
-                              onClick: () => (reply.edit = true),
-                              label: 'Edit',
-                            },
-                            {
-                              label: 'Delete',
-                              onClick: () => removeComment(reply.name, false),
-                            },
-                          ]
-                    "
+                    size="xs"
+                    variant="ghost"
+                    @click="triggerRoot"
                   >
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      @click="triggerRoot"
-                    >
-                      <LucideMoreVertical class="size-3" />
-                    </Button>
-                  </Dropdown>
-                  <LucideBadgeCheck
-                    v-if="comment.resolved"
-                    class="text-ink-gray-6 size-4"
-                  />
-                </div>
+                    <LucideMoreVertical class="size-3" />
+                  </Button>
+                </Dropdown>
+                <LucideBadgeCheck
+                  v-if="comment.resolved"
+                  class="text-ink-gray-6 size-4"
+                />
               </div>
               <div class="comment-content text-sm">
                 <CommentEditor
@@ -147,6 +167,7 @@
                           name: reply.name,
                           is_reply: false,
                         })
+                        delete reply.new
                       } else {
                         editComment.submit(reply)
                       }
@@ -198,7 +219,7 @@
           </div>
         </div>
         <div
-          v-if="activeComment !== comment.name"
+          v-if="activeComment !== comment.name && comment.replies.length > 0"
           class="text-ink-gray-6 font-base text-xs p-2.5 pt-0"
         >
           {{ comment.replies.length }}
@@ -235,9 +256,9 @@ const filteredComments = computed(() =>
 )
 
 watch(activeComment, (val) => {
-  if (!val) return
-  setCommentHeights()
   document.querySelector(".active")?.classList?.remove?.("active")
+  setCommentHeights()
+  if (!val) return
   // Sometimes remove runs after adding the class :woozy:
   setTimeout(
     () =>
@@ -284,6 +305,7 @@ const newReply = (comment, editor) => {
 
 const removeComment = (name, entire, server = true) => {
   if (server) deleteComment.submit({ name, entire })
+  props.editor.commands.unsetComment(name)
   for (let [i, val] of Object.entries(comments.value)) {
     if (val.name === name) {
       comments.value.splice(i, 1)
@@ -296,6 +318,7 @@ const removeComment = (name, entire, server = true) => {
       }
     }
   }
+  setCommentHeights()
 }
 
 const resolve = (comment, value = true) => {
@@ -338,4 +361,17 @@ const setCommentHeights = () => {
     }, 100)
 }
 onMounted(setCommentHeights)
+
+props.editor.on("update", () => {
+  const currentNames = new Set()
+  props.editor.state.doc.descendants((node) => {
+    node.marks.forEach((mark) => {
+      if (mark.type.name === "comment" && mark.attrs.commentId) {
+        currentNames.add(mark.attrs.commentId)
+      }
+    })
+  })
+  for (let comment of comments.value)
+    if (!currentNames.has(comment.name)) removeComment(comment.name, true)
+})
 </script>

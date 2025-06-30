@@ -6,14 +6,17 @@
     @keydown.esc.stop="!disabled && !isEmpty && $emit('cancel', editor)"
   >
     <TextEditor
-      @scroll="console.log"
+      :autofocus="true"
       ref="textEditor"
       :editable="editable"
       :content="content"
       :mentions="allUsers.data"
       class="editor flex"
       :class="editable && 'border rounded'"
-      :editor-class="['text-p-sm min-w-2 flex-grow', editable && 'p-2']"
+      :editor-class="[
+        'text-p-sm min-w-2 flex-grow',
+        editable && 'pl-2.5 py-1.5',
+      ]"
       :placeholder
       @change="(val) => (editorContent = val)"
       :bubble-menu="[
@@ -30,7 +33,7 @@
       <template #bottom="{ editor }">
         <div
           v-if="editable"
-          class="self-end me-1 flex-shrink-0 flex gap-1 mb-2"
+          class="self-end me-1 flex-shrink-0 flex gap-1 mb-1.5"
         >
           <Button
             v-if="!isEmpty"
