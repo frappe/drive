@@ -1,13 +1,14 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full text-neutral-100 mx-auto absolute"
+    class="w-10"
   />
   <embed
+    v-else
     ref="embed"
     :src="`/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`"
     type="application/pdf"
-    class="w-4/5 h-full py-5"
+    class="w-4/5 h-fit self-center"
     :class="{ 'opacity-0': loading }"
   />
 </template>

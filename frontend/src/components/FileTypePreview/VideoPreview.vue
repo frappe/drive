@@ -1,13 +1,13 @@
 <template>
   <LoadingIndicator
     v-show="loading"
-    class="w-10 h-full text-neutral-100 mx-auto"
+    class="w-10"
   />
   <video
     v-show="!loading"
     :key="src"
     ref="mediaRef"
-    class="w-auto max-h-full"
+    class="w-4/5 h-fit self-center"
     autoplay
     muted
     preload="none"

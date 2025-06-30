@@ -1,10 +1,10 @@
 <template>
   <LoadingIndicator
-    v-show="loading"
-    class="w-10 h-full text-neutral-100 mx-auto"
+    v-if="loading"
+    class="w-10"
   />
   <audio
-    v-show="!loading"
+    v-else
     :key="src"
     ref="mediaRef"
     class="w-1/4 max-h-full"
