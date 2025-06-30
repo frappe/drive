@@ -12,11 +12,11 @@
       <div
         id="renderContainer"
         :draggable="false"
-        class="h-[100vh] overflow-y-auto pt-8 pb-24"
+        class="h-[100vh] overflow-y-auto pt-8 pb-24 flex justify-center"
       >
         <LoadingIndicator
           v-if="file.loading"
-          class="w-10 h-full text-neutral-100 mx-auto"
+          class="w-10 h-full text-neutral-100"
         />
         <FileRender
           v-else-if="file.data"

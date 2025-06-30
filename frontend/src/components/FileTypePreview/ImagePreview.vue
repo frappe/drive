@@ -1,14 +1,13 @@
 <template>
   <LoadingIndicator
-    v-if="loading"
-    class="w-10 h-full text-neutral-100 mx-auto"
+    v-show="loading"
+    class="w-10"
   />
-  <template v-else>
+  <template v-show="!loading">
     <img
       draggable="false"
-      class="w-4/5 max-h-full"
+      class="w-4/5 h-fit self-center"
       :src="previewURL"
-      id-=""
     />
   </template>
 </template>

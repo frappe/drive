@@ -1,7 +1,7 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full z-10 text-neutral-100 mx-auto"
+    class="w-10"
   />
   <pre
     v-else
