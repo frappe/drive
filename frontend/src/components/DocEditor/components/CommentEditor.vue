@@ -1,8 +1,12 @@
 <template>
   <div
     class="w-full"
-    @keydown.ctrl.enter.capture.stop="!disabled && !isEmpty && $emit('submit')"
-    @keydown.meta.enter.capture.stop="!disabled && !isEmpty && $emit('submit')"
+    @keydown.ctrl.enter.capture.stop="
+      !disabled && !isEmpty && $emit('submit', editor)
+    "
+    @keydown.meta.enter.capture.stop="
+      !disabled && !isEmpty && $emit('submit', editor)
+    "
     @keydown.esc.stop="!disabled && !isEmpty && $emit('cancel', editor)"
   >
     <TextEditor
