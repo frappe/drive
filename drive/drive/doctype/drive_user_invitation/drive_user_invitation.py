@@ -63,18 +63,13 @@ class DriveUserInvitation(Document):
             self.save(ignore_permissions=True)
             frappe.throw("Invalid or expired key")
 
-        exists = frappe.db.exists(
-            "Account Request",
-            {
-                "email": self.email,
-                "signed_up": 1,
-            },
-        )
+        # Check if user exists in the system
+        user_exists = frappe.db.exists("User", self.email)
 
         if redirect:
             frappe.local.response["type"] = "redirect"
 
-        if not exists:
+        if not user_exists:
             # If the user does not have an account, redirect to sign up
             req = frappe.get_doc(
                 {
@@ -90,10 +85,22 @@ class DriveUserInvitation(Document):
             frappe.local.response["location"] = url
             return
 
-        # Otherwise, add the user to the team
+        # User exists, add them to the team
         team = frappe.get_doc("Drive Team", self.team)
-        team.append("users", {"user": self.email})
-        team.save(ignore_permissions=True)
+
+        # Check if user is already a team member
+        existing_member = None
+        for user in team.users:
+            if user.user == self.email:
+                existing_member = user
+                break
+
+        if not existing_member:
+            # Add user to team with default access level
+            team.append("users", {"user": self.email, "access_level": 1})
+            team.save(ignore_permissions=True)
+
+        # Update invitation status
         self.status = "Accepted"
         self.accepted_at = frappe.utils.now()
         self.save(ignore_permissions=True)
