@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="scrollContainer"
     v-show="filteredComments.length > 0"
     class="relative border-s-2 w-80 flex flex-col gap-8 justify-start min-h-[100vh] h-full"
   >
@@ -12,6 +13,7 @@
           (e) => {
             if (
               activeComment === comment.name &&
+              !e.target.getAttribute('data-comment-id') &&
               e.target.nodeName !== 'BUTTON'
             )
               activeComment = null
@@ -235,6 +237,7 @@ import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
 import CommentEditor from "./CommentEditor.vue"
+import { useDebounceFn, useEventListener } from "@vueuse/core"
 
 const props = defineProps({
   entityName: String,
@@ -244,6 +247,7 @@ const props = defineProps({
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
 const commentRefs = ref([])
+const scrollContainer = ref("scrollContainer")
 
 const newReplies = reactive({})
 const commentContents = reactive({})
@@ -350,20 +354,27 @@ const setCommentHeights = () => {
   let lastBottom = 0
   for (let [index, comment] of Object.entries(filteredComments.value))
     setTimeout(() => {
+      const containerTop = scrollContainer.value.getBoundingClientRect().top
       const anchorTop =
         document
           .querySelector(`[data-comment-id="${comment.name}"]`)
-          .getBoundingClientRect().top - 72
+          .getBoundingClientRect().top -
+        containerTop -
+        12
+
       const adjustedTop = Math.max(anchorTop, lastBottom)
       comment.top = adjustedTop
-      const commentHeight = commentRefs.value[index].offsetHeight
-      lastBottom = adjustedTop + commentHeight + 12
+
+      lastBottom = adjustedTop + commentRefs.value[index].offsetHeight + 12
     }, 100)
 }
 onMounted(setCommentHeights)
+const debouncedSetCommentHeights = useDebounceFn(setCommentHeights, 20)
+useEventListener(window, "resize", debouncedSetCommentHeights)
 
 props.editor.on("update", () => {
   const currentNames = new Set()
+  debouncedSetCommentHeights()
   props.editor.state.doc.descendants((node) => {
     node.marks.forEach((mark) => {
       if (mark.type.name === "comment" && mark.attrs.commentId) {
@@ -373,5 +384,6 @@ props.editor.on("update", () => {
   })
   for (let comment of comments.value)
     if (!currentNames.has(comment.name)) removeComment(comment.name, true)
+  setCommentHeights
 })
 </script>
