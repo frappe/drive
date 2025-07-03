@@ -114,16 +114,38 @@ class FileManager:
 
     def __init__(self):
         settings = frappe.get_single("Drive S3 Settings")
-        self.s3_enabled = settings.enabled
-        self.bucket = settings.bucket
+        
+        # Check if Drive S3 Settings is enabled
+        if settings.enabled:
+            self.s3_enabled = True
+            self.bucket = settings.bucket
+            aws_key = settings.aws_key
+            aws_secret = settings.get_password("aws_secret")
+            endpoint_url = settings.endpoint_url or None
+            signature_version = settings.signature_version
+        else:
+            # Fallback to site_config.json S3 settings
+            site_config = frappe.local.conf
+            if site_config.get("s3_bucket"):
+                self.s3_enabled = True
+                self.bucket = site_config.get("s3_bucket")
+                aws_key = site_config.get("aws_access_key_id")
+                aws_secret = site_config.get("aws_secret_access_key")
+                endpoint_url = site_config.get("aws_s3_endpoint_url")
+                signature_version = site_config.get("aws_signature_version", "s3v4")
+            else:
+                self.s3_enabled = False
+                self.bucket = None
+        
         self.site_folder = Path(frappe.get_site_path("private/files"))
+        
         if self.s3_enabled:
             self.conn = boto3.client(
                 "s3",
-                aws_access_key_id=settings.aws_key,
-                aws_secret_access_key=settings.get_password("aws_secret"),
-                endpoint_url=(settings.endpoint_url or None),
-                config=Config(signature_version=settings.signature_version),
+                aws_access_key_id=aws_key,
+                aws_secret_access_key=aws_secret,
+                endpoint_url=endpoint_url,
+                config=Config(signature_version=signature_version),
             )
 
     def can_create_thumbnail(self, file):
