@@ -29,30 +29,43 @@ export default defineConfig({
     outDir: `../${path.basename(path.resolve(".."))}/public/frontend`,
     emptyOutDir: true,
     target: "es2015",
-    minify: 'esbuild',
-    chunkSizeWarningLimit: 1500,
+    minify: false,
+    
     commonjsOptions: {
       include: [/tailwind.config.js/, /node_modules/],
     },
+    
     rollupOptions: {
       maxParallelFileOps: 1,
-      maxParallelFileReads: 1,
+      
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            if (id.includes('@tiptap')) return 'editor';
-            if (id.includes('mammoth')) return 'office-mammoth';
-            if (id.includes('xlsx')) return 'office-xlsx';
-            if (id.includes('docx-preview')) return 'office-docx';
+            if (id.includes('@tiptap/core')) return 'tiptap-core';
+            if (id.includes('@tiptap/vue')) return 'tiptap-vue';
+            if (id.includes('@tiptap/starter-kit')) return 'tiptap-starter';
+            if (id.includes('@tiptap/extension')) return 'tiptap-ext';
+            if (id.includes('mammoth')) return 'mammoth';
+            if (id.includes('xlsx')) return 'xlsx';
+            if (id.includes('docx-preview')) return 'docx';
             if (id.includes('x-data-spreadsheet')) return 'spreadsheet';
-            if (id.includes('frappe-ui')) return 'frappe-ui';
-            if (id.includes('vue') || id.includes('@vue')) return 'vue-vendor';
-            if (id.includes('yjs') || id.includes('y-')) return 'collaboration';
+            if (id.includes('frappe-ui')) return 'frappe';
+            if (id.includes('vue-router')) return 'vue-router';
+            if (id.includes('vue')) return 'vue';
+            if (id.includes('yjs')) return 'yjs';
+            if (id.includes('y-')) return 'y-collab';
+            if (id.includes('@headlessui')) return 'headless';
+            if (id.includes('socket.io')) return 'socketio';
             
-            return 'vendor';
+            const hash = id.split('node_modules/')[1].substring(0, 8);
+            return `vendor-${hash}`;
           }
-        }
-      }
+        },
+        
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+      },
+            treeshake: false,
     },
   },
   server: {
@@ -64,10 +77,8 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: { 
       target: "es2015",
-      keepNames: false,
-      treeShaking: true,
     },
     include: ["feather-icons", "showdown", "tailwind.config.js", "lowlight"],
-    exclude: ['mammoth', 'xlsx', 'docx-preview', 'x-data-spreadsheet']
+    exclude: ['@tiptap/*', 'mammoth', 'xlsx', 'docx-preview', 'x-data-spreadsheet', 'yjs', 'y-*']
   },
 })
