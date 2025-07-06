@@ -3,14 +3,12 @@ import vue from "@vitejs/plugin-vue"
 import path from "path"
 import frappeui from "frappe-ui/vite"
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     frappeui({
-      frappeProxy: true, // Setup proxy to Frappe backend
-      lucideIcons: true, // Configure Lucide icons
-      jinjaBootData: true, // Inject server-side boot data
-      // Production build config for asset paths and HTML output
+      frappeProxy: true,
+      lucideIcons: true,
+      jinjaBootData: true,
       buildConfig: {
         indexHtmlPath: "../drive/www/drive.html",
       },
@@ -30,12 +28,31 @@ export default defineConfig({
     sourcemap: false,
     outDir: `../${path.basename(path.resolve(".."))}/public/frontend`,
     emptyOutDir: true,
-    target: "esnext",
+    target: "es2015",
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 1500,
     commonjsOptions: {
       include: [/tailwind.config.js/, /node_modules/],
     },
     rollupOptions: {
-      maxParallelFileOps: 2,
+      maxParallelFileOps: 1,
+      maxParallelFileReads: 1,
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('@tiptap')) return 'editor';
+            if (id.includes('mammoth')) return 'office-mammoth';
+            if (id.includes('xlsx')) return 'office-xlsx';
+            if (id.includes('docx-preview')) return 'office-docx';
+            if (id.includes('x-data-spreadsheet')) return 'spreadsheet';
+            if (id.includes('frappe-ui')) return 'frappe-ui';
+            if (id.includes('vue') || id.includes('@vue')) return 'vue-vendor';
+            if (id.includes('yjs') || id.includes('y-')) return 'collaboration';
+            
+            return 'vendor';
+          }
+        }
+      }
     },
   },
   server: {
@@ -45,7 +62,12 @@ export default defineConfig({
     external: { html2canvas: "html2canvas", dompurify: "dompurify" },
   },
   optimizeDeps: {
-    esbuildOptions: { target: "esnext" },
+    esbuildOptions: { 
+      target: "es2015",
+      keepNames: false,
+      treeShaking: true,
+    },
     include: ["feather-icons", "showdown", "tailwind.config.js", "lowlight"],
+    exclude: ['mammoth', 'xlsx', 'docx-preview', 'x-data-spreadsheet']
   },
 })
