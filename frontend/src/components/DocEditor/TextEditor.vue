@@ -113,7 +113,15 @@ import {
 } from "frappe-ui"
 import { DOMParser } from "prosemirror-model"
 import { v4 as uuidv4 } from "uuid"
-import { computed, watch, onMounted, reactive, ref, onBeforeUnmount } from "vue"
+import {
+  computed,
+  defineAsyncComponent,
+  onMounted,
+  reactive,
+  ref,
+  onBeforeUnmount,
+  h,
+} from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebrtcProvider } from "y-webrtc"
 import * as Y from "yjs"
@@ -154,7 +162,7 @@ import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 import { LucideMessageCircle } from "lucide-vue-next"
-import store from "../../store"
+import store from "@/store"
 
 const autosave = debounce(() => emit("saveDocument"), 1000)
 const textEditor = ref("textEditor")
@@ -296,135 +304,12 @@ const bubbleMenuButtons = [
   "Strikethrough",
   "Separator",
   {
-    group: true,
-    search: true,
-    actions: [
-      {
-        label: "Caveat",
-        class: "font-caveat",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-caveat)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-caveat)",
-          }),
-      },
-      {
-        label: "Comic Sans",
-        class: "font-comic-sans",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-comic-sans)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-comic-sans)",
-          }),
-      },
-      {
-        label: "Comfortaa",
-        class: "font-comfortaa",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-comfortaa)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-comfortaa)",
-          }),
-      },
-      {
-        label: "EB Garamond",
-        class: "font-eb-garamond",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-eb-garamond)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-eb-garamond)",
-          }),
-      },
-      {
-        label: "Fantasy",
-        class: "font-[fantasy]",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("fantasy").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "fantasy",
-          }),
-      },
-      {
-        label: "Geist Mono",
-        class: "font-geist",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-geist)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-geist)",
-          }),
-      },
-      {
-        label: "IBM Plex Sans",
-        class: "font-ibm-plex",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-ibm-plex)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-ibm-plex)",
-          }),
-      },
-      {
-        label: "Inter",
-        default: true,
-        class: "font-inter",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-inter)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-inter)",
-          }),
-      },
-      {
-        label: "JetBrains Mono",
-        class: "font-jetbrains",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-jetbrains)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-jetbrains)",
-          }),
-      },
-      {
-        label: "Lora",
-        class: "font-lora",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-lora)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-lora)",
-          }),
-      },
-      {
-        label: "Merriweather",
-        class: "font-merriweather",
-        action: (editor) =>
-          editor
-            .chain()
-            .focus()
-            .setFontFamily("var(--font-merriweather)")
-            .run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-merriweather)",
-          }),
-      },
-      {
-        label: "Nunito",
-        class: "font-nunito",
-        action: (editor) =>
-          editor.chain().focus().setFontFamily("var(--font-nunito)").run(),
-        isActive: (editor) =>
-          editor.isActive("textStyle", {
-            fontFamily: "var(--font-nunito)",
-          }),
-      },
-    ],
+    label: "Inter",
+    class: "font-inter",
+    component: h(
+      defineAsyncComponent(() => import("./components/FontFamily.vue")),
+      { editor }
+    ),
   },
   "FontColor",
   "Separator",

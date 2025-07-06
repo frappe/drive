@@ -78,6 +78,7 @@ declare module 'vue' {
     FolderContentsError: typeof import('./src/components/FolderContentsError.vue')['default']
     FolderUpload: typeof import('./src/components/EspressoIcons/Folder-upload.vue')['default']
     FontColor: typeof import('./src/components/DocEditor/components/FontColor.vue')['default']
+    FontFamily: typeof import('./src/components/DocEditor/components/FontFamily.vue')['default']
     FrappeDriveLogo: typeof import('./src/components/FrappeDriveLogo.vue')['default']
     FrappeFileLine: typeof import('./src/components/FrappeFileLine.vue')['default']
     FrappeFolder: typeof import('./src/components/FrappeFolder.vue')['default']

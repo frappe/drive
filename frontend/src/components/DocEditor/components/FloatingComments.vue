@@ -2,7 +2,7 @@
   <div
     ref="scrollContainer"
     v-show="filteredComments.length > 0"
-    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start min-h-[100vh] h-full"
+    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start self-stretch"
   >
     <template
       v-for="comment in filteredComments"
@@ -352,22 +352,28 @@ const formatDateOrTime = (datetimeStr) => {
 
 const setCommentHeights = () => {
   let lastBottom = 0
-  for (let [index, comment] of Object.entries(filteredComments.value))
-    setTimeout(() => {
-      const containerTop = scrollContainer.value.getBoundingClientRect().top
-      const anchorTop =
-        document
-          .querySelector(`[data-comment-id="${comment.name}"]`)
-          .getBoundingClientRect().top -
-        containerTop -
-        12
+  setTimeout(() => {
+    scrollContainer.value.style.height =
+      scrollContainer.value.parentElement.scrollHeight + "px"
+    for (let [index, comment] of Object.entries(filteredComments.value)) {
+      try {
+        const containerTop = scrollContainer.value.getBoundingClientRect().top
+        const anchorTop =
+          document
+            .querySelector(`[data-comment-id="${comment.name}"]`)
+            .getBoundingClientRect().top -
+          containerTop -
+          12
 
-      const adjustedTop = Math.max(anchorTop, lastBottom)
-      comment.top = adjustedTop
+        const adjustedTop = Math.max(anchorTop, lastBottom)
+        comment.top = adjustedTop
 
-      lastBottom = adjustedTop + commentRefs.value[index].offsetHeight + 12
-    }, 100)
+        lastBottom = adjustedTop + commentRefs.value[index].offsetHeight + 12
+      } catch {}
+    }
+  }, 100)
 }
+
 onMounted(setCommentHeights)
 const debouncedSetCommentHeights = useDebounceFn(setCommentHeights, 20)
 useEventListener(window, "resize", debouncedSetCommentHeights)
