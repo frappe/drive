@@ -260,9 +260,8 @@ const editorExtensions = [
     },
     onCommentActivated: (id) => {
       if (id) {
-        setTimeout(() => (activeComment.value = id), 100)
-        let el = document.querySelector("#comment-" + id)
-        el.scrollIntoView({
+        activeComment.value = id
+        document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
           behavior: "smooth",
           block: "start",
           inline: "nearest",

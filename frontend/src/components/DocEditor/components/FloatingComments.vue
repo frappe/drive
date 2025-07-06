@@ -9,16 +9,7 @@
       :key="comment.name"
     >
       <div
-        v-on-outside-click="
-          (e) => {
-            if (
-              activeComment === comment.name &&
-              !e.target.getAttribute('data-comment-id') &&
-              e.target.nodeName !== 'BUTTON'
-            )
-              activeComment = null
-          }
-        "
+        v-on-outside-click="(e) => {}"
         ref="commentRefs"
         :id="'comment-' + comment.name"
         @click="activeComment = comment.name"
@@ -232,7 +223,15 @@
   </div>
 </template>
 <script setup>
-import { computed, reactive, watch, inject, onMounted, ref } from "vue"
+import {
+  computed,
+  reactive,
+  watch,
+  inject,
+  onMounted,
+  ref,
+  onBeforeUnmount,
+} from "vue"
 import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
@@ -260,17 +259,14 @@ const filteredComments = computed(() =>
 )
 
 watch(activeComment, (val) => {
-  document.querySelector(".active")?.classList?.remove?.("active")
+  const currentEl = document.querySelector(".active")
+  if (currentEl) currentEl.classList?.remove?.("active")
   setCommentHeights()
   if (!val) return
   // Sometimes remove runs after adding the class :woozy:
-  setTimeout(
-    () =>
-      document
-        .querySelector(`span[data-comment-id="${val}"]`)
-        .classList.add("active"),
-    100
-  )
+  document
+    .querySelector(`span[data-comment-id="${val}"]`)
+    .classList.add("active")
 })
 
 // Resources
@@ -390,6 +386,13 @@ props.editor.on("update", () => {
   })
   for (let comment of comments.value)
     if (!currentNames.has(comment.name)) removeComment(comment.name, true)
-  setCommentHeights
+  setCommentHeights()
 })
+
+const purgeNewEmptyComments = () => {
+  for (const comment of comments.value)
+    if (comment.new) removeComment(comment.name, true, false)
+}
+onBeforeUnmount(purgeNewEmptyComments)
+useEventListener(window, "beforeunload", purgeNewEmptyComments)
 </script>

@@ -7,7 +7,7 @@
     @keydown.meta.enter.capture.stop="
       !disabled && !isEmpty && $emit('submit', editor)
     "
-    @keydown.esc.stop="!disabled && !isEmpty && $emit('cancel', editor)"
+    @keydown.esc.stop="$emit('cancel', editor)"
   >
     <TextEditor
       :autofocus="true"
@@ -53,7 +53,6 @@
           </Button>
           <Button
             v-if="!isEmpty"
-            :disabled
             variant="ghost"
             size="xs"
             class="font-medium"

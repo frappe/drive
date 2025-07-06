@@ -73,6 +73,7 @@ span[data-comment-id]:not([data-resolved="true"]) {
   border-bottom: 2px dashed #facc15;
   user-select: text;
   cursor: pointer;
+  scroll-margin: 3rem;
 }
 
 span[data-annotation-id]:hover,
