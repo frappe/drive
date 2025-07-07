@@ -13,7 +13,7 @@
   <div
     ref="scrollContainer"
     v-show="showComments"
-    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start self-stretch"
+    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start self-stretch pb-5"
   >
     <div
       class="text-large text-ink-gray-8 font-semibold w-80 px-3 py-2 bg-surface-white z-[100] fixed"
@@ -274,7 +274,6 @@ const filteredComments = computed(() =>
     : props.comments.filter((k) => !k.resolved)
 )
 const showComments = ref(filteredComments.value.length > 0)
-console.log(filteredComments.value)
 
 watch(activeComment, (val) => {
   const currentEl = document.querySelector(".active")
@@ -367,17 +366,14 @@ const formatDateOrTime = (datetimeStr) => {
 const setCommentHeights = () => {
   let lastBottom = 0
   setTimeout(() => {
-    scrollContainer.value.style.height =
-      scrollContainer.value.parentElement.scrollHeight + "px"
+    scrollContainer.value.style.height = `max(${scrollContainer.value.parentElement.scrollHeight}px, calc(100vh - 3rem))`
     for (let [index, comment] of Object.entries(filteredComments.value)) {
       try {
         const containerTop = scrollContainer.value.getBoundingClientRect().top
         const anchorTop =
           document
             .querySelector(`[data-comment-id="${comment.name}"]`)
-            .getBoundingClientRect().top -
-          containerTop -
-          12
+            .getBoundingClientRect().top - containerTop
 
         const adjustedTop = Math.max(anchorTop, lastBottom)
         comment.top = adjustedTop

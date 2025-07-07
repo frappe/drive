@@ -14,7 +14,10 @@
         :content="rawContent"
         @change="
           (val) => {
-            emit('update:rawContent', val)
+            rawContent = val
+            db.transaction(['content'], 'readwrite')
+              .objectStore('content')
+              .put(val, props.entity.name)
             autosave()
           }
         "
@@ -103,7 +106,6 @@ import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
 import Typography from "@tiptap/extension-typography"
 import StarterKit from "@tiptap/starter-kit"
-import { BubbleMenu, Editor, EditorContent } from "@tiptap/vue-3"
 import {
   onOutsideClickDirective,
   createDocumentResource,
@@ -111,7 +113,6 @@ import {
   TextEditor as FTextEditor,
   debounce,
 } from "frappe-ui"
-import { DOMParser } from "prosemirror-model"
 import { v4 as uuidv4 } from "uuid"
 import {
   computed,
@@ -121,6 +122,7 @@ import {
   ref,
   onBeforeUnmount,
   h,
+  watch,
 } from "vue"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebrtcProvider } from "y-webrtc"
@@ -164,28 +166,22 @@ import H3 from "./icons/h-3.vue"
 import { LucideMessageCircle } from "lucide-vue-next"
 import store from "@/store"
 
-const autosave = debounce(() => emit("saveDocument"), 1000)
+const autosave = debounce(() => emit("saveDocument"), 5000)
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
 })
 
+const rawContent = defineModel()
 const props = defineProps({
-  settings: Object,
   entity: Object,
-  rawContent: String,
   isWritable: Boolean,
   users: Object,
 })
 const comments = ref([])
 
-const emit = defineEmits([
-  "updateTitle",
-  "saveDocument",
-  "mentionedUsers",
-  "update:rawContent",
-])
+const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 
 const font = ref("font-sans")
 const localStore = ref(null)
@@ -485,7 +481,7 @@ onBeforeUnmount(() => {
     .filter(({ name }) => editor.value.commands.unsetComment(name))
 })
 
-onKeyDown("s", (e) => {
+onKeyDown("S", (e) => {
   if (!(e.ctrlKey || e.metaKey)) {
     return
   }
@@ -671,8 +667,27 @@ function getOrderedComments(doc) {
 //   ],
 // })
 
+// TBD
 window.addEventListener("offline", () => {})
 window.addEventListener("online", () => {})
+
+const db = ref()
+const request = window.indexedDB.open("Writer", 1)
+request.onsuccess = (event) => {
+  db.value = event.target.result
+}
+request.onupgradeneeded = () => {
+  if (!request.result.objectStoreNames.contains("content"))
+    request.result.createObjectStore("content")
+}
+watch(db, (db) => {
+  db
+    .transaction(["content"])
+    .objectStore("content")
+    .get(props.entity.name).onsuccess = (val) => {
+    if (val.target.result) rawContent.value = val.target.result
+  }
+})
 
 function beforeUnmount() {
   emitter.off("printFile")

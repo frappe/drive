@@ -31,8 +31,7 @@
     <TextEditor
       ref="editor"
       v-if="contentLoaded"
-      v-model:raw-content="rawContent"
-      v-model:settings="settings"
+      v-model="rawContent"
       :users="allUsers.data || []"
       :timeout="timeout"
       :is-writable="isWritable"
@@ -86,7 +85,6 @@ const props = defineProps({
 const oldTitle = ref(null)
 const title = ref(null)
 const yjsContent = ref(null)
-const settings = ref(null)
 const rawContent = ref(null)
 const contentLoaded = ref(false)
 const isWritable = ref(false)
@@ -120,28 +118,16 @@ const saveDocument = () => {
       entity_name: props.entityName,
       doc_name: entity.value.document,
       title: titleVal.value,
-      content: fromUint8Array(yjsContent.value),
-      raw_content: rawContent.value,
-      settings: settings.value,
-      comments: comments.value,
+      content: rawContent.value,
       mentions: mentionedUsers.value,
-      file_size: fromUint8Array(yjsContent.value).length,
     })
   }
 }
 
 const onSuccess = (data) => {
   window.document.title = data.title
-  if (!data.settings) {
-    data.settings =
-      '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
-  }
-  settings.value = JSON.parse(data.settings)
   store.commit("setActiveEntity", data)
 
-  if (!("docSpellcheck" in settings.value)) {
-    settings.value.docSpellcheck = 1
-  }
   document.setData(prettyData([entity])[0])
   title.value = data.title
   oldTitle.value = data.title

@@ -430,29 +430,19 @@ def create_link(team, title, link, personal=False, parent=None):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
+def save_doc(entity_name, doc_name, content, mentions):
     write_perms = user_has_permission(
         frappe.get_doc("Drive File", entity_name), "write", frappe.session.user
     )
-    comment_perms = user_has_permission(
-        frappe.get_doc("Drive File", entity_name), "comment", frappe.session.user
-    )
-    # BROKEN - comment access is write access
-    if not write_perms and not comment_perms:
-        raise frappe.PermissionError("You do not have permission to view this file")
-    if settings:
-        frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
-    file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
-    update_modifed = comment_perms and not write_perms
-    frappe.db.set_value("Drive Document", doc_name, "content", content)
-    frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
-    frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
-    if (
-        frappe.db.get_value("Drive File", entity_name, "file_size") != int(file_size)
-        and write_perms
-    ):
-        frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
-    if json.dumps(mentions):
+    if not write_perms:
+        raise frappe.PermissionError("You do not have permission to edit this file")
+
+    mentions = json.dumps(mentions)
+    frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+    frappe.db.set_value("Drive Document", doc_name, "mentions", mentions)
+    frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
+
+    if mentions:
         frappe.enqueue(
             notify_mentions,
             queue="long",
@@ -464,6 +454,7 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
             entity_name=entity_name,
             document_name=doc_name,
         )
+
     return
 
 
