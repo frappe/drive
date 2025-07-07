@@ -27,6 +27,7 @@
     </Breadcrumbs>
 
     <div class="flex gap-2">
+      <div id="navbar-content" />
       <LucideStar
         v-if="rootEntity?.is_favourite"
         width="16"
@@ -47,6 +48,7 @@
           />
         </Button>
       </Dropdown>
+
       <Dropdown
         v-if="['Folder', 'Home', 'Team'].includes($route.name) && isLoggedIn"
         :options="newEntityOptions"
@@ -112,6 +114,7 @@ import {
   LoadingIndicator,
   Dropdown,
   Tooltip,
+  Switch,
 } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"

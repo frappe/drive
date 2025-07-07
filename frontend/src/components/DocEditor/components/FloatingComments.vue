@@ -1,9 +1,25 @@
 <template>
+  <Teleport
+    to="#navbar-content"
+    v-if="filteredComments.length > 0"
+  >
+    <Switch
+      size="sm"
+      label="Comments"
+      description=""
+      v-model="showComments"
+    />
+  </Teleport>
   <div
     ref="scrollContainer"
-    v-show="filteredComments.length > 0"
+    v-show="showComments"
     class="relative border-s-2 w-80 flex flex-col gap-8 justify-start self-stretch"
   >
+    <div
+      class="text-large text-ink-gray-8 font-semibold w-80 px-3 py-2 bg-surface-white z-[100] fixed"
+    >
+      Comments
+    </div>
     <template
       v-for="comment in filteredComments"
       :key="comment.name"
@@ -232,7 +248,7 @@ import {
   ref,
   onBeforeUnmount,
 } from "vue"
-import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
+import { Avatar, Button, createResource, Dropdown, Switch } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
 import CommentEditor from "./CommentEditor.vue"
@@ -257,6 +273,8 @@ const filteredComments = computed(() =>
     ? props.comments
     : props.comments.filter((k) => !k.resolved)
 )
+const showComments = ref(filteredComments.value.length > 0)
+console.log(filteredComments.value)
 
 watch(activeComment, (val) => {
   const currentEl = document.querySelector(".active")
