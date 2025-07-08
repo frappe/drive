@@ -12,6 +12,7 @@
         ref="textEditor"
         editor-class="prose-sm min-h-[4rem] p-2"
         :content="rawContent"
+        :editable="!!entity.write"
         @change="
           (val) => {
             rawContent = val
@@ -24,6 +25,7 @@
         :mentions="users"
         placeholder="Start writing here..."
         :bubble-menu="bubbleMenuButtons"
+        :show-bubble-menu-always="true"
         :extensions="editorExtensions"
       />
     </div>
@@ -270,97 +272,100 @@ const editorExtensions = [
   }),
 ]
 
-const bubbleMenuButtons = [
-  "Paragraph",
-  [
-    {
-      text: "H1",
-      icon: H1,
-      action: (editor) =>
-        editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      isActive: (editor) => editor.isActive("heading", { level: 1 }),
-    },
-    {
-      text: "H2",
-      icon: H2,
-      action: (editor) =>
-        editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      isActive: (editor) => editor.isActive("heading", { level: 2 }),
-    },
-    {
-      text: "H3",
-      icon: H3,
-      action: (editor) =>
-        editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      isActive: (editor) => editor.isActive("heading", { level: 3 }),
-    },
-  ],
-  "Separator",
-  "Bold",
-  "Italic",
-  "Link",
-  "Strikethrough",
-  "Separator",
-  {
-    label: "Inter",
-    class: "font-inter",
-    component: h(
-      defineAsyncComponent(() => import("./components/FontFamily.vue")),
-      { editor }
-    ),
-  },
-  "FontColor",
-  "Separator",
-  ["Bullet List", "Numbered List", "Task List"],
-  "Separator",
-  ["Align Left", "Align Center", "Align Right"],
-  "Separator",
-  {
-    label: "Comment",
-    icon: LucideMessageCircle,
-    action: (editor) => {
-      const id = uuidv4()
-      editor.chain().focus().setComment(id).run()
-      const orderedComments = getOrderedComments(editor.state.doc)
-      const newComment = {
-        name: id,
-        owner: store.state.user.id,
-        creation: new Date(),
-        content: "",
-        edit: true,
-        new: true,
-        replies: [],
-      }
+const CommentAction = {
+  label: "Comment",
+  icon: LucideMessageCircle,
+  action: (editor) => {
+    const id = uuidv4()
+    editor.chain().focus().setComment(id).run()
+    const orderedComments = getOrderedComments(editor.state.doc)
+    const newComment = {
+      name: id,
+      owner: store.state.user.id,
+      creation: new Date(),
+      content: "",
+      edit: true,
+      new: true,
+      replies: [],
+    }
 
-      comments.value = [...comments.value, newComment].toSorted((a, b) => {
-        const pos1 = orderedComments.findIndex((k) => k.id === a.name)
-        const pos2 = orderedComments.findIndex((k) => k.id === b.name)
-        return pos1 - pos2
-      })
-      activeComment.value = id
-    },
-    isActive: () => false,
+    comments.value = [...comments.value, newComment].toSorted((a, b) => {
+      const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+      const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+      return pos1 - pos2
+    })
+    activeComment.value = id
   },
-  "Image",
-  "Video",
-  "Blockquote",
-  "Code",
-  [
-    "InsertTable",
-    "AddColumnBefore",
-    "AddColumnAfter",
-    "DeleteColumn",
-    "AddRowBefore",
-    "AddRowAfter",
-    "DeleteRow",
-    "MergeCells",
-    "SplitCell",
-    "ToggleHeaderColumn",
-    "ToggleHeaderRow",
-    "ToggleHeaderCell",
-    "DeleteTable",
-  ],
-]
+  isActive: () => false,
+}
+const bubbleMenuButtons = props.entity.write
+  ? [
+      "Paragraph",
+      [
+        {
+          text: "H1",
+          icon: H1,
+          action: (editor) =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run(),
+          isActive: (editor) => editor.isActive("heading", { level: 1 }),
+        },
+        {
+          text: "H2",
+          icon: H2,
+          action: (editor) =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run(),
+          isActive: (editor) => editor.isActive("heading", { level: 2 }),
+        },
+        {
+          text: "H3",
+          icon: H3,
+          action: (editor) =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run(),
+          isActive: (editor) => editor.isActive("heading", { level: 3 }),
+        },
+      ],
+      "Separator",
+      "Bold",
+      "Italic",
+      "Link",
+      "Strikethrough",
+      "Separator",
+      {
+        label: "Inter",
+        class: "font-inter",
+        component: h(
+          defineAsyncComponent(() => import("./components/FontFamily.vue")),
+          { editor }
+        ),
+      },
+      "FontColor",
+      "Separator",
+      ["Bullet List", "Numbered List", "Task List"],
+      "Separator",
+      ["Align Left", "Align Center", "Align Right"],
+      "Separator",
+      CommentAction,
+      "Image",
+      "Video",
+      "Blockquote",
+      "Code",
+      [
+        "InsertTable",
+        "AddColumnBefore",
+        "AddColumnAfter",
+        "DeleteColumn",
+        "AddRowBefore",
+        "AddRowAfter",
+        "DeleteRow",
+        "MergeCells",
+        "SplitCell",
+        "ToggleHeaderColumn",
+        "ToggleHeaderRow",
+        "ToggleHeaderCell",
+        "DeleteTable",
+      ],
+    ]
+  : [CommentAction]
 // provide() {
 //   return {
 //     editor: computed(() => this.editor),
@@ -510,165 +515,6 @@ function getOrderedComments(doc) {
 
   return comments.sort((a, b) => a.pos - b.pos)
 }
-// this.editor = new Editor({
-//   editable: this.editable,
-//   autofocus: "start",
-//   editorProps: {
-//     attributes: {
-//       class: normalizeClass([`prose prose-sm`]),
-//     },
-//     clipboardTextParser: (text, $context) => {
-//       if (!detectMarkdown(text)) return
-//       let dom = document.createElement("div")
-//       dom.innerHTML = markdownToHTML(text)
-//       let parser =
-//         this.editor.view.someProp("clipboardParser") ||
-//         this.editor.view.someProp("domParser") ||
-//         DOMParser.fromSchema(this.editor.schema)
-//       return parser.parseSlice(dom, {
-//         preserveWhitespace: true,
-//         context: $context,
-//       })
-//     },
-//   })
-
-// evaluate document version
-// onUpdate() {
-//componentContext.updateConnectedUsers(componentContext.editor)
-//componentContext.findCommentsAndStoreValues()
-// componentContext.setCurrentComment()
-// if (
-//   componentContext.$props.rawContent ===
-//   componentContext.editor.getHTML()
-// )
-//   return
-// componentContext.$emit(
-//   "update:rawContent",
-//   componentContext.editor.getHTML()
-// )
-// componentContext.$emit(
-//   "mentionedUsers",
-//   componentContext.parseMentions(componentContext.editor.getJSON())
-// )
-// componentContext.$emit(
-//   "update:yjsContent",
-//   Y.encodeStateAsUpdate(componentContext.document)
-// )
-// componentContext.updateAnnotationStatus()
-// onSelectionUpdate() {
-//   //componentContext.updateConnectedUsers(componentContext.editor)
-//   //componentContext.setCurrentComment()
-//   //componentContext.isTextSelected =
-//   //  !!componentContext.editor.state.selection.content().size
-// },
-// eslint-disable-next-line no-sparse-arrays
-//   extensions: [
-//     StarterKit.configure({
-//       history: false,
-//       paragraph: {
-//         HTMLAttributes: {
-//           class: this.entity.version == 0 ? "legacy" : "",
-//         },
-//       },
-//       heading: {
-//         levels: [1, 2, 3, 4, 5],
-//       },
-//       listItem: {
-//         HTMLAttributes: {
-//           class: "prose-list-item",
-//         },
-//       },
-//       codeBlock: {
-//         HTMLAttributes: {
-//           spellcheck: false,
-//         },
-//       },
-//       blockquote: {
-//         HTMLAttributes: {},
-//       },
-//       code: {
-//         HTMLAttributes: {},
-//       },
-//       bulletList: {
-//         keepMarks: true,
-//         keepAttributes: false,
-//         HTMLAttributes: {
-//           class: "",
-//         },
-//       },
-//       orderedList: {
-//         keepMarks: true,
-//         keepAttributes: false,
-//         HTMLAttributes: {
-//           class: "",
-//         },
-//       },
-//     }),
-//     Commands.configure({
-//       suggestion,
-//     }),
-//     Table,
-//     FontFamily.configure({
-//       types: ["textStyle"],
-//     }),
-//     TextAlign.configure({
-//       types: ["heading", "paragraph"],
-//       defaultAlignment: "left",
-//     }),
-//     ,
-//     PageBreak,
-//     Annotation.configure({
-//       onAnnotationClicked: (ID) => {
-//         componentContext.setAndFocusCurrentAnnotation(ID)
-//       },
-//       onAnnotationActivated: (ID) => {
-//         //this.activeAnnotation = ID
-//         if (ID) setTimeout(() => componentContext.setCurrentAnnotation(ID))
-//       },
-//       HTMLAttributes: {
-//         //class: 'cursor-pointer annotation  annotation-number'
-//         //class: 'cursor-pointer bg-amber-300 bg-opacity-20 border-b-2 border-yellow-300 pb-[1px]'
-//         class: "cursor-pointer annotation",
-//       },
-//     }),
-
-//     LineHeight,
-//     Indent,
-//     Link.configure({
-//       openOnClick: false,
-//     }),
-//     Placeholder.configure({
-//       placeholder: "Press / for commands",
-//     }),
-//     Highlight.configure({
-//       multicolor: true,
-//     }),
-//     configureMention(this.userList),
-//     TaskList.configure({
-//       HTMLAttributes: {},
-//     }),
-//     TaskItem.configure({
-//       HTMLAttributes: {
-//         class: "my-task-item",
-//       },
-//     }),
-//     CharacterCount,
-//     Underline,
-//     Typography,
-//     TextStyle,
-//     FontSize.configure({
-//       types: ["textStyle"],
-//     }),
-//     Color.configure({
-//       types: ["textStyle"],
-//     }),
-//     ResizableMedia.configure({
-//       uploadFn: (file) =>
-//         uploadDriveEntity(file, this.entity.team, this.entityName),
-//     }),
-//     DiffMarkExtension,
-//   ],
-// })
 
 window.addEventListener("offline", () => {
   toast({
@@ -681,23 +527,27 @@ window.addEventListener("online", () => {
   toast({ title: "Back online!", icon: h(LucideWifi) })
 })
 
-const db = ref()
-const request = window.indexedDB.open("Writer", 1)
-request.onsuccess = (event) => {
-  db.value = event.target.result
-}
-request.onupgradeneeded = () => {
-  if (!request.result.objectStoreNames.contains("content"))
-    request.result.createObjectStore("content")
-}
-watch(db, (db) => {
-  db
-    .transaction(["content"])
-    .objectStore("content")
-    .get(props.entity.name).onsuccess = (val) => {
-    if (val.target.result) rawContent.value = val.target.result
+// Local saving
+if (props.entity.write) {
+  const db = ref()
+  const request = window.indexedDB.open("Writer", 1)
+  request.onsuccess = (event) => {
+    db.value = event.target.result
   }
-})
+  request.onupgradeneeded = () => {
+    if (!request.result.objectStoreNames.contains("content"))
+      request.result.createObjectStore("content")
+  }
+  watch(db, (db) => {
+    db
+      .transaction(["content"])
+      .objectStore("content")
+      .get(props.entity.name).onsuccess = (val) => {
+      // Hack until we get versioning.
+      if (val.target.result.length > 20) rawContent.value = val.target.result
+    }
+  })
+}
 
 function beforeUnmount() {
   emitter.off("printFile")
@@ -954,71 +804,4 @@ function evalImplicitTitle() {
 
 <style>
 @import url("./editor.css");
-
-.collaboration-cursor__caret {
-  border-left: 0px solid currentColor;
-  border-right: 2px solid currentColor;
-  margin-left: 0px;
-  margin-right: -2px;
-  pointer-events: none;
-  position: relative;
-  word-break: normal;
-}
-/* Render the username above the caret */
-.collaboration-cursor__label {
-  border-radius: 60px;
-  border: 2px solid #0000001a;
-  color: #ffffffdf;
-  font-size: 0.65rem;
-  font-style: normal;
-  font-family: "Inter";
-  font-weight: 500;
-  line-height: normal;
-  padding: 0.1rem 0.25rem;
-  position: absolute;
-  top: -1.5em;
-  left: 0.25em;
-  user-select: none;
-  white-space: nowrap;
-}
-
-summary {
-  display: flex;
-  width: 100%;
-  padding: 0 2.5rem;
-  box-sizing: border-box;
-  pointer-events: none;
-  outline: none;
-}
-
-summary p {
-  margin-top: 0.15rem !important;
-  margin-bottom: 0.15rem !important;
-}
-
-.grip-row.selected {
-  background-color: #e3f0fce2;
-  content: "✓";
-}
-.grip-column.selected {
-  background-color: #e3f0fce2;
-}
-
-.grip-column.selected::before {
-  content: "✓";
-  position: absolute;
-  color: white;
-  top: -25%;
-  left: 0%;
-  font-weight: 600;
-}
-
-.grip-row.selected::before {
-  content: "✓";
-  position: absolute;
-  color: white;
-  top: -25%;
-  left: 0%;
-  font-weight: 600;
-}
 </style>

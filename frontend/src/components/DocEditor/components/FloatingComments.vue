@@ -414,7 +414,7 @@ watch(
   }
 )
 useEventListener(window, "resize", setCommentHeights)
-const off = props.editor.on("update", () => {
+props.editor.on("update", () => {
   const currentNames = new Set()
   setCommentHeights()
   props.editor.state.doc.descendants((node) => {
@@ -429,7 +429,6 @@ const off = props.editor.on("update", () => {
 })
 
 const purgeNewEmptyComments = () => {
-  off()
   for (const comment of comments.value)
     if (comment.new) removeComment(comment.name, true, false)
 }
