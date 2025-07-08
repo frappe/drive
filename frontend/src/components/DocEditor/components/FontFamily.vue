@@ -2,6 +2,7 @@
   <Combobox
     :options="OPTIONS"
     v-model="selected"
+    placeholder="Font Family"
     class="min-w-[10rem]"
   />
 </template>

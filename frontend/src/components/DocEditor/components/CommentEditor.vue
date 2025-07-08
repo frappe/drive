@@ -22,7 +22,12 @@
         editable && 'pl-2.5 py-1.5',
       ]"
       :placeholder
-      @change="(val) => (editorContent = val)"
+      @change="
+        (val) => {
+          $emit('change')
+          editorContent = val
+        }
+      "
       :bubble-menu="[
         'Bold',
         'Italic',
@@ -86,7 +91,7 @@ defineProps({
   editable: { type: Boolean, default: true },
   content: { type: String, required: true },
 })
-defineEmits(["submit", "cancel"])
+defineEmits(["submit", "cancel", "change"])
 </script>
 <style>
 .editor > div:first-child {

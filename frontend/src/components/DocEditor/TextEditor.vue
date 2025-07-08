@@ -163,7 +163,9 @@ import { onKeyDown } from "@vueuse/core"
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
-import { LucideMessageCircle } from "lucide-vue-next"
+import LucideWifi from "~icons/lucide/wifi"
+import LucideWifiOff from "~icons/lucide/wifi-off"
+import LucideMessageCircle from "~icons/lucide/message-circle"
 import store from "@/store"
 
 const autosave = debounce(() => emit("saveDocument"), 5000)
@@ -256,6 +258,7 @@ const editorExtensions = [
     },
     onCommentActivated: (id) => {
       if (id) {
+        console.log("ACTIVATED", id)
         activeComment.value = id
         document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
           behavior: "smooth",
@@ -667,9 +670,16 @@ function getOrderedComments(doc) {
 //   ],
 // })
 
-// TBD
-window.addEventListener("offline", () => {})
-window.addEventListener("online", () => {})
+window.addEventListener("offline", () => {
+  toast({
+    title: "You're offline",
+    icon: LucideWifiOff,
+    text: "Don't worry, your changes will be saved locally.",
+  })
+})
+window.addEventListener("online", () => {
+  toast({ title: "Back online!", icon: h(LucideWifi) })
+})
 
 const db = ref()
 const request = window.indexedDB.open("Writer", 1)

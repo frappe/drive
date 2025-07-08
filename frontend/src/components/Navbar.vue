@@ -27,7 +27,10 @@
     </Breadcrumbs>
 
     <div class="flex gap-2">
-      <div id="navbar-content" />
+      <div
+        id="navbar-content"
+        class="flex align-center"
+      />
       <LucideStar
         v-if="rootEntity?.is_favourite"
         width="16"

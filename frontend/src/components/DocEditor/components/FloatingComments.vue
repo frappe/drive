@@ -6,17 +6,18 @@
     <Switch
       size="sm"
       label="Comments"
-      description=""
+      class="!py-0"
       v-model="showComments"
     />
   </Teleport>
+
   <div
-    ref="scrollContainer"
     v-show="showComments"
-    class="relative border-s-2 w-80 flex flex-col gap-8 justify-start self-stretch pb-5"
+    ref="scrollContainer"
+    class="relative w-80 border-s-2 flex flex-col gap-8 justify-start self-stretch pb-5"
   >
     <div
-      class="text-large text-ink-gray-8 font-semibold w-80 px-3 py-2 bg-surface-white z-[100] fixed"
+      class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-surface-white bg-opacity-30 z-[100] fixed"
     >
       Comments
     </div>
@@ -25,8 +26,23 @@
       :key="comment.name"
     >
       <div
-        v-on-outside-click="(e) => {}"
-        ref="commentRefs"
+        v-on-outside-click="
+          (e) => {
+            if (
+              activeComment === comment.name &&
+              !e.target.getAttribute('data-comment-id') &&
+              e.target.nodeName !== 'BUTTON' &&
+              !comment.new
+            )
+              activeComment = null
+          }
+        "
+        :ref="
+          (el) => {
+            if (el) commentRefs[comment.name] = el
+            else delete commentRefs[comment.name]
+          }
+        "
         :id="'comment-' + comment.name"
         @click="activeComment = comment.name"
         class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 bg-surface-white left-1/2 -translate-x-1/2 opacity-0 transition-[top] duration-100 ease-in-out"
@@ -165,6 +181,7 @@
                   "
                   :editable="reply.edit === true"
                   :content="reply.content"
+                  @change="setCommentHeights"
                   @submit="
                     () => {
                       reply.content = commentContents[reply.name]
@@ -216,6 +233,7 @@
               v-model="newReplies[comment.name]"
               placeholder="Reply"
               :is-empty="isEmpty(newReplies[comment.name])"
+              @change="setCommentHeights"
               @submit="(editor) => newReply(comment, editor)"
               @cancel="
                 (editor) => {
@@ -247,6 +265,7 @@ import {
   onMounted,
   ref,
   onBeforeUnmount,
+  nextTick,
 } from "vue"
 import { Avatar, Button, createResource, Dropdown, Switch } from "frappe-ui"
 import { formatDate } from "@/utils/format"
@@ -261,29 +280,31 @@ const props = defineProps({
 
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
-const commentRefs = ref([])
 const scrollContainer = ref("scrollContainer")
 
 const newReplies = reactive({})
+const commentRefs = reactive({})
 const commentContents = reactive({})
 
 const showResolved = inject("showResolved")
 const filteredComments = computed(() =>
   showResolved.value
-    ? props.comments
-    : props.comments.filter((k) => !k.resolved)
+    ? comments.value
+    : comments.value.filter((k) => !k.resolved)
 )
 const showComments = ref(filteredComments.value.length > 0)
 
 watch(activeComment, (val) => {
-  const currentEl = document.querySelector(".active")
-  if (currentEl) currentEl.classList?.remove?.("active")
-  setCommentHeights()
-  if (!val) return
-  // Sometimes remove runs after adding the class :woozy:
   document
-    .querySelector(`span[data-comment-id="${val}"]`)
-    .classList.add("active")
+    .querySelector(`span[data-comment-id].active`)
+    ?.classList?.remove?.("active")
+  setCommentHeights()
+  if (val)
+    nextTick(() => {
+      document
+        .querySelector(`span[data-comment-id="${val}"]`)
+        .classList.add("active")
+    })
 })
 
 // Resources
@@ -363,11 +384,12 @@ const formatDateOrTime = (datetimeStr) => {
   return isToday ? timeStr : dateStr
 }
 
-const setCommentHeights = () => {
+const setCommentHeights = useDebounceFn(() => {
+  console.log("CALLED", activeComment.value)
   let lastBottom = 0
-  setTimeout(() => {
+  nextTick(() => {
     scrollContainer.value.style.height = `max(${scrollContainer.value.parentElement.scrollHeight}px, calc(100vh - 3rem))`
-    for (let [index, comment] of Object.entries(filteredComments.value)) {
+    for (let comment of filteredComments.value) {
       try {
         const containerTop = scrollContainer.value.getBoundingClientRect().top
         const anchorTop =
@@ -377,20 +399,24 @@ const setCommentHeights = () => {
 
         const adjustedTop = Math.max(anchorTop, lastBottom)
         comment.top = adjustedTop
-
-        lastBottom = adjustedTop + commentRefs.value[index].offsetHeight + 12
+        lastBottom = adjustedTop + commentRefs[comment.name].offsetHeight + 12
       } catch {}
     }
-  }, 100)
-}
+  })
+}, 20)
 
 onMounted(setCommentHeights)
-const debouncedSetCommentHeights = useDebounceFn(setCommentHeights, 20)
-useEventListener(window, "resize", debouncedSetCommentHeights)
-
-props.editor.on("update", () => {
+watch(
+  () => comments.value.length,
+  (val) => {
+    console.log(val)
+    setCommentHeights()
+  }
+)
+useEventListener(window, "resize", setCommentHeights)
+const off = props.editor.on("update", () => {
   const currentNames = new Set()
-  debouncedSetCommentHeights()
+  setCommentHeights()
   props.editor.state.doc.descendants((node) => {
     node.marks.forEach((mark) => {
       if (mark.type.name === "comment" && mark.attrs.commentId) {
@@ -400,10 +426,10 @@ props.editor.on("update", () => {
   })
   for (let comment of comments.value)
     if (!currentNames.has(comment.name)) removeComment(comment.name, true)
-  setCommentHeights()
 })
 
 const purgeNewEmptyComments = () => {
+  off()
   for (const comment of comments.value)
     if (comment.new) removeComment(comment.name, true, false)
 }
