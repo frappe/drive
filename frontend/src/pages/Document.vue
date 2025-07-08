@@ -111,7 +111,6 @@ setTimeout(() => {
     }
   )
 }, 1500)
-
 const saveDocument = () => {
   if (isWritable.value || entity.value.comment) {
     updateDocument.submit({

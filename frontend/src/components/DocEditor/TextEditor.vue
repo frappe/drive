@@ -528,8 +528,17 @@ window.addEventListener("online", () => {
 })
 
 // Local saving
+const db = ref()
+watch(db, (db) => {
+  db
+    .transaction(["content"])
+    .objectStore("content")
+    .get(props.entity.name).onsuccess = (val) => {
+    // Hack until we get versioning.
+    if (val.target.result.length > 20) rawContent.value = val.target.result
+  }
+})
 if (props.entity.write) {
-  const db = ref()
   const request = window.indexedDB.open("Writer", 1)
   request.onsuccess = (event) => {
     db.value = event.target.result
@@ -538,15 +547,6 @@ if (props.entity.write) {
     if (!request.result.objectStoreNames.contains("content"))
       request.result.createObjectStore("content")
   }
-  watch(db, (db) => {
-    db
-      .transaction(["content"])
-      .objectStore("content")
-      .get(props.entity.name).onsuccess = (val) => {
-      // Hack until we get versioning.
-      if (val.target.result.length > 20) rawContent.value = val.target.result
-    }
-  })
 }
 
 function beforeUnmount() {
