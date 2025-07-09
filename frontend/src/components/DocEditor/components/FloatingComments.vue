@@ -287,11 +287,16 @@ const commentRefs = reactive({})
 const commentContents = reactive({})
 
 const showResolved = inject("showResolved")
-const filteredComments = computed(() =>
-  showResolved.value
+const filteredComments = computed(() => {
+  if (showResolved.value) {
+    document
+      .querySelectorAll("[data-resolved=true]")
+      .forEach((k) => k.classList.add("display"))
+  }
+  return showResolved.value
     ? comments.value
     : comments.value.filter((k) => !k.resolved)
-)
+})
 const showComments = ref(filteredComments.value.length > 0)
 
 watch(activeComment, (val) => {
@@ -385,7 +390,6 @@ const formatDateOrTime = (datetimeStr) => {
 }
 
 const setCommentHeights = useDebounceFn(() => {
-  console.log("CALLED", activeComment.value)
   let lastBottom = 0
   nextTick(() => {
     scrollContainer.value.style.height = `max(${scrollContainer.value.parentElement.scrollHeight}px, calc(100vh - 3rem))`
@@ -406,13 +410,7 @@ const setCommentHeights = useDebounceFn(() => {
 }, 20)
 
 onMounted(setCommentHeights)
-watch(
-  () => comments.value.length,
-  (val) => {
-    console.log(val)
-    setCommentHeights()
-  }
-)
+watch(() => filteredComments.value.length, setCommentHeights)
 useEventListener(window, "resize", setCommentHeights)
 props.editor.on("update", () => {
   const currentNames = new Set()

@@ -20,6 +20,7 @@ body {
   caret-color: theme("colors.blue.600");
   padding: 2.5em 0em;
   background: white;
+  font-size: 15px;
 }
 
 @media only screen and (max-width: 640px) {
@@ -30,8 +31,18 @@ body {
   }
 }
 
+span[data-comment-id].display {
+  border-bottom: 2px dashed var(--surface-blue-3);
+  user-select: text;
+  cursor: pointer;
+  scroll-margin: 4rem;
+}
+span[data-comment-id].display:hover,
+span[data-comment-id].display.active {
+  background: var(--surface-blue-2);
+}
 span[data-comment-id]:not([data-resolved="true"]) {
-  border-bottom: 2px dashed #facc15;
+  border-bottom: 2px dashed var(--outline-amber-2);
   user-select: text;
   cursor: pointer;
   scroll-margin: 4rem;

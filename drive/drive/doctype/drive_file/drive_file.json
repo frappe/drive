@@ -110,12 +110,11 @@
       "fieldname": "comments",
       "fieldtype": "Table",
       "label": "Comments",
-      "options": "Drive Comment",
-      "permlevel": 1
+      "options": "Drive Comment"
     }
   ],
   "links": [],
-  "modified": "2025-07-01 15:25:45.874367",
+  "modified": "2025-07-09 12:12:16.338508",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",

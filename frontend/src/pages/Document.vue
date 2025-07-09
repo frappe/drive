@@ -68,7 +68,6 @@ const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
 )
 
-// const editor = useTemplateRef("editor")
 const showResolved = ref(false)
 provide("showResolved", showResolved)
 
