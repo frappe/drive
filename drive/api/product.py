@@ -119,7 +119,6 @@ def signup(account_request, first_name, last_name=None, team=None):
         }
     )
     doc.insert()
-    print(team)
     # Check invites for this user
     # if not team:
     #     # Create team for this user

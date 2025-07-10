@@ -4,13 +4,14 @@
   </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
-    <span class="text-base font-medium text-ink-gray-8"
-      >{{ showFileStorage ? "You have" : "Your team has" }} used
-      {{ formatSize(usedSpace) ? formatSize(usedSpace) + " out" : "none" }} of
-      {{ showFileStorage ? "your" : "" }} {{ base2BlockSize(spaceLimit) }} ({{
+    <span class="text-base font-medium text-ink-gray-8">
+      {{ showFileStorage ? "You have" : "Your team has" }} used
+      {{ formatGB(usedSpace) }} out of {{ showFileStorage ? "your" : "" }}
+      {{ formatGB(spaceLimit) }} ({{
         formatPercent((usedSpace / spaceLimit) * 100)
-      }})</span
-    >
+      }})
+    </span>
+
     <div
       class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
     >
@@ -21,35 +22,15 @@
             label: __('You'),
             value: true,
           },
-          { label: __('Team'), value: false },
+          {
+            label: __('Team'),
+            value: false,
+          },
         ]"
       />
-      <!-- <Button
-        variant="ghost"
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          showFileStorage === true
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click="showFileStorage = true"
-      >
-        {{  }}
-      </Button>
-      <Button
-        variant="ghost"
-        class="max-h-6 leading-none transition-colors focus:outline-none"
-        :class="[
-          showFileStorage === false
-            ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-            : '',
-        ]"
-        @click="showFileStorage = false"
-      >
-        {{ }}
-      </Button> -->
     </div>
   </div>
+
   <div
     v-if="usedSpace > 0"
     class="w-full flex justify-start items-start bg-surface-menu-bar border rounded overflow-clip h-7 pl-0 mb-4"
@@ -75,19 +56,22 @@
       />
     </Tooltip>
   </div>
+
   <div
-    v-if="!usedSpace"
+    v-else
     class="w-full flex flex-col items-center justify-center my-10"
   >
     <LucideCloud class="h-7 stroke-1 text-ink-gray-5" />
     <span class="text-ink-gray-8 text-sm mt-2">No Storage Used</span>
   </div>
+
   <div
     class="mt-1 text-ink-gray-8 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
     Large Files:
   </div>
+
   <div
     class="flex flex-col items-start justify-start w-full rounded full px-1.5 overflow-y-auto"
   >
@@ -114,6 +98,7 @@
         {{ formatSize(i.file_size) }}
       </div>
     </div>
+
     <div
       v-if="!storageBreakdown.data?.entities?.length"
       class="py-4 text-center w-full text-sm text-italic"
@@ -122,13 +107,9 @@
     </div>
   </div>
 </template>
+
 <script setup>
-import {
-  formatSize,
-  base2BlockSize,
-  COLOR_MAP,
-  formatPercent,
-} from "@/utils/format"
+import { formatSize, formatPercent, COLOR_MAP } from "@/utils/format"
 import { Tooltip, TabButtons } from "frappe-ui"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { openEntity, MIME_LIST_MAP } from "@/utils/files"
@@ -136,6 +117,7 @@ import { createResource } from "frappe-ui"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
 import LucideCloud from "~icons/lucide/cloud"
+import LucideArrowRight from "~icons/lucide/arrow-right"
 
 const hoveredRow = ref(null)
 const showFileStorage = ref(true)
@@ -143,22 +125,30 @@ const usedSpace = ref(0)
 const spaceLimit = ref(0)
 const route = useRoute()
 
+function formatGB(bytes) {
+  return (bytes / 1024 ** 3).toFixed(2) + " GB"
+}
+
 const storageBreakdown = createResource({
   url: "drive.api.storage.storage_breakdown",
   makeParams: (p) => p,
   onSuccess(data) {
     let res = {}
     usedSpace.value = 0
-    spaceLimit.value = data.limit
+
+    spaceLimit.value = data.limit * 1024 * 1024
+
     data.total.forEach((item) => {
       let kind =
         Object.entries(MIME_LIST_MAP).find(([type, list]) =>
           list.includes(item.mime_type) ? type : false
         )?.[0] || "Unknown"
+
       res[kind] = res[kind] || { file_size: 0 }
       res[kind].file_size += item.file_size
       usedSpace.value += item.file_size
     })
+
     Object.keys(res).forEach((kind) => {
       res[kind].color = COLOR_MAP[kind]
       res[kind].kind = kind
@@ -166,6 +156,7 @@ const storageBreakdown = createResource({
       res[kind].percentageFormat = formatPercent(res[kind].percentageRaw)
       res[kind].h_size = formatSize(res[kind].file_size)
     })
+
     data.total = Object.entries(res).sort(
       (a, b) => b[1].file_size - a[1].file_size
     )

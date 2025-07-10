@@ -5,7 +5,7 @@
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
-      :label="props.isExpanded ? __('Storage') : '- used out of 5GB'"
+      :label="props.isExpanded ? __('Storage') : `- used out of ${limitText}`"
       :is-collapsed="!props.isExpanded"
     >
       <template #icon>
@@ -15,11 +15,7 @@
     <div class="w-auto mx-2 bg-surface-gray-4 rounded-full h-1 my-2">
       <div
         class="h-1 rounded-full"
-        :class="
-          (100 * usedStorage) / storageMax > 100
-            ? 'bg-surface-red-500'
-            : 'bg-surface-gray-7'
-        "
+        :class="usedPercent > 100 ? 'bg-surface-red-500' : 'bg-surface-gray-7'"
         :style="{
           width: calculatePercent,
           maxWidth: '100%',
@@ -33,8 +29,9 @@
           ? 'ml-2 w-auto opacity-100 h-auto'
           : 'ml-0 w-0 overflow-hidden opacity-0 h-0'
       "
-      >{{ formattedString }}</span
     >
+      {{ formattedString }}
+    </span>
   </div>
 </template>
 
@@ -42,51 +39,64 @@
 import { ref, computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
-import { formatSize, base2BlockSize } from "@/utils/format"
 import { useRoute } from "vue-router"
 import LucideCloud from "~icons/lucide/cloud"
 
 const emitter = inject("emitter")
 
-const usedStorage = ref(0)
-const storageMax = ref(5368709120)
-
+const usedStorage = ref(0) // bytes
+const storageMax = ref(0) // GB
 const props = defineProps(["isExpanded"])
+
+const route = useRoute()
+const team = computed(() => {
+  return route.params.team || localStorage.getItem("recentTeam") || ""
+})
+
+// Format hiển thị giới hạn dung lượng
+const limitText = computed(() => {
+  return `${storageMax.value.toFixed(1)} GB`
+})
+
+// Format chuỗi hiển thị chính
 const formattedString = computed(() => {
-  return (
-    (formatSize(usedStorage.value) || "-") +
-    " used out of " +
-    base2BlockSize(storageMax.value)
-  )
+  const usedGB = (usedStorage.value / 1024 ** 3).toFixed(2)
+  return `${usedGB} GB used out of ${storageMax.value.toFixed(1)} GB`
+})
+
+// Tính phần trăm đã sử dụng
+const usedPercent = computed(() => {
+  return ((usedStorage.value / (storageMax.value * 1024 ** 3)) * 100).toFixed(1)
 })
 
 const calculatePercent = computed(() => {
-  let num = (100 * usedStorage.value) / storageMax.value
-  return new Intl.NumberFormat("default", {
-    style: "percent",
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(num / 100)
+  return `${usedPercent.value}%`
 })
-const route = useRoute()
-const team = computed(
-  () => route.params.team || localStorage.getItem("recentTeam")
-)
 
+// Resource gọi API
 let totalStorage = createResource({
   url: "drive.api.storage.storage_bar_data",
   method: "GET",
   cache: "total_storage",
   onSuccess(data) {
-    usedStorage.value = data.total_size
-    storageMax.value = data.limit
+    usedStorage.value = data.total_size || 0 // bytes
+    storageMax.value = data.limit || 0 // đơn vị GB (KHÔNG chia lại!)
   },
 })
-watch(team, (val) => val && totalStorage.fetch({ team: val }), {
-  immediate: true,
-})
 
+// Gọi API khi thay đổi team
+watch(
+  team,
+  (val) => {
+    if (val) totalStorage.fetch({ team: val })
+  },
+  { immediate: true }
+)
+
+// Lắng nghe sự kiện làm mới
 emitter.on("recalculate", () => {
-  setTimeout(() => totalStorage.fetch({ team: team.value }), 2000)
+  setTimeout(() => {
+    if (team.value) totalStorage.fetch({ team: team.value })
+  }, 2000)
 })
 </script>
