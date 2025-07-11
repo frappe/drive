@@ -75,6 +75,7 @@ def get_team_invites(team):
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
     account_request = frappe.get_doc("Account Request", account_request)
+
     if not account_request.login_count:
         frappe.throw("Email not verified")
 
@@ -103,6 +104,7 @@ def signup(account_request, first_name, last_name=None, team=None):
         invite = frappe.get_doc("Drive User Invitation", account_request.invite)
         invite.status = "Accepted"
         invite.save(ignore_permissions=True)
+        
         # Add to that team
         team = frappe.get_doc("Drive Team", invite.team)
         team.append("users", {"user": account_request.email})

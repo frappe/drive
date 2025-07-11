@@ -24,6 +24,7 @@ class DriveUserInvitation(Document):
     def after_insert(self):
         if self.status == "Pending":
             self.invite_via_email()
+            
         elif self.status == "Proposed":
             admins = frappe.get_all(
                 "Drive Team Member", filters={"parent": self.team, "access_level": 2}, pluck="user"
@@ -55,42 +56,48 @@ class DriveUserInvitation(Document):
         )
 
     def accept(self, redirect=True):
-        if self.status != "Proposed":
-            frappe.throw("This key has already been used")
+        if redirect:
+            frappe.local.response["type"] = "redirect"
 
         if self.status == "Expired" or self.has_expired():
             self.status = "Expired"
             self.save(ignore_permissions=True)
             frappe.throw("Invalid or expired key")
 
-        # exists = frappe.db.exists(
-        #     "Account Request",
-        #     {
-        #         "email": self.email,
-        #         "signed_up": 1,
-        #     },
-        # )
+        if self.status == "Proposed":
+            return self._accept_and_add_to_team()
 
-        if redirect:
-            frappe.local.response["type"] = "redirect"
+        if self.status == "Pending":
+            if frappe.db.exists("User", {"email": self.email}):
+                return self._accept_and_add_to_team()
+            
+            exists = frappe.db.exists(
+                "Account Request",
+                {
+                    "email": self.email,
+                    "signed_up": 1,
+                },
+            )
 
-        # if not exists:
-        #     # If the user does not have an account, redirect to sign up
-        #     req = frappe.get_doc(
-        #         {
-        #             "doctype": "Account Request",
-        #             "email": self.email,
-        #             "invite": self.name,
-        #             "login_count": 1,
-        #         }
-        #     ).insert(ignore_permissions=True)
+            if not exists:
+                req = frappe.get_doc(
+                    {
+                        "doctype": "Account Request",
+                        "email": self.email,
+                        "invite": self.name,
+                        "login_count": 1,
+                    }
+                ).insert(ignore_permissions=True)
 
-        #     frappe.db.commit()
-        #     url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
-        #     frappe.local.response["location"] = url
-        #     return
+                frappe.db.commit()
 
-        # Otherwise, add the user to the team
+                url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
+                frappe.local.response["location"] = url
+                return url
+
+            return self._accept_and_add_to_team()
+
+    def _accept_and_add_to_team(self):
         team = frappe.get_doc("Drive Team", self.team)
         team.append("users", {"user": self.email})
         team.save(ignore_permissions=True)
@@ -103,5 +110,6 @@ class DriveUserInvitation(Document):
         if frappe.session.user == "Guest":
             frappe.local.login_manager.login_as(self.email)
 
-        frappe.local.response["location"] = "/drive/t/" + self.team
-        return "/drive/t/" + self.team
+        url = f"/drive/t/{self.team}"
+        frappe.local.response["location"] = url
+        return url

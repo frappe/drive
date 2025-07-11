@@ -59,10 +59,8 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     storage_data = storage_bar_data(team)
-    storage_data_limit = storage_data["limit"] * 1024 * 1024
-    if (storage_data_limit - storage_data["total_size"]) < int(
-        frappe.form_dict.total_file_size
-    ):
+    storage_data_limit = storage_data["limit"] * 1024 * 1024 * 1024
+    if (storage_data_limit - storage_data["total_size"]) < int(frappe.form_dict.total_file_size):
         frappe.throw("You're out of storage!", ValueError)
 
     file = frappe.request.files["file"]
@@ -541,6 +539,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
         auth = jwt.decode(jwt_token, key=settings.get_password("jwt_key"), algorithms=["HS256"])
         if datetime.now().timestamp() > auth["expiry"] or auth["name"] != entity_name:
             raise frappe.PermissionError("You do not have permission to view this file")
+
     elif not frappe.has_permission(
         doctype="Drive File",
         doc=entity_name,
