@@ -136,11 +136,11 @@
               :disabled="!getEntities.data?.length"
               @click.stop="toggleAscending"
             >
-              <LucideArrowUpZa
+              <LucideArrowDownAz
                 v-if="sortOrder.ascending"
                 class="size-4 text-ink-gray-6"
               />
-              <LucideArrowDownAz
+              <LucideArrowUpZa
                 v-else
                 class="size-4 text-ink-gray-6"
               />
@@ -206,8 +206,23 @@
   </div>
 </template>
 <script setup>
-import { Button, Tooltip, Dropdown, TextInput, TabButtons } from "frappe-ui"
-import { ref, computed, watch, useTemplateRef } from "vue"
+import {
+  Button,
+  Tooltip,
+  Dropdown,
+  TextInput,
+  TabButtons,
+  Switch,
+} from "frappe-ui"
+import {
+  ref,
+  computed,
+  watch,
+  useTemplateRef,
+  h,
+  reactive,
+  defineComponent,
+} from "vue"
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
@@ -222,7 +237,7 @@ const props = defineProps({
 })
 const store = useStore()
 
-const sortOrder = ref(store.state.sortOrder)
+const sortOrder = reactive(store.state.sortOrder)
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
 
@@ -279,19 +294,14 @@ onKeyDown("Escape", () => {
 const orderByItems = computed(() => {
   return columnHeaders.map((header) => ({
     ...header,
-    onClick: () =>
-      (sortOrder.value = {
-        field: header.field,
-        label: header.label,
-        ascending: sortOrder.value?.ascending,
-      }),
+    onClick: () => {
+      sortOrder.field = header.field
+      sortOrder.label = header.label
+    },
   }))
 })
 const toggleAscending = () => {
-  sortOrder.value = {
-    ...sortOrder.value,
-    ascending: !sortOrder.value.ascending,
-  }
+  sortOrder.ascending = !sortOrder.ascending
 }
 
 const columnHeaders = [
@@ -314,6 +324,21 @@ const columnHeaders = [
   {
     label: __("Type"),
     field: "mime_type",
+  },
+  {
+    divider: true,
+  },
+  {
+    component: defineComponent({
+      setup() {
+        return () =>
+          h(Switch, {
+            label: "Smart sort",
+            modelValue: sortOrder.smart,
+            "onUpdate:modelValue": (val) => (sortOrder.smart = val),
+          })
+      },
+    }),
   },
 ]
 </script>

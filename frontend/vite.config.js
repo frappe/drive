@@ -37,6 +37,9 @@ export default defineConfig({
   },
   server: {
     allowedHosts: ["drive.localhost"],
+    fs: {
+      allow: [".."],
+    },
   },
   ssr: {
     external: { html2canvas: "html2canvas", dompurify: "dompurify" },

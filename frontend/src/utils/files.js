@@ -70,6 +70,75 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   }
 }
 
+function trimCommonPrefix(a, b) {
+  let i = 0
+  while (i < a.length && i < b.length && a[i] === b[i]) i++
+  return [
+    a.slice(i).split(/[\W]/)[0].toLowerCase(),
+    b.slice(i).split(/[\W]/)[0].toLowerCase(),
+  ]
+}
+
+function extractNum(name) {
+  const match = name.match(/^(.*?)(\d+)(\D*)$/)
+  if (!match) return 0
+
+  const [_, prefix, numStr] = match
+  return parseInt(match[2], 10)
+}
+const months = {
+  january: 1,
+  jan: 1,
+  february: 2,
+  feb: 2,
+  march: 3,
+  mar: 3,
+  april: 4,
+  apr: 4,
+  may: 5,
+  june: 6,
+  jun: 6,
+  july: 7,
+  jul: 7,
+  august: 8,
+  aug: 8,
+  september: 9,
+  sep: 9,
+  sept: 9,
+  october: 10,
+  oct: 10,
+  november: 11,
+  nov: 11,
+  december: 12,
+  dec: 12,
+}
+
+const days = {
+  sunday: 7,
+  sun: 7,
+  monday: 1,
+  mon: 1,
+  tuesday: 2,
+  tue: 2,
+  tues: 2,
+  wednesday: 3,
+  wed: 3,
+  thursday: 4,
+  thu: 4,
+  thurs: 4,
+  friday: 5,
+  fri: 5,
+  saturday: 6,
+  sat: 6,
+}
+
+function extractTime(n) {
+  if (months[n]) return months[n]
+  if (days[n]) return days[n]
+
+  return 0
+}
+
 export const sortEntities = (rows, order) => {
   if (!order) order = store.state.sortOrder
   // Mutates directly
@@ -78,6 +147,21 @@ export const sortEntities = (rows, order) => {
   rows.sort((a, b) => {
     return a[field] == b[field] ? 0 : a[field] > b[field] ? asc : -asc
   })
+  if (order.smart) {
+    rows.sort((a, b) => {
+      const [endA, endB] = trimCommonPrefix(a.title, b.title)
+      if (!endA) return 0
+      const numA = extractNum(endA)
+      const numB = extractNum(endB)
+      if (numA && numB) (numA - numB) * asc
+
+      const timeA = extractTime(endA)
+      const timeB = extractTime(endB)
+      if (timeA && timeB) return (timeA - timeB) * asc
+
+      return 0
+    })
+  }
   return rows
 }
 
