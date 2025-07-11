@@ -41,11 +41,7 @@ def storage_breakdown(team, owned_only):
     query = (
         frappe.qb.from_(DriveFile)
         .select(DriveFile.mime_type, fn.Sum(DriveFile.file_size).as_("file_size"))
-        .where(
-            (DriveFile.is_group == 0) &
-            (DriveFile.is_active == 1) &
-            (DriveFile.team == team)
-        )
+        .where((DriveFile.is_group == 0) & (DriveFile.is_active == 1) & (DriveFile.team == team))
     )
 
     if owned_only:

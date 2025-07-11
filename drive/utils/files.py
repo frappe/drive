@@ -114,7 +114,7 @@ class FileManager:
 
     def __init__(self):
         settings = frappe.get_single("Drive S3 Settings")
-        
+
         # Check if Drive S3 Settings is enabled
         if settings.enabled:
             self.s3_enabled = True
@@ -136,9 +136,9 @@ class FileManager:
             else:
                 self.s3_enabled = False
                 self.bucket = None
-        
+
         self.site_folder = Path(frappe.get_site_path("private/files"))
-        
+
         if self.s3_enabled:
             self.conn = boto3.client(
                 "s3",

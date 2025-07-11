@@ -94,7 +94,7 @@ class DriveUserInvitation(Document):
         team = frappe.get_doc("Drive Team", self.team)
         team.append("users", {"user": self.email})
         team.save(ignore_permissions=True)
-        
+
         self.status = "Accepted"
         self.accepted_at = frappe.utils.now()
         self.save(ignore_permissions=True)

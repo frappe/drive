@@ -59,7 +59,8 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     storage_data = storage_bar_data(team)
-    if (storage_data["limit"] - storage_data["total_size"]) < int(
+    storage_data_limit = storage_data["limit"] * 1024 * 1024
+    if (storage_data_limit - storage_data["total_size"]) < int(
         frappe.form_dict.total_file_size
     ):
         frappe.throw("You're out of storage!", ValueError)
@@ -742,7 +743,8 @@ def remove_or_restore(entity_names, team):
         if doc.is_active:
             flag = 0
         else:
-            if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
+            storage_data_limit = storage_data["limit"] * 1024 * 1024
+            if (storage_data_limit - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
             flag = 1
 
