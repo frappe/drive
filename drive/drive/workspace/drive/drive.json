@@ -1,0 +1,54 @@
+{
+  "app": "drive",
+  "charts": [],
+  "content": "[{\"id\":\"vf_k8YJ6jw\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Drive</span>\",\"col\":12}},{\"id\":\"lgbz2-8bBY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Go to Drive\",\"col\":3}},{\"id\":\"MfWHdTHJyF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Setup S3\",\"col\":3}}]",
+  "creation": "2025-07-11 12:47:26.336149",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": "",
+  "hide_custom": 0,
+  "icon": "folder-normal",
+  "idx": 0,
+  "indicator_color": "green",
+  "is_hidden": 0,
+  "label": "Drive",
+  "link_type": "DocType",
+  "links": [],
+  "modified": "2025-07-11 13:45:19.744654",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive",
+  "number_cards": [],
+  "owner": "Administrator",
+  "parent_page": "",
+  "public": 1,
+  "quick_lists": [],
+  "roles": [
+    {
+      "role": "System Manager"
+    },
+    {
+      "role": "Website Manager"
+    }
+  ],
+  "sequence_id": 23.0,
+  "shortcuts": [
+    {
+      "color": "Grey",
+      "doc_view": "List",
+      "label": "Setup S3",
+      "link_to": "Drive S3 Settings",
+      "type": "DocType"
+    },
+    {
+      "color": "Grey",
+      "doc_view": "List",
+      "label": "Go to Drive",
+      "type": "URL",
+      "url": "/drive"
+    }
+  ],
+  "title": "Drive",
+  "type": "Workspace"
+}
