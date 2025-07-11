@@ -16,9 +16,10 @@
         @change="
           (val) => {
             rawContent = val
-            db.transaction(['content'], 'readwrite')
-              .objectStore('content')
-              .put(val, props.entity.name)
+            if (db)
+              db.transaction(['content'], 'readwrite')
+                .objectStore('content')
+                .put(val, props.entity.name)
             autosave()
           }
         "
@@ -288,7 +289,7 @@ const CommentAction = {
       new: true,
       replies: [],
     }
-
+    console.log(newComment)
     comments.value = [...comments.value, newComment].toSorted((a, b) => {
       const pos1 = orderedComments.findIndex((k) => k.id === a.name)
       const pos2 = orderedComments.findIndex((k) => k.id === b.name)

@@ -18,7 +18,7 @@ body {
 .prose-sm {
   min-width: 100%;
   caret-color: theme("colors.blue.600");
-  padding: 2.5em 0em;
+  padding: 2.5em 0;
   background: white;
   font-size: 15px;
 }
@@ -26,6 +26,7 @@ body {
 @media only screen and (max-width: 640px) {
   .prose-sm {
     display: block;
+    padding: 2.5em 1rem;
     max-width: 100%;
     min-width: 100%;
   }

@@ -89,7 +89,14 @@
             Delete
           </Button>
         </div>
-        <div class="flex flex-col p-3 gap-5">
+        <div
+          class="flex flex-col gap-5 p-3"
+          :class="
+            activeComment !== comment.name &&
+            comment.replies.length > 0 &&
+            'pb-1.5'
+          "
+        >
           <div
             v-for="(reply, index) in activeComment === comment.name
               ? [
@@ -101,6 +108,7 @@
               : [comment]"
             :key="reply.name"
             class="group w-full flex gap-3"
+            :class="reply.loading && 'opacity-70'"
           >
             <div class="w-8 flex justify-center">
               <Avatar
@@ -247,7 +255,7 @@
         </div>
         <div
           v-if="activeComment !== comment.name && comment.replies.length > 0"
-          class="text-ink-gray-6 font-base text-xs p-2.5 pt-0"
+          class="text-ink-gray-6 font-base text-xs p-3 pt-0"
         >
           {{ comment.replies.length }}
           {{ comment.replies.length === 1 ? "reply" : "replies" }}
@@ -272,6 +280,8 @@ import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
 import CommentEditor from "./CommentEditor.vue"
 import { useDebounceFn, useEventListener } from "@vueuse/core"
+import { toast } from "@/utils/toasts"
+import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
 
 const props = defineProps({
   entityName: String,
@@ -313,8 +323,18 @@ watch(activeComment, (val) => {
 })
 
 // Resources
+const findComment = (name) => comments.value.find((k) => k.name === name)
 const createComment = createResource({
   url: "drive.api.files.create_comment",
+  onSuccess: () => {
+    console.log(createComment.params)
+  },
+  onError: () => {
+    toast({
+      title: "Your comment did not go through. ",
+      icon: LucideMessageCircleWarning,
+    })
+  },
 })
 const editComment = createResource({
   url: "drive.api.files.edit_comment",
@@ -341,9 +361,11 @@ const newReply = (comment, editor) => {
     content: newReplies[comment.name],
     owner: comment.owner,
     creation: new Date(),
+    loading: true,
   })
   newReplies[comment.name] = ""
   editor.commands.setContent("")
+  setCommentHeights()
 }
 
 const removeComment = (name, entire, server = true) => {
