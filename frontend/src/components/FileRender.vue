@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="error"
-    class="max-w-[450px] h-[40%] self-center p-16 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
+    class="max-w-[450px] h-fit self-center p-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
   >
-    <LucideAlertCircle class="size-12" />
+    <LucideAlertCircle class="size-10" />
     <span>Cannot open file</span>
     <span class="text-base text-center text-ink-gray-7">
       {{ error }}
@@ -16,12 +16,11 @@
       Download
     </Button>
   </div>
-  <template v-else>
-    <component
-      :is="previewComponent"
-      :preview-entity="previewEntity"
-    />
-  </template>
+  <component
+    v-else
+    :is="previewComponent"
+    :preview-entity="previewEntity"
+  />
 </template>
 <script setup>
 import MSOfficePreview from "@/components/FileTypePreview/MSOfficePreview.vue"
@@ -69,5 +68,13 @@ const RENDERS = {
   Code: TextPreview,
   Markdown: TextPreview,
 }
-const previewComponent = computed(() => RENDERS[props.previewEntity.file_type])
+
+const EXCEPTIONS = {
+  "text/csv": "Text",
+}
+
+const getType = (k) => {
+  return EXCEPTIONS[k.mime_type] || k.file_type
+}
+const previewComponent = computed(() => RENDERS[getType(props.previewEntity)])
 </script>

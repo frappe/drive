@@ -243,7 +243,7 @@ const dropdownAction = computed(() => {
       icon: LucideTrash,
       onClick: () => (dialog.value = "remove"),
       isEnabled: () => rootEntity.value.write,
-      color: "text-ink-red-4",
+      theme: "red",
     },
   ].filter((k) => !k.isEnabled || k.isEnabled())
 })
