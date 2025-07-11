@@ -1,15 +1,15 @@
 <template>
   <div
     v-if="error"
-    class="max-w-[450px] px-16 py-8 z-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
+    class="max-w-[450px] h-[40%] self-center p-16 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
   >
-    <LucideAlertCircle class="h-12 mb-4 fill-blue-500 stroke-white" />
-    <span class="mb-4">Cannot open file</span>
+    <LucideAlertCircle class="size-12" />
+    <span>Cannot open file</span>
     <span class="text-base text-center text-ink-gray-7">
       {{ error }}
     </span>
     <Button
-      class="mt-4 w-full"
+      class="w-full"
       variant="solid"
       @click="download"
     >

@@ -10,7 +10,7 @@
   >
   <div
     v-else
-    class="max-w-[350px] p-8 z-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
+    class="max-w-[350px] h-[30%] p-8 z-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
   >
     <div
       v-if="error"

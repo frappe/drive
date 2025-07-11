@@ -165,13 +165,9 @@ class FileManager:
         """
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
-        print("CREATE THUMBNAIL")
         team_directory = get_home_folder(file.team)["name"]
         save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
         disk_path = str((self.site_folder / save_path).resolve())
-
-        if not file_path:
-            file_path = str((file_path).resolve())
 
         with DistributedLock(file.path, exclusive=False):
             try:
@@ -220,11 +216,12 @@ class FileManager:
                 else:
                     final_path.rename(final_path.with_suffix(".thumbnail"))
 
-            except Exception as e:
-                try:
-                    os.remove(file_path)
-                except FileNotFoundError:
-                    pass
+            except Exception:
+                if self.s3_enabled:
+                    try:
+                        os.remove(file_path)
+                    except FileNotFoundError:
+                        pass
 
     def get_file(self, path):
         """

@@ -8,7 +8,7 @@
     ref="embed"
     :src="`/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`"
     type="application/pdf"
-    class="w-4/5 h-fit self-center"
+    class="w-4/5 h-[90%] self-center"
     :class="{ 'opacity-0': loading }"
   />
 </template>
