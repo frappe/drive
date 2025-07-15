@@ -47,7 +47,7 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { createResource, LoadingIndicator } from "frappe-ui"
 import { watchDebounced } from "@vueuse/core"
-import { setBreadCrumbs, prettyData } from "@/utils/files"
+import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import router from "@/router"
 
@@ -114,6 +114,7 @@ const saveDocument = () => {
 
 const onSuccess = (data) => {
   window.document.title = data.title
+  updateURLSlug("Document", data.title)
   if (!data.settings) {
     data.settings =
       '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'

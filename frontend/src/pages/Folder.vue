@@ -13,7 +13,12 @@ import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
-import { setBreadCrumbs, prettyData, setCache } from "@/utils/files"
+import {
+  setBreadCrumbs,
+  prettyData,
+  setCache,
+  updateURLSlug,
+} from "@/utils/files"
 import router from "@/router"
 import LucideFolderClosed from "~icons/lucide/folder-closed"
 
@@ -62,6 +67,7 @@ const onSuccess = (entity) => {
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )
+  updateURLSlug("Folder", entity.title)
 }
 
 const e = computed(() => props.entityName)

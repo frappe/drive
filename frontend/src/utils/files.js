@@ -438,7 +438,7 @@ export function printDoc(html) {
   }
 }
 
-function slug(title) {
+function slugger(title) {
   return slugify(title.split(".").join(" "), { lower: true })
 }
 
@@ -449,7 +449,7 @@ function getLinkStem(entity) {
       [new Boolean(entity.is_group)]: "folder",
       [new Boolean(entity.document)]: "document",
     }[true]
-  }/${entity.name}/${slug(entity.title)}`
+  }/${entity.name}/${slugger(entity.title)}`
 }
 
 const copyToClipboard = (str) => {
@@ -470,7 +470,7 @@ const copyToClipboard = (str) => {
 export async function updateURLSlug(type, title) {
   await nextTick()
   const route = router.currentRoute.value
-  const slug = slug(entity.title)
+  const slug = slugger(title)
   if (route.params.slug !== slug) {
     router.push({
       name: type,
