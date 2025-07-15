@@ -68,9 +68,15 @@ import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
 import LucideScan from "~icons/lucide/scan"
 import { onKeyStroke } from "@vueuse/core"
-import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
+import {
+  prettyData,
+  setBreadCrumbs,
+  enterFullScreen,
+  updateURLSlug,
+} from "@/utils/files"
 import ErrorPage from "@/components/ErrorPage.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
+import slugify from "slugify"
 
 const router = useRouter()
 const store = useStore()
@@ -119,6 +125,7 @@ onKeyStroke("ArrowRight", (e) => {
 
 const onSuccess = (entity) => {
   document.title = entity.title
+  updateURLSlug(router, "File", slugify(entity.title))
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )

@@ -434,3 +434,19 @@ export function printDoc(html) {
     }
   }
 }
+
+export function updateURLSlug(router, type, slug) {
+  if (
+    !router.currentRoute.params.slug ||
+    router.currentRoute.params.slug !== page.doc?.slug
+  ) {
+    router.replace({
+      name: type,
+      params: {
+        ...route.params,
+        slug: slug,
+      },
+      query: route.query,
+    })
+  }
+}

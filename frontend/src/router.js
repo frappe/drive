@@ -34,13 +34,7 @@ const routes = [
         : "/teams"
     },
   },
-  {
-    path: "/t/:team/notifications",
-    name: "Inbox",
-    // Load a skeleton template directly?
-    component: () => import("@/pages/Notifications.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
+
   {
     path: "/:team/",
     redirect: (to) => ({
@@ -52,6 +46,13 @@ const routes = [
     path: "/t/:team/",
     name: "Home",
     component: () => import("@/pages/Personal.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/t/:team/notifications",
+    name: "Inbox",
+    // Load a skeleton template directly?
+    component: () => import("@/pages/Notifications.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
@@ -79,7 +80,7 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/file/:entityName",
+    path: "/t/:team/file/:entityName/:slug?",
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { allowGuest: true, filePage: true },
@@ -87,7 +88,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/t/:team/folder/:entityName",
+    path: "/t/:team/folder/:entityName/:slug?",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { allowGuest: true },
@@ -95,7 +96,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/t/:team/document/:entityName",
+    path: "/t/:team/document/:entityName/:slug?",
     name: "Document",
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
