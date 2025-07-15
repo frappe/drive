@@ -7,7 +7,7 @@
     v-else
     :key="src"
     ref="mediaRef"
-    class="w-1/4 max-h-full"
+    class="w-1/4 h-full"
     autoplay
     preload="none"
     controls="true"

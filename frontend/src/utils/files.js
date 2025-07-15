@@ -1,13 +1,15 @@
 import router from "@/router"
 import store from "@/store"
 import { formatSize } from "@/utils/format"
+import { nextTick } from "vue"
 import { useTimeAgo } from "@vueuse/core"
 import { mutate, getRecents } from "@/resources/files"
-import { getLink } from "./getLink"
 import { getTeams } from "@/resources/files"
 import { set } from "idb-keyval"
 import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
+import slugify from "slugify"
+import { toast } from "@/utils/toasts.js"
 
 // MIME icons
 import Folder from "@/components/MimeIcons/Folder.vue"
@@ -166,6 +168,7 @@ export const sortEntities = (rows, order) => {
 }
 
 export const manageBreadcrumbs = (to) => {
+  store.dispatch("clearUploads")
   if (
     store.state.breadcrumbs[store.state.breadcrumbs.length - 1]?.name !==
     to.params.entityName
@@ -435,18 +438,71 @@ export function printDoc(html) {
   }
 }
 
-export function updateURLSlug(router, type, slug) {
-  if (
-    !router.currentRoute.params.slug ||
-    router.currentRoute.params.slug !== page.doc?.slug
-  ) {
-    router.replace({
+function slug(title) {
+  return slugify(title.split(".").join(" "), { lower: true })
+}
+
+function getLinkStem(entity) {
+  return `${
+    {
+      true: "file",
+      [new Boolean(entity.is_group)]: "folder",
+      [new Boolean(entity.document)]: "document",
+    }[true]
+  }/${entity.name}/${slug(entity.title)}`
+}
+
+const copyToClipboard = (str) => {
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(str)
+  } else {
+    // Fallback to the legacy clipboard API
+    const textArea = document.createElement("textarea")
+    textArea.value = str
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand("copy")
+    document.body.removeChild(textArea)
+    return Promise.resolve()
+  }
+}
+
+export async function updateURLSlug(type, title) {
+  await nextTick()
+  const route = router.currentRoute.value
+  const slug = slug(entity.title)
+  if (route.params.slug !== slug) {
+    router.push({
       name: type,
       params: {
         ...route.params,
-        slug: slug,
+        slug,
       },
-      query: route.query,
     })
+  }
+}
+
+export function getLink(entity, copy = true, withDomain = true) {
+  const team = router.currentRoute.value.params.team
+  let link = entity.is_link
+    ? entity.path
+    : `${
+        withDomain ? window.location.origin + "/drive" : ""
+      }/t/${team}/${getLinkStem(entity)}`
+
+  if (!copy) return link
+  try {
+    copyToClipboard(link).then(() => toast("Copied to your clipboard!"))
+  } catch (err) {
+    if (err.name === "NotAllowedError") {
+      toast({
+        icon: "alert-triangle",
+        iconClasses: "text-red-700",
+        title: "Clipboard permission denied",
+        position: "bottom-right",
+      })
+    } else {
+      console.error("Failed to copy link:", err)
+    }
   }
 }

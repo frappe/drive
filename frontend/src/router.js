@@ -146,6 +146,7 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  console.log("Navigating to:", to.fullPath, "with params:", to.params)
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
     next("/login")
   } else {

@@ -224,6 +224,7 @@ export default {
           name: "File",
           params: { entityName: upload.response.name },
         })
+        this.close()
       }
     },
     toggleCollapsed() {

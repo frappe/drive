@@ -77,7 +77,7 @@
               multiple
             >
               <div
-                class="flex flex-col items-start justify-start rounded-md bg-surface-gray-2"
+                class="h-7 flex flex-col items-start justify-center rounded-md bg-surface-gray-2"
               >
                 <div class="flex flex-wrap justify-between p-1 w-full">
                   <div class="w-[75%] flex flex-wrap">
@@ -107,7 +107,7 @@
                       ref="queryInput"
                       v-focus
                       placeholder="Add people..."
-                      class="text-base px-1.5 p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
+                      class="text-base px-1.5 p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
                       autocomplete="off"
                       @change="query = $event.target.value"
                     />
@@ -201,7 +201,7 @@
           </div>
           <Autocomplete
             v-model="shareAccess"
-            class=""
+            class="flex items-center"
             placeholder="Access"
             :hide-search="true"
             :options="
@@ -336,7 +336,7 @@ import {
   ComboboxOption,
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
-import { getLink } from "@/utils/getLink"
+import { getLink } from "@/utils/files"
 
 import {
   getUsersWithAccess,

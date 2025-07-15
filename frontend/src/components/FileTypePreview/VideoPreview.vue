@@ -35,10 +35,7 @@ import { LoadingIndicator } from "frappe-ui"
 import { ref, onBeforeUnmount, watch } from "vue"
 
 const props = defineProps({
-  previewEntity: {
-    type: String,
-    default: "",
-  },
+  previewEntity: Object,
 })
 const loading = ref(true)
 const src = ref(

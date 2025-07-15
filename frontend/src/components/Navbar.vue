@@ -129,6 +129,7 @@ import {
   toggleFav,
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
+import { getLink } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"

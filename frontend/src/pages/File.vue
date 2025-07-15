@@ -76,7 +76,6 @@ import {
 } from "@/utils/files"
 import ErrorPage from "@/components/ErrorPage.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
-import slugify from "slugify"
 
 const router = useRouter()
 const store = useStore()
@@ -104,12 +103,7 @@ const prevEntity = computed(() => filteredEntities.value[index.value - 1])
 const nextEntity = computed(() => filteredEntities.value[index.value + 1])
 
 function fetchFile(currentEntity) {
-  file.fetch({ entity_name: currentEntity }).then(() => {
-    router.replace({
-      name: "File",
-      params: { entityName: currentEntity },
-    })
-  })
+  file.fetch({ entity_name: currentEntity })
 }
 
 onKeyStroke("ArrowLeft", (e) => {
@@ -123,13 +117,15 @@ onKeyStroke("ArrowRight", (e) => {
   scrollEntity()
 })
 
-const onSuccess = (entity) => {
+const onSuccess = async (entity) => {
   document.title = entity.title
-  updateURLSlug(router, "File", slugify(entity.title))
+
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )
+  updateURLSlug("File", entity.title)
 }
+
 let file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
