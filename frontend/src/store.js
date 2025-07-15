@@ -28,11 +28,7 @@ const store = createStore({
     },
     uploads: [],
     connectedUsers: [],
-    sortOrder: getJson("sortOrder", {
-      label: "Modified",
-      field: "modified",
-      ascending: false,
-    }),
+    sortOrder: getJson("sortOrder", {}),
     view: getJson("view", "list"),
     shareView: getJson("shareView", "with"),
     activeTags: [],

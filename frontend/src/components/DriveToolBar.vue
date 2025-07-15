@@ -120,7 +120,9 @@
         >
           <Tooltip text="Filter">
             <Button :disabled="!getEntities.data?.length">
-              <LucideFilter class="size-4 text-ink-gray-6" />
+              <template #icon>
+                <LucideFilter class="size-4" />
+              </template>
             </Button>
           </Tooltip>
         </Dropdown>
@@ -136,14 +138,16 @@
               :disabled="!getEntities.data?.length"
               @click.stop="toggleAscending"
             >
-              <LucideArrowDownAz
-                v-if="sortOrder.ascending"
-                class="size-4 text-ink-gray-6"
-              />
-              <LucideArrowUpZa
-                v-else
-                class="size-4 text-ink-gray-6"
-              />
+              <template #icon>
+                <LucideArrowDownAz
+                  v-if="sortOrder.ascending"
+                  class="size-4"
+                />
+                <LucideArrowUpZa
+                  v-else
+                  class="size-4"
+                />
+              </template>
             </Button>
 
             <Button
@@ -237,7 +241,16 @@ const props = defineProps({
 })
 const store = useStore()
 
-const sortOrder = reactive(store.state.sortOrder)
+const name = computed(
+  () => props.getEntities.params?.entity_name || props.getEntities.params?.team
+)
+const sortOrder = reactive(
+  store.state.sortOrder[name.value] || {
+    label: "Modified",
+    field: "modified",
+    ascending: false,
+  }
+)
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
 
@@ -254,14 +267,14 @@ watch(
     sortEntities(rows.value, val)
     props.getEntities.setData(rows.value)
     store.commit("setCurrentFolder", {
-      name:
-        props.getEntities.params?.entity_name ||
-        rows.value[0]?.parent_entity ||
-        "",
+      name,
       team: props.getEntities.params?.team || rows.value[0]?.team,
       entities: rows.value.filter?.((k) => k.title[0] !== "."),
     })
-    store.commit("setSortOrder", val)
+    if (name.value) {
+      store.state.sortOrder[name.value] = val
+      store.commit("setSortOrder", store.state.sortOrder)
+    }
   },
   { immediate: true }
 )

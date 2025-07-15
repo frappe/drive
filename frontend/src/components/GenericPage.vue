@@ -27,6 +27,7 @@
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
+      v-if="getEntities.params?.team"
       v-model="rows"
       :action-items="actionItems"
       :selections="selectedEntitities"
@@ -149,13 +150,14 @@ const verifyAccess = computed(() => props.verify?.data || !props.verify)
 watch(
   verifyAccess,
   async (data) => {
-    if (data)
-      await props.getEntities.fetch({
-        team,
-        order_by:
-          store.state.sortOrder.field +
-          (store.state.sortOrder.ascending ? " 1" : " 0"),
-      })
+    if (!data) return
+
+    const sortOrder =
+      store.state.sortOrder[props.getEntities.params?.entityName]
+    const params = { team }
+    if (sortOrder)
+      params.order_by = sortOrder.field + (sortOrder.ascending ? " 1" : " 0")
+    await props.getEntities.fetch(params)
   },
   { immediate: true }
 )
