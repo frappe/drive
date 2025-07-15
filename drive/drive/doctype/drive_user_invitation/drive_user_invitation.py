@@ -84,11 +84,13 @@ class DriveUserInvitation(Document):
                     "login_count": 1,
                 }
             ).insert(ignore_permissions=True)
-
             frappe.db.commit()
-            url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
-            frappe.local.response["location"] = url
-            return
+            user_exists = frappe.db.exists("User", self.email)
+
+            if not user_exists:
+                url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
+                frappe.local.response["location"] = url
+                return
 
         # Otherwise, add the user to the team
         team = frappe.get_doc("Drive Team", self.team)
