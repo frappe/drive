@@ -332,6 +332,7 @@ def dribble_access(path):
         "read": 0,
         "comment": 0,
         "share": 0,
+        "upload": 0,
         "write": 0,
     }
     result = {}
@@ -388,6 +389,7 @@ def generate_upward_path(entity_name, user=None):
             gp.is_private,
             gp.team,
             p.read,
+            p.upload,
             p.write,
             p.comment,
             p.share

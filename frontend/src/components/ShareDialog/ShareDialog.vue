@@ -77,7 +77,7 @@
               multiple
             >
               <div
-                class="h-7 flex flex-col items-start justify-center rounded-md bg-surface-gray-2"
+                class="flex flex-col items-start justify-center rounded-md bg-surface-gray-2"
               >
                 <div class="flex flex-wrap justify-between p-1 w-full">
                   <div class="w-[75%] flex flex-wrap">
@@ -336,7 +336,7 @@ import {
   ComboboxOption,
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
-import { getLink } from "@/utils/files"
+import { getLink, dynamicList } from "@/utils/files"
 
 import {
   getUsersWithAccess,
@@ -387,14 +387,17 @@ const filteredUsers = computed(() => {
     )
 })
 
-const accessOptions = computed(() => {
-  return props.entity.write
-    ? [
-        { value: "reader", label: "Can view" },
-        { value: "editor", label: "Can edit" },
-      ]
-    : [{ value: "reader", label: "Can view" }]
-})
+const accessOptions = computed(() =>
+  dynamicList([
+    { value: "reader", label: "Can view" },
+    { value: "editor", label: "Can edit", cond: props.entity.write },
+    {
+      value: "upload",
+      label: "Can upload",
+      cond: props.entity.is_group && props.entity.upload,
+    },
+  ])
+)
 function addShares() {
   // Used to enable future advanced config
   const access =
@@ -481,7 +484,7 @@ const openDialog = computed({
   },
 })
 
-const ACCESS_LEVELS = ["read", "comment", "share", "write"]
+const ACCESS_LEVELS = ["read", "comment", "upload", "share", "write"]
 const filteredAccess = computed(() =>
   ACCESS_LEVELS.filter((l) => props.entity[l])
 )

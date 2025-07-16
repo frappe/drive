@@ -54,7 +54,7 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
             parent = if_folder_exists(team, i, parent, is_private)
 
     if not frappe.has_permission(
-        doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
+        doctype="Drive File", doc=parent, ptype="upload", user=frappe.session.user
     ):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 

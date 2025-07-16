@@ -330,7 +330,16 @@ class DriveFile(Document):
         self.save()
 
     @frappe.whitelist()
-    def share(self, user=None, read=None, comment=None, share=None, write=None, valid_until=""):
+    def share(
+        self,
+        user=None,
+        read=None,
+        comment=None,
+        share=None,
+        upload=None,
+        write=None,
+        valid_until="",
+    ):
         """
         Share this file or folder with the specified user.
         If it has already been shared, update permissions.
@@ -368,7 +377,13 @@ class DriveFile(Document):
         else:
             permission = frappe.get_doc("Drive Permission", permission)
 
-        levels = [["read", read], ["comment", comment], ["share", share], ["write", write]]
+        levels = [
+            ["read", read],
+            ["comment", comment],
+            ["share", share],
+            ["upload", upload],
+            ["write", write],
+        ]
         permission.update(
             {
                 "user": user,

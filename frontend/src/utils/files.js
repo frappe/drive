@@ -506,3 +506,7 @@ export function getLink(entity, copy = true, withDomain = true) {
     }
   }
 }
+
+export function dynamicList(k) {
+  return k.filter((a) => !("cond" in a) || a.cond)
+}

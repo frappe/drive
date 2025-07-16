@@ -34,9 +34,9 @@ def get_user_access(entity, user=frappe.session.user):
     """
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
-
+    print(user, entity.owner)
     if user == entity.owner:
-        return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
+        return {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
 
     # Default access based on public or team view
     teams = get_teams(user)
@@ -47,7 +47,8 @@ def get_user_access(entity, user=frappe.session.user):
             "read": 1,
             "comment": 1,
             "share": 1,
-            "write": access == 2,
+            "upload": int(entity.is_group),
+            "write": int(access == 2 or entity.owner == user),
             "type": {2: "team-admin", 1: "team", 0: "guest"}[access],
         }
     else:
@@ -56,12 +57,14 @@ def get_user_access(entity, user=frappe.session.user):
             "comment": 0,
             "share": 0,
             "write": 0,
+            "upload": 0,
         }
 
     path = generate_upward_path(entity.name, user)
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if not user or user == "Guest":
         return user_access
+
     public_path = generate_upward_path(entity.name, "Guest")
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
 
@@ -181,7 +184,7 @@ def get_shared_with_list(entity):
         "Drive Permission",
         filters=[["entity", "=", entity], ["user", "!=", ""], ["user", "!=", "$TEAM"]],
         order_by="user",
-        fields=["user", "read", "write", "comment", "share"],
+        fields=["user", "read", "write", "comment", "upload", "share"],
     )
 
     owner = frappe.db.get_value("Drive File", entity, "owner")

@@ -185,6 +185,7 @@ def files(
         else:
             r["share_count"] = share_count.get(r["name"], 0)
         r |= get_user_access(r["name"])
+        print(r)
 
     return res
 
