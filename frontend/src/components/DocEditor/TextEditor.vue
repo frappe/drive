@@ -1,11 +1,9 @@
 <template>
   <div class="flex w-full h-100 overflow-y-auto">
     <div
-      class="mx-auto"
+      class="mx-auto sm:w-[80%]"
       :class="
-        comments.filter((k) => !k.resolved).length
-          ? 'w-[60%]'
-          : 'w-[90%] sm:w-[80%]'
+        showComments ? 'w-[90%] sm:px-[2.5rem]  sm:w-[60%] md:px-0' : 'w-[90%]'
       "
     >
       <FTextEditor
@@ -26,7 +24,6 @@
         :mentions="users"
         placeholder="Start writing here..."
         :bubble-menu="bubbleMenuButtons"
-        :show-bubble-menu-always="true"
         :extensions="editorExtensions"
       />
     </div>
@@ -34,6 +31,7 @@
       v-if="comments.length"
       :entity-name="entity.name"
       :editor
+      :show-comments
       v-model:active-comment="activeComment"
       v-model:comments="comments"
     />
@@ -48,7 +46,6 @@ import {
   computed,
   defineAsyncComponent,
   onMounted,
-  reactive,
   ref,
   onBeforeUnmount,
   h,
@@ -80,6 +77,7 @@ const rawContent = defineModel()
 const props = defineProps({
   entity: Object,
   isWritable: Boolean,
+  showComments: Boolean,
   users: Object,
 })
 const comments = ref([])

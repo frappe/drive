@@ -2,7 +2,7 @@
   <div
     v-show="showComments"
     ref="scrollContainer"
-    class="relative w-80 border-s-2 flex flex-col gap-8 justify-start self-stretch pb-5"
+    class="relative hidden sm:flex w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5"
   >
     <div
       class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-surface-white bg-opacity-30 z-[1] fixed"
@@ -274,6 +274,7 @@ import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
 const props = defineProps({
   entityName: String,
   editor: Object,
+  showComments: Boolean,
 })
 
 const activeComment = defineModel("activeComment")
@@ -285,7 +286,6 @@ const commentRefs = reactive({})
 const commentContents = reactive({})
 
 const showResolved = inject("showResolved")
-const showComments = inject("showComments")
 const filteredComments = computed(() => {
   if (showResolved.value) {
     document

@@ -45,6 +45,7 @@
       v-if="contentLoaded"
       v-model="rawContent"
       :users="allUsers.data || []"
+      :show-comments
       :timeout="timeout"
       :is-writable="isWritable"
       :entity="entity"
@@ -107,7 +108,6 @@ const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
 const showComments = ref(false)
-provide("showComments", showComments)
 const userId = computed(() => store.state.user.id)
 let intervalId = ref(null)
 
