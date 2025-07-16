@@ -229,14 +229,12 @@ class FileManager:
 
         Temporary: if not found in S3, look at disk.
         """
-        not_s3 = not self.s3_enabled
         if self.s3_enabled:
             try:
                 buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
             except:
-                not_s3 = True
-
-        if not_s3:
+                return ""
+        else:
             with DistributedLock(path, exclusive=False):
                 with open(self.site_folder / path, "rb") as fh:
                     buf = BytesIO(fh.read())

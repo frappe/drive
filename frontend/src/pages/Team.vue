@@ -22,7 +22,10 @@ import LucideBuilding2 from "~icons/lucide/building-2"
 import { computed } from "vue"
 
 const store = useStore()
-store.commit("setCurrentFolder", { name: "" })
+const props = defineProps({
+  team: String,
+})
+store.commit("setCurrentFolder", { name: "", team: props.team })
 
 const write = computed(
   () =>

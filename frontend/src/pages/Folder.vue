@@ -30,6 +30,7 @@ const props = defineProps({
   entityName: String,
   team: String,
 })
+store.commit("setCurrentFolder", { name: props.entityName, team: props.team })
 
 const getFolderContents = createResource({
   ...COMMON_OPTIONS,

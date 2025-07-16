@@ -203,21 +203,23 @@ def get_thumbnail(entity_name):
             thumbnail_data = frappe.cache().get_value(entity_name)
 
         if not thumbnail_data:
-            thumbnail_data = None
+            manager = FileManager()
             try:
-                manager = FileManager()
-                thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
-                thumbnail_data = BytesIO(thumbnail.read())
-                frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
-            except FileNotFoundError:
                 if drive_file.mime_type.startswith("text"):
                     with manager.get_file(drive_file.path) as f:
                         thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
                 elif drive_file.mime_type == "frappe_doc":
                     html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
                     thumbnail_data = html[:1000]
-                if thumbnail_data:
+                else:
+                    thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
+                    thumbnail_data = BytesIO(thumbnail.read())
                     frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
+            except FileNotFoundError:
+                return ""
+
+    if thumbnail_data:
+        frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
 
     if isinstance(thumbnail_data, BytesIO):
         response = Response(

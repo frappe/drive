@@ -2,14 +2,14 @@
   <Navbar
     v-if="!verify?.error && !getEntities.error"
     :actions="
-      $route.name === 'Folder' &&
-      verify?.data &&
-      actionItems
-        .filter((k) => k.isEnabled?.(verify.data))
-        // Remove irrelevant ones
-        .slice(1)
-        .toSpliced(4, 1)
-        .map((k) => ({ ...k, onClick: () => k.action([verify.data]) }))
+      $route.name === 'Folder' && verify?.data
+        ? actionItems
+            .filter((k) => k.isEnabled?.(verify.data))
+            // Remove irrelevant ones
+            .slice(1)
+            .toSpliced(4, 1)
+            .map((k) => ({ ...k, onClick: () => k.action([verify.data]) }))
+        : null
     "
     :trigger-root="
       () => ((selections = new Set()), store.commit('setActiveEntity', null))

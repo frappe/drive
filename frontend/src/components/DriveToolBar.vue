@@ -267,8 +267,6 @@ watch(
     sortEntities(rows.value, val)
     props.getEntities.setData(rows.value)
     store.commit("setCurrentFolder", {
-      name,
-      team: props.getEntities.params?.team || rows.value[0]?.team,
       entities: rows.value.filter?.((k) => k.title[0] !== "."),
     })
     if (name.value) {

@@ -47,6 +47,7 @@ const routes = [
     name: "Home",
     component: () => import("@/pages/Personal.vue"),
     beforeEnter: [setRootBreadCrumb],
+    props: true,
   },
   {
     path: "/t/:team/notifications",
@@ -60,6 +61,7 @@ const routes = [
     name: "Team",
     component: () => import("@/pages/Team.vue"),
     beforeEnter: [setRootBreadCrumb],
+    props: true,
   },
   {
     path: "/t/:team/recents",
@@ -146,7 +148,6 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  console.log("Navigating to:", to.fullPath, "with params:", to.params)
   if (!store.getters.isLoggedIn && !to.meta.allowGuest) {
     next("/login")
   } else {
