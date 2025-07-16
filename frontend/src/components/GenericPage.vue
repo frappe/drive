@@ -2,6 +2,7 @@
   <Navbar
     v-if="!verify?.error && !getEntities.error"
     :actions="
+      $route.name === 'Folder' &&
       verify?.data &&
       actionItems
         .filter((k) => k.isEnabled?.(verify.data))

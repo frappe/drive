@@ -172,7 +172,7 @@ const rootEntity = computed(() => props.rootResource?.data)
 
 const dropdownAction = computed(() => {
   if (props.actions) return props.actions
-  if (!rootEntity.value) return
+  if (!rootEntity.value?.title) return
   return [
     {
       label: __("Share"),
