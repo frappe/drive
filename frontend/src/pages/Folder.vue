@@ -29,6 +29,7 @@ const emitter = inject("emitter")
 const props = defineProps({
   entityName: String,
   team: String,
+  slug: String,
 })
 store.commit("setCurrentFolder", { name: props.entityName, team: props.team })
 

@@ -51,7 +51,7 @@
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
-          props.rootResource?.data?.write
+          props.rootResource?.data?.write !== false
         "
         :options="newEntityOptions"
         placement="left"

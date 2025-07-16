@@ -33,7 +33,7 @@ def get_user_access(entity, user=frappe.session.user):
     :rtype: frappe._dict or None
     """
     if isinstance(entity, str):
-        entity = frappe.get_doc("Drive File", entity)
+        entity = frappe.get_cached_doc("Drive File", entity)
 
     if user == entity.owner:
         return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
@@ -47,7 +47,7 @@ def get_user_access(entity, user=frappe.session.user):
             "read": 1,
             "comment": 1,
             "share": 1,
-            "write": 1 if ((entity.is_group and access) or access == 2) else 0,
+            "write": access == 2,
             "type": {2: "team-admin", 1: "team", 0: "guest"}[access],
         }
     else:

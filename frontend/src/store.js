@@ -112,7 +112,6 @@ const store = createStore({
         state.currentFolder = { name: null, team: null, entities: [] }
       else {
         state.currentFolder = { ...state.currentFolder, ...payload }
-        console.log(payload, state.currentFolder)
         localStorage.setItem(
           "currentFolder",
           JSON.stringify(state.currentFolder.name)

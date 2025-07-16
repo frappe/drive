@@ -11,6 +11,7 @@
     "comment",
     "share",
     "write",
+    "upload",
     "valid_until"
   ],
   "fields": [
@@ -56,12 +57,18 @@
       "fieldname": "valid_until",
       "fieldtype": "Datetime",
       "label": "Valid Until"
+    },
+    {
+      "default": "0",
+      "fieldname": "upload",
+      "fieldtype": "Check",
+      "label": "Upload"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-05-28 11:55:42.728243",
+  "modified": "2025-07-16 18:13:00.874325",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Permission",

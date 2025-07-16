@@ -70,13 +70,10 @@ def files(
         # Give defaults as a team member
         .select(
             *ENTITY_FIELDS,
-            fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read"),
-            fn.Coalesce(DrivePermission.comment, user_access["comment"]).as_("comment"),
-            fn.Coalesce(DrivePermission.share, user_access["share"]).as_("share"),
-            fn.Coalesce(DrivePermission.write, user_access["write"]).as_("write"),
         )
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
+
     # Cursor pagination
     if cursor:
         query = query.where(
@@ -187,6 +184,7 @@ def files(
             r["share_count"] = -1
         else:
             r["share_count"] = share_count.get(r["name"], 0)
+        r |= get_user_access(r["name"])
 
     return res
 
