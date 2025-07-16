@@ -2,7 +2,7 @@ import os, re, json, mimetypes
 
 import frappe
 from pypika import Order
-from .permissions import get_teams, user_has_permission
+from .permissions import get_teams, get_user_access
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -430,19 +430,17 @@ def create_link(team, title, link, personal=False, parent=None):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, content, mentions):
-    write_perms = user_has_permission(
-        frappe.get_doc("Drive File", entity_name), "write", frappe.session.user
-    )
-    if not write_perms:
+def save_doc(entity_name, doc_name, content):
+    access = get_user_access(frappe.get_doc("Drive File", entity_name))
+    if not access["comment"] and not access["write"]:
         raise frappe.PermissionError("You do not have permission to edit this file")
 
-    mentions = json.dumps(mentions)
     frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-    frappe.db.set_value("Drive Document", doc_name, "mentions", mentions)
     frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
 
+    mentions = extract_mentions(content)
     if mentions:
+        frappe.db.set_value("Drive Document", doc_name, "mentions", mentions)
         frappe.enqueue(
             notify_mentions,
             queue="long",
@@ -455,7 +453,9 @@ def save_doc(entity_name, doc_name, content, mentions):
             document_name=doc_name,
         )
 
-    return
+
+def extract_mentions(content):
+    return []
 
 
 @frappe.whitelist()

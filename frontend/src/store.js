@@ -47,8 +47,6 @@ const store = createStore({
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     // Writer ones
-    hasWriteAccess: false,
-    allComments: "",
     activeCommentsInstance: "",
     IsSidebarExpanded: JSON.parse(
       localStorage.getItem("IsSidebarExpanded") || true
@@ -137,16 +135,10 @@ const store = createStore({
       localStorage.setItem("showInfo", payload)
       state.showInfo = payload
     },
-    setAllComments(state, payload) {
-      /* localStorage.setItem("allDocComments",payload); */
-      state.allComments = payload
-    },
     setActiveCommentsInstance(state, payload) {
       state.activeCommentsInstance = payload
     },
-    setHasWriteAccess(state, payload) {
-      state.hasWriteAccess = payload
-    },
+
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))
       state.breadcrumbs = payload

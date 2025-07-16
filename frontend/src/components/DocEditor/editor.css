@@ -1,7 +1,7 @@
 @import url("../../assets/fonts/fonts.css");
 
 body {
-  --font-inter: "Inter", sans-serif;
+  --font-inter: "InterVar", "Inter", sans-serif;
   --font-lora: "Lora", serif;
   --font-roboto: "Roboto", sans-serif;
   --font-merriweather: "Merriweather", serif;

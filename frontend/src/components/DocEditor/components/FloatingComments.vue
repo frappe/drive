@@ -262,15 +262,18 @@ import {
   ref,
   onBeforeUnmount,
   nextTick,
+  defineAsyncComponent,
 } from "vue"
 import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
-import CommentEditor from "./CommentEditor.vue"
 import { useDebounceFn, useEventListener } from "@vueuse/core"
 import { toast } from "@/utils/toasts"
 import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
 
+const CommentEditor = defineAsyncComponent(() =>
+  import("@/components/DocEditor/components/CommentEditor.vue")
+)
 const props = defineProps({
   entityName: String,
   editor: Object,

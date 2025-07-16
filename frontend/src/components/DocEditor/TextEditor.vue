@@ -62,11 +62,9 @@ import emitter from "@/emitter"
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
-import LucideWifi from "~icons/lucide/wifi"
-import LucideWifiOff from "~icons/lucide/wifi-off"
+
 import LucideMessageCircle from "~icons/lucide/message-circle"
 
-const autosave = debounce(() => emit("saveDocument"), 5000)
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
@@ -76,7 +74,6 @@ const editor = computed(() => {
 const rawContent = defineModel()
 const props = defineProps({
   entity: Object,
-  isWritable: Boolean,
   showComments: Boolean,
   users: Object,
 })
@@ -84,6 +81,7 @@ const comments = ref([])
 
 const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 const activeComment = ref(null)
+const autosave = debounce(() => emit("saveDocument"), 5000)
 
 const ExtendedCommentExtension = CommentExtension.extend({
   addAttributes() {
@@ -265,6 +263,7 @@ onMounted(() => {
     return pos1 - pos2
   })
 })
+
 onBeforeUnmount(() => {
   comments.value
     .filter((k) => k.new)
@@ -272,17 +271,14 @@ onBeforeUnmount(() => {
 })
 
 onKeyDown("S", (e) => {
-  if (!(e.ctrlKey || e.metaKey)) {
+  if (!e.metaKey) {
     return
   }
   e.preventDefault()
-  emit("mentionedUsers", this.parseMentions(this.editor.getJSON()))
-  if (this.synced || this.peercount === 0) {
-    emit("saveDocument")
-  }
-  toast({
-    title: "Document saved",
-  })
+  emit("saveDocument") &&
+    toast({
+      title: "Document saved",
+    })
 })
 
 function getOrderedComments(doc) {
@@ -297,17 +293,6 @@ function getOrderedComments(doc) {
 
   return comments.sort((a, b) => a.pos - b.pos)
 }
-
-window.addEventListener("offline", () => {
-  toast({
-    title: "You're offline",
-    icon: LucideWifiOff,
-    text: "Don't worry, your changes will be saved locally.",
-  })
-})
-window.addEventListener("online", () => {
-  toast({ title: "Back online!", icon: h(LucideWifi) })
-})
 
 // Local saving
 const db = ref()
