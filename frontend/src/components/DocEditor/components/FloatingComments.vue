@@ -1,23 +1,11 @@
 <template>
-  <Teleport
-    to="#navbar-content"
-    v-if="filteredComments.length > 0"
-  >
-    <Switch
-      size="sm"
-      label="Comments"
-      class="!py-0"
-      v-model="showComments"
-    />
-  </Teleport>
-
   <div
     v-show="showComments"
     ref="scrollContainer"
     class="relative w-80 border-s-2 flex flex-col gap-8 justify-start self-stretch pb-5"
   >
     <div
-      class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-surface-white bg-opacity-30 z-[100] fixed"
+      class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-surface-white bg-opacity-30 z-[1] fixed"
     >
       Comments
     </div>
@@ -59,7 +47,7 @@
           <Button
             v-if="!comment.resolved"
             variant="ghost"
-            size="xs"
+            class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="resolve(comment)"
           >
             <template #prefix>
@@ -70,7 +58,7 @@
           <Button
             v-if="comment.resolved"
             variant="ghost"
-            size="xs"
+            class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="resolve(comment, false)"
           >
             <template #prefix>
@@ -80,7 +68,7 @@
           </Button>
           <Button
             variant="ghost"
-            size="xs"
+            class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="removeComment(comment.name, true)"
           >
             <template #prefix>
@@ -167,7 +155,7 @@
                       reply.edit ||
                       reply.resolved
                     "
-                    size="xs"
+                    class="!h-5 !text-xs !px-1.5 !rounded-sm"
                     variant="ghost"
                     @click="triggerRoot"
                   >
@@ -275,7 +263,7 @@ import {
   onBeforeUnmount,
   nextTick,
 } from "vue"
-import { Avatar, Button, createResource, Dropdown, Switch } from "frappe-ui"
+import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
 import { v4 } from "uuid"
 import CommentEditor from "./CommentEditor.vue"
@@ -297,6 +285,7 @@ const commentRefs = reactive({})
 const commentContents = reactive({})
 
 const showResolved = inject("showResolved")
+const showComments = inject("showComments")
 const filteredComments = computed(() => {
   if (showResolved.value) {
     document
@@ -307,8 +296,6 @@ const filteredComments = computed(() => {
     ? comments.value
     : comments.value.filter((k) => !k.resolved)
 })
-const showComments = ref(filteredComments.value.length > 0)
-
 watch(activeComment, (val) => {
   document
     .querySelector(`span[data-comment-id].active`)
@@ -388,7 +375,7 @@ const removeComment = (name, entire, server = true) => {
 
 const resolve = (comment, value = true) => {
   resolveComment.submit({ name: comment.name, value })
-  props.editor.commands.resolveComment(comment.name)
+  props.editor.commands.resolveComment(comment.name, value)
   comment.resolved = value
 }
 

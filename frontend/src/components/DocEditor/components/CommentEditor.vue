@@ -48,23 +48,21 @@
             v-if="!isEmpty"
             :disabled
             variant="ghost"
-            size="xs"
-            class=""
+            class="!h-5 !w-5 !text-xs !rounded-sm"
             @click="$emit('submit', editor)"
           >
             <template #icon>
-              <LucideMessageCircleReply class="size-4" />
+              <LucideMessageCircleReply class="size-3.5" />
             </template>
           </Button>
           <Button
             v-if="!isEmpty"
             variant="ghost"
-            size="xs"
-            class="font-medium"
+            class="!h-5 !w-5 !text-xs !rounded-sm"
             @click="$emit('cancel', editor)"
           >
             <template #icon>
-              <LucideX class="w-4" />
+              <LucideX class="w-3.5" />
             </template>
           </Button>
         </div>

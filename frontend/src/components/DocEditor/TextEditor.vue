@@ -38,84 +38,11 @@
       v-model:comments="comments"
     />
   </div>
-
-  <!-- <DocMenuAndInfoBar
-    v-if="editor && ready"
-    ref="MenuBar"
-    v-model:all-annotations="allAnnotations"
-    v-model:active-annotation="activeAnnotation"
-    :editor="editor"
-    :versions="versions"
-    :settings="settings"
-  /> -->
-  <!-- <div
-      :class="[
-        settings.docFont,
-        settings.docSize ? 'text-[15px]' : 'text-[17px]',
-        settings.docWidth
-          ? 'sm:min-w-[75vw] sm:max-w-[75vw]'
-          : 'sm:min-w-[21cm] sm:max-w-[21cm]',
-      ]"
-      class="flex sm:w-full items-start justify-start lg:justify-center mx-auto px-[1cm]"
-    >
-   
-      <editor-content
-        id="editor-capture"
-        class="min-w-full"
-        autocomplete="true"
-        autocorrect="true"
-        autocapitalize="true"
-        :spellcheck="settings.docSpellcheck ? true : false"
-        :editor="editor"
-        @keydown.enter.passive=" this.entity.title === "Untitled Document" && evalImplicitTitle()"
-      />
-    </div>
-  </div>
-  
-  <FilePicker
-    v-if="showFilePicker"
-    v-model="showFilePicker"
-    :suggested-tab-index="0"
-    @success="
-      (val) => {
-        pickedFile = val
-        showFilePicker = false
-        if (editor) {
-          if (editable) {
-            wordToHTML()
-          }
-        }
-      }
-    "
-  />
-  <SnapshotPreviewDialog
-    v-if="snapShotDialog"
-    v-model="snapShotDialog"
-    :snapshot-data="selectedSnapshot"
-    @success="
-      () => {
-        selectedSnapshot = null
-      }
-    "
-  />
-  -->
 </template>
 
 <script setup>
-import FilePicker from "@/components/FilePicker.vue"
 import { toast } from "@/utils/toasts.js"
-import Link from "@tiptap/extension-link"
-import TaskItem from "@tiptap/extension-task-item"
-import TaskList from "@tiptap/extension-task-list"
-import Typography from "@tiptap/extension-typography"
-import StarterKit from "@tiptap/starter-kit"
-import {
-  onOutsideClickDirective,
-  createDocumentResource,
-  createListResource,
-  TextEditor as FTextEditor,
-  debounce,
-} from "frappe-ui"
+import { TextEditor as FTextEditor, debounce } from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
 import {
   computed,
@@ -127,49 +54,20 @@ import {
   h,
   watch,
 } from "vue"
-import { IndexeddbPersistence } from "y-indexeddb"
-import { WebrtcProvider } from "y-webrtc"
-import * as Y from "yjs"
-import { uploadDriveEntity } from "@/utils/chunkFileUpload"
-import { detectMarkdown, markdownToHTML } from "@/utils/markdown"
-import DocMenuAndInfoBar from "./components/DocMenuAndInfoBar.vue"
-import configureMention from "./extensions/mention/mention"
-import { Table } from "./extensions/table"
-import TableBubbleMenu from "./components/TableBubbleMenu.vue"
-import { PageBreak } from "./extensions/Pagebreak"
-import { Highlight } from "./extensions/backgroundColor"
-import { CharacterCount } from "./extensions/character-count"
-import { Collaboration } from "./extensions/collaboration"
-import { CollaborationCursor } from "./extensions/collaborationCursor"
-import { Color } from "./extensions/color"
+import store from "@/store"
 import { FontFamily } from "./extensions/font-family"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
-
-import { FontSize } from "./extensions/font-size"
-import { Indent } from "./extensions/indent"
-import { LineHeight } from "./extensions/lineHeight"
-import { Placeholder } from "./extensions/placeholder"
-import { TextAlign } from "./extensions/text-align"
-import { TextStyle } from "./extensions/text-style"
-import { Underline } from "./extensions/underline"
-import { ResizableMedia } from "./extensions/resizenode"
-import { createEditorButton } from "./utils"
-import { Annotation } from "./extensions/AnnotationExtension/annotation"
-import suggestion from "./extensions/suggestion/suggestion"
-import Commands from "./extensions/suggestion/suggestionExtension"
-import SnapshotPreviewDialog from "./components/SnapshotPreviewDialog.vue"
-import { DiffMarkExtension } from "./extensions/createDiffMark"
 import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc } from "@/utils/files"
-import emitter from "@/emitter"
 import { onKeyDown } from "@vueuse/core"
+import emitter from "@/emitter"
+
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideMessageCircle from "~icons/lucide/message-circle"
-import store from "@/store"
 
 const autosave = debounce(() => emit("saveDocument"), 5000)
 const textEditor = ref("textEditor")
@@ -187,17 +85,7 @@ const props = defineProps({
 const comments = ref([])
 
 const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
-
-const font = ref("font-sans")
-const localStore = ref(null)
-const implicitTitle = ref(null)
-const allComments = reactive([])
-const allAnnotations = reactive([])
 const activeComment = ref(null)
-
-const versions = reactive([])
-const selectedSnapshot = ref(null)
-const snapShotDialog = ref(false)
 
 const ExtendedCommentExtension = CommentExtension.extend({
   addAttributes() {
@@ -217,7 +105,7 @@ const ExtendedCommentExtension = CommentExtension.extend({
       ...this.parent?.(),
 
       resolveComment:
-        (commentId) =>
+        (commentId, resolved = true) =>
         ({ state, tr, dispatch }) => {
           const { doc } = state
           const markType = state.schema.marks[this.name]
@@ -227,12 +115,11 @@ const ExtendedCommentExtension = CommentExtension.extend({
             node.marks.forEach((mark) => {
               if (
                 mark.type === markType &&
-                mark.attrs.commentId === commentId &&
-                !mark.attrs.resolved
+                mark.attrs.commentId === commentId
               ) {
                 const updatedMark = markType.create({
                   ...mark.attrs,
-                  resolved: true,
+                  resolved,
                 })
 
                 tr.removeMark(pos, pos + node.nodeSize, markType)
@@ -251,6 +138,7 @@ const ExtendedCommentExtension = CommentExtension.extend({
     }
   },
 })
+
 const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
@@ -299,181 +187,76 @@ const CommentAction = {
   },
   isActive: () => false,
 }
-const bubbleMenuButtons = props.entity.write
-  ? [
-      "Paragraph",
-      [
-        {
-          text: "H1",
-          icon: H1,
-          action: (editor) =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run(),
-          isActive: (editor) => editor.isActive("heading", { level: 1 }),
-        },
-        {
-          text: "H2",
-          icon: H2,
-          action: (editor) =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run(),
-          isActive: (editor) => editor.isActive("heading", { level: 2 }),
-        },
-        {
-          text: "H3",
-          icon: H3,
-          action: (editor) =>
-            editor.chain().focus().toggleHeading({ level: 3 }).run(),
-          isActive: (editor) => editor.isActive("heading", { level: 3 }),
-        },
-      ],
-      "Separator",
-      "Bold",
-      "Italic",
-      "Link",
-      "Strikethrough",
-      "Separator",
-      {
-        label: "Inter",
-        class: "font-inter",
-        component: h(
-          defineAsyncComponent(() => import("./components/FontFamily.vue")),
-          { editor }
-        ),
-      },
-      "FontColor",
-      "Separator",
-      ["Bullet List", "Numbered List", "Task List"],
-      "Separator",
-      ["Align Left", "Align Center", "Align Right"],
-      "Separator",
-      CommentAction,
-      "Image",
-      "Video",
-      "Blockquote",
-      "Code",
-      [
-        "InsertTable",
-        "AddColumnBefore",
-        "AddColumnAfter",
-        "DeleteColumn",
-        "AddRowBefore",
-        "AddRowAfter",
-        "DeleteRow",
-        "MergeCells",
-        "SplitCell",
-        "ToggleHeaderColumn",
-        "ToggleHeaderRow",
-        "ToggleHeaderCell",
-        "DeleteTable",
-      ],
-    ]
-  : [CommentAction]
-// provide() {
-//   return {
-//     editor: computed(() => this.editor),
-//     document: computed(() => this.document),
-//     versions: computed(() => this.versions),
-//   }
-// },
-// inheritAttrs: false,
-//expose: ["editor", "versions"],
 
-// docWidth: this.settings.docWidth,
-// docSize: this.settings.docSize,
-// docFont: this.settings.docFont,
-// buttons: [],
-// forceHideBubbleMenu: false,
-// synced: false,
-// peercount: 0,
-// ready: true,
-// document: null,
-// awareness: null,
-
-// showCommentMenu: false,
-// commentText: "",
-// isCommentModeOn: true,
-// showFilePicker: false,
-// pickedFile: null,
-// activeCommentsInstance: {
-//   uuid: "",
-//   comments: [],
-// },
-
-// activeAnchorAnnotations: null,
-
-// activeAnchorAnnotations: {
-//   handler(newVal) {
-//     if (newVal) {
-//       // unexpected case??
-//       let yArray = this.document.getArray("docAnnotations")
-//       // Toggle visibility if it's not visible in the document anymore
-//       yArray.forEach((item) => {
-//         if (newVal.has(item.get("id"))) {
-//           item.set("anchor", 1)
-//         } else {
-//           item.set("anchor", 0)
-//         }
-//       })
-//     }
-//   },
-// },
-// lastSaved(newVal) {
-//   const ymap = this.document.getMap("docinfo")
-//   const lastSaved = ymap.get("lastsaved")
-//   if (newVal > lastSaved) {
-//     ymap.set("lastsaved", newVal)
-//   }
-// },
-// settings(newVal) {
-//   switch (newVal.toLowerCase()) {
-//     case "sans":
-//       this.defaultFont = "font-['Nunito']"
-//       break
-//     case "serif":
-//       this.defaultFont = "font-['Lora']"
-//       break
-//     case "round":
-//       this.defaultFont = "font-['Nunito']"
-//       break
-//     case "mono":
-//       this.defaultFont = "font-['Geist-Mono']"
-//       break
-//     default:
-//       this.defaultFont = "font-['InterVar']"
-//   }
-// },
-//   activeCommentsInstance: {
-//     handler(newVal) {
-//       if (newVal) {
-//         // check if userid is available
-//         store.commit(
-//           "setActiveCommentsInstance",
-//           JSON.stringify(newVal)
-//         )
-//       }
-//     },
-//     immediate: true,
-//   },
-//   allComments: {
-//     handler(newVal) {
-//       if (newVal) {
-//         store.commit("setAllComments", JSON.stringify(newVal))
-//       }
-//     },
-//     immediate: true, // make this watch function is called when component created
-//   },
-//   editable(value) {
-//     this.editor.setEditable(value)
-//   },
-// },
+const bubbleMenuButtons = [
+  "Paragraph",
+  [
+    {
+      text: "H1",
+      icon: H1,
+      action: (editor) =>
+        editor.chain().focus().toggleHeading({ level: 1 }).run(),
+      isActive: (editor) => editor.isActive("heading", { level: 1 }),
+    },
+    {
+      text: "H2",
+      icon: H2,
+      action: (editor) =>
+        editor.chain().focus().toggleHeading({ level: 2 }).run(),
+      isActive: (editor) => editor.isActive("heading", { level: 2 }),
+    },
+    {
+      text: "H3",
+      icon: H3,
+      action: (editor) =>
+        editor.chain().focus().toggleHeading({ level: 3 }).run(),
+      isActive: (editor) => editor.isActive("heading", { level: 3 }),
+    },
+  ],
+  "Separator",
+  "Bold",
+  "Italic",
+  "Link",
+  "Strikethrough",
+  "Separator",
+  {
+    label: "Inter",
+    class: "font-inter",
+    component: h(
+      defineAsyncComponent(() => import("./components/FontFamily.vue")),
+      { editor }
+    ),
+  },
+  "FontColor",
+  "Separator",
+  ["Bullet List", "Numbered List", "Task List"],
+  "Separator",
+  ["Align Left", "Align Center", "Align Right"],
+  "Separator",
+  CommentAction,
+  "Image",
+  "Video",
+  "Blockquote",
+  "Code",
+  [
+    "InsertTable",
+    "AddColumnBefore",
+    "AddColumnAfter",
+    "DeleteColumn",
+    "AddRowBefore",
+    "AddRowAfter",
+    "DeleteRow",
+    "MergeCells",
+    "SplitCell",
+    "ToggleHeaderColumn",
+    "ToggleHeaderRow",
+    "ToggleHeaderCell",
+    "DeleteTable",
+  ],
+]
 
 emitter.on("printFile", () => {
-  if (this.editor) {
-    this.printEditorContent()
-  }
-})
-
-emitter.on("importDocFromWord", () => {
-  this.showFilePicker = true
+  if (editor.value) printDoc(editor.value.getHTML())
 })
 
 onMounted(() => {
@@ -550,222 +333,6 @@ if (props.entity.write) {
   }
 }
 
-function beforeUnmount() {
-  emitter.off("printFile")
-  emitter.off("importDocFromWord")
-
-  this.editor.destroy()
-  this.editor = null
-}
-
-function updateAnnotationStatus() {
-  const temp = new Set()
-  this.editor.state.doc.descendants((node) => {
-    const { marks } = node
-    marks.forEach((mark) => {
-      if (mark.type.name === "annotation") {
-        const annotationMark = mark.attrs.annotationID
-        temp.add(annotationMark)
-      }
-    })
-  })
-  this.activeAnchorAnnotations = temp
-}
-
-async function wordToHTML() {
-  let ctx = this
-  if (
-    ctx.pickedFile?.mime_type ===
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-    ctx.pickedFile?.file_ext == ".docx"
-  ) {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json; charset=utf-8",
-      "X-Frappe-Site-Name": window.location.hostname,
-      Range: "bytes=0-10000000",
-    }
-    const res = await fetch(
-      `/api/method/drive.api.files.get_file_content?entity_name=${ctx.pickedFile.name}`,
-      {
-        method: "GET",
-        headers,
-      }
-    )
-    if (res.ok) {
-      let blob = await res.arrayBuffer()
-      const { convertToHtml } = await import("mammoth")
-      convertToHtml({ arrayBuffer: blob })
-        .then(function (result) {
-          ctx.editor.commands.insertContent(result.value)
-        })
-        .catch(function (error) {
-          console.error(error)
-        })
-    }
-  } else {
-    toast({
-      title: "Not a valid DOCX file!",
-      position: "bottom-right",
-      icon: "alert-triangle",
-      iconClasses: "text-ink-red-3",
-      timeout: 2,
-    })
-  }
-}
-
-function printEditorContent() {
-  const html = this.editor.getHTML()
-  if (html) {
-    printDoc(html)
-    return true
-  }
-  return false
-}
-function shouldShow({ state }) {
-  const { from, to } = state.selection
-  // Check if the selection is within a text node
-  const node = state.doc.nodeAt(from)
-  if (node && node.type.name === "text") {
-    // Ensure the selection is not empty
-    return from !== to
-  }
-  return false // Hide the menu if the selection is outside a text node
-}
-function RndColor() {
-  const max = 255
-  const min = 100
-  const range = max - min
-  const red = Math.floor(Math.random() * range) + min
-  const green = Math.floor(Math.random() * range) + min
-  const blue = Math.floor(Math.random() * range) + min
-  const redToHex = red.toString(16)
-  const greenToHex = green.toString(16)
-  const blueToHex = blue.toString(16)
-  return "#" + redToHex + greenToHex + blueToHex
-}
-function discardComment() {
-  this.commentText = ""
-  this.isCommentModeOn = false
-}
-function getIsCommentModeOn() {
-  return this.isCommentModeOn
-}
-
-function focusContent({ from, to }) {
-  this.editor.chain().setTextSelection({ from, to }).run()
-}
-function findCommentsAndStoreValues() {
-  const tempComments = []
-  this.editor.state.doc.descendants((node, pos) => {
-    const { marks } = node
-    marks.forEach((mark) => {
-      if (mark.type.name === "comment") {
-        const markComments = mark.attrs.comment
-        const jsonComments = markComments ? JSON.parse(markComments) : null
-        if (
-          jsonComments !== null &&
-          !tempComments.find((el) => el.jsonComments.uuid === jsonComments.uuid)
-        ) {
-          tempComments.push({
-            node,
-            jsonComments,
-            from: pos,
-            to: pos + (node.text?.length || 0),
-            text: node.text,
-          })
-        }
-      }
-    })
-  })
-  return (this.allComments = tempComments)
-}
-
-function setCurrentAnnotation() {
-  let newVal = this.editor.isActive("annotation")
-  const sideBarState = store.state.showInfo && this.$refs.MenuBar.tab == 5
-  if (newVal && sideBarState) {
-    this.activeAnnotation = this.editor.getAttributes("annotation").annotationID
-  }
-}
-function setAndFocusCurrentAnnotation() {
-  let newVal = this.editor.isActive("annotation")
-  if (newVal) {
-    store.state.showInfo = true
-    this.$refs.MenuBar.tab = 5
-    this.activeAnnotation = this.editor.getAttributes("annotation").annotationID
-  }
-}
-function setCurrentComment() {
-  let newVal = this.editor.isActive("comment")
-  if (newVal) {
-    store.state.showInfo = true
-    this.$refs.MenuBar.tab = 5
-    const parsedComment = JSON.parse(
-      this.editor.getAttributes("comment").comment
-    )
-    parsedComment.comments =
-      typeof parsedComment.comments === "string"
-        ? JSON.parse(parsedComment.comments)
-        : parsedComment.comments
-    this.activeCommentsInstance = parsedComment
-  } else {
-    this.activeCommentsInstance = {}
-  }
-}
-function setComment(val) {
-  const localVal = val || this.commentText
-  if (!localVal.trim().length) return
-  const currentSelectedComment = JSON.parse(
-    JSON.stringify(this.activeCommentsInstance)
-  )
-  const commentsArray =
-    typeof currentSelectedComment.comments === "string"
-      ? JSON.parse(currentSelectedComment.comments)
-      : currentSelectedComment.comments
-  if (commentsArray) {
-    commentsArray.push({
-      userName: store.state.user.id,
-      userImage: store.state.user.imageURL,
-      time: Date.now(),
-      content: localVal,
-    })
-    const commentWithUuid = JSON.stringify({
-      uuid: this.activeCommentsInstance.uuid || uuidv4(),
-      comments: commentsArray,
-    })
-    this.editor.chain().setComment(commentWithUuid).run()
-    this.commentText = ""
-  } else {
-    const commentWithUuid = JSON.stringify({
-      uuid: uuidv4(),
-      comments: [
-        {
-          userName: store.state.user.id,
-          userImage: store.state.user.imageURL,
-          time: Date.now(),
-          content: localVal,
-        },
-      ],
-    })
-    this.editor.chain().setComment(commentWithUuid).run()
-    this.commentText = ""
-  }
-}
-function parseMentions(data) {
-  const tempMentions = (data.content || []).flatMap(this.parseMentions)
-  if (data.type === "mention") {
-    tempMentions.push({
-      id: data.attrs.id,
-      author: data.attrs.author,
-      type: data.attrs.type,
-    })
-  }
-  const uniqueMentions = [...new Set(tempMentions.map((item) => item.id))].map(
-    (id) => tempMentions.find((item) => item.id === id)
-  )
-  return uniqueMentions
-}
 function evalImplicitTitle() {
   this.implicitTitle = this.editor.state.doc.firstChild.textContent
     .replaceAll("#", "")
@@ -785,22 +352,6 @@ function evalImplicitTitle() {
     })
   }
 }
-
-// rename() {
-//   return {
-//     url: "drive.api.files.call_controller_method",
-//     makeParams: (params) => ({
-//       method: "rename",
-//       ...params,
-//     }),
-//     onSuccess: () => {
-//       store.state.breadcrumbs[
-//         store.state.breadcrumbs.length - 1
-//       ].label = this.implicitTitle
-//     },
-//     debounce: 500,
-//   }
-// },
 </script>
 
 <style>

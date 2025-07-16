@@ -6,12 +6,24 @@
       'extend',
       {
         icon: MessagesSquare,
+        label: 'Show Comments',
+        onClick: () => (showComments = true),
+        isEnabled: () => !showComments,
+      },
+      {
+        icon: MessagesSquare,
+        label: 'Hide Comments',
+        onClick: () => (showComments = false),
+        isEnabled: () => showComments,
+      },
+      {
+        icon: MessageSquareDot,
         label: 'Show Resolved',
         onClick: () => (showResolved = true),
         isEnabled: () => !showResolved,
       },
       {
-        icon: MessagesSquare,
+        icon: MessageSquareDot,
         label: 'Hide Resolved',
         onClick: () => (showResolved = false),
         isEnabled: () => showResolved,
@@ -51,7 +63,6 @@ import {
   inject,
   onMounted,
   defineAsyncComponent,
-  useTemplateRef,
   provide,
   onBeforeUnmount,
 } from "vue"
@@ -62,6 +73,7 @@ import { watchDebounced } from "@vueuse/core"
 import { setBreadCrumbs, prettyData } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import MessagesSquare from "~icons/lucide/messages-square"
+import MessageSquareDot from "~icons/lucide/message-square-dot"
 import router from "@/router"
 
 const TextEditor = defineAsyncComponent(() =>
@@ -94,6 +106,8 @@ const saveCount = ref(0)
 const lastSaved = ref(0)
 const titleVal = computed(() => title.value || oldTitle.value)
 const comments = computed(() => store.state.allComments)
+const showComments = ref(false)
+provide("showComments", showComments)
 const userId = computed(() => store.state.user.id)
 let intervalId = ref(null)
 
@@ -136,6 +150,7 @@ const onSuccess = (data) => {
 
   data.owner = data.owner === userId.value ? "You" : data.owner
   entity.value = data
+  showComments.value = !!entity.value.comments.length
   lastSaved.value = Date.now()
   contentLoaded.value = true
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
