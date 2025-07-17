@@ -62,7 +62,7 @@ declare module 'vue' {
     H1: typeof import('./src/components/DocEditor/icons/h-1.vue')['default']
     H2: typeof import('./src/components/DocEditor/icons/h-2.vue')['default']
     H3: typeof import('./src/components/DocEditor/icons/h-3.vue')['default']
-    Image: typeof import('./src/components/DocEditor/icons/Image.vue')['default']
+    Image: typeof import('./src/components/MimeIcons/Image.vue')['default']
     ImagePreview: typeof import('./src/components/FileTypePreview/ImagePreview.vue')['default']
     Indent: typeof import('./src/components/DocEditor/icons/Indent.vue')['default']
     InfoPopup: typeof import('./src/components/InfoPopup.vue')['default']
@@ -121,7 +121,7 @@ declare module 'vue' {
     MoveDialog: typeof import('./src/components/MoveDialog.vue')['default']
     MSOfficePreview: typeof import('./src/components/FileTypePreview/MSOfficePreview.vue')['default']
     Navbar: typeof import('./src/components/Navbar.vue')['default']
-    NewAnnotation: typeof import('./src/components/DocEditor/components/NewAnnotation.vue')['default']
+    NewAnnotation: typeof import('./src/components/DocEditor/icons/NewAnnotation.vue')['default']
     NewComment: typeof import('./src/components/DocEditor/components/NewComment.vue')['default']
     NewFolderDialog: typeof import('./src/components/NewFolderDialog.vue')['default']
     NewLinkDialog: typeof import('./src/components/NewLinkDialog.vue')['default']
@@ -176,7 +176,7 @@ declare module 'vue' {
     UserAutoComplete: typeof import('./src/components/ShareDialog/UserAutoComplete.vue')['default']
     UserListSettings: typeof import('./src/components/Settings/UserListSettings.vue')['default']
     UsersBar: typeof import('./src/components/UsersBar.vue')['default']
-    Video: typeof import('./src/components/DocEditor/icons/Video.vue')['default']
+    Video: typeof import('./src/components/MimeIcons/Video.vue')['default']
     VideoPreview: typeof import('./src/components/FileTypePreview/VideoPreview.vue')['default']
   }
 }
