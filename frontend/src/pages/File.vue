@@ -1,6 +1,6 @@
 <template>
-  <div class="flex w-full">
-    <div class="w-full">
+  <div class="flex w-full h-full">
+    <div class="w-full h-full flex flex-col">
       <Navbar
         v-if="!file?.error"
         :root-resource="file"
@@ -10,18 +10,23 @@
         :error="file.error"
       />
       <div
-        id="renderContainer"
-        :draggable="false"
-        class="h-[100vh] overflow-y-auto pt-8 pb-24 flex justify-center"
+        v-else
+        class="flex-grow w-full flex justify-center"
       >
-        <LoadingIndicator
-          v-if="file.loading"
-          class="w-10 h-full text-neutral-100"
-        />
-        <FileRender
-          v-else-if="file.data"
-          :preview-entity="file.data"
-        />
+        <div
+          id="renderContainer"
+          :draggable="false"
+          class="h-full w-full md:w-4/5 flex justify-center py-10 align-center items-center"
+        >
+          <LoadingIndicator
+            v-if="file.loading"
+            class="w-10 h-full text-neutral-100"
+          />
+          <FileRender
+            v-else-if="file.data"
+            :preview-entity="file.data"
+          />
+        </div>
       </div>
       <div
         class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-surface-white"
