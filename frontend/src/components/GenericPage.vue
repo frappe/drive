@@ -128,7 +128,7 @@ const store = useStore()
 
 const dialog = ref("")
 const infoEntities = ref([])
-const team = route.params.team
+const team = route.params.team || localStorage.getItem("recentTeam")
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = ref(props.getEntities.data)
 watch(
@@ -163,8 +163,10 @@ watch(
   { immediate: true }
 )
 
-allUsers.fetch({ team })
-allFolders.fetch({ team })
+if (team) {
+  allUsers.fetch({ team })
+  allFolders.fetch({ team })
+}
 if (!settings.fetched) settings.fetch()
 
 // Drag and drop

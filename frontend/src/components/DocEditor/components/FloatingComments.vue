@@ -4,11 +4,6 @@
     ref="scrollContainer"
     class="relative hidden sm:flex w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5 bg-surface-white"
   >
-    <div
-      class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-surface-white bg-opacity-30 z-[1] fixed"
-    >
-      Comments
-    </div>
     <template
       v-for="comment in filteredComments"
       :key="comment.name"
@@ -20,7 +15,8 @@
               activeComment === comment.name &&
               !e.target.getAttribute('data-comment-id') &&
               e.target.nodeName !== 'BUTTON' &&
-              !comment.new
+              !comment.new &&
+              !e.target.classList?.contains?.('replies-count')
             )
               activeComment = null
           }
@@ -41,14 +37,20 @@
         :style="`top: ${comment.top}px;`"
       >
         <div
-          v-show="activeComment === comment.name && !comment.new"
+          v-show="
+            activeComment === comment.name &&
+            !comment.new &&
+            (comment.owner == $store.state.user.id || entity.write)
+          "
           class="p-1.5 text-sm flex gap-1 border-b text-ink-gray-9"
+          :class="comment.loading && !comment.edit && 'opacity-70'"
         >
           <Button
             v-if="
               !comment.resolved &&
               (comment.owner == $store.state.user.id || entity.write)
             "
+            :disabled="comment.loading"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="resolve(comment)"
@@ -63,6 +65,7 @@
               comment.resolved &&
               (comment.owner == $store.state.user.id || entity.write)
             "
+            :disabled="comment.loading"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="resolve(comment, false)"
@@ -74,6 +77,7 @@
           </Button>
           <Button
             v-if="comment.owner == $store.state.user.id"
+            :disabled="comment.loading"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="removeComment(comment.name, true)"
@@ -103,7 +107,7 @@
               : [comment]"
             :key="reply.name"
             class="group w-full flex gap-3"
-            :class="reply.loading && 'opacity-70'"
+            :class="reply.loading && !reply.edit && 'opacity-70'"
           >
             <div class="w-8 flex justify-center">
               <Avatar
@@ -120,16 +124,18 @@
               <div
                 class="w-full flex justify-between items-start label-group gap-1 text-sm"
               >
-                <label class="font-medium text-ink-gray-8">{{
-                  $user(reply.owner).full_name
-                }}</label>
+                <div class="flex gap-1">
+                  <label class="font-medium text-ink-gray-8">{{
+                    $user(reply.owner).full_name
+                  }}</label>
 
-                <label class="text-ink-gray-6 truncate">
-                  &#183;
-                  {{ formatDateOrTime(reply.creation) }}</label
-                >
+                  <label class="text-ink-gray-6 truncate">
+                    &#183;
+                    {{ formatDateOrTime(reply.creation) }}</label
+                  >
+                </div>
                 <Dropdown
-                  class="ml-auto opacity-0 disabled"
+                  class="ml-auto opacity-0"
                   :class="
                     activeComment === comment.name &&
                     !reply.edit &&
@@ -159,7 +165,14 @@
                       reply.edit ||
                       reply.resolved
                     "
-                    class="!h-5 !text-xs !px-1.5 !rounded-sm"
+                    class="!h-5 !text-xs !px-1.5 !rounded-sm opacity-0"
+                    :class="
+                      activeComment === comment.name &&
+                      !reply.edit &&
+                      !reply.resolved &&
+                      comment.owner == $store.state.user.id &&
+                      'opacity-100'
+                    "
                     variant="ghost"
                     @click="triggerRoot"
                   >
@@ -247,13 +260,18 @@
         </div>
         <div
           v-if="activeComment !== comment.name && comment.replies.length > 0"
-          class="text-ink-gray-6 font-base text-xs p-3 pt-0"
+          class="replies-count text-ink-gray-6 font-base text-xs p-3 pt-0"
         >
           {{ comment.replies.length }}
           {{ comment.replies.length === 1 ? "reply" : "replies" }}
         </div>
       </div>
     </template>
+    <div
+      class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-white dark:bg-black bg-opacity-70 fixed"
+    >
+      Comments
+    </div>
   </div>
 </template>
 <script setup>
@@ -275,6 +293,7 @@ import { v4 } from "uuid"
 import { useDebounceFn, useEventListener } from "@vueuse/core"
 import { toast } from "@/utils/toasts"
 import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
+import { useStore } from "vuex"
 
 const CommentEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/components/CommentEditor.vue")
@@ -285,6 +304,8 @@ const props = defineProps({
   showComments: Boolean,
 })
 
+const store = useStore()
+
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
 const scrollContainer = ref("scrollContainer")
@@ -292,6 +313,15 @@ const scrollContainer = ref("scrollContainer")
 const newReplies = reactive({})
 const commentRefs = reactive({})
 const commentContents = reactive({})
+
+const findComment = (name) => {
+  const mainComment = comments.value.find((k) => k.name == name)
+  if (mainComment) return mainComment
+  for (let c of comments.value) {
+    let reply = c.replies.find((k) => k.name == name)
+    if (reply) return reply
+  }
+}
 
 const showResolved = inject("showResolved")
 const filteredComments = computed(() => {
@@ -321,7 +351,7 @@ watch(activeComment, (val) => {
 const createComment = createResource({
   url: "drive.api.files.create_comment",
   onSuccess: () => {
-    console.log(createComment.params)
+    findComment(createComment.params.name).loading = false
   },
   onError: () => {
     toast({
@@ -344,7 +374,8 @@ const resolveComment = createResource({
 const newReply = (comment, editor) => {
   const name = v4()
   createComment.submit({
-    parent: comment.name,
+    entity_name: props.entity.name,
+    parent_name: comment.name,
     name,
     creation: new Date(),
     content: newReplies[comment.name],
@@ -353,7 +384,7 @@ const newReply = (comment, editor) => {
   comment.replies.push({
     name,
     content: newReplies[comment.name],
-    owner: comment.owner,
+    owner: store.state.user.id,
     creation: new Date(),
     loading: true,
   })
