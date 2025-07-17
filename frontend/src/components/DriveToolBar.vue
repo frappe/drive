@@ -4,8 +4,9 @@
       v-if="selections?.length"
       class="my-auto w-[40%] text-base text-ink-gray-8"
     >
-      {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
-      selected
+      {{ selections.length }}
+      {{ selections.length === 1 ? __("item") : __("items") }}
+      {{ __("selected") }}
     </div>
     <div
       v-else-if="$route.name === 'Shared'"
@@ -15,7 +16,7 @@
         v-model="shareView"
         :buttons="[
           {
-            label: 'By',
+            label: __('By'),
             value: 'by',
             onClick: () => {
               store.commit('toggleShareView', 'by')
@@ -23,7 +24,7 @@
             disabled: !getEntities.data?.length,
           },
           {
-            label: 'With you',
+            label: __('With you'),
             value: 'with',
             onClick: () => {
               store.commit('toggleShareView', 'with')
@@ -344,7 +345,7 @@ const columnHeaders = [
       setup() {
         return () =>
           h(Switch, {
-            label: "Smart sort",
+            label: __("Smart sort"),
             modelValue: sortOrder.smart,
             "onUpdate:modelValue": (val) => (sortOrder.smart = val),
           })

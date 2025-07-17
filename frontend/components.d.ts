@@ -61,6 +61,7 @@ declare module 'vue' {
     LucideCheck: typeof import('~icons/lucide/check')['default']
     LucideChevronDown: typeof import('~icons/lucide/chevron-down')['default']
     LucideChevronRight: typeof import('~icons/lucide/chevron-right')['default']
+    LucideCircle: typeof import('~icons/lucide/circle')['default']
     LucideClock: typeof import('~icons/lucide/clock')['default']
     LucideEllipsis: typeof import('~icons/lucide/ellipsis')['default']
     LucideEyeOff: typeof import('~icons/lucide/eye-off')['default']
