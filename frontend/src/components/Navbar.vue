@@ -177,7 +177,6 @@ const dialog = ref("")
 const rootEntity = computed(() => props.rootResource?.data)
 
 const dropdownAction = computed(() => {
-  if (props.actions) return props.actions
   if (!rootEntity.value?.title) return
   let actions = []
   if (props.actions) {

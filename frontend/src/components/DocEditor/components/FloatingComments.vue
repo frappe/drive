@@ -318,7 +318,6 @@ watch(activeComment, (val) => {
 })
 
 // Resources
-const findComment = (name) => comments.value.find((k) => k.name === name)
 const createComment = createResource({
   url: "drive.api.files.create_comment",
   onSuccess: () => {
