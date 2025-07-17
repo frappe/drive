@@ -508,7 +508,7 @@ export function getLink(entity, copy = true, withDomain = true) {
 }
 
 export function dynamicList(k) {
-  return k.filter((a) => !("cond" in a) || a.cond)
+  return k.filter((a) => typeof a !== "object" || !("cond" in a) || a.cond)
 }
 
 export const setTitle = (title) =>

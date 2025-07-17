@@ -2,33 +2,39 @@
   <Navbar
     v-if="!document.error"
     :root-resource="document"
-    :actions="[
-      'extend',
-      {
-        icon: MessagesSquare,
-        label: 'Show Comments',
-        onClick: () => (showComments = true),
-        isEnabled: () => !showComments,
-      },
-      {
-        icon: MessagesSquare,
-        label: 'Hide Comments',
-        onClick: () => (showComments = false),
-        isEnabled: () => showComments,
-      },
-      {
-        icon: MessageSquareDot,
-        label: 'Show Resolved',
-        onClick: () => (showResolved = true),
-        isEnabled: () => !showResolved,
-      },
-      {
-        icon: MessageSquareDot,
-        label: 'Hide Resolved',
-        onClick: () => (showResolved = false),
-        isEnabled: () => showResolved,
-      },
-    ]"
+    :actions="
+      dynamicList([
+        'extend',
+        {
+          icon: MessagesSquare,
+          label: 'Show Comments',
+          onClick: () => (showComments = true),
+          isEnabled: () => !showComments,
+          cond: entity?.comments?.length,
+        },
+        {
+          icon: MessagesSquare,
+          label: 'Hide Comments',
+          onClick: () => (showComments = false),
+          isEnabled: () => showComments,
+          cond: entity?.comments?.length,
+        },
+        {
+          icon: MessageSquareDot,
+          label: 'Show Resolved',
+          onClick: () => (showResolved = true),
+          isEnabled: () => !showResolved,
+          cond: entity?.comments?.length,
+        },
+        {
+          icon: MessageSquareDot,
+          label: 'Hide Resolved',
+          onClick: () => (showResolved = false),
+          isEnabled: () => showResolved,
+          cond: entity?.comments?.length,
+        },
+      ])
+    "
   />
   <ErrorPage
     v-if="document.error"
@@ -43,7 +49,8 @@
     <TextEditor
       v-if="entity"
       ref="editor"
-      v-model="rawContent"
+      v-model:raw-content="rawContent"
+      v-model:show-comments="showComments"
       :entity="entity"
       :users="allUsers.data || []"
       :show-comments
@@ -74,6 +81,7 @@ import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
+import { dynamicList } from "../utils/files"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -113,11 +121,6 @@ const saveDocument = () => {
 const onSuccess = (data) => {
   window.document.title = data.title
   updateURLSlug("Document", data.title)
-  if (!data.settings) {
-    data.settings =
-      '{ "docWidth": false, "docSize": true, "docFont": "font-fd-sans", "docHeader": false, "docHighlightAnnotations": false, "docSpellcheck": false}'
-  }
-  settings.value = JSON.parse(data.settings)
 
   store.commit("setActiveEntity", data)
   entity.value = data

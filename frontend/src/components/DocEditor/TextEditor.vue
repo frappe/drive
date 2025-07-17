@@ -75,7 +75,9 @@ const editor = computed(() => {
   return editor
 })
 
-const rawContent = defineModel()
+const rawContent = defineModel("rawContent")
+const showComments = defineModel("showComments")
+
 const props = defineProps({
   entity: Object,
   showComments: Boolean,
@@ -88,6 +90,7 @@ const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
 
 const createNewComment = (editor) => {
+  showComments.value = true
   const id = uuidv4()
   editor.chain().focus().setComment(id).run()
   const orderedComments = getOrderedComments(editor.state.doc)
@@ -98,6 +101,7 @@ const createNewComment = (editor) => {
     content: "",
     edit: true,
     new: true,
+    loading: true,
     replies: [],
   }
   comments.value = [...comments.value, newComment].toSorted((a, b) => {
