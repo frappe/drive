@@ -54,7 +54,8 @@ import {
   watch,
 } from "vue"
 import store from "@/store"
-import { FontFamily } from "./extensions/font-family"
+import FontFamily from "./extensions/font-family"
+import FloatingQuoteButton from "./extensions/comment"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc } from "@/utils/files"
@@ -85,6 +86,27 @@ const comments = ref([])
 const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 5000)
+
+const createNewComment = (editor) => {
+  const id = uuidv4()
+  editor.chain().focus().setComment(id).run()
+  const orderedComments = getOrderedComments(editor.state.doc)
+  const newComment = {
+    name: id,
+    owner: store.state.user.id,
+    creation: new Date(),
+    content: "",
+    edit: true,
+    new: true,
+    replies: [],
+  }
+  comments.value = [...comments.value, newComment].toSorted((a, b) => {
+    const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+    const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+    return pos1 - pos2
+  })
+  activeComment.value = id
+}
 
 const ExtendedCommentExtension = CommentExtension.extend({
   addAttributes() {
@@ -142,13 +164,17 @@ const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
   }),
+  FloatingQuoteButton.configure({
+    onClick: () => {
+      createNewComment(editor.value)
+    },
+  }),
   ExtendedCommentExtension.configure({
     HTMLAttributes: {
       class: "",
     },
     onCommentActivated: (id) => {
       if (id) {
-        console.log("ACTIVATED", id)
         activeComment.value = id
         document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
           behavior: "smooth",
@@ -163,27 +189,7 @@ const editorExtensions = [
 const CommentAction = {
   label: "Comment",
   icon: LucideMessageCircle,
-  action: (editor) => {
-    const id = uuidv4()
-    editor.chain().focus().setComment(id).run()
-    const orderedComments = getOrderedComments(editor.state.doc)
-    const newComment = {
-      name: id,
-      owner: store.state.user.id,
-      creation: new Date(),
-      content: "",
-      edit: true,
-      new: true,
-      replies: [],
-    }
-    console.log(newComment)
-    comments.value = [...comments.value, newComment].toSorted((a, b) => {
-      const pos1 = orderedComments.findIndex((k) => k.id === a.name)
-      const pos2 = orderedComments.findIndex((k) => k.id === b.name)
-      return pos1 - pos2
-    })
-    activeComment.value = id
-  },
+  action: createNewComment,
   isActive: () => false,
 }
 
