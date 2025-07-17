@@ -1,5 +1,5 @@
 import { Editor, Extension } from "@tiptap/core"
-import { EditorState, Plugin, PluginKey } from "@tiptap/pm/state"
+import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { EditorView } from "@tiptap/pm/view"
 import { DOMSerializer } from "@tiptap/pm/model"
 import tippy, { Instance } from "tippy.js"
