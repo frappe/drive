@@ -2,7 +2,7 @@
   <div
     v-show="showComments"
     ref="scrollContainer"
-    class="relative hidden sm:flex w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5"
+    class="relative hidden sm:flex w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5 bg-surface-white"
   >
     <div
       class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-surface-white bg-opacity-30 z-[1] fixed"

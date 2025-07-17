@@ -116,7 +116,10 @@ def get_entity_with_permissions(entity_name):
     :rtype: frappe._dict
     """
     entity = frappe.db.get_value(
-        "Drive File", {"is_active": 1, "name": entity_name}, ENTITY_FIELDS + ["team"], as_dict=1
+        "Drive File",
+        {"is_active": 1, "name": entity_name},
+        ENTITY_FIELDS + ["team", "modified"],
+        as_dict=1,
     )
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
@@ -168,7 +171,7 @@ def get_entity_with_permissions(entity_name):
                 fields=["content", "owner", "creation", "name"],
             )
 
-        return_obj |= entity_doc_content | {"comments": comments}
+        return_obj |= entity_doc_content | {"comments": comments, "modified": entity.modified}
     return return_obj
 
 
@@ -228,7 +231,9 @@ def auto_delete_expired_perms():
         frappe.enqueue(batch_delete_perms, docs=expired_documents)
 
 
-def user_has_permission(doc, ptype, user):
+def user_has_permission(doc, ptype, user=None):
+    if not user:
+        user = frappe.session.user
     if doc.owner == user or user == "Administrator":
         return True
     access = get_user_access(doc, user)

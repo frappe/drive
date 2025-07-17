@@ -19,7 +19,7 @@
             if (db)
               db.transaction(['content'], 'readwrite')
                 .objectStore('content')
-                .put(val, props.entity.name)
+                .put({ val, saved: new Date() }, props.entity.name)
             autosave()
           }
         "
@@ -85,7 +85,7 @@ const comments = ref([])
 
 const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 const activeComment = ref(null)
-const autosave = debounce(() => emit("saveDocument"), 5000)
+const autosave = debounce(() => emit("saveDocument"), 2000)
 
 const createNewComment = (editor) => {
   const id = uuidv4()
@@ -106,6 +106,7 @@ const createNewComment = (editor) => {
     return pos1 - pos2
   })
   activeComment.value = id
+  emit("saveDocument")
 }
 
 const ExtendedCommentExtension = CommentExtension.extend({
@@ -307,12 +308,17 @@ function getOrderedComments(doc) {
 // Local saving
 const db = ref()
 watch(db, (db) => {
+  if (!props.entity.write) return
   db
     .transaction(["content"])
     .objectStore("content")
     .get(props.entity.name).onsuccess = (val) => {
     // Hack until we get versioning.
-    if (val.target.result.length > 20) rawContent.value = val.target.result
+    if (
+      val.target.result.val.length > 20 &&
+      val.target.result.saved > new Date(props.entity.modified)
+    )
+      rawContent.value = val.target.result.val
   }
 })
 if (props.entity.write) {

@@ -248,7 +248,6 @@ class DriveFile(Document):
         :raises FileExistsError: If a file or folder with the same name already exists in the parent folder
         :return: DriveEntity doc once it's renamed
         """
-        print(self, new_title)
         if new_title == self.title:
             return self
 

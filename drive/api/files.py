@@ -2,7 +2,7 @@ import os, re, json, mimetypes
 
 import frappe
 from pypika import Order
-from .permissions import get_teams, get_user_access
+from .permissions import get_teams, get_user_access, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -969,6 +969,9 @@ def export_media(entity_name):
 @frappe.whitelist()
 def create_comment(parent, name, content, is_reply):
     doc = frappe.get_doc("Drive Comment" if is_reply else "Drive File", parent)
+    if not user_has_permission(doc, "comment"):
+        raise PermissionError("You don't have comment access")
+
     comment = frappe.get_doc(
         {
             "doctype": "Drive Comment",
@@ -977,8 +980,8 @@ def create_comment(parent, name, content, is_reply):
         }
     )
     doc.append("replies" if is_reply else "comments", comment)
-    comment.insert()
-    doc.save()
+    doc.save(ignore_permissions=True)
+    comment.insert(ignore_permissions=True)
     return comment.name
 
 
