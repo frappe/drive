@@ -350,3 +350,7 @@ export function printDoc(html) {
     }
   }
 }
+
+export const setTitle = (title) =>
+  (document.title =
+    (router.currentRoute.name === "Folder" ? "Folder - " : "") + title)

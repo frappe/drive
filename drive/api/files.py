@@ -760,7 +760,7 @@ def remove_or_restore(entity_names, team):
 
 
 @frappe.whitelist(allow_guest=True)
-def call_controller_method(entity_name, method):
+def call_controller_method():
     """
     Call a whitelisted Drive File controller method
 
@@ -769,13 +769,12 @@ def call_controller_method(entity_name, method):
     :raises ValueError: If the entity does not exist
     :return: The result of the controller method
     """
-    # broken
-    drive_file = frappe.get_doc("Drive File", frappe.local.form_dict.pop("entity_name"))
+    method = frappe.local.form_dict.pop("method")
+    entity_name = frappe.local.form_dict.pop("entity_name")
+    frappe.local.form_dict.pop("cmd")
+    drive_file = frappe.get_doc("Drive File", entity_name)
     if not drive_file:
         frappe.throw("Entity does not exist", ValueError)
-    method = frappe.local.form_dict.pop("method")
-    drive_file.is_whitelisted(method)
-    frappe.local.form_dict.pop("cmd")
     return drive_file.run_method(method, **frappe.local.form_dict)
 
 

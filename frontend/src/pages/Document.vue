@@ -56,7 +56,6 @@
 import Navbar from "@/components/Navbar.vue"
 import {
   ref,
-  computed,
   inject,
   onMounted,
   defineAsyncComponent,

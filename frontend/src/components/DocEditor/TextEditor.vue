@@ -56,6 +56,7 @@ import { FontFamily } from "./extensions/font-family"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc } from "@/utils/files"
+import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 
@@ -270,6 +271,7 @@ onBeforeUnmount(() => {
     .filter(({ name }) => editor.value.commands.unsetComment(name))
 })
 
+onKeyDown("Enter", evalImplicitTitle)
 onKeyDown("S", (e) => {
   if (!e.metaKey) {
     return
@@ -317,21 +319,18 @@ if (props.entity.write) {
 }
 
 function evalImplicitTitle() {
-  this.implicitTitle = this.editor.state.doc.firstChild.textContent
+  if (!props.entity.title.startsWith("Untitled Document")) return
+  const implicitTitle = editor.value.state.doc.firstChild.textContent
     .replaceAll("#", "")
     .replaceAll("@", "")
-    .slice(0, 35)
     .trim()
-  if (
-    this.implicitTitle.length === 0 ||
-    this.entity.title === this.implicitTitle
-  )
-    return
-  if (this.implicitTitle.length) {
-    store.state.activeEntity.title = this.implicitTitle
-    this.$resources.rename.submit({
+  if (implicitTitle.length === 0) return
+
+  if (implicitTitle.length) {
+    store.state.activeEntity.title = implicitTitle
+    rename.submit({
       entity_name: props.entity.name,
-      new_title: this.implicitTitle,
+      new_title: implicitTitle,
     })
   }
 }

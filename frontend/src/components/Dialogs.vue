@@ -22,12 +22,6 @@
         if (selections[0] !== rootResource?.data && props.getEntities)
           props.getEntities.data.find((k) => k.name === name).title = title
         resetDialog()
-        // Handle breadcrumbs
-        let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
-        if (l.label === selections[0].title) {
-          l.label = title
-          setTitle(title)
-        }
       }
     "
   />
@@ -85,7 +79,7 @@ import emitter from "@/emitter"
 import { useStore } from "vuex"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { sortEntities } from "@/utils/files"
+import { sortEntities, setTitle } from "@/utils/files"
 import { useTimeAgo } from "@vueuse/core"
 import { openEntity } from "../utils/files"
 
@@ -115,8 +109,6 @@ emitter.on("remove", () => (dialog.value = "remove"))
 emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
-const setTitle = (title) =>
-  (document.title = (route.name === "Folder" ? "Folder - " : "") + title)
 function addToList(data, file_type) {
   if (!props.getEntities) return
   data = {
