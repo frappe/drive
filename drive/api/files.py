@@ -2,7 +2,7 @@ import os, re, json, mimetypes
 
 import frappe
 from pypika import Order
-from .permissions import get_teams, user_has_permission
+from .permissions import get_teams, get_user_access, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.utils import secure_filename, send_file
@@ -430,29 +430,17 @@ def create_link(team, title, link, personal=False, parent=None):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, settings=None):
-    write_perms = user_has_permission(
-        frappe.get_doc("Drive File", entity_name), "write", frappe.session.user
-    )
-    comment_perms = user_has_permission(
-        frappe.get_doc("Drive File", entity_name), "comment", frappe.session.user
-    )
-    # BROKEN - comment access is write access
-    if not write_perms and not comment_perms:
-        raise frappe.PermissionError("You do not have permission to view this file")
-    if settings:
-        frappe.db.set_value("Drive Document", doc_name, "settings", json.dumps(settings))
-    file_size = len(content.encode("utf-8")) + len(raw_content.encode("utf-8"))
-    update_modifed = comment_perms and not write_perms
-    frappe.db.set_value("Drive Document", doc_name, "content", content)
-    frappe.db.set_value("Drive Document", doc_name, "raw_content", raw_content)
-    frappe.db.set_value("Drive Document", doc_name, "mentions", json.dumps(mentions))
-    if (
-        frappe.db.get_value("Drive File", entity_name, "file_size") != int(file_size)
-        and write_perms
-    ):
-        frappe.db.set_value("Drive File", entity_name, "file_size", file_size)
-    if json.dumps(mentions):
+def save_doc(entity_name, doc_name, content):
+    access = get_user_access(frappe.get_doc("Drive File", entity_name))
+    if not access["comment"] and not access["write"]:
+        raise frappe.PermissionError("You do not have permission to edit this file")
+
+    frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+    frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
+
+    mentions = extract_mentions(content)
+    if mentions:
+        frappe.db.set_value("Drive Document", doc_name, "mentions", mentions)
         frappe.enqueue(
             notify_mentions,
             queue="long",
@@ -464,7 +452,10 @@ def save_doc(entity_name, doc_name, raw_content, content, file_size, mentions, s
             entity_name=entity_name,
             document_name=doc_name,
         )
-    return
+
+
+def extract_mentions(content):
+    return []
 
 
 @frappe.whitelist()
@@ -769,7 +760,7 @@ def remove_or_restore(entity_names, team):
 
 
 @frappe.whitelist(allow_guest=True)
-def call_controller_method(entity_name, method):
+def call_controller_method():
     """
     Call a whitelisted Drive File controller method
 
@@ -778,13 +769,12 @@ def call_controller_method(entity_name, method):
     :raises ValueError: If the entity does not exist
     :return: The result of the controller method
     """
-    # broken
-    drive_file = frappe.get_doc("Drive File", frappe.local.form_dict.pop("entity_name"))
+    method = frappe.local.form_dict.pop("method")
+    entity_name = frappe.local.form_dict.pop("entity_name")
+    frappe.local.form_dict.pop("cmd")
+    drive_file = frappe.get_doc("Drive File", entity_name)
     if not drive_file:
         frappe.throw("Entity does not exist", ValueError)
-    method = frappe.local.form_dict.pop("method")
-    drive_file.is_whitelisted(method)
-    frappe.local.form_dict.pop("cmd")
     return drive_file.run_method(method, **frappe.local.form_dict)
 
 
@@ -839,18 +829,15 @@ def auto_delete_from_trash():
 
 
 def clear_deleted_files():
-    print("DELETINGGG")
     days_before = (date.today() + timedelta(days=30)).isoformat()
     result = frappe.db.get_all(
         "Drive File",
         filters={"is_active": -1, "modified": ["<", days_before]},
         fields=["name"],
     )
-    print(result)
     for entity in result:
         doc = frappe.get_doc("Drive File", entity, ignore_permissions=True)
         doc.delete()
-        print("deleted", doc)
 
 
 @frappe.whitelist()
@@ -876,7 +863,6 @@ def move(entity_names, new_parent=None, is_private=None):
     :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
     :return: DriveEntity doc once file is moved
     """
-    print("HAHAHAH", entity_names)
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not entity_names or not isinstance(entity_names, list):
@@ -885,7 +871,6 @@ def move(entity_names, new_parent=None, is_private=None):
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
         res = doc.move(new_parent, is_private)
-    print(res)
     if res["title"] == "Drive - " + res["team"]:
         res["title"] = "Home" if res["is_private"] else "Team"
 
@@ -979,3 +964,50 @@ def export_media(entity_name):
     return frappe.get_list(
         "Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"]
     )
+
+
+@frappe.whitelist()
+def create_comment(parent, name, content, is_reply):
+    doc = frappe.get_doc("Drive Comment" if is_reply else "Drive File", parent)
+    if not user_has_permission(doc, "comment"):
+        raise PermissionError("You don't have comment access")
+
+    comment = frappe.get_doc(
+        {
+            "doctype": "Drive Comment",
+            "name": name,
+            "content": content,
+        }
+    )
+    doc.append("replies" if is_reply else "comments", comment)
+    doc.save(ignore_permissions=True)
+    comment.insert(ignore_permissions=True)
+    return comment.name
+
+
+@frappe.whitelist()
+def edit_comment(name, content):
+    comment = frappe.get_doc("Drive Comment", name)
+    if comment.owner != frappe.session.user:
+        raise PermissionError("You can't edit comments you don't own.")
+    comment.content = content
+    comment.save()
+    return name
+
+
+@frappe.whitelist()
+def delete_comment(name, entire=True):
+    comment = frappe.get_doc("Drive Comment", name)
+    if comment.owner != frappe.session.user:
+        raise PermissionError("You can't edit comments you don't own.")
+    if entire:
+        for r in comment.replies:
+            r.delete()
+    comment.delete()
+
+
+@frappe.whitelist()
+def resolve_comment(name, value):
+    comment = frappe.get_doc("Drive Comment", name)
+    comment.resolved = value
+    comment.save()

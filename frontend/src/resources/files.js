@@ -1,6 +1,6 @@
 import { createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
-import { openEntity } from "@/utils/files"
+import { openEntity, setTitle } from "@/utils/files"
 
 import store from "@/store"
 import router from "@/router"
@@ -216,6 +216,13 @@ export const rename = createResource({
     return {
       method: "rename",
       ...data,
+    }
+  },
+  onSuccess: () => {
+    let l = store.state.breadcrumbs[store.state.breadcrumbs.length - 1]
+    if (l.name === rename.params.entity_name) {
+      l.label = rename.params.new_title
+      setTitle(rename.params.new_title)
     }
   },
   onError(error) {

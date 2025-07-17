@@ -20,7 +20,8 @@
     "is_active",
     "document",
     "is_private",
-    "old_name"
+    "old_name",
+    "comments"
   ],
   "fields": [
     {
@@ -104,10 +105,16 @@
       "fieldname": "is_link",
       "fieldtype": "Check",
       "label": "Is Link"
+    },
+    {
+      "fieldname": "comments",
+      "fieldtype": "Table",
+      "label": "Comments",
+      "options": "Drive Comment"
     }
   ],
   "links": [],
-  "modified": "2025-03-20 15:36:58.945585",
+  "modified": "2025-07-09 12:12:16.338508",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",
@@ -132,6 +139,7 @@
       "write": 1
     }
   ],
+  "row_format": "Dynamic",
   "sort_field": "creation",
   "sort_order": "DESC",
   "states": [],

@@ -510,3 +510,7 @@ export function getLink(entity, copy = true, withDomain = true) {
 export function dynamicList(k) {
   return k.filter((a) => !("cond" in a) || a.cond)
 }
+
+export const setTitle = (title) =>
+  (document.title =
+    (router.currentRoute.name === "Folder" ? "Folder - " : "") + title)

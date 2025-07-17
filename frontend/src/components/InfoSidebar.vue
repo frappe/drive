@@ -270,7 +270,6 @@ const imageURL = computed(() => store.state.user.imageURL)
 const entity = computed(() => store.state.activeEntity)
 const thumbnailUrl = computed(() => {
   const res = getThumbnailUrl(entity.value?.name, entity.value?.file_type)
-  console.log(res)
   return res
 })
 

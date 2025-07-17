@@ -1,62 +1,57 @@
+@import url("../../assets/fonts/fonts.css");
+
+body {
+  --font-inter: "InterVar", "Inter", sans-serif;
+  --font-lora: "Lora", serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-merriweather: "Merriweather", serif;
+  --font-geist: "Geist Mono", monospace;
+  --font-ibm-plex: "IBM Plex Sans", sans-serif;
+  --font-eb-garamond: "EB Garamond", serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+  --font-comfortaa: "Comfortaa", cursive;
+  --font-caveat: "Caveat", cursive;
+  --font-nunito: "Nunito", sans-serif;
+  --font-comic-sans: "Comic Sans MS", sans-serif;
+}
+
 .prose-sm {
   min-width: 100%;
-  font-size: 15px;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
-  color: #383838;
-  outline: none;
   caret-color: theme("colors.blue.600");
-  word-break: break-word;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: text;
-  padding: 2.5em 0em;
+  padding: 2.5em 0;
   background: white;
-}
-
-.prose-sm .tableWrapper {
-  overflow-x: visible;
-}
-
-.prose-sm table {
-  width: 100%;
-  margin: 2em 0px;
-  table-layout: fixed;
-  font-size: 0.85em;
-  line-height: 1.5;
-  min-width: 200px;
-  resize: both;
-  border-collapse: collapse;
-  border-color: inherit;
-}
-
-.prose-sm tr {
-  border-bottom-width: 1px;
-  border-bottom-color: #e5e7eb;
-}
-
-.prose-sm th {
-  position: relative;
-  font-weight: inherit;
-  background-color: #f3f3f3;
-  padding: 0.5rem;
-  border-width: 1px;
-  border-color: #e2e2e2;
-}
-
-.prose-sm td {
-  position: relative;
-  padding: 0.5rem;
-  border-width: 1px;
-  border-color: #e2e2e2;
+  font-size: 15px;
 }
 
 @media only screen and (max-width: 640px) {
   .prose-sm {
     display: block;
+    padding: 2.5em 1rem;
     max-width: 100%;
     min-width: 100%;
   }
+}
+
+span[data-comment-id].display {
+  border-bottom: 2px dashed var(--surface-blue-3);
+  user-select: text;
+  cursor: pointer;
+  scroll-margin: 4rem;
+}
+span[data-comment-id].display:hover,
+span[data-comment-id].display.active {
+  background: var(--surface-blue-2);
+}
+span[data-comment-id]:not([data-resolved="true"]) {
+  border-bottom: 2px dashed var(--outline-amber-2);
+  user-select: text;
+  cursor: pointer;
+  scroll-margin: 4rem;
+}
+
+span[data-comment-id]:not([data-resolved="true"]):hover,
+span[data-comment-id]:not([data-resolved="true"]).active {
+  background: rgba(250, 204, 21, 0.4);
 }
 
 @media print {

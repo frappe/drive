@@ -313,7 +313,7 @@ const actionItems = computed(() => {
         important: true,
         multi: true,
         danger: true,
-        color: "text-ink-red-4",
+        theme: "blue",
       },
     ]
   }

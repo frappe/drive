@@ -5,9 +5,14 @@
   >
     <div class="flex place-items-center">
       <FeatherIcon
-        v-if="icon"
+        v-if="icon && typeof icon === 'string'"
         :name="icon"
-        :class="['h-4.5 w-4.5 mr-2', iconClasses]"
+        :class="['size-4 mr-2', iconClasses]"
+      />
+      <component
+        :is="icon"
+        v-else-if="icon"
+        :class="['size-4 mr-2', iconClasses]"
       />
       <Avatar
         v-else-if="avatarURL"
