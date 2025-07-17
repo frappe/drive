@@ -1,117 +1,70 @@
 <template>
-  <LoadingIndicator
-    v-show="loading"
-    class="w-10"
-  />
-
-  <template v-if="!loading && previewURL">
+  <div class="relative">
+    <!-- Thumbnail preview -->
     <img
-      draggable="false"
-      class="w-4/5 h-fit self-center"
       :src="previewURL"
-      alt="Preview Image"
+      class="max-w-full max-h-[80vh] cursor-zoom-in object-contain mx-auto"
+      @click="openFullPreview"
     />
-  </template>
+
+    <!-- Fullscreen preview -->
+    <div
+      v-if="showFull"
+      class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
+      @click.self="closeFullPreview"
+    >
+      <img
+        :src="previewURL"
+        class="max-w-full max-h-full object-contain"
+        :style="{ imageRendering: 'auto' }"
+      />
+      <button
+        class="absolute top-4 right-4 text-white text-3xl font-bold"
+        @click="closeFullPreview"
+      >
+        ×
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount, inject } from "vue"
+import { ref, watch } from "vue"
 import { useObjectUrl } from "@vueuse/core"
-import { LoadingIndicator } from "frappe-ui"
 
 const props = defineProps({
-  previewEntity: {
-    type: Object,
-    default: null,
-  },
+  previewEntity: Object,
 })
 
-const loading = ref(true)
 const imgBlob = ref(null)
 const previewURL = useObjectUrl(imgBlob)
-const emitter = inject("emitter")
-
-async function fetchContent() {
-  if (!props.previewEntity?.name) return
-
-  loading.value = true
-  imgBlob.value = null
-
-  try {
-    const res = await fetch(
-      `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
-      {
-        method: "GET",
-        headers: {
-          "X-Frappe-Site-Name": window.location.hostname,
-        },
-      }
-    )
-
-    if (!res.ok) throw new Error("Failed to fetch image")
-
-    const blob = await res.blob()
-
-    if (!blob.type.startsWith("image/")) {
-      throw new Error("Not an image file")
-    }
-
-    imgBlob.value = blob
-  } catch (err) {
-    console.error("Error loading image:", err)
-  } finally {
-    loading.value = false
-  }
-}
-
-emitter?.on("printFile", () => {
-  const printFrame = document.createElement("iframe")
-  printFrame.style.position = "absolute"
-  printFrame.style.width = "0"
-  printFrame.style.height = "0"
-  printFrame.style.border = "none"
-  document.body.appendChild(printFrame)
-  printFrame.contentWindow.document.open()
-  printFrame.contentWindow.document.write(`
-    <html>
-      <head>
-        <style>
-          img {
-            max-width: 100%;
-            height: auto;
-          }
-        </style>
-      </head>
-      <body>
-        <img src="${previewURL.value}" />
-      </body>
-    </html>
-  `)
-  printFrame.contentWindow.document.close()
-  printFrame.contentWindow.focus()
-  printFrame.contentWindow.print()
-  printFrame.onload = () => {
-    setTimeout(() => {
-      document.body.removeChild(printFrame)
-    }, 100)
-  }
-})
+const showFull = ref(false)
 
 watch(
   () => props.previewEntity,
-  () => {
-    fetchContent()
-  },
+  () => fetchContent(),
   { immediate: true }
 )
 
-onMounted(fetchContent)
+async function fetchContent() {
+  const res = await fetch(
+    `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`,
+    { method: "GET" }
+  )
+  if (res.ok) {
+    imgBlob.value = await res.blob()
+  }
+}
 
-onBeforeUnmount(() => {
-  emitter?.off("printFile")
-  loading.value = true
-  imgBlob.value = null
-})
+function openFullPreview() {
+  showFull.value = true
+  document.body.style.overflow = "hidden" // Disable background scroll
+}
+
+function closeFullPreview() {
+  showFull.value = false
+  document.body.style.overflow = "" // Re-enable scroll
+}
 </script>
 
 <style scoped>

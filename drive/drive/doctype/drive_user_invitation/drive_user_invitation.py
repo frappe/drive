@@ -24,7 +24,7 @@ class DriveUserInvitation(Document):
     def after_insert(self):
         if self.status == "Pending":
             self.invite_via_email()
-            
+
         elif self.status == "Proposed":
             admins = frappe.get_all(
                 "Drive Team Member", filters={"parent": self.team, "access_level": 2}, pluck="user"
@@ -70,7 +70,7 @@ class DriveUserInvitation(Document):
         if self.status == "Pending":
             if frappe.db.exists("User", {"email": self.email}):
                 return self._accept_and_add_to_team()
-            
+
             exists = frappe.db.exists(
                 "Account Request",
                 {

@@ -32,7 +32,7 @@ class AccountRequest(Document):
         if not self.invite:
             self.set_otp()
             self.send_otp()
-            
+
         # Telemetry: Only capture if it's not a saas signup or invited by parent team. Also don't capture if user already have a team
         # if not (
         #     frappe.db.exists("Team", {"user": self.email})
