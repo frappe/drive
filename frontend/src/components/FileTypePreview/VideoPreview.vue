@@ -7,7 +7,7 @@
     v-show="!loading"
     :key="src"
     ref="mediaRef"
-    class="w-4/5 h-fit self-center"
+    class="h-fit"
     autoplay
     muted
     preload="none"
