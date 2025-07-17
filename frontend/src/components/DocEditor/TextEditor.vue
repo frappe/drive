@@ -31,7 +31,7 @@
     </div>
     <FloatingComments
       v-if="comments.length"
-      :entity-name="entity.name"
+      :entity="entity"
       :editor
       :show-comments
       v-model:active-comment="activeComment"

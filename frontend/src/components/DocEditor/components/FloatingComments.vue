@@ -45,7 +45,10 @@
           class="p-1.5 text-sm flex gap-1 border-b text-ink-gray-9"
         >
           <Button
-            v-if="!comment.resolved"
+            v-if="
+              !comment.resolved &&
+              (comment.owner == $store.state.user.id || entity.write)
+            "
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="resolve(comment)"
@@ -56,7 +59,10 @@
             Resolve
           </Button>
           <Button
-            v-if="comment.resolved"
+            v-if="
+              comment.resolved &&
+              (comment.owner == $store.state.user.id || entity.write)
+            "
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="resolve(comment, false)"
@@ -67,6 +73,7 @@
             Unresolve
           </Button>
           <Button
+            v-if="comment.owner == $store.state.user.id"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
             @click="removeComment(comment.name, true)"
@@ -127,26 +134,23 @@
                     activeComment === comment.name &&
                     !reply.edit &&
                     !reply.resolved &&
+                    comment.owner == $store.state.user.id &&
                     'opacity-100'
                   "
                   :options="
-                    index === 0
-                      ? [
-                          {
-                            onClick: () => (reply.edit = true),
-                            label: 'Edit',
-                          },
-                        ]
-                      : [
-                          {
-                            onClick: () => (reply.edit = true),
-                            label: 'Edit',
-                          },
-                          {
-                            label: 'Delete',
-                            onClick: () => removeComment(reply.name, false),
-                          },
-                        ]
+                    dynamicList([
+                      {
+                        label: 'Edit',
+                        onClick: () => (reply.edit = true),
+                        cond: comment.owner == $store.state.user.id,
+                      },
+                      {
+                        label: 'Delete',
+                        onClick: () => removeComment(reply.name, false),
+                        cond:
+                          comment.owner == $store.state.user.id && index !== 0,
+                      },
+                    ])
                   "
                 >
                   <Button
@@ -184,7 +188,7 @@
                       reply.edit = false
                       if (reply.new) {
                         createComment.submit({
-                          parent: entityName,
+                          parent: entity.name,
                           content: reply.content,
                           name: reply.name,
                           is_reply: false,
@@ -266,6 +270,7 @@ import {
 } from "vue"
 import { Avatar, Button, createResource, Dropdown } from "frappe-ui"
 import { formatDate } from "@/utils/format"
+import { dynamicList } from "@/utils/files"
 import { v4 } from "uuid"
 import { useDebounceFn, useEventListener } from "@vueuse/core"
 import { toast } from "@/utils/toasts"
@@ -275,7 +280,7 @@ const CommentEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/components/CommentEditor.vue")
 )
 const props = defineProps({
-  entityName: String,
+  entity: Object,
   editor: Object,
   showComments: Boolean,
 })
