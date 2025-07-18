@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'New Tag', size: 'sm' }"
+    :options="{ title: __('New Tag'), size: 'sm' }"
   >
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
@@ -16,7 +16,7 @@
           type="text"
           clas="w-full"
           :placeholder="placeholder"
-          label="Title"
+          :label="__('Title')"
           @keyup.enter="submitTag"
         />
       </div>
@@ -27,7 +27,7 @@
         class="w-full"
         @click="submitTag"
       >
-        Confirm
+        {{ __("Confirm") }}
       </Button>
     </template>
   </Dialog>
@@ -40,7 +40,6 @@ import { ref, computed } from "vue"
 import { useFocus } from "@vueuse/core"
 
 const inputElem = ref()
-const { focused } = useFocus(inputElem, { initialValue: true })
 
 const selectedColor = ref(getRandomColor())
 const tagTitle = ref("")

@@ -96,6 +96,7 @@ const activityLog = createResource({
   onSuccess: groupAndTransform,
 })
 const groupedActivityLog = ref()
+
 watch(
   entity,
   () => {

@@ -18,27 +18,17 @@
       :key="tag.name"
     >
       <div
-        class="flex items-center justify-start text-sm py-1.5 gap-x-1.5 w-full"
+        class="flex items-center justify-between text-sm py-1.5 gap-x-1.5 w-full"
         :class="i > 0 ? 'border-t' : ''"
       >
-        <svg
-          class="h-2.5"
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            r="4.5"
-            cx="8"
-            cy="8"
+        <div class="flex gap-2 items-center">
+          <LucideCircle
+            class="size-2"
             :fill="tag.color"
             :stroke="tag.color"
-            stroke-width="3"
           />
-        </svg>
-        <span class="text-sm text-ink-gray-8">{{ tag.title }}</span>
+          <span class="text-sm text-ink-gray-8">{{ tag.title }}</span>
+        </div>
         <Dropdown
           class="ml-auto"
           placement="right"
@@ -61,10 +51,7 @@
             },
           ]"
         >
-          <Button
-            variant="ghost"
-            @click="selectedTag = tag"
-          >
+          <Button variant="ghost">
             <template #icon>
               <LucideMoreHorizontal class="size-4" />
             </template>
