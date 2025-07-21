@@ -131,7 +131,6 @@
           v-if="$route.name !== 'Recents'"
           :options="orderByItems"
           placement="right"
-          class="basis-auto"
         >
           <div class="flex items-center whitespace-nowrap">
             <Button
@@ -338,19 +337,22 @@ const columnHeaders = [
     field: "mime_type",
   },
   {
-    divider: true,
-  },
-  {
-    component: defineComponent({
-      setup() {
-        return () =>
-          h(Switch, {
-            label: __("Smart sort"),
-            modelValue: sortOrder.smart,
-            "onUpdate:modelValue": (val) => (sortOrder.smart = val),
-          })
+    group: true,
+    hideLabel: true,
+    items: [
+      {
+        component: defineComponent({
+          setup() {
+            return () =>
+              h(Switch, {
+                label: __("Smart sort"),
+                modelValue: sortOrder.smart,
+                "onUpdate:modelValue": (val) => (sortOrder.smart = val),
+              })
+          },
+        }),
       },
-    }),
+    ],
   },
 ]
 </script>

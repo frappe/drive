@@ -40,6 +40,7 @@
       <Dropdown
         v-if="dropdownAction"
         :options="dropdownAction"
+        placement="left"
       >
         <Button
           variant="ghost"
@@ -59,16 +60,14 @@
           props.rootResource?.data?.write !== false
         "
         :options="newEntityOptions"
-        placement="left"
+        placement="right"
         class="basis-5/12 lg:basis-auto"
       >
-        <Tooltip text="Add or upload">
-          <Button variant="solid">
-            <div class="flex">
-              <LucidePlus class="size-4" />
-            </div>
-          </Button>
-        </Tooltip>
+        <Button variant="solid">
+          <div class="flex">
+            <LucidePlus class="size-4" />
+          </div>
+        </Button>
       </Dropdown>
       <Button
         v-if="button"
@@ -185,79 +184,98 @@ const dropdownAction = computed(() => {
   }
   return [
     {
-      label: __("Share"),
-      icon: LucideShare2,
-      onClick: () => (dialog.value = "s"),
-      isEnabled: () => rootEntity.value.share,
+      group: true,
+      hideLabel: true,
+      items: [
+        {
+          label: __("Share"),
+          icon: LucideShare2,
+          onClick: () => (dialog.value = "s"),
+          isEnabled: () => rootEntity.value.share,
+        },
+        {
+          label: __("Download"),
+          icon: LucideDownload,
+          onClick: () =>
+            entitiesDownload(route.params.team, [rootEntity.value]),
+        },
+        {
+          label: __("Copy Link"),
+          icon: LucideLink,
+          onClick: () => getLink(rootEntity.value),
+        },
+      ],
     },
     {
-      label: __("Download"),
-      icon: LucideDownload,
-      onClick: () => entitiesDownload(route.params.team, [rootEntity.value]),
+      group: true,
+      hideLabel: true,
+      items: [
+        {
+          label: __("Move"),
+          icon: LucideMoveUpRight,
+          onClick: () => (dialog.value = "m"),
+          isEnabled: () => rootEntity.value.write,
+        },
+        {
+          label: __("Rename"),
+          icon: LucideSquarePen,
+          onClick: () => (dialog.value = "rn"),
+          isEnabled: () => rootEntity.value.write,
+        },
+        {
+          label: __("Show Info"),
+          icon: LucideInfo,
+          onClick: () => infoEntities.value.push(store.state.activeEntity),
+          isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+        },
+        {
+          label: __("Hide Info"),
+          icon: LucideInfo,
+          onClick: () => (dialog.value = "info"),
+          isEnabled: () => store.state.activeEntity && store.state.showInfo,
+        },
+        {
+          label: __("Favourite"),
+          icon: LucideStar,
+          onClick: () => {
+            rootEntity.value.is_favourite = true
+            toggleFav.submit({
+              entities: [{ name: rootEntity.value.name, is_favourite: false }],
+            })
+          },
+          isEnabled: () => !rootEntity.value.is_favourite,
+        },
+        {
+          label: __("Unfavourite"),
+          icon: LucideStar,
+          color: "stroke-amber-500 fill-amber-500",
+          onClick: () => {
+            rootEntity.value.is_favourite = false
+            toggleFav.submit({
+              entities: [{ name: rootEntity.value.name, is_favourite: false }],
+            })
+          },
+          isEnabled: () => rootEntity.value.is_favourite,
+        },
+      ],
     },
     {
-      label: __("Copy Link"),
-      icon: LucideLink,
-      onClick: () => getLink(rootEntity.value),
-    },
-    { divider: true },
-    {
-      label: __("Move"),
-      icon: LucideMoveUpRight,
-      onClick: () => (dialog.value = "m"),
-      isEnabled: () => rootEntity.value.write,
-    },
-    {
-      label: __("Rename"),
-      icon: LucideSquarePen,
-      onClick: () => (dialog.value = "rn"),
-      isEnabled: () => rootEntity.value.write,
-    },
-    {
-      label: __("Show Info"),
-      icon: LucideInfo,
-      onClick: () => infoEntities.value.push(store.state.activeEntity),
-      isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
-    },
-    {
-      label: __("Hide Info"),
-      icon: LucideInfo,
-      onClick: () => (dialog.value = "info"),
-      isEnabled: () => store.state.activeEntity && store.state.showInfo,
-    },
-    {
-      label: __("Favourite"),
-      icon: LucideStar,
-      onClick: () => {
-        rootEntity.value.is_favourite = true
-        toggleFav.submit({
-          entities: [{ name: rootEntity.value.name, is_favourite: false }],
-        })
-      },
-      isEnabled: () => !rootEntity.value.is_favourite,
-    },
-    {
-      label: __("Unfavourite"),
-      icon: LucideStar,
-      color: "stroke-amber-500 fill-amber-500",
-      onClick: () => {
-        rootEntity.value.is_favourite = false
-        toggleFav.submit({
-          entities: [{ name: rootEntity.value.name, is_favourite: false }],
-        })
-      },
-      isEnabled: () => rootEntity.value.is_favourite,
-    },
-    { divider: true },
-    {
-      label: __("Delete"),
-      icon: LucideTrash,
-      onClick: () => (dialog.value = "remove"),
-      isEnabled: () => rootEntity.value.write,
-      theme: "red",
+      group: true,
+      hideLabel: true,
+      items: [
+        {
+          label: __("Delete"),
+          icon: LucideTrash,
+          onClick: () => (dialog.value = "remove"),
+          isEnabled: () => rootEntity.value.write,
+          theme: "red",
+        },
+      ],
     },
     ...actions,
-  ].filter((k) => !k.isEnabled || k.isEnabled())
+  ].map((k) => {
+    return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
+  })
 })
 
 // Functions
