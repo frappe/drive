@@ -74,7 +74,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
 
 function trimCommonPrefix(a, b) {
   let i = 0
-  while (i < a.length && i < b.length && a[i] === b[i]) i++
+  while (i < a.length && i < b.length && !/^\d+$/.test(a[i]) && a[i] === b[i]) i++
   return [
     a.slice(i).split(/[\W]/)[0].toLowerCase(),
     b.slice(i).split(/[\W]/)[0].toLowerCase(),
@@ -155,7 +155,7 @@ export const sortEntities = (rows, order) => {
       if (!endA) return 0
       const numA = extractNum(endA)
       const numB = extractNum(endB)
-      if (numA && numB) (numA - numB) * asc
+      if (numA && numB) return (numA - numB) * asc
 
       const timeA = extractTime(endA)
       const timeB = extractTime(endB)

@@ -346,6 +346,7 @@ const columnHeaders = [
             return () =>
               h(Switch, {
                 label: __("Smart sort"),
+                disabled: sortOrder.field !== "title",
                 modelValue: sortOrder.smart,
                 "onUpdate:modelValue": (val) => (sortOrder.smart = val),
               })
