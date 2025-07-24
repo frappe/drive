@@ -48,7 +48,7 @@ def get_user_access(entity, user=frappe.session.user):
             "comment": 1,
             "share": 1,
             "upload": int(entity.is_group),
-            "write": int(access == 2 or entity.owner == user),
+            "write": int(access_level == 2 or entity.owner == user),
             "type": {2: "team-admin", 1: "team", 0: "guest"}[access_level],
         }
     else:
