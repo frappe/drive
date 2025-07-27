@@ -16,7 +16,7 @@ def execute():
             uint8_bytes = base64.b64decode(yjs_data)
 
             doc = pycrdt.Doc()
-            print(name, uint8_bytes)
+            print(name, "length:", len(uint8_bytes), "first bytes:", list(uint8_bytes[:10]))
             doc.apply_update(uint8_bytes)
             annotations = doc.get("docAnnotations", type=pycrdt.Array)
             MAP = {}
