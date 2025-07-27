@@ -10,7 +10,7 @@
     >
       <FTextEditor
         ref="textEditor"
-        editor-class="prose-sm min-h-[4rem] p-2"
+        editor-class="prose-sm min-h-[4rem] p-5"
         :content="rawContent"
         :editable="!!entity.write"
         @change="

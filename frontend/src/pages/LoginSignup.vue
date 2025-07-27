@@ -76,7 +76,6 @@
                     </Link>
                   </label>
                 </div>
-                <!-- Buttons -->
                 <div class="mt-8 flex flex-col items-center gap-3">
                   <Button
                     :loading="signup.loading"
@@ -149,7 +148,10 @@
                 >
                   {{ isLogin ? "Login" : "Join" }}
                 </Button>
-                <div class="mt-6 border-t text-center">
+                <div
+                  v-if="oAuthProviders.data?.length"
+                  class="mt-6 border-t text-center"
+                >
                   <div class="-translate-y-1/2 transform">
                     <span
                       class="relative bg-surface-white px-2 text-sm font-medium leading-8 text-ink-gray-8"

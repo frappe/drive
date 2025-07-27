@@ -201,7 +201,7 @@
                       reply.edit = false
                       if (reply.new) {
                         createComment.submit({
-                          parent: entity.name,
+                          entity_name: props.entity.name,
                           content: reply.content,
                           name: reply.name,
                           is_reply: false,

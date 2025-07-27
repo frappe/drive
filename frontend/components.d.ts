@@ -87,6 +87,7 @@ declare module 'vue' {
     LucideStar: typeof import('~icons/lucide/star')['default']
     LucideTag: typeof import('~icons/lucide/tag')['default']
     LucideTrash: typeof import('~icons/lucide/trash')['default']
+    LucideUs: typeof import('~icons/lucide/us')['default']
     LucideUser: typeof import('~icons/lucide/user')['default']
     LucideX: typeof import('~icons/lucide/x')['default']
     MoveDialog: typeof import('./src/components/MoveDialog.vue')['default']

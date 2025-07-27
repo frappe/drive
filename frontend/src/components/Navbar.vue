@@ -182,6 +182,7 @@ const dropdownAction = computed(() => {
     if (props.actions[0] === "extend") actions = props.actions.slice(1)
     else return props.actions
   }
+  console.log(actions)
   return [
     {
       group: true,
@@ -272,7 +273,7 @@ const dropdownAction = computed(() => {
         },
       ],
     },
-    ...actions,
+    { group: true, hideLabel: true, items: actions },
   ].map((k) => {
     return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
   })

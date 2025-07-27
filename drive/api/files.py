@@ -967,7 +967,7 @@ def export_media(entity_name):
 
 
 @frappe.whitelist()
-def create_comment(entity_name, parent_name, name, content, is_reply):
+def create_comment(entity_name,  name, content, is_reply, parent_name=None):
     doc = frappe.get_doc("Drive File", entity_name)
     parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else doc
 
