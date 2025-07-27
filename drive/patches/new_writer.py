@@ -62,6 +62,6 @@ def execute():
             frappe.log_error(f"Error processing Yjs content: {e}")
 
         doc = frappe.get_doc("Drive Document", drive_file.document)
-        if "data-annotation-id" in doc.raw_content:
+        if doc.raw_content and "data-annotation-id" in doc.raw_content:
             doc.raw_content = doc.raw_content.replace("data-annotation-id", "data-comment-id")
             doc.save()
