@@ -5,11 +5,6 @@ from datetime import datetime
 
 
 def execute():
-    import frappe
-    import pycrdt
-    import base64
-    from datetime import datetime
-
     files = frappe.get_all(
         "Drive File", filters={"document": ("!=", "")}, fields=["name", "document"]
     )

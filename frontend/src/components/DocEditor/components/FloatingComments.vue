@@ -451,7 +451,9 @@ const setCommentHeights = useDebounceFn(() => {
         const adjustedTop = Math.max(anchorTop, lastBottom)
         comment.top = adjustedTop
         lastBottom = adjustedTop + commentRefs[comment.name].offsetHeight + 12
-      } catch {}
+      } catch (e) {
+        console.log(e)
+      }
     }
   })
 }, 20)
