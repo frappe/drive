@@ -90,6 +90,7 @@ const TextEditor = defineAsyncComponent(() =>
 const props = defineProps({
   entityName: String,
   team: String,
+  slug: String,
 })
 
 const store = useStore()

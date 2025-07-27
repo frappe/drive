@@ -182,7 +182,6 @@ const dropdownAction = computed(() => {
     if (props.actions[0] === "extend") actions = props.actions.slice(1)
     else return props.actions
   }
-  console.log(actions)
   return [
     {
       group: true,
