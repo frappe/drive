@@ -2,6 +2,7 @@ import frappe
 import pycrdt
 import base64
 from datetime import datetime
+from uuid import uuid4
 
 
 def execute():
@@ -46,6 +47,7 @@ def execute():
                         {
                             "doctype": "Drive Comment",
                             "content": content,
+                            "name": str(uuid4())
                         }
                     )
                     comment.append("replies", reply_doc)
