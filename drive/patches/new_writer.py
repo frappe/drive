@@ -62,6 +62,6 @@ def execute():
             if doc.raw_content and "data-annotation-id" in doc.raw_content:
                 doc.raw_content = doc.raw_content.replace("data-annotation-id", "data-comment-id")
                 doc.save()
-        except Exception as e:
+        except BaseException as e:
             print("ERROR", e)
             frappe.log_error(f"Error processing Yjs content: {e}")
