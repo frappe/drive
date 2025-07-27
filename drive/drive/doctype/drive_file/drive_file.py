@@ -403,7 +403,6 @@ class DriveFile(Document):
         """
         absolute_path = generate_upward_path(self.name)
         for i in absolute_path:
-            print(i)
             if i["owner"] == user:
                 frappe.throw("User owns parent folder", frappe.PermissionError)
 

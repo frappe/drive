@@ -12,8 +12,9 @@
       class="text-lg text-ink-gray-5 mt-2"
       v-html="error.messages?.join?.('\n') || error"
     />
-    <div class="w-50 flex gap-10 my-8">
+    <div class="w-50 flex gap-8 my-8">
       <Button
+        v-if="$router.options.history.state.back"
         variant="outline"
         size="md"
         @click="$router.go(-1)"
@@ -23,11 +24,20 @@
         </div>
       </Button>
       <Button
+        v-if="$store.state.user.id !== 'Guest'"
         variant="solid"
         size="md"
         @click="$router.replace({ path: '/' })"
       >
         <div class="flex gap-2"><LucideHome class="size-4" />Go Home</div>
+      </Button>
+      <Button
+        v-else
+        variant="solid"
+        size="md"
+        @click="$router.replace('/drive/login')"
+      >
+        <div class="flex gap-2"><LucideUser class="size-4" />Login</div>
       </Button>
     </div>
   </div>

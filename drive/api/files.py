@@ -53,9 +53,7 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         for i in dirname:
             parent = if_folder_exists(team, i, parent, is_private)
 
-    if not frappe.has_permission(
-        doctype="Drive File", doc=parent, ptype="upload", user=frappe.session.user
-    ):
+    if not user_has_permission(parent, 'upload'):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     storage_data = storage_bar_data(team)
@@ -237,13 +235,7 @@ def get_thumbnail(entity_name):
 def create_document_entity(title, personal, team, content, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
-
-    if not frappe.has_permission(
-        doctype="Drive File",
-        doc=parent,
-        ptype="write",
-        user=frappe.session.user,
-    ):
+    if not user_has_permission(parent, 'upload'):
         frappe.throw(
             "Cannot access folder due to insufficient permissions",
             frappe.PermissionError,
@@ -292,7 +284,7 @@ def create_drive_file(
         }
     )
     drive_file.flags.file_created = True
-    drive_file.insert()
+    drive_file.insert(ignore_permissions=True)
     drive_file.path = str(entity_path(drive_file.name))
     drive_file.save()
     if last_modified:
@@ -316,9 +308,7 @@ def create_folder(team, title, personal=False, parent=None):
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
 
-    if not frappe.has_permission(
-        doctype="Drive File", doc=parent, ptype="write", user=frappe.session.user
-    ):
+    if not user_has_permission(parent, 'upload'):
         frappe.throw(
             "Cannot create folder due to insufficient permissions",
             frappe.PermissionError,
@@ -366,7 +356,7 @@ def create_folder(team, title, personal=False, parent=None):
             "is_private": personal,
         }
     )
-    drive_file.insert()
+    drive_file.insert(ignore_permissions=True)
 
     return drive_file
 
@@ -967,7 +957,7 @@ def export_media(entity_name):
 
 
 @frappe.whitelist()
-def create_comment(entity_name, parent_name, name, content, is_reply):
+def create_comment(entity_name,  name, content, is_reply, parent_name=None):
     doc = frappe.get_doc("Drive File", entity_name)
     parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else doc
 

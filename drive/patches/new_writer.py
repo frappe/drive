@@ -2,14 +2,10 @@ import frappe
 import pycrdt
 import base64
 from datetime import datetime
+from uuid import uuid4
 
 
 def execute():
-    import frappe
-    import pycrdt
-    import base64
-    from datetime import datetime
-
     files = frappe.get_all(
         "Drive File", filters={"document": ("!=", "")}, fields=["name", "document"]
     )
@@ -25,7 +21,7 @@ def execute():
             annotations = doc.get("docAnnotations", type=pycrdt.Array)
             MAP = {}
             for annotation in annotations:
-                name = annotation.get("id")
+                comment_name = annotation.get("id")
                 content = annotation.get("content")
                 owner = annotation.get("ownerEmail")
                 created_at = datetime.fromtimestamp(annotation.get("createdAt", 0) / 1000)
@@ -33,14 +29,14 @@ def execute():
                 comment = frappe.get_doc(
                     {
                         "doctype": "Drive Comment",
-                        "name": name,
+                        "name": comment_name,
                         "content": content,
                     }
                 )
                 drive_file.append("comments", comment)
                 comment.insert(ignore_permissions=True)
                 drive_file.save(ignore_permissions=True)
-                MAP[name] = (owner, created_at)
+                MAP[comment_name] = (owner, created_at)
 
                 replies = annotation.get("replies")
                 for reply in replies:
@@ -51,6 +47,7 @@ def execute():
                         {
                             "doctype": "Drive Comment",
                             "content": content,
+                            "name": str(uuid4())
                         }
                     )
                     comment.append("replies", reply_doc)
@@ -62,11 +59,10 @@ def execute():
             for name, (owner, created_at) in MAP.items():
                 frappe.db.set_value("Drive Comment", name, "owner", owner)
                 frappe.db.set_value("Drive Comment", name, "creation", created_at)
-        except Exception as e:
+            doc = frappe.get_doc("Drive Document", drive_file.document)
+            if doc.raw_content and "data-annotation-id" in doc.raw_content:
+                doc.raw_content = doc.raw_content.replace("data-annotation-id", "data-comment-id")
+                doc.save()
+        except BaseException as e:
             print("ERROR", e)
             frappe.log_error(f"Error processing Yjs content: {e}")
-
-        doc = frappe.get_doc("Drive Document", drive_file.document)
-        if "data-annotation-id" in doc.raw_content:
-            doc.raw_content = doc.raw_content.replace("data-annotation-id", "data-comment-id")
-            doc.save()

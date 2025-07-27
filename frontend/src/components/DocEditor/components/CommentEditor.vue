@@ -87,7 +87,7 @@ defineProps({
   isEmpty: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
   editable: { type: Boolean, default: true },
-  content: { type: String, required: true },
+  content: { type: String, default: "" },
 })
 defineEmits(["submit", "cancel", "change"])
 </script>

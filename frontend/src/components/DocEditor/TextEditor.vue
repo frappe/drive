@@ -1,7 +1,8 @@
 <template>
   <div class="flex w-full h-100 overflow-y-auto">
     <div
-      class="mx-auto"
+      @click="textEditor.editor?.chain?.().focus?.().run?.()"
+      class="mx-auto cursor-text"
       :class="
         showComments
           ? 'w-[90%] sm:px-[2.5rem] sm:w-[60%] md:px-0'
@@ -10,7 +11,7 @@
     >
       <FTextEditor
         ref="textEditor"
-        editor-class="prose-sm min-h-[4rem] p-2"
+        editor-class="prose-sm min-h-[4rem] p-5"
         :content="rawContent"
         :editable="!!entity.write"
         @change="

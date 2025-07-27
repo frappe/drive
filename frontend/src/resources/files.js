@@ -5,6 +5,7 @@ import { openEntity, setTitle } from "@/utils/files"
 import store from "@/store"
 import router from "@/router"
 import { prettyData, setCache } from "@/utils/files"
+import { updateURLSlug } from "@/utils/files"
 
 // GETTERS
 export const COMMON_OPTIONS = {
@@ -224,6 +225,7 @@ export const rename = createResource({
       l.label = rename.params.new_title
       setTitle(rename.params.new_title)
     }
+    updateURLSlug(router.currentRoute.value.params.name, rename.params.new_title)
   },
   onError(error) {
     toast({

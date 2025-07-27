@@ -201,7 +201,7 @@
                       reply.edit = false
                       if (reply.new) {
                         createComment.submit({
-                          parent: entity.name,
+                          entity_name: props.entity.name,
                           content: reply.content,
                           name: reply.name,
                           is_reply: false,
@@ -451,7 +451,9 @@ const setCommentHeights = useDebounceFn(() => {
         const adjustedTop = Math.max(anchorTop, lastBottom)
         comment.top = adjustedTop
         lastBottom = adjustedTop + commentRefs[comment.name].offsetHeight + 12
-      } catch {}
+      } catch (e) {
+        console.log(e)
+      }
     }
   })
 }, 20)

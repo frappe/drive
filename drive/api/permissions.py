@@ -24,7 +24,7 @@ ENTITY_FIELDS = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user=frappe.session.user):
+def get_user_access(entity, user=None):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -32,9 +32,10 @@ def get_user_access(entity, user=frappe.session.user):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
+    if not user:
+        user = frappe.session.user
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
-    print(user, entity.owner)
     if user == entity.owner:
         return {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
 
@@ -242,8 +243,9 @@ def auto_delete_expired_perms():
 def user_has_permission(doc, ptype, user=None):
     if not user:
         user = frappe.session.user
-    if doc.owner == user or user == "Administrator":
+    if user == "Administrator":
         return True
     access = get_user_access(doc, user)
+    print(user, access, ptype in access)
     if ptype in access:
-        return access[ptype]
+        return bool(access[ptype])

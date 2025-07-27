@@ -272,7 +272,7 @@ const dropdownAction = computed(() => {
         },
       ],
     },
-    ...actions,
+    { group: true, hideLabel: true, items: actions },
   ].map((k) => {
     return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
   })
