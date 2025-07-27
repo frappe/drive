@@ -24,7 +24,7 @@ ENTITY_FIELDS = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user=frappe.session.user):
+def get_user_access(entity, user=None):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -32,6 +32,8 @@ def get_user_access(entity, user=frappe.session.user):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
+    if not user:
+        user = frappe.session.user
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
     if user == entity.owner:
