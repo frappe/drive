@@ -314,8 +314,7 @@ const actionItems = computed(() => {
         isEnabled: (e) => e.write,
         important: true,
         multi: true,
-        danger: true,
-        theme: "blue",
+        theme: "red",
       },
     ]
   }

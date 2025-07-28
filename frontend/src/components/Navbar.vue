@@ -52,23 +52,21 @@
           />
         </Button>
       </Dropdown>
-
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
           props.rootResource?.data?.write !== false
         "
+        :button="{
+          variant: 'solid',
+          icon: LucidePlus,
+          tooltip: 'Add or upload',
+        }"
         :options="newEntityOptions"
         placement="right"
         class="basis-5/12 lg:basis-auto"
-      >
-        <Button variant="solid">
-          <div class="flex">
-            <LucidePlus class="size-4" />
-          </div>
-        </Button>
-      </Dropdown>
+      />
       <Button
         v-if="button"
         class="line-clamp-1 truncate w-full"
@@ -120,7 +118,6 @@ import {
   LoadingIndicator,
   Dropdown,
   Tooltip,
-  Switch,
 } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
@@ -144,6 +141,7 @@ import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideStar from "~icons/lucide/star"
 import LucideShare2 from "~icons/lucide/share-2"
 import LucideDownload from "~icons/lucide/download"
+import LucidePlus from "~icons/lucide/plus"
 import LucideLink from "~icons/lucide/link"
 import LucideMoveUpRight from "~icons/lucide/move-up-right"
 import LucideSquarePen from "~icons/lucide/square-pen"

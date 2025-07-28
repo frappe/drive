@@ -224,8 +224,8 @@ export const rename = createResource({
     if (l.name === rename.params.entity_name) {
       l.label = rename.params.new_title
       setTitle(rename.params.new_title)
+      updateURLSlug(rename.params.new_title)
     }
-    updateURLSlug(rename.params.new_title)
   },
   onError(error) {
     toast({
