@@ -115,7 +115,7 @@ class FileManager:
     def __init__(self):
         settings = frappe.get_single("Drive Disk Settings")
         self.s3_enabled = settings.enabled
-        self.s3_enabled = settings.enabled
+        self.flat = settings.flat
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path("private/files"))
         if self.s3_enabled:
@@ -135,13 +135,12 @@ class FileManager:
             or file.mime_type in FileManager.ACCEPTABLE_MIME_TYPES
         )
 
-    def upload_file(self, current_path: str, new_path: str, drive_file: str = None) -> None:
+    def upload_file(self, current_path: Path, drive_file) -> None:
         """
         Moves the file from the current path to another path
         """
-
         if self.s3_enabled:
-            self.conn.upload_file(current_path, self.bucket, new_path)
+            self.conn.upload_file(current_path, self.bucket, drive_file.path)
             if drive_file and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
@@ -153,14 +152,14 @@ class FileManager:
             else:
                 os.remove(current_path)
         else:
-            os.rename(current_path, self.site_folder / new_path)
+            os.rename(current_path, self.site_folder / drive_file.path)
             if drive_file and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
                     now=True,
                     at_front=True,
                     file=drive_file,
-                    file_path=str(self.site_folder / new_path),
+                    file_path=str(self.site_folder / drive_file.path),
                 )
 
     def upload_thumbnail(self, file, file_path: str):
@@ -225,25 +224,43 @@ class FileManager:
                     except FileNotFoundError:
                         pass
 
-    def create_folder(self, title: str, parent: Path, personal: bool, root=True):
+    def get_disk_path(self, entity, root):
         """
-        Function to create a folder in the s3 bucket or on disk.
+        Helper function to get path of a file
         """
-        # if self.settings.
-        if root:
-            # Root files are placed in either team or personal folders
-            if personal:
-                path = parent / "personal" / frappe.session.user / title
+        if self.flat:
+            return self.site_folder / entity.parent_path / entity.name
+        else:
+            parent = (
+                Path(frappe.get_value("Drive File", entity.parent_entity, "path"))
+                if not hasattr(entity, "parent_path")
+                else Path(entity.parent_path)
+            )
+            if root:
+                # Root files are placed in either team or personal folders
+                if entity.is_private:
+                    path = parent / "personal" / frappe.session.user / entity.title
+                else:
+                    path = parent / "team" / entity.title
             else:
-                path = parent / "team" / title
+                # Otherwise, rely on the parent already having a perms-adjusted path
+                path = parent / entity.title
+            return str(path) + "/"
+
+    def create_folder(self, drive_entity, root):
+        """
+        Function to create a folder in the S3 bucket or on disk.
+        Only creates if flat structure is disabled.
+        """
+        if self.flat:
+            return
         else:
-            # Otherwise, rely on the parent already having a perms-adjusted path
-            path = parent / title
-        path = str(path) + "/"
-        if self.s3_enabled:
-            self.conn.put_object(Bucket=self.bucket, Key=path, Body="")
-        else:
-            (self.site_folder / path).mkdir(parents=True, exist_ok=True)
+            path = self.get_disk_path(drive_entity, root)
+            if self.s3_enabled:
+                self.conn.put_object(Bucket=self.bucket, Key=path, Body="")
+            else:
+                (self.site_folder / path).mkdir(parents=True, exist_ok=True)
+
         return path
 
     def get_file(self, path):

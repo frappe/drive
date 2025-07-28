@@ -315,7 +315,7 @@ class DriveFile(Document):
         write_access = frappe.has_permission(doctype="Drive File", doc=self, ptype="write")
         parent_write_access = frappe.has_permission(
             doctype="Drive File",
-            doc=frappe.get_value("Drive File", self, "parent_entity"),
+            doc=self.parent_entity,
             ptype="write",
         )
 

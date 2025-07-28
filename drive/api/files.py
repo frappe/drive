@@ -88,11 +88,7 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
     if mime_type is None:
         mime_type = magic.from_buffer(open(temp_path, "rb").read(2048), mime=True)
 
-    # Upload and update parent folder size
     manager = FileManager()
-    manager.upload_file(str(temp_path), drive_file.path, drive_file if not embed else None)
-    update_file_size(parent, file_size)
-
     # Create DB record
     drive_file = create_drive_file(
         team,
@@ -102,10 +98,15 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         file_size,
         mime_type,
         last_modified,
-        lambda n: Path(home_folder["name"])
-        / f"{'embeds' if embed else ''}"
-        / f"{n}{temp_path.suffix}",
+        lambda entity: manager.get_disk_path(entity, home_folder["name"] == entity.parent_entity),
     )
+
+    # Upload and update parent folder size
+    manager.upload_file(
+        temp_path,
+        drive_file if not embed else None,
+    )
+    update_file_size(parent, file_size)
 
     return drive_file
 
@@ -165,6 +166,7 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
     if file_size != int(frappe.form_dict.total_file_size):
         save_path.unlink()
         frappe.throw("Size on disk does not match specified filesize", ValueError)
+
     drive_file = create_drive_file(
         drive_entity.team,
         personal,
@@ -295,7 +297,8 @@ def create_drive_file(
     )
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
-    drive_file.path = str(entity_path(drive_file.name))
+    drive_file.path = str(entity_path(drive_file))
+    print("GO", drive_file.path)
     drive_file.save()
     if last_modified:
         dt_object = datetime.fromtimestamp(int(last_modified) / 1000.0)
@@ -359,7 +362,10 @@ def create_folder(team, title, personal=False, parent=None):
 
     manager = FileManager()
     path = manager.create_folder(
-        title, Path(parent_doc.path), personal, parent_doc.name == home_folder.name
+        frappe._dict(
+            {"title": title, "parent_path": Path(parent_doc.path), "is_private": personal}
+        ),
+        parent_doc.name == home_folder.name,
     )
 
     drive_file = create_drive_file(

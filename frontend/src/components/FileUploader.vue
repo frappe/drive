@@ -105,12 +105,10 @@ onMounted(() => {
     disablePreviews: true,
     addRemoveLinks: true,
     createImageThumbnails: false,
-    retryChunksLimit: 5,
     hiddenInputContainer: "#fileSelection",
     // Do we want to allow multi uploads?
     uploadMultiple: false,
     chunking: true,
-    retryChunks: true,
     forceChunking: true,
     url: "/api/method/drive.api.files.upload_file",
     dictUploadCanceled: "Upload canceled by user",

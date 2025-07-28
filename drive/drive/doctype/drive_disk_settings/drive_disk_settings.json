@@ -5,12 +5,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "s3_section",
   "enabled",
   "aws_key",
   "aws_secret",
   "bucket",
   "endpoint_url",
-  "signature_version"
+  "signature_version",
+  "others_section",
+  "flat"
  ],
  "fields": [
   {
@@ -51,13 +54,30 @@
    "fieldname": "signature_version",
    "fieldtype": "Data",
    "label": "Signature Version"
+  },
+  {
+   "fieldname": "s3_section",
+   "fieldtype": "Section Break",
+   "label": "S3"
+  },
+  {
+   "fieldname": "others_section",
+   "fieldtype": "Section Break",
+   "label": "Others"
+  },
+  {
+   "default": "1",
+   "description": "More performant. Use if you only access the file system through Drive.",
+   "fieldname": "flat",
+   "fieldtype": "Check",
+   "label": "Store flatly"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-25 19:05:44.366826",
+ "modified": "2025-07-28 15:28:14.383239",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Disk Settings",
