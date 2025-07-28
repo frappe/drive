@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class DriveS3Settings(Document):
+class DriveDiskSettings(Document):
     pass
