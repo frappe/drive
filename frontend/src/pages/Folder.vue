@@ -69,7 +69,7 @@ const onSuccess = (entity) => {
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )
-  updateURLSlug("Folder", entity.title)
+  updateURLSlug(entity.title)
 }
 
 const e = computed(() => props.entityName)

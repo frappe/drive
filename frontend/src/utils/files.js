@@ -467,18 +467,14 @@ const copyToClipboard = (str) => {
   }
 }
 
-export async function updateURLSlug(type, title) {
+export async function updateURLSlug(title) {
   await nextTick()
   const route = router.currentRoute.value
   const slug = slugger(title)
   if (route.params.slug !== slug) {
-    router.push({
-      name: type,
-      params: {
-        ...route.params,
-        slug,
-      },
-    })
+    // Hacky, but we only want to update the URL - triggering a reload breaks a lot
+   const new_path = window.location.pathname.split('/').slice(0, 6).join('/') + '/' + slug
+   history.replaceState({}, null, new_path)
   }
 }
 

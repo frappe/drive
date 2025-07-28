@@ -320,7 +320,7 @@ watch(db, (db) => {
     .get(props.entity.name).onsuccess = (val) => {
     // Hack until we get versioning.
     if (
-      val.target.result.val.length > 20 &&
+      val.target.result?.val?.length > 20 &&
       val.target.result.saved > new Date(props.entity.modified)
     )
       rawContent.value = val.target.result.val

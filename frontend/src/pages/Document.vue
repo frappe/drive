@@ -121,7 +121,7 @@ const saveDocument = () => {
 
 const onSuccess = (data) => {
   window.document.title = data.title
-  updateURLSlug("Document", data.title)
+  updateURLSlug(data.title)
 
   store.commit("setActiveEntity", data)
   entity.value = data

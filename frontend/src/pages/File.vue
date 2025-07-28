@@ -128,7 +128,7 @@ const onSuccess = async (entity) => {
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )
-  updateURLSlug("File", entity.title)
+  updateURLSlug(entity.title)
 }
 
 let file = createResource({

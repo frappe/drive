@@ -225,7 +225,7 @@ export const rename = createResource({
       l.label = rename.params.new_title
       setTitle(rename.params.new_title)
     }
-    updateURLSlug(router.currentRoute.value.params.name, rename.params.new_title)
+    updateURLSlug(rename.params.new_title)
   },
   onError(error) {
     toast({
