@@ -1,44 +1,42 @@
 {
-  "actions": [],
-  "allow_rename": 1,
-  "creation": "2025-01-23 13:08:15.285320",
-  "doctype": "DocType",
-  "editable_grid": 1,
-  "engine": "InnoDB",
-  "field_order": ["user", "is_admin", "access_level"],
-  "fields": [
-    {
-      "fieldname": "user",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "User",
-      "options": "User"
-    },
-    {
-      "default": "0",
-      "fieldname": "is_admin",
-      "fieldtype": "Check",
-      "label": "Is Admin"
-    },
-    {
-      "default": "1",
-      "fieldname": "access_level",
-      "fieldtype": "Int",
-      "label": "Access Level"
-    }
-  ],
-  "grid_page_length": 50,
-  "index_web_pages_for_search": 1,
-  "istable": 1,
-  "links": [],
-  "modified": "2025-06-24 13:46:25.641109",
-  "modified_by": "Administrator",
-  "module": "Drive",
-  "name": "Drive Team Member",
-  "owner": "Administrator",
-  "permissions": [],
-  "row_format": "Dynamic",
-  "sort_field": "creation",
-  "sort_order": "DESC",
-  "states": []
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-23 13:08:15.285320",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "access_level"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "default": "1",
+   "description": "0 for Guest, 1 for User, 2 for Manager",
+   "fieldname": "access_level",
+   "fieldtype": "Int",
+   "label": "Access Level"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-28 17:15:27.485035",
+ "modified_by": "Administrator",
+ "module": "Drive",
+ "name": "Drive Team Member",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
 }
