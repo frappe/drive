@@ -246,6 +246,5 @@ def user_has_permission(doc, ptype, user=None):
     if user == "Administrator":
         return True
     access = get_user_access(doc, user)
-    print(user, access, ptype in access)
     if ptype in access:
         return bool(access[ptype])

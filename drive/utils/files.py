@@ -113,7 +113,8 @@ class FileManager:
     ]
 
     def __init__(self):
-        settings = frappe.get_single("Drive S3 Settings")
+        settings = frappe.get_single("Drive Disk Settings")
+        self.s3_enabled = settings.enabled
         self.s3_enabled = settings.enabled
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path("private/files"))
@@ -138,6 +139,7 @@ class FileManager:
         """
         Moves the file from the current path to another path
         """
+
         if self.s3_enabled:
             self.conn.upload_file(current_path, self.bucket, new_path)
             if drive_file and self.can_create_thumbnail(drive_file):
@@ -222,6 +224,27 @@ class FileManager:
                         os.remove(file_path)
                     except FileNotFoundError:
                         pass
+
+    def create_folder(self, title: str, parent: Path, personal: bool, root=True):
+        """
+        Function to create a folder in the s3 bucket or on disk.
+        """
+        # if self.settings.
+        if root:
+            # Root files are placed in either team or personal folders
+            if personal:
+                path = parent / "personal" / frappe.session.user / title
+            else:
+                path = parent / "team" / title
+        else:
+            # Otherwise, rely on the parent already having a perms-adjusted path
+            path = parent / title
+        path = str(path) + "/"
+        if self.s3_enabled:
+            self.conn.put_object(Bucket=self.bucket, Key=path, Body="")
+        else:
+            (self.site_folder / path).mkdir(parents=True, exist_ok=True)
+        return path
 
     def get_file(self, path):
         """
