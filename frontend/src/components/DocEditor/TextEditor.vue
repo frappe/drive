@@ -1,7 +1,10 @@
 <template>
   <div class="flex w-full h-100 overflow-y-auto">
     <div
-      @click="textEditor.editor?.chain?.().focus?.().run?.()"
+      @click="
+        $event.target.tagName === 'div' &&
+          textEditor.editor?.chain?.().focus?.().run?.()
+      "
       class="mx-auto cursor-text"
       :class="
         showComments
