@@ -2,10 +2,10 @@
   <div class="flex w-full h-100 overflow-y-auto">
     <div
       @click="
-        $event.target.tagName === 'div' &&
+        $event.target.tagName === 'DIV' &&
           textEditor.editor?.chain?.().focus?.().run?.()
       "
-      class="mx-auto cursor-text"
+      class="mx-auto cursor-text min-h-[100vh]"
       :class="
         showComments
           ? 'w-[90%] sm:px-[2.5rem] sm:w-[60%] md:px-0'
