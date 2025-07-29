@@ -98,10 +98,10 @@ after_install = "drive.install.after_install"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
+permission_query_conditions = {
+    "Drive File": "drive.api.permissions.get_permission_query_conditions"
+}
+
 
 has_permission = {
     "Drive File": "drive.api.permissions.user_has_permission",

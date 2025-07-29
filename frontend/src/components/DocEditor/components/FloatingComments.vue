@@ -114,7 +114,7 @@
                 size="xl"
                 class="bg-surface-white"
                 :label="reply.owner"
-                :image="$user(reply.owner).user_image"
+                :image="$user(reply.owner)?.user_image"
               />
             </div>
             <div
@@ -126,7 +126,7 @@
               >
                 <div class="flex gap-1">
                   <label class="font-medium text-ink-gray-8">{{
-                    $user(reply.owner).full_name
+                    $user(reply.owner)?.full_name
                   }}</label>
 
                   <label class="text-ink-gray-6 truncate">
@@ -238,8 +238,8 @@
             <Avatar
               size="xl"
               class="self-center"
-              :label="$user($store.state.user.id).full_name"
-              :image="$user($store.state.user.id).user_image"
+              :label="$user($store.state.user.id)?.full_name"
+              :image="$user($store.state.user.id)?.user_image"
             />
 
             <CommentEditor

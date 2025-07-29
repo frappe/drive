@@ -27,7 +27,7 @@ class DriveTeam(Document):
                 "team": self.name,
             }
         )
-        d.insert()
+        d.insert(ignore_permissions=True)
 
         user_directory_path = Path(frappe.get_site_path("private/files"), d.name)
         user_directory_path.mkdir()

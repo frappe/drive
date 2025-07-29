@@ -1,50 +1,41 @@
 {
-  "actions": [],
-  "autoname": "autoincrement",
-  "creation": "2022-11-25 11:51:10.412352",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": ["user", "entity"],
-  "fields": [
-    {
-      "fieldname": "user",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "User",
-      "options": "User",
-      "reqd": 1
-    },
-    {
-      "fieldname": "entity",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "Drive File",
-      "options": "Drive File",
-      "reqd": 1
-    }
-  ],
-  "links": [],
-  "modified": "2025-02-13 15:11:38.610661",
-  "modified_by": "Administrator",
-  "module": "Drive",
-  "name": "Drive Favourite",
-  "naming_rule": "Autoincrement",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "All",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "states": []
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2022-11-25 11:51:10.412352",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "entity"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "entity",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Drive File",
+   "options": "Drive File",
+   "reqd": 1
+  }
+ ],
+ "links": [],
+ "modified": "2025-07-29 08:35:20.073966",
+ "modified_by": "Administrator",
+ "module": "Drive",
+ "name": "Drive Favourite",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }
