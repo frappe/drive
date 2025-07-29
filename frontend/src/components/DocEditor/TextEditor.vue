@@ -17,6 +17,16 @@
         editor-class="prose-sm min-h-[4rem] p-5"
         :content="rawContent"
         :editable="!!entity.write"
+        :upload-function="
+          (file) => {
+            const fileUpload = useFileUpload()
+            return fileUpload.upload(file, {
+              private: entity.is_private,
+              folder: entity.name,
+              upload_endpoint: `/api/method/drive.api.files.upload_embed`,
+            })
+          }
+        "
         @change="
           (val) => {
             rawContent = val
@@ -47,7 +57,7 @@
 
 <script setup>
 import { toast } from "@/utils/toasts.js"
-import { TextEditor as FTextEditor, debounce } from "frappe-ui"
+import { TextEditor as FTextEditor, debounce, useFileUpload } from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
 import {
   computed,
@@ -67,6 +77,7 @@ import { printDoc } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import { uploadDriveEntity } from "@/utils/chunkFileUpload"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"

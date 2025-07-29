@@ -45,10 +45,11 @@ def get_file_content(embed_name, parent_entity_name):
             ["document", "title", "mime_type", "file_size", "owner", "path", "team"],
             as_dict=1,
         )
+        
         if not drive_entity:
             drive_entity = frappe.get_list(
                 "Drive File",
-                {"old_name": parent_entity_name},
+                filters={"old_name": parent_entity_name},
                 fields=["document", "title", "mime_type", "file_size", "owner", "path", "team"],
             )[0]
 

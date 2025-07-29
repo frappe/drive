@@ -31,6 +31,25 @@ from drive.locks.distributed_lock import DistributedLock
 
 
 @frappe.whitelist()
+def upload_embed(is_private, folder):
+    doc = frappe.get_doc("Drive File", folder)
+    file = frappe.request.files["file"]
+    file.filename = "Embed - " + folder
+
+    # Calculate file size
+    current_pos = file.tell()
+    file.seek(0, 2)
+    file_size = file.tell()
+    file.seek(current_pos)
+    frappe.form_dict.total_file_size = file_size
+
+    embed = upload_file(doc.team, is_private, parent=folder, embed=1)
+    return {
+        "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={folder}"
+    }
+
+
+@frappe.whitelist()
 def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=None, embed=0):
     """
     Accept chunked file contents via a multipart upload, store the file on
@@ -62,15 +81,23 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
     ):
         frappe.throw("You're out of storage!", ValueError)
 
-    file = frappe.request.files["file"]
-    upload_session = frappe.form_dict.uuid
-    title = get_new_title(frappe.form_dict.filename if embed else file.filename, parent)
-    current_chunk = int(frappe.form_dict.chunk_index)
-    total_chunks = int(frappe.form_dict.total_chunk_count)
+    # Support non-chunked uploads too
+    if frappe.form_dict.chunk_index:
+        current_chunk = int(frappe.form_dict.chunk_index)
+        total_chunks = int(frappe.form_dict.total_chunk_count)
+        offset = int(frappe.form_dict.chunk_byte_offset)
+    else:
+        offset = 0
+        current_chunk = 0
+        total_chunks = 1
 
+    file = frappe.request.files["file"]
+    title = get_new_title(file.filename, parent)
+    upload_session = frappe.form_dict.uuid
     temp_path = get_upload_path(home_folder["name"], f"{upload_session}_{secure_filename(title)}")
+
     with temp_path.open("ab") as f:
-        f.seek(int(frappe.form_dict.chunk_byte_offset))
+        f.seek(offset)
         f.write(file.stream.read())
         if (
             not f.tell() >= int(frappe.form_dict.total_file_size)
@@ -79,10 +106,11 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
             return
 
     # Validate that file size is matching
-    file_size = temp_path.stat().st_size
-    if file_size != int(frappe.form_dict.total_file_size):
-        temp_path.unlink()
-        frappe.throw("Size on disk does not match specified filesize.", ValueError)
+    if frappe.form_dict.total_file_size:
+        file_size = temp_path.stat().st_size
+        if file_size != int(frappe.form_dict.total_file_size):
+            temp_path.unlink()
+            frappe.throw("Size on disk does not match specified filesize.", ValueError)
 
     mime_type = mimemapper.get_mime_type(str(temp_path), native_first=False)
     if mime_type is None:
