@@ -38,42 +38,50 @@ def get_user_access(entity, user=frappe.session.user):
     if user == entity.owner:
         return {"read": 1, "comment": 1, "share": 1, "write": 1, "type": "admin"}
 
-    # Default access based on public or team view
     teams = get_teams(user)
-    access = get_access(entity.team)
+
+    # Quyền mặc định
+    access = {
+        "read": 0,
+        "comment": 0,
+        "share": 0,
+        "write": 0,
+        "type": "guest"
+    }
+
+    # Quyền theo team
     if entity.team in teams and entity.is_private == 0:
-        # Everyone can upload to team folders, and admins can edit all files
-        access = {
+        access_level = get_access(entity.team)
+        access.update({
             "read": 1,
             "comment": 1,
             "share": 1,
-            "write": 1 if ((entity.is_group and access) or access == 2) else 0,
-            "type": {2: "team-admin", 1: "team", 0: "guest"}[access],
-        }
-    else:
-        access = {
-            "read": 0,
-            "comment": 0,
-            "share": 0,
-            "write": 0,
-        }
+            "write": 1 if ((entity.is_group and access_level) or access_level == 2) else 0,
+            "type": {2: "team-admin", 1: "team", 0: "guest"}[access_level],
+        })
 
+    # Quyền theo chia sẻ trực tiếp
     path = generate_upward_path(entity.name, user)
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
-    if not user or user == "Guest":
-        return user_access
-    public_path = generate_upward_path(entity.name, "Guest")
-    public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
+    if user != "Guest":
+        public_path = generate_upward_path(entity.name, "Guest")
+        public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
+    else:
+        public_access = {}
 
     valid_accesses = [user_access, public_access]
+
+    # Thêm quyền từ $TEAM nếu user trong team
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
         team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
         valid_accesses.append(team_access)
+
+    # Merge lại quyền
     for access_type in valid_accesses:
-        for type, v in access_type.items():
+        for key, v in access_type.items():
             if v:
-                access[type] = 1
+                access[key] = 1
 
     return access
 

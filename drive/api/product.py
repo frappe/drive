@@ -130,7 +130,7 @@ def signup(account_request, first_name, last_name=None, team=None):
     #     else:
     #         return get_domain_teams(domain)
 
-    return {"location": "/drive/t/" + team}
+    return {"location": "/drive/t/" + team if team else "/drive"}
 
 
 @frappe.whitelist(allow_guest=True)

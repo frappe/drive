@@ -160,8 +160,10 @@ watch(
   { immediate: true }
 )
 
-allUsers.fetch({ team })
-allFolders.fetch({ team })
+if (team) {
+  allUsers.fetch({ team })
+  allFolders.fetch({ team })
+}
 if (!settings.fetched) settings.fetch()
 
 // Drag and drop
