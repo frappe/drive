@@ -178,7 +178,7 @@
               </template>
             </form>
 
-            <div class="mt-6 text-center">
+            <!-- <div class="mt-6 text-center">
               <router-link
                 class="text-center text-base font-medium text-ink-gray-9 hover:text-ink-gray-7"
                 :to="{
@@ -192,7 +192,7 @@
                     : "Already have an account? Log in."
                 }}
               </router-link>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

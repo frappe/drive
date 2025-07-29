@@ -27,13 +27,26 @@
   }
  ],
  "links": [],
- "modified": "2025-07-29 08:35:20.073966",
+ "modified": "2025-07-29 09:51:16.128807",
  "modified_by": "Administrator",
  "module": "Drive",
  "name": "Drive Favourite",
  "naming_rule": "Autoincrement",
  "owner": "Administrator",
- "permissions": [],
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",

@@ -72,7 +72,7 @@ def get_team_invites(team):
     return invites
 
 
-@frappe.whitelist(allow_guest=True)
+# @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
     account_request = frappe.get_doc("Account Request", account_request)
     if not account_request.login_count:

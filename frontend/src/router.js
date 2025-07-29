@@ -105,15 +105,15 @@ const routes = [
     props: true,
     beforeEnter: [manageBreadcrumbs],
   },
-  {
-    path: "/signup",
-    name: "Signup",
-    component: () => import("@/pages/LoginSignup.vue"),
-    beforeEnter: () => {
-      if (store.getters.isLoggedIn) return "/"
-    },
-    meta: { allowGuest: true },
-  },
+  // {
+  //   path: "/signup",
+  //   name: "Signup",
+  //   component: () => import("@/pages/LoginSignup.vue"),
+  //   beforeEnter: () => {
+  //     if (store.getters.isLoggedIn) return "/"
+  //   },
+  //   meta: { allowGuest: true },
+  // },
   {
     path: "/login",
     name: "Login",
