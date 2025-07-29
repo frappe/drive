@@ -49,6 +49,7 @@
     <TextEditor
       v-if="entity"
       ref="editor"
+      v-model:edited="edited"
       v-model:raw-content="rawContent"
       v-model:show-comments="showComments"
       :entity="entity"

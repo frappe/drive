@@ -53,7 +53,7 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         for i in dirname:
             parent = if_folder_exists(team, i, parent, is_private)
 
-    if not user_has_permission(parent, 'upload'):
+    if not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     storage_data = storage_bar_data(team)
@@ -235,7 +235,7 @@ def get_thumbnail(entity_name):
 def create_document_entity(title, personal, team, content, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
-    if not user_has_permission(parent, 'upload'):
+    if not user_has_permission(parent, "upload"):
         frappe.throw(
             "Cannot access folder due to insufficient permissions",
             frappe.PermissionError,
@@ -308,7 +308,7 @@ def create_folder(team, title, personal=False, parent=None):
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
 
-    if not user_has_permission(parent, 'upload'):
+    if not user_has_permission(parent, "upload"):
         frappe.throw(
             "Cannot create folder due to insufficient permissions",
             frappe.PermissionError,
@@ -424,6 +424,8 @@ def save_doc(entity_name, doc_name, content):
     access = get_user_access(frappe.get_doc("Drive File", entity_name))
     if not access["comment"] and not access["write"]:
         raise frappe.PermissionError("You do not have permission to edit this file")
+    if not content:
+        return
 
     frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
     frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
@@ -957,7 +959,7 @@ def export_media(entity_name):
 
 
 @frappe.whitelist()
-def create_comment(entity_name,  name, content, is_reply, parent_name=None):
+def create_comment(entity_name, name, content, is_reply, parent_name=None):
     doc = frappe.get_doc("Drive File", entity_name)
     parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else doc
 

@@ -24,6 +24,7 @@
               db.transaction(['content'], 'readwrite')
                 .objectStore('content')
                 .put({ val, saved: new Date() }, props.entity.name)
+            edited = true
             autosave()
           }
         "
@@ -81,6 +82,7 @@ const editor = computed(() => {
 
 const rawContent = defineModel("rawContent")
 const showComments = defineModel("showComments")
+const edited = defineModel("edited")
 
 const props = defineProps({
   entity: Object,
