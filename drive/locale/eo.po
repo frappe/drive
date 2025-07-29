@@ -1,0 +1,989 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: frappe\n"
+"Report-Msgid-Bugs-To: developers@frappe.io\n"
+"POT-Creation-Date: 2025-07-25 16:11+0000\n"
+"PO-Revision-Date: 2025-07-29 05:17\n"
+"Last-Translator: developers@frappe.io\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: frappe\n"
+"X-Crowdin-Project-ID: 639578\n"
+"X-Crowdin-Language: eo\n"
+"X-Crowdin-File: /[frappe.drive] develop/drive/locale/main.pot\n"
+"X-Crowdin-File-ID: 110\n"
+"Language: eo_UY\n"
+
+#. Header text in the Drive Workspace
+#: drive/drive/workspace/drive/drive.json
+msgid "<span class=\"h4\">Drive</span>"
+msgstr "crwdns156794:0crwdne156794:0"
+
+#. Label of the aws_key (Data) field in DocType 'Drive S3 Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "AWS Key"
+msgstr "crwdns156796:0crwdne156796:0"
+
+#. Label of the aws_secret (Password) field in DocType 'Drive S3 Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "AWS Secret"
+msgstr "crwdns156798:0crwdne156798:0"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Accepted"
+msgstr "crwdns156800:0crwdne156800:0"
+
+#. Label of the accepted_on (Datetime) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Accepted On"
+msgstr "crwdns156802:0crwdne156802:0"
+
+#. Label of the access_level (Int) field in DocType 'Drive Team Member'
+#: drive/drive/doctype/drive_team_member/drive_team_member.json
+msgid "Access Level"
+msgstr "crwdns156804:0crwdne156804:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Account Request"
+msgstr "crwdns156806:0crwdne156806:0"
+
+#. Label of the action_type (Select) field in DocType 'Drive Entity Activity
+#. Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "Action Type"
+msgstr "crwdns156808:0crwdne156808:0"
+
+#: frontend/src/components/InfoSidebar.vue:197
+msgid "Activity"
+msgstr "crwdns156810:0crwdne156810:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:77
+msgid "Add Image"
+msgstr "crwdns156812:0crwdne156812:0"
+
+#: frontend/src/components/InfoPopup.vue:55
+msgid "Added"
+msgstr "crwdns156814:0crwdne156814:0"
+
+#. Name of a role
+#: drive/drive/doctype/drive_document/drive_document.json
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+#: drive/drive/doctype/drive_favourite/drive_favourite.json
+#: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+#: drive/drive/doctype/drive_settings/drive_settings.json
+#: drive/drive/doctype/drive_tag/drive_tag.json
+#: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "All"
+msgstr "crwdns156816:0crwdne156816:0"
+
+#. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Auto Detect Links"
+msgstr "crwdns156818:0crwdne156818:0"
+
+#: frontend/src/components/DriveToolBar.vue:19
+msgid "By"
+msgstr "crwdns156820:0crwdne156820:0"
+
+#. Description of the 'Meta Value' (Data) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare"
+msgstr "crwdns156822:0crwdne156822:0"
+
+#: frontend/src/components/Navbar.vue:302
+#: frontend/src/components/Navbar.vue:308
+msgid "Clear"
+msgstr "crwdns156824:0crwdne156824:0"
+
+#. Label of the color (Data) field in DocType 'Drive File'
+#. Label of the color (Data) field in DocType 'Drive Tag'
+#: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_tag/drive_tag.json
+#: frontend/src/components/TagColorInput.vue:8
+msgid "Color"
+msgstr "crwdns156826:0crwdne156826:0"
+
+#. Label of the comment (Check) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Comment"
+msgstr "crwdns156828:0crwdne156828:0"
+
+#. Label of the comments (Table) field in DocType 'Drive Document'
+#. Label of the comments2 (JSON) field in DocType 'Drive Document'
+#. Label of the comments (Table) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_document/drive_document.json
+#: drive/drive/doctype/drive_file/drive_file.json
+#: frontend/src/components/InfoSidebar.vue:131
+msgid "Comments"
+msgstr "crwdns156830:0crwdne156830:0"
+
+#: frontend/src/components/Settings/NewTagDialog.vue:30
+#: frontend/src/components/Settings/ProfileSettings.vue:30
+msgid "Confirm"
+msgstr "crwdns156832:0crwdne156832:0"
+
+#. Label of the content (Text Editor) field in DocType 'Drive Comment'
+#. Label of the content (Long Text) field in DocType 'Drive Document'
+#: drive/drive/doctype/drive_comment/drive_comment.json
+#: drive/drive/doctype/drive_document/drive_document.json
+msgid "Content"
+msgstr "crwdns156834:0crwdne156834:0"
+
+#: frontend/src/components/GenericPage.vue:239
+#: frontend/src/components/Navbar.vue:203
+msgid "Copy Link"
+msgstr "crwdns156836:0crwdne156836:0"
+
+#. Label of the core_section (Section Break) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Core"
+msgstr "crwdns156838:0crwdne156838:0"
+
+#. Label of the default_team (Link) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Default Team"
+msgstr "crwdns156840:0crwdne156840:0"
+
+#. Description of the 'Signature Version' (Data) field in DocType 'Drive S3
+#. Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
+msgstr "crwdns156842:0crwdne156842:0"
+
+#: frontend/src/components/GenericPage.vue:311
+#: frontend/src/components/Navbar.vue:267
+msgid "Delete"
+msgstr "crwdns156844:0crwdne156844:0"
+
+#. Label of the notif_doctype_name (Dynamic Link) field in DocType 'Drive
+#. Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "DocType Name"
+msgstr "crwdns156846:0crwdne156846:0"
+
+#. Label of the document (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Document"
+msgstr "crwdns156848:0crwdne156848:0"
+
+#. Label of the document_field (Data) field in DocType 'Drive Entity Activity
+#. Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "Document Field"
+msgstr "crwdns156850:0crwdne156850:0"
+
+#. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "Document Type"
+msgstr "crwdns156852:0crwdne156852:0"
+
+#: frontend/src/components/PrimaryDropdown.vue:120
+msgid "Documentation"
+msgstr "crwdns156854:0crwdne156854:0"
+
+#: frontend/src/components/GenericPage.vue:231
+#: frontend/src/components/Navbar.vue:197
+msgid "Download"
+msgstr "crwdns156856:0crwdne156856:0"
+
+#. Name of a Workspace
+#: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
+msgid "Drive"
+msgstr "crwdns156858:0crwdne156858:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_comment/drive_comment.json
+msgid "Drive Comment"
+msgstr "crwdns156860:0crwdne156860:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_document/drive_document.json
+msgid "Drive Document"
+msgstr "crwdns156862:0crwdne156862:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+msgid "Drive Document Version"
+msgstr "crwdns156864:0crwdne156864:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "Drive Entity Activity Log"
+msgstr "crwdns156866:0crwdne156866:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+msgid "Drive Entity Log"
+msgstr "crwdns156868:0crwdne156868:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
+msgid "Drive Entity Tag"
+msgstr "crwdns156870:0crwdne156870:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_favourite/drive_favourite.json
+msgid "Drive Favourite"
+msgstr "crwdns156872:0crwdne156872:0"
+
+#. Label of the entity (Link) field in DocType 'Drive Favourite'
+#. Name of a DocType
+#: drive/drive/doctype/drive_favourite/drive_favourite.json
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Drive File"
+msgstr "crwdns156874:0crwdne156874:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "Drive Notification"
+msgstr "crwdns156876:0crwdne156876:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Drive Permission"
+msgstr "crwdns156878:0crwdne156878:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "Drive S3 Settings"
+msgstr "crwdns156880:0crwdne156880:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Drive Settings"
+msgstr "crwdns156882:0crwdne156882:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
+msgid "Drive Site Settings"
+msgstr "crwdns156884:0crwdne156884:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_tag/drive_tag.json
+msgid "Drive Tag"
+msgstr "crwdns156886:0crwdne156886:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Drive Team"
+msgstr "crwdns156888:0crwdne156888:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_team_member/drive_team_member.json
+msgid "Drive Team Member"
+msgstr "crwdns156890:0crwdne156890:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Drive User Invitation"
+msgstr "crwdns156892:0crwdne156892:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:26
+msgid "Edit Profile"
+msgstr "crwdns156894:0crwdne156894:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:20
+msgid "Edit profile"
+msgstr "crwdns156896:0crwdne156896:0"
+
+#. Label of the email (Data) field in DocType 'Account Request'
+#. Label of the email (Data) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/account_request/account_request.json
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Email"
+msgstr "crwdns156898:0crwdne156898:0"
+
+#: frontend/src/components/Navbar.vue:314
+msgid "Empty"
+msgstr "crwdns156900:0crwdne156900:0"
+
+#. Label of the enabled (Check) field in DocType 'Drive S3 Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "Enabled"
+msgstr "crwdns156902:0crwdne156902:0"
+
+#. Label of the endpoint_url (Data) field in DocType 'Drive S3 Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "Endpoint URL"
+msgstr "crwdns156904:0crwdne156904:0"
+
+#. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
+#. Label of the entity (Link) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Entity"
+msgstr "crwdns156906:0crwdne156906:0"
+
+#. Label of the entity_name (Link) field in DocType 'Drive Entity Log'
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+msgid "Entity Name"
+msgstr "crwdns156908:0crwdne156908:0"
+
+#. Label of the entity_type (Data) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "Entity Type"
+msgstr "crwdns156910:0crwdne156910:0"
+
+#. Description of the 'Endpoint URL' (Data) field in DocType 'Drive S3
+#. Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "Example format: https://s3.ap-south-1.amazonaws.com"
+msgstr "crwdns156912:0crwdne156912:0"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Expired"
+msgstr "crwdns156914:0crwdne156914:0"
+
+#: frontend/src/components/GenericPage.vue:272
+#: frontend/src/components/Navbar.vue:238
+msgid "Favourite"
+msgstr "crwdns156916:0crwdne156916:0"
+
+#. Label of the file_size (Int) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "File Size"
+msgstr "crwdns156918:0crwdne156918:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:83
+msgid "First Name"
+msgstr "crwdns156920:0crwdne156920:0"
+
+#. Label of the from_user (Link) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "From User"
+msgstr "crwdns156922:0crwdne156922:0"
+
+#: frontend/src/components/InfoPopup.vue:88
+msgid "General"
+msgstr "crwdns156924:0crwdne156924:0"
+
+#. Label of the geo_location (Code) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Geo Location"
+msgstr "crwdns156926:0crwdne156926:0"
+
+#: frontend/src/components/Sidebar.vue:14
+msgid "Go"
+msgstr "crwdns156928:0crwdne156928:0"
+
+#. Label of a shortcut in the Drive Workspace
+#: drive/drive/workspace/drive/drive.json
+msgid "Go to Drive"
+msgstr "crwdns156930:0crwdne156930:0"
+
+#. Name of a role
+#: drive/drive/doctype/drive_document/drive_document.json
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Guest"
+msgstr "crwdns156932:0crwdne156932:0"
+
+#: frontend/src/components/GenericPage.vue:266
+#: frontend/src/components/Navbar.vue:232
+msgid "Hide Info"
+msgstr "crwdns156934:0crwdne156934:0"
+
+#: frontend/src/utils/files.js:219
+msgid "Home"
+msgstr "crwdns156936:0crwdne156936:0"
+
+#. Label of the ip_address (Data) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "IP Address"
+msgstr "crwdns156938:0crwdne156938:0"
+
+#. Description of the 'Storage' (Int) field in DocType 'Drive Team'
+#. Description of the 'Quota' (Int) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "In MB"
+msgstr "crwdns156940:0crwdne156940:0"
+
+#: frontend/src/components/InfoSidebar.vue:15
+msgid "Information"
+msgstr "crwdns156942:0crwdne156942:0"
+
+#. Label of the invite (Link) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+#: frontend/src/components/Settings/UserListSettings.vue:13
+msgid "Invite"
+msgstr "crwdns156944:0crwdne156944:0"
+
+#. Label of the is_active (Int) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Is Active"
+msgstr "crwdns156946:0crwdne156946:0"
+
+#. Label of the is_admin (Check) field in DocType 'Drive Team Member'
+#: drive/drive/doctype/drive_team_member/drive_team_member.json
+msgid "Is Admin"
+msgstr "crwdns156948:0crwdne156948:0"
+
+#. Label of the is_group (Check) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Is Group"
+msgstr "crwdns156950:0crwdne156950:0"
+
+#. Label of the is_link (Check) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Is Link"
+msgstr "crwdns156952:0crwdne156952:0"
+
+#. Label of the is_private (Check) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Is Private"
+msgstr "crwdns156954:0crwdne156954:0"
+
+#. Label of the resolved (Check) field in DocType 'Drive Comment'
+#: drive/drive/doctype/drive_comment/drive_comment.json
+msgid "Is Resolved"
+msgstr "crwdns156956:0crwdne156956:0"
+
+#. Label of the jwt_key (Password) field in DocType 'Drive Site Settings'
+#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
+msgid "JWT Key"
+msgstr "crwdns156958:0crwdne156958:0"
+
+#: frontend/src/components/ListView.vue:195
+msgid "Last Accessed"
+msgstr "crwdns156960:0crwdne156960:0"
+
+#. Label of the last_interaction (Datetime) field in DocType 'Drive Entity Log'
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+msgid "Last Interaction"
+msgstr "crwdns156962:0crwdne156962:0"
+
+#: frontend/src/components/ListView.vue:187
+msgid "Last Modified"
+msgstr "crwdns156964:0crwdne156964:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:88
+msgid "Last Name"
+msgstr "crwdns156966:0crwdne156966:0"
+
+#: frontend/src/components/PrimaryDropdown.vue:146
+msgid "Log out"
+msgstr "crwdns156968:0crwdne156968:0"
+
+#. Label of the login_count (Int) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Login Count"
+msgstr "crwdns156970:0crwdne156970:0"
+
+#. Label of the mime_type (Data) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "MIME Type"
+msgstr "crwdns156972:0crwdne156972:0"
+
+#: frontend/src/components/InfoPopup.vue:72
+#: frontend/src/components/InfoSidebar.vue:64
+#: frontend/src/components/PrimaryDropdown.vue:109
+msgid "Manage"
+msgstr "crwdns156974:0crwdne156974:0"
+
+#. Option for the 'Type' (Select) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "Mention"
+msgstr "crwdns156976:0crwdne156976:0"
+
+#. Label of the mentions (JSON) field in DocType 'Drive Document'
+#: drive/drive/doctype/drive_document/drive_document.json
+msgid "Mentions"
+msgstr "crwdns156978:0crwdne156978:0"
+
+#. Label of the snapshot_message (Text) field in DocType 'Drive Document
+#. Version'
+#. Label of the message (Data) field in DocType 'Drive Entity Activity Log'
+#. Label of the message (Text) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "Message"
+msgstr "crwdns156980:0crwdne156980:0"
+
+#. Label of the meta_value (Data) field in DocType 'Drive Entity Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "Meta Value"
+msgstr "crwdns156982:0crwdne156982:0"
+
+#: frontend/src/components/DriveToolBar.vue:328
+#: frontend/src/components/InfoPopup.vue:51
+#: frontend/src/components/InfoSidebar.vue:103
+msgid "Modified"
+msgstr "crwdns156984:0crwdne156984:0"
+
+#: frontend/src/components/GenericPage.vue:246
+#: frontend/src/components/Navbar.vue:214
+msgid "Move"
+msgstr "crwdns156986:0crwdne156986:0"
+
+#: frontend/src/components/DriveToolBar.vue:320
+#: frontend/src/components/ListView.vue:131
+msgid "Name"
+msgstr "crwdns156988:0crwdne156988:0"
+
+#. Description of the 'JWT Key' (Password) field in DocType 'Drive Site
+#. Settings'
+#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
+msgid "Never share this publicly! This gives complete read access to all files in your site."
+msgstr "crwdns156990:0crwdne156990:0"
+
+#: frontend/src/components/Settings/TagSettings.vue:12
+msgid "New"
+msgstr "crwdns156992:0crwdne156992:0"
+
+#: frontend/src/components/Settings/NewTagDialog.vue:4
+msgid "New Tag"
+msgstr "crwdns156994:0crwdne156994:0"
+
+#. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "New Value"
+msgstr "crwdns156996:0crwdne156996:0"
+
+#. Label of the oauth_signup (Check) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "OAuth Signup"
+msgstr "crwdns156998:0crwdne156998:0"
+
+#. Label of the otp (Data) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "OTP"
+msgstr "crwdns157000:0crwdne157000:0"
+
+#. Label of the otp_generated_at (Datetime) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "OTP Generated at"
+msgstr "crwdns157002:0crwdne157002:0"
+
+#. Label of the old_name (Data) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Old Name"
+msgstr "crwdns157004:0crwdne157004:0"
+
+#. Label of the old_value (Data) field in DocType 'Drive Entity Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "Old Value"
+msgstr "crwdns157006:0crwdne157006:0"
+
+#: frontend/src/components/GenericPage.vue:217
+msgid "Open"
+msgstr "crwdns157008:0crwdne157008:0"
+
+#: frontend/src/components/PrimaryDropdown.vue:136
+msgid "Others"
+msgstr "crwdns157010:0crwdne157010:0"
+
+#: frontend/src/components/DriveToolBar.vue:324
+#: frontend/src/components/InfoPopup.vue:33
+#: frontend/src/components/InfoSidebar.vue:114
+#: frontend/src/components/ListView.vue:145
+msgid "Owner"
+msgstr "crwdns157012:0crwdne157012:0"
+
+#. Label of the parent_document (Link) field in DocType 'Drive Document
+#. Version'
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+msgid "Parent Document"
+msgstr "crwdns157014:0crwdne157014:0"
+
+#. Label of the parent_entity (Link) field in DocType 'Drive Document Version'
+#. Label of the parent_entity (Link) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Parent Entity"
+msgstr "crwdns157016:0crwdne157016:0"
+
+#. Label of the path (Text) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+msgid "Path"
+msgstr "crwdns157018:0crwdne157018:0"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Pending"
+msgstr "crwdns157020:0crwdne157020:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:95
+msgid "Preferences"
+msgstr "crwdns157022:0crwdne157022:0"
+
+#: frontend/src/components/GenericPage.vue:211
+msgid "Preview"
+msgstr "crwdns157024:0crwdne157024:0"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:3
+msgid "Profile"
+msgstr "crwdns157026:0crwdne157026:0"
+
+#: frontend/src/components/InfoSidebar.vue:79
+msgid "Properties"
+msgstr "crwdns157028:0crwdne157028:0"
+
+#. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Proposed"
+msgstr "crwdns157030:0crwdne157030:0"
+
+#. Label of the quota (Int) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Quota"
+msgstr "crwdns157032:0crwdne157032:0"
+
+#. Label of the raw_content (Long Text) field in DocType 'Drive Document'
+#: drive/drive/doctype/drive_document/drive_document.json
+msgid "Raw Content"
+msgstr "crwdns157034:0crwdne157034:0"
+
+#. Label of the read (Check) field in DocType 'Drive Notification'
+#. Label of the read (Check) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Read"
+msgstr "crwdns157036:0crwdne157036:0"
+
+#. Label of the referral_source (Data) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Referral Source"
+msgstr "crwdns157038:0crwdne157038:0"
+
+#. Label of the referrer_data (Section Break) field in DocType 'Account
+#. Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Referrer Data"
+msgstr "crwdns157040:0crwdne157040:0"
+
+#. Label of the referrer_id (Data) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Referrer ID"
+msgstr "crwdns157042:0crwdne157042:0"
+
+#: frontend/src/components/GenericPage.vue:298
+msgid "Remove from Recents"
+msgstr "crwdns157044:0crwdne157044:0"
+
+#: frontend/src/components/GenericPage.vue:254
+#: frontend/src/components/Navbar.vue:220
+msgid "Rename"
+msgstr "crwdns157046:0crwdne157046:0"
+
+#. Label of the replies (Table) field in DocType 'Drive Comment'
+#: drive/drive/doctype/drive_comment/drive_comment.json
+msgid "Replies"
+msgstr "crwdns157048:0crwdne157048:0"
+
+#. Label of the request_key (Data) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Request Key"
+msgstr "crwdns157050:0crwdne157050:0"
+
+#. Label of the bucket (Data) field in DocType 'Drive S3 Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "S3 Bucket"
+msgstr "crwdns157052:0crwdne157052:0"
+
+#: frontend/src/components/DriveToolBar.vue:42
+msgid "Search"
+msgstr "crwdns157054:0crwdne157054:0"
+
+#: frontend/src/components/TagColorInput.vue:36
+msgid "Set Color"
+msgstr "crwdns157056:0crwdne157056:0"
+
+#. Label of the settings (JSON) field in DocType 'Drive Document'
+#: drive/drive/doctype/drive_document/drive_document.json
+#: frontend/src/components/PrimaryDropdown.vue:141
+#: frontend/src/components/Settings/SettingsDialog.vue:15
+msgid "Settings"
+msgstr "crwdns157058:0crwdne157058:0"
+
+#. Label of a shortcut in the Drive Workspace
+#: drive/drive/workspace/drive/drive.json
+msgid "Setup S3"
+msgstr "crwdns157060:0crwdne157060:0"
+
+#. Option for the 'Type' (Select) field in DocType 'Drive Notification'
+#. Label of the share (Check) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+#: frontend/src/components/GenericPage.vue:224
+#: frontend/src/components/Navbar.vue:191
+msgid "Share"
+msgstr "crwdns157062:0crwdne157062:0"
+
+#: frontend/src/components/InfoPopup.vue:109
+#: frontend/src/components/ListView.vue:165 frontend/src/utils/files.js:204
+msgid "Shared"
+msgstr "crwdns157064:0crwdne157064:0"
+
+#: frontend/src/components/GenericPage.vue:260
+#: frontend/src/components/Navbar.vue:226
+msgid "Show Info"
+msgstr "crwdns157066:0crwdne157066:0"
+
+#. Label of the signature_version (Data) field in DocType 'Drive S3 Settings'
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+msgid "Signature Version"
+msgstr "crwdns157068:0crwdne157068:0"
+
+#. Label of the signed_up (Check) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "Signed Up"
+msgstr "crwdns157070:0crwdne157070:0"
+
+#. Label of the single_click (Check) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Single Click"
+msgstr "crwdns157072:0crwdne157072:0"
+
+#: frontend/src/components/DriveToolBar.vue:332
+#: frontend/src/components/InfoPopup.vue:45
+#: frontend/src/components/InfoSidebar.vue:93
+#: frontend/src/components/ListView.vue:203
+msgid "Size"
+msgstr "crwdns157074:0crwdne157074:0"
+
+#: frontend/src/components/DriveToolBar.vue:348
+msgid "Smart sort"
+msgstr "crwdns157076:0crwdne157076:0"
+
+#. Label of the snapshot_data (Long Text) field in DocType 'Drive Document
+#. Version'
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+msgid "Snapshot Data"
+msgstr "crwdns157078:0crwdne157078:0"
+
+#. Label of the snapshot_size (Int) field in DocType 'Drive Document Version'
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+msgid "Snapshot Size"
+msgstr "crwdns157080:0crwdne157080:0"
+
+#. Label of the status (Select) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "Status"
+msgstr "crwdns157082:0crwdne157082:0"
+
+#. Label of the storage (Int) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+#: frontend/src/components/Settings/StorageSettings.vue:3
+#: frontend/src/components/StorageBar.vue:8
+msgid "Storage"
+msgstr "crwdns157084:0crwdne157084:0"
+
+#: frontend/src/components/PrimaryDropdown.vue:125
+msgid "Support"
+msgstr "crwdns157086:0crwdne157086:0"
+
+#. Name of a role
+#: drive/drive/doctype/account_request/account_request.json
+#: drive/drive/doctype/drive_document_version/drive_document_version.json
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#: drive/drive/doctype/drive_settings/drive_settings.json
+#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
+#: drive/drive/doctype/drive_team/drive_team.json
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+msgid "System Manager"
+msgstr "crwdns157088:0crwdne157088:0"
+
+#. Label of the tag (Link) field in DocType 'Drive Entity Tag'
+#: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
+msgid "Tag"
+msgstr "crwdns157090:0crwdne157090:0"
+
+#. Label of the tags (Table) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+#: frontend/src/components/InfoSidebar.vue:70
+#: frontend/src/components/Settings/TagSettings.vue:4
+msgid "Tags"
+msgstr "crwdns157092:0crwdne157092:0"
+
+#. Label of the team (Link) field in DocType 'Drive File'
+#. Option for the 'Type' (Select) field in DocType 'Drive Notification'
+#. Label of the team (Link) field in DocType 'Drive User Invitation'
+#: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
+#: frontend/src/components/Settings/StorageSettings.vue:24
+msgid "Team"
+msgstr "crwdns157094:0crwdne157094:0"
+
+#. Label of the team_domain (Data) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+msgid "Team Domain"
+msgstr "crwdns157096:0crwdne157096:0"
+
+#. Label of the title (Data) field in DocType 'Drive File'
+#. Label of the title (Data) field in DocType 'Drive Tag'
+#. Label of the title (Small Text) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_file/drive_file.json
+#: drive/drive/doctype/drive_tag/drive_tag.json
+#: drive/drive/doctype/drive_team/drive_team.json
+#: frontend/src/components/Settings/NewTagDialog.vue:19
+msgid "Title"
+msgstr "crwdns157098:0crwdne157098:0"
+
+#. Label of the to_user (Link) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+msgid "To User"
+msgstr "crwdns157100:0crwdne157100:0"
+
+#. Label of the type (Select) field in DocType 'Drive Notification'
+#: drive/drive/doctype/drive_notification/drive_notification.json
+#: frontend/src/components/DriveToolBar.vue:336
+#: frontend/src/components/InfoPopup.vue:41
+#: frontend/src/components/InfoSidebar.vue:82
+msgid "Type"
+msgstr "crwdns157102:0crwdne157102:0"
+
+#. Label of the url_args (Code) field in DocType 'Account Request'
+#: drive/drive/doctype/account_request/account_request.json
+msgid "URL Args"
+msgstr "crwdns157104:0crwdne157104:0"
+
+#: frontend/src/components/GenericPage.vue:285
+#: frontend/src/components/Navbar.vue:249
+msgid "Unfavourite"
+msgstr "crwdns157106:0crwdne157106:0"
+
+#. Label of the upload (Check) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Upload"
+msgstr "crwdns157108:0crwdne157108:0"
+
+#: frontend/src/components/InfoSidebar.vue:109
+msgid "Uploaded"
+msgstr "crwdns157110:0crwdne157110:0"
+
+#. Label of the user (Link) field in DocType 'Drive Entity Log'
+#. Label of the user (Link) field in DocType 'Drive Favourite'
+#. Label of the user (Data) field in DocType 'Drive Permission'
+#. Label of the user (Link) field in DocType 'Drive Settings'
+#. Label of the user (Link) field in DocType 'Drive Team Member'
+#: drive/drive/doctype/drive_entity_log/drive_entity_log.json
+#: drive/drive/doctype/drive_favourite/drive_favourite.json
+#: drive/drive/doctype/drive_permission/drive_permission.json
+#: drive/drive/doctype/drive_settings/drive_settings.json
+#: drive/drive/doctype/drive_team_member/drive_team_member.json
+msgid "User"
+msgstr "crwdns157112:0crwdne157112:0"
+
+#. Label of the users (Table MultiSelect) field in DocType 'Drive Team'
+#: drive/drive/doctype/drive_team/drive_team.json
+#: frontend/src/components/Settings/UserListSettings.vue:4
+msgid "Users"
+msgstr "crwdns157114:0crwdne157114:0"
+
+#. Label of the valid_until (Datetime) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Valid Until"
+msgstr "crwdns157116:0crwdne157116:0"
+
+#. Label of the version (Int) field in DocType 'Drive Document'
+#: drive/drive/doctype/drive_document/drive_document.json
+msgid "Version"
+msgstr "crwdns157118:0crwdne157118:0"
+
+#: frontend/src/components/DriveToolBar.vue:27
+msgid "With you"
+msgstr "crwdns157120:0crwdne157120:0"
+
+#. Label of the write (Check) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_permission/drive_permission.json
+msgid "Write"
+msgstr "crwdns157122:0crwdne157122:0"
+
+#: frontend/src/components/Settings/StorageSettings.vue:21
+msgid "You"
+msgstr "crwdns157124:0crwdne157124:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "comment"
+msgstr "crwdns157126:0crwdne157126:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "create"
+msgstr "crwdns157128:0crwdne157128:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "delete"
+msgstr "crwdns157130:0crwdne157130:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "edit"
+msgstr "crwdns157132:0crwdne157132:0"
+
+#: frontend/src/components/DriveToolBar.vue:8
+msgid "item"
+msgstr "crwdns157134:0crwdne157134:0"
+
+#: frontend/src/components/DriveToolBar.vue:8
+msgid "items"
+msgstr "crwdns157136:0crwdne157136:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "move"
+msgstr "crwdns157138:0crwdne157138:0"
+
+#: frontend/src/components/InfoPopup.vue:118
+#: frontend/src/components/ListView.vue:174
+msgid "people"
+msgstr "crwdns157140:0crwdne157140:0"
+
+#: frontend/src/components/InfoPopup.vue:117
+#: frontend/src/components/ListView.vue:174
+msgid "person"
+msgstr "crwdns157142:0crwdne157142:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "rename"
+msgstr "crwdns157144:0crwdne157144:0"
+
+#: frontend/src/components/DriveToolBar.vue:9
+msgid "selected"
+msgstr "crwdns157146:0crwdne157146:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "share_add"
+msgstr "crwdns157148:0crwdne157148:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "share_edit"
+msgstr "crwdns157150:0crwdne157150:0"
+
+#. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
+#. Activity Log'
+#: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
+msgid "share_remove"
+msgstr "crwdns157152:0crwdne157152:0"
+
