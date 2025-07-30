@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-29 05:16\n"
+"PO-Revision-Date: 2025-07-30 05:49\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr ""
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Action Type"
-msgstr ""
+msgstr "Jenis Tindakan"
 
 #: frontend/src/components/InfoSidebar.vue:197
 msgid "Activity"
@@ -176,7 +176,7 @@ msgstr ""
 #. Label of the document (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document"
-msgstr ""
+msgstr "Dokumen"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
@@ -355,7 +355,7 @@ msgstr ""
 #. Label of the file_size (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
-msgstr ""
+msgstr "Ukuran Berkas"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
@@ -402,7 +402,7 @@ msgstr "Rumah"
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "IP Address"
-msgstr ""
+msgstr "Alamat IP"
 
 #. Description of the 'Storage' (Int) field in DocType 'Drive Team'
 #. Description of the 'Quota' (Int) field in DocType 'Drive Team'
@@ -443,7 +443,7 @@ msgstr ""
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Private"
-msgstr ""
+msgstr "Pribadi"
 
 #. Label of the resolved (Check) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -495,12 +495,12 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Sebutkan"
 
 #. Label of the mentions (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Mentions"
-msgstr ""
+msgstr "Sebutan"
 
 #. Label of the snapshot_message (Text) field in DocType 'Drive Document
 #. Version'
@@ -625,7 +625,7 @@ msgstr "Pratayang"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: frontend/src/components/InfoSidebar.vue:79
 msgid "Properties"
@@ -725,7 +725,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:109
 #: frontend/src/components/ListView.vue:165 frontend/src/utils/files.js:204
 msgid "Shared"
-msgstr ""
+msgstr "Dibagikan"
 
 #: frontend/src/components/GenericPage.vue:260
 #: frontend/src/components/Navbar.vue:226
@@ -840,7 +840,7 @@ msgstr "Judul"
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "To User"
-msgstr ""
+msgstr "Ke Pengguna"
 
 #. Label of the type (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -905,7 +905,7 @@ msgstr ""
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "Tulis"
 
 #: frontend/src/components/Settings/StorageSettings.vue:21
 msgid "You"
@@ -915,39 +915,39 @@ msgstr "Anda"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "comment"
-msgstr ""
+msgstr "komentar"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr ""
+msgstr "buat"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "delete"
-msgstr ""
+msgstr "hapus"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "edit"
-msgstr ""
+msgstr "ubah"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "item"
-msgstr ""
+msgstr "item"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "items"
-msgstr ""
+msgstr "item"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "move"
-msgstr ""
+msgstr "bergerak"
 
 #: frontend/src/components/InfoPopup.vue:118
 #: frontend/src/components/ListView.vue:174
@@ -957,13 +957,13 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:117
 #: frontend/src/components/ListView.vue:174
 msgid "person"
-msgstr ""
+msgstr "orang"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "rename"
-msgstr ""
+msgstr "ubah nama"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
