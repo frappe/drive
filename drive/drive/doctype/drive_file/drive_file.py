@@ -106,6 +106,10 @@ class DriveFile(Document):
 
         self.parent_entity = new_parent
         self.is_private = frappe.db.get_value("Drive File", new_parent, "is_private")
+        manager = FileManager()
+        new_path = manager.get_disk_path(self)
+        manager.move(self.path, new_path)
+        self.path = new_path
 
         title = get_new_title(self.title, new_parent)
         if title != self.title:

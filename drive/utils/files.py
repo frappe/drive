@@ -151,14 +151,18 @@ class FileManager:
                     except FileNotFoundError:
                         pass
 
-    def get_disk_path(self, entity: DriveFile, root: dict):
+    def get_disk_path(self, entity: DriveFile, root: dict = None):
         """
         Helper function to get path of a file
         """
+        if not root:
+            root = get_home_folder(entity.team)
+
         if self.flat:
             return self.site_folder / root["name"] / entity.name
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
+
             parent = (
                 Path(frappe.get_value("Drive File", entity.parent_entity, "path"))
                 if not hasattr(entity, "parent_path")
@@ -246,7 +250,7 @@ class FileManager:
         current_path = self.__get_trash_path(entity)
         self.move(current_path, entity.path)
 
-    def move(self, old_path, new_path, folder=False):
+    def move(self, old_path, new_path):
         """
         Move a file from old_path to new_path.
         """

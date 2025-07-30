@@ -31,7 +31,7 @@
             </template>
           </Button>
         </div>
-        <Autocomplete
+        <!-- <Autocomplete
           v-if="allFolders.data"
           v-model="folderSearch"
           class="mb-2"
@@ -45,7 +45,7 @@
           "
         >
           <template #suffix-icon>&#8203;</template>
-        </Autocomplete>
+        </Autocomplete> -->
         <Tabs
           v-model="tabIndex"
           as="div"
