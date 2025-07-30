@@ -3,13 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.model.document import Document
-from frappe.utils import (
-    add_days,
-    get_datetime,
-    now,
-    validate_email_address,
-)
+from frappe.utils import add_days, get_datetime, now, validate_email_address
 
 EXPIRY_DAYS = 1
 

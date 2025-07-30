@@ -1,11 +1,10 @@
 import frappe
-from frappe.rate_limiter import rate_limit
-from frappe.utils import escape_html
-from frappe.utils import split_emails, validate_email_address
-from drive.api.permissions import is_admin
-from frappe.translate import get_all_translations
 from frappe import _
+from frappe.rate_limiter import rate_limit
+from frappe.translate import get_all_translations
+from frappe.utils import escape_html, split_emails, validate_email_address
 
+from drive.api.permissions import is_admin
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 

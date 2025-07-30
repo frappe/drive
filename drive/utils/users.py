@@ -1,8 +1,9 @@
+import os
+
 import frappe
+import requests
 from frappe.rate_limiter import rate_limit
 from frappe.utils import now
-import requests
-import os
 
 
 def mark_as_viewed(entity):

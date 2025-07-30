@@ -1,9 +1,8 @@
 import frappe
 from frappe.utils import getdate
 
+from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
 from drive.utils.users import mark_as_viewed
-from drive.utils import get_valid_breadcrumbs, generate_upward_path, get_file_type
-
 
 ENTITY_FIELDS = [
     "name",

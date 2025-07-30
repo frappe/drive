@@ -1,18 +1,14 @@
+import shutil
+from pathlib import Path
+
 import frappe
 from frappe.model.document import Document
-from pathlib import Path
-import shutil
 
-from drive.utils import (
-    get_ancestors_of,
-    generate_upward_path,
-    get_home_folder,
-    update_file_size,
-)
-from drive.utils.files import FileManager
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import user_has_permission
+from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size
+from drive.utils.files import FileManager
 
 
 class DriveFile(Document):
