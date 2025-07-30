@@ -2,7 +2,7 @@ import frappe
 from frappe.utils import getdate
 
 from drive.utils.users import mark_as_viewed
-from drive.utils.files import get_valid_breadcrumbs, generate_upward_path, get_file_type
+from drive.utils import get_valid_breadcrumbs, generate_upward_path, get_file_type
 
 
 ENTITY_FIELDS = [
@@ -194,10 +194,9 @@ def get_shared_with_list(entity):
     :return: List of users, with permissions and last modified datetime
     :rtype: list[frappe._dict]
     """
-    if not frappe.has_permission(
-        doctype="Drive File", doc=entity, ptype="share", user=frappe.session.user
-    ):
-        raise frappe.PermissionError
+    if not user_has_permission(entity, "share"):
+        raise frappe.PermissionError("You do not have permission to share this file.")
+
     permissions = frappe.db.get_all(
         "Drive Permission",
         filters=[["entity", "=", entity], ["user", "!=", ""], ["user", "!=", "$TEAM"]],

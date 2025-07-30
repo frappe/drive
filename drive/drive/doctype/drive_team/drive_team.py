@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 from pathlib import Path
 import shutil
-from drive.utils.files import get_home_folder
+from drive.utils import get_home_folder
 
 
 class DriveTeam(Document):

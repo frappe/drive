@@ -349,7 +349,7 @@ watch(activeComment, (val) => {
 
 // Resources
 const createComment = createResource({
-  url: "drive.api.files.create_comment",
+  url: "drive.api.docs.create_comment",
   onSuccess: () => {
     findComment(createComment.params.name).loading = false
   },
@@ -361,13 +361,13 @@ const createComment = createResource({
   },
 })
 const editComment = createResource({
-  url: "drive.api.files.edit_comment",
+  url: "drive.api.docs.edit_comment",
 })
 const deleteComment = createResource({
-  url: "drive.api.files.delete_comment",
+  url: "drive.api.docs.delete_comment",
 })
 const resolveComment = createResource({
-  url: "drive.api.files.resolve_comment",
+  url: "drive.api.docs.resolve_comment",
 })
 
 // Functions

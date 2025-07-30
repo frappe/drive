@@ -1,7 +1,7 @@
 import frappe
 import json
-from drive.utils.files import get_home_folder, MIME_LIST_MAP, get_file_type
-from .permissions import ENTITY_FIELDS, get_user_access, get_teams
+from drive.utils import get_home_folder, MIME_LIST_MAP, get_file_type
+from .permissions import ENTITY_FIELDS, get_user_access
 from pypika import Order, Criterion, functions as fn, CustomFunction
 
 
