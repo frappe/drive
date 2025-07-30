@@ -553,12 +553,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
         auth = jwt.decode(jwt_token, key=settings.get_password("jwt_key"), algorithms=["HS256"])
         if datetime.now().timestamp() > auth["expiry"] or auth["name"] != entity_name:
             raise frappe.PermissionError("You do not have permission to view this file")
-    elif not frappe.has_permission(
-        doctype="Drive File",
-        doc=entity_name,
-        ptype="read",
-        user=frappe.session.user,
-    ):
+    elif not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
 
     trigger_download = int(trigger_download)
