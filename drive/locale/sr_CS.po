@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-29 05:17\n"
+"PO-Revision-Date: 2025-07-30 05:49\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -21,17 +21,17 @@ msgstr ""
 #. Header text in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "<span class=\"h4\">Drive</span>"
-msgstr ""
+msgstr "<span class=\"h4\">Drive</span>"
 
 #. Label of the aws_key (Data) field in DocType 'Drive S3 Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 msgid "AWS Key"
-msgstr ""
+msgstr "AWS Key"
 
 #. Label of the aws_secret (Password) field in DocType 'Drive S3 Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 msgid "AWS Secret"
-msgstr ""
+msgstr "AWS Secret"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -65,7 +65,7 @@ msgstr "Aktivnost"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:77
 msgid "Add Image"
-msgstr ""
+msgstr "Dodaj sliku"
 
 #: frontend/src/components/InfoPopup.vue:55
 msgid "Added"
@@ -154,7 +154,7 @@ msgstr "Osnovno"
 #. Label of the default_team (Link) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Default Team"
-msgstr ""
+msgstr "Podrazumevani tim"
 
 #. Description of the 'Signature Version' (Data) field in DocType 'Drive S3
 #. Settings'
@@ -171,7 +171,7 @@ msgstr "Obriši"
 #. Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "DocType Name"
-msgstr ""
+msgstr "Naziv DocType"
 
 #. Label of the document (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -182,7 +182,7 @@ msgstr "Dokument"
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Document Field"
-msgstr ""
+msgstr "Polje dokumenta"
 
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -201,22 +201,22 @@ msgstr "Preuzmi"
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
 msgid "Drive"
-msgstr ""
+msgstr "Drive"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Drive Comment"
-msgstr ""
+msgstr "Drive komentar"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Drive Document"
-msgstr ""
+msgstr "Drive dokument"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Drive Document Version"
-msgstr ""
+msgstr "Drive verzija dokumenta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -236,54 +236,54 @@ msgstr ""
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 msgid "Drive Favourite"
-msgstr ""
+msgstr "Drive omiljeno"
 
 #. Label of the entity (Link) field in DocType 'Drive Favourite'
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Drive File"
-msgstr ""
+msgstr "Drive fajl"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Drive Notification"
-msgstr ""
+msgstr "Drive obaveštenje"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Drive Permission"
-msgstr ""
+msgstr "Drive dozvola"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 msgid "Drive S3 Settings"
-msgstr ""
+msgstr "Drive S3 podešavanja"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Drive Settings"
-msgstr ""
+msgstr "Drive podešavanja"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_site_settings/drive_site_settings.json
 msgid "Drive Site Settings"
-msgstr ""
+msgstr "Drive podešavanja sajta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_tag/drive_tag.json
 msgid "Drive Tag"
-msgstr ""
+msgstr "Drive oznaka"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Drive Team"
-msgstr ""
+msgstr "Drive tim"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Drive Team Member"
-msgstr ""
+msgstr "Drive član tima"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -296,7 +296,7 @@ msgstr "Uredi profil"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
-msgstr ""
+msgstr "Uredi profil"
 
 #. Label of the email (Data) field in DocType 'Account Request'
 #. Label of the email (Data) field in DocType 'Drive User Invitation'
@@ -340,7 +340,7 @@ msgstr "Vrsta entiteta"
 #. Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 msgid "Example format: https://s3.ap-south-1.amazonaws.com"
-msgstr ""
+msgstr "Primer formata: https://s3.ap-south-1.amazonaws.com"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -373,7 +373,7 @@ msgstr "Opšte"
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Geo Location"
-msgstr ""
+msgstr "Geolokacija"
 
 #: frontend/src/components/Sidebar.vue:14
 msgid "Go"
@@ -382,18 +382,18 @@ msgstr "Kreni"
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Go to Drive"
-msgstr ""
+msgstr "Idi na Drive"
 
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Guest"
-msgstr ""
+msgstr "Gost"
 
 #: frontend/src/components/GenericPage.vue:266
 #: frontend/src/components/Navbar.vue:232
 msgid "Hide Info"
-msgstr ""
+msgstr "Sakrij informacije"
 
 #: frontend/src/utils/files.js:219
 msgid "Home"
@@ -408,11 +408,11 @@ msgstr "IP adresa"
 #. Description of the 'Quota' (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "In MB"
-msgstr ""
+msgstr "U MB"
 
 #: frontend/src/components/InfoSidebar.vue:15
 msgid "Information"
-msgstr ""
+msgstr "Informacija"
 
 #. Label of the invite (Link) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -428,7 +428,7 @@ msgstr "Aktivno"
 #. Label of the is_admin (Check) field in DocType 'Drive Team Member'
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Is Admin"
-msgstr ""
+msgstr "Administrator"
 
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -438,7 +438,7 @@ msgstr "Grupa"
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Link"
-msgstr ""
+msgstr "Link"
 
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -453,7 +453,7 @@ msgstr ""
 #. Label of the jwt_key (Password) field in DocType 'Drive Site Settings'
 #: drive/drive/doctype/drive_site_settings/drive_site_settings.json
 msgid "JWT Key"
-msgstr ""
+msgstr "JWT Key"
 
 #: frontend/src/components/ListView.vue:195
 msgid "Last Accessed"
@@ -541,11 +541,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 msgid "New"
-msgstr "Novi"
+msgstr "Novo"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
-msgstr ""
+msgstr "Nova oznaka"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -560,7 +560,7 @@ msgstr ""
 #. Label of the otp (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OTP"
-msgstr ""
+msgstr "Jednokratna lozinka"
 
 #. Label of the otp_generated_at (Datetime) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -603,7 +603,7 @@ msgstr "Matični dokument"
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Parent Entity"
-msgstr ""
+msgstr "Matični entitet"
 
 #. Label of the path (Text) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -629,7 +629,7 @@ msgstr "Profil"
 
 #: frontend/src/components/InfoSidebar.vue:79
 msgid "Properties"
-msgstr ""
+msgstr "Svojstva"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -691,7 +691,7 @@ msgstr ""
 #. Label of the bucket (Data) field in DocType 'Drive S3 Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 msgid "S3 Bucket"
-msgstr ""
+msgstr "S3 Bucket"
 
 #: frontend/src/components/DriveToolBar.vue:42
 msgid "Search"
@@ -699,7 +699,7 @@ msgstr "Pretraga"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
-msgstr ""
+msgstr "Postavite boju"
 
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -853,7 +853,7 @@ msgstr "Vrsta"
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "URL Args"
-msgstr ""
+msgstr "URL Args"
 
 #: frontend/src/components/GenericPage.vue:285
 #: frontend/src/components/Navbar.vue:249
@@ -867,7 +867,7 @@ msgstr "Otpremi"
 
 #: frontend/src/components/InfoSidebar.vue:109
 msgid "Uploaded"
-msgstr ""
+msgstr "Otpremljeno"
 
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
 #. Label of the user (Link) field in DocType 'Drive Favourite'
@@ -973,17 +973,17 @@ msgstr ""
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_add"
-msgstr ""
+msgstr "share_add"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_edit"
-msgstr ""
+msgstr "share_edit"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_remove"
-msgstr ""
+msgstr "share_remove"
 
