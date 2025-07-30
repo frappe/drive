@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-29 05:16\n"
+"PO-Revision-Date: 2025-07-30 05:48\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr ""
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Action Type"
-msgstr ""
+msgstr "Tipo de Ação"
 
 #: frontend/src/components/InfoSidebar.vue:197
 msgid "Activity"
@@ -144,7 +144,7 @@ msgstr "Conteúdo"
 #: frontend/src/components/GenericPage.vue:239
 #: frontend/src/components/Navbar.vue:203
 msgid "Copy Link"
-msgstr ""
+msgstr "Copiar Link"
 
 #. Label of the core_section (Section Break) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -364,11 +364,11 @@ msgstr ""
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "From User"
-msgstr ""
+msgstr "De usuário"
 
 #: frontend/src/components/InfoPopup.vue:88
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -495,7 +495,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Menção"
 
 #. Label of the mentions (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -583,7 +583,7 @@ msgstr ""
 
 #: frontend/src/components/PrimaryDropdown.vue:136
 msgid "Others"
-msgstr ""
+msgstr "Outros"
 
 #: frontend/src/components/DriveToolBar.vue:324
 #: frontend/src/components/InfoPopup.vue:33
@@ -625,7 +625,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: frontend/src/components/InfoSidebar.vue:79
 msgid "Properties"
@@ -772,7 +772,7 @@ msgstr ""
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -798,7 +798,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr ""
+msgstr "Gestor de Sistema"
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
@@ -915,39 +915,39 @@ msgstr ""
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "comment"
-msgstr ""
+msgstr "comentário"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr ""
+msgstr "criar"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "delete"
-msgstr ""
+msgstr "eliminar"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "edit"
-msgstr ""
+msgstr "editar"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "item"
-msgstr ""
+msgstr "item"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "items"
-msgstr ""
+msgstr "itens"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "move"
-msgstr ""
+msgstr "mover"
 
 #: frontend/src/components/InfoPopup.vue:118
 #: frontend/src/components/ListView.vue:174
@@ -957,13 +957,13 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:117
 #: frontend/src/components/ListView.vue:174
 msgid "person"
-msgstr ""
+msgstr "pessoa"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "rename"
-msgstr ""
+msgstr "alterar Nome"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
