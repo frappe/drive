@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-29 05:16\n"
+"PO-Revision-Date: 2025-07-30 05:48\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -118,7 +118,7 @@ msgstr ""
 #. Label of the comment (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Comment"
-msgstr ""
+msgstr "Комментарий"
 
 #. Label of the comments (Table) field in DocType 'Drive Document'
 #. Label of the comments2 (JSON) field in DocType 'Drive Document'
@@ -132,7 +132,7 @@ msgstr ""
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
 msgid "Confirm"
-msgstr ""
+msgstr "Подтвердите"
 
 #. Label of the content (Text Editor) field in DocType 'Drive Comment'
 #. Label of the content (Long Text) field in DocType 'Drive Document'
@@ -329,7 +329,7 @@ msgstr ""
 #. Label of the entity_name (Link) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Entity Name"
-msgstr ""
+msgstr "Название организации"
 
 #. Label of the entity_type (Data) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -368,7 +368,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:88
 msgid "General"
-msgstr ""
+msgstr "Общие сведения"
 
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -377,7 +377,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:14
 msgid "Go"
-msgstr ""
+msgstr "Перейти на сайт"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
@@ -388,7 +388,7 @@ msgstr ""
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Guest"
-msgstr ""
+msgstr "Гость"
 
 #: frontend/src/components/GenericPage.vue:266
 #: frontend/src/components/Navbar.vue:232
@@ -510,7 +510,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Сообщение"
 
 #. Label of the meta_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -550,7 +550,7 @@ msgstr ""
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "New Value"
-msgstr ""
+msgstr "Новая ценность"
 
 #. Label of the oauth_signup (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -583,7 +583,7 @@ msgstr ""
 
 #: frontend/src/components/PrimaryDropdown.vue:136
 msgid "Others"
-msgstr ""
+msgstr "Другие"
 
 #: frontend/src/components/DriveToolBar.vue:324
 #: frontend/src/components/InfoPopup.vue:33
@@ -608,7 +608,7 @@ msgstr ""
 #. Label of the path (Text) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Path"
-msgstr ""
+msgstr "Путь"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -651,7 +651,7 @@ msgstr ""
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Read"
-msgstr ""
+msgstr "Читать"
 
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -863,7 +863,7 @@ msgstr ""
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Upload"
-msgstr ""
+msgstr "Загрузить"
 
 #: frontend/src/components/InfoSidebar.vue:109
 msgid "Uploaded"
@@ -896,7 +896,7 @@ msgstr ""
 #. Label of the version (Int) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Version"
-msgstr ""
+msgstr "Версия"
 
 #: frontend/src/components/DriveToolBar.vue:27
 msgid "With you"
@@ -909,7 +909,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/StorageSettings.vue:21
 msgid "You"
-msgstr ""
+msgstr "Вы"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -937,11 +937,11 @@ msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "item"
-msgstr ""
+msgstr "позиция"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "items"
-msgstr ""
+msgstr "продукты"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -957,13 +957,13 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:117
 #: frontend/src/components/ListView.vue:174
 msgid "person"
-msgstr ""
+msgstr "человек"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "rename"
-msgstr ""
+msgstr "переименовать"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
