@@ -14,7 +14,7 @@
           icon-left="trash-2"
           class="w-full"
           :loading="current.resource.loading"
-          @click="current.resource.submit(null) && emit('success')"
+          @click="current.resource.submit() && emit('success')"
         >
           {{ current.buttonText }}
         </Button>

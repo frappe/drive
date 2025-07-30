@@ -42,6 +42,18 @@ class FileManager:
                 config=Config(signature_version=settings.signature_version),
             )
 
+    def __not_if_flat(func):
+        """
+        Decorator to skip the function if flat structure is enabled.
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if self.flat:
+                return
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
     def can_create_thumbnail(self, file):
         # Don't create thumbnails for text files
         return (
@@ -139,19 +151,20 @@ class FileManager:
                     except FileNotFoundError:
                         pass
 
-    def get_disk_path(self, entity, root):
+    def get_disk_path(self, entity: DriveFile, root: dict):
         """
         Helper function to get path of a file
         """
         if self.flat:
-            return self.site_folder / entity.parent_path / entity.name
+            return self.site_folder / root["name"] / entity.name
         else:
+            # perf: stupidly complicated because we use this both with a real entity and a dict
             parent = (
                 Path(frappe.get_value("Drive File", entity.parent_entity, "path"))
                 if not hasattr(entity, "parent_path")
                 else Path(entity.parent_path)
             )
-            if root:
+            if root["name"] == entity.parent_entity:
                 # Root files are placed in either team or personal folders
                 if entity.is_private:
                     path = parent / "personal" / frappe.session.user / entity.title
@@ -162,19 +175,17 @@ class FileManager:
                 path = parent / entity.title
             return str(path) + "/"
 
+    @__not_if_flat
     def create_folder(self, drive_entity, root):
         """
         Function to create a folder in the S3 bucket or on disk.
         Only creates if flat structure is disabled.
         """
-        if self.flat:
-            return
+        path = self.get_disk_path(drive_entity, root)
+        if self.s3_enabled:
+            self.conn.put_object(Bucket=self.bucket, Key=path, Body="")
         else:
-            path = self.get_disk_path(drive_entity, root)
-            if self.s3_enabled:
-                self.conn.put_object(Bucket=self.bucket, Key=path, Body="")
-            else:
-                (self.site_folder / path).mkdir(parents=True, exist_ok=True)
+            (self.site_folder / path).mkdir()
 
         return path
 
@@ -201,6 +212,54 @@ class FileManager:
 
     def get_thumbnail(self, team, name):
         return self.get_file(str(self.get_thumbnail_path(team, name)))
+
+    def __get_trash_path(self, entity: DriveFile):
+        root = get_home_folder(entity.team)
+        if entity.is_private:
+            trash_path = (
+                Path(root["path"]) / "personal" / frappe.session.user / ".trash" / entity.title
+            )
+        else:
+            trash_path = Path(root["name"]) / "team" / ".trash" / entity.title
+        return trash_path
+
+    @__not_if_flat
+    def move_to_trash(self, entity: DriveFile):
+        new_path = self.site_folder / self.__get_trash_path(entity)
+
+        if self.s3_enabled:
+            self.conn.copy_object(
+                Bucket=self.bucket,
+                CopySource={"Bucket": self.bucket, "Key": entity.path},
+                Key=str(new_path),
+            )
+            self.conn.delete_object(Bucket=self.bucket, Key=entity.path)
+        else:
+            new_path.parent.mkdir(exist_ok=True)
+            (self.site_folder / entity.path).rename(new_path)
+
+    @__not_if_flat
+    def restore(self, entity: DriveFile):
+        """
+        Restore a file from the trash.
+        """
+        current_path = self.__get_trash_path(entity)
+        self.move(current_path, entity.path)
+
+    def move(self, old_path, new_path, folder=False):
+        """
+        Move a file from old_path to new_path.
+        """
+
+        if self.s3_enabled:
+            self.conn.copy_object(
+                Bucket=self.bucket,
+                CopySource={"Bucket": self.bucket, "Key": old_path},
+                Key=new_path,
+            )
+            self.conn.delete_object(Bucket=self.bucket, Key=old_path)
+        else:
+            (self.site_folder / old_path).rename(self.site_folder / new_path)
 
     def delete_file(self, team, name, path):
         if self.s3_enabled:

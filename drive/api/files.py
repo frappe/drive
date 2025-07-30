@@ -92,7 +92,7 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         file_size,
         mime_type,
         last_modified,
-        lambda entity: manager.get_disk_path(entity, home_folder["name"] == entity.parent_entity),
+        lambda entity: manager.get_disk_path(entity, home_folder),
     )
 
     # Upload and update parent folder size
@@ -284,9 +284,14 @@ def create_folder(team, title, personal=False, parent=None):
     manager = FileManager()
     path = manager.create_folder(
         frappe._dict(
-            {"title": title, "parent_path": Path(parent_doc.path), "is_private": personal}
+            {
+                "title": title,
+                "parent_path": Path(parent_doc.path),
+                "parent_entity": parent_doc.name,
+                "is_private": personal,
+            }
         ),
-        parent_doc.name == home_folder.name,
+        home_folder,
     )
 
     drive_file = create_drive_file(
@@ -572,12 +577,16 @@ def remove_or_restore(entity_names, team):
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
 
+    manager = FileManager()
+
     def depth_zero_toggle_is_active(doc):
         if doc.is_active:
             flag = 0
+            manager.move_to_trash(doc)
         else:
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
+            manager.restore(doc)
             flag = 1
 
         doc.is_active = flag

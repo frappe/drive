@@ -86,6 +86,7 @@ export default {
             buttonIcon: "refresh-ccw",
             methodName: "drive.api.files.remove_or_restore",
             toastMessage: `Restored ${items}`,
+            errorMessage: `There was an error restoring ${items} - please reload.`,
           }
         case "remove":
           return {
@@ -157,11 +158,12 @@ export default {
           })
         },
         onError(error) {
-          if (error.messages) {
-            this.errorMessage = error.messages.join("\n")
-          } else {
-            this.errorMessage = error.message
-          }
+          toast({
+            title: this.dialogData.errorMessage,
+            position: "bottom-right",
+            timeout: 2,
+          })
+          console.log(error.messages)
         },
       }
     },

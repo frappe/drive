@@ -208,6 +208,14 @@ export const clearTrash = createResource({
       `Permanently deleted ${files || "all"} file${files === 1 ? "" : "s"}.`
     )
   },
+  onError(error) {
+    toast({
+      title: "There was an error",
+      description: JSON.stringify(error),
+      position: "bottom-right",
+      timeout: 2,
+    })
+  },
 })
 
 export const rename = createResource({
