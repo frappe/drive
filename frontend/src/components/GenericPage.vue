@@ -25,6 +25,7 @@
   <div
     v-else
     ref="container"
+    id="drop-area"
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
@@ -66,7 +67,9 @@
     />
     <InfoPopup :entities="infoEntities" />
   </div>
-
+  <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
+    Drop to upload
+  </p>
   <Dialogs
     v-model="dialog"
     :selected-rows="activeEntity ? [activeEntity] : selectedEntitities"
@@ -354,3 +357,14 @@ if (settings.data?.auto_detect_links) {
   window.addEventListener("copy", newLink)
 }
 </script>
+<style>
+.dz-drag-hover #drop-area {
+  opacity: 0.5;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dz-drag-hover #drop-area + p {
+  display: block;
+}
+</style>

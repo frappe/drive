@@ -18,7 +18,7 @@
       />
       <div
         id="dropzone"
-        class="flex flex-col h-screen flex-grow overflow-hidden bg-surface-white"
+        class="relative flex flex-col h-screen flex-grow overflow-hidden bg-surface-white"
       >
         <router-view
           :key="$route.fullPath"
