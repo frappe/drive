@@ -32,7 +32,7 @@ def mark_as_viewed(entity):
     return doc
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 @rate_limit(key="reference_name", limit=10, seconds=60 * 60)
 def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str):
     """Allow logged user with permission to read document to add a comment"""

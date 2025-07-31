@@ -1,7 +1,5 @@
 import json
-import mimetypes
 import os
-import re
 from datetime import date, datetime, timedelta
 from io import BytesIO
 from pathlib import Path
@@ -18,14 +16,20 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.locks.distributed_lock import DistributedLock
-from drive.utils import get_file_type, get_home_folder, if_folder_exists, update_file_size
+from drive.utils import (
+	create_drive_file,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	update_file_size,
+)
 from drive.utils.files import FileManager
 
 from .permissions import get_user_access, user_has_permission
 
 
 @frappe.whitelist()
-def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=None, embed=0):
+def upload_file(team, last_modified, personal=None, fullpath=None, parent=None, embed=0):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -89,10 +93,10 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
         is_private,
         title,
         parent,
-        file_size,
         mime_type,
-        last_modified,
         lambda entity: manager.get_disk_path(entity, home_folder),
+        file_size,
+        int(last_modified) / 1000,
     )
 
     # Upload and update parent folder size
@@ -174,9 +178,7 @@ def create_document_entity(title, personal, team, content, parent=None):
         personal,
         title,
         parent,
-        0,
         "frappe_doc",
-        None,
         lambda _: "",
         document=drive_doc.name,
     )
@@ -189,43 +191,6 @@ def get_upload_path(team_name, file_name):
         uploads_path = Path(frappe.get_site_path("private/files"), team_name, "uploads")
         uploads_path.mkdir()
     return uploads_path / file_name
-
-
-def create_drive_file(
-    team,
-    personal,
-    title,
-    parent,
-    file_size,
-    mime_type,
-    last_modified,
-    entity_path,
-    document=None,
-    is_group=False,
-):
-    drive_file = frappe.get_doc(
-        {
-            "doctype": "Drive File",
-            "team": team,
-            "is_private": personal,
-            "title": title,
-            "parent_entity": parent,
-            "file_size": file_size,
-            "mime_type": mime_type,
-            "document": document,
-            "is_group": is_group,
-        }
-    )
-    drive_file.flags.file_created = True
-    drive_file.insert(ignore_permissions=True)
-    drive_file.path = str(entity_path(drive_file))
-    print("GO", drive_file.path)
-    drive_file.save()
-    if last_modified:
-        dt_object = datetime.fromtimestamp(int(last_modified) / 1000.0)
-        formatted_datetime = dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")
-        drive_file.db_set("modified", formatted_datetime, update_modified=False)
-    return drive_file
 
 
 @frappe.whitelist()
@@ -299,10 +264,8 @@ def create_folder(team, title, personal=False, parent=None):
         personal,
         title,
         parent,
-        file_size=0,
-        mime_type="folder",
-        last_modified=None,
-        entity_path=lambda _: path,
+        "folder",
+        lambda _: path,
         is_group=True,
     )
 
@@ -607,7 +570,7 @@ def remove_or_restore(entity_names, team):
         depth_zero_toggle_is_active(doc)
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def call_controller_method():
     """
     Call a whitelisted Drive File controller method

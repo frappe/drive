@@ -31,6 +31,7 @@ def get_user_access(entity, user=None):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
+    # BROKEN: no perm checks, has an allow_guest too.
     if not user:
         user = frappe.session.user
     if isinstance(entity, str):

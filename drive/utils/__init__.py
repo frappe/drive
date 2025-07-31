@@ -1,3 +1,6 @@
+from datetime import datetime
+from pathlib import Path
+
 import frappe
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -267,3 +270,54 @@ def if_folder_exists(team, folder_name, parent, personal):
         d = frappe.get_doc({"doctype": "Drive File", **values})
         d.insert()
         return d.name
+
+
+def create_drive_file(
+    team,
+    is_private,
+    title,
+    parent,
+    mime_type,
+    entity_path,
+    file_size=0,
+    last_modified=None,
+    document=None,
+    is_group=False,
+    owner=None,
+):
+    drive_file = frappe.get_doc(
+        {
+            "doctype": "Drive File",
+            "team": team,
+            "is_private": is_private,
+            "title": title,
+            "parent_entity": parent,
+            "file_size": file_size,
+            "mime_type": mime_type,
+            "document": document,
+            "is_group": is_group,
+        }
+    )
+    drive_file.flags.file_created = True
+    drive_file.insert(ignore_permissions=True)
+    drive_file.path = str(entity_path(drive_file))
+    drive_file.save()
+    if last_modified:
+        dt_object = datetime.fromtimestamp(last_modified)
+        formatted_datetime = dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")
+        drive_file.db_set("modified", formatted_datetime, update_modified=False)
+    if owner:
+        drive_file.db_set("owner", owner, update_modified=False)
+    return drive_file
+
+
+def get_parent_path(path: Path, is_private: bool) -> str:
+    """
+    Function to get the DB parent path for a given file or folder
+    Used because root files are placed in either team or personal folders, but DB path is shared.
+    """
+    disk_parent = path.parent
+    parts = disk_parent.parts
+    if (is_private and len(parts) == 3) or (not is_private and len(parts) == 2):
+        return parts[0]
+    return str(disk_parent)

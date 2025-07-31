@@ -36,6 +36,8 @@ class DriveTeam(Document):
         (user_directory_path / "uploads").mkdir()
         (user_directory_path / "embeds").mkdir()
         (user_directory_path / "thumbnails").mkdir()
+        (user_directory_path / "team").mkdir()
+        (user_directory_path / "personal").mkdir()
         d.path = d.name
         d.save()
 

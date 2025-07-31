@@ -5,6 +5,8 @@ from pathlib import Path
 import boto3
 import cv2
 import frappe
+import magic
+import mimemapper
 from botocore.config import Config
 from PIL import Image, ImageOps
 
@@ -33,6 +35,8 @@ class FileManager:
         self.flat = settings.flat
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path("private/files"))
+        self.team_prefix = "team"
+        self.personal_prefix = "personal"
         if self.s3_enabled:
             self.conn = boto3.client(
                 "s3",
@@ -171,13 +175,15 @@ class FileManager:
             if root["name"] == entity.parent_entity:
                 # Root files are placed in either team or personal folders
                 if entity.is_private:
-                    path = parent / "personal" / frappe.session.user / entity.title
+                    user_folder = parent / "personal" / frappe.session.user
+                    (self.site_folder / user_folder).mkdir(exist_ok=True)
+                    path = user_folder / entity.title
                 else:
                     path = parent / "team" / entity.title
             else:
                 # Otherwise, rely on the parent already having a perms-adjusted path
                 path = parent / entity.title
-            return str(path) + "/"
+            return str(path)
 
     @__not_if_flat
     def create_folder(self, drive_entity, root):
@@ -210,6 +216,51 @@ class FileManager:
                     buf = BytesIO(fh.read())
 
         return buf
+
+    def fetch_new_files(self, team: str) -> dict[Path, tuple[str]]:
+        """
+        Traverse the site folder and return a list of all yet-uncreated files with information
+        Returns path, location (team or personal), file size, and modified
+        Ignores hidden files
+        """
+
+        if self.s3_enabled:
+            return self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
+        else:
+            # Get files...
+            team_folder = self.site_folder / get_home_folder(team)["path"]
+            team_files = {f: "team" for f in (team_folder / self.team_prefix).glob("**/*")}
+
+            personal_files = {}
+            personal_users = [
+                f.name for f in (team_folder / self.personal_prefix).iterdir() if f.is_dir()
+            ]
+            for user in personal_users:
+                user_folder = team_folder / self.personal_prefix / user
+                for f in user_folder.glob("**/*"):
+                    personal_files[f] = user
+
+            # ... and stitch them together with information
+            files = {}
+            for f, loc in (team_files | personal_files).items():
+                path = f.relative_to(self.site_folder)
+                exists = frappe.get_value(
+                    "Drive File",
+                    {"path": str(path), "team": team},
+                    "name",
+                )
+                if exists or any(p for p in f.parts if p.startswith(".")):
+                    continue
+
+                if f.is_dir():
+                    mime_type = "folder"
+                else:
+                    mime_type = mimemapper.get_mime_type(str(f), native_first=False)
+                if mime_type is None:
+                    mime_type = magic.from_buffer(open(f, "rb").read(2048), mime=True)
+
+                files[path] = (loc, f.stat().st_size, f.stat().st_mtime, mime_type)
+        return files
 
     def get_thumbnail_path(self, team, name):
         return Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail")
