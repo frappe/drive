@@ -62,18 +62,18 @@
 </template>
 
 <script setup>
-import { Dropdown } from "frappe-ui"
+import { Dropdown, createResource } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
-import TeamSwitcher from "@/components/TeamSwitcher.vue"
+
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
-import { ref, computed, watch, markRaw, onMounted } from "vue"
+import { ref, computed, watch, onMounted, h } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
-import AppSwitcher from "./AppSwitcher.vue"
 
+import AppsIcon from "@/components/AppsIcon.vue"
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
 import LucideChevronDown from "~icons/lucide/chevron-down"
@@ -102,6 +102,32 @@ const showShortcuts = ref(false)
 const suggestedTab = ref(0)
 
 const fullName = computed(() => store.state.user.fullName)
+const apps = createResource({
+  url: "frappe.apps.get_apps",
+  cache: "apps",
+  auto: true,
+  transform: (data) => {
+    let apps = [
+      {
+        name: "frappe",
+        logo: "/assets/frappe/images/framework.png",
+        title: "Desk",
+        route: "/app",
+      },
+    ]
+    data.map((app) => {
+      if (app.name === "drive") return
+      apps.push({
+        name: app.name,
+        logo: app.logo,
+        title: app.title,
+        route: app.route,
+      })
+    })
+
+    return apps
+  },
+})
 
 const settingsItems = computed(() => {
   return [
@@ -110,10 +136,41 @@ const settingsItems = computed(() => {
       hideLabel: true,
       items: [
         {
-          component: markRaw(TeamSwitcher),
+          icon: LucideUser,
+          label: __(route.params.team ? "Switch Team" : "Go to"),
+          submenu: Object.entries(getTeams.data)
+            .filter(([k, _]) => k !== route.params.team)
+            .map(([k, v]) => ({
+              label: v.title,
+              onClick: () => {
+                router.push({ name: "Home", params: { team: k } })
+                LISTS.forEach((l) => l.reset())
+              },
+            })),
         },
         {
-          component: markRaw(AppSwitcher),
+          icon: AppsIcon,
+          label: __("Apps"),
+          submenu: apps.data.map((app) => ({
+            label: app.title,
+            icon: app.logo,
+            component: h(
+              "a",
+              {
+                class:
+                  "flex items-center gap-2 p-1.5 rounded hover:bg-surface-gray-2",
+                href: app.route,
+              },
+              [
+                h("img", { src: app.logo, class: "size-6" }),
+                h(
+                  "span",
+                  { class: "max-w-18 text-sm w-full truncate" },
+                  app.title
+                ),
+              ]
+            ),
+          })),
         },
         {
           icon: LucideBook,
