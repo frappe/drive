@@ -2,7 +2,7 @@ black
 Pillow
 opencv-python
 mimemapper
-unoconv
+unoserver>=3.3.2
 thumbnail
 boto3
 PyJWT

@@ -973,3 +973,56 @@ def export_media(entity_name):
     return frappe.get_list(
         "Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"]
     )
+
+
+from frappe import _
+from botocore.exceptions import ClientError
+import boto3
+
+@frappe.whitelist(allow_guest=False)
+def get_file_signed_url(entity_name):
+    """
+    Trả về signed URL cho file lưu trên S3, sử dụng để preview trên Microsoft Office Viewer.
+    """
+    if not entity_name:
+        frappe.throw(_("Missing required parameter: entity_name"))
+
+    file = frappe.get_doc("Drive File", entity_name)
+
+    if not frappe.has_permission("Drive File", doc=file, ptype="read", user=frappe.session.user):
+        raise frappe.PermissionError(_("You do not have permission to access this file"))
+
+    if not file.file_url or not file.file_url.lower().endswith(('.docx', '.xlsx', '.pptx')):
+        frappe.throw(_("Only .docx, .xlsx, .pptx files are supported for preview"))
+
+    settings = frappe.get_single("Drive Site Settings")
+    bucket = settings.s3_bucket
+    region = settings.s3_region
+    access_key = settings.s3_access_key
+    secret_key = settings.get_password("s3_secret_key")
+
+    s3 = boto3.client(
+        "s3",
+        region_name=region,
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
+    )
+
+    try:
+        # file.file_url thường có dạng: /drive/files/my-folder/file.docx
+        s3_key = file.file_url.lstrip("/")  # Loại bỏ dấu / đầu tiên
+        signed_url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": s3_key},
+            ExpiresIn=600  # URL hợp lệ trong 10 phút
+        )
+
+        return {
+            "name": file.name,
+            "mime_type": file.mime_type,
+            "s3_signed_url": signed_url
+        }
+
+    except ClientError as e:
+        frappe.log_error(title="S3 signed URL error", message=str(e))
+        frappe.throw(_("Could not generate signed URL for this file."))

@@ -5,7 +5,7 @@
   />
   <pre
     v-else
-    class="font-[InterVar] font-normal text-p-base text-ink-gray-8 sm:w-full md:w-2/3 mx-auto border p-3 rounded overflow-x-auto"
+    class="overflow-y-auto h-[80vh] font-[InterVar] font-normal text-p-base text-ink-gray-8 sm:w-full border p-3 rounded overflow-x-auto"
   >
       {{ blob }}
     </pre
