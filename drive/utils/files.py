@@ -225,25 +225,48 @@ class FileManager:
         root_folder = Path(get_home_folder(team)["path"])
         if self.s3_enabled:
             objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
-            basic_files = []
+            basic_files = {}
             # Get files...
-            for o in objects:
-                if Path("/" + o["Key"]).is_relative_to(root_folder / self.team_prefix):
-                    basic_files.append((o, "team"))
-                if Path("/" + o["Key"]).is_relative_to(root_folder / self.personal_prefix):
+            for obj in objects:
+                # Slash makes everything more complicated; we don't want in in DB but need it for is_relative
+                obj_path = Path("/" + obj["Key"])
+                personal = False
+                if obj_path.is_relative_to(root_folder / self.team_prefix):
+                    basic_files[obj["Key"]] = (obj, "team")
+                elif obj_path.is_relative_to(root_folder / self.personal_prefix):
                     # TBD
-                    basic_files.append((o, "personal"))
+                    basic_files[obj["Key"]] = (obj, "personal")
+                    personal = "personal"
+
+                parent_path = Path(obj["Key"]).parent
+                if parent_path not in basic_files:
+                    parent_obj = {
+                        "Key": str(parent_path),
+                        "Size": 0,
+                        "LastModified": obj["LastModified"],
+                        "Folder": True,
+                    }
+                    basic_files[parent_obj["Key"]] = (
+                        parent_obj,
+                        personal if personal else "team",
+                    )
+
             files = {}
-            for f, loc in basic_files:
+            for f_path, (f, loc) in basic_files.items():
                 exists = frappe.get_value(
                     "Drive File",
-                    {"path": f["Key"], "team": team},
+                    {"path": f_path, "team": team, "is_active": 1},
                     "name",
                 )
                 if exists:
                     continue
-                mime_type = mimemapper.get_mime_type(str(f), native_first=False)
-                files[Path(f["Key"])] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
+
+                mime_type = (
+                    "folder"
+                    if f.get("Folder")
+                    else mimemapper.get_mime_type(str(f_path), native_first=False)
+                )
+                files[Path(f_path)] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
             # Get files...
@@ -264,7 +287,7 @@ class FileManager:
                 path = f.relative_to(self.site_folder)
                 exists = frappe.get_value(
                     "Drive File",
-                    {"path": str(path), "team": team},
+                    {"path": str(path), "team": team, "is_active": 1},
                     "name",
                 )
                 if exists or any(p for p in f.parts if p.startswith(".")):
@@ -278,7 +301,6 @@ class FileManager:
                     mime_type = magic.from_buffer(open(f, "rb").read(2048), mime=True)
 
                 files[path] = (loc, f.stat().st_size, f.stat().st_mtime, mime_type)
-        print(files)
         return files
 
     def get_thumbnail_path(self, team, name):
@@ -297,11 +319,25 @@ class FileManager:
             trash_path = Path(root["path"]) / "team" / ".trash" / entity.title
         return trash_path
 
+    def get_parent_path(self, path: Path, team, is_private: bool) -> Path:
+        """
+        Function to get the DB parent path for a given file or folder
+        Used because root files are placed in either team or personal folders, but DB path is shared.
+        """
+        disk_parent = path.parent
+        root = Path(get_home_folder(team)["path"])
+        if not is_private and root / self.team_prefix == disk_parent:
+            return root
+        elif is_private and root / self.personal_prefix == disk_parent.parent:
+            return root
+        return disk_parent if disk_parent != Path(".") else ""
+
     @__not_if_flat
     def move_to_trash(self, entity: DriveFile):
         new_path = self.site_folder / self.__get_trash_path(entity)
 
         if self.s3_enabled:
+            return
             self.conn.copy_object(
                 Bucket=self.bucket,
                 CopySource={"Bucket": self.bucket, "Key": entity.path},
@@ -337,6 +373,7 @@ class FileManager:
 
     def delete_file(self, team, name, path):
         if self.s3_enabled:
+            return
             self.conn.delete_object(Bucket=self.bucket, Key=path)
         else:
             try:

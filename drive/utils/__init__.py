@@ -309,15 +309,3 @@ def create_drive_file(
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
     return drive_file
-
-
-def get_parent_path(path: Path, is_private: bool) -> str:
-    """
-    Function to get the DB parent path for a given file or folder
-    Used because root files are placed in either team or personal folders, but DB path is shared.
-    """
-    disk_parent = path.parent
-    parts = disk_parent.parts
-    if (is_private and len(parts) == 3) or (not is_private and len(parts) == 2):
-        return parts[0]
-    return str(disk_parent)

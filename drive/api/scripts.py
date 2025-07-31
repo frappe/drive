@@ -1,6 +1,6 @@
 import frappe
 
-from drive.utils import create_drive_file, get_parent_path, update_file_size
+from drive.utils import create_drive_file, update_file_size
 from drive.utils.files import FileManager
 
 
@@ -14,12 +14,13 @@ def sync_from_disk(team):
     files_added = []
     files = manager.fetch_new_files(team)
     sorted_files = sorted(files.items(), key=lambda p: len(p[0].parts))
+    print(sorted_files[:3])
     for file, (loc, file_size, last_modified, mime_type) in sorted_files:
         is_private = loc != "team"
-        parent_path = get_parent_path(file, is_private)
+        parent_path = manager.get_parent_path(file, team, is_private)
         parent = frappe.get_value(
             "Drive File",
-            {"path": parent_path, "team": team},
+            {"path": str(parent_path), "team": team},
             "name",
         )
         if not parent:
