@@ -10,7 +10,7 @@
     </div>
     <Button
       label="Sync"
-      @click="syncFromDisk"
+      @click="confirmSync"
       class="ml-auto mr-4"
     />
   </div>
@@ -24,26 +24,26 @@
         { label: 'Team Name', value: 'team_name' },
         { label: 'Other', value: 'other' },
       ]"
-      v-model="generalSettings.rootPrefix"
+      v-model="generalSettings.root_prefix"
       description="The root folder name for each team, defaults to team ID."
     />
     <FormControl
-      v-if="generalSettings.rootPrefix === 'other'"
+      v-if="generalSettings.root_prefix === 'other'"
       label="Root Folder Name"
       placeholder="team"
-      v-model="generalSettings.rootPrefixValue"
+      v-model="generalSettings.root_prefix_value"
       description="Value to use for the root folder. Use / to not use a separate folder."
     />
     <FormControl
       label="Team Prefix"
       placeholder="team"
-      v-model="generalSettings.teamPrefix"
+      v-model="generalSettings.team_prefix"
       description="Team files will be placed inside this folder. Use / to place directly in the root folder."
     />
     <FormControl
       label="Personal Prefix"
       placeholder="personal"
-      v-model="generalSettings.personalPrefix"
+      v-model="generalSettings.personal_prefix"
       description="Personal folders will be created under this prefix."
     />
     <FormControl
@@ -53,29 +53,22 @@
         { label: 'Disk', value: 'disk' },
         { label: 'S3', value: 's3' },
       ]"
-      v-model="generalSettings.backendType"
-    />
-    <Button
-      label="Update"
-      variant="solid"
-      :disabled="!edited"
-      @click="saveS3Settings"
-      class="mt-4"
+      v-model="generalSettings.backend_type"
     />
     <div
-      v-if="backendType === 's3'"
+      v-if="generalSettings.backend_type === 's3'"
       class="flex flex-col gap-2 mt-2"
     >
       <h3 class="font-semibold text-md">S3 Settings</h3>
       <FormControl
         label="AWS Key"
         placeholder="Enter AWS Key"
-        v-model="s3Settings.awsKey"
+        v-model="s3Settings.aws_key"
       />
       <FormControl
         label="AWS Secret"
         placeholder="Enter AWS Secret"
-        v-model="s3Settings.awsSecret"
+        v-model="s3Settings.aws_secret"
         type="password"
       />
       <FormControl
@@ -87,23 +80,24 @@
       <FormControl
         label="Endpoint URL"
         placeholder="Enter Endpoint URL"
-        v-model="s3Settings.endpointUrl"
+        v-model="s3Settings.endpoint_url"
         description="Optional, only if using a custom endpoint."
       />
       <FormControl
         label="Signature Version"
         placeholder="s3v4"
-        v-model="s3Settings.signatureVersion"
+        v-model="s3Settings.signature_version"
         description="Optional. Some providers only support 's3'."
       />
-      <Button
-        label="Save S3 Settings"
-        variant="solid"
-        :disabled="!subEdited"
-        @click="saveS3Settings"
-        class="mt-4"
-      />
     </div>
+    <Button
+      label="Update"
+      variant="solid"
+      :disabled="!edited"
+      :loading="generalResource.isLoading"
+      @click="generalResource.submit()"
+      class="mt-4"
+    />
   </div>
 </template>
 
@@ -111,47 +105,49 @@
 import { ref, reactive, watch } from "vue"
 import { FormControl, Button, confirmDialog, createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
-import { root } from "postcss"
+import { useRoute } from "vue-router"
+
+const route = useRoute()
 
 const edited = ref(false)
-// used for sub-settings, e.g. S3
-const subEdited = ref(false)
 
 const generalSettings = reactive({
-  rootPrefix: "team_id",
-  rootPrefixValue: "",
-  teamPrefix: "",
-  personalPrefix: "",
-  backendType: "disk",
+  root_prefix: "team_id",
+  root_prefix_value: "",
+  team_prefix: "",
+  personal_prefix: "",
+  backend_type: "disk",
 })
 const s3Settings = reactive({
-  awsKey: "",
-  awsSecret: "",
+  aws_key: "",
+  aws_secret: "",
   bucket: "",
-  endpointUrl: "",
-  signatureVersion: "",
+  endpoint_url: "",
+  signature_version: "",
 })
 
-watch(generalSettings, () => (edited.value = true), { deep: true })
+watch([generalSettings, s3Settings], () => (edited.value = true), {
+  deep: true,
+})
 
-watch(s3Settings, () => (subEdited.value = true), { deep: true })
-
-function syncFromDisk() {
-  confirmDialog("Are you sure?")
+function confirmSync() {
+  // if(confirm('Are you sure? This might corrupt your Drive system.'))
+  syncFromDisk.submit()
 }
 
-const s3resource = createResource({
-  url: "drive.api.product.update_s3_settings",
-  makeParams: () => s3Settings,
+const syncFromDisk = createResource({
+  url: "drive.api.scripts.sync_from_disk",
+  params: { team: route.params.team },
+})
+
+const generalResource = createResource({
+  url: "drive.api.product.update_disk_settings",
+  makeParams: () => ({ ...generalSettings, ...s3Settings }),
   onSuccess() {
-    subEdited.value = false
+    edited.value = false
     toast({
-      message: "S3 settings updated successfully",
-      variant: "success",
+      title: "S3 settings updated successfully",
     })
   },
 })
-async function saveS3Settings() {
-  await s3resource.submit()
-}
 </script>

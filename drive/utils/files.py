@@ -34,9 +34,9 @@ class FileManager:
         self.s3_enabled = settings.enabled
         self.flat = settings.flat
         self.bucket = settings.bucket
+        self.team_prefix = settings.team_prefix
+        self.personal_prefix = settings.personal_prefix
         self.site_folder = Path(frappe.get_site_path("private/files"))
-        self.team_prefix = "team"
-        self.personal_prefix = "personal"
         if self.s3_enabled:
             self.conn = boto3.client(
                 "s3",
@@ -163,10 +163,9 @@ class FileManager:
             root = get_home_folder(entity.team)
 
         if self.flat:
-            return self.site_folder / root["name"] / entity.name
+            return self.site_folder / root["path"] / entity.name
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
-
             parent = (
                 Path(frappe.get_value("Drive File", entity.parent_entity, "path"))
                 if not hasattr(entity, "parent_path")
@@ -223,20 +222,39 @@ class FileManager:
         Returns path, location (team or personal), file size, and modified
         Ignores hidden files
         """
-
+        root_folder = Path(get_home_folder(team)["path"])
         if self.s3_enabled:
-            return self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
-        else:
+            objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
+            basic_files = []
             # Get files...
-            team_folder = self.site_folder / get_home_folder(team)["path"]
-            team_files = {f: "team" for f in (team_folder / self.team_prefix).glob("**/*")}
+            for o in objects:
+                if Path("/" + o["Key"]).is_relative_to(root_folder / self.team_prefix):
+                    basic_files.append((o, "team"))
+                if Path("/" + o["Key"]).is_relative_to(root_folder / self.personal_prefix):
+                    # TBD
+                    basic_files.append((o, "personal"))
+            files = {}
+            for f, loc in basic_files:
+                exists = frappe.get_value(
+                    "Drive File",
+                    {"path": f["Key"], "team": team},
+                    "name",
+                )
+                if exists:
+                    continue
+                mime_type = mimemapper.get_mime_type(str(f), native_first=False)
+                files[Path(f["Key"])] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
+        else:
+            root_folder = self.site_folder / root_folder
+            # Get files...
+            team_files = {f: "team" for f in (root_folder / self.team_prefix).glob("**/*")}
 
             personal_files = {}
             personal_users = [
-                f.name for f in (team_folder / self.personal_prefix).iterdir() if f.is_dir()
+                f.name for f in (root_folder / self.personal_prefix).iterdir() if f.is_dir()
             ]
             for user in personal_users:
-                user_folder = team_folder / self.personal_prefix / user
+                user_folder = root_folder / self.personal_prefix / user
                 for f in user_folder.glob("**/*"):
                     personal_files[f] = user
 
@@ -260,10 +278,11 @@ class FileManager:
                     mime_type = magic.from_buffer(open(f, "rb").read(2048), mime=True)
 
                 files[path] = (loc, f.stat().st_size, f.stat().st_mtime, mime_type)
+        print(files)
         return files
 
     def get_thumbnail_path(self, team, name):
-        return Path(get_home_folder(team)["name"]) / "thumbnails" / (name + ".thumbnail")
+        return Path(get_home_folder(team)["path"]) / "thumbnails" / (name + ".thumbnail")
 
     def get_thumbnail(self, team, name):
         return self.get_file(str(self.get_thumbnail_path(team, name)))
@@ -275,7 +294,7 @@ class FileManager:
                 Path(root["path"]) / "personal" / frappe.session.user / ".trash" / entity.title
             )
         else:
-            trash_path = Path(root["name"]) / "team" / ".trash" / entity.title
+            trash_path = Path(root["path"]) / "team" / ".trash" / entity.title
         return trash_path
 
     @__not_if_flat

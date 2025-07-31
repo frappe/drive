@@ -347,3 +347,28 @@ def get_translations():
         language = frappe.db.get_single_value("System Settings", "language")
 
     return get_all_translations(language)
+
+
+@frappe.whitelist()
+def update_disk_settings(**kwargs):
+    settings = frappe.get_single("Drive Disk Settings")
+    field_map = {
+        "root_prefix_type": "team_id",
+        "root_prefix_value": None,
+        "team_prefix": "team",
+        "personal_prefix": "personal",
+        "aws_key": None,
+        "aws_secret": None,
+        "bucket": None,
+        "endpoint_url": None,
+        "signature_version": "s3v4",
+    }
+    settings.enabled = 1
+    for field, value in kwargs.items():
+        print(kwargs["backend_type"])
+        if field in field_map:
+            setattr(settings, field, value if value else field_map[field])
+        elif field == "backend_type":
+            # If backend is s3, enable it. Otherwise, disable.
+            settings.enabled = 1 if value == "s3" else 0
+    settings.save()
