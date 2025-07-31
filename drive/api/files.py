@@ -1,6 +1,7 @@
 import os, re, json, mimetypes
 
 import frappe
+from frappe import _
 from pypika import Order
 from .permissions import get_teams, user_has_permission
 from pathlib import Path
@@ -9,6 +10,7 @@ from werkzeug.utils import secure_filename, send_file
 from io import BytesIO
 import mimemapper
 import jwt
+import boto3
 
 from drive.utils.files import (
     get_home_folder,
@@ -975,54 +977,55 @@ def export_media(entity_name):
     )
 
 
-from frappe import _
-from botocore.exceptions import ClientError
-import boto3
-
-@frappe.whitelist(allow_guest=False)
-def get_file_signed_url(entity_name):
-    """
-    Trả về signed URL cho file lưu trên S3, sử dụng để preview trên Microsoft Office Viewer.
-    """
-    if not entity_name:
-        frappe.throw(_("Missing required parameter: entity_name"))
-
-    file = frappe.get_doc("Drive File", entity_name)
-
-    if not frappe.has_permission("Drive File", doc=file, ptype="read", user=frappe.session.user):
-        raise frappe.PermissionError(_("You do not have permission to access this file"))
-
-    if not file.file_url or not file.file_url.lower().endswith(('.docx', '.xlsx', '.pptx')):
-        frappe.throw(_("Only .docx, .xlsx, .pptx files are supported for preview"))
-
-    settings = frappe.get_single("Drive Site Settings")
-    bucket = settings.s3_bucket
-    region = settings.s3_region
-    access_key = settings.s3_access_key
-    secret_key = settings.get_password("s3_secret_key")
-
+def get_s3_signed_url(path, mime_type, expires_in=3600):
     s3 = boto3.client(
         "s3",
-        region_name=region,
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key,
+        aws_access_key_id=frappe.conf.aws_access_key_id,
+        aws_secret_access_key=frappe.conf.aws_secret_access_key,
+        region_name=frappe.conf.get("aws_default_region"),
+    )
+    bucket_name = frappe.conf.s3_bucket
+
+    return s3.generate_presigned_url(
+        ClientMethod='get_object',
+        Params={'Bucket': bucket_name, 'Key': path, 'ResponseContentType': mime_type},
+        ExpiresIn=expires_in
     )
 
-    try:
-        # file.file_url thường có dạng: /drive/files/my-folder/file.docx
-        s3_key = file.file_url.lstrip("/")  # Loại bỏ dấu / đầu tiên
-        signed_url = s3.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": bucket, "Key": s3_key},
-            ExpiresIn=600  # URL hợp lệ trong 10 phút
-        )
+@frappe.whitelist()
+def get_file_signed_url(docname: str):
+    doc = frappe.get_doc("Drive File", docname)
+    mime_type = doc.mime_type or ""
 
-        return {
-            "name": file.name,
-            "mime_type": file.mime_type,
-            "s3_signed_url": signed_url
-        }
+    allowed_types = [
+        # Word
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.oasis.opendocument.text",
 
-    except ClientError as e:
-        frappe.log_error(title="S3 signed URL error", message=str(e))
-        frappe.throw(_("Could not generate signed URL for this file."))
+        # Excel
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "link/googlesheets",
+        "application/vnd.apple.numbers",
+        "text/csv",
+
+        # PowerPoint
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+        "application/vnd.oasis.opendocument.presentation",
+        "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+    ]
+
+    if mime_type not in allowed_types:
+        frappe.throw(_("Only .docx, .xlsx, .csv and .pptx files are supported."))
+
+    # Tạo signed URL
+    signed_url = get_s3_signed_url(doc.path, mime_type)
+
+    return {
+        "signed_url": signed_url,
+        "title": doc.title,
+    }
