@@ -66,10 +66,11 @@ import { Dropdown, createResource } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
+import { LISTS } from "@/resources/files"
 
 import { getTeams } from "@/resources/files"
 import emitter from "@/emitter"
-import { ref, computed, watch, onMounted, h } from "vue"
+import { ref, computed, watch, onMounted, h, shallowRef } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 
@@ -79,6 +80,7 @@ import LucideBadgeHelp from "~icons/lucide/badge-help"
 import LucideChevronDown from "~icons/lucide/chevron-down"
 import LucideChevronUp from "~icons/lucide/chevron-up"
 import LucideMoon from "~icons/lucide/moon"
+import LucideUser from "~icons/lucide/user"
 
 const router = useRouter()
 const route = useRoute()
@@ -129,84 +131,90 @@ const apps = createResource({
   },
 })
 
-const settingsItems = computed(() => {
-  return [
-    {
-      group: __("Manage"),
-      hideLabel: true,
-      items: [
-        {
-          icon: LucideUser,
-          label: __(route.params.team ? "Switch Team" : "Go to"),
-          submenu: Object.entries(getTeams.data)
-            .filter(([k, _]) => k !== route.params.team)
-            .map(([k, v]) => ({
-              label: v.title,
-              onClick: () => {
-                router.push({ name: "Home", params: { team: k } })
-                LISTS.forEach((l) => l.reset())
-              },
-            })),
+let settingsItems = shallowRef([
+  {
+    group: __("Manage"),
+    hideLabel: true,
+    items: [
+      {
+        icon: LucideUser,
+        label: __(route.params.team ? "Switch Team" : "Go to"),
+        submenu: [],
+      },
+      {
+        icon: AppsIcon,
+        label: __("Apps"),
+        submenu: [],
+      },
+      {
+        icon: LucideBook,
+        label: __("Documentation"),
+        onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
+      },
+      {
+        icon: LucideBadgeHelp,
+        label: __("Support"),
+        onClick: () => window.open("https://t.me/frappedrive", "_blank"),
+      },
+      {
+        icon: LucideMoon,
+        label: "Toggle theme",
+        onClick: toggleTheme,
+      },
+    ],
+  },
+  {
+    group: __("Others"),
+    hideLabel: true,
+    items: [
+      {
+        icon: "settings",
+        label: __("Settings"),
+        onClick: () => (showSettings.value = true),
+      },
+      {
+        icon: "log-out",
+        label: __("Log out"),
+        onClick: logout,
+      },
+    ],
+  },
+])
+
+watch(
+  [() => apps.data, () => getTeams.data],
+  ([a, b]) => {
+    if (!a || !b) return
+    const teams = Object.entries(b).filter(([k, _]) => k !== route.params.team)
+    if (!teams.length) settingsItems.value[0].items.shift()
+    else
+      settingsItems.value[0].items[0].submenu = teams.map(([k, v]) => ({
+        label: v.title,
+        onClick: () => {
+          router.push({ name: "Home", params: { team: k } })
+          LISTS.forEach((l) => l.reset())
         },
+      }))
+
+    settingsItems.value[0].items[1].submenu = a.map((app) => ({
+      label: app.title,
+      icon: app.logo,
+      component: h(
+        "a",
         {
-          icon: AppsIcon,
-          label: __("Apps"),
-          submenu: apps.data.map((app) => ({
-            label: app.title,
-            icon: app.logo,
-            component: h(
-              "a",
-              {
-                class:
-                  "flex items-center gap-2 p-1.5 rounded hover:bg-surface-gray-2",
-                href: app.route,
-              },
-              [
-                h("img", { src: app.logo, class: "size-6" }),
-                h(
-                  "span",
-                  { class: "max-w-18 text-sm w-full truncate" },
-                  app.title
-                ),
-              ]
-            ),
-          })),
+          class:
+            "flex items-center gap-2 p-1.5 rounded hover:bg-surface-gray-2",
+          href: app.route,
         },
-        {
-          icon: LucideBook,
-          label: __("Documentation"),
-          onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
-        },
-        {
-          icon: LucideBadgeHelp,
-          label: __("Support"),
-          onClick: () => window.open("https://t.me/frappedrive", "_blank"),
-        },
-        {
-          icon: LucideMoon,
-          label: "Toggle theme",
-          onClick: toggleTheme,
-        },
-      ],
-    },
-    {
-      group: __("Others"),
-      hideLabel: true,
-      items: [
-        {
-          icon: "settings",
-          label: __("Settings"),
-          onClick: () => (showSettings.value = true),
-        },
-        {
-          icon: "log-out",
-          label: __("Log out"),
-          onClick: logout,
-        },
-      ],
-    },
-  ]
-})
+        [
+          h("img", { src: app.logo, class: "size-6" }),
+          h("span", { class: "max-w-18 text-sm w-full truncate" }, app.title),
+        ]
+      ),
+    }))
+  },
+  { immediate: true }
+)
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute("data-theme")

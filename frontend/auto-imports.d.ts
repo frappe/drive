@@ -6,5 +6,7 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const LucideCloudUp: typeof import("~icons/lucide/cloud-up")["default"]
+  const LucideCloudUpload: typeof import("~icons/lucide/cloud-upload")["default"]
   const LucideUser: typeof import("~icons/lucide/user")["default"]
 }
