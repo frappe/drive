@@ -104,7 +104,7 @@ after_install = "drive.install.after_install"
 #
 
 has_permission = {
-    "Drive File": "drive.api.permissions.user_has_permission",
+    # "Drive File": "drive.api.permissions.user_has_permission",
 }
 
 # DocType Class

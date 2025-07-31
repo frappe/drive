@@ -158,7 +158,7 @@ const options = {
 for (let k in options) {
   watch(options[k], (v) => {
     setSettings.submit({
-      updates: { [k]: v },
+      updates: { [k]: v.value || v },
     })
   })
 }
