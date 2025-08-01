@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "postinstall": "npm run frontend:pnpm_install",
+    "postinstall": "cd frontend && pnpm install",
     "dev": "cd frontend && pnpm dev",
     "build": "cd frontend && pnpm build",
     "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd ..",

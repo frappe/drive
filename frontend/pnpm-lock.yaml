@@ -21,7 +21,10 @@ importers:
         version: 2.26.1(@tiptap/pm@2.26.1)
       "@tiptap/extension-font-family":
         specifier: ^2.14.0
-        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))
+        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))
+      "@tiptap/extension-text-style":
+        specifier: ^3.0.8
+        version: 3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
       "@tiptap/pm":
         specifier: ^2.7.0
         version: 2.26.1
@@ -46,6 +49,9 @@ importers:
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.2
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       mitt:
         specifier: ^3.0.0
         version: 3.0.1
@@ -55,6 +61,9 @@ importers:
       socket.io-client:
         specifier: ^4.7.5
         version: 4.8.1
+      tippy.js:
+        specifier: ^6.3.7
+        version: 6.3.7
       uuid:
         specifier: ^9.0.0
         version: 9.0.1
@@ -1063,6 +1072,14 @@ packages:
     peerDependencies:
       "@tiptap/core": ^2.7.0
 
+  "@tiptap/extension-text-style@3.0.8":
+    resolution:
+      {
+        integrity: sha512-FolYOjUSORmjbuaN5uZvnyvlsDVVoQJhbBBdbJ8kpX2H/qWwy8eqysVz9H6599tIVCR+qlicy0K5OHF4A6gQVQ==,
+      }
+    peerDependencies:
+      "@tiptap/core": ^3.0.8
+
   "@tiptap/extension-text@2.26.1":
     resolution:
       {
@@ -1623,6 +1640,12 @@ packages:
     resolution:
       {
         integrity: sha512-aFCtd4l6GvAXwVEh3XbbVqJGHDJt0OZRa+5ePGx3LLwi12WfexqQxcsohb2wgsa/92xtl19Hd66G/L+TaAxDMw==,
+      }
+
+  core-util-is@1.0.3:
+    resolution:
+      {
+        integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==,
       }
 
   crelt@1.0.6:
@@ -2256,6 +2279,12 @@ packages:
     engines: { node: ">=0.10.0" }
     hasBin: true
 
+  immediate@3.0.6:
+    resolution:
+      {
+        integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==,
+      }
+
   import-fresh@3.3.1:
     resolution:
       {
@@ -2365,6 +2394,12 @@ packages:
         integrity: sha512-sNxgpk9793nzSs7bA6JQJGeIuRBQhAaNGG77kzYQgMkrID+lS6SlK07K5LaptscDlSaIgH+GPFzf+d75FVxozA==,
       }
 
+  isarray@1.0.0:
+    resolution:
+      {
+        integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==,
+      }
+
   isexe@2.0.0:
     resolution:
       {
@@ -2421,6 +2456,12 @@ packages:
         integrity: sha512-qaGIxqxetdoNnFQQXxTKUD9/Z7AloLaw94fFsOiJMxbfYdBbrBuhWmbzI8TVjrw7s3jBY1PFHofBKMV/wZPapg==,
       }
 
+  jszip@3.10.1:
+    resolution:
+      {
+        integrity: sha512-xXDvecyTpGLrqFrvkrUSoxxfJI5AH7U8zxxtVclpsUtMCq4JQ290LY8AW5c7Ggnr/Y/oK+bQMbqK2qmtk3pN4g==,
+      }
+
   just-extend@5.1.1:
     resolution:
       {
@@ -2453,6 +2494,12 @@ packages:
         integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==,
       }
     engines: { node: ">= 0.8.0" }
+
+  lie@3.3.0:
+    resolution:
+      {
+        integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==,
+      }
 
   lilconfig@3.1.3:
     resolution:
@@ -2839,6 +2886,12 @@ packages:
         integrity: sha512-ZsEbbZORsyHuO00lY1kV3/t72yp6Ysay6Pd17ZAlNGuGwmWDLCJxFpRs0IzfXfj1o4icJOkUEioexFHzyPurSQ==,
       }
 
+  pako@1.0.11:
+    resolution:
+      {
+        integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==,
+      }
+
   parent-module@1.0.1:
     resolution:
       {
@@ -3061,6 +3114,12 @@ packages:
     peerDependencies:
       prettier: ^2.0.0
 
+  process-nextick-args@2.0.1:
+    resolution:
+      {
+        integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==,
+      }
+
   prosemirror-changeset@2.3.1:
     resolution:
       {
@@ -3231,6 +3290,12 @@ packages:
         integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==,
       }
 
+  readable-stream@2.3.8:
+    resolution:
+      {
+        integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==,
+      }
+
   readable-stream@3.6.2:
     resolution:
       {
@@ -3323,6 +3388,12 @@ packages:
         integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==,
       }
 
+  safe-buffer@5.1.2:
+    resolution:
+      {
+        integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==,
+      }
+
   safe-buffer@5.2.1:
     resolution:
       {
@@ -3361,6 +3432,12 @@ packages:
       }
     engines: { node: ">=10" }
     hasBin: true
+
+  setimmediate@1.0.5:
+    resolution:
+      {
+        integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==,
+      }
 
   shebang-command@2.0.0:
     resolution:
@@ -3444,6 +3521,12 @@ packages:
         integrity: sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA==,
       }
     engines: { node: ">=12" }
+
+  string_decoder@1.1.1:
+    resolution:
+      {
+        integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==,
+      }
 
   string_decoder@1.3.0:
     resolution:
@@ -4317,10 +4400,10 @@ snapshots:
       "@tiptap/pm": 2.26.1
       tippy.js: 6.3.7
 
-  "@tiptap/extension-font-family@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))":
+  "@tiptap/extension-font-family@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
-      "@tiptap/extension-text-style": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
+      "@tiptap/extension-text-style": 3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
 
   "@tiptap/extension-gapcursor@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)":
     dependencies:
@@ -4421,6 +4504,10 @@ snapshots:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
 
   "@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))":
+    dependencies:
+      "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
+
+  "@tiptap/extension-text-style@3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
 
@@ -4801,6 +4888,8 @@ snapshots:
       is-what: 3.14.1
 
   core-js@3.44.0: {}
+
+  core-util-is@1.0.3: {}
 
   crelt@1.0.6: {}
 
@@ -5264,6 +5353,8 @@ snapshots:
   image-size@0.5.5:
     optional: true
 
+  immediate@3.0.6: {}
+
   import-fresh@3.3.1:
     dependencies:
       parent-module: 1.0.1
@@ -5310,6 +5401,8 @@ snapshots:
 
   is-what@3.14.1: {}
 
+  isarray@1.0.0: {}
+
   isexe@2.0.0: {}
 
   jackspeak@3.4.3:
@@ -5344,6 +5437,13 @@ snapshots:
       dompurify: 3.2.6
       html2canvas: 1.4.1
 
+  jszip@3.10.1:
+    dependencies:
+      lie: 3.3.0
+      pako: 1.0.11
+      readable-stream: 2.3.8
+      setimmediate: 1.0.5
+
   just-extend@5.1.1: {}
 
   keyv@4.5.4:
@@ -5370,6 +5470,10 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
+
+  lie@3.3.0:
+    dependencies:
+      immediate: 3.0.6
 
   lilconfig@3.1.3: {}
 
@@ -5571,6 +5675,8 @@ snapshots:
 
   package-manager-detector@1.3.0: {}
 
+  pako@1.0.11: {}
+
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
@@ -5680,6 +5786,8 @@ snapshots:
       picomatch: 3.0.1
       prettier: 2.8.8
       tslib: 2.8.1
+
+  process-nextick-args@2.0.1: {}
 
   prosemirror-changeset@2.3.1:
     dependencies:
@@ -5826,6 +5934,16 @@ snapshots:
     dependencies:
       pify: 2.3.0
 
+  readable-stream@2.3.8:
+    dependencies:
+      core-util-is: 1.0.3
+      inherits: 2.0.4
+      isarray: 1.0.0
+      process-nextick-args: 2.0.1
+      safe-buffer: 5.1.2
+      string_decoder: 1.1.1
+      util-deprecate: 1.0.2
+
   readable-stream@3.6.2:
     dependencies:
       inherits: 2.0.4
@@ -5888,6 +6006,8 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  safe-buffer@5.1.2: {}
+
   safe-buffer@5.2.1: {}
 
   safer-buffer@2.1.2:
@@ -5902,6 +6022,8 @@ snapshots:
     optional: true
 
   semver@7.7.2: {}
+
+  setimmediate@1.0.5: {}
 
   shebang-command@2.0.0:
     dependencies:
@@ -5952,6 +6074,10 @@ snapshots:
       eastasianwidth: 0.2.0
       emoji-regex: 9.2.2
       strip-ansi: 7.1.0
+
+  string_decoder@1.1.1:
+    dependencies:
+      safe-buffer: 5.1.2
 
   string_decoder@1.3.0:
     dependencies:
