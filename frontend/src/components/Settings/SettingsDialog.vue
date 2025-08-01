@@ -36,7 +36,7 @@
             </button>
           </div>
         </div>
-        <div class="flex flex-1 flex-col px-8 pt-6 overflow-y-auto">
+        <div class="flex flex-1 flex-col p-8 overflow-y-auto">
           <component
             :is="activeTab.component"
             v-if="activeTab"

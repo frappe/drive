@@ -41,7 +41,7 @@
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
-      <LoadingIndicator class="size-10 text-ink-gray-9" />
+      <LoadingIndicator class="size-5 text-ink-gray-9" />
     </div>
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"
@@ -99,10 +99,11 @@ import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
-import { toast } from "@/utils/toasts"
+// import { toast } from "@/utils/toasts"
 import { move, allFolders } from "@/resources/files"
-import { LoadingIndicator } from "frappe-ui"
+import { LoadingIndicator, toast } from "frappe-ui"
 import { settings } from "@/resources/permissions"
+toast.success("hey!")
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"

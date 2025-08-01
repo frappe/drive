@@ -227,7 +227,7 @@
           </div>
           <div
             v-else
-            class="flex flex-col gap-4 overflow-y-scroll text-base max-h-80 py-4"
+            class="flex flex-col gap-4 overflow-y-auto text-base max-h-80 py-4"
           >
             <div
               v-for="(user, idx) in getUsersWithAccess.data"
@@ -256,7 +256,7 @@
                   v-if="user.user === entity.owner"
                   class="flex gap-1"
                 >
-                  Owner (you)<LucideDiamond class="size-3 my-auto" />
+                  Owner (you)
                 </div>
                 <template v-else>You</template>
               </span>
