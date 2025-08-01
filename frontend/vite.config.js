@@ -46,6 +46,12 @@ export default defineConfig({
   },
   optimizeDeps: {
     esbuildOptions: { target: "esnext" },
-    include: [],
+    include: [
+      "frappe-ui > feather-icons",
+      "frappe-ui > lowlight",
+      "frappe-ui > @tiptap/extension-text-style",
+      "frappe-ui > showdown",
+      "frappe-ui > interactjs",
+    ],
   },
 })

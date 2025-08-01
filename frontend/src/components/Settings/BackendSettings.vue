@@ -71,6 +71,7 @@
         required
         placeholder="Enter AWS Secret"
         v-model="s3Settings.aws_secret"
+        description="This isn't shown after you submit it."
         type="password"
       />
       <FormControl
@@ -96,8 +97,8 @@
       label="Update"
       variant="solid"
       :disabled="!edited"
-      :loading="generalResource.isLoading"
-      @click="generalResource.submit()"
+      :loading="updateSettings.isLoading"
+      @click="updateSettings.submit()"
       class="mt-4"
     />
   </div>
@@ -158,7 +159,19 @@ const syncFromDisk = createResource({
   },
 })
 
-const generalResource = createResource({
+createResource({
+  url: "drive.api.product.get_disk_settings",
+  auto: true,
+  onSuccess: (data) => {
+    delete data.aws_secret
+    for (let [key, value] of Object.entries(data)) {
+      if (key in generalSettings) generalSettings[key] = value
+      if (key in s3Settings) s3Settings[key] = value
+    }
+    generalSettings.backend_type = data.enabled ? "s3" : "disk"
+  },
+})
+const updateSettings = createResource({
   url: "drive.api.product.update_disk_settings",
   makeParams: () => ({ ...generalSettings, ...s3Settings }),
   onSuccess() {

@@ -350,6 +350,11 @@ def get_translations():
 
 
 @frappe.whitelist()
+def get_disk_settings():
+    return frappe.get_single("Drive Disk Settings")
+
+
+@frappe.whitelist()
 def update_disk_settings(**kwargs):
     settings = frappe.get_single("Drive Disk Settings")
     field_map = {
@@ -365,9 +370,8 @@ def update_disk_settings(**kwargs):
     }
     settings.enabled = 1
     for field, value in kwargs.items():
-        print(kwargs["backend_type"])
-        if field in field_map:
-            setattr(settings, field, value if value else field_map[field])
+        if field in field_map and value:
+            setattr(settings, field, value)
         elif field == "backend_type":
             # If backend is s3, enable it. Otherwise, disable.
             settings.enabled = 1 if value == "s3" else 0

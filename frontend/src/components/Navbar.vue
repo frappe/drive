@@ -65,7 +65,6 @@
         }"
         :options="newEntityOptions"
         placement="right"
-        class="basis-5/12 lg:basis-auto"
       />
       <Button
         v-if="button"
