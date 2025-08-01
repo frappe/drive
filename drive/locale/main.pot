@@ -7,14 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe Drive VERSION\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-25 16:11+0000\n"
+"POT-Creation-Date: 2025-08-01 16:11+0000\n"
+"PO-Revision-Date: 2025-08-01 16:11+0000\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: developers@frappe.io\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
+
+#. Description of the 'Access Level' (Int) field in DocType 'Drive Team Member'
+#: drive/drive/doctype/drive_team_member/drive_team_member.json
+msgid "0 for Guest, 1 for User, 2 for Manager"
+msgstr ""
 
 #. Header text in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
@@ -382,12 +387,6 @@ msgstr ""
 msgid "Go to Drive"
 msgstr ""
 
-#. Name of a role
-#: drive/drive/doctype/drive_document/drive_document.json
-#: drive/drive/doctype/drive_file/drive_file.json
-msgid "Guest"
-msgstr ""
-
 #: frontend/src/components/GenericPage.vue:266
 #: frontend/src/components/Navbar.vue:232
 msgid "Hide Info"
@@ -421,11 +420,6 @@ msgstr ""
 #. Label of the is_active (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Active"
-msgstr ""
-
-#. Label of the is_admin (Check) field in DocType 'Drive Team Member'
-#: drive/drive/doctype/drive_team_member/drive_team_member.json
-msgid "Is Admin"
 msgstr ""
 
 #. Label of the is_group (Check) field in DocType 'Drive File'
@@ -880,7 +874,7 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#. Label of the users (Table MultiSelect) field in DocType 'Drive Team'
+#. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/UserListSettings.vue:4
 msgid "Users"
