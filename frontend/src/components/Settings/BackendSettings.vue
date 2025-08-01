@@ -106,8 +106,8 @@
 <script setup>
 import { ref, reactive, watch } from "vue"
 import { FormControl, Button, createResource } from "frappe-ui"
-import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
+import { toast } from "@/utils/toasts"
 
 const route = useRoute()
 
@@ -140,8 +140,21 @@ function confirmSync() {
 const syncFromDisk = createResource({
   url: "drive.api.scripts.sync_from_disk",
   params: { team: route.params.team },
+  beforeSubmit: (d) => {
+    toast({
+      icon: LucideFolderSync,
+      title: "Starting syncing.",
+      text: "We'll give you an update when it's done.",
+    })
+  },
   onSuccess: (d) => {
-    toast({ title: "Successfully synced from disk." })
+    toast({
+      icon: LucideCloudCheck,
+      title: "Successfully synced from disk.",
+      text: d.length
+        ? `Added ${d.length} item${d.length > 1 ? "s" : ""}`
+        : "No new files were added.",
+    })
   },
 })
 

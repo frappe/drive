@@ -12,8 +12,8 @@ import router from "./router"
 import App from "./App.vue"
 import emitter from "@/emitter"
 import "./index.css"
-import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
+
 import { allUsers } from "@/resources/permissions"
 const app = createApp(App)
 setConfig("resourceFetcher", frappeRequest)
@@ -34,14 +34,6 @@ const realtime = new RealTimeHandler(socket)
 app.provide("realtime", realtime)
 app.config.globalProperties.$realtime = realtime
 app.directive("on-outside-click", onOutsideClickDirective)
-app.use(
-  VueTippy,
-  // optional
-  {
-    directive: "tippy", // => v-tippy
-    component: "tippy", // => <tippy/>
-  }
-)
 app.directive("focus", {
   mounted: (el) => el.focus(),
 })

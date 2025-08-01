@@ -186,8 +186,11 @@ watch(
   ([a, b]) => {
     if (!a || !b) return
     const teams = Object.entries(b).filter(([k, _]) => k !== route.params.team)
-    if (!teams.length) settingsItems.value[0].items.shift()
-    else
+    let appsMenuIndex = 1
+    if (!teams.length) {
+      settingsItems.value[0].items.shift()
+      appsMenuIndex--
+    } else
       settingsItems.value[0].items[0].submenu = teams.map(([k, v]) => ({
         label: v.title,
         onClick: () => {
@@ -196,7 +199,7 @@ watch(
         },
       }))
 
-    settingsItems.value[0].items[1].submenu = a.map((app) => ({
+    settingsItems.value[0].items[appsMenuIndex].submenu = a.map((app) => ({
       label: app.title,
       icon: app.logo,
       component: h(

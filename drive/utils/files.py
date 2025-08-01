@@ -35,8 +35,8 @@ class FileManager:
         self.s3_enabled = settings.enabled
         self.flat = settings.flat
         self.bucket = settings.bucket
-        self.team_prefix = settings.team_prefix if settings.team_prefix != "/" else ""
-        self.personal_prefix = settings.personal_prefix if settings.personal_prefix != "/" else ""
+        self.team_prefix = settings.team_prefix
+        self.personal_prefix = settings.personal_prefix
         self.site_folder = Path(frappe.get_site_path("private/files"))
         if self.s3_enabled:
             self.conn = boto3.client(
@@ -230,10 +230,10 @@ class FileManager:
         if self.s3_enabled:
             objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
             basic_files = {}
+
             # Get files...
             for obj in objects:
-                # Slash makes everything more complicated; we don't want in in DB but need it for is_relative
-                obj_path = Path("/" + obj["Key"])
+                obj_path = Path(obj["Key"])
                 personal = False
                 if obj_path.is_relative_to(root_folder / self.team_prefix):
                     basic_files[obj["Key"]] = (obj, "team")
@@ -242,8 +242,10 @@ class FileManager:
                     basic_files[obj["Key"]] = (obj, "personal")
                     personal = "personal"
 
-                parent_path = Path(obj["Key"]).parent
-                if parent_path not in basic_files:
+                # Used to "calculate" natural folders, folders created by Drive are already counted
+                # Don't count root folder
+                parent_path = obj_path.parent
+                if parent_path not in basic_files and parent_path != Path("."):
                     parent_obj = {
                         "Key": str(parent_path),
                         "Size": 0,
@@ -257,9 +259,16 @@ class FileManager:
 
             files = {}
             for f_path, (f, loc) in basic_files.items():
+                # Drive-created folders - registered S3 objects - have trailing slashes.
+                is_group = f.get("Folder") or f_path.endswith("/")
                 exists = frappe.get_value(
                     "Drive File",
-                    {"path": f_path, "team": team, "is_active": 1},
+                    {
+                        "path": f_path.rstrip("/"),
+                        "team": team,
+                        "is_active": 1,
+                        "is_group": is_group,
+                    },
                     "name",
                 )
                 if exists:
@@ -267,7 +276,7 @@ class FileManager:
 
                 mime_type = (
                     "folder"
-                    if f.get("Folder")
+                    if is_group
                     else mimemapper.get_mime_type(str(f_path), native_first=False)
                 )
                 files[Path(f_path)] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
@@ -335,9 +344,9 @@ class FileManager:
         disk_parent = path.parent
         root = Path(get_home_folder(team)["path"])
         if not is_private and root / self.team_prefix == disk_parent:
-            return root
+            disk_parent = root
         elif is_private and root / self.personal_prefix == disk_parent.parent:
-            return root
+            disk_parent = root
         return disk_parent if disk_parent != Path(".") else ""
 
     @__not_if_flat

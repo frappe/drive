@@ -17,11 +17,11 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.locks.distributed_lock import DistributedLock
 from drive.utils import (
-    create_drive_file,
-    get_file_type,
-    get_home_folder,
-    if_folder_exists,
-    update_file_size,
+	create_drive_file,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -66,7 +66,7 @@ def upload_file(team, last_modified, personal=None, fullpath=None, parent=None, 
     current_chunk = int(frappe.form_dict.chunk_index)
     total_chunks = int(frappe.form_dict.total_chunk_count)
 
-    temp_path = get_upload_path(home_folder["name"], f"{upload_session}_{secure_filename(title)}")
+    temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
         f.seek(int(frappe.form_dict.chunk_byte_offset))
         f.write(file.stream.read())
@@ -185,10 +185,10 @@ def create_document_entity(title, personal, team, content, parent=None):
     return entity
 
 
-def get_upload_path(team_name, file_name):
-    uploads_path = Path(frappe.get_site_path("private/files"), team_name, "uploads")
+def get_upload_path(team_path, file_name):
+    uploads_path = Path(frappe.get_site_path("private/files"), team_path, "uploads")
     if not os.path.exists(uploads_path):
-        uploads_path = Path(frappe.get_site_path("private/files"), team_name, "uploads")
+        uploads_path = Path(frappe.get_site_path("private/files"), team_path, "uploads")
         uploads_path.mkdir()
     return uploads_path / file_name
 
