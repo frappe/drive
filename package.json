@@ -1,9 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "postinstall": "cd frontend && pnpm install",
+    "postinstall": "npm run frontend:pnpm_install",
     "dev": "cd frontend && pnpm dev",
     "build": "cd frontend && pnpm build",
-    "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd .."
+    "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd ..",
+    "disable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh disable",
+    "enable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh enable"
   }
 }

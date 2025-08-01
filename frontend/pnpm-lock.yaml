@@ -38,7 +38,7 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: 0.1.181
+        specifier: ^0.1.181
         version: 0.1.181(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
       html2pdf.js:
         specifier: ^0.10.3
