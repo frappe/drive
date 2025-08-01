@@ -1,12 +1,9 @@
 {
   "private": true,
-  "aworkspaces": [
-    "frontend",
-    "frappe-ui"
-  ],
   "scripts": {
-    "postinstall": "cd frontend && yarn install",
-    "dev": "cd frontend && yarn dev",
-    "build": "cd frontend && yarn build"
+    "postinstall": "cd frontend && pnpm install",
+    "dev": "cd frontend && pnpm dev",
+    "build": "cd frontend && pnpm build",
+    "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd .."
   }
 }
