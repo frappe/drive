@@ -186,7 +186,7 @@ const selectedColumns = [
   {
     label: __("Last Modified"),
     getLabel: ({ row }) => row.relativeModified,
-    getTooltip: (row) => formatDate(row.modified),
+    getTooltip: (row) => formatDate(row.creation),
     key: "modified",
     isEnabled: (n) => n !== "Recents",
     width: "15%",

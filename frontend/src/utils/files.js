@@ -101,7 +101,7 @@ export const groupByFolder = (entities) => {
 export const prettyData = (entities) => {
   return entities.map((entity) => {
     entity.file_size_pretty = formatSize(entity.file_size)
-    entity.relativeModified = useTimeAgo(entity.modified)
+    entity.relativeModified = useTimeAgo(entity.creation) // Changed to use upload time (creation)
     if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
     return entity
   })
