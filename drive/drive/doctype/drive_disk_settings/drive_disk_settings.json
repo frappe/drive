@@ -11,6 +11,7 @@
     "root_prefix_value",
     "team_prefix",
     "personal_prefix",
+    "thumbnail_prefix",
     "s3_section",
     "enabled",
     "aws_key",
@@ -98,13 +99,19 @@
       "fieldname": "personal_prefix",
       "fieldtype": "Data",
       "label": "Personal Prefix"
+    },
+    {
+      "default": "thumbnail",
+      "fieldname": "thumbnail_prefix",
+      "fieldtype": "Data",
+      "label": "Thumbnail prefix"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-07-31 17:47:10.040306",
+  "modified": "2025-08-01 12:45:50.215161",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Disk Settings",

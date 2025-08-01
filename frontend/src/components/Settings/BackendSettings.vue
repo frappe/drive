@@ -62,11 +62,13 @@
       <h3 class="font-semibold text-md">S3 Settings</h3>
       <FormControl
         label="AWS Key"
+        required
         placeholder="Enter AWS Key"
         v-model="s3Settings.aws_key"
       />
       <FormControl
         label="AWS Secret"
+        required
         placeholder="Enter AWS Secret"
         v-model="s3Settings.aws_secret"
         type="password"
@@ -103,7 +105,7 @@
 
 <script setup>
 import { ref, reactive, watch } from "vue"
-import { FormControl, Button, confirmDialog, createResource } from "frappe-ui"
+import { FormControl, Button, createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
 
@@ -138,6 +140,9 @@ function confirmSync() {
 const syncFromDisk = createResource({
   url: "drive.api.scripts.sync_from_disk",
   params: { team: route.params.team },
+  onSuccess: (d) => {
+    toast({ title: "Successfully synced from disk." })
+  },
 })
 
 const generalResource = createResource({

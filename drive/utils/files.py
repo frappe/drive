@@ -31,11 +31,12 @@ class FileManager:
 
     def __init__(self):
         settings = frappe.get_single("Drive Disk Settings")
+        self.settings = settings
         self.s3_enabled = settings.enabled
         self.flat = settings.flat
         self.bucket = settings.bucket
-        self.team_prefix = settings.team_prefix
-        self.personal_prefix = settings.personal_prefix
+        self.team_prefix = settings.team_prefix if settings.team_prefix != "/" else ""
+        self.personal_prefix = settings.personal_prefix if settings.personal_prefix != "/" else ""
         self.site_folder = Path(frappe.get_site_path("private/files"))
         if self.s3_enabled:
             self.conn = boto3.client(
@@ -97,8 +98,8 @@ class FileManager:
         """
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
-        team_directory = get_home_folder(file.team)["name"]
-        save_path = Path(team_directory) / "thumbnails" / (file.name + ".png")
+        team_directory = get_home_folder(file.team)["path"]
+        save_path = Path(team_directory) / self.settings.thumbnail_prefix / (file.name + ".png")
         disk_path = str((self.site_folder / save_path).resolve())
 
         with DistributedLock(file.path, exclusive=False):
@@ -148,7 +149,8 @@ class FileManager:
                 else:
                     final_path.rename(final_path.with_suffix(".thumbnail"))
 
-            except Exception:
+            except BaseException as e:
+                print(e)
                 if self.s3_enabled:
                     try:
                         os.remove(file_path)
@@ -174,14 +176,16 @@ class FileManager:
             if root["name"] == entity.parent_entity:
                 # Root files are placed in either team or personal folders
                 if entity.is_private:
-                    user_folder = parent / "personal" / frappe.session.user
-                    (self.site_folder / user_folder).mkdir(exist_ok=True)
+                    user_folder = parent / self.personal_prefix / frappe.session.user
+                    if not self.s3_enabled:
+                        (self.site_folder / user_folder).mkdir(exist_ok=True)
                     path = user_folder / entity.title
                 else:
-                    path = parent / "team" / entity.title
+                    path = parent / self.team_prefix / entity.title
             else:
                 # Otherwise, rely on the parent already having a perms-adjusted path
                 path = parent / entity.title
+            print(path)
             return str(path)
 
     @__not_if_flat
@@ -192,7 +196,7 @@ class FileManager:
         """
         path = self.get_disk_path(drive_entity, root)
         if self.s3_enabled:
-            self.conn.put_object(Bucket=self.bucket, Key=path, Body="")
+            self.conn.put_object(Bucket=self.bucket, Key=path + "/", Body="")
         else:
             (self.site_folder / path).mkdir()
 
@@ -208,7 +212,7 @@ class FileManager:
             try:
                 buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
             except:
-                return ""
+                raise FileNotFoundError("Cannot find this file in the S3 bucket.")
         else:
             with DistributedLock(path, exclusive=False):
                 with open(self.site_folder / path, "rb") as fh:
@@ -313,11 +317,15 @@ class FileManager:
         root = get_home_folder(entity.team)
         if entity.is_private:
             trash_path = (
-                Path(root["path"]) / "personal" / frappe.session.user / ".trash" / entity.title
+                Path(root["path"])
+                / self.personal_prefix
+                / frappe.session.user
+                / ".trash"
+                / entity.title
             )
         else:
-            trash_path = Path(root["path"]) / "team" / ".trash" / entity.title
-        return trash_path
+            trash_path = Path(root["path"]) / self.team_prefix / ".trash" / entity.title
+        return str(trash_path)
 
     def get_parent_path(self, path: Path, team, is_private: bool) -> Path:
         """
@@ -334,19 +342,18 @@ class FileManager:
 
     @__not_if_flat
     def move_to_trash(self, entity: DriveFile):
-        new_path = self.site_folder / self.__get_trash_path(entity)
+        trash_path = self.__get_trash_path(entity)
 
         if self.s3_enabled:
-            return
             self.conn.copy_object(
                 Bucket=self.bucket,
                 CopySource={"Bucket": self.bucket, "Key": entity.path},
-                Key=str(new_path),
+                Key=trash_path,
             )
             self.conn.delete_object(Bucket=self.bucket, Key=entity.path)
         else:
-            new_path.parent.mkdir(exist_ok=True)
-            (self.site_folder / entity.path).rename(new_path)
+            trash_path.parent.mkdir(exist_ok=True)
+            (self.site_folder / entity.path).rename(self.site_folder / trash_path)
 
     @__not_if_flat
     def restore(self, entity: DriveFile):
@@ -354,11 +361,13 @@ class FileManager:
         Restore a file from the trash.
         """
         current_path = self.__get_trash_path(entity)
+        print(current_path)
         self.move(current_path, entity.path)
 
-    def move(self, old_path, new_path):
+    @__not_if_flat
+    def move(self, old_path: str, new_path: str):
         """
-        Move a file from old_path to new_path.
+        Move a file on disk
         """
 
         if self.s3_enabled:
@@ -373,7 +382,6 @@ class FileManager:
 
     def delete_file(self, team, name, path):
         if self.s3_enabled:
-            return
             self.conn.delete_object(Bucket=self.bucket, Key=path)
         else:
             try:
