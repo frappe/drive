@@ -13,10 +13,10 @@
               <p class="mb-2 text-2xl font-semibold leading-6 text-ink-gray-9">
                 {{
                   isLogin
-                    ? "Login to Drive"
+                    ? "Đăng nhập Drive"
                     : params.get("t")
-                    ? "Join " + params.get("t")
-                    : "Create a new account"
+                    ? "Tham gia " + params.get("t")
+                    : "Tạo tài khoản mới"
                 }}
               </p>
               <p
@@ -25,9 +25,9 @@
                 {{
                   !isLogin
                     ? params.get("t")
-                      ? "Powered by Frappe Drive."
-                      : "Get 5 GB for free, no credit card required."
-                    : "Welcome back!"
+                      ? "Được cung cấp bởi nextGRP Drive."
+                      : "Nhận 5 GB miễn phí, không cần thẻ tín dụng."
+                    : "Chào mừng bạn trở lại!"
                 }}
               </p>
             </div>
@@ -37,7 +37,7 @@
                 v-model="email"
                 label="Email"
                 type="email"
-                placeholder="johndoe@mail.com"
+                placeholder="tuanbd@mail.com"
                 autocomplete="email"
                 :disabled="otpRequested"
                 required
@@ -48,7 +48,7 @@
                     v-model="first_name"
                     label="First Name"
                     type="text"
-                    placeholder="Robin"
+                    placeholder="Tuan"
                     variant="outline"
                     required
                   />
@@ -56,7 +56,7 @@
                     v-model="last_name"
                     label="Last Name"
                     type="text"
-                    placeholder="Hood"
+                    placeholder="Bui"
                     variant="outline"
                   />
                 </div>
@@ -66,13 +66,13 @@
                     type="checkbox"
                   />
                   <label class="text-base">
-                    I accept the
+                    Tôi chấp nhận
                     <Link
                       class="!text-ink-gray-7"
                       to="https://frappecloud.com/policies"
                       target="_blank"
                     >
-                      Terms and Policies
+                      Điều khoản và Chính sách
                     </Link>
                   </label>
                 </div>
@@ -85,14 +85,14 @@
                     class="w-full font-medium"
                     @click="signup.submit()"
                   >
-                    Create Account
+                    Tạo tài khoản
                   </Button>
                 </div>
               </template>
               <div v-else-if="otpRequested">
                 <FormControl
                   v-model="otp"
-                  label="Verification code"
+                  label="Mã xác minh"
                   type="text"
                   class="mt-4"
                   placeholder="123456"
@@ -132,10 +132,10 @@
                   :disabled="otpResendCountdown > 0"
                   @click="sendOTP.submit()"
                 >
-                  Resend verification code
+                  Gửi lại mã xác minh
                   {{
                     otpResendCountdown > 0
-                      ? `in ${otpResendCountdown} seconds`
+                      ? `trong ${otpResendCountdown} giây`
                       : ""
                   }}
                 </Button>
@@ -147,17 +147,9 @@
                   variant="solid"
                   @click="sendOTP.submit({ email, login: isLogin })"
                 >
-                  {{ isLogin ? "Login" : "Join" }}
+                  {{ isLogin ? "Đăng nhập" : "Tham gia" }}
                 </Button>
-                <div class="mt-6 border-t text-center">
-                  <div class="-translate-y-1/2 transform">
-                    <span
-                      class="relative bg-surface-white px-2 text-sm font-medium leading-8 text-ink-gray-8"
-                    >
-                      or
-                    </span>
-                  </div>
-                </div>
+
                 <Button
                   v-for="provider in oAuthProviders.data"
                   :key="provider.name"
@@ -168,7 +160,7 @@
                   <div class="flex items-center">
                     <div v-html="provider.icon" />
                     <span class="ml-2"
-                      >{{ isLogin ? "Continue" : "Join" }} with
+                      >{{ isLogin ? "Tiếp tục" : "Tham gia" }} với
                       {{ provider.provider_name }}</span
                     >
                   </div>
@@ -176,19 +168,15 @@
               </template>
             </form>
 
-            <div class="mt-6 text-center">
+            <div v-if="!isLogin" class="mt-6 text-center">
               <router-link
                 class="text-center text-base font-medium text-ink-gray-9 hover:text-ink-gray-7"
                 :to="{
-                  name: isLogin ? 'Signup' : 'Login',
+                  name: 'Login',
                   query: { ...$route.query, forgot: undefined },
                 }"
               >
-                {{
-                  isLogin
-                    ? "New member? Create a new account."
-                    : "Already have an account? Log in."
-                }}
+                Bạn đã có tài khoản? Đăng nhập.
               </router-link>
             </div>
           </div>
@@ -243,7 +231,7 @@ const signup = createResource({
   }),
   validate() {
     if (!terms_accepted.value) {
-      throw new Error("Please accept the terms of service")
+      throw new Error("Vui lòng chấp nhận các điều khoản dịch vụ")
     }
   },
   onSuccess(data) {
@@ -251,9 +239,9 @@ const signup = createResource({
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
-      toast("Account already exists - please login.")
+      toast("Tài khoản đã tồn tại - vui lòng đăng nhập.")
     } else {
-      toast("Failed to create account")
+      toast("Không tạo được tài khoản. Vui lòng thử lại sau.")
     }
   },
 })
@@ -276,12 +264,12 @@ const sendOTP = createResource({
     otpRequested.value = true
     otpResendCountdown.value = 30
     account_request.value = data.message || data
-    toast("Verification code sent to your email")
+    toast("Mã xác minh đã được gửi đến email của bạn")
   },
   onError(err) {
     if (JSON.stringify(err).includes("not found"))
-      toast("Please sign up first!")
-    else toast("Failed to send verification code")
+      toast("Vui lòng đăng ký trước!")
+    else toast("Không thể gửi mã xác minh")
   },
 })
 

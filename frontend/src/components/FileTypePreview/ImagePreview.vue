@@ -1,5 +1,13 @@
 <template>
   <div class="relative">
+    <!-- Close button for normal view (moved to right) -->
+    <button
+      class="absolute top-4 right-4 z-10 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors"
+      @click="goBack"
+    >
+      <span class="text-lg text-gray-600 font-bold leading-none">×</span>
+    </button>
+
     <!-- Thumbnail preview -->
     <img
       :src="previewURL"
@@ -18,9 +26,11 @@
         class="max-w-full max-h-full object-contain"
         :style="{ imageRendering: 'auto' }"
       />
+
+      <!-- Close button for fullscreen (top-right) -->
       <button
-        class="absolute top-4 right-4 text-white text-3xl font-bold"
-        @click="closeFullPreview"
+        class="absolute top-4 right-4 text-white text-2xl font-bold hover:bg-white hover:bg-opacity-20 rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+        @click="goBack"
       >
         ×
       </button>
@@ -31,11 +41,15 @@
 <script setup>
 import { ref, watch } from "vue"
 import { useObjectUrl } from "@vueuse/core"
+import { useRouter } from "vue-router"
 
 const props = defineProps({
   previewEntity: Object,
 })
 
+const emit = defineEmits(['back'])
+
+const router = useRouter()
 const imgBlob = ref(null)
 const previewURL = useObjectUrl(imgBlob)
 const showFull = ref(false)
@@ -58,12 +72,20 @@ async function fetchContent() {
 
 function openFullPreview() {
   showFull.value = true
-  document.body.style.overflow = "hidden" // Disable background scroll
+  document.body.style.overflow = "hidden"
 }
 
 function closeFullPreview() {
   showFull.value = false
-  document.body.style.overflow = "" // Re-enable scroll
+  document.body.style.overflow = ""
+}
+
+function goBack() {
+  if (showFull.value) {
+    closeFullPreview()
+  }
+  emit('back')
+  router.back()
 }
 </script>
 
