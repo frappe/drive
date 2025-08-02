@@ -10,7 +10,6 @@
       enableActive: true,
       showTooltip: true,
       resizeColumn: false,
-      // Should be getLink(row, false, false) - but messes up clicking
       getRowRoute: () => '',
       emptyState: {
         description: 'Nothing found - try something else?',
@@ -29,42 +28,43 @@
     <template v-else>
       <div
         id="drop-area"
-        class="h-full overflow-y-auto"
+        class="h-full overflow-y-auto pb-20"
       >
         <ListEmptyState v-if="!formattedRows.length" />
-        <div
-          v-for="group in formattedRows"
-          v-else-if="formattedRows[0].group"
-          :key="group.group"
-        >
-          <ListGroupHeader :group="group">
-            <slot
-              v-if="$slots['group-header']"
-              name="group-header"
-              v-bind="{ group }"
-            />
-          </ListGroupHeader>
-          <ListGroupRows :group="group">
+        <template v-else>
+          <!-- Grouped rows -->
+          <div
+            v-for="group in formattedRows"
+            v-if="formattedRows[0]?.group"
+            :key="group.group"
+          >
+            <ListGroupHeader :group="group" />
+            <ListGroupRows :group="group">
+              <CustomListRow
+                :rows="group.rows"
+                :context-menu="contextMenu"
+                @dropped="(...p) => emit('dropped', ...p)"
+              />
+            </ListGroupRows>
+          </div>
+
+          <!-- Ungrouped rows -->
+          <div v-else :key="'ungrouped-rows'">
             <CustomListRow
-              :rows="group.rows"
+              :rows="formattedRows"
               :context-menu="contextMenu"
-              @dropped="emit('dropped')"
+              @dropped="(...p) => emit('dropped', ...p)"
             />
-          </ListGroupRows>
-        </div>
-        <div v-else="formattedRows.length">
-          <CustomListRow
-            :rows="formattedRows"
-            :context-menu="contextMenu"
-            @dropped="(...p) => $emit('dropped', ...p)"
-          />
-        </div>
+          </div>
+        </template>
       </div>
+
       <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
         Drop to upload
       </p>
     </template>
   </FrappeListView>
+
   <ContextMenu
     v-if="rowEvent && selectedRow"
     :key="selectedRow.name"
@@ -74,6 +74,7 @@
     :event="rowEvent"
   />
 </template>
+
 <script setup>
 import {
   ListHeader,
