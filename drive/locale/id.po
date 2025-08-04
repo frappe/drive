@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-30 05:49\n"
+"PO-Revision-Date: 2025-08-04 07:07\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -187,7 +187,7 @@ msgstr ""
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Document Type"
-msgstr "Jenis Dokumen"
+msgstr "Tipe Dokumen"
 
 #: frontend/src/components/PrimaryDropdown.vue:120
 msgid "Documentation"
