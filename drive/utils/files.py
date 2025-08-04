@@ -267,7 +267,7 @@ class FileManager:
                         "path": f_path.rstrip("/"),
                         "team": team,
                         "is_active": 1,
-                        "is_group": is_group,
+                        "is_group": int(is_group),
                     },
                     "name",
                 )

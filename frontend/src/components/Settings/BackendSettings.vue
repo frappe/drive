@@ -14,93 +14,94 @@
       class="ml-auto mr-4"
     />
   </div>
-
-  <div class="flex flex-col gap-4 pb-10">
-    <FormControl
-      type="select"
-      label="Root Folder Type"
-      :options="[
-        { label: 'Team ID', value: 'team_id' },
-        { label: 'Team Name', value: 'team_name' },
-        { label: 'Other', value: 'other' },
-      ]"
-      v-model="generalSettings.root_prefix"
-      description="The root folder name for each team, defaults to team ID."
-    />
-    <FormControl
-      v-if="generalSettings.root_prefix === 'other'"
-      label="Root Folder Name"
-      placeholder="team"
-      v-model="generalSettings.root_prefix_value"
-      description="Value to use for the root folder. Use / to not use a separate folder."
-    />
-    <FormControl
-      label="Team Prefix"
-      placeholder="team"
-      v-model="generalSettings.team_prefix"
-      description="Team files will be placed inside this folder. Use / to place directly in the root folder."
-    />
-    <FormControl
-      label="Personal Prefix"
-      placeholder="personal"
-      v-model="generalSettings.personal_prefix"
-      description="Personal folders will be created under this prefix."
-    />
-    <FormControl
-      type="select"
-      label="Backend Type"
-      :options="[
-        { label: 'Disk', value: 'disk' },
-        { label: 'S3', value: 's3' },
-      ]"
-      v-model="generalSettings.backend_type"
-    />
-    <div
-      v-if="generalSettings.backend_type === 's3'"
-      class="flex flex-col gap-2 mt-2"
-    >
-      <h3 class="font-semibold text-md">S3 Settings</h3>
+  <div class="overflow-y-auto">
+    <div class="flex flex-col gap-4 pb-5 pr-5">
       <FormControl
-        label="AWS Key"
-        required
-        placeholder="Enter AWS Key"
-        v-model="s3Settings.aws_key"
+        type="select"
+        label="Root Folder Type"
+        :options="[
+          { label: 'Team ID', value: 'team_id' },
+          { label: 'Team Name', value: 'team_name' },
+          { label: 'Other', value: 'other' },
+        ]"
+        v-model="generalSettings.root_prefix_type"
+        description="The root folder name for each team, defaults to team ID."
       />
       <FormControl
-        label="AWS Secret"
-        required
-        placeholder="Enter AWS Secret"
-        v-model="s3Settings.aws_secret"
-        description="This isn't shown after you submit it."
-        type="password"
+        v-if="generalSettings.root_prefix_type === 'other'"
+        label="Root Folder Name"
+        placeholder="team"
+        v-model="generalSettings.root_prefix_value"
+        description="Value to use for the root folder. Use / to not use a separate folder."
       />
       <FormControl
-        required
-        label="S3 Bucket"
-        placeholder="bucket.example"
-        v-model="s3Settings.bucket"
+        label="Team Prefix"
+        placeholder="team"
+        v-model="generalSettings.team_prefix"
+        description="Team files will be placed inside this folder. Use / to place directly in the root folder."
       />
       <FormControl
-        label="Endpoint URL"
-        placeholder="Enter Endpoint URL"
-        v-model="s3Settings.endpoint_url"
-        description="Optional, only if using a custom endpoint."
+        label="Personal Prefix"
+        placeholder="personal"
+        v-model="generalSettings.personal_prefix"
+        description="Personal folders will be created under this prefix."
       />
       <FormControl
-        label="Signature Version"
-        placeholder="s3v4"
-        v-model="s3Settings.signature_version"
-        description="Optional. Some providers only support 's3'."
+        type="select"
+        label="Backend Type"
+        :options="[
+          { label: 'Disk', value: 'disk' },
+          { label: 'S3', value: 's3' },
+        ]"
+        v-model="generalSettings.backend_type"
+      />
+      <div
+        v-if="generalSettings.backend_type === 's3'"
+        class="flex flex-col gap-2 mt-2"
+      >
+        <h3 class="font-semibold text-md">S3 Settings</h3>
+        <FormControl
+          label="AWS Key"
+          required
+          placeholder="Enter AWS Key"
+          v-model="s3Settings.aws_key"
+        />
+        <FormControl
+          label="AWS Secret"
+          required
+          placeholder="Enter AWS Secret"
+          v-model="s3Settings.aws_secret"
+          description="This isn't shown after you submit it."
+          type="password"
+        />
+        <FormControl
+          required
+          label="S3 Bucket"
+          placeholder="bucket.example"
+          v-model="s3Settings.bucket"
+        />
+        <FormControl
+          label="Endpoint URL"
+          placeholder="Enter Endpoint URL"
+          v-model="s3Settings.endpoint_url"
+          description="Optional, only if using a custom endpoint."
+        />
+        <FormControl
+          label="Signature Version"
+          placeholder="s3v4"
+          v-model="s3Settings.signature_version"
+          description="Optional. Some providers only support 's3'."
+        />
+      </div>
+      <Button
+        label="Update"
+        variant="solid"
+        :disabled="!edited"
+        :loading="updateSettings.isLoading"
+        @click="updateSettings.submit()"
+        class="mt-4"
       />
     </div>
-    <Button
-      label="Update"
-      variant="solid"
-      :disabled="!edited"
-      :loading="updateSettings.isLoading"
-      @click="updateSettings.submit()"
-      class="mt-4"
-    />
   </div>
 </template>
 
@@ -115,7 +116,7 @@ const route = useRoute()
 const edited = ref(false)
 
 const generalSettings = reactive({
-  root_prefix: "team_id",
+  root_prefix_type: "team_id",
   root_prefix_value: "",
   team_prefix: "",
   personal_prefix: "",
@@ -155,6 +156,13 @@ const syncFromDisk = createResource({
       text: d.length
         ? `Added ${d.length} item${d.length > 1 ? "s" : ""}`
         : "No new files were added.",
+    })
+  },
+  onError: (d) => {
+    toast({
+      icon: LucideCloudAlert,
+      title: "There was an error.",
+      text: "Is there an issue with your configuration?",
     })
   },
 })
