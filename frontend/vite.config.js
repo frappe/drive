@@ -49,8 +49,7 @@ export default defineConfig({
     include: [
       "frappe-ui > feather-icons",
       "frappe-ui > lowlight",
-      "frappe-ui > @tiptap/extension-text-style",
-      "frappe-ui > showdown",
+      "frappe-ui > @tiptap/extension-text-style.js",
       "frappe-ui > interactjs",
     ],
   },
