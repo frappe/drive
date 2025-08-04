@@ -17,6 +17,7 @@ from drive.utils.files import (
     update_file_size,
     if_folder_exists,
     FileManager,
+    extract_mentions
 )
 from datetime import date, timedelta
 import magic
@@ -460,22 +461,15 @@ def save_doc(entity_name, doc_name, content):
 
     mentions = extract_mentions(content)
     if mentions:
-        frappe.db.set_value("Drive Document", doc_name, "mentions", mentions)
         frappe.enqueue(
             notify_mentions,
-            queue="long",
-            job_id=f"fdoc_{doc_name}",
+            job_id=f"doc_{entity_name}",
+            now=True,
             deduplicate=True,
-            timeout=None,
-            now=False,
-            at_front=False,
             entity_name=entity_name,
-            document_name=doc_name,
+            mentions=mentions,
         )
 
-
-def extract_mentions(content):
-    return []
 
 
 @frappe.whitelist()

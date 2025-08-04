@@ -10,6 +10,7 @@ import boto3
 import frappe
 from io import BytesIO
 from botocore.config import Config
+import re
 
 
 DriveFile = frappe.qb.DocType("Drive File")
@@ -452,3 +453,8 @@ def if_folder_exists(team, folder_name, parent, personal):
         d = frappe.get_doc({"doctype": "Drive File", **values})
         d.insert()
         return d.name
+
+
+def extract_mentions(content):
+    pattern = r'<span class="mention" data-type="mention" data-id="([^"]+)"'
+    return re.findall(pattern, content)

@@ -5,12 +5,7 @@
         $event.target.tagName === 'DIV' &&
           textEditor.editor?.chain?.().focus?.().run?.()
       "
-      class="mx-auto cursor-text min-h-[100vh]"
-      :class="
-        showComments
-          ? 'w-[90%] sm:px-[2.5rem] sm:w-[60%] md:px-0'
-          : 'w-[90%] sm:w-[80%]'
-      "
+      class="mx-auto cursor-text min-h-[100vh] w-[90%] sm:w-[50%] sm:px-[2.5rem] md:px-0"
     >
       <FTextEditor
         ref="textEditor"
@@ -48,7 +43,7 @@
       v-if="comments.length"
       :entity="entity"
       :editor
-      :show-comments
+      v-model:show-comments="showComments"
       v-model:active-comment="activeComment"
       v-model:comments="comments"
     />

@@ -22,16 +22,19 @@
         {
           icon: MessageSquareDot,
           label: 'Show Resolved',
-          onClick: () => (showResolved = true),
+          onClick: () => {
+            showResolved = true
+            showComments = true
+          },
           isEnabled: () => !showResolved,
-          cond: entity?.comments?.length,
+          cond: entity?.comments?.filter((k) => k.resolved)?.length,
         },
         {
           icon: MessageSquareDot,
           label: 'Hide Resolved',
           onClick: () => (showResolved = false),
           isEnabled: () => showResolved,
-          cond: entity?.comments?.length,
+          cond: entity?.comments?.filter((k) => k.resolved)?.length,
         },
       ])
     "

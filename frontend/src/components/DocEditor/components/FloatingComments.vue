@@ -271,6 +271,12 @@
       class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-white dark:bg-black bg-opacity-70 fixed"
     >
       Comments
+      <Button
+        :icon="LucideX"
+        variant="ghost"
+        class="float-right"
+        @click="showComments = false"
+      />
     </div>
   </div>
 </template>
@@ -293,6 +299,7 @@ import { v4 } from "uuid"
 import { useDebounceFn, useEventListener } from "@vueuse/core"
 import { toast } from "@/utils/toasts"
 import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
+import LucideX from "~icons/lucide/x"
 import { useStore } from "vuex"
 
 const CommentEditor = defineAsyncComponent(() =>
@@ -301,13 +308,13 @@ const CommentEditor = defineAsyncComponent(() =>
 const props = defineProps({
   entity: Object,
   editor: Object,
-  showComments: Boolean,
 })
 
 const store = useStore()
 
 const activeComment = defineModel("activeComment")
 const comments = defineModel("comments")
+const showComments = defineModel("showComments")
 const scrollContainer = ref("scrollContainer")
 
 const newReplies = reactive({})
