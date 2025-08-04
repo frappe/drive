@@ -46,8 +46,8 @@
   </Popover>
 </template>
 <script setup>
-import AppsIcon from "@/components/AppsIcon.vue"
 import { Popover, createResource, Button } from "frappe-ui"
+
 
 const props = defineProps({
   active: Boolean,

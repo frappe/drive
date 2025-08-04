@@ -82,6 +82,8 @@ declare module 'vue' {
     LucideMoreHorizontal: typeof import('~icons/lucide/more-horizontal')['default']
     LucideMoreVertical: typeof import('~icons/lucide/more-vertical')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
+    LucideSe: typeof import('~icons/lucide/se')['default']
+    LucideSea: typeof import('~icons/lucide/sea')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']
     LucideSettings: typeof import('~icons/lucide/settings')['default']
     LucideStar: typeof import('~icons/lucide/star')['default']

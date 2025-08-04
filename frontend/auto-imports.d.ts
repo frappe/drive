@@ -6,5 +6,8 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-
+  const LucideBadgeHelp: typeof import('~icons/lucide/badge-help')['default']
+  const LucideBook: typeof import('~icons/lucide/book')['default']
+  const LucideMoon: typeof import('~icons/lucide/moon')['default']
+  const LucideUser: typeof import('~icons/lucide/user')['default']
 }

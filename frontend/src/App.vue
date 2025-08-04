@@ -1,24 +1,13 @@
 <template>
-  <div
-    class="w-screen h-screen antialiased"
-    dark
-  >
-    <div
-      class="bg-surface-gray-7 text-ink-white text-sm text-center py-2 sm:hidden"
-    >
-      Drive works best on desktop.
-    </div>
+  <div class="w-screen h-screen antialiased">
     <div
       v-if="isLoggedIn || $route.meta.allowGuest"
-      class="flex"
+      class="flex h-full"
     >
-      <Sidebar
-        v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)"
-        class="hidden sm:block"
-      />
+      <Sidebar v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)" />
       <div
         id="dropzone"
-        class="flex flex-col h-screen flex-grow overflow-hidden bg-surface-white"
+        class="flex flex-col h-full flex-grow overflow-hidden bg-surface-white"
       >
         <router-view
           :key="$route.fullPath"

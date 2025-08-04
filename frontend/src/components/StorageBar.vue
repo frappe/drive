@@ -27,12 +27,8 @@
       />
     </div>
     <span
-      class="mx-2 text-xs text-ink-gray-5 transition-all duration-500 ease-in-out line-clamp-1"
-      :class="
-        isExpanded
-          ? 'ml-2 w-auto opacity-100 h-auto'
-          : 'ml-0 w-0 overflow-hidden opacity-0 h-0'
-      "
+      class="text-xs text-ink-gray-5 line-clamp-1 ml-2"
+      :class="isExpanded ? 'opacity-100' : 'opacity-0'"
       >{{ formattedString }}</span
     >
   </div>

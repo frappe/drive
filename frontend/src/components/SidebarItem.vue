@@ -73,8 +73,5 @@ function handleClick() {
   router.push({ path: props.to })
 }
 
-let isActive = computed(() => {
-  const first = store.state.breadcrumbs[0]
-  return first.label === props.label || first.name === props.label
-})
+let isActive = computed(() => {})
 </script>

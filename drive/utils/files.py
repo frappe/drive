@@ -234,7 +234,7 @@ class FileManager:
             try:
                 buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
             except:
-                return ""
+                raise FileNotFoundError()
         else:
             with DistributedLock(path, exclusive=False):
                 with open(self.site_folder / path, "rb") as fh:

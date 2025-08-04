@@ -80,7 +80,7 @@
         </div>
       </div>
       <div
-        v-if="!searchResults.data?.length"
+        v-if="!searchResults.data?.length && search.length"
         class="flex flex-col py-4 px-2.5"
       >
         <span

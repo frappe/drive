@@ -50,15 +50,7 @@
       </button>
     </template>
   </Dropdown>
-  <SettingsDialog
-    v-if="showSettings"
-    v-model="showSettings"
-    :suggested-tab="suggestedTab"
-  />
-  <ShortcutsDialog
-    v-if="showShortcuts"
-    v-model="showShortcuts"
-  />
+  
 </template>
 
 <script setup>
