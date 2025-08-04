@@ -5,7 +5,7 @@
         $event.target.tagName === 'DIV' &&
           textEditor.editor?.chain?.().focus?.().run?.()
       "
-      class="mx-auto cursor-text min-h-[100vh] w-[90%] sm:w-[50%] sm:px-[2.5rem] md:px-0"
+      class="mx-auto cursor-text min-h-[100vh] px-3 md:px-0"
     >
       <FTextEditor
         ref="textEditor"
