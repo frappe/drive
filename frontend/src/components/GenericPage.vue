@@ -64,7 +64,6 @@
       :user-data="userData"
       @dropped="onDrop"
     />
-    <InfoPopup :entities="infoEntities" />
   </div>
 
   <Dialogs
@@ -113,6 +112,7 @@ import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
+import emitter from "../emitter"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -127,7 +127,7 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref("")
-const infoEntities = ref([])
+const infoEntity = ref()
 const team = route.params.team || localStorage.getItem("recentTeam")
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = ref(props.getEntities.data)
@@ -259,14 +259,10 @@ const actionItems = computed(() => {
       {
         label: __("Show Info"),
         icon: LucideInfo,
-        action: () => infoEntities.value.push(store.state.activeEntity),
+        action: (a) => {
+          emitter.emit("info")
+        },
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
-      },
-      {
-        label: __("Hide Info"),
-        icon: LucideInfo,
-        action: () => (dialog.value = "info"),
-        isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
         label: __("Favourite"),

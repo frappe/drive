@@ -51,8 +51,6 @@
         />
       </div>
     </div>
-
-    <InfoSidebar />
   </div>
 </template>
 
@@ -80,7 +78,6 @@ import {
   updateURLSlug,
 } from "@/utils/files"
 import ErrorPage from "@/components/ErrorPage.vue"
-import InfoSidebar from "@/components/InfoSidebar.vue"
 
 const router = useRouter()
 const store = useStore()

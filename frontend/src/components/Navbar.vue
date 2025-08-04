@@ -225,14 +225,8 @@ const dropdownAction = computed(() => {
         {
           label: __("Show Info"),
           icon: LucideInfo,
-          onClick: () => infoEntities.value.push(store.state.activeEntity),
+          onClick: () => (dialog.value = "i"),
           isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
-        },
-        {
-          label: __("Hide Info"),
-          icon: LucideInfo,
-          onClick: () => (dialog.value = "info"),
-          isEnabled: () => store.state.activeEntity && store.state.showInfo,
         },
         {
           label: __("Favourite"),

@@ -31,6 +31,11 @@
     :entity="selections[0]"
     @success="getEntities.fetch(getEntities.params)"
   />
+  <InfoPopup
+    v-if="dialog === 'i'"
+    v-model="dialog"
+    :entity="selections[0]"
+  />
 
   <!-- Deletion dialogs -->
   <GeneralDialog
@@ -79,13 +84,12 @@ import emitter from "@/emitter"
 import { useStore } from "vuex"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { sortEntities, setTitle } from "@/utils/files"
+import { sortEntities } from "@/utils/files"
 import { useTimeAgo } from "@vueuse/core"
 import { openEntity } from "../utils/files"
 
 const dialog = defineModel(String)
 const store = useStore()
-const route = useRoute()
 
 const props = defineProps({
   rootResource: Object,
@@ -105,6 +109,7 @@ emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => (dialog.value = "f"))
 emitter.on("rename", () => (dialog.value = "rn"))
+emitter.on("info", () => (dialog.value = "i"))
 emitter.on("remove", () => (dialog.value = "remove"))
 emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))

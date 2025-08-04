@@ -242,7 +242,6 @@ const contextMenu = (event, row) => {
   if (event.ctrlKey) openEntity(route.params.team, row, true)
   rowEvent.value = event
   selectedRow.value = row
-  console.log(selectedRow.value)
   event.stopPropagation()
   event.preventDefault()
 }

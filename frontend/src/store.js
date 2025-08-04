@@ -35,7 +35,6 @@ const store = createStore({
     activeEntity: null,
     notifCount: 0,
     pasteData: { entities: [], action: null },
-    showInfo: false,
     currentFolder: {
       name: getJson("currentFolder", {}),
       team: getJson("currentFolderTeam", {}),

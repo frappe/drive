@@ -17,8 +17,6 @@ export default {
     fontFamily: {
       sans: ["InterVar", "sans-serif"],
       serif: ["Lora", "serif"],
-      mono: ["Geist Mono", "serif"],
-      round: ["Nunito", "serif"],
       // Only accessible in the editor
       inter: ["var(--font-inter)"],
       lora: ["var(--font-lora)"],
@@ -34,5 +32,4 @@ export default {
       nunito: ["var(--font-nunito)"],
     },
   },
-  plugins: [],
 }
