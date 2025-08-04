@@ -6,7 +6,7 @@ from pypika import Order
 def get_link(entity):
     type_ = {True: "file", bool(entity.is_group): "folder", bool(entity.document): "document"}
     return (
-        entity.path if entity.is_link else f"/drive/{entity.team}/{type_.get(True)}/{entity.name}/"
+        entity.path if entity.is_link else f"/drive/t/{entity.team}/{type_.get(True)}/{entity.name}/"
     )
 
 
@@ -104,7 +104,7 @@ def notify_share(entity_name, docperm_name):
     author_full_name = frappe.db.get_value("User", {"name": docshare.owner}, ["full_name"])
     entity_type = "document" if entity.document else "folder" if entity.is_group else "file"
 
-    message = f'{author_full_name} shared a {entity_type} with you: "{entity.title}"'
+    message = f'{author_full_name} đã chia sẻ một {entity_type} với bạn: "{entity.title}"'
     create_notification(docshare.owner, docshare.user, "Share", entity, message)
     send_share_email(docshare.user, message, get_link(entity), entity.team, entity_type)
 

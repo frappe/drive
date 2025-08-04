@@ -39,10 +39,18 @@
                 type="email"
                 placeholder="tuanbd@mail.com"
                 autocomplete="email"
-                :disabled="otpRequested"
                 required
               />
-              <template v-if="otpValidated && !isLogin">
+              <FormControl
+                v-model="password"
+                label="Mật khẩu"
+                type="password"
+                placeholder="Nhập mật khẩu"
+                autocomplete="current-password"
+                class="mt-4"
+                required
+              />
+              <template v-if="!isLogin">
                 <div class="mt-5 flex flex-row gap-5">
                   <FormControl
                     v-model="first_name"
@@ -76,78 +84,18 @@
                     </Link>
                   </label>
                 </div>
-                <!-- Buttons -->
-                <div class="mt-8 flex flex-col items-center gap-3">
-                  <Button
-                    :loading="signup.loading"
-                    :disabled="!first_name.length || !terms_accepted"
-                    variant="solid"
-                    class="w-full font-medium"
-                    @click="signup.submit()"
-                  >
-                    Tạo tài khoản
-                  </Button>
-                </div>
               </template>
-              <div v-else-if="otpRequested">
-                <FormControl
-                  v-model="otp"
-                  label="Mã xác minh"
-                  type="text"
-                  class="mt-4"
-                  placeholder="123456"
-                  :disabled="verifyOTP.loading"
-                  maxlength="6"
-                  required
-                  @keyup="
-                    (e) =>
-                      e.target.value.length === 6 &&
-                      verifyOTP.submit({
-                        account_request,
-                        otp,
-                      })
-                  "
-                />
-                <ErrorMessage
-                  class="mt-4 text-center"
-                  :message="verifyOTP.error"
-                />
+
+              <!-- Buttons -->
+              <div class="mt-8 flex flex-col items-center gap-3">
                 <Button
-                  class="mt-4 w-full"
+                  :loading="isLogin ? login.loading : signup.loading"
+                  :disabled="!isLogin && (!first_name.length || !terms_accepted)"
                   variant="solid"
-                  :loading="verifyOTP.loading"
-                  @click="
-                    verifyOTP.submit({
-                      account_request,
-                      otp,
-                    })
-                  "
+                  class="w-full font-medium"
+                  @click="isLogin ? login.submit() : signup.submit()"
                 >
-                  Verify
-                </Button>
-                <Button
-                  class="mt-2 w-full"
-                  variant="outline"
-                  :loading="sendOTP.loading"
-                  :disabled="otpResendCountdown > 0"
-                  @click="sendOTP.submit()"
-                >
-                  Gửi lại mã xác minh
-                  {{
-                    otpResendCountdown > 0
-                      ? `trong ${otpResendCountdown} giây`
-                      : ""
-                  }}
-                </Button>
-              </div>
-              <template v-else>
-                <Button
-                  class="mt-4"
-                  :loading="sendOTP.loading"
-                  variant="solid"
-                  @click="sendOTP.submit({ email, login: isLogin })"
-                >
-                  {{ isLogin ? "Đăng nhập" : "Tham gia" }}
+                  {{ isLogin ? "Đăng nhập" : "Tạo tài khoản" }}
                 </Button>
 
                 <Button
@@ -165,7 +113,7 @@
                     >
                   </div>
                 </Button>
-              </template>
+              </div>
             </form>
 
             <div v-if="!isLogin" class="mt-6 text-center">
@@ -188,7 +136,7 @@
 
 <script setup>
 import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
-import { ref, onMounted, computed } from "vue"
+import { ref, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute, useRouter } from "vue-router"
@@ -198,22 +146,13 @@ const route = useRoute()
 const router = useRouter()
 const params = new URLSearchParams(new URL(window.location.href).search)
 const email = ref(params.get("e") || "")
+const password = ref("")
 const first_name = ref("")
 const last_name = ref("")
 const terms_accepted = ref(false)
-
-const otp = ref("")
-const otpResendCountdown = ref(0)
-const account_request = ref(params.get("r") || "")
-const otpRequested = ref(account_request.value !== "")
-const otpValidated = ref(account_request.value !== "")
 const isLogin = computed(() => route.name === "Login")
 
-onMounted(() => {
-  setInterval(() => {
-    if (otpResendCountdown.value > 0) otpResendCountdown.value -= 1
-  }, 1000)
-})
+
 
 const getReferrerIfAny = () => {
   const params = location.search
@@ -222,9 +161,10 @@ const getReferrerIfAny = () => {
 }
 
 const signup = createResource({
-  url: "drive.api.product.signup",
+  url: "drive.api.product.direct_signup",
   makeParams: () => ({
-    account_request: account_request.value,
+    email: email.value,
+    password: password.value,
     first_name: first_name.value,
     last_name: last_name.value,
     referrer: getReferrerIfAny(),
@@ -233,9 +173,12 @@ const signup = createResource({
     if (!terms_accepted.value) {
       throw new Error("Vui lòng chấp nhận các điều khoản dịch vụ")
     }
+    if (!email.value || !password.value || !first_name.value) {
+      throw new Error("Vui lòng điền đầy đủ thông tin")
+    }
   },
   onSuccess(data) {
-    window.location.href = data.location
+    window.location.href = data.location || "/drive"
   },
   onError(err) {
     if (err.exc_type === "DuplicateEntryError") {
@@ -243,6 +186,25 @@ const signup = createResource({
     } else {
       toast("Không tạo được tài khoản. Vui lòng thử lại sau.")
     }
+  },
+})
+
+const login = createResource({
+  url: "login",
+  makeParams: () => ({
+    usr: email.value,
+    pwd: password.value,
+  }),
+  validate() {
+    if (!email.value || !password.value) {
+      throw new Error("Vui lòng nhập email và mật khẩu")
+    }
+  },
+  onSuccess() {
+    window.location.href = "/drive"
+  },
+  onError(err) {
+    toast("Email hoặc mật khẩu không đúng")
   },
 })
 
@@ -258,29 +220,5 @@ const oAuth = createResource({
   },
 })
 
-const sendOTP = createResource({
-  url: "drive.api.product.send_otp",
-  onSuccess(data) {
-    otpRequested.value = true
-    otpResendCountdown.value = 30
-    account_request.value = data.message || data
-    toast("Mã xác minh đã được gửi đến email của bạn")
-  },
-  onError(err) {
-    if (JSON.stringify(err).includes("not found"))
-      toast("Vui lòng đăng ký trước!")
-    else toast("Không thể gửi mã xác minh")
-  },
-})
 
-const verifyOTP = createResource({
-  url: "drive.api.product.verify_otp",
-  onSuccess: (data) => {
-    otpValidated.value = true
-    settings.fetch()
-    if (data.location) {
-      window.location.replace(data.location)
-    }
-  },
-})
 </script>

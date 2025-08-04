@@ -1,10 +1,11 @@
 import frappe
+from frappe import _
 from frappe.rate_limiter import rate_limit
 from frappe.utils import escape_html
 from frappe.utils import split_emails, validate_email_address
 from drive.api.permissions import is_admin
 from frappe.translate import get_all_translations
-from frappe import _
+import re
 
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
@@ -71,6 +72,52 @@ def get_team_invites(team):
         i["user_name"] = frappe.db.get_value("User", i["email"], "full_name")
     return invites
 
+
+@frappe.whitelist(allow_guest=True)
+def direct_signup(email, password, first_name, last_name=None, referrer=None):
+    """Direct signup with email and password, bypassing account request system"""
+    
+    # Validate email format
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        frappe.throw("Invalid email format")
+    
+    # Check if user already exists
+    if frappe.db.exists("User", email):
+        frappe.throw("User already exists")
+
+    # Create user with password
+    user = frappe.get_doc(
+        {
+            "doctype": "User",
+            "email": email,
+            "first_name": escape_html(first_name),
+            "last_name": escape_html(last_name) if last_name else "",
+            "enabled": 1,
+            "user_type": "Website User",
+            "new_password": password,
+        }
+    )
+
+    user.flags.no_welcome_mail = True
+    try:
+        user.insert(ignore_permissions=True)
+    except frappe.DuplicateEntryError:
+        frappe.throw("User already exists")
+
+    # Login the user
+    frappe.local.login_manager.login_as(user.email)
+    
+    # Create drive settings
+    doc = frappe.get_doc(
+        {
+            "doctype": "Drive Settings",
+            "user": email,
+            "single_click": 1,
+        }
+    )
+    doc.insert()
+
+    return {"location": "/drive"}
 
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
@@ -171,44 +218,45 @@ def oauth_providers():
     return out
 
 
-@frappe.whitelist(allow_guest=True)
-@rate_limit(limit=5, seconds=60)
-def send_otp(email, login):
-    is_login = frappe.db.exists(
-        "Account Request",
-        {
-            "email": email,
-            "signed_up": 1,
-        },
-    )
-    if not is_login:
-        if login:
-            frappe.throw("Email account not found!")
-        account_request = frappe.get_doc(
-            {
-                "doctype": "Account Request",
-                "email": email,
-            }
-        ).insert(ignore_permissions=True)
-        return account_request.name
-    else:
-        req = frappe.get_doc("Account Request", is_login, ignore_permissions=True)
-        req.set_otp()
-        req.send_otp()
-        return is_login
+# Legacy OTP functions - Commented out as no longer needed with email/password authentication
+# @frappe.whitelist(allow_guest=True)
+# @rate_limit(limit=5, seconds=60)
+# def send_otp(email, login):
+#     is_login = frappe.db.exists(
+#         "Account Request",
+#         {
+#             "email": email,
+#             "signed_up": 1,
+#         },
+#     )
+#     if not is_login:
+#         if login:
+#             frappe.throw("Email account not found!")
+#         account_request = frappe.get_doc(
+#             {
+#                 "doctype": "Account Request",
+#                 "email": email,
+#             }
+#         ).insert(ignore_permissions=True)
+#         return account_request.name
+#     else:
+#         req = frappe.get_doc("Account Request", is_login, ignore_permissions=True)
+#         req.set_otp()
+#         req.send_otp()
+#         return is_login
 
 
-@frappe.whitelist(allow_guest=True)
-@rate_limit(limit=5, seconds=60)
-def verify_otp(account_request, otp):
-    req = frappe.get_doc("Account Request", account_request)
-    if req.otp != otp:
-        frappe.throw("Invalid OTP")
-    req.login_count += 1
-    req.save(ignore_permissions=True)
-    if req.signed_up:
-        frappe.local.login_manager.login_as(req.email)
-        return {"location": "/drive"}
+# @frappe.whitelist(allow_guest=True)
+# @rate_limit(limit=5, seconds=60)
+# def verify_otp(account_request, otp):
+#     req = frappe.get_doc("Account Request", account_request)
+#     if req.otp != otp:
+#         frappe.throw("Invalid OTP")
+#     req.login_count += 1
+#     req.save(ignore_permissions=True)
+#     if req.signed_up:
+#         frappe.local.login_manager.login_as(req.email)
+#         return {"location": "/drive"}
 
 
 @frappe.whitelist(allow_guest=True)
