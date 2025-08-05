@@ -14,7 +14,10 @@
     </Button>
   </div>
 
-  <Tabs :tabs>
+  <Tabs
+    :tabs
+    v-model="tabIndex"
+  >
     <template #tab-panel="{ tab }">
       <template v-if="tab.label === 'Members'">
         <div class="flex flex-col items-stretch justify-start overflow-y-auto">
@@ -38,34 +41,39 @@
                 }}</span>
                 <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
               </div>
-              <Dropdown
+              <div
                 v-if="isAdmin.data && user.name != $store.state.user.id"
-                v-slot="{ open }"
-                :options="accessOptions"
-                placement="right"
-                class="ml-auto text-base text-ink-gray-6"
+                class="ml-auto"
               >
-                <Button
-                  variant="ghost"
-                  @click="selectedUser = user"
+                <Dropdown
+                  v-slot="{ open }"
+                  :options="accessOptions"
+                  placement="right"
                 >
-                  {{
-                    __(
-                      user.access_level == 2
-                        ? "Manager"
-                        : user.access_level == 1
-                        ? "User"
-                        : "Guest"
-                    )
-                  }}
-                  <template #suffix>
-                    <LucideChevronDown
-                      class="size-4 text-ink-gray-6"
-                      :class="{ '[transform:rotateX(180deg)]': open }"
-                    />
-                  </template>
-                </Button>
-              </Dropdown>
+                  <Button
+                    variant="ghost"
+                    @click="selectedUser = user"
+                  >
+                    {{
+                      __(
+                        user.access_level == 2
+                          ? "Manager"
+                          : user.access_level == 1
+                          ? "User"
+                          : "Guest"
+                      )
+                    }}
+                    <template #suffix>
+                      <LucideChevronDown
+                        class="size-4 text-ink-gray-6"
+                        :class="{
+                          '[transform:rotateX(180deg)]': open,
+                        }"
+                      />
+                    </template>
+                  </Button>
+                </Dropdown>
+              </div>
               <span
                 v-else
                 class="ml-auto text-base text-ink-gray-6"
@@ -273,7 +281,7 @@ const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
 
-const dialog = ref(null)
+const tabIndex = ref(0)
 const selectedUser = ref(null)
 const invited = ref("")
 const emailInput = ref("")

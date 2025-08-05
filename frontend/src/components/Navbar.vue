@@ -52,23 +52,20 @@
           />
         </Button>
       </Dropdown>
-
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
           props.rootResource?.data?.write !== false
         "
+        :button="{
+          variant: 'solid',
+          icon: LucidePlus,
+          tooltip: 'Add or upload',
+        }"
         :options="newEntityOptions"
         placement="right"
-        class="basis-5/12 lg:basis-auto"
-      >
-        <Button variant="solid">
-          <div class="flex">
-            <LucidePlus class="size-4" />
-          </div>
-        </Button>
-      </Dropdown>
+      />
       <Button
         v-if="button"
         class="line-clamp-1 truncate w-full"
@@ -148,6 +145,7 @@ import LucideLink from "~icons/lucide/link"
 import LucideMoveUpRight from "~icons/lucide/move-up-right"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideInfo from "~icons/lucide/info"
+import LucidePlus from "~icons/lucide/plus"
 import LucideFileUp from "~icons/lucide/file-up"
 import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"

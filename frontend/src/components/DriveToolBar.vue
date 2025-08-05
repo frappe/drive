@@ -117,16 +117,12 @@
               onClick: () => activeFilters.push(k),
             }))
           "
+          :button="{
+            icon: LucideFilter,
+            tooltip: 'Filter',
+          }"
           placement="right"
-        >
-          <Tooltip text="Filter">
-            <Button :disabled="!getEntities.data?.length">
-              <template #icon>
-                <LucideFilter class="size-4" />
-              </template>
-            </Button>
-          </Tooltip>
-        </Dropdown>
+        />
         <Dropdown
           v-if="$route.name !== 'Recents'"
           :options="orderByItems"
@@ -232,6 +228,7 @@ import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideLayoutGrid from "~icons/lucide/layout-grid"
 import LucideLayoutList from "~icons/lucide/layout-list"
+import LucideFilter from "~icons/lucide/filter"
 
 const rows = defineModel(Array)
 const props = defineProps({

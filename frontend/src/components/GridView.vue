@@ -31,13 +31,13 @@
     >
       <LucideStar
         v-if="$route.name !== 'Favourites' && file.is_favourite"
-        class="stroke-amber-500 fill-amber-500 z-10 absolute top-2 left-2 h-4"
+        class="stroke-amber-500 fill-amber-500 absolute top-2 left-2 h-4"
         width="16"
         height="16"
       />
       <Button
         :variant="'subtle'"
-        class="z-10 duration-300 absolute top-2 right-2"
+        class="duration-300 absolute top-2 right-2"
         :class="[
           selections.size > 0 ? '' : '!bg-surface-gray-3 hover:shadow-lg',
           selectedRow?.name === file.name
