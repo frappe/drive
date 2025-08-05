@@ -9,6 +9,7 @@
     >
       <FTextEditor
         ref="textEditor"
+        class="min-w-[65ch] px-2"
         editor-class="prose-sm min-h-[4rem] p-5"
         :content="rawContent"
         :editable="!!entity.write"
