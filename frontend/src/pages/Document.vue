@@ -48,7 +48,7 @@
     :error="document.error"
     class="w-10 h-full text-neutral-100 mx-auto"
   />
-  <div class="flex w-full overflow-auto">
+  <div class="flex w-full h-full overflow-auto">
     <TextEditor
       v-if="entity"
       ref="editor"

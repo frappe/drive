@@ -6,6 +6,7 @@
     <template #body-content>
       <TextInput
         ref="input"
+        v-focus
         v-model="title"
         class="pb-2"
         placeholder="Link name"
@@ -25,7 +26,7 @@
         v-if="createLink.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This file already exists.
+        This link already exists.
       </div>
       <div
         class="flex"

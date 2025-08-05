@@ -18,7 +18,7 @@
     <template #body-content>
       <p class="text-ink-gray-5 text-sm mb-2">Folder name:</p>
       <TextInput
-        ref="my-input"
+        v-focus
         v-model="folderName"
         @keyup.enter="submit"
         @keydown="createFolder.error = null"
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, computed, useTemplateRef, watch } from "vue"
+import { ref, computed, useTemplateRef, watch, nextTick, onMounted } from "vue"
 import store from "@/store"
 import { Dialog, TextInput, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
@@ -51,10 +51,15 @@ const props = defineProps({
 })
 const emit = defineEmits(["update:modelValue", "success", "mutate"])
 const folderName = ref("")
-const text = useTemplateRef("my-input")
-watch(text, (val) => {
-  val.el.focus()
-})
+// const text = useTemplateRef("my-input")
+// // watch(text, async (val) => {
+// //   await nextTick()
+// //   console.log(val.el)
+// //   val.el.focus()
+// // })
+// onMounted(() => {
+//   console.log(text.value)
+// })
 
 const createFolder = createResource({
   url: "drive.api.files.create_folder",

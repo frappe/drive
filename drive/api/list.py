@@ -30,7 +30,7 @@ def files(
     recents_only=0,
     tag_list=[],
     file_kinds=[],
-    personal=0,
+    personal=-1,
     folders=0,
     only_parent=1,
 ):

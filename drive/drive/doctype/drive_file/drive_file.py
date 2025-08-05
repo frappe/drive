@@ -79,6 +79,8 @@ class DriveFile(Document):
             if is_private is not None:
                 self.is_private = int(is_private)
                 self.save()
+            for child in self.get_children():
+                child.move(self.name, is_private)
             return frappe.get_value(
                 "Drive File",
                 self.parent_entity,
@@ -91,9 +93,7 @@ class DriveFile(Document):
                 "Cannot move into itself",
                 frappe.PermissionError,
             )
-
-        is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
-        if not is_group:
+        if not frappe.db.get_value("Drive File", new_parent, "is_group"):
             raise NotADirectoryError()
 
         for child in self.get_children():
@@ -108,6 +108,8 @@ class DriveFile(Document):
                     ["title", "team", "name", "is_private"],
                     as_dict=True,
                 )
+            else:
+                child.move(self.name, is_private)
 
         update_file_size(self.parent_entity, -self.file_size)
         update_file_size(new_parent, +self.file_size)

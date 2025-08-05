@@ -18,10 +18,6 @@ async function setRootBreadCrumb(to) {
   }
 }
 
-function redirectHome(to) {
-  console.log(to.params.entityName, getTeams.data?.[to.params.team])
-}
-
 const routes = [
   {
     path: "/",
@@ -99,7 +95,7 @@ const routes = [
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { allowGuest: true },
-    beforeEnter: [manageBreadcrumbs, redirectHome],
+    beforeEnter: [manageBreadcrumbs],
     props: true,
   },
   {

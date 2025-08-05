@@ -14,6 +14,7 @@ import emitter from "@/emitter"
 import "./index.css"
 import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
+import focusDirective from './utils/focus'
 import { allUsers } from "@/resources/permissions"
 const app = createApp(App)
 setConfig("resourceFetcher", frappeRequest)
@@ -42,9 +43,7 @@ app.use(
     component: "tippy", // => <tippy/>
   }
 )
-app.directive("focus", {
-  mounted: (el) => el.focus(),
-})
+app.directive("focus", focusDirective)
 
 setConfig("resourceFetcher", (options) => {
   return frappeRequest({

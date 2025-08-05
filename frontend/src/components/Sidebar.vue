@@ -1,6 +1,6 @@
 <template>
   <Sidebar
-    :collapsed="true"
+    v-model:collapsed="isCollapsed"
     class="hidden sm:flex"
     :header="{
       title: getTeams.data?.[$route.params.team]?.title || 'Drive',
@@ -326,8 +326,5 @@ const sidebarItems = computed(() => {
   return items
 })
 
-watch(isCollapsed, (val) => {
-  console.log(val)
-  store.commit("setSidebarCollapsed", val)
-})
+watch(isCollapsed, (val) => store.commit("setSidebarCollapsed", val))
 </script>
