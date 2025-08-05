@@ -397,6 +397,7 @@ class DriveFile(Document):
     @frappe.whitelist()
     def unshare(self, user=None):
         """Unshare this file or folder with the specified user
+        # BROKEN - poorly implemented, perm check
 
         :param user: User or group with whom this is to be shared
         :param user_type:
@@ -405,16 +406,27 @@ class DriveFile(Document):
         for i in absolute_path:
             if i["owner"] == user:
                 frappe.throw("User owns parent folder", frappe.PermissionError)
-
-        perm_name = frappe.db.get_value(
-            "Drive Permission",
-            {
-                "user": user,
-                "entity": self.name,
-            },
-        )
-        if perm_name:
-            frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+        if user == "general":
+            perm_names = frappe.db.get_list(
+                "Drive Permission",
+                {
+                    "user": ["in", ["", "$TEAM"]],
+                    "entity": self.name,
+                },
+                pluck="name",
+            )
+            for perm_name in perm_names:
+                frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+        else:
+            perm_name = frappe.db.get_value(
+                "Drive Permission",
+                {
+                    "user": user,
+                    "entity": self.name,
+                },
+            )
+            if perm_name:
+                frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
 
 
 def on_doctype_update():

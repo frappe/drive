@@ -197,7 +197,7 @@
           </div>
           <FCombobox
             v-model="shareAccess"
-            class="flex items-start"
+            class="flex items-start w-32"
             :options="
               advancedTweak
                 ? filteredAccess.map((k) => ({
@@ -452,14 +452,12 @@ const getGeneralAccess = createResource({
 getGeneralAccess.fetch({ user: "Guest" })
 
 const updateGeneralAccess = (type, level) => {
-  for (let user of ["$TEAM", ""]) {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user,
-      method: "unshare",
-    })
-  }
-  if (type.value !== "restricted") {
+  updateAccess.submit({
+    entity_name: props.entity.name,
+    user: "general",
+    method: "unshare",
+  })
+  if (type !== "restricted") {
     updateAccess.submit({
       entity_name: props.entity.name,
       user: type.value === "public" ? "" : "$TEAM",
