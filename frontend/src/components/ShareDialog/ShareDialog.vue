@@ -460,11 +460,11 @@ const updateGeneralAccess = (type, level) => {
   if (type !== "restricted") {
     updateAccess.submit({
       entity_name: props.entity.name,
-      user: type.value === "public" ? "" : "$TEAM",
+      user: type === "public" ? "" : "$TEAM",
       read: 1,
       comment: 1,
       share: 1,
-      write: level.value === "editor",
+      write: level === "editor",
     })
   }
   emit("success")
