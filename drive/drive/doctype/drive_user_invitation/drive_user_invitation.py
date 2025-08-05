@@ -69,6 +69,11 @@ class DriveUserInvitation(Document):
 
         if self.status == "Pending":
             if frappe.db.exists("User", {"email": self.email}):
+                # If user is not logged in as the invited user, redirect to login
+                if frappe.session.user == "Guest" or frappe.session.user != self.email:
+                    url = f"/drive/login?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&message=invitation"
+                    frappe.local.response["location"] = url
+                    return url
                 return self._accept_and_add_to_team()
 
             exists = frappe.db.exists(
@@ -91,7 +96,7 @@ class DriveUserInvitation(Document):
 
                 frappe.db.commit()
 
-                url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
+                url = f"/drive/login?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
                 frappe.local.response["location"] = url
                 return url
 
@@ -107,9 +112,14 @@ class DriveUserInvitation(Document):
         self.save(ignore_permissions=True)
         frappe.db.commit()
 
+        # Only auto-login if user is Guest and this is the invited email
+        # For security, we should still require proper authentication
         if frappe.session.user == "Guest":
-            frappe.local.login_manager.login_as(self.email)
+            # Redirect to login instead of auto-login for security
+            url = f"/drive/login?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&message=accepted"
+            frappe.local.response["location"] = url
+            return url
 
-        url = f"/drive/t/{self.team}"
+        url = f"/drive/t/{self.team}/team"
         frappe.local.response["location"] = url
         return url
