@@ -42,14 +42,7 @@ const store = createStore({
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     // Writer ones
-    activeCommentsInstance: "",
-    IsSidebarExpanded: JSON.parse(
-      localStorage.getItem("IsSidebarExpanded") || true
-    ),
-    passiveRename: false,
-    editorNewTab: localStorage.getItem("editorNewTab")
-      ? JSON.parse(localStorage.getItem("editorNewTab"))
-      : false,
+    sidebarCollapsed: getJson("sidebarCollapsed", false),
   },
   getters: {
     isLoggedIn: (state) => {
@@ -68,10 +61,6 @@ const store = createStore({
   mutations: {
     setElementExists(state, val) {
       state.elementExists = val
-    },
-    toggleEditorNewTab(state) {
-      state.editorNewTab = !state.editorNewTab
-      localStorage.setItem("editorNewTab", JSON.stringify(state.editorNewTab))
     },
     setUploads(state, uploads) {
       state.uploads = uploads
@@ -133,14 +122,13 @@ const store = createStore({
     setActiveCommentsInstance(state, payload) {
       state.activeCommentsInstance = payload
     },
-
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))
       state.breadcrumbs = payload
     },
-    setIsSidebarExpanded(state, payload) {
-      localStorage.setItem("IsSidebarExpanded", JSON.stringify(payload))
-      state.IsSidebarExpanded = payload
+    setSidebarCollapsed(state, payload) {
+      localStorage.setItem("sidebarCollapsed", JSON.stringify(payload))
+      state.sidebarCollapsed = payload
     },
   },
   actions: {

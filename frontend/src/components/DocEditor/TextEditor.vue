@@ -360,7 +360,6 @@ function evalImplicitTitle() {
   if (implicitTitle.length === 0) return
 
   if (implicitTitle.length) {
-    store.state.activeEntity.title = implicitTitle
     rename.submit({
       entity_name: props.entity.name,
       new_title: implicitTitle,

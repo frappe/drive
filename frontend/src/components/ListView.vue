@@ -31,7 +31,10 @@
         id="drop-area"
         class="h-full overflow-y-auto"
       >
-        <ListEmptyState v-if="!formattedRows.length" />
+        <ListEmptyState
+          v-if="!formattedRows.length"
+          class="py-5"
+        />
         <div
           v-for="group in formattedRows"
           v-else-if="formattedRows[0].group"

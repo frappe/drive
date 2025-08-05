@@ -1,5 +1,6 @@
 <template>
   <Sidebar
+    :collapsed="true"
     class="hidden sm:flex"
     :header="{
       title: getTeams.data?.[$route.params.team]?.title || 'Drive',
@@ -85,7 +86,7 @@ const store = useStore()
 const route = useRoute()
 notifCount.fetch()
 
-const isExpanded = computed(() => store.state.IsSidebarExpanded)
+const isCollapsed = ref(store.state.sidebarCollapsed)
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
@@ -325,6 +326,8 @@ const sidebarItems = computed(() => {
   return items
 })
 
-const toggleExpanded = () =>
-  store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)
+watch(isCollapsed, (val) => {
+  console.log(val)
+  store.commit("setSidebarCollapsed", val)
+})
 </script>

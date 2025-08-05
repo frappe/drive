@@ -51,9 +51,6 @@ const ext = ref("")
 
 if (props.entity.is_group || props.entity.document) {
   newName.value = props.entity.title
-  if (useRoute().meta.documentPage) {
-    store.state.activeEntity.title = newName.value
-  }
 } else {
   const parts = props.entity.title.split(".")
   if (parts.length > 1) {

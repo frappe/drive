@@ -110,10 +110,10 @@ onKeyDown((e) => {
     }
     if (e.shiftKey) {
       if (e.key == "ArrowRight") {
-        store.commit("setIsSidebarExpanded", true)
+        store.commit("setSidebarCollapsed", true)
         e.preventDefault()
       } else if (e.key == "ArrowLeft") {
-        store.commit("setIsSidebarExpanded", false)
+        store.commit("setSidebarCollapsed", false)
         e.preventDefault()
       }
     }

@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     isExpanded() {
-      return this.$store.state.IsSidebarExpanded
+      return this.$store.state.sidebarCollapsed
     },
     team() {
       return this.$route.params.team || localStorage.getItem("recentTeam")
@@ -115,7 +115,7 @@ export default {
   methods: {
     toggleExpanded() {
       return this.$store.commit(
-        "setIsSidebarExpanded",
+        "setSidebarCollapsed",
         this.isExpanded ? false : true
       )
     },
@@ -136,16 +136,16 @@ export default {
       let range = [60, 180]
       if (sidebarWidth > range[0] && sidebarWidth < range[1]) {
         sidebarWidth = 60
-        this.$store.commit("setIsSidebarExpanded", false)
+        this.$store.commit("setSidebarCollapsed", false)
       }
       if (sidebarWidth > 180) {
-        this.$store.commit("setIsSidebarExpanded", true)
+        this.$store.commit("setSidebarCollapsed", true)
       }
       /* if (sidebarWidth < 100) {
-          this.$store.commit("setIsSidebarExpanded", false )
+          this.$store.commit("setSidebarCollapsed", false )
         }
         if (sidebarWidth > 100) {
-          this.$store.commit("setIsSidebarExpanded", true )
+          this.$store.commit("setSidebarCollapsed", true )
         } */
     },
   },
