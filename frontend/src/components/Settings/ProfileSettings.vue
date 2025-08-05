@@ -94,13 +94,14 @@
   <h1 class="font-semibold mt-12 mb-4 text-ink-gray-8">
     {{ __("Preferences") }}
   </h1>
-  <Autocomplete
+  <FormControl
+    type="select"
     v-model="defaultTeam"
-    placeholder="Not set"
     :options="teamOptions"
     label="Default Team"
     class="mb-3"
   />
+
   <Switch
     v-model="singleClick"
     label="Single click to open files and folders"
@@ -120,7 +121,7 @@ import {
   Dialog,
   FileUploader,
   Switch,
-  Autocomplete,
+  FormControl,
   createDocumentResource,
 } from "frappe-ui"
 import LucideLink from "~icons/lucide/link"
