@@ -130,9 +130,9 @@ const onSuccess = (data) => {
   window.document.title = data.title
   updateURLSlug(data.title)
 
-  store.commit("setActiveEntity", data)
+  document.setData(prettyData([data])[0])
   entity.value = data
-  document.setData(prettyData([entity])[0])
+  store.commit("setActiveEntity", data)
 
   title.value = data.title
   rawContent.value = data.raw_content

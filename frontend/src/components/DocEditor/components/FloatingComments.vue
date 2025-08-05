@@ -2,7 +2,7 @@
   <div
     v-show="showComments"
     ref="scrollContainer"
-    class="relative hidden sm:flex w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5 bg-surface-white"
+    class="relative hidden md:flex min-w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5 bg-surface-white"
   >
     <template
       v-for="comment in filteredComments"

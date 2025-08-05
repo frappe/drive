@@ -55,7 +55,7 @@
         </li> -->
       </ul>
       <ul
-        v-if="editor"
+        v-if="editor?.storage?.characterCount"
         class="space-y-3 text-sm mb-4 text-ink-gray-9"
       >
         <span class="text-base font-semibold">{{ __("Stats") }}</span>
