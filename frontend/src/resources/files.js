@@ -114,8 +114,8 @@ export const mutate = (entities, func) => {
   )
 }
 
-export const updateMoved = (new_parent, team) => {
-  if (new_parent && team) {
+export const updateMoved = (team, new_parent, special) => {
+  if (!special) {
     // All details are repetetively provided (check Folder.vue) because if this is run first
     // No further mutation of the resource object can take place
     createResource({
@@ -130,8 +130,8 @@ export const updateMoved = (new_parent, team) => {
       cache: ["folder", new_parent],
     }).fetch({
       order_by:
-        store.state.sortOrder.field +
-        (store.state.sortOrder.ascending ? " 1" : " 0"),
+        store.state.sortOrder[new_parent].field +
+        (store.state.sortOrder[new_parent].ascending ? " 1" : " 0"),
     })
   } else {
     ;(move.params.is_private ? getPersonal : getHome).fetch({ team })
@@ -271,19 +271,21 @@ export const move = createResource({
         {
           label: "Go",
           action: () => {
-            openEntity(null, {
-              name: data.name,
-              team: data.team,
-              is_group: true,
-              is_private: data.is_private,
-            })
+            if (!data.special)
+              openEntity(null, {
+                name: data.name,
+                team: data.team,
+                is_group: true,
+                is_private: data.is_private,
+              })
+              else router.push({name: data.title})
           },
         },
       ],
     })
 
     // Update moved-into folder
-    updateMoved(data.name, data.team, data.is_private)
+    updateMoved(data.team, data.name, data.special)
   },
   onError() {
     toast("There was an error.")

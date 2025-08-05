@@ -38,8 +38,6 @@ const getFolderContents = createResource({
   url: "drive.api.list.files",
   makeParams: (params) => ({
     ...params,
-    // Disable all checks, return all children
-    personal: -2,
     entity_name: props.entityName,
     team: props.team,
   }),

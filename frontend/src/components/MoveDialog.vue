@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ size: '2xl' }"
+    :options="{ size: 'lg' }"
   >
     <template #body-main>
       <div

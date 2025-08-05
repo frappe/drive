@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { manageBreadcrumbs } from "./utils/files"
 import { createResource } from "frappe-ui"
+import { getTeams } from "./resources/files"
 
 function clearStore() {
   store.commit("setActiveEntity", null)
@@ -15,6 +16,10 @@ async function setRootBreadCrumb(to) {
         { label: __(to.name), name: to.name, route: to.path },
       ])
   }
+}
+
+function redirectHome(to) {
+  console.log(to.params.entityName, getTeams.data?.[to.params.team])
 }
 
 const routes = [
@@ -94,7 +99,7 @@ const routes = [
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { allowGuest: true },
-    beforeEnter: [manageBreadcrumbs],
+    beforeEnter: [manageBreadcrumbs, redirectHome],
     props: true,
   },
   {

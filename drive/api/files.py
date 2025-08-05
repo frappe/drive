@@ -17,7 +17,7 @@ from drive.utils.files import (
     update_file_size,
     if_folder_exists,
     FileManager,
-    extract_mentions
+    extract_mentions,
 )
 from datetime import date, timedelta
 import magic
@@ -471,7 +471,6 @@ def save_doc(entity_name, doc_name, content):
         )
 
 
-
 @frappe.whitelist()
 def create_doc_version(entity_name, doc_name, snapshot_data, snapshot_message):
     if not frappe.has_permission(
@@ -880,8 +879,10 @@ def move(entity_names, new_parent=None, is_private=None):
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
         res = doc.move(new_parent, is_private)
+
     if res["title"] == "Drive - " + res["team"]:
-        res["title"] = "Home" if res["is_private"] else "Team"
+        res["title"] = "Home" if is_private else "Team"
+        res["special"] = True
 
     return res
 

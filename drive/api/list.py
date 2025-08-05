@@ -30,7 +30,7 @@ def files(
     recents_only=0,
     tag_list=[],
     file_kinds=[],
-    personal=-1,
+    personal=0,
     folders=0,
     only_parent=1,
 ):
@@ -185,7 +185,6 @@ def files(
         else:
             r["share_count"] = share_count.get(r["name"], 0)
         r |= get_user_access(r["name"])
-        print(r)
 
     return res
 
