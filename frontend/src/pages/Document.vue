@@ -86,6 +86,7 @@ import LucideWifi from "~icons/lucide/wifi"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
 import { dynamicList } from "../utils/files"
+import { useTemplateRef } from "vue"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -101,6 +102,8 @@ const store = useStore()
 const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
+const editor = useTemplateRef("editor")
+provide("editor", editor)
 provide("showResolved", showResolved)
 
 // Reactive data properties

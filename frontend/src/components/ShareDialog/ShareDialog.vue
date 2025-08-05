@@ -29,37 +29,33 @@
           </div>
           <div class="flex justify-between mt-3">
             <div class="flex flex-col gap-2">
-              <div class="w-fit">
-                <Autocomplete
-                  v-model="generalAccessLevel"
-                  :options="generalOptions"
-                  :hide-search="true"
-                  @update:model-value="
-                    (val) => updateGeneralAccess(val, generalAccessLevel)
-                  "
-                >
-                  <template #prefix>
-                    <component
-                      :is="generalAccessLevel.icon"
-                      class="mr-2 size-4 text-ink-gray-6"
-                    />
-                  </template>
-                  <template #item-prefix="{ option }">
-                    <component
-                      :is="option.icon"
-                      class="size-4 text-ink-gray-6"
-                    />
-                  </template>
-                </Autocomplete>
-              </div>
+              <FCombobox
+                v-model="generalAccessLevel"
+                :options="generalOptions"
+                @update:model-value="
+                  (val) => updateGeneralAccess(val, generalAccessLevel)
+                "
+              >
+                <template #prefix>
+                  <component
+                    :is="generalAccessLevel.icon"
+                    class="mr-2 size-4 text-ink-gray-6"
+                  />
+                </template>
+                <template #item-prefix="{ option }">
+                  <component
+                    :is="option.icon"
+                    class="size-4 text-ink-gray-6"
+                  />
+                </template>
+              </FCombobox>
             </div>
-            <div class="my-auto">
-              <Autocomplete
-                v-if="generalAccessLevel.value !== 'restricted'"
+            <div class="my-auto w-32">
+              <FCombobox
+                v-if="generalAccessLevel !== 'restricted'"
                 v-model="generalAccessType"
                 class="my-auto"
                 :options="accessOptions"
-                :hide-search="true"
                 @update:model-value="
                   (val) => updateGeneralAccess(generalAccessType, val)
                 "
@@ -199,11 +195,9 @@
               </transition>
             </Combobox>
           </div>
-          <Autocomplete
+          <FCombobox
             v-model="shareAccess"
-            class="flex items-center"
-            placeholder="Access"
-            :hide-search="true"
+            class="flex items-start"
             :options="
               advancedTweak
                 ? filteredAccess.map((k) => ({
@@ -256,7 +250,7 @@
                   v-if="user.user === entity.owner"
                   class="flex gap-1"
                 >
-                  Owner (you)<LucideDiamond class="size-3 my-auto" />
+                  Owner (you)
                 </div>
                 <template v-else>You</template>
               </span>
@@ -325,7 +319,7 @@ import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
 import {
   Avatar,
   Dialog,
-  Autocomplete,
+  Combobox as FCombobox,
   LoadingIndicator,
   createResource,
 } from "frappe-ui"
@@ -367,7 +361,7 @@ watch(sharedUsers, (now, prev) => {
       allUsers.data.push(addedUser)
   }
 })
-const shareAccess = ref({ value: "reader" })
+const shareAccess = ref("reader")
 const advancedTweak = false
 const baseOption = computed(() => ({ email: query.value, name: query.value }))
 const query = ref("")
@@ -401,7 +395,7 @@ const accessOptions = computed(() =>
 function addShares() {
   // Used to enable future advanced config
   const access =
-    shareAccess.value.value === "editor"
+    shareAccess.value === "editor"
       ? { read: 1, comment: 1, share: 1, write: 1 }
       : { read: 1, comment: 1, share: 1, write: 0 }
   for (let user of sharedUsers.value) {
@@ -433,26 +427,29 @@ const generalOptions = [
   },
   { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
 ]
-const generalAccessLevel = ref(generalOptions[0])
-const generalAccessType = ref({ value: "reader" })
+const generalAccessLevel = ref(generalOptions[0].value)
+const generalAccessType = ref("reader")
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
-  makeParams: (params) => ({ ...params, entity: props.entity.name }),
+  makeParams: (params) => ({
+    ...params,
+    entity: props.entity.name,
+  }),
   onSuccess: (data) => {
     if (!data || !data.read) {
-      if (getGeneralAccess.params.user === "")
+      if (getGeneralAccess.params.user === "Guest")
         getGeneralAccess.fetch({ user: "$TEAM" })
       return
     }
-    const translate = { "": "public", $TEAM: "team" }
+    const translate = { Guest: "public", $TEAM: "team" }
     generalAccessLevel.value = generalOptions.find(
       (k) => k.value === translate[getGeneralAccess.params.user]
-    )
+    ).value
 
-    generalAccessType.value = { value: data.write ? "editor" : "reader" }
+    generalAccessType.value = data.write ? "editor" : "reader"
   },
 })
-getGeneralAccess.fetch({ user: "" })
+getGeneralAccess.fetch({ user: "Guest" })
 
 const updateGeneralAccess = (type, level) => {
   for (let user of ["$TEAM", ""]) {

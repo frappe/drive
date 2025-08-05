@@ -67,13 +67,13 @@ import {
 import store from "@/store"
 import FontFamily from "./extensions/font-family"
 import FloatingQuoteButton from "./extensions/comment"
+import { CharacterCount } from "./extensions/character-count"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
-import { uploadDriveEntity } from "@/utils/chunkFileUpload"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
@@ -86,6 +86,7 @@ const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
 })
+defineExpose(editor)
 
 const rawContent = defineModel("rawContent")
 const showComments = defineModel("showComments")
@@ -179,6 +180,7 @@ const ExtendedCommentExtension = CommentExtension.extend({
 })
 
 const editorExtensions = [
+  CharacterCount,
   FontFamily.configure({
     types: ["textStyle"],
   }),

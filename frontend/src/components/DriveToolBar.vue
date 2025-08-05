@@ -226,8 +226,6 @@ import {
 import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
-import LucideLayoutGrid from "~icons/lucide/layout-grid"
-import LucideLayoutList from "~icons/lucide/layout-list"
 import LucideFilter from "~icons/lucide/filter"
 
 const rows = defineModel(Array)

@@ -17,9 +17,6 @@ export default defineConfig({
     }),
     vue(),
   ],
-  define: {
-    "process.env.IS_PREACT": JSON.stringify("true"),
-  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

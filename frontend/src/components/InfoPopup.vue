@@ -13,8 +13,8 @@
       </h3>
     </template>
     <template #body-content>
-      <ul class="space-y-3 text-sm pb-2 text-ink-gray-9">
-        <span class="text-base font-semibold mt-2">Information</span>
+      <ul class="space-y-3 text-sm mb-4 text-ink-gray-9">
+        <span class="text-base font-semibold">Information</span>
         <li>
           <span class="inline-block w-24 text-ink-gray-5"
             >{{ __("Owner") }}:</span
@@ -54,8 +54,49 @@
           <span class="col-span-1">{{ entity.path }}</span>
         </li> -->
       </ul>
+      <ul
+        v-if="editor"
+        class="space-y-3 text-sm mb-4 text-ink-gray-9"
+      >
+        <span class="text-base font-semibold">{{ __("Stats") }}</span>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5"
+            >{{ __("Words") }}:</span
+          >
+          <span class="col-span-1">{{
+            editor.storage.characterCount.words()
+          }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5"
+            >{{ __("Characters") }}:</span
+          >
+          <span class="col-span-1">{{
+            editor.storage.characterCount.characters()
+          }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5"
+            >{{ __("Reading time") }}:</span
+          >
+          <span class="col-span-1">
+            {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
+            {{
+              Math.ceil(editor.storage.characterCount.words() / 200) > 1
+                ? "mins"
+                : "min"
+            }}
+          </span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5"
+            >{{ __("Modified") }}:</span
+          >
+          <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
+        </li>
+      </ul>
       <div class="flex justify-between">
-        <span class="text-base font-semibold mt-2">Access</span>
+        <span class="text-base font-semibold">Access</span>
         <Button
           v-if="entity.share"
           :variant="'subtle'"
@@ -123,11 +164,16 @@
 import { formatDate } from "@/utils/format"
 import { Dialog, Button, LoadingIndicator } from "frappe-ui"
 import { computedAsync } from "@vueuse/core"
-import { ref, computed } from "vue"
+import { ref, computed, inject } from "vue"
 import emitter from "@/emitter"
 
+import LucideX from "~icons/lucide/x"
+
 const dialogValue = defineModel()
-const props = defineProps({ entity: Object })
+const editor = inject("editor")
+const props = defineProps({
+  entity: Object,
+})
 
 const dialog = computed({
   get: () => {
