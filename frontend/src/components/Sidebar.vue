@@ -2,7 +2,7 @@
   <Sidebar
     class="hidden sm:flex"
     :header="{
-      title: 'Drive',
+      title: getTeams.data?.[$route.params.team]?.title || 'Drive',
       subtitle: $store.state.user.fullName,
       menuItems: settingsItems,
       logo: FrappeDriveLogo,

@@ -8,6 +8,12 @@ export {}
 declare global {
   const LucideBadgeHelp: typeof import('~icons/lucide/badge-help')['default']
   const LucideBook: typeof import('~icons/lucide/book')['default']
+  const LucideCloudAlert: typeof import('~icons/lucide/cloud-alert')['default']
+  const LucideCloudCheck: typeof import('~icons/lucide/cloud-check')['default']
+  const LucideCloudSync: typeof import("~icons/lucide/cloud-sync")["default"]
+  const LucideCloudUp: typeof import("~icons/lucide/cloud-up")["default"]
+  const LucideCloudUpload: typeof import("~icons/lucide/cloud-upload")["default"]
+  const LucideFolderSync: typeof import('~icons/lucide/folder-sync')['default']
   const LucideMoon: typeof import('~icons/lucide/moon')['default']
   const LucideUser: typeof import('~icons/lucide/user')['default']
 }

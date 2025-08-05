@@ -16,10 +16,10 @@
   <RenameDialog
     v-if="dialog === 'rn'"
     v-model="dialog"
-    :entity="selections[0]"
+    :entity="entities[0]"
     @success="
       ({ name, title }) => {
-        if (selections[0] !== rootResource?.data && props.getEntities)
+        if (entities[0] !== rootResource?.data && props.getEntities)
           props.getEntities.data.find((k) => k.name === name).title = title
         resetDialog()
       }
@@ -28,42 +28,42 @@
   <ShareDialog
     v-if="dialog === 's'"
     v-model="dialog"
-    :entity="selections[0]"
+    :entity="entities[0]"
     @success="getEntities.fetch(getEntities.params)"
   />
   <InfoPopup
     v-if="dialog === 'i'"
     v-model="dialog"
-    :entity="selections[0]"
+    :entity="entities[0]"
   />
 
   <!-- Deletion dialogs -->
   <GeneralDialog
     v-if="dialog === 'remove'"
     v-model="dialog"
-    :entities="selections"
+    :entities="entities"
     :for="'remove'"
-    @success="removeFromList(selections, false)"
+    @success="removeFromList(entities, false)"
   />
   <GeneralDialog
     v-if="dialog === 'restore'"
     v-model="dialog"
-    :entities="selections"
+    :entities="entities"
     :for="'restore'"
-    @success="removeFromList(selections)"
+    @success="removeFromList(entities)"
   />
 
   <MoveDialog
     v-if="dialog === 'm'"
     v-model="dialog"
-    :entities="selections"
-    @success="removeFromList(selections)"
+    :entities="entities"
+    @success="removeFromList(entities)"
   />
   <DeleteDialog
     v-if="dialog === 'd'"
     v-model="dialog"
-    :entities="selections"
-    @success="removeFromList(selections)"
+    :entities="entities"
+    @success="removeFromList(entities)"
   />
   <CTADeleteDialog
     v-if="dialog === 'cta'"
@@ -93,17 +93,10 @@ const store = useStore()
 
 const props = defineProps({
   rootResource: Object,
-  selectedRows: Array,
+  entities: Array,
   getEntities: { type: Object, default: null },
 })
 const resetDialog = () => (dialog.value = "")
-const selections = computed(() => {
-  return props.selectedRows && props.selectedRows.length
-    ? props.selectedRows
-    : props.rootResource
-    ? [props.rootResource.data]
-    : null
-})
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))

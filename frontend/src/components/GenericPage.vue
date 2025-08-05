@@ -1,18 +1,11 @@
 <template>
   <Navbar
     v-if="!verify?.error && !getEntities.error"
-    :actions="
-      $route.name === 'Folder' && verify?.data
-        ? actionItems
-            .filter((k) => k.isEnabled?.(verify.data))
-            // Remove irrelevant ones
-            .slice(1)
-            .toSpliced(4, 1)
-            .map((k) => ({ ...k, onClick: () => k.action([verify.data]) }))
-        : null
-    "
+    :actions="null"
     :trigger-root="
-      () => ((selections = new Set()), store.commit('setActiveEntity', null))
+      () => (
+        (selections = new Set()), store.commit('setActiveEntity', verify.data)
+      )
     "
     :root-resource="verify"
   />
@@ -28,15 +21,14 @@
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
-      v-if="getEntities.params?.team"
       v-model="rows"
       :action-items="actionItems"
       :selections="selectedEntitities"
-      :get-entities="getEntities"
+      :get-entities="getEntities || { data: [] }"
     />
 
     <div
-      v-if="!props.getEntities.fetched"
+      v-if="!props.getEntities.data"
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
@@ -68,8 +60,7 @@
 
   <Dialogs
     v-model="dialog"
-    :selected-rows="activeEntity ? [activeEntity] : selectedEntitities"
-    :root-resource="verify"
+    :entities="activeEntity ? [activeEntity] : selectedEntitities"
     :get-entities="getEntities"
   />
   <FileUploader
@@ -85,7 +76,6 @@ import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
-import InfoPopup from "@/components/InfoPopup.vue"
 import { getLink } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
@@ -106,7 +96,7 @@ import LucideExternalLink from "~icons/lucide/external-link"
 import LucideEye from "~icons/lucide/eye"
 import LucideInfo from "~icons/lucide/info"
 import LucideLink2 from "~icons/lucide/link-2"
-import LucideMoveUpRight from "~icons/lucide/move-up-right"
+import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 import LucideRotateCcw from "~icons/lucide/rotate-ccw"
 import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
@@ -244,7 +234,7 @@ const actionItems = computed(() => {
       { divider: true },
       {
         label: __("Move"),
-        icon: LucideMoveUpRight,
+        icon: LucideArrowLeftRight,
         action: () => (dialog.value = "m"),
         isEnabled: (e) => e.write,
         multi: true,

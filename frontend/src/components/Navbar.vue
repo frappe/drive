@@ -40,18 +40,18 @@
       <Dropdown
         v-if="dropdownAction"
         :options="dropdownAction"
-        placement="left"
-      >
-        <Button
-          variant="ghost"
-          @click="triggerRoot"
-        >
-          <LucideMoreHorizontal
-            name="more-horizontal"
-            class="size-4"
-          />
-        </Button>
-      </Dropdown>
+        placement="right"
+        :button="{
+          variant: 'ghost',
+          tooltip: 'Actions',
+          onClick: () => {
+            $store.commit('setActiveEntity', rootEntity)
+            console.log($store.state.activeEntity)
+          },
+          icon: LucideMoreHorizontal,
+        }"
+      />
+
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
@@ -105,20 +105,13 @@
     <Dialogs
       v-if="$route.name === 'File' || $route.name === 'Document'"
       v-model="dialog"
-      :root-resource
+      :entities="[rootEntity]"
     />
   </nav>
 </template>
 <script setup>
 import UsersBar from "./UsersBar.vue"
-import {
-  Button,
-  Breadcrumbs,
-  LoadingIndicator,
-  Dropdown,
-  Tooltip,
-  Switch,
-} from "frappe-ui"
+import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
 import { ref, computed } from "vue"
@@ -139,10 +132,11 @@ import LucideTrash from "~icons/lucide/trash"
 import LucideUsers from "~icons/lucide/users"
 import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideStar from "~icons/lucide/star"
+import LucideMoreHorizontal from "~icons/lucide/more-horizontal"
 import LucideShare2 from "~icons/lucide/share-2"
 import LucideDownload from "~icons/lucide/download"
 import LucideLink from "~icons/lucide/link"
-import LucideMoveUpRight from "~icons/lucide/move-up-right"
+import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideInfo from "~icons/lucide/info"
 import LucidePlus from "~icons/lucide/plus"
@@ -210,7 +204,7 @@ const dropdownAction = computed(() => {
       items: [
         {
           label: __("Move"),
-          icon: LucideMoveUpRight,
+          icon: LucideArrowLeftRight,
           onClick: () => (dialog.value = "m"),
           isEnabled: () => rootEntity.value.write,
         },

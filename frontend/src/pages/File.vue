@@ -107,6 +107,11 @@ const nextEntity = computed(() => filteredEntities.value[index.value + 1])
 
 function fetchFile(currentEntity) {
   file.fetch({ entity_name: currentEntity })
+  router.push({
+    params: {
+      entityName: currentEntity,
+    },
+  })
 }
 
 onKeyStroke("ArrowLeft", (e) => {

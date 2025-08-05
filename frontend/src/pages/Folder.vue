@@ -47,6 +47,7 @@ const getFolderContents = createResource({
 })
 setCache(getFolderContents, ["folder", props.entityName])
 
+// BROKEN
 onMounted(() => {
   realtime.doc_subscribe("Drive File", props.entityName)
   realtime.doc_open("Drive File", props.entityName)

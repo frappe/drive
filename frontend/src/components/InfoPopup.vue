@@ -167,8 +167,6 @@ import { computedAsync } from "@vueuse/core"
 import { ref, computed, inject } from "vue"
 import emitter from "@/emitter"
 
-import LucideX from "~icons/lucide/x"
-
 const dialogValue = defineModel()
 const editor = inject("editor")
 const props = defineProps({
