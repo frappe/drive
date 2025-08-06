@@ -427,7 +427,9 @@ const generalOptions = [
   },
   { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
 ]
-const generalAccessLevel = ref(generalOptions[0].value)
+const generalAccessLevel = ref(
+  generalOptions[props.entity.is_private ? 0 : 1].value
+)
 const generalAccessType = ref("reader")
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
