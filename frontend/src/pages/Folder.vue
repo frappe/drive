@@ -41,6 +41,16 @@ const getFolderContents = createResource({
 setCache(getFolderContents, ["folder", props.entityName])
 
 onMounted(() => {
+  // Lưu thông tin folder share nếu user chưa login
+  if (!store.getters.isLoggedIn) {
+    const sharedFileInfo = {
+      team: props.team,
+      entityName: props.entityName,
+      entityType: "folder"
+    }
+    sessionStorage.setItem("sharedFileInfo", JSON.stringify(sharedFileInfo))
+  }
+  
   realtime.doc_subscribe("Drive File", props.entityName)
   realtime.doc_open("Drive File", props.entityName)
   realtime.on("doc_viewers", (data) => {

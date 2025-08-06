@@ -142,6 +142,16 @@ function scrollEntity(negative = false) {
 }
 
 onMounted(() => {
+  // Lưu thông tin file share nếu user chưa login
+  if (!store.getters.isLoggedIn) {
+    const sharedFileInfo = {
+      team: props.team,
+      entityName: props.entityName,
+      entityType: "file"
+    }
+    sessionStorage.setItem("sharedFileInfo", JSON.stringify(sharedFileInfo))
+  }
+  
   fetchFile(props.entityName)
   realtime.doc_subscribe("Drive File", props.entityName)
   realtime.doc_open("Drive File", props.entityName)

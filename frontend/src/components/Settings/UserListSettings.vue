@@ -308,10 +308,10 @@ const accessOptions = [
     label: "User",
     onClick: () => updateAccess(1),
   },
-  {
-    label: "Guest",
-    onClick: () => updateAccess(0),
-  },
+  // {
+  //   label: "Guest",
+  //   onClick: () => updateAccess(0),
+  // },
   {
     label: "Remove",
     class: "text-ink-red-3",

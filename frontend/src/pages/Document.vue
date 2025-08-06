@@ -166,6 +166,16 @@ const updateDocument = createResource({
 })
 
 onMounted(() => {
+  // Lưu thông tin document share nếu user chưa login
+  if (!store.getters.isLoggedIn) {
+    const sharedFileInfo = {
+      team: props.team,
+      entityName: props.entityName,
+      entityType: "document"
+    }
+    sessionStorage.setItem("sharedFileInfo", JSON.stringify(sharedFileInfo))
+  }
+  
   allUsers.fetch({ team: route.params?.team })
   if (saveCount.value > 0) {
     intervalId.value = setInterval(() => {

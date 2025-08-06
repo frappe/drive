@@ -207,11 +207,12 @@ def oauth_providers():
                 icon = f"<img src='{provider.icon}' alt={provider.provider_name}>"
 
         if provider.client_id and provider.base_url and get_oauth_keys(provider.name):
+            auth_url = get_oauth2_authorize_url(provider.name, "/drive")
             out.append(
                 {
                     "name": provider.name,
                     "provider_name": provider.provider_name,
-                    "auth_url": get_oauth2_authorize_url(provider.name, "/drive"),
+                    "auth_url": auth_url,
                     "icon": icon,
                 }
             )
@@ -390,11 +391,5 @@ def reject_invite(key):
 
 @frappe.whitelist(allow_guest=True)
 def get_translations():
-    if frappe.session.user != "Guest":
-        language = frappe.db.get_value("User", frappe.session.user, "language")
-        if not language:
-            language = frappe.db.get_single_value("System Settings", "language")
-    else:
-        language = frappe.db.get_single_value("System Settings", "language")
-
-    return get_all_translations(language)
+    """Get all translations for the frontend"""
+    return get_all_translations()

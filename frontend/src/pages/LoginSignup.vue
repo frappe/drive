@@ -178,6 +178,22 @@ const signup = createResource({
     }
   },
   onSuccess(data) {
+    // Kiểm tra xem có file được share trong sessionStorage không
+    const sharedFileInfo = sessionStorage.getItem("sharedFileInfo")
+    if (sharedFileInfo) {
+      try {
+        const { team, entityName, entityType } = JSON.parse(sharedFileInfo)
+        // Xóa thông tin share file khỏi sessionStorage
+        sessionStorage.removeItem("sharedFileInfo")
+        // Redirect đến file được share
+        window.location.href = `/drive/t/${team}/${entityType}/${entityName}`
+        return
+      } catch (error) {
+        console.error("Error parsing shared file info:", error)
+        sessionStorage.removeItem("sharedFileInfo")
+      }
+    }
+    // Nếu không có file share, redirect đến trang chủ như bình thường
     window.location.href = data.location || "/drive"
   },
   onError(err) {
@@ -201,6 +217,22 @@ const login = createResource({
     }
   },
   onSuccess() {
+    // Kiểm tra xem có file được share trong sessionStorage không
+    const sharedFileInfo = sessionStorage.getItem("sharedFileInfo")
+    if (sharedFileInfo) {
+      try {
+        const { team, entityName, entityType } = JSON.parse(sharedFileInfo)
+        // Xóa thông tin share file khỏi sessionStorage
+        sessionStorage.removeItem("sharedFileInfo")
+        // Redirect đến file được share
+        window.location.href = `/drive/t/${team}/${entityType}/${entityName}`
+        return
+      } catch (error) {
+        console.error("Error parsing shared file info:", error)
+        sessionStorage.removeItem("sharedFileInfo")
+      }
+    }
+    // Nếu không có file share, redirect đến trang chủ như bình thường
     window.location.href = "/drive"
   },
   onError(err) {
