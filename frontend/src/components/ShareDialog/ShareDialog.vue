@@ -1,6 +1,7 @@
 <template>
   <Dialog
-    v-model="openDialog"
+    v-model="open"
+    @close="dialogType = ''"
     :options="{ size: 'lg' }"
   >
     <template #body-main>
@@ -348,6 +349,9 @@ import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])
+const dialogType = defineModel()
+const open = ref(true)
+
 getUsersWithAccess.fetch({ entity: props.entity.name })
 
 // Invite users
@@ -471,15 +475,6 @@ const updateGeneralAccess = (type, level) => {
   }
   emit("success")
 }
-
-const openDialog = computed({
-  get: () => {
-    return props.modelValue === "s"
-  },
-  set: (value) => {
-    emit("update:modelValue", value || "")
-  },
-})
 
 const ACCESS_LEVELS = ["read", "comment", "upload", "share", "write"]
 const filteredAccess = computed(() =>

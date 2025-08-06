@@ -248,9 +248,7 @@ const actionItems = computed(() => {
       {
         label: __("Show Info"),
         icon: LucideInfo,
-        action: (a) => {
-          emitter.emit("info")
-        },
+        action: () => (dialog.value = "i"),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {

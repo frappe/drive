@@ -1,4 +1,5 @@
 <template>
+  <!-- New dialogs -->
   <NewFolderDialog
     v-if="dialog === 'f'"
     v-model="dialog"
@@ -11,7 +12,7 @@
     :parent="$route.params.entityName"
     @success="(data) => addToList(data, 'Link')"
   />
-  <!-- Mutation dialog -->
+  <!-- Mutation dialogs -->
   <RenameDialog
     v-if="dialog === 'rn'"
     v-model="dialog"
@@ -109,7 +110,6 @@ emitter.on("newFolder", () => {
   dialog.value = "f"
 })
 emitter.on("rename", () => (dialog.value = "rn"))
-emitter.on("info", () => (dialog.value = "i"))
 emitter.on("remove", () => (dialog.value = "remove"))
 emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))

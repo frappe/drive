@@ -1,8 +1,7 @@
 <template>
   <Dialog
-    v-if="entity"
-    size="md"
-    v-model="dialog"
+    v-model="open"
+    @close="dialogType = ''"
   >
     <template #body-title>
       <h3
@@ -164,10 +163,12 @@
 import { formatDate } from "@/utils/format"
 import { Dialog, Button, LoadingIndicator } from "frappe-ui"
 import { computedAsync } from "@vueuse/core"
-import { ref, computed, inject, watch } from "vue"
+import { ref, inject, watch } from "vue"
 import emitter from "@/emitter"
 
-const dialogValue = defineModel()
+const dialogType = defineModel()
+const open = ref(true)
+
 const editor = inject("editor")
 watch(
   editor,
@@ -180,15 +181,6 @@ const props = defineProps({
   entity: Object,
 })
 
-const dialog = computed({
-  get: () => {
-    return dialogValue.value === "i"
-  },
-  set: (value) => {
-    if (!value) dialogValue.value = ""
-  },
-})
-ref(Boolean(props.entity))
 const access = computedAsync(async () => {
   const users = await fetch(
     "/api/method/drive.api.permissions.get_shared_with_list?entity=" +

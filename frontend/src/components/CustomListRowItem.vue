@@ -26,20 +26,7 @@
       />
     </template>
     <template #default="{ label }">
-      <transition
-        v-if="column.key === 'title'"
-        name="fade-in"
-        mode="out-in"
-      >
-        <div
-          :key="label"
-          class="truncate text-base"
-        >
-          {{ column?.getLabel ? column.getLabel({ row }) : label }}
-        </div>
-      </transition>
       <div
-        v-else
         :key="label"
         class="truncate text-base"
       >
