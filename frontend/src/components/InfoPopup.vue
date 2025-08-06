@@ -172,7 +172,7 @@ const editor = inject("editor")
 watch(
   editor,
   () => {
-    window.editor = editor.value
+    window.editor = editor?.value
   },
   { immediate: true }
 )

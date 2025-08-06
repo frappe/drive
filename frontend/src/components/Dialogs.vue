@@ -1,5 +1,4 @@
 <template>
-  <!-- New item dialogs -->
   <NewFolderDialog
     v-if="dialog === 'f'"
     v-model="dialog"
@@ -7,7 +6,7 @@
     @success="(data) => addToList(data, 'Folder')"
   />
   <NewLinkDialog
-    v-if="dialog === 'l'"
+    v-else-if="dialog === 'l'"
     v-model="dialog"
     :parent="$route.params.entityName"
     @success="(data) => addToList(data, 'Link')"
@@ -72,6 +71,13 @@
   />
 </template>
 <script setup>
+import { ref, watch } from "vue"
+import { useStore } from "vuex"
+import { useTimeAgo } from "@vueuse/core"
+import { sortEntities, openEntity } from "@/utils/files"
+
+import emitter from "@/emitter"
+
 import NewFolderDialog from "@/components/NewFolderDialog.vue"
 import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
@@ -80,27 +86,28 @@ import GeneralDialog from "@/components/GeneralDialog.vue"
 import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
-import emitter from "@/emitter"
-import { useStore } from "vuex"
-import { computed } from "vue"
-import { useRoute } from "vue-router"
-import { sortEntities } from "@/utils/files"
-import { useTimeAgo } from "@vueuse/core"
-import { openEntity } from "../utils/files"
-
-const dialog = defineModel(String)
-const store = useStore()
 
 const props = defineProps({
   rootResource: Object,
   entities: Array,
   getEntities: { type: Object, default: null },
 })
+const store = useStore()
+
+const dialog = defineModel(String)
+const open = ref(false)
+watch(dialog, (val) => {
+  if (val) open.value = true
+})
+
 const resetDialog = () => (dialog.value = "")
 
 emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
-emitter.on("newFolder", () => (dialog.value = "f"))
+emitter.on("newFolder", () => {
+  console.log("emittted")
+  dialog.value = "f"
+})
 emitter.on("rename", () => (dialog.value = "rn"))
 emitter.on("info", () => (dialog.value = "i"))
 emitter.on("remove", () => (dialog.value = "remove"))
@@ -109,6 +116,7 @@ emitter.on("newLink", () => (dialog.value = "l"))
 
 function addToList(data, file_type) {
   if (!props.getEntities) return
+  console.log("in")
   data = {
     ...data,
     modified: Date(),
@@ -125,8 +133,9 @@ function addToList(data, file_type) {
   const newData = [...props.getEntities.data, data]
   sortEntities(newData, store.state.sortOrder)
   props.getEntities.setData(newData)
-  // props.getEntities.fetch()
+  console.log("almost out")
   resetDialog()
+  dialog.value = ""
 }
 
 function removeFromList(entities, move = true) {

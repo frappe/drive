@@ -38,15 +38,14 @@
         class="my-auto stroke-amber-500 fill-amber-500"
       />
       <Dropdown
-        v-if="dropdownAction"
-        :options="dropdownAction"
+        v-if="defaultActions"
+        :options="defaultActions"
         placement="right"
         :button="{
           variant: 'ghost',
           tooltip: 'Actions',
           onClick: () => {
             $store.commit('setActiveEntity', rootEntity)
-            console.log($store.state.activeEntity)
           },
           icon: LucideMoreHorizontal,
         }"
@@ -61,7 +60,6 @@
         :button="{
           variant: 'solid',
           icon: LucidePlus,
-          tooltip: 'Add or upload',
         }"
         :options="newEntityOptions"
         placement="right"
@@ -103,7 +101,6 @@
       </div>
     </div>
     <Dialogs
-      v-if="$route.name === 'File' || $route.name === 'Document'"
       v-model="dialog"
       :entities="[rootEntity]"
     />
@@ -167,7 +164,7 @@ const connectedUsers = computed(() => store.state.connectedUsers)
 const dialog = ref("")
 const rootEntity = computed(() => props.rootResource?.data)
 
-const dropdownAction = computed(() => {
+const defaultActions = computed(() => {
   if (!rootEntity.value?.title) return
   let actions = []
   if (props.actions) {
@@ -182,7 +179,9 @@ const dropdownAction = computed(() => {
         {
           label: __("Share"),
           icon: LucideShare2,
-          onClick: () => (dialog.value = "s"),
+          onClick: () => {
+            dialog.value = "s"
+          },
           isEnabled: () => rootEntity.value.share,
         },
         {
@@ -334,13 +333,12 @@ const newEntityOptions = [
       {
         label: "Folder",
         icon: LucideFolderPlus,
-        onClick: () => emitter.emit("newFolder"),
+        onClick: () => (dialog.value = "f"),
       },
-
       {
         label: "New Link",
         icon: LucideLink,
-        onClick: () => emitter.emit("newLink"),
+        onClick: () => (dialog.value = "l"),
       },
     ],
   },

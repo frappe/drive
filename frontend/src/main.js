@@ -1,11 +1,13 @@
 import { createApp } from "vue"
 import {
   FrappeUI,
-  Button,
+  FormControl,
   onOutsideClickDirective,
   setConfig,
   frappeRequest,
+  Button
 } from "frappe-ui"
+
 import store from "./store"
 import translationPlugin from "./translation"
 import router from "./router"
@@ -16,6 +18,7 @@ import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
 import focusDirective from './utils/focus'
 import { allUsers } from "@/resources/permissions"
+
 const app = createApp(App)
 setConfig("resourceFetcher", frappeRequest)
 app.config.unwrapInjectedRef = true
@@ -32,17 +35,11 @@ app.use(store)
 app.use(FrappeUI, { socketio: false })
 const socket = initSocket()
 const realtime = new RealTimeHandler(socket)
+
 app.provide("realtime", realtime)
 app.config.globalProperties.$realtime = realtime
+
 app.directive("on-outside-click", onOutsideClickDirective)
-app.use(
-  VueTippy,
-  // optional
-  {
-    directive: "tippy", // => v-tippy
-    component: "tippy", // => <tippy/>
-  }
-)
 app.directive("focus", focusDirective)
 
 setConfig("resourceFetcher", (options) => {
@@ -55,5 +52,8 @@ setConfig("resourceFetcher", (options) => {
     },
   })
 })
+
+app.component("FormControl", FormControl)
 app.component("Button", Button)
+
 app.mount("#app")
