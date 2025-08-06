@@ -164,11 +164,18 @@
 import { formatDate } from "@/utils/format"
 import { Dialog, Button, LoadingIndicator } from "frappe-ui"
 import { computedAsync } from "@vueuse/core"
-import { ref, computed, inject } from "vue"
+import { ref, computed, inject, watch } from "vue"
 import emitter from "@/emitter"
 
 const dialogValue = defineModel()
 const editor = inject("editor")
+watch(
+  editor,
+  () => {
+    window.editor = editor.value
+  },
+  { immediate: true }
+)
 const props = defineProps({
   entity: Object,
 })

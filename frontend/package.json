@@ -22,7 +22,7 @@
     "@vueuse/core": "^10.3.0",
     "date-fns": "^4.1.0",
     "dropzone": "^6.0.0-beta.2",
-    "frappe-ui": "^0.1.183",
+    "frappe-ui": "0.1.185",
     "html2pdf.js": "^0.10.3",
     "idb-keyval": "^6.2.1",
     "mammoth": "^1.6.0",

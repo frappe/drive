@@ -180,7 +180,7 @@ def files(
         r["file_type"] = get_file_type(r)
         if r["name"] in public_files:
             r["share_count"] = -2
-        elif r["name"] in team_files:
+        elif r["name"] in team_files or not r["is_private"]:
             r["share_count"] = -1
         else:
             r["share_count"] = share_count.get(r["name"], 0)

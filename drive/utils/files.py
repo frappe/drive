@@ -40,6 +40,9 @@ MIME_LIST_MAP = {
         "application/x-abiword",
         "frappe_doc",
     ],
+    "Frappe Document": [
+        "frappe_doc",
+    ],
     "Spreadsheet": [
         "application/vnd.ms-excel",
         "link/googlesheets",

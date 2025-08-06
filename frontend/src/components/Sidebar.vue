@@ -8,27 +8,7 @@
       menuItems: settingsItems,
       logo: FrappeDriveLogo,
     }"
-    :sections="[
-      {
-        label: '',
-        items: [
-          {
-            label: __('Find'),
-            icon: LucideSearch,
-            onClick: () => emitter.emit('showSearchPopup', true),
-          },
-          {
-            label: __('Inbox'),
-            icon: LucideInbox,
-            to: '/t/' + team + '/notifications',
-          },
-        ],
-      },
-      {
-        label: 'Your Drive',
-        items: sidebarItems,
-      },
-    ]"
+    :sections="sidebarItems"
   >
     <template #footer-items="{ isCollapsed }">
       <StorageBar :is-expanded="!isCollapsed" />
@@ -47,8 +27,6 @@
 <script setup>
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 
-import PrimaryDropDown from "./PrimaryDropdown.vue"
-import SidebarItem from "@/components/SidebarItem.vue"
 import StorageBar from "./StorageBar.vue"
 import { Sidebar, createResource } from "frappe-ui"
 
@@ -57,7 +35,6 @@ import { getTeams } from "@/resources/files"
 
 import { useStore } from "vuex"
 import LucideClock from "~icons/lucide/clock"
-import ArrowLeftFromLine from "~icons/lucide/arrow-left-from-line"
 import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideUsers from "~icons/lucide/users"
 import LucideTrash from "~icons/lucide/trash"
@@ -65,20 +42,17 @@ import LucideHome from "~icons/lucide/home"
 import LucideStar from "~icons/lucide/star"
 import LucideInbox from "~icons/lucide/inbox"
 import LucideSearch from "~icons/lucide/search"
+import LucideFileText from "~icons/lucide/file-text"
 
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
-import TeamSwitcher from "@/components/TeamSwitcher.vue"
 import emitter from "@/emitter"
 import { ref, computed, watch, shallowRef, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
-import { useRouter, useRoute } from "vue-router"
-import AppSwitcher from "./AppSwitcher.vue"
+import { useRoute } from "vue-router"
 
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
-import LucideChevronDown from "~icons/lucide/chevron-down"
-import LucideChevronUp from "~icons/lucide/chevron-up"
 import LucideMoon from "~icons/lucide/moon"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
@@ -283,47 +257,79 @@ function logout() {
 }
 const sidebarItems = computed(() => {
   const first = store.state.breadcrumbs[0]
-  const items = [
+  return [
     {
-      label: "Home",
-      to: `/t/${team.value}/`,
-      icon: LucideHome,
-      isActive: first.name == "Home",
+      items: [
+        {
+          label: __("Find"),
+          icon: LucideSearch,
+          onClick: () => emitter.emit("showSearchPopup", true),
+        },
+        {
+          label: __("Inbox"),
+          icon: LucideInbox,
+          to: "/t/" + team.value + "/inbox",
+          isActive: first.name === "Inbox",
+        },
+      ],
     },
     {
-      label: "Recents",
-      to: `/t/${team.value}/recents`,
-      icon: LucideClock,
-      isActive: first.name == "Recents",
+      label: "Drive",
+      items: [
+        {
+          label: "Home",
+          to: `/t/${team.value}/`,
+          icon: LucideHome,
+          isActive: first.name == "Home",
+        },
+
+        {
+          label: "Team",
+          to: `/t/${team.value}/team`,
+          icon: LucideBuilding2,
+          isActive: first.name == "Team",
+        },
+
+        {
+          label: "Trash",
+          to: `/t/${team.value}/trash`,
+          icon: LucideTrash,
+          isActive: first.name == "Trash",
+        },
+      ],
     },
     {
-      label: "Favourites",
-      to: `/t/${team.value}/favourites`,
-      icon: LucideStar,
-      isActive: first.name == "Favourites",
-    },
-    {
-      label: "Team",
-      to: `/t/${team.value}/team`,
-      icon: LucideBuilding2,
-      isActive: first.name == "Team",
-    },
-    {
-      label: "Shared",
-      to: `/shared/`,
-      icon: LucideUsers,
-      isActive: first.name == "Shared",
-    },
-    {
-      label: "Trash",
-      to: `/t/${team.value}/trash`,
-      icon: LucideTrash,
-      isActive: first.name == "Trash",
+      label: "Views",
+      collapsible: true,
+      items: [
+        {
+          label: "Recents",
+          to: `/t/${team.value}/recents`,
+          icon: LucideClock,
+          isActive: first.name == "Recents",
+        },
+        {
+          label: "Shared",
+          to: `/shared/`,
+          icon: LucideUsers,
+          isActive: first.name == "Shared",
+        },
+
+        {
+          label: "Favourites",
+          to: `/t/${team.value}/favourites`,
+          icon: LucideStar,
+          isActive: first.name == "Favourites",
+        },
+        {
+          label: "Documents",
+          to: `/t/${team.value}/documents`,
+          icon: LucideFileText,
+          isActive: first.name == "Documents",
+        },
+      ],
     },
   ]
-  if (getTeams.data && getTeams.data[team.value]?.title === "Your Drive")
-    items.splice(1, 1)
-  return items
 })
 
 watch(isCollapsed, (val) => store.commit("setSidebarCollapsed", val))

@@ -117,7 +117,6 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref("")
-const infoEntity = ref()
 const team = route.params.team || localStorage.getItem("recentTeam")
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = ref(props.getEntities.data)

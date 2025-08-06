@@ -33,7 +33,7 @@
   </div>
   <ListView
     class="px-5 pt-5"
-    v-if="notifications.data.length"
+    v-if="notifications.data?.length"
     :columns="columns"
     :options="options"
     :rows="notifications.data"

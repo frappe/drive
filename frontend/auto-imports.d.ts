@@ -13,7 +13,9 @@ declare global {
   const LucideCloudSync: typeof import("~icons/lucide/cloud-sync")["default"]
   const LucideCloudUp: typeof import("~icons/lucide/cloud-up")["default"]
   const LucideCloudUpload: typeof import("~icons/lucide/cloud-upload")["default"]
+  const LucideFileText: typeof import('~icons/lucide/file-text')['default']
   const LucideFolderSync: typeof import('~icons/lucide/folder-sync')['default']
   const LucideMoon: typeof import('~icons/lucide/moon')['default']
+  const LucideT: typeof import('~icons/lucide/t')['default']
   const LucideUser: typeof import('~icons/lucide/user')['default']
 }

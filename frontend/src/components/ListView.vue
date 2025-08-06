@@ -55,7 +55,10 @@
             />
           </ListGroupRows>
         </div>
-        <div v-else="formattedRows.length">
+        <div
+          v-else="formattedRows.length"
+          class="pb-8"
+        >
           <CustomListRow
             :rows="formattedRows"
             :context-menu="contextMenu"

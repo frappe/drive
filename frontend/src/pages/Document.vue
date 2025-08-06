@@ -72,6 +72,7 @@ import {
   defineAsyncComponent,
   provide,
   onBeforeUnmount,
+  h,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"

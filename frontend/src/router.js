@@ -51,7 +51,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/t/:team/notifications",
+    path: "/t/:team/inbox",
     name: "Inbox",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
@@ -64,22 +64,29 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
     props: true,
   },
+  
+  {
+    path: "/t/:team/trash",
+    name: "Trash",
+    component: () => import("@/pages/Trash.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
   {
     path: "/t/:team/recents",
     name: "Recents",
     component: () => import("@/pages/Recents.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
+   {
+    path: "/t/:team/documents",
+    name: "Documents",
+    component: () => import("@/pages/Documents.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
   {
     path: "/t/:team/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/trash",
-    name: "Trash",
-    component: () => import("@/pages/Trash.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {

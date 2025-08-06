@@ -14,7 +14,7 @@
           icon-left="search"
           type="text"
           class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
-          placeholder="Search"
+          placeholder="Find"
         />
       </div>
       <div
@@ -22,7 +22,7 @@
         class="flex flex-col py-4 px-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
       >
         <span class="mb-2 pl-1 text-base text-ink-gray-5"
-          >Search results for <strong>{{ search }}:</strong></span
+          >Results for <strong>{{ search }}:</strong></span
         >
         <div
           v-for="entity in searchResults.data"
@@ -84,15 +84,15 @@
         class="flex flex-col py-4 px-2.5"
       >
         <span
-          v-if="search.length > 3"
+          v-if="search.length > 2"
           class="pl-2 text-base text-ink-gray-5"
         >
           No results for <strong>"{{ search }}"</strong></span
         >
         <span
           v-else
-          class="pl-2 text-sm"
-          >Type more...</span
+          class="pl-2 text-xs"
+          >type more...</span
         >
       </div>
       <div
