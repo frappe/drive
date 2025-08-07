@@ -1,9 +1,12 @@
-import frappe
 import json
-from drive.utils.files import get_home_folder, MIME_LIST_MAP, get_file_type
-from .permissions import ENTITY_FIELDS, get_user_access, get_teams
-from pypika import Order, Criterion, functions as fn, CustomFunction
 
+import frappe
+from pypika import Criterion, CustomFunction, Order
+from pypika import functions as fn
+
+from drive.utils import MIME_LIST_MAP, get_file_type, get_home_folder
+
+from .permissions import ENTITY_FIELDS, get_user_access
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")

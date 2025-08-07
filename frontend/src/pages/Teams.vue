@@ -4,16 +4,9 @@
       <div class="relative h-full">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
           <div
-            class="flex flex-col items-center"
-            @dblclick="window.location.href = '/f-login'"
+            class="relative mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl flex flex-col gap-4"
           >
-            <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
-          </div>
-
-          <div
-            class="relative mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
-          >
-            <div class="text-sm absolute top-3 right-3 flex gap-1.5">
+            <div class="text-sm absolute top-5 right-5 flex gap-1.5">
               <LucideLogOut class="w-3 h-3 my-auto" />
               <a
                 href="#"
@@ -21,12 +14,16 @@
                 >Log out</a
               >
             </div>
-            <h2 class="grow font-bold font-xl text-center mb-4">
+            <div class="flex flex-col items-center">
+              <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
+            </div>
+
+            <h2 class="grow font-bold text-lg text-center">
               Welcome, {{ $store.state.user.fullName }}
             </h2>
 
-            <div class="py-3">
-              <p class="font-bold text-lg mb-3">Teams</p>
+            <div>
+              <p class="font-semibold text-md mb-1">Teams</p>
               <p
                 v-if="!getTeams.data || !Object.values(getTeams.data).length"
                 class="text-center text-sm flex flex-col gap-4"
@@ -35,12 +32,11 @@
               </p>
               <ul
                 v-else
-                class="ms-1"
+                class="ms-1 flex flex-col gap-2"
               >
                 <li
                   v-for="team in Object.values(getTeams?.data)"
                   :key="team.id"
-                  class="mb-3"
                 >
                   <div class="flex justify-between">
                     <div class="flex flex-col">
@@ -59,14 +55,8 @@
                 </li>
               </ul>
             </div>
-            <div class="py-3">
-              <p class="font-bold text-lg mb-3">Invites</p>
-              <p
-                v-if="!getInvites?.data?.length"
-                class="text-center text-sm"
-              >
-                No invites found.
-              </p>
+            <div v-if="getInvites?.data?.length">
+              <p class="font-semibold text-md mb-3">Invites</p>
               <li
                 v-for="(invite, index) in getInvites?.data"
                 :key="invite.name"

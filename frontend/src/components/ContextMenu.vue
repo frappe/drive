@@ -2,7 +2,7 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="w-[208px] p-1.5 absolute mt-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+    class="w-[208px] p-1.5 fixed mt-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
     :style="{
       left: `${calculateX}px`,
       top: `${calculateY}px`,

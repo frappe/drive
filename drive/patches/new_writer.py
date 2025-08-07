@@ -1,8 +1,9 @@
-import frappe
-import pycrdt
 import base64
 from datetime import datetime
 from uuid import uuid4
+
+import frappe
+import pycrdt
 
 
 def execute():
@@ -44,11 +45,7 @@ def execute():
                     owner = reply.get("ownerEmail")
                     created_at = datetime.fromtimestamp(reply.get("createdAt", 0) / 1000)
                     reply_doc = frappe.get_doc(
-                        {
-                            "doctype": "Drive Comment",
-                            "content": content,
-                            "name": str(uuid4())
-                        }
+                        {"doctype": "Drive Comment", "content": content, "name": str(uuid4())}
                     )
                     comment.append("replies", reply_doc)
                     reply_doc.insert(ignore_permissions=True)

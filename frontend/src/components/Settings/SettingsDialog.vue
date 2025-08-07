@@ -36,7 +36,7 @@
             </button>
           </div>
         </div>
-        <div class="flex flex-1 flex-col px-8 pt-6 overflow-y-auto">
+        <div class="flex flex-1 flex-col p-8">
           <component
             :is="activeTab.component"
             v-if="activeTab"
@@ -45,27 +45,27 @@
         <Button
           class="m-3 absolute right-0"
           variant="ghost"
+          :icon="LucideX"
           @click="$emit('update:modelValue', false)"
-        >
-          <template #icon>
-            <LucideX class="size-4" />
-          </template>
-        </Button>
+        />
       </div>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { ref, defineProps, markRaw, computed } from "vue"
+import { ref, markRaw, computed } from "vue"
 import { Dialog, Button } from "frappe-ui"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
+import LucideCloudUpload from "~icons/lucide/cloud-upload"
 import LucideTag from "~icons/lucide/tag"
+import LucideX from "~icons/lucide/x"
 import LucideUser from "~icons/lucide/user"
 import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
+import BackendSettings from "./BackendSettings.vue"
 
 let tabs = [
   {
@@ -89,6 +89,12 @@ let tabs = [
     label: "Tags",
     icon: LucideTag,
     component: markRaw(TagSettings),
+  },
+  {
+    enabled: true,
+    label: "Backend",
+    icon: LucideCloudUpload,
+    component: markRaw(BackendSettings),
   },
 ]
 

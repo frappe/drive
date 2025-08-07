@@ -128,11 +128,15 @@ export const updateMoved = (team, new_parent, special) => {
         team,
       }),
       cache: ["folder", new_parent],
-    }).fetch( store.state.sortOrder[new_parent] ?{
-      order_by: 
-        store.state.sortOrder[new_parent].field +
-        (store.state.sortOrder[new_parent].ascending ? " 1" : " 0") ,
-    } : {})
+    }).fetch(
+      store.state.sortOrder[new_parent]
+        ? {
+            order_by:
+              store.state.sortOrder[new_parent].field +
+              (store.state.sortOrder[new_parent].ascending ? " 1" : " 0"),
+          }
+        : {}
+    )
   } else {
     ;(move.params.is_private ? getPersonal : getHome).fetch({ team })
   }
@@ -205,6 +209,14 @@ export const clearTrash = createResource({
       `Permanently deleted ${files || "all"} file${files === 1 ? "" : "s"}.`
     )
   },
+  onError(error) {
+    toast({
+      title: "There was an error",
+      description: JSON.stringify(error),
+      position: "bottom-right",
+      timeout: 2,
+    })
+  },
 })
 
 export const rename = createResource({
@@ -276,7 +288,7 @@ export const move = createResource({
                 is_group: true,
                 is_private: data.is_private,
               })
-              else router.push({name: data.title})
+            else router.push({ name: data.title })
           },
         },
       ],

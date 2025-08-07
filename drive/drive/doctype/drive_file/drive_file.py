@@ -1,17 +1,14 @@
+import shutil
+from pathlib import Path
+
 import frappe
 from frappe.model.document import Document
-from pathlib import Path
-import shutil
-from drive.utils.files import (
-    get_home_folder,
-    get_new_title,
-    get_team_thumbnails_directory,
-    update_file_size,
-    FileManager,
-)
-from drive.api.files import get_ancestors_of
-from drive.utils.files import generate_upward_path
+
 from drive.api.activity import create_new_activity_log
+from drive.api.files import get_new_title
+from drive.api.permissions import user_has_permission
+from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size
+from drive.utils.files import FileManager
 
 
 class DriveFile(Document):
@@ -35,12 +32,7 @@ class DriveFile(Document):
 
         if self.is_group or self.document:
             for child in self.get_children():
-                has_write_access = frappe.has_permission(
-                    doctype="Drive File",
-                    doc=self,
-                    ptype="write",
-                    user=frappe.session.user,
-                )
+                has_write_access = user_has_permission(self, "write")
                 child.delete(ignore_permissions=has_write_access)
 
     def after_delete(self):
@@ -116,6 +108,10 @@ class DriveFile(Document):
 
         self.parent_entity = new_parent
         self.is_private = is_private
+        manager = FileManager()
+        new_path = manager.get_disk_path(self)
+        manager.move(self.path, new_path)
+        self.path = new_path
 
         title = get_new_title(self.title, new_parent)
         if title != self.title:
@@ -148,12 +144,7 @@ class DriveFile(Document):
             parent_is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
             if not parent_is_group:
                 raise NotADirectoryError()
-            if not frappe.has_permission(
-                doctype="Drive File",
-                doc=new_parent,
-                ptype="write",
-                user=frappe.session.user,
-            ):
+            if not user_has_permission(new_parent, "upload"):
                 frappe.throw(
                     "Cannot paste to this folder due to insufficient permissions",
                     frappe.PermissionError,
@@ -314,12 +305,8 @@ class DriveFile(Document):
         return self.name
 
     def permanent_delete(self):
-        write_access = frappe.has_permission(doctype="Drive File", doc=self.name, ptype="write")
-        parent_write_access = frappe.has_permission(
-            doctype="Drive File",
-            doc=frappe.get_value("Drive File", self.name, "parent_entity"),
-            ptype="write",
-        )
+        write_access = user_has_permission(self, "write")
+        parent_write_access = user_has_permission(self.parent_entity, "write")
 
         if not (write_access or parent_write_access):
             frappe.throw("Not permitted", frappe.PermissionError)
@@ -351,12 +338,7 @@ class DriveFile(Document):
         :param share: 1 if share permission is to be granted. Defaults to 0
         """
         if frappe.session.user != self.owner:
-            if not frappe.has_permission(
-                doctype="Drive File",
-                doc=self,
-                ptype="share",
-                user=frappe.session.user,
-            ):
+            if not user_has_permission(self, "share"):
                 for owner in get_ancestors_of(self.name):
                     if frappe.session.user == frappe.get_value(
                         "Drive File", {"name": owner}, ["owner"]

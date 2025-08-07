@@ -1,11 +1,10 @@
 import frappe
-from frappe.rate_limiter import rate_limit
-from frappe.utils import escape_html
-from frappe.utils import split_emails, validate_email_address
-from drive.api.permissions import is_admin
-from frappe.translate import get_all_translations
 from frappe import _
+from frappe.rate_limiter import rate_limit
+from frappe.translate import get_all_translations
+from frappe.utils import escape_html, split_emails, validate_email_address
 
+from drive.api.permissions import is_admin
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
@@ -348,3 +347,32 @@ def get_translations():
         language = frappe.db.get_single_value("System Settings", "language")
 
     return get_all_translations(language)
+
+
+@frappe.whitelist()
+def get_disk_settings():
+    return frappe.get_single("Drive Disk Settings")
+
+
+@frappe.whitelist()
+def update_disk_settings(**kwargs):
+    settings = frappe.get_single("Drive Disk Settings")
+    field_map = {
+        "root_prefix_type": "team_id",
+        "root_prefix_value": None,
+        "team_prefix": "team",
+        "personal_prefix": "personal",
+        "aws_key": None,
+        "aws_secret": None,
+        "bucket": None,
+        "endpoint_url": None,
+        "signature_version": "s3v4",
+    }
+    settings.enabled = 1
+    for field, value in kwargs.items():
+        if field in field_map and value:
+            setattr(settings, field, value)
+        elif field == "backend_type":
+            # If backend is s3, enable it. Otherwise, disable.
+            settings.enabled = 1 if value == "s3" else 0
+    settings.save()

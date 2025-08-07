@@ -2,7 +2,7 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-surface-white border-b w-full px-5 py-2.5 h-12 flex items-center justify-between"
+    class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
   >
     <Breadcrumbs
       :items="store.state.breadcrumbs"
@@ -130,6 +130,7 @@ import LucideStar from "~icons/lucide/star"
 import LucideMoreHorizontal from "~icons/lucide/more-horizontal"
 import LucideShare2 from "~icons/lucide/share-2"
 import LucideDownload from "~icons/lucide/download"
+import LucidePlus from "~icons/lucide/plus"
 import LucideLink from "~icons/lucide/link"
 import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 import LucideSquarePen from "~icons/lucide/square-pen"

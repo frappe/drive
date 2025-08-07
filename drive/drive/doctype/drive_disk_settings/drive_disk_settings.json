@@ -5,6 +5,14 @@
   "doctype": "DocType",
   "engine": "InnoDB",
   "field_order": [
+    "general_section",
+    "flat",
+    "root_prefix_type",
+    "root_prefix_value",
+    "team_prefix",
+    "personal_prefix",
+    "thumbnail_prefix",
+    "s3_section",
     "enabled",
     "aws_key",
     "aws_secret",
@@ -51,16 +59,62 @@
       "fieldname": "signature_version",
       "fieldtype": "Data",
       "label": "Signature Version"
+    },
+    {
+      "fieldname": "s3_section",
+      "fieldtype": "Section Break",
+      "label": "S3"
+    },
+    {
+      "default": "1",
+      "description": "More performant. Use if you only access the file system through Drive.",
+      "fieldname": "flat",
+      "fieldtype": "Check",
+      "label": "Store flatly"
+    },
+    {
+      "fieldname": "general_section",
+      "fieldtype": "Section Break",
+      "label": "General"
+    },
+    {
+      "default": "team_id",
+      "fieldname": "root_prefix_type",
+      "fieldtype": "Select",
+      "label": "Root Prefix Type",
+      "options": "team_id\nteam_name\nother"
+    },
+    {
+      "fieldname": "root_prefix_value",
+      "fieldtype": "Data",
+      "label": "Root Prefix Value"
+    },
+    {
+      "default": "team",
+      "fieldname": "team_prefix",
+      "fieldtype": "Data",
+      "label": "Team Prefix"
+    },
+    {
+      "fieldname": "personal_prefix",
+      "fieldtype": "Data",
+      "label": "Personal Prefix"
+    },
+    {
+      "default": ".thumbnails",
+      "fieldname": "thumbnail_prefix",
+      "fieldtype": "Data",
+      "label": "Thumbnail prefix"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-05-25 19:05:44.366826",
+  "modified": "2025-08-01 14:25:41.983519",
   "modified_by": "Administrator",
   "module": "Drive",
-  "name": "Drive S3 Settings",
+  "name": "Drive Disk Settings",
   "owner": "Administrator",
   "permissions": [
     {

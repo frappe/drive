@@ -18,6 +18,7 @@
   <div
     v-else
     ref="container"
+    id="drop-area"
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
@@ -32,7 +33,7 @@
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
-      <LoadingIndicator class="size-10 text-ink-gray-9" />
+      <LoadingIndicator class="size-5 text-ink-gray-9" />
     </div>
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"
@@ -57,7 +58,9 @@
       @dropped="onDrop"
     />
   </div>
-
+  <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
+    Drop to upload
+  </p>
   <Dialogs
     v-model="dialog"
     :entities="activeEntity ? [activeEntity] : selectedEntitities"
@@ -86,10 +89,11 @@ import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
-import { toast } from "@/utils/toasts"
+// import { toast } from "@/utils/toasts"
 import { move, allFolders } from "@/resources/files"
-import { LoadingIndicator } from "frappe-ui"
+import { LoadingIndicator, toast } from "frappe-ui"
 import { settings } from "@/resources/permissions"
+toast.success("hey!")
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -301,8 +305,7 @@ const actionItems = computed(() => {
         isEnabled: (e) => e.write,
         important: true,
         multi: true,
-        danger: true,
-        theme: "blue",
+        theme: "red",
       },
     ]
   }
@@ -342,3 +345,14 @@ if (settings.data?.auto_detect_links) {
   window.addEventListener("copy", newLink)
 }
 </script>
+<style>
+.dz-drag-hover #drop-area {
+  opacity: 0.5;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dz-drag-hover #drop-area + p {
+  display: block;
+}
+</style>

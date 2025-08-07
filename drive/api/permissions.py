@@ -1,9 +1,8 @@
 import frappe
 from frappe.utils import getdate
 
+from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
 from drive.utils.users import mark_as_viewed
-from drive.utils.files import get_valid_breadcrumbs, generate_upward_path, get_file_type
-
 
 ENTITY_FIELDS = [
     "name",
@@ -32,6 +31,7 @@ def get_user_access(entity, user=None):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
+    # BROKEN: no perm checks, has an allow_guest too.
     if not user:
         user = frappe.session.user
     if isinstance(entity, str):
@@ -194,10 +194,9 @@ def get_shared_with_list(entity):
     :return: List of users, with permissions and last modified datetime
     :rtype: list[frappe._dict]
     """
-    if not frappe.has_permission(
-        doctype="Drive File", doc=entity, ptype="share", user=frappe.session.user
-    ):
-        raise frappe.PermissionError
+    if not user_has_permission(entity, "share"):
+        raise frappe.PermissionError("You do not have permission to share this file.")
+
     permissions = frappe.db.get_all(
         "Drive Permission",
         filters=[["entity", "=", entity], ["user", "!=", ""], ["user", "!=", "$TEAM"]],
@@ -246,7 +245,6 @@ def user_has_permission(doc, ptype, user=None):
     if user == "Administrator":
         return True
     access = get_user_access(doc, user)
-    print(user, access, ptype in access)
     if ptype in access:
         return bool(access[ptype])
 
