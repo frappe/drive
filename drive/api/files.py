@@ -65,7 +65,9 @@ def upload_file(team, personal=None, fullpath=None, parent=None, last_modified=N
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
-    is_private = personal or frappe.get_value("Drive File", parent, "is_private")
+    is_private = (
+        int(personal) if personal else frappe.get_value("Drive File", parent, "is_private")
+    )
     embed = int(embed)
 
     if fullpath:

@@ -10,6 +10,9 @@ import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
+import { toast as nToast } from "vue-sonner"
+import { useFileUpload } from "frappe-ui"
+import emitter from '@/emitter'
 
 // MIME icons
 import Folder from "@/components/MimeIcons/Folder.vue"
@@ -74,7 +77,8 @@ export const openEntity = (team = null, entity, new_tab = false) => {
 
 function trimCommonPrefix(a, b) {
   let i = 0
-  while (i < a.length && i < b.length && !/^\d+$/.test(a[i]) && a[i] === b[i]) i++
+  while (i < a.length && i < b.length && !/^\d+$/.test(a[i]) && a[i] === b[i])
+    i++
   return [
     a.slice(i).split(/[\W]/)[0].toLowerCase(),
     b.slice(i).split(/[\W]/)[0].toLowerCase(),
@@ -473,8 +477,9 @@ export async function updateURLSlug(title) {
   const slug = slugger(title)
   if (route.params.slug !== slug) {
     // Hacky, but we only want to update the URL - triggering a reload breaks a lot
-   const new_path = window.location.pathname.split('/').slice(0, 6).join('/') + '/' + slug
-   history.replaceState({}, null, new_path)
+    const new_path =
+      window.location.pathname.split("/").slice(0, 6).join("/") + "/" + slug
+    history.replaceState({}, null, new_path)
   }
 }
 
@@ -509,4 +514,47 @@ export function dynamicList(k) {
 
 export const setTitle = (title) =>
   (document.title =
-    (router.currentRoute.name === "Folder" ? "Folder - " : "") + title)
+    (router.currentRoute.value.name === "Folder" ? "Folder - " : "") + title)
+
+async function uploadImage(file, params) {
+  const uploader = useFileUpload()
+  const upload = uploader.upload(file, {
+    params,
+    upload_endpoint: "/api/method/drive.api.files.upload_file",
+  })
+  let entity = await new Promise((resolve) => {
+    upload.then((data) => {
+      resolve(data)
+    })
+  })
+
+  return entity
+}
+
+export const pasteObj = (e) => {
+  const clipboardItems = Array.from(e.clipboardData?.items || [])
+  if (clipboardItems.some((item) => item.type.includes("image"))) {
+    e.preventDefault()
+    const file = clipboardItems
+      .find((item) => item.type.includes("image"))
+      ?.getAsFile()
+    if (file) {
+      const route = router.currentRoute.value
+      const entity = uploadImage(file, {
+        team: route.params.team,
+        parent: route.params.entityName || "",
+        personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
+        total_file_size: file.size,
+      })
+      nToast.promise(entity, {
+			loading: "Uploading...",
+			success: () => {
+        emitter.emit('refresh')
+				return "Uploaded";
+			},
+			error: () => "Failed to upload",
+			duration: 500,
+		});
+    }
+  }
+}

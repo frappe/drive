@@ -76,13 +76,14 @@ import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
-import { getLink } from "@/utils/files"
+import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import FileUploader from "@/components/FileUploader.vue"
 import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
+import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
@@ -126,6 +127,7 @@ watch(
     rows.value = val
   }
 )
+useEventListener("paste", pasteObj)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -137,20 +139,22 @@ const selectedEntitities = computed(
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
 
+const refreshData = () => {
+  const sortOrder = store.state.sortOrder[props.getEntities.params?.entityName]
+  const params = { team }
+  if (sortOrder)
+    params.order_by = sortOrder.field + (sortOrder.ascending ? " 1" : " 0")
+  props.getEntities.fetch(params)
+}
 watch(
   verifyAccess,
-  async (data) => {
+  (data) => {
     if (!data) return
-
-    const sortOrder =
-      store.state.sortOrder[props.getEntities.params?.entityName]
-    const params = { team }
-    if (sortOrder)
-      params.order_by = sortOrder.field + (sortOrder.ascending ? " 1" : " 0")
-    await props.getEntities.fetch(params)
+    refreshData()
   },
   { immediate: true }
 )
+emitter.on("refresh", refreshData)
 
 if (team) {
   allUsers.fetch({ team })
