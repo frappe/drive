@@ -17,7 +17,7 @@ const props = defineProps({
 const OPTIONS = [
   {
     label: "Caveat",
-    value: "font-caveat",
+    value: "caveat",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-caveat)").run(),
     isActive: (editor) =>
@@ -27,7 +27,7 @@ const OPTIONS = [
   },
   {
     label: "Comic Sans",
-    value: "font-comic-sans",
+    value: "comic-sans",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-comic-sans)").run(),
     isActive: (editor) =>
@@ -37,7 +37,7 @@ const OPTIONS = [
   },
   {
     label: "Comfortaa",
-    value: "font-comfortaa",
+    value: "comfortaa",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-comfortaa)").run(),
     isActive: (editor) =>
@@ -47,7 +47,7 @@ const OPTIONS = [
   },
   {
     label: "EB Garamond",
-    value: "font-eb-garamond",
+    value: "eb-garamond",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-eb-garamond)").run(),
     isActive: (editor) =>
@@ -57,7 +57,7 @@ const OPTIONS = [
   },
   {
     label: "Fantasy",
-    value: "font-[fantasy]",
+    value: "fantasy",
     action: (editor) => editor.chain().focus().setFontFamily("fantasy").run(),
     isActive: (editor) =>
       editor.isActive("textStyle", {
@@ -66,7 +66,7 @@ const OPTIONS = [
   },
   {
     label: "Geist Mono",
-    value: "font-geist",
+    value: "geist",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-geist)").run(),
     isActive: (editor) =>
@@ -76,7 +76,7 @@ const OPTIONS = [
   },
   {
     label: "IBM Plex Sans",
-    value: "font-ibm-plex",
+    value: "ibm-plex",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-ibm-plex)").run(),
     isActive: (editor) =>
@@ -86,8 +86,7 @@ const OPTIONS = [
   },
   {
     label: "Inter",
-    default: true,
-    value: "font-inter",
+    value: "inter",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-inter)").run(),
     isActive: (editor) =>
@@ -97,7 +96,7 @@ const OPTIONS = [
   },
   {
     label: "JetBrains Mono",
-    value: "font-jetbrains",
+    value: "jetbrains",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-jetbrains)").run(),
     isActive: (editor) =>
@@ -107,7 +106,7 @@ const OPTIONS = [
   },
   {
     label: "Lora",
-    value: "font-lora",
+    value: "lora",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-lora)").run(),
     isActive: (editor) =>
@@ -117,7 +116,7 @@ const OPTIONS = [
   },
   {
     label: "Merriweather",
-    value: "font-merriweather",
+    value: "merriweather",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-merriweather)").run(),
     isActive: (editor) =>
@@ -127,7 +126,7 @@ const OPTIONS = [
   },
   {
     label: "Nunito",
-    value: "font-nunito",
+    value: "nunito",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-nunito)").run(),
     isActive: (editor) =>
