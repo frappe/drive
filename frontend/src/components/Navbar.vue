@@ -70,7 +70,7 @@
         :disabled="!button.entities.data?.length"
         variant="subtle"
         :theme="button.theme || 'gray'"
-        @click="emitter.emit('showCTADelete')"
+        @click="dialog = 'cta'"
       >
         <template #prefix>
           <component
@@ -102,7 +102,7 @@
     </div>
     <Dialogs
       v-model="dialog"
-      :entities="[rootEntity]"
+      :entities="rootEntity ? [rootEntity] : []"
     />
   </nav>
 </template>

@@ -44,17 +44,21 @@
   />
 
   <!-- Deletion dialogs -->
-  <GenericDialog
-    v-if="['remove', 'restore', 'd'].includes(dialog)"
+  <ConfirmDialog
+    v-if="['remove', 'restore', 'd', 'cta'].includes(dialog)"
     v-model="dialog"
     :entities="entities"
-    @success="removeFromList(entities, dialog === 'restore')"
+    @success="
+      dialog === 'cta'
+        ? resetDialog
+        : removeFromList(entities, dialog === 'restore')
+    "
   />
-  <CTADeleteDialog
+  <!-- <CTADeleteDialog
     v-if="dialog === 'cta'"
     v-model="dialog"
     @success="resetDialog"
-  />
+  /> -->
 </template>
 <script setup>
 import { ref, watch } from "vue"
@@ -68,7 +72,7 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue"
 import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import GenericDialog from "@/components/GenericDialog.vue"
+import ConfirmDialog from "@/components/ConfirmDialog.vue"
 import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
@@ -88,7 +92,7 @@ watch(dialog, (val) => {
 
 const resetDialog = () => (dialog.value = "")
 
-emitter.on("showCTADelete", () => (dialog.value = "cta"))
+// emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => {
   console.log("emittted")

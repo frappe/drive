@@ -184,11 +184,8 @@ export const clearRecent = createResource({
       entity_names,
     }
   },
-  onSuccess: () => {
-    const files = clearRecent.params.entity_names?.length
-    toast(
-      `Removed  ${files || "all"} file${files === 1 ? "" : "s"} from Recents.`
-    )
+  onError: () => {
+    toast("There was an error while clearing recents.")
   },
 })
 

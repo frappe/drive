@@ -780,7 +780,6 @@ def remove_recents(entity_names=[], clear_all=False):
     :type entity_names: list[str]
     :raises ValueError: If decoded entity_names is not a list
     """
-
     if clear_all:
         return frappe.db.delete("Drive Entity Log", {"user": frappe.session.user})
 
