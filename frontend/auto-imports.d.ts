@@ -6,10 +6,12 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const LucideCloudAlert: typeof import("~icons/lucide/cloud-alert")["default"]
   const LucideCloudCheck: typeof import("~icons/lucide/cloud-check")["default"]
   const LucideCloudSync: typeof import("~icons/lucide/cloud-sync")["default"]
   const LucideCloudUp: typeof import("~icons/lucide/cloud-up")["default"]
   const LucideCloudUpload: typeof import("~icons/lucide/cloud-upload")["default"]
   const LucideFolderSync: typeof import("~icons/lucide/folder-sync")["default"]
+  const LucideTrash: typeof import("~icons/lucide/trash")["default"]
   const LucideUser: typeof import("~icons/lucide/user")["default"]
 }

@@ -102,6 +102,7 @@ after_install = "drive.install.after_install"
 # 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
+fixtures = [{"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}]
 
 has_permission = {
     # "Drive File": "drive.api.permissions.user_has_permission",
