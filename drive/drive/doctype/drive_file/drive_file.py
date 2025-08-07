@@ -115,7 +115,7 @@ class DriveFile(Document):
         update_file_size(new_parent, +self.file_size)
 
         self.parent_entity = new_parent
-        self.is_private = frappe.db.get_value("Drive File", new_parent, "is_private")
+        self.is_private = is_private
 
         title = get_new_title(self.title, new_parent)
         if title != self.title:

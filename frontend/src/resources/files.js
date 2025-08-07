@@ -128,11 +128,11 @@ export const updateMoved = (team, new_parent, special) => {
         team,
       }),
       cache: ["folder", new_parent],
-    }).fetch({
-      order_by:
+    }).fetch( store.state.sortOrder[new_parent] ?{
+      order_by: 
         store.state.sortOrder[new_parent].field +
-        (store.state.sortOrder[new_parent].ascending ? " 1" : " 0"),
-    })
+        (store.state.sortOrder[new_parent].ascending ? " 1" : " 0") ,
+    } : {})
   } else {
     ;(move.params.is_private ? getPersonal : getHome).fetch({ team })
   }

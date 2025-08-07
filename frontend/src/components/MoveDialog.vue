@@ -1,13 +1,11 @@
 <template>
   <Dialog
     v-model="open"
+    @close="dialogType = ''"
     :options="{ size: 'lg' }"
   >
     <template #body-main>
-      <div
-        v-focus
-        class="py-5 px-4 sm:px-6"
-      >
+      <div class="py-5 px-4 sm:px-6">
         <div class="flex w-full justify-between gap-x-15 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             <template v-if="props.entities.length > 1">
@@ -24,7 +22,7 @@
           <Button
             class="ml-auto"
             variant="ghost"
-            @click="$emit('update:modelValue', false)"
+            @click="dialogType = ''"
           >
             <template #icon>
               <LucideX class="size-4" />
@@ -143,17 +141,15 @@
                   </div>
                 </template>
               </Tree>
-              <p
+              <div
                 v-if="!tree.children.length"
                 class="text-base flex justify-center h-full"
               >
-              <div class="self-center text-ink-gray-6 flex flex-col gap-2">
-                <LucideFolderClosed
-                  class="size-6 self-center"
-                />
-                No folders found
+                <div class="self-center text-ink-gray-6 flex flex-col gap-2">
+                  <LucideFolderClosed class="size-6 self-center" />
+                  No folders found
                 </div>
-              </p>
+              </div>
             </div>
           </template>
         </Tabs>
@@ -236,7 +232,6 @@ import {
   Button,
   Tabs,
   Dropdown,
-  Combobox,
   Tree,
   Input,
 } from "frappe-ui"
@@ -251,7 +246,6 @@ import LucideHome from "~icons/lucide/home"
 import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 
 const route = useRoute()
-const currentFolder = ref("")
 
 const emit = defineEmits(["success"])
 const props = defineProps({
@@ -261,6 +255,10 @@ const props = defineProps({
     default: null,
   },
 })
+const dialogType = defineModel()
+const open = ref(true)
+
+const currentFolder = ref("")
 
 const homeMap = {}
 const teamMap = {}
@@ -279,7 +277,6 @@ const homeRoot = reactive({
     isCollapsed: true,
   },
 })
-
 const teamRoot = reactive({
   name: "",
   label: "Team",
@@ -304,16 +301,6 @@ const store = useStore()
 const in_home = store.state.breadcrumbs[0].name == "Home"
 const tabIndex = ref(in_home ? 0 : 1)
 const tree = ref(tabIndex.value === 0 ? homeRoot : teamRoot)
-
-const dialogValue = defineModel()
-const open = computed({
-  get() {
-    return dialogValue.value === "m"
-  },
-  set(newValue) {
-    dialogValue.value = newValue || ""
-  },
-})
 
 const slicedBreadcrumbs = computed(() => {
   if (breadcrumbs.value.length > 3) {
@@ -352,7 +339,7 @@ const tabs = [
 const breadcrumbs = ref([
   { name: "", title: in_home ? "Home" : "Team", is_private: in_home ? 1 : 0 },
 ])
-const folderSearch = ref('')
+const folderSearch = ref("")
 
 const folderPermissions = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",

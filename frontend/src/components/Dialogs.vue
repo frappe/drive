@@ -31,6 +31,12 @@
     :entity="entities[0]"
     @success="getEntities.fetch(getEntities.params)"
   />
+  <MoveDialog
+    v-if="dialog === 'm'"
+    v-model="dialog"
+    :entities="entities"
+    @success="removeFromList(entities)"
+  />
   <InfoPopup
     v-if="dialog === 'i'"
     v-model="dialog"
@@ -50,13 +56,6 @@
     v-model="dialog"
     :entities="entities"
     :for="'restore'"
-    @success="removeFromList(entities)"
-  />
-
-  <MoveDialog
-    v-if="dialog === 'm'"
-    v-model="dialog"
-    :entities="entities"
     @success="removeFromList(entities)"
   />
   <DeleteDialog
