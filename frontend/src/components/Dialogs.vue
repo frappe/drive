@@ -12,6 +12,7 @@
     :parent="$route.params.entityName"
     @success="(data) => addToList(data, 'Link')"
   />
+
   <!-- Mutation dialogs -->
   <RenameDialog
     v-if="dialog === 'rn'"
@@ -43,9 +44,18 @@
     :entity="entities[0]"
   />
 
-  <!-- Deletion dialogs -->
+  <!-- Confirmation dialogs -->
   <ConfirmDialog
-    v-if="['remove', 'restore', 'd', 'cta'].includes(dialog)"
+    v-if="
+      [
+        'remove',
+        'restore',
+        'd',
+        'cta-favourites',
+        'cta-recents',
+        'cta-trash',
+      ].includes(dialog)
+    "
     v-model="dialog"
     :entities="entities"
     @success="
@@ -54,11 +64,6 @@
         : removeFromList(entities, dialog === 'restore')
     "
   />
-  <!-- <CTADeleteDialog
-    v-if="dialog === 'cta'"
-    v-model="dialog"
-    @success="resetDialog"
-  /> -->
 </template>
 <script setup>
 import { ref, watch } from "vue"
@@ -73,8 +78,6 @@ import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
 import ConfirmDialog from "@/components/ConfirmDialog.vue"
-import DeleteDialog from "@/components/DeleteDialog.vue"
-import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 
 const props = defineProps({
@@ -92,7 +95,6 @@ watch(dialog, (val) => {
 
 const resetDialog = () => (dialog.value = "")
 
-// emitter.on("showCTADelete", () => (dialog.value = "cta"))
 emitter.on("showShareDialog", () => (dialog.value = "s"))
 emitter.on("newFolder", () => {
   console.log("emittted")
@@ -105,7 +107,6 @@ emitter.on("newLink", () => (dialog.value = "l"))
 
 function addToList(data, file_type) {
   if (!props.getEntities) return
-  console.log("in")
   data = {
     ...data,
     modified: Date(),
@@ -122,7 +123,6 @@ function addToList(data, file_type) {
   const newData = [...props.getEntities.data, data]
   sortEntities(newData, store.state.sortOrder)
   props.getEntities.setData(newData)
-  console.log("almost out")
   resetDialog()
   dialog.value = ""
 }

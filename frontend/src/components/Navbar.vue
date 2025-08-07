@@ -66,11 +66,9 @@
       />
       <Button
         v-if="button"
-        class="line-clamp-1 truncate w-full"
         :disabled="!button.entities.data?.length"
-        variant="subtle"
         :theme="button.theme || 'gray'"
-        @click="dialog = 'cta'"
+        @click="dialog = 'cta-' + $route.name.toLowerCase()"
       >
         <template #prefix>
           <component

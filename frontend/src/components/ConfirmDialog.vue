@@ -28,6 +28,7 @@
 import { ref, computed } from "vue"
 import { createResource, Dialog, ErrorMessage } from "frappe-ui"
 import { toast } from "@/utils/toasts.js"
+import { useTimeAgo } from "@vueuse/core"
 
 import {
   mutate,
@@ -78,7 +79,7 @@ const dialogData = computed(() => {
     remove: {
       title: `Move ${itemString} to Trash`,
       message:
-        "will be moved to Trash. <br/>Items in trash are deleted forever after 30 days.",
+        "will be moved to Trash.<br/><br/> Items in trash are deleted forever after 30 days.",
       url: "drive.api.files.remove_or_restore",
       button: {
         label: "Move to Trash",
@@ -103,7 +104,7 @@ const dialogData = computed(() => {
       title: `Delete ${itemString}`,
       url: "drive.api.files.delete_entities",
       message:
-        " will be deleted - you can no longer access it.<br/><br/> <span class=font-semibold>This is an irreversible action.<b>",
+        " will be deleted - you can no longer access it.<br/><br/> <span class=font-semibold>This is an irreversible action.<span>",
       button: {
         label: "Delete — forever.",
         theme: "red",
@@ -112,20 +113,22 @@ const dialogData = computed(() => {
       },
       toastMessage: `Deleted ${itemString}.`,
     },
-    cta: {
+    "cta-recents": {
       title: "Are you sure?",
       message: "All your recently viewed files will be cleared.",
       button: { label: "Clear" },
       resource: clearRecent,
     },
     "cta-favourites": {
+      title: "Are you sure?",
       message: "All your favourite items will be cleared.",
       button: { label: "Clear" },
       resource: toggleFav,
     },
     "cta-trash": {
+      title: "Clear your Trash",
       message:
-        "All items in your Trash will be deleted forever. This is an irreversible process.",
+        "All items in your Trash will be deleted forever. <br/><br/> <span class=font-semibold>This is an irreversible process.</span>",
       button: { label: "Delete", variant: "solid", iconLeft: LucideTrash },
       resource: clearTrash,
     },
@@ -170,11 +173,7 @@ const updateResource = createResource({
     if (dialogData.value.mutate) mutate(props.entities, props.dialogData.mutate)
     if (dialogData.value.onSuccess)
       dialogData.value.onSuccess(props.entities, data)
-    toast({
-      title: dialogData.value.toastMessage,
-      position: "bottom-right",
-      timeout: 2,
-    })
+    toast(dialogData.value.toastMessage)
   },
 })
 </script>
