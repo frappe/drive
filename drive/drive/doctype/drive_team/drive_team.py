@@ -21,8 +21,6 @@ class DriveTeam(Document):
                 "team": self.name,
             }
         )
-        # Could lead to colissions in the future, but makes life so much easier
-        d.name = self.name
         d.insert()
 
         self.append("users", {"user": frappe.session.user, "access_level": 2})
@@ -40,6 +38,7 @@ class DriveTeam(Document):
 
         # Create even with S3 as we need local folders before uploading to S3
         user_directory_path = Path(frappe.get_site_path("private/files")) / root_folder
+        print(user_directory_path, "R", root_folder)
         user_directory_path.mkdir(exist_ok=True, parents=True)  # allows prefixes to be nested
         (user_directory_path / "uploads").mkdir(exist_ok=True)
         (user_directory_path / settings.thumbnail_prefix).mkdir(exist_ok=True)

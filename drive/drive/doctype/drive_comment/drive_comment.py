@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 
 from drive.api.notifications import create_notification
-from drive.utils.files import extract_mentions
+from drive.utils import extract_mentions
 
 
 class DriveComment(Document):

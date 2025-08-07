@@ -10,9 +10,8 @@ import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
-import { toast as nToast } from "vue-sonner"
-import { useFileUpload } from "frappe-ui"
-import emitter from '@/emitter'
+import { useFileUpload, toast as nToast } from "frappe-ui"
+import emitter from "@/emitter"
 
 // MIME icons
 import Folder from "@/components/MimeIcons/Folder.vue"
@@ -547,14 +546,14 @@ export const pasteObj = (e) => {
         total_file_size: file.size,
       })
       nToast.promise(entity, {
-			loading: "Uploading...",
-			success: () => {
-        emitter.emit('refresh')
-				return "Uploaded";
-			},
-			error: () => "Failed to upload",
-			duration: 500,
-		});
+        loading: "Uploading...",
+        success: () => {
+          emitter.emit("refresh")
+          return "Uploaded"
+        },
+        error: () => "Failed to upload",
+        duration: 500,
+      })
     }
   }
 }

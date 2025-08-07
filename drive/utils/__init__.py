@@ -1,5 +1,5 @@
+import re
 from datetime import datetime
-from pathlib import Path
 
 import frappe
 
@@ -309,3 +309,8 @@ def create_drive_file(
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
     return drive_file
+
+
+def extract_mentions(content):
+    pattern = r'<span class="mention" data-type="mention" data-id="([^"]+)"'
+    return re.findall(pattern, content)

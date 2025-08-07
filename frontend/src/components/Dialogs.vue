@@ -143,9 +143,10 @@ function removeFromList(entities, move = true) {
     }
   } else {
     const names = entities.map((o) => o.name)
-    props.getEntities.setData(
-      props.getEntities.data.filter(({ name }) => !names.includes(name))
-    )
+    if (props.getEntities)
+      props.getEntities.setData(
+        props.getEntities.data.filter(({ name }) => !names.includes(name))
+      )
   }
   resetDialog()
 }

@@ -1,5 +1,4 @@
 import os
-import re
 from io import BytesIO
 from pathlib import Path
 
@@ -166,7 +165,7 @@ class FileManager:
             root = get_home_folder(entity.team)
 
         if self.flat:
-            return self.site_folder / root["path"] / entity.name
+            return Path(root["path"]) / entity.name
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
             parent = (
@@ -186,7 +185,6 @@ class FileManager:
             else:
                 # Otherwise, rely on the parent already having a perms-adjusted path
                 path = parent / entity.title
-            print(path)
             return str(path)
 
     @__not_if_flat

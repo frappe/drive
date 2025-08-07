@@ -150,6 +150,5 @@ import LucidePlaneTakeoff from "~icons/lucide/plane-takeoff"
 
 const store = useStore()
 const email = computed(() => store.state.user.id)
-getTeams.fetch()
 getInvites.fetch({ email: email.value })
 </script>

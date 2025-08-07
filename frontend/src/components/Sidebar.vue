@@ -31,7 +31,7 @@ import StorageBar from "./StorageBar.vue"
 import { Sidebar, createResource } from "frappe-ui"
 
 import { notifCount } from "@/resources/permissions"
-import { getTeams } from "@/resources/files"
+import { getTeams, LISTS } from "@/resources/files"
 
 import { useStore } from "vuex"
 import LucideClock from "~icons/lucide/clock"
@@ -49,7 +49,7 @@ import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
 import { ref, computed, watch, shallowRef, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
@@ -57,8 +57,10 @@ import LucideMoon from "~icons/lucide/moon"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
+const router = useRouter()
 const route = useRoute()
 notifCount.fetch()
+getTeams.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
 const team = computed(
