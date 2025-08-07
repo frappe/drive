@@ -9,7 +9,6 @@
     "copy-html-entry": "cp ../drive/public/frontend/index.html ../drive/www/drive.html",
     "preview": "vite preview",
     "precommit": "pretty-quick --staged",
-    "prepare": "cd .. && husky install frontend/.husky",
     "lint": "eslint --fix --ext .js,.vue ."
   },
   "dependencies": {

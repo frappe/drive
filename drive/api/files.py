@@ -655,28 +655,6 @@ def delete_background_job(entity, ignore_permissions):
 
 
 @frappe.whitelist()
-def delete_entities(entity_names=None, clear_all=None):
-    """
-    Delete DriveEntities
-
-    :param entity_names: List of document-names
-    :type entity_names: list[str]
-    :raises ValueError: If decoded entity_names is not a list
-    """
-    if clear_all:
-        entity_names = frappe.db.get_list(
-            "Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name"
-        )
-    elif isinstance(entity_names, str):
-        entity_names = json.loads(entity_names)
-    elif not isinstance(entity_names, list) or not entity_names:
-        frappe.throw(f"Expected non-empty list but got {type(entity_names)}", ValueError)
-
-    for entity in entity_names:
-        frappe.get_doc("Drive File", entity).permanent_delete()
-
-
-@frappe.whitelist()
 def set_favourite(entities=None, clear_all=False):
     """
     Favouite or unfavourite DriveEntities for specified user
@@ -717,23 +695,14 @@ def set_favourite(entities=None, clear_all=False):
             ).insert()
 
 
-# def toggle_is_active(doc):
-#     doc.is_active = 0 if doc.is_active else 1
-#     frappe.db.set_value('Drive File', doc.name, 'is_active',doc.is_active)
-#     for child in doc.get_children():
-#         toggle_is_active(child)
-
-
 @frappe.whitelist()
-def remove_or_restore(entity_names, team):
+def remove_or_restore(entity_names):
     """
     To move entities to or restore entities from the trash
 
     :param entity_names: List of document-names
     :type entity_names: list[str]
     """
-    storage_data = storage_bar_data(team)
-
     if isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
@@ -743,6 +712,7 @@ def remove_or_restore(entity_names, team):
         if doc.is_active:
             flag = 0
         else:
+            storage_data = storage_bar_data(doc.team)
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
             flag = 1
@@ -765,6 +735,21 @@ def remove_or_restore(entity_names, team):
         ):
             raise frappe.PermissionError("You do not have permission to remove this file")
         depth_zero_toggle_is_active(doc)
+
+
+@frappe.whitelist()
+def delete_entities(entity_names=None, clear_all=None):
+    if clear_all:
+        entity_names = frappe.db.get_list(
+            "Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name"
+        )
+    elif isinstance(entity_names, str):
+        entity_names = json.loads(entity_names)
+    elif not isinstance(entity_names, list) or not entity_names:
+        frappe.throw(f"Expected non-empty list but got {type(entity_names)}", ValueError)
+
+    for entity in entity_names:
+        frappe.get_doc("Drive File", entity).permanent_delete()
 
 
 @frappe.whitelist(allow_guest=True)

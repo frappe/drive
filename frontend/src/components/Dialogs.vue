@@ -44,25 +44,11 @@
   />
 
   <!-- Deletion dialogs -->
-  <GeneralDialog
-    v-if="dialog === 'remove'"
+  <GenericDialog
+    v-if="['remove', 'restore', 'd'].includes(dialog)"
     v-model="dialog"
     :entities="entities"
-    :for="'remove'"
-    @success="removeFromList(entities, false)"
-  />
-  <GeneralDialog
-    v-if="dialog === 'restore'"
-    v-model="dialog"
-    :entities="entities"
-    :for="'restore'"
-    @success="removeFromList(entities)"
-  />
-  <DeleteDialog
-    v-if="dialog === 'd'"
-    v-model="dialog"
-    :entities="entities"
-    @success="removeFromList(entities)"
+    @success="removeFromList(entities, dialog === 'restore')"
   />
   <CTADeleteDialog
     v-if="dialog === 'cta'"
@@ -82,7 +68,7 @@ import NewFolderDialog from "@/components/NewFolderDialog.vue"
 import NewLinkDialog from "@/components/NewLinkDialog.vue"
 import RenameDialog from "@/components/RenameDialog.vue"
 import ShareDialog from "@/components/ShareDialog/ShareDialog.vue"
-import GeneralDialog from "@/components/GeneralDialog.vue"
+import GenericDialog from "@/components/GenericDialog.vue"
 import DeleteDialog from "@/components/DeleteDialog.vue"
 import CTADeleteDialog from "@/components/CTADeleteDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"

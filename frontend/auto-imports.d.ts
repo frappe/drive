@@ -17,5 +17,6 @@ declare global {
   const LucideFolderSync: typeof import('~icons/lucide/folder-sync')['default']
   const LucideMoon: typeof import('~icons/lucide/moon')['default']
   const LucideT: typeof import('~icons/lucide/t')['default']
+  const LucideTrash: typeof import('~icons/lucide/trash')['default']
   const LucideUser: typeof import('~icons/lucide/user')['default']
 }

@@ -314,10 +314,10 @@ class DriveFile(Document):
         return self.name
 
     def permanent_delete(self):
-        write_access = frappe.has_permission(doctype="Drive File", doc=self, ptype="write")
+        write_access = frappe.has_permission(doctype="Drive File", doc=self.name, ptype="write")
         parent_write_access = frappe.has_permission(
             doctype="Drive File",
-            doc=frappe.get_value("Drive File", self, "parent_entity"),
+            doc=frappe.get_value("Drive File", self.name, "parent_entity"),
             ptype="write",
         )
 
