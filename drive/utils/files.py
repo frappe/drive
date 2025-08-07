@@ -1,7 +1,6 @@
 import os
-from io import BytesIO
-from botocore.config import Config
 import re
+from io import BytesIO
 from pathlib import Path
 
 import boto3
