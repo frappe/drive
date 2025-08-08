@@ -150,7 +150,7 @@ class FileManager:
                     final_path.rename(final_path.with_suffix(".thumbnail"))
 
             except BaseException as e:
-                print(e)
+                frappe.log_error("thumbnail failed", e)
                 if self.s3_enabled:
                     try:
                         os.remove(file_path)
@@ -369,7 +369,6 @@ class FileManager:
         Restore a file from the trash.
         """
         current_path = self.__get_trash_path(entity)
-        print(current_path)
         self.move(current_path, entity.path)
 
     @__not_if_flat

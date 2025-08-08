@@ -122,7 +122,8 @@ def files(
         # Temporary hack: the correct way would be to check permissions on all children
         if entity_name == home:
             query = query.where(DriveFile.owner == frappe.session.user)
-    elif personal == -1:
+    # Only filter in home folder; previously private shared folders showed up empty
+    elif personal == -1 and entity_name == home:
         query = query.where(
             (DriveFile.is_private == 0)
             | ((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
