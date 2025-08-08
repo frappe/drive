@@ -10,7 +10,6 @@ EXPIRY_DAYS = 1
 
 class DriveUserInvitation(Document):
     def has_expired(self):
-        return False
         return get_datetime(self.creation) < get_datetime(add_days(now(), -EXPIRY_DAYS))
 
     def before_insert(self):
@@ -18,7 +17,10 @@ class DriveUserInvitation(Document):
 
     def after_insert(self):
         if self.status == "Pending":
-            self.invite_via_email()
+            try:
+                self.invite_via_email()
+            except:
+                pass
         elif self.status == "Proposed":
             admins = frappe.get_all(
                 "Drive Team Member", filters={"parent": self.team, "access_level": 2}, pluck="user"

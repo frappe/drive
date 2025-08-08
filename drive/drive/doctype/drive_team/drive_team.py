@@ -38,7 +38,6 @@ class DriveTeam(Document):
 
         # Create even with S3 as we need local folders before uploading to S3
         user_directory_path = Path(frappe.get_site_path("private/files")) / root_folder
-        print(user_directory_path, "R", root_folder)
         user_directory_path.mkdir(exist_ok=True, parents=True)  # allows prefixes to be nested
         (user_directory_path / "uploads").mkdir(exist_ok=True)
         (user_directory_path / settings.thumbnail_prefix).mkdir(exist_ok=True)
@@ -55,7 +54,6 @@ class DriveTeam(Document):
         for s in user_settings:
             d = frappe.get_doc("Drive Settings", s)
             d.default_team = ""
-            print(d.name, d.default_team)
             d.save()
         frappe.db.commit()
 

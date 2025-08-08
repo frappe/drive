@@ -23,7 +23,7 @@ ENTITY_FIELDS = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user=None):
+def get_user_access(entity, user=None, details=False):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -36,12 +36,11 @@ def get_user_access(entity, user=None):
         user = frappe.session.user
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
-    if user == entity.owner:
-        return {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
 
-    # Default access based on public or team view
     teams = get_teams(user)
-    if entity.team in teams and entity.is_private == 0:
+    if user == entity.owner:
+        access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
+    elif entity.team in teams and entity.is_private == 0:
         # Everyone can upload to team folders, and admins can edit all files
         access_level = get_access_level(entity.team)
         access = {
@@ -64,22 +63,26 @@ def get_user_access(entity, user=None):
     path = generate_upward_path(entity.name, user)
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if user == "Guest":
-        return user_access
+        return (user_access, (path,)) if details else user_access
 
     public_path = generate_upward_path(entity.name, "Guest")
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
 
     valid_accesses = [user_access, public_access]
+    team_path = None
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
         team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
         valid_accesses.append(team_access)
+
     for access_type in valid_accesses:
         for type, v in access_type.items():
             if v:
                 access[type] = 1
-
-    return access
+    if details:
+        return access, (path, team_path, public_path)
+    else:
+        return access
 
 
 @frappe.whitelist()
@@ -133,14 +136,14 @@ def get_entity_with_permissions(entity_name):
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
 
-    user_access = get_user_access(entity, frappe.session.user)
+    user_access, paths = get_user_access(entity, details=True)
     if user_access.get("read") == 0:
         frappe.throw("You don't have access to this file.", {"error": frappe.PermissionError})
 
     owner_info = (
         frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     )
-    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
+    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(user_access, paths)}
     favourite = frappe.db.get_value(
         "Drive Favourite",
         {

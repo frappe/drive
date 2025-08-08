@@ -32,7 +32,6 @@ class DriveComment(Document):
             doc = frappe.get_doc("Drive File", self.parent_doc.parent)
 
         for mention in mentions:
-            print(doc, from_owner)
             create_notification(
                 self.owner,
                 mention,

@@ -149,7 +149,6 @@ def dribble_access(path):
     return {**default_access, **result}
 
 
-@frappe.whitelist()
 def generate_upward_path(entity_name, user=None):
     """
     Given an ID traverse upwards till the root node
@@ -212,19 +211,19 @@ def generate_upward_path(entity_name, user=None):
     return result
 
 
-def get_valid_breadcrumbs(entity, user_access):
+def get_valid_breadcrumbs(user_access, paths):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
-    file_path = generate_upward_path(entity.name)
-
     # If team/admin of this entity, then entire path
     if user_access.get("type") in ["admin", "team"]:
-        return file_path
+        return paths[0]
 
     # Otherwise, slice where they lose read access.
-    lose_access = next((i for i, k in enumerate(file_path[::-1]) if not k["read"]), 0)
-    return file_path[-lose_access:]
+    lose_access = max(
+        next((i for i, k in enumerate(path[::-1]) if not k["read"]), 0) for path in paths
+    )
+    return paths[0][-lose_access:]
 
 
 def get_file_type(r):
