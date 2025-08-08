@@ -10,7 +10,6 @@ import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
-import { toast as nToast } from "vue-sonner"
 import { useFileUpload } from "frappe-ui"
 import emitter from '@/emitter'
 
