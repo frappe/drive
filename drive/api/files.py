@@ -49,7 +49,9 @@ def upload_embed(is_private, folder):
 
 
 @frappe.whitelist()
-def upload_file(team, last_modified=None, personal=None, fullpath=None, parent=None, embed=0):
+def upload_file(
+    team, total_file_size, last_modified=None, personal=None, fullpath=None, parent=None, embed=0
+):
     """
     Accept chunked file contents via a multipart upload, store the file on
     disk, and insert a corresponding DriveEntity doc.
@@ -67,6 +69,7 @@ def upload_file(team, last_modified=None, personal=None, fullpath=None, parent=N
         int(personal) if personal else frappe.get_value("Drive File", parent, "is_private")
     )
     embed = int(embed)
+    file_size = int(total_file_size)
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
@@ -77,9 +80,7 @@ def upload_file(team, last_modified=None, personal=None, fullpath=None, parent=N
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     storage_data = storage_bar_data(team)
-    if (storage_data["limit"] - storage_data["total_size"]) < int(
-        frappe.form_dict.total_file_size
-    ):
+    if (storage_data["limit"] - storage_data["total_size"]) < file_size:
         frappe.throw("You're out of storage!", ValueError)
 
     # Support non-chunked uploads too
@@ -99,18 +100,17 @@ def upload_file(team, last_modified=None, personal=None, fullpath=None, parent=N
     with temp_path.open("ab") as f:
         f.seek(offset)
         f.write(file.stream.read())
-        if (
-            not f.tell() >= int(frappe.form_dict.total_file_size)
-            or current_chunk != total_chunks - 1
-        ):
+        if not f.tell() >= file_size or current_chunk != total_chunks - 1:
             return
 
     # Validate that file size is matching
     if frappe.form_dict.total_file_size:
-        file_size = temp_path.stat().st_size
-        if file_size != int(frappe.form_dict.total_file_size):
+        actual_file_size = temp_path.stat().st_size
+        if actual_file_size != file_size:
             temp_path.unlink()
-            frappe.throw("Size on disk does not match specified filesize.", ValueError)
+            frappe.throw(
+                f"Size on disk  {actual_file_size} does not match specified filesize.", ValueError
+            )
 
     mime_type = mimemapper.get_mime_type(str(temp_path), native_first=False)
     if mime_type is None:
@@ -118,6 +118,8 @@ def upload_file(team, last_modified=None, personal=None, fullpath=None, parent=N
 
     manager = FileManager()
     # Create DB record
+    print(home_folder)
+
     drive_file = create_drive_file(
         team,
         is_private,
@@ -152,26 +154,28 @@ def get_thumbnail(entity_name):
     if user_has_permission(drive_file, "read") is False:
         frappe.throw("Cannot read this file", frappe.PermissionError)
 
-    with DistributedLock(drive_file.path, exclusive=False):
-        thumbnail_data = None
-        if frappe.cache().exists(entity_name):
+    thumbnail_data = None
+    if frappe.cache().exists(entity_name):
+        try:
             thumbnail_data = frappe.cache().get_value(entity_name)
+        except:
+            frappe.cache().delete_value(entity_name)
 
-        if not thumbnail_data:
-            manager = FileManager()
-            try:
-                if drive_file.mime_type.startswith("text"):
-                    with manager.get_file(drive_file.path) as f:
-                        thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
-                elif drive_file.mime_type == "frappe_doc":
-                    html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
-                    thumbnail_data = html[:1000]
-                else:
-                    thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
-                    thumbnail_data = BytesIO(thumbnail.read())
-                    frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
-            except FileNotFoundError:
-                return ""
+    if not thumbnail_data:
+        manager = FileManager()
+        try:
+            if drive_file.mime_type.startswith("text"):
+                with manager.get_file(drive_file.path) as f:
+                    thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
+            elif drive_file.mime_type == "frappe_doc":
+                html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
+                thumbnail_data = html[:1000]
+            else:
+                thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
+                thumbnail_data = BytesIO(thumbnail.read())
+                frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
+        except FileNotFoundError:
+            return ""
 
     if thumbnail_data:
         frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)

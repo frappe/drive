@@ -544,6 +544,7 @@ export const pasteObj = (e) => {
         parent: route.params.entityName || "",
         personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
         total_file_size: file.size,
+        last_modified: file.lastModified,
       })
       nToast.promise(entity, {
         loading: "Uploading...",

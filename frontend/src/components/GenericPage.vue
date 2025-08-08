@@ -84,16 +84,15 @@ import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import FileUploader from "@/components/FileUploader.vue"
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, watchEffect } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
-// import { toast } from "@/utils/toasts"
+import { toast } from "@/utils/toasts"
 import { move, allFolders } from "@/resources/files"
-import { LoadingIndicator, toast } from "frappe-ui"
+import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
-toast.success("hey!")
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -131,7 +130,6 @@ watch(
     rows.value = val
   }
 )
-useEventListener("paste", pasteObj)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -142,6 +140,9 @@ const selectedEntitities = computed(
 )
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
+watchEffect(() => {
+  if (verifyAccess.value?.write) useEventListener("paste", pasteObj)
+})
 
 const refreshData = () => {
   const sortOrder = store.state.sortOrder[props.getEntities.params?.entityName]

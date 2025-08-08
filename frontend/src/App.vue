@@ -43,12 +43,10 @@
   >
     <UploadTracker v-if="showUploadTracker" />
   </Transition>
-  <Toasts />
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
-import { Toasts } from "@/utils/toasts.js"
 import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { useStore } from "vuex"

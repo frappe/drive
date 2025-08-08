@@ -48,7 +48,7 @@ const props = defineProps({
     required: true,
   },
 })
-const emit = defineEmits("success")
+const emit = defineEmits(["success"])
 const dialogType = defineModel()
 const open = ref(true)
 
@@ -173,7 +173,7 @@ const updateResource = createResource({
     if (dialogData.value.mutate) mutate(props.entities, props.dialogData.mutate)
     if (dialogData.value.onSuccess)
       dialogData.value.onSuccess(props.entities, data)
-    toast(dialogData.value.toastMessage)
+    toast.success(dialogData.value.toastMessage)
   },
 })
 </script>

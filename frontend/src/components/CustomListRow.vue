@@ -52,7 +52,7 @@ const draggedItem = ref()
 const route = useRoute()
 const store = useStore()
 const action = computed(() =>
-  (settings.data.message || settings.data).single_click ? "click" : "dblclick"
+  (settings.data?.message || settings.data).single_click ? "click" : "dblclick"
 )
 
 // Used as right-click doesn't trigger active in frappe-ui
