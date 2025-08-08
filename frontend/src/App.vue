@@ -1,13 +1,13 @@
 <template>
-  <div class="w-screen h-screen antialiased">
+  <FrappeUIProvider>
     <div
       v-if="isLoggedIn || $route.meta.allowGuest"
-      class="flex h-full"
+      class="flex flex-col sm:flex-row h-full"
     >
       <Sidebar v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)" />
       <div
         id="dropzone"
-        class="flex flex-col h-full flex-grow overflow-hidden bg-surface-white"
+        class="flex flex-col flex-1 overflow-hidden bg-surface-white"
       >
         <router-view
           :key="$route.fullPath"
@@ -16,10 +16,9 @@
           <component :is="Component" />
         </router-view>
       </div>
-
       <BottomBar
         v-if="isLoggedIn"
-        class="fixed bottom-0 w-full sm:hidden"
+        class="w-full sm:hidden"
       />
     </div>
     <router-view
@@ -29,7 +28,7 @@
     >
       <component :is="Component" />
     </router-view>
-  </div>
+  </FrappeUIProvider>
   <SearchPopup
     v-if="isLoggedIn && showSearchPopup"
     v-model="showSearchPopup"
@@ -57,6 +56,7 @@ import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import { FrappeUIProvider } from "frappe-ui"
 
 const store = useStore()
 const router = useRouter()
