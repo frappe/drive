@@ -53,6 +53,19 @@ export const allUsers = createResource({
   },
 })
 
+export const allSiteUsers = createResource({
+  url: "drive.api.product.get_all_site_users",
+  method: "GET",
+  transform: (data) => {
+    if (!data) return []
+    return data.map((item) => ({
+      ...item,
+      value: item.email,
+      label: item.full_name ? item.full_name.trimEnd() : item.email
+    }))
+  },
+})
+
 export const getInvites = createResource({
   url: "drive.api.product.get_invites",
 })

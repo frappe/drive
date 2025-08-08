@@ -368,6 +368,27 @@ def get_all_users(team):
     return users
 
 
+@frappe.whitelist()
+def get_all_site_users():
+    """Get all users in the site, not just team members"""
+    users = frappe.get_all(
+        doctype="User",
+        filters={
+            "enabled": 1,
+            "user_type": ("!=", "Website User"),
+            "name": ("not in", ("Administrator", "Guest")),
+        },
+        fields=[
+            "name",
+            "email", 
+            "full_name",
+            "user_image",
+        ],
+        order_by="full_name asc",
+    )
+    return users
+
+
 @frappe.whitelist(allow_guest=True)
 def accept_invite(key, redirect=True):
     try:

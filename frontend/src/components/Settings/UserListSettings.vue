@@ -188,9 +188,9 @@
   >
     <template #body-content>
       <div class="flex items-start justify-start gap-4">
-        <div class="flex flex-wrap gap-1 rounded w-full bg-surface-gray-2 p-2">
+        <div class="flex flex-wrap gap-1 rounded w-full bg-surface-gray-2 p-2 relative" ref="inviteDropdownContainer">
           <Button
-            v-for="(email, idx) in invited"
+            v-for="(email, idx) in invitedEmailsArray"
             :key="email"
             :label="email"
             variant="outline"
@@ -200,21 +200,56 @@
               <LucideX
                 class="h-4"
                 stroke-width="1.5"
-                @click.stop="() => invited.splice(idx, 1)"
+                @click.stop="() => removeInvitedEmail(idx)"
               />
             </template>
           </Button>
           <div class="min-w-[10rem] flex-1">
             <input
-              v-model="emailInput"
+              v-model="inviteQuery"
               type="text"
               autocomplete="off"
-              placeholder="Enter email address"
+              placeholder="Add people..."
               class="h-7 w-full rounded border-none bg-surface-gray-2 py-1.5 pl-2 pr-2 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-              @keydown="isValidEmail"
-              @keydown.enter.capture.stop="extractEmails"
-              @keydown.space.prevent.stop="extractEmails"
+              @focus="handleInviteInputFocus"
+              @input="handleInviteInputChange"
+              @click="handleInviteInputFocus"
             />
+          </div>
+          
+          <!-- Dropdown -->
+          <div
+            v-if="isInviteDropdownOpen"
+            class="absolute top-full left-0 right-0 z-[4] rounded-lg bg-surface-modal text-base shadow-2xl mt-1"
+          >
+            <div class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5">
+              <div v-if="allSiteUsers.loading" class="px-2.5 py-1.5 text-ink-gray-5 text-sm cursor-not-allowed">
+                Loading users...
+              </div>
+              <div v-else-if="!filteredInviteUsers.length" class="px-2.5 py-1.5 text-ink-gray-5 text-sm cursor-not-allowed">
+                {{ inviteQuery.length ? 'No users found' : 'No users available' }}
+              </div>
+              <div
+                v-for="person in filteredInviteUsers"
+                :key="person.email"
+                class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7 hover:bg-surface-gray-3 cursor-pointer"
+                @click="selectInviteUser(person)"
+              >
+                <div class="size-4" />
+                <Avatar
+                  size="sm"
+                  :label="person.full_name || person.email"
+                  :image="person.user_image"
+                  class="mr-2"
+                />
+                <span class="block truncate">
+                  {{ person.email }}
+                  <span v-if="person.full_name">
+                    ({{ person.full_name }})
+                  </span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -261,14 +296,16 @@ import {
   Tooltip,
   createResource,
 } from "frappe-ui"
-import { allUsers } from "@/resources/permissions"
-import { ref, computed } from "vue"
+import { allUsers, allSiteUsers } from "@/resources/permissions"
+import { ref, computed, onMounted, onUnmounted } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
+import { useStore } from "vuex"
 import LucideMail from "~icons/lucide/mail"
 import LucideUsers from "~icons/lucide/users"
 
 const route = useRoute()
+const store = useStore()
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
@@ -279,6 +316,11 @@ const invited = ref("")
 const emailInput = ref("")
 const showInvite = ref(false)
 const showRemove = ref(false)
+
+// Dropdown variables for invite 
+const inviteQuery = ref("")
+const isInviteDropdownOpen = ref(false)
+const inviteDropdownContainer = ref(null)
 
 const tabs = [
   {
@@ -329,6 +371,38 @@ const accessOptions = [
   },
 ]
 allUsers.fetch({ team: team.value })
+
+// Invite dropdown computed properties
+const allInviteUsersData = computed(() => allSiteUsers.data || [])
+
+const invitedEmailsArray = computed(() => {
+  return invited.value ? invited.value.split(',').map(e => e.trim()).filter(e => e) : []
+})
+
+const filteredInviteUsers = computed(() => {
+  const allUsers = allInviteUsersData.value || []
+  if (!allUsers.length) return []
+
+  const currentUserId = store.state.user.id
+  const availableUsers = allUsers.filter(k => k.name !== currentUserId)
+  
+  // Convert invited string to array for filtering
+  const invitedEmails = invited.value ? invited.value.split(',').map(e => e.trim()) : []
+
+  if (!inviteQuery.value.trim()) {
+    return availableUsers.filter(user => !invitedEmails.includes(user.email))
+  }
+
+  const regex = new RegExp(inviteQuery.value.trim(), "i")
+  return availableUsers
+    .filter((k) => {
+      const email = k.email || ''
+      const fullName = k.full_name || ''
+      return regex.test(email) || regex.test(fullName)
+    })
+    .filter(user => !invitedEmails.includes(user.email))
+})
+
 function emailTest() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailInput.value
@@ -341,6 +415,40 @@ function emailTest() {
 function extractEmails() {
   invited.value = [...invited.value, ...emailTest()]
   emailInput.value = ""
+}
+
+// Dropdown methods
+const handleInviteInputFocus = () => {
+  isInviteDropdownOpen.value = true
+}
+
+const handleInviteInputChange = () => {
+  isInviteDropdownOpen.value = true
+}
+
+const selectInviteUser = (person) => {
+  // Add email to invited string
+  if (invited.value) {
+    invited.value += ',' + person.email
+  } else {
+    invited.value = person.email
+  }
+  inviteQuery.value = ''
+  isInviteDropdownOpen.value = false
+}
+
+const handleInviteClickOutside = (event) => {
+  if (!isInviteDropdownOpen.value) return
+  
+  if (inviteDropdownContainer.value && !inviteDropdownContainer.value.contains(event.target)) {
+    isInviteDropdownOpen.value = false
+  }
+}
+
+const removeInvitedEmail = (index) => {
+  const emails = invitedEmailsArray.value
+  emails.splice(index, 1)
+  invited.value = emails.join(',')
 }
 
 const isAdmin = createResource({
@@ -369,5 +477,20 @@ const removeUser = createResource({
 
 const updateUserAccess = createResource({
   url: "drive.api.product.set_user_access",
+})
+
+// Lifecycle hooks
+onMounted(() => {
+  allSiteUsers.fetch().catch(error => {
+    console.error("Error fetching all site users:", error)
+  })
+  
+  document.addEventListener('mousedown', handleInviteClickOutside)
+  document.addEventListener('click', handleInviteClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleInviteClickOutside)
+  document.removeEventListener('click', handleInviteClickOutside)
 })
 </script>
