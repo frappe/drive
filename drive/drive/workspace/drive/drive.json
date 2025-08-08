@@ -1,7 +1,7 @@
 {
   "app": "drive",
   "charts": [],
-  "content": "[{\"id\":\"vf_k8YJ6jw\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Drive</span>\",\"col\":12}},{\"id\":\"lgbz2-8bBY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Go to Drive\",\"col\":3}},{\"id\":\"MfWHdTHJyF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Setup S3\",\"col\":3}}]",
+  "content": "[{\"id\":\"lgbz2-8bBY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Go to Drive\",\"col\":3}},{\"id\":\"vf_k8YJ6jw\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"font-size: 16px;\\\">Manage Drive</span>\",\"col\":12}},{\"id\":\"MfWHdTHJyF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Manage Disk Settings\",\"col\":3}},{\"id\":\"n2ZStcN9b4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Teams\",\"col\":3}}]",
   "creation": "2025-07-11 12:47:26.336149",
   "custom_blocks": [],
   "docstatus": 0,
@@ -15,7 +15,7 @@
   "label": "Drive",
   "link_type": "DocType",
   "links": [],
-  "modified": "2025-07-11 13:45:19.744654",
+  "modified": "2025-08-08 13:16:49.038082",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive",
@@ -37,8 +37,8 @@
     {
       "color": "Grey",
       "doc_view": "List",
-      "label": "Setup S3",
-      "link_to": "Drive S3 Settings",
+      "label": "Manage Disk Settings",
+      "link_to": "Drive Disk Settings",
       "type": "DocType"
     },
     {
@@ -47,6 +47,14 @@
       "label": "Go to Drive",
       "type": "URL",
       "url": "/drive"
+    },
+    {
+      "color": "Grey",
+      "doc_view": "List",
+      "label": "Teams",
+      "link_to": "Drive Team",
+      "stats_filter": "[]",
+      "type": "DocType"
     }
   ],
   "title": "Drive",
