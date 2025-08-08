@@ -66,7 +66,7 @@
       "label": "S3"
     },
     {
-      "default": "1",
+      "default": "0",
       "description": "More performant. Use if you only access the file system through Drive.",
       "fieldname": "flat",
       "fieldtype": "Check",
@@ -111,7 +111,7 @@
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-08-01 14:25:41.983519",
+  "modified": "2025-08-08 13:13:48.581365",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Disk Settings",
