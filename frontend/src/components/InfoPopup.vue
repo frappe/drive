@@ -155,10 +155,9 @@
 
 <script setup>
 import { formatDate } from "@/utils/format"
-import { Dialog, Button, LoadingIndicator } from "frappe-ui"
+import { Dialog, Button, LoadingIndicator, createResource } from "frappe-ui"
 import { ref, inject, watch } from "vue"
 import emitter from "@/emitter"
-import { createResource } from "../../../frappe-ui/src"
 
 const dialogType = defineModel()
 const open = ref(true)
