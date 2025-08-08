@@ -45,6 +45,7 @@
             <CustomListRow
               :rows="group.rows"
               :context-menu="contextMenu"
+              :selections
               @dropped="emit('dropped')"
             />
           </ListGroupRows>
@@ -56,6 +57,7 @@
           <CustomListRow
             :rows="formattedRows"
             :context-menu="contextMenu"
+            :selections
             @dropped="(...p) => $emit('dropped', ...p)"
           />
         </div>

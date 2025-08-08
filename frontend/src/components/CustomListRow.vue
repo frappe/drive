@@ -7,7 +7,7 @@
       :row="row"
       class="group"
       :class="[
-        row.name === selectedName
+        row.name === selectedName || selections.has(row.name)
           ? 'bg-surface-gray-2 hover:!bg-surface-gray-3'
           : 'bg-surface-white',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
@@ -44,6 +44,7 @@ import { computed, ref } from "vue"
 defineProps({
   rows: Array,
   contextMenu: Function,
+  selections: Set,
 })
 const emit = defineEmits(["dropped"])
 

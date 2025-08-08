@@ -29,11 +29,11 @@
         <component
           :is="item.icon"
           class="mr-2 size-4 flex-shrink-0"
-          :class="item.danger ? 'text-[#E03636]' : 'text-ink-gray-7'"
+          :class="item.theme ? 'text-[#E03636]' : 'text-ink-gray-7'"
         />
         <span
           class="whitespace-nowrap"
-          :class="item.danger ? 'text-ink-red-4' : 'text-ink-gray-7'"
+          :class="item.theme ? 'text-ink-red-4' : 'text-ink-gray-7'"
         >
           {{ item.label }}
         </span>
