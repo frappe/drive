@@ -21,7 +21,7 @@
     "@vueuse/core": "^10.3.0",
     "date-fns": "^4.1.0",
     "dropzone": "^6.0.0-beta.2",
-    "frappe-ui": "workspace:*",
+    "frappe-ui": "^0.1.187",
     "html2pdf.js": "^0.10.3",
     "idb-keyval": "^6.2.1",
     "jszip": "^3.10.1",

@@ -20,11 +20,11 @@ importers:
         specifier: ^2.26.1
         version: 2.26.1(@tiptap/pm@2.26.1)
       "@tiptap/extension-font-family":
-        specifier: ^2.14.0
-        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))
+        specifier: ^2.26.1
+        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))
       "@tiptap/extension-text-style":
-        specifier: ^3.0.8
-        version: 3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
+        specifier: ^2.26.1
+        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
       "@tiptap/pm":
         specifier: ^2.7.0
         version: 2.26.1
@@ -41,8 +41,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: 0.1.185
-        version: 0.1.185(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
+        specifier: ^0.1.187
+        version: 0.1.187(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
       html2pdf.js:
         specifier: ^0.10.3
         version: 0.10.3
@@ -1202,14 +1202,6 @@ packages:
     peerDependencies:
       "@tiptap/core": ^2.7.0
 
-  "@tiptap/extension-text-style@3.0.8":
-    resolution:
-      {
-        integrity: sha512-FolYOjUSORmjbuaN5uZvnyvlsDVVoQJhbBBdbJ8kpX2H/qWwy8eqysVz9H6599tIVCR+qlicy0K5OHF4A6gQVQ==,
-      }
-    peerDependencies:
-      "@tiptap/core": ^3.0.8
-
   "@tiptap/extension-text@2.26.1":
     resolution:
       {
@@ -2243,10 +2235,10 @@ packages:
         integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==,
       }
 
-  frappe-ui@0.1.185:
+  frappe-ui@0.1.187:
     resolution:
       {
-        integrity: sha512-qF0SuC2cvAbD+dgvOmvzoWSJTLfEW/jherq0v3GXYCAbDZQlUiiRUvgijOBXv4V1Z/Wvk6mjR0ZxxVUovqfufg==,
+        integrity: sha512-bu8l3JrXKyh4a9L67P0p8bZLScU5QgLDZPwr7BIUH7Ova5sxUSfup73qFsNgM655k0hANa/LKIRTPj6EAE7UXw==,
       }
     peerDependencies:
       vue: ">=3.5.0"
@@ -4633,10 +4625,10 @@ snapshots:
       "@tiptap/pm": 2.26.1
       tippy.js: 6.3.7
 
-  "@tiptap/extension-font-family@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))":
+  "@tiptap/extension-font-family@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
-      "@tiptap/extension-text-style": 3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
+      "@tiptap/extension-text-style": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
 
   "@tiptap/extension-gapcursor@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)":
     dependencies:
@@ -4737,10 +4729,6 @@ snapshots:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
 
   "@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))":
-    dependencies:
-      "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
-
-  "@tiptap/extension-text-style@3.0.8(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
 
@@ -5433,7 +5421,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.185(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2)):
+  frappe-ui@0.1.187(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2)):
     dependencies:
       "@floating-ui/vue": 1.1.8(vue@3.5.18(typescript@5.9.2))
       "@headlessui/vue": 1.7.23(vue@3.5.18(typescript@5.9.2))
