@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  prosemirror-model: 1.25.2
+
 importers:
   .:
     dependencies:
@@ -3365,7 +3368,7 @@ packages:
         integrity: sha512-xiun5/3q0w5eRnGYfNlW1uU9W6x5MoFKWwq/0TIRgt09lv7Hcser2QYV8t4muXbEr+Fwo0geYn79Xs4GKywrRQ==,
       }
     peerDependencies:
-      prosemirror-model: ^1.22.1
+      prosemirror-model: 1.25.2
       prosemirror-state: ^1.4.2
       prosemirror-view: ^1.33.8
 

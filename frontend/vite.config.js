@@ -46,8 +46,11 @@ export default defineConfig({
     include: [
       "frappe-ui > feather-icons",
       "frappe-ui > lowlight",
-      "frappe-ui > @tiptap/extension-text-style.js",
       "frappe-ui > interactjs",
+      "frappe-ui > prosemirror-transform",
+      "frappe-ui > prosemirror-model",
+      "frappe-ui > prosemirror-state",
+      "frappe-ui > prosemirror-view",
     ],
   },
 })
