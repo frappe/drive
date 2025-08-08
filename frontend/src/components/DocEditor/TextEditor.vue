@@ -86,7 +86,7 @@ const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
 })
-defineExpose(editor)
+defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
 const showComments = defineModel("showComments")

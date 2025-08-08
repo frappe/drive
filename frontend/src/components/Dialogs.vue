@@ -15,7 +15,7 @@
 
   <!-- Mutation dialogs -->
   <RenameDialog
-    v-if="dialog === 'rn'"
+    v-else-if="dialog === 'rn'"
     v-model="dialog"
     :entity="entities[0]"
     @success="
@@ -27,19 +27,19 @@
     "
   />
   <ShareDialog
-    v-if="dialog === 's'"
+    v-else-if="dialog === 's'"
     v-model="dialog"
     :entity="entities[0]"
     @success="getEntities.fetch(getEntities.params)"
   />
   <MoveDialog
-    v-if="dialog === 'm'"
+    v-else-if="dialog === 'm'"
     v-model="dialog"
     :entities="entities"
     @success="removeFromList(entities)"
   />
   <InfoPopup
-    v-if="dialog === 'i'"
+    v-else-if="dialog === 'i'"
     v-model="dialog"
     :entity="entities[0]"
   />

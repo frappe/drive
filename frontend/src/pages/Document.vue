@@ -73,6 +73,7 @@ import {
   provide,
   onBeforeUnmount,
   h,
+  computed,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -104,7 +105,10 @@ const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
 const editor = useTemplateRef("editor")
-provide("editor", editor)
+provide(
+  "editor",
+  computed(() => editor.value.editor)
+)
 provide("showResolved", showResolved)
 
 // Reactive data properties
