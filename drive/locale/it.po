@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-30 05:48\n"
+"PO-Revision-Date: 2025-08-08 10:05\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Accepted"
-msgstr ""
+msgstr "Accettato"
 
 #. Label of the accepted_on (Datetime) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -113,7 +113,7 @@ msgstr ""
 #: drive/drive/doctype/drive_tag/drive_tag.json
 #: frontend/src/components/TagColorInput.vue:8
 msgid "Color"
-msgstr ""
+msgstr "Colore"
 
 #. Label of the comment (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
@@ -132,7 +132,7 @@ msgstr ""
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
 msgid "Confirm"
-msgstr ""
+msgstr "Conferma"
 
 #. Label of the content (Text Editor) field in DocType 'Drive Comment'
 #. Label of the content (Long Text) field in DocType 'Drive Document'
@@ -149,7 +149,7 @@ msgstr ""
 #. Label of the core_section (Section Break) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Core"
-msgstr ""
+msgstr "Principale"
 
 #. Label of the default_team (Link) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -312,7 +312,7 @@ msgstr ""
 #. Label of the enabled (Check) field in DocType 'Drive S3 Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 msgid "Enabled"
-msgstr ""
+msgstr "Abilitato"
 
 #. Label of the endpoint_url (Data) field in DocType 'Drive S3 Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
@@ -324,7 +324,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Entity"
-msgstr ""
+msgstr "Entità"
 
 #. Label of the entity_name (Link) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
@@ -359,7 +359,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
-msgstr ""
+msgstr "Nome di battesimo"
 
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -397,7 +397,7 @@ msgstr ""
 
 #: frontend/src/utils/files.js:219
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -474,7 +474,7 @@ msgstr ""
 
 #: frontend/src/components/PrimaryDropdown.vue:146
 msgid "Log out"
-msgstr ""
+msgstr "Esci"
 
 #. Label of the login_count (Int) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -490,7 +490,7 @@ msgstr ""
 #: frontend/src/components/InfoSidebar.vue:64
 #: frontend/src/components/PrimaryDropdown.vue:109
 msgid "Manage"
-msgstr ""
+msgstr "Gestisci"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -621,7 +621,7 @@ msgstr ""
 
 #: frontend/src/components/GenericPage.vue:211
 msgid "Preview"
-msgstr ""
+msgstr "Anteprima"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
@@ -651,7 +651,7 @@ msgstr ""
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Read"
-msgstr ""
+msgstr "Leggere"
 
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -676,7 +676,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:254
 #: frontend/src/components/Navbar.vue:220
 msgid "Rename"
-msgstr ""
+msgstr "Rinomina"
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -720,7 +720,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:224
 #: frontend/src/components/Navbar.vue:191
 msgid "Share"
-msgstr ""
+msgstr "Condividi"
 
 #: frontend/src/components/InfoPopup.vue:109
 #: frontend/src/components/ListView.vue:165 frontend/src/utils/files.js:204
@@ -810,7 +810,7 @@ msgstr ""
 #: frontend/src/components/InfoSidebar.vue:70
 #: frontend/src/components/Settings/TagSettings.vue:4
 msgid "Tags"
-msgstr ""
+msgstr "Etichette"
 
 #. Label of the team (Link) field in DocType 'Drive File'
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
@@ -820,7 +820,7 @@ msgstr ""
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 #: frontend/src/components/Settings/StorageSettings.vue:24
 msgid "Team"
-msgstr ""
+msgstr "Squadra"
 
 #. Label of the team_domain (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -863,7 +863,7 @@ msgstr ""
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Upload"
-msgstr ""
+msgstr "Carica"
 
 #: frontend/src/components/InfoSidebar.vue:109
 msgid "Uploaded"
