@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-08-08 10:05\n"
+"PO-Revision-Date: 2025-08-10 10:18\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -201,7 +201,7 @@ msgstr ""
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
 msgid "Drive"
-msgstr ""
+msgstr "Drive"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_comment/drive_comment.json
@@ -292,7 +292,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
-msgstr ""
+msgstr "Modifica Profilo"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
@@ -526,7 +526,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:246
 #: frontend/src/components/Navbar.vue:214
 msgid "Move"
-msgstr ""
+msgstr "Muovi"
 
 #: frontend/src/components/DriveToolBar.vue:320
 #: frontend/src/components/ListView.vue:131
