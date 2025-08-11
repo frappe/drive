@@ -1,13 +1,8 @@
 <template>
   <Navbar
     v-if="!verify?.error && !getEntities.error"
-    :actions="null"
-    :trigger-root="
-      () => (
-        (selections = new Set()), store.commit('setActiveEntity', verify.data)
-      )
-    "
     :root-resource="verify"
+    :entities="activeEntity ? [activeEntity] : selectedEntitities"
   />
 
   <ErrorPage
@@ -61,13 +56,9 @@
   <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
     Drop to upload
   </p>
-  <Dialogs
-    v-model="dialog"
-    :entities="activeEntity ? [activeEntity] : selectedEntitities"
-  />
   <FileUploader
     v-if="$store.state.user.id"
-    @success="getEntities.fetch()"
+    @success="getEntities.fetch"
   />
 </template>
 <script setup>
@@ -76,14 +67,13 @@ import GridView from "@/components/GridView.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
-import Dialogs from "@/components/Dialogs.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import FileUploader from "@/components/FileUploader.vue"
-import { ref, computed, watch, watchEffect } from "vue"
+import { ref, computed, watch, watchEffect, provide } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
@@ -120,6 +110,7 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref("")
+provide("dialog", dialog)
 const team = route.params.team || localStorage.getItem("recentTeam")
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = ref(props.getEntities.data)

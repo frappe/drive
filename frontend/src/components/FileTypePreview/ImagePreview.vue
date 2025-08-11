@@ -52,7 +52,6 @@ async function fetchContent() {
   if (res.ok) {
     imgBlob.value = await res.blob()
     loading.value = false
-    console.log("hii")
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = 'l'"
+    @close="dialogType = ''"
     :options="{
       title: 'Create a Folder',
       size: 'xs',

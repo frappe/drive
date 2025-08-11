@@ -92,12 +92,11 @@
     </div>
     <Dialogs
       v-model="dialog"
-      :entities="rootEntity ? [rootEntity] : []"
+      :entities="entities?.length ? entities : [rootEntity]"
     />
   </nav>
 </template>
 <script setup>
-import UsersBar from "./UsersBar.vue"
 import {
   Button,
   Breadcrumbs,
@@ -107,7 +106,7 @@ import {
 } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
-import { ref, computed } from "vue"
+import { ref, computed, inject } from "vue"
 import { entitiesDownload } from "@/utils/download"
 import {
   getRecents,
@@ -152,13 +151,20 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  actions: Array,
   rootResource: Object,
+  actions: { type: Array, required: false },
+  // Used to pass into dialogs
+  entities: {
+    type: Array,
+    default: [],
+  },
 })
 
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
-const dialog = ref("")
-const rootEntity = computed(() => props.rootResource?.data)
+const dialog = inject("dialog", ref(""))
+const rootEntity = computed(
+  () => props.rootResource?.data?.title && props.rootResource?.data
+)
 
 const defaultActions = computed(() => {
   if (!rootEntity.value?.title) return

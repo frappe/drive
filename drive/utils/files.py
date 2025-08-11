@@ -335,7 +335,7 @@ class FileManager:
             )
         else:
             trash_path = Path(root["path"]) / self.team_prefix / ".trash" / entity.title
-        return str(trash_path)
+        return trash_path
 
     def get_parent_path(self, path: Path, team, is_private: bool) -> Path:
         """
@@ -358,12 +358,13 @@ class FileManager:
             self.conn.copy_object(
                 Bucket=self.bucket,
                 CopySource={"Bucket": self.bucket, "Key": entity.path},
-                Key=trash_path,
+                Key=str(trash_path),
             )
             self.conn.delete_object(Bucket=self.bucket, Key=entity.path)
         else:
-            trash_path.parent.mkdir(exist_ok=True)
-            (self.site_folder / entity.path).rename(self.site_folder / trash_path)
+            full_trash_path = self.site_folder / trash_path
+            full_trash_path.parent.mkdir(exist_ok=True)
+            (self.site_folder / entity.path).rename(full_trash_path)
 
     @__not_if_flat
     def restore(self, entity: DriveFile):
@@ -371,7 +372,7 @@ class FileManager:
         Restore a file from the trash.
         """
         current_path = self.__get_trash_path(entity)
-        self.move(current_path, entity.path)
+        self.move(str(current_path), entity.path)
 
     @__not_if_flat
     def move(self, old_path: str, new_path: str):

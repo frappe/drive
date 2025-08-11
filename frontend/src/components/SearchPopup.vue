@@ -173,7 +173,6 @@ const search = ref("")
 const route = useRoute()
 
 const open = defineModel()
-console.log(open.value)
 
 const searchResults = createResource({
   auto: false,

@@ -163,8 +163,8 @@ store.commit("setCurrentResource", document)
 
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",
-  onError(data) {
-    console.log(data)
+  onError(error) {
+    console.log(error)
     toast({
       title: "There was an error.",
       icon: LucideFileWarning,

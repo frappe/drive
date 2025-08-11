@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  prosemirror-model: 1.25.2
-
 importers:
   .:
     dependencies:
@@ -44,8 +41,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: ^0.1.187
-        version: 0.1.187(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
+        specifier: ^0.1.188
+        version: 0.1.188(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
       html2pdf.js:
         specifier: ^0.10.3
         version: 0.10.3
@@ -2238,10 +2235,10 @@ packages:
         integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==,
       }
 
-  frappe-ui@0.1.187:
+  frappe-ui@0.1.188:
     resolution:
       {
-        integrity: sha512-bu8l3JrXKyh4a9L67P0p8bZLScU5QgLDZPwr7BIUH7Ova5sxUSfup73qFsNgM655k0hANa/LKIRTPj6EAE7UXw==,
+        integrity: sha512-5H0J6y96DSs3ddr47/QU9ptgVjcliu0rjLg6I/3IDEk0+4iUurmGa6l86eWxtjyClQ39Kxxaax6hr9Lj+eyfQA==,
       }
     peerDependencies:
       vue: ">=3.5.0"
@@ -3368,7 +3365,7 @@ packages:
         integrity: sha512-xiun5/3q0w5eRnGYfNlW1uU9W6x5MoFKWwq/0TIRgt09lv7Hcser2QYV8t4muXbEr+Fwo0geYn79Xs4GKywrRQ==,
       }
     peerDependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: ^1.22.1
       prosemirror-state: ^1.4.2
       prosemirror-view: ^1.33.8
 
@@ -5424,7 +5421,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.187(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2)):
+  frappe-ui@0.1.188(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2)):
     dependencies:
       "@floating-ui/vue": 1.1.8(vue@3.5.18(typescript@5.9.2))
       "@headlessui/vue": 1.7.23(vue@3.5.18(typescript@5.9.2))

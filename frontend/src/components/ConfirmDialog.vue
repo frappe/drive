@@ -11,7 +11,7 @@
             >{{
               props.entities.length > 1
                 ? "These items "
-                : `"${props.entities[0].title}"`
+                : `"${props.entities[0].title}" `
             }}
           </template>
           <span v-html="dialogData.message" />

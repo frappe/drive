@@ -54,15 +54,6 @@ watch(
   }
 )
 
-/* watch(() => mediaRef.value, (newValue, oldValue) => {
-  console.log(newValue)
-  if (newValue) {
-    if (newValue.readyState === 1) {
-      loading.value = false;
-    }
-  }
-}); */
-
 onMounted(() => {
   loading.value = false
 })

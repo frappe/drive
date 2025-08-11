@@ -99,10 +99,7 @@ watch(dialog, (val) => {
 const resetDialog = () => (dialog.value = "")
 
 emitter.on("showShareDialog", () => (dialog.value = "s"))
-emitter.on("newFolder", () => {
-  console.log("emittted")
-  dialog.value = "f"
-})
+emitter.on("newFolder", () => (dialog.value = "f"))
 emitter.on("rename", () => (dialog.value = "rn"))
 emitter.on("remove", () => (dialog.value = "remove"))
 emitter.on("move", () => (dialog.value = "m"))

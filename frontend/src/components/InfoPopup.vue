@@ -206,7 +206,6 @@ const getGeneralAccess = createResource({
   }),
   transform: (data) => {
     if (!data || !data.read) {
-      console.log(data)
       if (getGeneralAccess.params.user === "Guest")
         getGeneralAccess.fetch({ user: "$TEAM" })
       else
