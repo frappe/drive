@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-08-04 07:07\n"
+"PO-Revision-Date: 2025-08-11 10:38\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -730,7 +730,7 @@ msgstr "به اشتراک گذاشته شده است"
 #: frontend/src/components/GenericPage.vue:260
 #: frontend/src/components/Navbar.vue:226
 msgid "Show Info"
-msgstr ""
+msgstr "نمایش اطلاعات"
 
 #. Label of the signature_version (Data) field in DocType 'Drive S3 Settings'
 #: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
@@ -745,7 +745,7 @@ msgstr ""
 #. Label of the single_click (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Single Click"
-msgstr ""
+msgstr "تک کلیک"
 
 #: frontend/src/components/DriveToolBar.vue:332
 #: frontend/src/components/InfoPopup.vue:45
@@ -756,7 +756,7 @@ msgstr "اندازه"
 
 #: frontend/src/components/DriveToolBar.vue:348
 msgid "Smart sort"
-msgstr ""
+msgstr "مرتب‌سازی هوشمند"
 
 #. Label of the snapshot_data (Long Text) field in DocType 'Drive Document
 #. Version'
@@ -779,7 +779,7 @@ msgstr "وضعیت"
 #: frontend/src/components/Settings/StorageSettings.vue:3
 #: frontend/src/components/StorageBar.vue:8
 msgid "Storage"
-msgstr ""
+msgstr "ذخیره‌سازی"
 
 #: frontend/src/components/PrimaryDropdown.vue:125
 msgid "Support"
@@ -891,7 +891,7 @@ msgstr "کاربران"
 #. Label of the valid_until (Datetime) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Valid Until"
-msgstr ""
+msgstr "معتبر تا"
 
 #. Label of the version (Int) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
