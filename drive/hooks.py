@@ -103,8 +103,15 @@ after_install = "drive.install.after_install"
 # }
 #
 
-has_permission = {
-    # "Drive File": "drive.api.permissions.user_has_permission",
+permission_query_conditions = {
+    "Drive Team": "drive.utils.overrides.filter_drive_team",
+    "Drive File": "drive.utils.overrides.filter_drive_file",
+    "Drive Permission": "drive.utils.overrides.filter_drive_permission",
+    "Drive Document": "drive.utils.overrides.filter_drive_document",
+    "Drive Comment": "drive.utils.overrides.filter_drive_comment",
+    "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
+    "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
+    "Drive Notification": "drive.utils.overrides.filter_drive_notif",
 }
 
 # DocType Class
@@ -112,7 +119,7 @@ has_permission = {
 # Override standard doctype classes
 
 # override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
+# 	"ToDo": "custom_app.utils.overrides.CustomToDo"
 # }
 
 # Document Events

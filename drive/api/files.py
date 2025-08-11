@@ -389,7 +389,7 @@ def save_doc(entity_name, doc_name, content):
 def create_auth_token(entity_name):
     if not user_has_permission(entity_name):
         raise frappe.PermissionError("You do not have permission to view this file")
-    settings = frappe.get_single("Drive Site Settings")
+    settings = frappe.get_single("Drive Disk Settings")
     key = settings.get_password("jwt_key", raise_exception=False)
     return jwt.encode(
         {"name": entity_name, "expiry": (datetime.now() + timedelta(minutes=1)).timestamp()},
@@ -415,7 +415,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
     A more secure way would be a DB-stored auth token that can only be created by someone with read access.
     """
     if jwt_token:
-        settings = frappe.get_single("Drive Site Settings")
+        settings = frappe.get_single("Drive Disk Settings")
         auth = jwt.decode(jwt_token, key=settings.get_password("jwt_key"), algorithms=["HS256"])
         if datetime.now().timestamp() > auth["expiry"] or auth["name"] != entity_name:
             raise frappe.PermissionError("You do not have permission to view this file")

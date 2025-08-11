@@ -12,6 +12,7 @@
     "team_prefix",
     "personal_prefix",
     "thumbnail_prefix",
+    "jwt_key",
     "s3_section",
     "enabled",
     "aws_key",
@@ -105,13 +106,19 @@
       "fieldname": "thumbnail_prefix",
       "fieldtype": "Data",
       "label": "Thumbnail prefix"
+    },
+    {
+      "fieldname": "jwt_key",
+      "fieldtype": "Data",
+      "label": "JWT Key",
+      "options": "Dangerous - if leaked, all files can be accessed."
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-08-08 13:13:48.581365",
+  "modified": "2025-08-11 12:24:45.114568",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Disk Settings",

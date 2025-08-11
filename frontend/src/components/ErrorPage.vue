@@ -5,7 +5,7 @@
     <div
       class="bg-surface-red-2 text-ink-red-4 p-4 rounded-full flex items-center justify-center w-16 h-16"
     >
-      <LucideAxe />
+      <LucideFileQuestionMark />
     </div>
     <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">Uh oh!</h1>
     <p
