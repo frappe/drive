@@ -24,7 +24,6 @@ import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
 import LucideStar from "~icons/lucide/star"
-import LucideTrash from "~icons/lucide/trash"
 import LucideUsers from "~icons/lucide/users"
 
 export default {
@@ -44,34 +43,12 @@ export default {
     },
     sidebarItems() {
       return [
-        // {
-        //   label: "Search",
-        //   route: () => {},
-        //   icon: "search",
-        //   highlight: () => {},
-        // },
         {
           label: "Home",
           route: "/t/" + this.team,
           icon: LucideHome,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Home"
-          },
-        },
-        {
-          label: "Recents",
-          route: "/t/" + this.team + "/recents",
-          icon: LucideClock,
-          highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Recents"
-          },
-        },
-        {
-          label: "Favourites",
-          route: "/t/" + this.team + "/favourites",
-          icon: LucideStar,
-          highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Favourites"
           },
         },
         {
@@ -83,6 +60,15 @@ export default {
           },
         },
         {
+          label: "Recents",
+          route: "/t/" + this.team + "/recents",
+          icon: LucideClock,
+          highlight: () => {
+            return this.$store.state.breadcrumbs[0].name === "Recents"
+          },
+        },
+
+        {
           label: "Shared",
           route: "/shared",
           icon: LucideUsers,
@@ -91,11 +77,11 @@ export default {
           },
         },
         {
-          label: "Trash",
-          route: "/t/" + this.team + "/trash",
-          icon: LucideTrash,
+          label: "Favourites",
+          route: "/t/" + this.team + "/favourites",
+          icon: LucideStar,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Trash"
+            return this.$store.state.breadcrumbs[0].name === "Favourites"
           },
         },
       ]

@@ -48,13 +48,10 @@
           >
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
-        <!-- <li>
-          <span class="inline-block w-24">Path:</span>
-          <span class="col-span-1">{{ entity.path }}</span>
-        </li> -->
       </ul>
+
       <ul
-        v-if="editor.storage?.characterCount"
+        v-if="editor?.storage?.characterCount"
         class="space-y-3 text-sm mb-4 text-ink-gray-9"
       >
         <span class="text-base font-semibold">{{ __("Stats") }}</span>
@@ -149,6 +146,34 @@
           <span v-else>-</span>
         </li>
       </ul>
+      <ul
+        class="space-y-3 text-sm mb-8 text-ink-gray-9"
+        v-if="developer"
+      >
+        <div>
+          <span class="text-base font-semibold">{{ __("Developer") }}</span>
+          <Button
+            variant="subtle"
+            size="sm"
+            class="scale-[90%] float-right"
+            @click=""
+          >
+            <a
+              :href="'/app/drive-file/' + entity.name"
+              target="_blank"
+              >Open in Desk</a
+            >
+          </Button>
+        </div>
+        <li>
+          <span class="inline-block w-24">Disk path:</span>
+          <span class="col-span-1">{{ entity.path }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">MIME type:</span>
+          <span class="col-span-1">{{ entity.mime_type }}</span>
+        </li>
+      </ul>
     </template>
   </Dialog>
 </template>
@@ -156,20 +181,14 @@
 <script setup>
 import { formatDate } from "@/utils/format"
 import { Dialog, Button, LoadingIndicator, createResource } from "frappe-ui"
-import { ref, inject, watch } from "vue"
+import { ref, inject } from "vue"
+import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 
 const dialogType = defineModel()
 const open = ref(true)
 
 const editor = inject("editor")
-watch(
-  editor,
-  (val) => {
-    window.editor = val
-  },
-  { immediate: true }
-)
 const props = defineProps({
   entity: Object,
 })
@@ -182,14 +201,21 @@ const getGeneralAccess = createResource({
     entity: props.entity.name,
   }),
   transform: (data) => {
-    console.log(data)
     if (!data || !data.read) {
+      console.log(data)
       if (getGeneralAccess.params.user === "Guest")
         getGeneralAccess.fetch({ user: "$TEAM" })
-      return
+      else
+        return {
+          type: "restricted",
+        }
+    } else {
+      const translate = {
+        Guest: "public",
+        $TEAM: "team",
+      }
+      return { ...data, type: translate[getGeneralAccess.params.user] }
     }
-    const translate = { Guest: "public", $TEAM: "team" }
-    return { ...data, type: translate[getGeneralAccess.params.user] }
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
@@ -198,5 +224,10 @@ const userAccess = createResource({
   url: "drive.api.permissions.get_shared_with_list",
   params: { entity: props.entity.name },
   auto: true,
+})
+
+const developer = ref(false)
+onKeyDown("D", () => {
+  developer.value = !developer.value
 })
 </script>
