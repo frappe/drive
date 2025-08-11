@@ -143,10 +143,12 @@ const newFullName = computed(() => newFirstName.value + " " + newLastName.value)
 const editProfileDialog = ref(false)
 
 const teamOptions = computed(() =>
-  Object.keys(getTeams.data).map((k) => ({
-    value: k,
-    label: getTeams.data[k].title,
-  }))
+  getTeams.data
+    ? Object.keys(getTeams.data).map((k) => ({
+        value: k,
+        label: getTeams.data[k].title,
+      }))
+    : {}
 )
 const singleClick = ref(Boolean(settings.data.single_click))
 const detectLinks = ref(Boolean(settings.data.auto_detect_links))

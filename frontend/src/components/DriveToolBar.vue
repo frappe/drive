@@ -147,10 +147,15 @@
             </Button>
 
             <Button
-              class="text-sm h-7 rounded-l-none flex-1 md:block"
+              class="text-sm h-7 rounded-l-none flex-1"
               :disabled="!getEntities.data?.length"
             >
-              {{ __(sortOrder.label) }}
+              <div class="flex items-center gap-2">
+                {{ __(sortOrder.label) }}
+                <template v-if="sortOrder.smart">
+                  <LucideSparkles class="size-3" />
+                </template>
+              </div>
             </Button>
           </div>
         </Dropdown>
@@ -340,7 +345,7 @@ const columnHeaders = [
           setup() {
             return () =>
               h(Switch, {
-                label: __("Smart sort"),
+                label: __("Smart"),
                 disabled: sortOrder.field !== "title",
                 modelValue: sortOrder.smart,
                 "onUpdate:modelValue": (val) => (sortOrder.smart = val),

@@ -83,7 +83,7 @@ const store = useStore()
 const selections = defineModel(new Set())
 
 const rows = computed(() => props.folderContents)
-const action = (settings.data.message || settings.data).single_click
+const action = (settings.data?.message || settings.data)?.single_click
   ? "click"
   : "dblclick"
 
@@ -163,6 +163,8 @@ onKeyDown("Escape", (e) => {
 })
 </script>
 <style scoped>
+@import url("./DocEditor/editor.css");
+
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
