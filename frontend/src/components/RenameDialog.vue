@@ -24,12 +24,13 @@
           type="text"
           @keyup.enter="submit"
         />
-        <FormControl
+        <div
           disabled
           v-if="file_ext"
-          v-model="file_ext"
-          class="flex-1"
-        />
+          class="w-12 text-ink-gray-7 bg-surface-gray-2 rounded text-center self-center py-1.5 text-sm"
+        >
+          {{ file_ext }}
+        </div>
       </div>
     </template>
   </Dialog>

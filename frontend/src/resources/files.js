@@ -1,7 +1,6 @@
-import { createResource } from "frappe-ui"
+import { createResource, toast as nToast } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import { openEntity, setTitle } from "@/utils/files"
-
 import store from "@/store"
 import router from "@/router"
 import { prettyData, setCache } from "@/utils/files"
