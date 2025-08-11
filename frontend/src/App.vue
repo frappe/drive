@@ -28,21 +28,21 @@
     >
       <component :is="Component" />
     </router-view>
+    <SearchPopup
+      v-if="isLoggedIn && showSearchPopup"
+      v-model="showSearchPopup"
+    />
+    <Transition
+      enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+      enter-from-class="translate-y-1 opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+      leave-from-class="translate-y-0 opacity-100"
+      leave-to-class="translate-y-1 opacity-0"
+    >
+      <UploadTracker v-if="showUploadTracker" />
+    </Transition>
   </FrappeUIProvider>
-  <SearchPopup
-    v-if="isLoggedIn && showSearchPopup"
-    v-model="showSearchPopup"
-  />
-  <Transition
-    enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    enter-from-class="translate-y-1 opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
-    leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="translate-y-1 opacity-0"
-  >
-    <UploadTracker v-if="showUploadTracker" />
-  </Transition>
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"

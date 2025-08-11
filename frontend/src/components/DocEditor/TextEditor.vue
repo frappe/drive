@@ -5,12 +5,12 @@
         $event.target.tagName === 'DIV' &&
           textEditor.editor?.chain?.().focus?.().run?.()
       "
-      class="mx-auto cursor-text min-h-full w-full md:w-auto px-3 md:px-0"
+      class="mx-auto cursor-text min-h-full w-full md:w-auto ps-4 md:p-0"
     >
       <FTextEditor
         ref="textEditor"
-        class="min-w-full md:min-w-[65ch] px-5"
-        editor-class="prose-sm min-h-[4rem] p-5"
+        class="min-w-full md:min-w-[65ch]"
+        editor-class="prose-sm min-h-[4rem]"
         :content="rawContent"
         :editable="!!entity.write"
         :upload-function="
