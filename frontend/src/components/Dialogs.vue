@@ -109,8 +109,8 @@ emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 function addToList(data, file_type) {
-  if (typeof resource.data !== "list") return
   resetDialog()
+  if (!listResource.value) return
   const now = Date()
   data = {
     ...data,
@@ -148,10 +148,9 @@ function removeFromList(entities, move = true) {
     resetDialog()
     if (listResource.value) {
       const names = entities.map((o) => o.name)
-      const index = listResource.value.data.findIndex(({ name }) =>
-        names.includes(name)
+      listResource.value.setData(
+        listResource.value.data.filter(({ name }) => !names.includes(name))
       )
-      if (index !== -1) listResource.value.data.splice(index, 1)
     }
   }
 }

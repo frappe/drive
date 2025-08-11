@@ -72,6 +72,15 @@ export const getFavourites = createResource({
   },
 })
 
+export const getDocuments = createResource({
+  ...COMMON_OPTIONS,
+  url: "drive.api.list.files",
+  makeParams: (params) => {
+    return { ...params, file_kinds: '["Frappe Document"]' }
+  },
+  cache: "document-folder-contents",
+})
+
 export const getShared = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.shared",
@@ -333,3 +342,4 @@ setCache(getRecents, "recents-folder-contents")
 setCache(getFavourites, "favourite-folder-contents")
 setCache(getPersonal, "personal-folder-contents")
 setCache(getTrash, "trash-folder-contents")
+setCache(getDocuments, "document-folder-contents")

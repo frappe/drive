@@ -98,7 +98,13 @@
 </template>
 <script setup>
 import UsersBar from "./UsersBar.vue"
-import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from "frappe-ui"
+import {
+  Button,
+  Breadcrumbs,
+  LoadingIndicator,
+  Dropdown,
+  toast,
+} from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
 import { ref, computed } from "vue"
@@ -109,9 +115,10 @@ import {
   getTrash,
   createDocument,
   toggleFav,
+  getDocuments,
 } from "@/resources/files"
 import { useRoute, useRouter } from "vue-router"
-import { getLink } from "@/utils/files"
+import { getLink, prettyData } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
@@ -254,18 +261,32 @@ const defaultActions = computed(() => {
 
 // Functions
 const newDocument = async () => {
-  let data = await createDocument.submit({
-    title: "Untitled Document",
-    team: route.params.team,
-    personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
-    content: null,
-    parent: store.state.currentFolder.name,
-  })
-  window.open(
-    router.resolve({
-      name: "Document",
-      params: { team: route.params.team, entityName: data.name },
-    }).href
+  toast.promise(
+    createDocument.submit({
+      title: "Untitled Document",
+      team: route.params.team,
+      personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
+      content: null,
+      parent: store.state.currentFolder.name,
+    }),
+    {
+      successDuration: 1,
+      loading: "Creating document...",
+      success: (data) => {
+        prettyData([data])
+        data.file_type = "Document"
+        store.state.listResource.data?.push?.(data)
+        getDocuments.data?.push(data)
+        window.open(
+          router.resolve({
+            name: "Document",
+            params: { team: route.params.team, entityName: data.name },
+          }).href
+        )
+        return "Created"
+      },
+      error: "Failed to create document",
+    }
   )
 }
 
