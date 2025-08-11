@@ -68,10 +68,10 @@
     },
     {
       "default": "0",
-      "description": "More performant. Use if you only access the file system through Drive.",
+      "description": "Legacy option.\n<br>\n<br>\nBy default, Drive stores files the way you see it. If this option is checked, the files are store flatly, with randomized names.\n",
       "fieldname": "flat",
       "fieldtype": "Check",
-      "label": "Store flatly"
+      "label": "Do not mimic folder/file structure"
     },
     {
       "fieldname": "general_section",
@@ -118,7 +118,7 @@
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-08-11 12:24:45.114568",
+  "modified": "2025-08-11 12:57:29.487715",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Disk Settings",

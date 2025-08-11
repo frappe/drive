@@ -7,14 +7,10 @@
 </template>
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { createResource, toast } from "frappe-ui"
+import { createResource } from "frappe-ui"
 import LucideFileText from "~icons/lucide/file-text"
 import { COMMON_OPTIONS } from "@/resources/files"
-import { onMounted } from "vue"
 
-onMounted(() => {
-  toast.success("Co pied to clipboard")
-})
 const getDocuments = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
