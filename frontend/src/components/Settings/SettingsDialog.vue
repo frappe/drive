@@ -15,25 +15,29 @@
             {{ __("Settings") }}
           </h1>
           <div class="mt-3 space-y-1">
-            <button
+            <template
               v-for="tab in tabs"
               :key="tab.label"
-              class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
-              :class="[
-                activeTab?.label == tab.label
-                  ? 'bg-surface-gray-4'
-                  : 'hover:bg-surface-gray-2',
-              ]"
-              @click="activeTab = tab"
             >
-              <component
-                :is="tab.icon"
-                class="size-4 text-ink-gray-7 stroke-[1.5]"
-              />
-              <span class="text-base text-ink-gray-8">
-                {{ __(tab.label) }}
-              </span>
-            </button>
+              <button
+                v-if="tab.enabled?.value !== false"
+                class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
+                :class="[
+                  activeTab?.label == tab.label
+                    ? 'bg-surface-gray-4'
+                    : 'hover:bg-surface-gray-2',
+                ]"
+                @click="activeTab = tab"
+              >
+                <component
+                  :is="tab.icon"
+                  class="size-4 text-ink-gray-7 stroke-[1.5]"
+                />
+                <span class="text-base text-ink-gray-8">
+                  {{ __(tab.label) }}
+                </span>
+              </button>
+            </template>
           </div>
         </div>
         <div class="flex flex-1 flex-col p-8">
@@ -55,6 +59,7 @@
 <script setup>
 import { ref, markRaw, computed } from "vue"
 import { Dialog, Button } from "frappe-ui"
+import { isAdmin } from "@/resources/permissions"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
@@ -69,13 +74,11 @@ import BackendSettings from "./BackendSettings.vue"
 
 let tabs = [
   {
-    enabled: true,
     label: "Profile",
     icon: LucideUser,
     component: markRaw(ProfileSettings),
   },
   {
-    enabled: true,
     label: "Users",
     icon: LucideUserPlus,
     component: markRaw(UserListSettings),
@@ -91,12 +94,13 @@ let tabs = [
     component: markRaw(TagSettings),
   },
   {
-    enabled: true,
+    enabled: computed(() => isAdmin.data?.is_admin || false),
     label: "Backend",
     icon: LucideCloudUpload,
     component: markRaw(BackendSettings),
   },
 ]
+if (!isAdmin.data) isAdmin.fetch()
 
 const emit = defineEmits(["update:modelValue"])
 const props = defineProps({

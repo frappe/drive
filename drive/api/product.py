@@ -350,12 +350,16 @@ def get_translations():
 
 
 @frappe.whitelist()
-def get_disk_settings():
-    return frappe.get_single("Drive Disk Settings")
+def check_is_admin():
+    return {"is_admin": "Drive Admin" in frappe.get_roles()}
 
 
 @frappe.whitelist()
-def update_disk_settings(**kwargs):
+def disk_settings(**kwargs):
+    if not check_is_admin()["is_admin"]:
+        frappe.throw("Only admins can access this endpoint", frappe.PermissionError)
+    if frappe.request.method == "GET":
+        return frappe.get_single("Drive Disk Settings")
     settings = frappe.get_single("Drive Disk Settings")
     field_map = {
         "root_prefix_type": "team_id",

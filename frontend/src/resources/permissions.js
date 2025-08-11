@@ -34,12 +34,10 @@ export const setSettings = createResource({
 
 export const generalAccess = createResource({
   url: "drive.api.permissions.get_user_access",
-  auto: false,
 })
 
 export const userList = createResource({
   url: "drive.api.permissions.get_shared_with_list",
-  auto: false,
 })
 
 export const allUsers = createResource({
@@ -68,4 +66,8 @@ export const acceptInvite = createResource({
 export const rejectInvite = createResource({
   url: "drive.api.product.reject_invite",
   onSuccess: () => toast("Removed invite"),
+})
+
+export const isAdmin = createResource({
+  url: "drive.api.product.check_is_admin",
 })

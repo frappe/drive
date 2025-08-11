@@ -15,7 +15,14 @@
     />
   </div>
   <div class="overflow-y-auto">
-    <div class="flex flex-col gap-4 pb-5 pr-5">
+    <LoadingIndicator
+      v-if="getSettings.loading || getSettings.error"
+      class="size-5 mx-auto my-10"
+    />
+    <div
+      v-else
+      class="flex flex-col gap-4 pb-5 pr-5"
+    >
       <FormControl
         type="select"
         label="Root Folder Type"
@@ -107,7 +114,12 @@
 
 <script setup>
 import { ref, reactive, watch } from "vue"
-import { FormControl, Button, createResource } from "frappe-ui"
+import {
+  FormControl,
+  Button,
+  createResource,
+  LoadingIndicator,
+} from "frappe-ui"
 import { useRoute } from "vue-router"
 import { toast } from "@/utils/toasts"
 
@@ -158,7 +170,7 @@ const syncFromDisk = createResource({
         : "No new files were added.",
     })
   },
-  onError: (d) => {
+  onError: () => {
     toast({
       icon: LucideCloudAlert,
       title: "There was an error.",
@@ -167,8 +179,9 @@ const syncFromDisk = createResource({
   },
 })
 
-createResource({
-  url: "drive.api.product.get_disk_settings",
+const getSettings = createResource({
+  url: "drive.api.product.disk_settings",
+  method: "GET",
   auto: true,
   onSuccess: (data) => {
     delete data.aws_secret
@@ -180,7 +193,8 @@ createResource({
   },
 })
 const updateSettings = createResource({
-  url: "drive.api.product.update_disk_settings",
+  url: "drive.api.product.disk_settings",
+  method: "PUT",
   makeParams: () => ({ ...generalSettings, ...s3Settings }),
   onSuccess() {
     edited.value = false
