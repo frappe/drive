@@ -190,21 +190,20 @@
             )"
           :key="item.label"
         >
-          <Tooltip :text="item.label">
-            <Button
-              variant="outline"
-              size="md"
-              @click.once="item.action(selections)"
-            >
-              <template #icon>
-                <component
-                  :is="item.icon"
-                  class="size-4 text-ink-gray-6"
-                  :class="[item.class, item.danger ? 'text-ink-red-3' : '']"
-                />
-              </template>
-            </Button>
-          </Tooltip>
+          <Button
+            variant="outline"
+            :tooltip="item.label"
+            size="md"
+            @click.once="item.action(selections)"
+          >
+            <template #icon>
+              <component
+                :is="item.icon"
+                class="size-4 text-ink-gray-6"
+                :class="[item.class, item.theme ? 'text-ink-red-3' : '']"
+              />
+            </template>
+          </Button>
         </template>
       </div>
     </div>

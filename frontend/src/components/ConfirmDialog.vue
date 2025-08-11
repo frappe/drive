@@ -26,8 +26,7 @@
 </template>
 <script setup>
 import { ref, computed } from "vue"
-import { createResource, Dialog, ErrorMessage } from "frappe-ui"
-import { toast } from "@/utils/toasts.js"
+import { createResource, Dialog, ErrorMessage, toast } from "frappe-ui"
 import { useTimeAgo } from "@vueuse/core"
 
 import {

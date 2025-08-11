@@ -279,7 +279,7 @@ export const move = createResource({
       buttons: [
         {
           label: "Go",
-          action: () => {
+          onClick: () => {
             if (!data.special)
               openEntity(null, {
                 name: data.name,

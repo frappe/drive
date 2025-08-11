@@ -159,6 +159,7 @@ const document = createResource({
   },
   onSuccess,
 })
+store.commit("setCurrentResource", document)
 
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",

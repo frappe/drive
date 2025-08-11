@@ -6,7 +6,7 @@
   >
     <Breadcrumbs
       :items="store.state.breadcrumbs"
-      :class="'select-none'"
+      class="select-none truncate"
     >
       <template #prefix="{ item, index }">
         <LoadingIndicator
@@ -78,14 +78,6 @@
         </template>
         {{ button.label }}
       </Button>
-
-      <div
-        v-if="connectedUsers.length > 1 && isLoggedIn"
-        class="hidden sm:flex bg-surface-gray-3 rounded justify-center items-center px-1"
-      >
-        <UsersBar />
-      </div>
-
       <div
         v-if="!isLoggedIn"
         class="ml-auto"
@@ -154,11 +146,10 @@ const router = useRouter()
 
 const props = defineProps({
   actions: Array,
-  triggerRoot: Function,
   rootResource: Object,
 })
+
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
-const connectedUsers = computed(() => store.state.connectedUsers)
 const dialog = ref("")
 const rootEntity = computed(() => props.rootResource?.data)
 

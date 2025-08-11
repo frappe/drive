@@ -74,7 +74,6 @@ const onSuccess = (entity) => {
 const e = computed(() => props.entityName)
 let currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
-  makeParams: (e) => ({ entity_name: e }),
   transform(entity) {
     return prettyData([entity])[0]
   },
@@ -83,7 +82,8 @@ let currentFolder = createResource({
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
-watch(e, (v) => currentFolder.fetch(v), { immediate: true })
+store.commit("setCurrentResource", currentFolder)
+watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })
 
 let userInfo = createResource({
   url: "frappe.desk.form.load.get_user_info_for_viewers",

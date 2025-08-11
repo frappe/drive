@@ -64,7 +64,6 @@
   <Dialogs
     v-model="dialog"
     :entities="activeEntity ? [activeEntity] : selectedEntitities"
-    :get-entities="getEntities"
   />
   <FileUploader
     v-if="$store.state.user.id"
@@ -130,6 +129,7 @@ watch(
     rows.value = val
   }
 )
+store.commit("setListResource", props.getEntities)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -157,7 +157,7 @@ watch(
     if (!data) return
     refreshData()
   },
-  { immediate: true }
+  { immediate: true, deep: false }
 )
 emitter.on("refresh", refreshData)
 
@@ -322,7 +322,7 @@ async function newLink() {
     const text = await navigator.clipboard.readText()
     if (localStorage.getItem("prevClip") === text) return
     localStorage.setItem("prevClip", text)
-    url = new URL(text)
+    const url = new URL(text)
     if (url.host)
       toast({
         title: "Link detected",
@@ -330,7 +330,7 @@ async function newLink() {
         buttons: [
           {
             label: "Add",
-            action: () => {
+            onClick: () => {
               dialog.value = "l"
             },
           },

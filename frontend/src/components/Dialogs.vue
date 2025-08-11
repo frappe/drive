@@ -20,8 +20,8 @@
     :entity="entities[0]"
     @success="
       ({ name, title }) => {
-        if (entities[0] !== rootResource?.data && props.getEntities)
-          props.getEntities.data.find((k) => k.name === name).title = title
+        if (entities[0] !== rootResource?.data && resource.value)
+          resource.value.data.find((k) => k.name === name).title = title
         resetDialog()
       }
     "
@@ -30,13 +30,14 @@
     v-else-if="dialog === 's'"
     v-model="dialog"
     :entity="entities[0]"
-    @success="getEntities.fetch(getEntities.params)"
+    @success="resource.fetch(resource.params)"
   />
   <MoveDialog
     v-else-if="dialog === 'm'"
     v-model="dialog"
     :entities="entities"
     @success="removeFromList(entities)"
+    @complete="is_root && resource.fetch(resource.params)"
   />
   <InfoPopup
     v-else-if="dialog === 'i'"
@@ -66,7 +67,7 @@
   />
 </template>
 <script setup>
-import { ref, watch } from "vue"
+import { ref, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { useTimeAgo } from "@vueuse/core"
 import { sortEntities, openEntity } from "@/utils/files"
@@ -81,12 +82,14 @@ import ConfirmDialog from "@/components/ConfirmDialog.vue"
 import MoveDialog from "@/components/MoveDialog.vue"
 
 const props = defineProps({
-  rootResource: Object,
   entities: Array,
-  getEntities: { type: Object, default: null },
 })
 const store = useStore()
-
+const resource = computed(() => store.state.currentResource)
+const listResource = computed(() => store.state.listResource)
+const is_root = computed(
+  () => props.entities[0].name === resource.value.data?.name
+)
 const dialog = defineModel(String)
 const open = ref(false)
 watch(dialog, (val) => {
@@ -106,48 +109,50 @@ emitter.on("move", () => (dialog.value = "m"))
 emitter.on("newLink", () => (dialog.value = "l"))
 
 function addToList(data, file_type) {
-  if (!props.getEntities) return
+  if (typeof resource.data !== "list") return
+  resetDialog()
+  const now = Date()
   data = {
     ...data,
-    modified: Date(),
+    modified: now,
     file_type,
     share_count: 0,
     read: 1,
     write: 1,
     share: 1,
     comment: 1,
+    relativeModified: useTimeAgo(now),
   }
-
-  data.relativeModified = useTimeAgo(data.modified)
-
-  const newData = [...props.getEntities.data, data]
-  sortEntities(newData, store.state.sortOrder)
-  props.getEntities.setData(newData)
-  resetDialog()
-  dialog.value = ""
+  const newData = [...listResource.value.data, data]
+  sortEntities(
+    newData,
+    store.state.sortOrder[listResource.value.params.entityName]
+  )
+  listResource.value.setData(newData)
 }
 
 function removeFromList(entities, move = true) {
-  // Hack (that breaks for some reason)
-  if (!props.getEntities?.data && props.rootResource) {
+  if (is_root.value) {
     if (move) {
       store.state.breadcrumbs.splice(1)
       store.state.breadcrumbs.push({ loading: true })
-      setTimeout(() => props.rootResource.fetch(), 1000)
     } else {
+      resetDialog()
       openEntity(null, {
-        team: props.rootResource.data.team,
-        name: props.rootResource.data.parent_entity,
+        team: resource.value.data.team,
+        name: resource.value.data.parent_entity,
         is_group: true,
       })
     }
   } else {
-    const names = entities.map((o) => o.name)
-    if (props.getEntities)
-      props.getEntities.setData(
-        props.getEntities.data.filter(({ name }) => !names.includes(name))
+    resetDialog()
+    if (listResource.value) {
+      const names = entities.map((o) => o.name)
+      const index = listResource.value.data.findIndex(({ name }) =>
+        names.includes(name)
       )
+      if (index !== -1) listResource.value.data.splice(index, 1)
+    }
   }
-  resetDialog()
 }
 </script>

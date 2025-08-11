@@ -204,14 +204,7 @@
               currentFolder === '' && breadcrumbs[0].title == $route.name
             "
             :loading="move.loading"
-            @click="
-              $emit('success'),
-                move.submit({
-                  entity_names: entities.map((obj) => obj.name),
-                  new_parent: currentFolder,
-                  is_private: breadcrumbs[breadcrumbs.length - 1].is_private,
-                })
-            "
+            @click="moveFile"
           >
             <template #prefix>
               <LucideArrowLeftRight class="size-4" />
@@ -247,7 +240,7 @@ import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 
 const route = useRoute()
 
-const emit = defineEmits(["success"])
+const emit = defineEmits(["success", "complete"])
 const props = defineProps({
   entities: {
     type: Object,
@@ -451,7 +444,6 @@ const expandNode = (obj, name) => {
 }
 
 watch(folderSearch, (val) => {
-  console.log(val)
   if (!val) return
   expandNode(tree.value, val)
   openEntity(val)
@@ -467,5 +459,16 @@ function closeEntity(name) {
       personal: currentFolder.value === "" ? 1 : -1,
     })
   }
+}
+
+const moveFile = async () => {
+  open.value = false
+  emit("success")
+  await move.submit({
+    entity_names: props.entities.map((obj) => obj.name),
+    new_parent: currentFolder.value,
+    is_private: breadcrumbs.value[breadcrumbs.value.length - 1].is_private,
+  })
+  emit("complete")
 }
 </script>

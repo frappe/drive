@@ -18,6 +18,7 @@ const getJson = (key, initial) => {
     return initial
   }
 }
+
 const store = createStore({
   state: {
     user: {
@@ -27,12 +28,13 @@ const store = createStore({
       imageURL: user_image,
     },
     uploads: [],
-    connectedUsers: [],
     sortOrder: getJson("sortOrder", {}),
     view: getJson("view", "list"),
     shareView: getJson("shareView", "with"),
     activeTags: [],
     activeEntity: null,
+    currentResource: [],
+    listResource: [],
     notifCount: 0,
     pasteData: { entities: [], action: null },
     currentFolder: {
@@ -41,7 +43,6 @@ const store = createStore({
       entities: getJson("currentEntitites", []),
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
-    // Writer ones
     sidebarCollapsed: getJson("sidebarCollapsed", false),
   },
   getters: {
@@ -59,15 +60,10 @@ const store = createStore({
     },
   },
   mutations: {
-    setElementExists(state, val) {
-      state.elementExists = val
-    },
     setUploads(state, uploads) {
       state.uploads = uploads
     },
-    setConnectedUsers(state, connectedUsers) {
-      state.connectedUsers = connectedUsers
-    },
+
     pushToUploads(state, upload) {
       state.uploads.push(upload)
     },
@@ -92,6 +88,12 @@ const store = createStore({
     setActiveEntity(state, payload) {
       state.activeEntity = payload
     },
+    setCurrentResource(state, payload) {
+      state.currentResource = payload
+    },
+    setListResource(state, payload) {
+      state.listResource = payload
+    },
     setCurrentFolder(state, payload) {
       // Don't clear cache for performance's sake (state is cleared on every reroute)
       if (payload === null)
@@ -115,13 +117,6 @@ const store = createStore({
     setPasteData(state, payload) {
       state.pasteData = payload
     },
-    setShowInfo(state, payload) {
-      localStorage.setItem("showInfo", payload)
-      state.showInfo = payload
-    },
-    setActiveCommentsInstance(state, payload) {
-      state.activeCommentsInstance = payload
-    },
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))
       state.breadcrumbs = payload
@@ -132,10 +127,6 @@ const store = createStore({
     },
   },
   actions: {
-    checkElementPresence({ commit }) {
-      const exists = document.getElementById("headlessui-portal-root") !== null
-      commit("setElementExists", exists)
-    },
     async logout() {
       await call("logout")
       clear()
@@ -146,13 +137,5 @@ const store = createStore({
     },
   },
 })
-
-const observer = new MutationObserver(() => {
-  store.dispatch("checkElementPresence")
-})
-observer.observe(document.body, { childList: true, subtree: true })
-export function stopObserving() {
-  observer.disconnect()
-}
 
 export default store
