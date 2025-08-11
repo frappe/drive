@@ -8,11 +8,11 @@
       <div class="flex items-center justify-start">
         <div class="text-base text-ink-gray-6">
           <template v-if="props.entities.length"
-            >"{{
+            >{{
               props.entities.length > 1
-                ? "These items"
-                : props.entities[0].title
-            }}"
+                ? "These items "
+                : `"${props.entities[0].title}"`
+            }}
           </template>
           <span v-html="dialogData.message" />
         </div>

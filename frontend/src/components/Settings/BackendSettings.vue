@@ -1,5 +1,6 @@
 <template>
-  <div class="flex items-center mb-4">
+  <!-- Hack padding for select clip -->
+  <div class="flex items-center mb-4 ps-1">
     <div>
       <h1 class="font-semibold text-ink-gray-9">
         {{ __("Backend") }}
@@ -14,7 +15,7 @@
       class="ml-auto mr-4"
     />
   </div>
-  <div class="overflow-y-auto">
+  <div class="overflow-y-auto ps-1">
     <LoadingIndicator
       v-if="getSettings.loading || getSettings.error"
       class="size-5 mx-auto my-10"
@@ -122,6 +123,7 @@ import {
 } from "frappe-ui"
 import { useRoute } from "vue-router"
 import { toast } from "@/utils/toasts"
+import emitter from "@/emitter"
 
 const route = useRoute()
 
@@ -147,14 +149,14 @@ watch([generalSettings, s3Settings], () => (edited.value = true), {
 })
 
 function confirmSync() {
-  // if(confirm('Are you sure? This might corrupt your Drive system.'))
+  // if (confirmDialog("Are you sure? This might corrupt your Drive system."))
   syncFromDisk.submit()
 }
 
 const syncFromDisk = createResource({
   url: "drive.api.scripts.sync_from_disk",
   params: { team: route.params.team },
-  beforeSubmit: (d) => {
+  beforeSubmit: () => {
     toast({
       icon: LucideFolderSync,
       title: "Starting syncing.",
@@ -169,6 +171,7 @@ const syncFromDisk = createResource({
         ? `Added ${d.length} item${d.length > 1 ? "s" : ""}`
         : "No new files were added.",
     })
+    emitter.emit("refresh")
   },
   onError: () => {
     toast({

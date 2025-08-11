@@ -281,17 +281,19 @@ class FileManager:
                 files[Path(f_path)] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
+            print(root_folder / self.team_prefix)
             # Get files...
             team_files = {f: "team" for f in (root_folder / self.team_prefix).glob("**/*")}
 
             personal_files = {}
-            personal_users = [
-                f.name for f in (root_folder / self.personal_prefix).iterdir() if f.is_dir()
-            ]
-            for user in personal_users:
-                user_folder = root_folder / self.personal_prefix / user
-                for f in user_folder.glob("**/*"):
-                    personal_files[f] = user
+            if self.personal_prefix:
+                personal_users = [
+                    f.name for f in (root_folder / self.personal_prefix).iterdir() if f.is_dir()
+                ]
+                for user in personal_users:
+                    user_folder = root_folder / self.personal_prefix / user
+                    for f in user_folder.glob("**/*"):
+                        personal_files[f] = user
 
             # ... and stitch them together with information
             files = {}

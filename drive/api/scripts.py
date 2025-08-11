@@ -1,5 +1,6 @@
 import frappe
 
+from drive.api.product import is_admin
 from drive.utils import create_drive_file, update_file_size
 from drive.utils.files import FileManager
 
@@ -7,8 +8,14 @@ from drive.utils.files import FileManager
 @frappe.whitelist()
 def sync_from_disk(team):
     """
-    One-way synce from disk to Drive. Ignores hidden files.
+    One-way sync from disk to Drive. Ignores hidden files.
     """
+    if not is_admin(team):
+        frappe.throw(
+            "You do not have permission to sync files from disk.",
+            frappe.PermissionError,
+        )
+
     manager = FileManager()
 
     files_added = []
