@@ -20,7 +20,24 @@
           :label="item.label"
           :image="item.user_image"
         />
-        {{ item.label }}
+        <span 
+          :class="[
+            item.has_permission 
+              ? 'text-blue-600 font-medium' 
+              : 'text-gray-400',
+            'flex-1'
+          ]"
+          :title="item.has_permission ? 'Has access to document' : 'No access to document'"
+        >
+          {{ item.label }}
+        </span>
+        <span 
+          v-if="!item.has_permission"
+          class="ml-2 px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded"
+          title="Will be granted access when mentioned"
+        >
+          No access
+        </span>
       </button>
     </div>
   </div>

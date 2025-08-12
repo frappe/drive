@@ -33,10 +33,10 @@
               {{ formatDate(jsonComment.time) }}
             </span>
           </div>
-          <span
-            class="my-2 text-base text-ink-gray-7 break-word leading-snug"
-            >{{ jsonComment.content }}</span
-          >
+          <div
+            class="my-2 text-base text-ink-gray-7 break-word leading-snug comment-content"
+            v-html="renderCommentContent(jsonComment.content)"
+          ></div>
         </div>
       </div>
 
@@ -57,23 +57,25 @@
             :image="imageURL"
             class="h-7 w-7 mr-1"
           />
-          <div
-            class="flex items-center mx-auto border w-full bg-transparent rounded max-w-[87%] focus-within:ring-2 ring-outline-gray-3 hover:bg-surface-gray-2 focus-within:bg-surface-gray-2 group"
-          >
-            <textarea
+          <div class="w-full max-w-[87%]">
+            <RichCommentEditor
+              ref="richEditor"
               v-model="commentText"
-              class="w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
-              placeholder="Add comment"
-              @input="resize($event)"
-              @keypress.enter.stop.prevent="setComment"
+              :entity-name="entityName"
+              placeholder="Add comment (use @ to mention users)"
+              @mentioned-users="(val) => (mentionedUsers = val)"
             />
-            <Button
-              class="hover:bg-transparent"
-              variant="ghost"
-              icon="arrow-up-circle"
-              :disabled="!commentText.length"
-              @click="setComment"
-            ></Button>
+            <div class="flex justify-end mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                icon="arrow-up-circle"
+                :disabled="isCommentEmpty"
+                @click="setComment"
+              >
+                Reply
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -86,6 +88,7 @@ import { useStore } from "vuex"
 import { ref, watch, computed, nextTick, onUpdated } from "vue"
 import { Avatar, Button, Input } from "frappe-ui"
 import { formatDate } from "@/utils/format"
+import RichCommentEditor from "./RichCommentEditor.vue"
 
 const store = useStore()
 
@@ -98,12 +101,15 @@ interface Props {
     comments: []
   }
   isCommentModeOn: boolean
+  entityName: string
   focusContent: ({ from, to }: { from: number; to: number }) => void
 }
 
 const props = defineProps<Props>()
 
 const commentText = ref<string>("")
+const mentionedUsers = ref<any[]>([])
+const richEditor = ref<any>(null)
 
 const textarea = ref<Record<string, any>>({})
 
@@ -115,32 +121,44 @@ const fullName = computed(() => store.state.user.fullName)
 
 const imageURL = computed(() => store.state.user.imageURL)
 
+const isCommentEmpty = computed(() => {
+  return !commentText.value || richEditor.value?.isEmpty()
+})
+
 const setComment = () => {
-  emit("setComment", commentText.value)
+  if (isCommentEmpty.value) return
+  emit("setComment", {
+    content: commentText.value,
+    mentions: mentionedUsers.value
+  })
   commentText.value = ""
+  mentionedUsers.value = []
+  if (richEditor.value) {
+    richEditor.value.clear()
+  }
+}
+
+const renderCommentContent = (content: string) => {
+  // If content is HTML (from rich editor), return as is
+  if (content.includes('<') && content.includes('>')) {
+    return content
+  }
+  // If content is plain text, return as is
+  return content
 }
 
 watch(activeCommentInstanceUuid, (val) => {
   setTimeout(() => {
     if (!val || !props.isCommentModeOn) return
     commentText.value = ""
+    mentionedUsers.value = []
 
-    const activeTextArea: HTMLTextAreaElement = textarea.value[val]
-
-    //if (activeTextArea) activeTextArea.focus()
+    if (richEditor.value) {
+      richEditor.value.clear()
+      richEditor.value.focus()
+    }
   }, 100)
 })
-
-function resize(e) {
-  e.target.style.height = `${e.target.scrollHeight}px`
-}
-
-/* watch(commentText, (val) => {
-  nextTick(() => {
-    console.log(textarea.value.style)
-    //textarea.value.style.height = textarea.value.style.scrollHeight + 'px';
-  })
-}) */
 </script>
 
 <style lang="scss" scoped>
@@ -150,5 +168,14 @@ function resize(e) {
   &.active {
     padding: 10px 0px;
   }
+}
+
+:deep(.comment-content span[data-type="mention"]) {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-weight: 500;
+  text-decoration: none;
 }
 </style>

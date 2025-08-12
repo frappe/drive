@@ -33,8 +33,9 @@ def mark_as_viewed(entity):
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="reference_name", limit=10, seconds=60 * 60)
-def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str):
+def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str, mentions=None):
     """Allow logged user with permission to read document to add a comment"""
+    import json
     exists = frappe.db.exists("Drive File", reference_name)
     if not exists:
         frappe.throw("Entity does not exist", frappe.NotFound)
@@ -50,6 +51,26 @@ def add_comment(reference_name: str, content: str, comment_email: str, comment_b
         }
     )
     comment.insert(ignore_permissions=True)
+    
+    # Handle mentions in comments
+    if mentions:
+        from drive.api.notifications import notify_comment_mentions
+        if isinstance(mentions, str):
+            mentions = json.loads(mentions)
+        if mentions:
+            frappe.enqueue(
+                notify_comment_mentions,
+                queue="long",
+                job_id=f"fcomment_{comment.name}",
+                deduplicate=True,
+                timeout=None,
+                now=False,
+                at_front=False,
+                entity_name=reference_name,
+                comment_doc=comment,
+                mentions=mentions,
+            )
+    
     return comment
 
 

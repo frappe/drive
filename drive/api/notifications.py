@@ -142,6 +142,21 @@ def create_notification(from_user, to_user, type, entity, message=None):
         print(f"Error inserting document: {e}")
 
 
+def notify_comment_mentions(entity_name, comment_doc, mentions):
+    """
+    Create a mention notification for each user mentioned in a comment
+    :param entity_name: ID of entity
+    :param comment_doc: Comment document instance
+    :param mentions: List of mentions from frontend
+    """
+    entity = frappe.get_doc("Drive File", entity_name)
+    
+    for mention in mentions:
+        author_full_name = frappe.db.get_value("User", {"name": comment_doc.comment_email}, ["full_name"])
+        message = f'{author_full_name} mentioned you in a comment on "{entity.title}"'
+        create_notification(comment_doc.comment_email, mention["id"], "Mention", entity, message)
+
+
 def send_share_email(to, message, link, team, type_):
     frappe.sendmail(
         recipients=to,

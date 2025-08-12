@@ -76,7 +76,7 @@
           <span
             id="injected"
             v-html="comment.get('content')"
-            class="max-w-full break-word text-sm text-ink-gray-7"
+            class="max-w-full break-word text-sm text-ink-gray-7 comment-content"
           >
           </span>
         </div>
@@ -439,6 +439,15 @@ function wipeEntryById(yarray, targetId) {
 #injected p:empty::after {
   content: "\A"; /* Inserts a line break */
   white-space: pre; /* Preserves white space */
+}
+
+.comment-content span[data-type="mention"] {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-weight: 500;
+  text-decoration: none;
 }
 
 .current-comment.active {

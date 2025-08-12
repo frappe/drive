@@ -384,9 +384,172 @@ def get_all_site_users():
             "full_name",
             "user_image",
         ],
+        order_by="full_name"
+    )
+    return users
+
+
+@frappe.whitelist()
+def get_system_users():
+    """Get all system users for mentions"""
+    users = frappe.get_all(
+        doctype="User",
+        filters=[
+            ["user_type", "=", "System User"],
+            ["enabled", "=", 1],
+            ["name", "!=", "Administrator"]
+        ],
+        fields=[
+            "name",
+            "email", 
+            "full_name",
+            "user_image",
+        ],
         order_by="full_name asc",
     )
     return users
+
+@frappe.whitelist()
+def check_users_permissions(entity_name, user_emails):
+    """
+    Check if users have read permission for a specific entity
+    :param entity_name: Drive File name
+    :param user_emails: List of user emails or JSON string
+    """
+    import json
+    
+    if isinstance(user_emails, str):
+        user_emails = json.loads(user_emails)
+    
+    if not isinstance(user_emails, list):
+        user_emails = [user_emails]
+    
+    result = []
+    
+    for email in user_emails:
+        has_permission = False
+        
+        try:
+            # Check if user has read permission for the entity
+            entity_doc = frappe.get_doc("Drive File", entity_name)
+            
+            # Check if user is owner
+            if entity_doc.owner == email:
+                has_permission = True
+            else:
+                # Check DriveDocShare permissions
+                share_doc = frappe.db.exists("DriveDocShare", {
+                    "share_doctype": "Drive File",
+                    "share_name": entity_name,
+                    "user_name": email
+                })
+                
+                if share_doc:
+                    share = frappe.get_doc("DriveDocShare", share_doc)
+                    if share.read == 1:
+                        has_permission = True
+                
+                # Check if user is in a team that has access
+                if not has_permission:
+                    team_shares = frappe.get_all("DriveDocShare", {
+                        "share_doctype": "Drive File", 
+                        "share_name": entity_name,
+                        "share_user_type": "Team",
+                        "read": 1
+                    }, ["user_name"])
+                    
+                    for team_share in team_shares:
+                        team_members = frappe.get_all("Drive Team User", {
+                            "parent": team_share.user_name,
+                            "user": email
+                        })
+                        if team_members:
+                            has_permission = True
+                            break
+                            
+        except Exception as e:
+            frappe.log_error(f"Error checking permission for {email}: {str(e)}")
+            has_permission = False
+        
+        result.append({
+            "email": email,
+            "has_permission": has_permission
+        })
+    
+    return result
+
+
+@frappe.whitelist()
+def grant_read_access_to_users(entity_name, user_emails):
+    """
+    Grant read access to users for a specific entity
+    :param entity_name: Drive File name
+    :param user_emails: List of user emails or JSON string
+    """
+    import json
+    
+    if isinstance(user_emails, str):
+        user_emails = json.loads(user_emails)
+    
+    if not isinstance(user_emails, list):
+        user_emails = [user_emails]
+    
+    results = []
+    
+    for email in user_emails:
+        try:
+            # Check if user exists
+            user_exists = frappe.db.exists("User", email)
+            if not user_exists:
+                results.append({
+                    "email": email,
+                    "success": False,
+                    "error": "User does not exist"
+                })
+                continue
+            
+            # Check if share already exists
+            existing_share = frappe.db.exists("DriveDocShare", {
+                "share_doctype": "Drive File",
+                "share_name": entity_name,
+                "user_name": email
+            })
+            
+            if existing_share:
+                # Update existing share to grant read access
+                share_doc = frappe.get_doc("DriveDocShare", existing_share)
+                share_doc.read = 1
+                share_doc.save(ignore_permissions=True)
+            else:
+                # Create new share with read access
+                share_doc = frappe.new_doc("DriveDocShare")
+                share_doc.update({
+                    "share_doctype": "Drive File",
+                    "share_name": entity_name,
+                    "user_name": email,
+                    "read": 1,
+                    "write": 0,
+                    "share": 0,
+                    "owner": 0,
+                    "share_user_type": "User"
+                })
+                share_doc.insert(ignore_permissions=True)
+            
+            results.append({
+                "email": email,
+                "success": True,
+                "message": "Read access granted successfully"
+            })
+            
+        except Exception as e:
+            frappe.log_error(f"Error granting access to {email}: {str(e)}")
+            results.append({
+                "email": email,
+                "success": False,
+                "error": str(e)
+            })
+    
+    return results
 
 
 @frappe.whitelist(allow_guest=True)

@@ -9,18 +9,19 @@
       <!-- <span class="text-sm italic font-medium leading-relaxed text-ink-gray-7">{{ `"${commentRootContent}"` }}</span> -->
       <!-- <span class="text-sm prose prose-xs overflow-auto" v-html="commentRootContent"></span> -->
       <!-- <span class="mt-4 mb-0.5 block text-sm leading-4 text-ink-gray-7">Comment</span> -->
-      <textarea
-        ref="input"
+      <RichCommentEditor
+        ref="richEditor"
         v-model="commentText"
-        class="resize-none w-full form-input mt-1 min-h-6 max-h-[50vh] text-sm"
-        type="text"
-        placeholder="Comment"
-        @keydown.enter="(e) => setComment(e.target.value)"
+        :entity-name="entityName"
+        placeholder="Comment (use @ to mention users)"
+        @mentioned-users="(val) => (mentionedUsers = val)"
+        @keydown.enter.prevent="handleEnterKey"
       />
       <Button
         variant="solid"
         class="w-full mt-6"
-        @click="setComment(commentText)"
+        :disabled="isCommentEmpty"
+        @click="setComment()"
       >
         Save
       </Button>
@@ -34,11 +35,12 @@ import { ref } from "vue"
 import { useFocus } from "@vueuse/core"
 import { v4 as uuidv4 } from "uuid"
 import { DOMSerializer } from "prosemirror-model"
+import RichCommentEditor from "./RichCommentEditor.vue"
 
 export default {
   name: "NewComment",
-  components: { Button, Input, Dialog },
-  props: ["editor"],
+  components: { Button, Input, Dialog, RichCommentEditor },
+  props: ["editor", "entityName"],
   setup() {
     const input = ref(null)
     const { focused } = useFocus(input, { initialValue: true })
@@ -50,6 +52,7 @@ export default {
   data() {
     return {
       commentText: "",
+      mentionedUsers: [],
       showNewCommentDialog: false,
       activeCommentsInstance: {
         uuid: "",
@@ -70,15 +73,11 @@ export default {
       return this.getHTMLContentBetween(this.editor, from, to)
       return state.doc.textBetween(from, to, "")
     },
-  },
-  watch: {
-    commentText: function () {
-      this.$refs.input.style.height = "2rem"
-      this.$nextTick(() => {
-        this.$refs.input.style.height = this.$refs.input.scrollHeight + "px"
-      })
+    isCommentEmpty() {
+      return !this.commentText || this.$refs.richEditor?.isEmpty()
     },
   },
+
   methods: {
     openDialog() {
       this.emitter.emit("forceHideBubbleMenu", true)
@@ -100,8 +99,9 @@ export default {
 
       return nodesArray.join("")
     },
-    setComment(val) {
-      const localVal = val || this.commentText
+    setComment() {
+      if (this.isCommentEmpty) return
+      
       const commentWithUuid = JSON.stringify({
         uuid: uuidv4(),
         comments: [
@@ -109,22 +109,39 @@ export default {
             userName: this.currentUserName,
             userImage: this.currentUserImage,
             time: Date.now(),
-            content: localVal,
+            content: this.commentText,
+            mentions: this.mentionedUsers,
           },
         ],
       })
       this.editor.chain().setComment(commentWithUuid).run()
       this.commentText = ""
+      this.mentionedUsers = []
       this.showNewCommentDialog = false
       this.$emit("success")
+    },
+    handleEnterKey(event) {
+      if (!event.shiftKey) {
+        event.preventDefault()
+        this.setComment()
+      }
     },
     discardComment() {
       this.activeCommentsInstance = {}
       this.commentText = ""
+      this.mentionedUsers = []
+      if (this.$refs.richEditor) {
+        this.$refs.richEditor.clear()
+      }
     },
     reset() {
       this.emitter.emit("forceHideBubbleMenu", false)
       this.showNewCommentDialog = this.$options.data().showNewCommentDialog
+      this.commentText = ""
+      this.mentionedUsers = []
+      if (this.$refs.richEditor) {
+        this.$refs.richEditor.clear()
+      }
     },
   },
 }

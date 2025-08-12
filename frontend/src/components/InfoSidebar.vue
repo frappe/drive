@@ -152,11 +152,10 @@
                   }}</span>
                   <span>∙ {{ comment.creation }}</span>
                 </div>
-                <span
-                  class="my-2 text-base text-ink-gray-7 break-word leading-snug"
-                >
-                  {{ comment.content }}
-                </span>
+                <div
+                  class="my-2 text-base text-ink-gray-7 break-word leading-snug comment-content"
+                  v-html="renderCommentContent(comment.content)"
+                ></div>
               </div>
             </div>
           </div>
@@ -167,22 +166,26 @@
               class="mr-3"
             />
             <div
-              class="flex items-center border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-outline-gray-3 hover:bg-surface-gray-2 focus-within:bg-surface-gray-2 group"
+              class="flex border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-outline-gray-3 hover:bg-surface-gray-2 focus-within:bg-surface-gray-2 group"
             >
-              <textarea
-                v-model="newComment"
-                class="disabled w-full form-textarea bg-transparent resize-none border-none hover:bg-transparent focus:ring-0 focus:shadow-none focus:bg-transparent"
-                placeholder="Add a comment"
-                @input="resize($event)"
-                @keypress.enter.stop.prevent="postComment"
-              />
-              <Button
-                class="hover:bg-transparent"
-                variant="ghost"
-                icon="arrow-up-circle"
-                :disabled="!newComment.length"
-                @click="postComment"
-              />
+              <div class="flex-1 min-w-0">
+                <RichCommentEditor
+                  ref="richCommentEditor"
+                  v-model="newComment"
+                  :entity-name="entity.name"
+                  placeholder="Add a comment (use @ to mention users)"
+                  @mentioned-users="(val) => (mentionedUsers = val)"
+                />
+              </div>
+              <div class="flex-shrink-0 self-start pt-2 pr-2">
+                <Button
+                  class="hover:bg-transparent"
+                  variant="ghost"
+                  icon="arrow-up-circle"
+                  :disabled="isCommentEmpty"
+                  @click="postComment"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -246,6 +249,17 @@
       <LucideClock class="size-4 text-ink-gray-6" />
     </Button>
   </div>
+
+  <!-- Permission Confirmation Dialog -->
+  <PermissionConfirmDialog
+    v-model="showPermissionDialog"
+    :users-without-permission="usersWithoutPermission"
+    :entity-name="entity?.title || entity?.name"
+    :comment-content="newComment"
+    @grant-access="handleGrantAccess"
+    @post-without-permission="submitComment"
+    @cancel="showPermissionDialog = false"
+  />
 </template>
 
 <script setup>
@@ -257,17 +271,27 @@ import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"
 import ActivityTree from "./ActivityTree.vue"
 import TagInput from "@/components/TagInput.vue"
+import RichCommentEditor from "@/components/DocEditor/components/RichCommentEditor.vue"
+import PermissionConfirmDialog from "@/components/PermissionConfirmDialog.vue"
 import { generalAccess, userList } from "@/resources/permissions"
 import LucideMessageCircle from "~icons/lucide/message-circle"
 
 const store = useStore()
 const tab = ref(0)
 const newComment = ref("")
+const mentionedUsers = ref([])
+const richCommentEditor = ref(null)
+const showPermissionDialog = ref(false)
+const usersWithoutPermission = ref([])
 
 const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
 const entity = computed(() => store.state.activeEntity)
+
+const isCommentEmpty = computed(() => {
+  return !newComment.value || richCommentEditor.value?.isEmpty()
+})
 const thumbnailUrl = computed(() => {
   const res = getThumbnailUrl(entity.value?.name, entity.value?.file_type)
   console.log(res)
@@ -303,20 +327,76 @@ watch(entity, (newEntity) => {
 })
 
 async function postComment() {
-  if (newComment.value.length) {
-    try {
-      await call("drive.utils.users.add_comment", {
-        reference_doctype: "Drive File",
-        reference_name: entity.value.name,
-        content: newComment.value,
-        comment_email: userId.value,
-        comment_by: fullName.value,
+  if (isCommentEmpty.value) return
+  
+  try {
+    // Check if any mentioned users don't have permission
+    if (mentionedUsers.value && mentionedUsers.value.length > 0) {
+      const userEmails = mentionedUsers.value.map(u => u.id)
+      const permissionCheck = await call("drive.api.product.check_users_permissions", {
+        entity_name: entity.value?.name,
+        user_emails: JSON.stringify(userEmails)
       })
-      newComment.value = ""
-      comments.fetch()
-    } catch (e) {
-      console.log(e)
+      
+      const usersWithoutAccess = []
+      permissionCheck.forEach(perm => {
+        if (!perm.has_permission) {
+          const user = mentionedUsers.value.find(u => u.id === perm.email)
+          if (user) {
+            usersWithoutAccess.push(user)
+          }
+        }
+      })
+      
+      if (usersWithoutAccess.length > 0) {
+        // Show permission dialog
+        usersWithoutPermission.value = usersWithoutAccess
+        showPermissionDialog.value = true
+        return
+      }
     }
+    
+    // Post comment directly if no permission issues
+    await submitComment()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+async function submitComment() {
+  try {
+    await call("drive.utils.users.add_comment", {
+      reference_doctype: "Drive File",
+      reference_name: entity.value.name,
+      content: newComment.value,
+      comment_email: userId.value,
+      comment_by: fullName.value,
+      mentions: JSON.stringify(mentionedUsers.value),
+    })
+    newComment.value = ""
+    mentionedUsers.value = []
+    if (richCommentEditor.value) {
+      richCommentEditor.value.clear()
+    }
+    comments.fetch()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+async function handleGrantAccess(usersToGrant) {
+  try {
+    // Grant read access to users
+    const userEmails = usersToGrant.map(u => u.id)
+    await call("drive.api.product.grant_read_access_to_users", {
+      entity_name: entity.value?.name,
+      user_emails: JSON.stringify(userEmails)
+    })
+    
+    // Post the comment after granting access
+    await submitComment()
+  } catch (e) {
+    console.error("Error granting access:", e)
   }
 }
 
@@ -338,4 +418,34 @@ let comments = createResource({
 function resize(e) {
   e.target.style.height = `${e.target.scrollHeight}px`
 }
+
+function renderCommentContent(content) {
+  // If content is HTML (from rich editor), return as is
+  if (content.includes('<') && content.includes('>')) {
+    return content
+  }
+  // If content is plain text, return as is (for backward compatibility)
+  return content
+}
 </script>
+
+<style scoped>
+:deep(span[data-type="mention"]) {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Ensure mentions are styled in comment content */
+:deep(.comment-content span[data-type="mention"]) {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-weight: 500;
+  text-decoration: none;
+}
+</style>
