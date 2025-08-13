@@ -685,6 +685,7 @@ def list_entity_comments(entity_name):
         comment_ids = [c.get("name") for c in comments]
         if comment_ids:
             Reaction = frappe.qb.DocType("Comment")
+            User = frappe.qb.DocType("User")
             reaction_rows = (
                 frappe.qb.from_(Reaction)
                 .select(Reaction.reference_name, Reaction.content, fn.Count("*").as_("count"))
@@ -718,6 +719,24 @@ def list_entity_comments(entity_name):
             for row in user_rows:
                 user_map.setdefault(row.reference_name, set()).add(row.content)
 
+            # get reactor full names for tooltip per emoji
+            reactors_rows = (
+                frappe.qb.from_(Reaction)
+                .left_join(User)
+                .on(Reaction.comment_email == User.name)
+                .select(Reaction.reference_name, Reaction.content, User.full_name)
+                .where(
+                    (Reaction.comment_type == "Like")
+                    & (Reaction.reference_doctype == "Comment")
+                    & (Reaction.reference_name.isin(comment_ids))
+                )
+            ).run(as_dict=True)
+            reactors_map = {}
+            for row in reactors_rows:
+                reactors_map.setdefault(row.reference_name, {}).setdefault(row.content, []).append(
+                    row.full_name or ""
+                )
+
             for c in comments:
                 c["reactions"] = []
                 for emoji, cnt in (counts.get(c["name"], {}) or {}).items():
@@ -726,6 +745,8 @@ def list_entity_comments(entity_name):
                         "count": int(cnt),
                         "reacted": emoji in user_map.get(c["name"], set()),
                     })
+                # attach reactor names list for tooltip
+                c["reaction_users"] = reactors_map.get(c["name"], {})
 
     return comments
 

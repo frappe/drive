@@ -157,22 +157,43 @@
                   v-html="renderCommentContent(comment.content)"
                 ></div>
                 <!-- Reactions -->
-                <div class="flex items-center gap-2 mt-1">
-                  <button
+                <div class="relative inline-flex items-center gap-2 mt-1">
+                  <Tooltip
                     v-for="r in (comment.reactions || [])"
                     :key="r.emoji"
-                    class="px-2 py-0.5 rounded border text-sm"
-                    :class="r.reacted ? 'bg-surface-gray-3 border-outline-gray-3' : 'border-outline-gray-2'"
-                    @click="toggleReaction(comment, r.emoji)"
+                    :text="reactionTooltip(comment, r.emoji)"
                   >
-                    <span>{{ r.emoji }}</span>
-                    <span class="ml-1 text-ink-gray-7">{{ r.count }}</span>
-                  </button>
-                  <Dropdown :options="emojiOptions(comment)" placement="bottom-start">
-                    <Button size="sm" variant="ghost" class="text-ink-gray-6 hover:bg-transparent">
-                      <LucideSmilePlus class="size-4" />
-                    </Button>
-                  </Dropdown>
+                    <button
+                      class="px-2 py-0.5 rounded border text-sm"
+                      :class="r.reacted ? 'bg-surface-gray-3 border-outline-gray-3' : 'border-outline-gray-2'"
+                      @click="toggleReaction(comment, r.emoji)"
+                    >
+                      <span>{{ r.emoji }}</span>
+                      <span class="ml-1 text-ink-gray-7">{{ r.count }}</span>
+                    </button>
+                  </Tooltip>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    class="text-ink-gray-6 hover:bg-transparent"
+                    @click.stop="toggleEmojiMenu(comment)"
+                  >
+                    <LucideSmilePlus class="size-4" />
+                  </Button>
+                  <div
+                    v-if="openEmojiFor === comment.name"
+                    class="absolute top-full left-0 mt-1 bg-surface-white border rounded-md shadow p-1 flex items-center gap-1 z-50"
+                    @click.stop
+                  >
+                    <button
+                      v-for="e in defaultEmojis"
+                      :key="e"
+                      class="px-2 py-1 text-sm hover:bg-surface-gray-2 rounded"
+                      @click="toggleReaction(comment, e); openEmojiFor = null"
+                    >
+                      {{ e }}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -284,7 +305,7 @@
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { Avatar, call, createResource } from "frappe-ui"
-import { Dropdown, Button } from "frappe-ui"
+import { Dropdown, Button, Tooltip } from "frappe-ui"
 import LucideSmilePlus from "~icons/lucide/smile-plus"
 import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
@@ -304,6 +325,7 @@ const richCommentEditor = ref(null)
 const showPermissionDialog = ref(false)
 const usersWithoutPermission = ref([])
 const defaultEmojis = ["👍", "❤️", "😂", "🎉", "😮"]
+const openEmojiFor = ref(null)
 
 const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
@@ -467,6 +489,23 @@ function emojiOptions(comment) {
     label: e,
     onClick: () => toggleReaction(comment, e),
   }))
+}
+
+function toggleEmojiMenu(comment) {
+  openEmojiFor.value = openEmojiFor.value === comment.name ? null : comment.name
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("click", () => {
+    openEmojiFor.value = null
+  })
+}
+
+function reactionTooltip(comment, emoji) {
+  const map = comment.reaction_users || {}
+  const names = map[emoji] || []
+  if (!names.length) return ""
+  return names.join(", ")
 }
 
 function resize(e) {
