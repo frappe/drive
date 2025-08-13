@@ -112,6 +112,7 @@ def get_teams(user=None, details=None):
             ["user", "=", user],
         ],
     )
+    print(user, frappe.get_all("Drive Team Member", fields=["user", "parent"]))
     if details:
         return {team: frappe.get_doc("Drive Team", team) for team in teams}
 

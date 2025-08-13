@@ -3,16 +3,13 @@
     v-if="loading"
     class="w-10"
   />
-  <div
-    class="max-w-4/5 max-h-[90%] overflow-auto items-center justify-center flex"
-  >
-    <img
-      v-show="!loading"
-      draggable="false"
-      class="self-center justify-center"
-      :src="previewURL"
-    />
-  </div>
+  <img
+    v-else
+    v-show="!loading"
+    draggable="false"
+    class="self-center justify-center w-[50rem]"
+    :src="previewURL"
+  />
 </template>
 
 <script setup>

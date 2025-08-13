@@ -28,7 +28,7 @@ add_to_apps_screen = [
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/drive/css/drive.css"
-# app_include_js = "/assets/drive/js/drive.js"
+app_include_js = "/assets/drive/js/ff_integration.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/drive/css/drive.css"

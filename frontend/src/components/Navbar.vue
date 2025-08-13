@@ -37,13 +37,25 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
+      <template v-if="!isLoggedIn">
+        <Button
+          label="Download"
+          variant="outline"
+          @click="entitiesDownload($route.params.team, [rootEntity])"
+        />
+        <Button
+          variant="solid"
+          @click="$router.push({ name: 'Login' })"
+        >
+          Sign In
+        </Button>
+      </template>
       <Dropdown
-        v-if="defaultActions"
+        v-else-if="defaultActions"
         :options="defaultActions"
         placement="right"
         :button="{
           variant: 'ghost',
-          tooltip: 'Actions',
           onClick: () => {
             $store.commit('setActiveEntity', rootEntity)
           },
@@ -78,18 +90,15 @@
         </template>
         {{ button.label }}
       </Button>
-      <div
-        v-if="!isLoggedIn"
-        class="ml-auto"
-      >
-        <Button
-          variant="solid"
-          @click="$router.push({ name: 'Login' })"
-        >
-          Sign In
-        </Button>
-      </div>
     </div>
+    <Button
+      v-if="!isLoggedIn"
+      class="fixed bottom-4 right-4 text-sm"
+      variant="outline"
+      :icon-left="h(FrappeDriveLogo, { class: 'w-4.5 h-4.5' })"
+      label="Try out Drive"
+      @click="open('https://frappe.io/drive')"
+    />
     <Dialogs
       v-model="dialog"
       :entities="entities?.length ? entities : [rootEntity]"
@@ -106,7 +115,7 @@ import {
 } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
-import { ref, computed, inject } from "vue"
+import { ref, computed, inject, h } from "vue"
 import { entitiesDownload } from "@/utils/download"
 import {
   getRecents,
@@ -129,6 +138,7 @@ import LucideMoreHorizontal from "~icons/lucide/more-horizontal"
 import LucideShare2 from "~icons/lucide/share-2"
 import LucideDownload from "~icons/lucide/download"
 import LucidePlus from "~icons/lucide/plus"
+import LucideArrowUpRight from "~icons/lucide/arrow-up-right"
 import LucideLink from "~icons/lucide/link"
 import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 import LucideSquarePen from "~icons/lucide/square-pen"
@@ -137,6 +147,7 @@ import LucideFileUp from "~icons/lucide/file-up"
 import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
+import FrappeDriveLogo from "./FrappeDriveLogo.vue"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -149,6 +160,9 @@ const COMPONENT_MAP = {
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const open = (url) => {
+  window.open(url, "_blank")
+}
 
 const props = defineProps({
   rootResource: Object,
