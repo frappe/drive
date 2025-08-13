@@ -2,7 +2,7 @@ import os, re, json, mimetypes
 
 import frappe
 from frappe import _
-from pypika import Order
+from pypika import Order, functions as fn
 from .permissions import get_teams, user_has_permission
 from pathlib import Path
 from werkzeug.wrappers import Response
@@ -658,6 +658,7 @@ def list_entity_comments(entity_name):
     Comment = frappe.qb.DocType("Comment")
     User = frappe.qb.DocType("User")
     selectedFields = [
+        Comment.name,
         Comment.comment_by,
         Comment.comment_email,
         Comment.creation,
@@ -677,7 +678,56 @@ def list_entity_comments(entity_name):
         )
         .orderby(Comment.creation, order=Order.asc)
     )
-    return query.run(as_dict=True)
+    comments = query.run(as_dict=True)
+
+    # Attach reactions summary for each comment
+    if comments:
+        comment_ids = [c.get("name") for c in comments]
+        if comment_ids:
+            Reaction = frappe.qb.DocType("Comment")
+            reaction_rows = (
+                frappe.qb.from_(Reaction)
+                .select(Reaction.reference_name, Reaction.content, fn.Count("*").as_("count"))
+                .where(
+                    (Reaction.comment_type == "Like")
+                    & (Reaction.reference_doctype == "Comment")
+                    & (Reaction.reference_name.isin(comment_ids))
+                )
+                .groupby(Reaction.reference_name, Reaction.content)
+            ).run(as_dict=True)
+
+            # map: comment_id -> { emoji -> count }
+            counts = {}
+            for row in reaction_rows:
+                counts.setdefault(row.reference_name, {}).setdefault(row.content, 0)
+                counts[row.reference_name][row.content] += row.count
+
+            # also indicate whether current user has reacted with each emoji
+            user = frappe.session.user
+            user_rows = (
+                frappe.qb.from_(Reaction)
+                .select(Reaction.reference_name, Reaction.content)
+                .where(
+                    (Reaction.comment_type == "Like")
+                    & (Reaction.reference_doctype == "Comment")
+                    & (Reaction.reference_name.isin(comment_ids))
+                    & (Reaction.comment_email == user)
+                )
+            ).run(as_dict=True)
+            user_map = {}
+            for row in user_rows:
+                user_map.setdefault(row.reference_name, set()).add(row.content)
+
+            for c in comments:
+                c["reactions"] = []
+                for emoji, cnt in (counts.get(c["name"], {}) or {}).items():
+                    c["reactions"].append({
+                        "emoji": emoji,
+                        "count": int(cnt),
+                        "reacted": emoji in user_map.get(c["name"], set()),
+                    })
+
+    return comments
 
 
 def delete_background_job(entity, ignore_permissions):

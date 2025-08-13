@@ -134,7 +134,7 @@
         <div class="pb-2 px-5">
           <div
             v-for="comment in comments.data"
-            :key="comment"
+            :key="comment.name || comment"
             class="flex flex-col mb-5"
           >
             <div class="flex items-start justify-start">
@@ -156,6 +156,24 @@
                   class="my-2 text-base text-ink-gray-7 break-word leading-snug comment-content"
                   v-html="renderCommentContent(comment.content)"
                 ></div>
+                <!-- Reactions -->
+                <div class="flex items-center gap-2 mt-1">
+                  <button
+                    v-for="r in (comment.reactions || [])"
+                    :key="r.emoji"
+                    class="px-2 py-0.5 rounded border text-sm"
+                    :class="r.reacted ? 'bg-surface-gray-3 border-outline-gray-3' : 'border-outline-gray-2'"
+                    @click="toggleReaction(comment, r.emoji)"
+                  >
+                    <span>{{ r.emoji }}</span>
+                    <span class="ml-1 text-ink-gray-7">{{ r.count }}</span>
+                  </button>
+                  <Dropdown :options="emojiOptions(comment)" placement="bottom-start">
+                    <Button size="sm" variant="ghost" class="text-ink-gray-6 hover:bg-transparent">
+                      <LucideSmilePlus class="size-4" />
+                    </Button>
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -266,6 +284,8 @@
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { Avatar, call, createResource } from "frappe-ui"
+import { Dropdown, Button } from "frappe-ui"
+import LucideSmilePlus from "~icons/lucide/smile-plus"
 import { formatDate } from "@/utils/format"
 import GeneralAccess from "@/components/GeneralAccess.vue"
 import { getThumbnailUrl } from "@/utils/getIconUrl"
@@ -283,6 +303,7 @@ const mentionedUsers = ref([])
 const richCommentEditor = ref(null)
 const showPermissionDialog = ref(false)
 const usersWithoutPermission = ref([])
+const defaultEmojis = ["👍", "❤️", "😂", "🎉", "😮"]
 
 const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
@@ -414,6 +435,39 @@ let comments = createResource({
   },
   auto: false,
 })
+
+async function toggleReaction(comment, emoji) {
+  try {
+    await call("drive.api.comments.react_to_comment", {
+      comment_id: comment.name,
+      emoji,
+    })
+    // optimistic: update local state
+    if (!comment.reactions) comment.reactions = []
+    const existing = comment.reactions.find((r) => r.emoji === emoji)
+    if (existing) {
+      if (existing.reacted) {
+        existing.count = Math.max(0, (existing.count || 1) - 1)
+        existing.reacted = false
+      } else {
+        existing.count = (existing.count || 0) + 1
+        existing.reacted = true
+      }
+    } else {
+      comment.reactions.push({ emoji, count: 1, reacted: true })
+    }
+  } catch (e) {
+    // fallback: refetch list
+    comments.fetch()
+  }
+}
+
+function emojiOptions(comment) {
+  return defaultEmojis.map((e) => ({
+    label: e,
+    onClick: () => toggleReaction(comment, e),
+  }))
+}
 
 function resize(e) {
   e.target.style.height = `${e.target.scrollHeight}px`

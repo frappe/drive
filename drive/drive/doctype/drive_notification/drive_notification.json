@@ -42,7 +42,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Share\nMention\nTeam\nFolder Creation\nFile Upload"
+   "options": "Share\nMention\nTeam\nFolder Creation\nFile Upload\nReaction"
   },
   {
    "fieldname": "message",
@@ -84,7 +84,7 @@
   }
  ],
  "links": [],
- "modified": "2025-08-13 21:48:21.662467",
+ "modified": "2025-08-13 22:08:27.872082",
  "modified_by": "antivenomff@gmail.com",
  "module": "Drive",
  "name": "Drive Notification",
