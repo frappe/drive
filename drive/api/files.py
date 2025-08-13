@@ -17,12 +17,12 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.locks.distributed_lock import DistributedLock
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -118,7 +118,6 @@ def upload_file(
 
     manager = FileManager()
     # Create DB record
-    print(home_folder)
 
     drive_file = create_drive_file(
         team,
@@ -166,11 +165,11 @@ def get_thumbnail(entity_name):
         frappe.throw("Cannot read this file", frappe.PermissionError)
 
     thumbnail_data = None
-    if frappe.cache().exists(entity_name):
-        try:
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        except:
-            frappe.cache().delete_value(entity_name)
+    # if frappe.cache().exists(entity_name):
+    #     try:
+    #         thumbnail_data = frappe.cache().get_value(entity_name)
+    #     except:
+    #         frappe.cache().delete_value(entity_name)
 
     if not thumbnail_data:
         manager = FileManager()

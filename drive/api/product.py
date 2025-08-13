@@ -15,7 +15,6 @@ def access_app():
 
 @frappe.whitelist()
 def get_domain_teams(domain):
-    print(domain)
     if domain in CORPORATE_DOMAINS:
         return False
     return frappe.db.get_value(

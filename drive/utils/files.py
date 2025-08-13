@@ -98,9 +98,8 @@ class FileManager:
         """
         Creates a thumbnail for the file on disk and then uploads to the relevant team directory
         """
-        team_directory = get_home_folder(file.team)["path"]
-        save_path = Path(team_directory) / self.settings.thumbnail_prefix / (file.name + ".png")
-        disk_path = str((self.site_folder / save_path).resolve())
+        save_path = self.get_thumbnail_path(file.team, file.name).with_suffix(".png")
+        disk_path = str(self.site_folder / save_path)
 
         with DistributedLock(file.path, exclusive=False):
             try:
@@ -109,7 +108,7 @@ class FileManager:
                     with Image.open(file_path).convert("RGB") as image:
                         image = ImageOps.exif_transpose(image)
                         image.thumbnail((512, 512))
-                        image.save(str(disk_path), format="webp")
+                        image.save(disk_path, format="webp")
                 elif file.mime_type.startswith("video"):
                     cap = cv2.VideoCapture(file_path)
                     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -139,18 +138,19 @@ class FileManager:
                             "type": "thumbnail",
                         },
                     )
-                final_path = Path(disk_path)
+
+                disk_path = Path(disk_path)
+                final_path = disk_path.with_suffix(".thumbnail")
                 if self.s3_enabled:
+                    # Removes original file
                     os.remove(file_path)
-                    self.conn.upload_file(
-                        final_path, self.bucket, str(save_path.with_suffix(".thumbnail"))
-                    )
-                    final_path.unlink()
+                    self.conn.upload_file(final_path, self.bucket, final_path)
+                    disk_path.unlink()
                 else:
-                    final_path.rename(final_path.with_suffix(".thumbnail"))
+                    disk_path.rename(final_path)
 
             except BaseException as e:
-                frappe.log_error("thumbnail failed", e)
+                frappe.log_error("Thumbnail failed", e)
                 if self.s3_enabled:
                     try:
                         os.remove(file_path)
@@ -177,15 +177,16 @@ class FileManager:
                 # Root files are placed in either team or personal folders
                 if entity.is_private:
                     user_folder = parent / self.personal_prefix / frappe.session.user
-                    if not self.s3_enabled:
-                        (self.site_folder / user_folder).mkdir(exist_ok=True)
+                    if not self.s3_enabled and not (self.site_folder / user_folder).exists():
+                        (self.site_folder / user_folder).mkdir()
+                        (self.site_folder / user_folder / ".thumbnails").mkdir()
                     path = user_folder / entity.title
                 else:
                     path = parent / self.team_prefix / entity.title
             else:
                 # Otherwise, rely on the parent already having a perms-adjusted path
                 path = parent / entity.title
-            return str(path)
+            return path
 
     @__not_if_flat
     def create_folder(self, drive_entity, root):
@@ -195,7 +196,7 @@ class FileManager:
         """
         path = self.get_disk_path(drive_entity, root)
         if self.s3_enabled:
-            self.conn.put_object(Bucket=self.bucket, Key=path + "/", Body="")
+            self.conn.put_object(Bucket=self.bucket, Key=str(path) + "/", Body="")
         else:
             (self.site_folder / path).mkdir()
 
@@ -318,10 +319,23 @@ class FileManager:
         return files
 
     def get_thumbnail_path(self, team, name):
+        return (
+            self.get_disk_path(
+                frappe.get_cached_doc("Drive File", {"name": name, "team": team})
+            ).parent
+            / self.settings.thumbnail_prefix
+            / (name + ".thumbnail")
+        )
+
+    def get_old_thumbnail_path(self, team, name):
         return Path(get_home_folder(team)["path"]) / "thumbnails" / (name + ".thumbnail")
 
     def get_thumbnail(self, team, name):
-        return self.get_file(str(self.get_thumbnail_path(team, name)))
+        # Used for pre v-0.3 compatibility
+        try:
+            return self.get_file(str(self.get_thumbnail_path(team, name)))
+        except:
+            return self.get_file(str(self.get_old_thumbnail_path(team, name)))
 
     def __get_trash_path(self, entity: DriveFile):
         root = get_home_folder(entity.team)

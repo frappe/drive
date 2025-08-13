@@ -302,7 +302,6 @@ def create_drive_file(
     )
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
-    print(entity_path(drive_file))
     drive_file.path = str(entity_path(drive_file))
     drive_file.save()
     if last_modified:

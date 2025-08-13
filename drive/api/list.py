@@ -65,7 +65,6 @@ def files(
             f"You don't have access.",
             frappe.exceptions.PageDoesNotExistError,
         )
-    print(is_active)
     query = (
         frappe.qb.from_(DriveFile)
         .where(DriveFile.is_active == is_active)
