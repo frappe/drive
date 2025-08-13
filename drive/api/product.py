@@ -437,30 +437,31 @@ def check_users_permissions(entity_name, user_emails):
             if entity_doc.owner == email:
                 has_permission = True
             else:
-                # Check DriveDocShare permissions
-                share_doc = frappe.db.exists("DriveDocShare", {
-                    "share_doctype": "Drive File",
-                    "share_name": entity_name,
-                    "user_name": email
+                # Check Drive Permission permissions
+                share_doc = frappe.db.exists("Drive Permission", {
+                    "entity": entity_name,
+                    "user": email
                 })
                 
                 if share_doc:
-                    share = frappe.get_doc("DriveDocShare", share_doc)
+                    share = frappe.get_doc("Drive Permission", share_doc)
                     if share.read == 1:
                         has_permission = True
                 
-                # Check if user is in a team that has access
+                # Check if user is in a team that has access  
                 if not has_permission:
-                    team_shares = frappe.get_all("DriveDocShare", {
-                        "share_doctype": "Drive File", 
-                        "share_name": entity_name,
-                        "share_user_type": "Team",
+                    # Check team permissions via Drive Permission with team user format
+                    team_shares = frappe.get_all("Drive Permission", {
+                        "entity": entity_name,
+                        "user": ("like", "$TEAM%"),
                         "read": 1
-                    }, ["user_name"])
+                    }, ["user"])
                     
                     for team_share in team_shares:
+                        # Extract team name from user field (format: $TEAM:team_name)
+                        team_name = team_share.user.replace("$TEAM:", "") if team_share.user.startswith("$TEAM:") else team_share.user
                         team_members = frappe.get_all("Drive Team User", {
-                            "parent": team_share.user_name,
+                            "parent": team_name,
                             "user": email
                         })
                         if team_members:
@@ -508,30 +509,27 @@ def grant_read_access_to_users(entity_name, user_emails):
                 })
                 continue
             
-            # Check if share already exists
-            existing_share = frappe.db.exists("DriveDocShare", {
-                "share_doctype": "Drive File",
-                "share_name": entity_name,
-                "user_name": email
+            # Check if share already exists using Drive Permission
+            existing_share = frappe.db.exists("Drive Permission", {
+                "entity": entity_name,
+                "user": email
             })
             
             if existing_share:
                 # Update existing share to grant read access
-                share_doc = frappe.get_doc("DriveDocShare", existing_share)
+                share_doc = frappe.get_doc("Drive Permission", existing_share)
                 share_doc.read = 1
                 share_doc.save(ignore_permissions=True)
             else:
-                # Create new share with read access
-                share_doc = frappe.new_doc("DriveDocShare")
+                # Create new share with read access using Drive Permission
+                share_doc = frappe.new_doc("Drive Permission")
                 share_doc.update({
-                    "share_doctype": "Drive File",
-                    "share_name": entity_name,
-                    "user_name": email,
+                    "entity": entity_name,
+                    "user": email,
                     "read": 1,
                     "write": 0,
                     "share": 0,
-                    "owner": 0,
-                    "share_user_type": "User"
+                    "comment": 0
                 })
                 share_doc.insert(ignore_permissions=True)
             
@@ -576,4 +574,8 @@ def reject_invite(key):
 @frappe.whitelist(allow_guest=True)
 def get_translations():
     """Get all translations for the frontend"""
-    return get_all_translations()
+    try:
+        return get_all_translations()
+    except Exception as e:
+        frappe.log_error(f"Translation error: {str(e)}")
+        return {}
