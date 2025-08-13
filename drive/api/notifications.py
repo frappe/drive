@@ -109,7 +109,7 @@ def notify_share(entity_name, docperm_name):
     send_share_email(docshare.user, message, get_link(entity), entity.team, entity_type)
 
 
-def create_notification(from_user, to_user, type, entity, message=None):
+def create_notification(from_user, to_user, type, entity, message=None, comment_content: str = None):
     """
     Create a notification
     :param from_user: notification owner user email
@@ -135,10 +135,13 @@ def create_notification(from_user, to_user, type, entity, message=None):
             "notif_doctype_name": entity.name,
             "message": message,
             "id_team": entity.team,
+            "file_name": entity.title,
+            "comment_content": comment_content
         }
     )
     try:
         notif.insert()
+        print(f"Notification created: {notif.type}")
     except frappe.exceptions.ValidationError as e:
         print(f"Error inserting document: {e}")
 
@@ -151,11 +154,10 @@ def notify_comment_mentions(entity_name, comment_doc, mentions):
     :param mentions: List of mentions from frontend
     """
     entity = frappe.get_doc("Drive File", entity_name)
-    
     for mention in mentions:
         author_full_name = frappe.db.get_value("User", {"name": comment_doc.comment_email}, ["full_name"])
         message = f'{author_full_name} mentioned you in a comment on "{entity.title}"'
-        create_notification(comment_doc.comment_email, mention["id"], "Mention", entity, message)
+        create_notification(comment_doc.comment_email, mention["id"], "Mention", entity, message, comment_content=comment_doc.content)
 
 
 def send_share_email(to, message, link, team, type_):

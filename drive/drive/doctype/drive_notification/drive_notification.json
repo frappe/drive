@@ -13,7 +13,9 @@
   "notif_doctype",
   "notif_doctype_name",
   "entity_type",
-  "id_team"
+  "id_team",
+  "file_name",
+  "comment_content"
  ],
  "fields": [
   {
@@ -69,11 +71,21 @@
    "fieldtype": "Link",
    "label": "Id Team",
    "options": "Drive Team"
+  },
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "label": "File Name"
+  },
+  {
+   "fieldname": "comment_content",
+   "fieldtype": "Text",
+   "label": "Comment Content"
   }
  ],
  "links": [],
- "modified": "2025-08-13 13:56:01.328761",
- "modified_by": "Administrator",
+ "modified": "2025-08-13 15:19:29.315822",
+ "modified_by": "cccd@gmail.com",
  "module": "Drive",
  "name": "Drive Notification",
  "naming_rule": "Random",
