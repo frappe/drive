@@ -155,9 +155,10 @@ const settingsItems = shallowRef([
 ])
 
 watch(
-  [() => apps.data, () => getTeams.data],
-  ([a, b]) => {
-    if (!a || !b) return
+  [() => apps.data, () => getTeams.data, () => route.params.team],
+  ([a, b, team], prev) => {
+    if (!a || !b || (!team && !!prev[2])) return
+
     const teams = Object.entries(b).filter(([k, _]) => k !== route.params.team)
     let appsMenuIndex = 1
     if (!teams.length) {

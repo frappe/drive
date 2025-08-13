@@ -23,7 +23,7 @@
             </h2>
 
             <div>
-              <p class="font-semibold text-md mb-1">Teams</p>
+              <p class="font-semibold text-sm mb-1">Teams</p>
               <p
                 v-if="!getTeams.data || !Object.values(getTeams.data).length"
                 class="text-center text-sm flex flex-col gap-4"
@@ -56,7 +56,7 @@
               </ul>
             </div>
             <div v-if="getInvites?.data?.length">
-              <p class="font-semibold text-md mb-3">Invites</p>
+              <p class="font-semibold text-sm mb-3">Invites</p>
               <li
                 v-for="(invite, index) in getInvites?.data"
                 :key="invite.name"
@@ -112,26 +112,6 @@
                 </div>
               </li>
             </div>
-            <div
-              v-if="
-                !getInvites?.data?.length &&
-                getTeams.data &&
-                !Object.values(getTeams.data).length
-              "
-              class="text-sm font-semibold mt-2"
-            >
-              <hr />
-              <div class="flex gap-2 w-fit mx-auto mt-4">
-                <LucidePlaneTakeoff class="w-3 h-3 my-auto" />
-                <router-link
-                  :to="{
-                    name: 'Setup',
-                  }"
-                >
-                  Get started
-                </router-link>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -144,11 +124,23 @@ import { Badge, Tooltip } from "frappe-ui"
 import { getInvites, rejectInvite, acceptInvite } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
-import LucidePlaneTakeoff from "~icons/lucide/plane-takeoff"
+import { useRouter } from "vue-router"
 
 const store = useStore()
+const router = useRouter()
 const email = computed(() => store.state.user.id)
 getInvites.fetch({ email: email.value })
+
+watch(
+  [getInvites, getTeams],
+  ([a, b]) => {
+    if (!a.data || !b.data) return
+    if (!a.data.length && !b.data.length) {
+      router.replace({ name: "Setup" })
+    }
+  },
+  { immediate: true }
+)
 </script>

@@ -61,6 +61,7 @@ def get_user_access(entity, user=None, details=False):
         }
 
     path = generate_upward_path(entity.name, user)
+    print(entity.name, path, user)
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if user == "Guest":
         return (user_access, (path,)) if details else user_access

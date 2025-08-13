@@ -15,21 +15,31 @@ def access_app():
 
 @frappe.whitelist()
 def get_domain_teams(domain):
-    return frappe.db.get_all(
+    print(domain)
+    if domain in CORPORATE_DOMAINS:
+        return False
+    return frappe.db.get_value(
         "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
     )
 
 
 @frappe.whitelist()
-def create_personal_team(email=frappe.session.user, team_name=None):
+def create_team(email=frappe.session.user, team_name="Your Drive"):
     """
     Used for creating teams, personal or not.
     """
+    domain = email.split("@")[-1] if team_name else ""
+    exists = frappe.db.exists("Drive Team", {"team_domain": domain}) or frappe.db.exists(
+        "Drive Team", {"title": team_name, "owner": email}
+    )
+    if exists:
+        return exists
+
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
-            "title": team_name if team_name else "Your Drive",
-            "team_domain": email.split("@")[-1] if team_name else "",
+            "title": team_name,
+            "team_domain": domain,
         }
     ).insert(ignore_permissions=True)
     team.append("users", {"user": email, "access_level": 2})
@@ -123,7 +133,7 @@ def signup(account_request, first_name, last_name=None, team=None):
     #     # Create team for this user
     #     domain = user.email.split("@")[-1]
     #     if domain in CORPORATE_DOMAINS:
-    #         team = create_personal_team(user.email)
+    #         team = create_team(user.email)
     #     else:
     #         return get_domain_teams(domain)
 
@@ -225,6 +235,7 @@ def set_settings(updates):
     except:
         settings = frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user})
         settings.insert()
+
     if "single_click" in updates:
         settings.single_click = int(updates["single_click"])
     if "auto_detect_links" in updates:

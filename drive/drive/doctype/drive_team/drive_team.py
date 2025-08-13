@@ -7,6 +7,8 @@ from pathlib import Path
 import frappe
 from frappe.model.document import Document
 
+from drive.api.permissions import get_teams
+from drive.api.product import set_settings
 from drive.utils import get_home_folder
 
 
@@ -15,6 +17,7 @@ class DriveTeam(Document):
         """Creates the file on disk"""
         d = frappe.get_doc(
             {
+                "name": self.name,
                 "doctype": "Drive File",
                 "title": f"Drive - {self.name}",
                 "is_group": 1,
@@ -35,6 +38,10 @@ class DriveTeam(Document):
         }[True]
         d.path = root_folder
         d.save()
+
+        # Set to default team if this is the first team created
+        if len(get_teams()) == 1:
+            set_settings({"default_team": self.name})
 
         # Create even with S3 as we need local folders before uploading to S3
         user_directory_path = Path(frappe.get_site_path("private/files")) / root_folder
