@@ -33,38 +33,32 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
-      <Dropdown
-        v-if="dropdownAction"
-        :options="dropdownAction"
-      >
-        <Button
-          variant="ghost"
-          @click="triggerRoot"
-        >
-          <LucideMoreHorizontal
-            name="more-horizontal"
-            class="size-4"
-          />
-        </Button>
-      </Dropdown>
-      <Dropdown
+      
+      <div
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
           isLoggedIn &&
           props.rootResource?.data?.write
         "
-        :options="newEntityOptions"
-        placement="left"
-        class="basis-5/12 lg:basis-auto"
+        class="flex gap-2"
       >
-        <Tooltip text="Add or upload">
-          <Button variant="solid">
-            <div class="flex">
-              <LucidePlus class="size-4" />
-            </div>
+        <Dropdown :options="uploadOptions" placement="left">
+          <Button variant="subtle" class="rounded-lg px-3">
+            <template #prefix>
+              <LucideFolderUp class="size-4" />
+            </template>
+            Tải lên
           </Button>
-        </Tooltip>
-      </Dropdown>
+        </Dropdown>
+        <Dropdown :options="createOptions" placement="left">
+          <Button variant="subtle" class="rounded-lg px-3">
+            <template #prefix>
+              <LucideFilePlus2 class="size-4" />
+            </template>
+            Mới
+          </Button>
+        </Dropdown>
+      </div>
       <Button
         v-if="button"
         class="line-clamp-1 truncate w-full"
@@ -291,42 +285,34 @@ const button = computed(() =>
   possibleButtons.find((k) => k.route == route.name)
 )
 
-const newEntityOptions = [
+const uploadOptions = [
   {
-    group: "Upload",
-    items: [
-      {
-        label: "Upload File",
-        icon: LucideFileUp,
-        onClick: () => emitter.emit("uploadFile"),
-      },
-      {
-        label: "Upload Folder",
-        icon: LucideFolderUp,
-        onClick: () => emitter.emit("uploadFolder"),
-      },
-    ],
+    label: "Upload File",
+    icon: LucideFileUp,
+    onClick: () => emitter.emit("uploadFile"),
   },
   {
-    group: "Create",
-    items: [
-      {
-        label: "Document",
-        icon: LucideFilePlus2,
-        onClick: newDocument,
-      },
-      {
-        label: "Folder",
-        icon: LucideFolderPlus,
-        onClick: () => emitter.emit("newFolder"),
-      },
+    label: "Upload Folder",
+    icon: LucideFolderUp,
+    onClick: () => emitter.emit("uploadFolder"),
+  },
+]
 
-      {
-        label: "New Link",
-        icon: LucideLink,
-        onClick: () => emitter.emit("newLink"),
-      },
-    ],
+const createOptions = [
+  {
+    label: "Document",
+    icon: LucideFilePlus2,
+    onClick: newDocument,
+  },
+  {
+    label: "Folder",
+    icon: LucideFolderPlus,
+    onClick: () => emitter.emit("newFolder"),
+  },
+  {
+    label: "New Link",
+    icon: LucideLink,
+    onClick: () => emitter.emit("newLink"),
   },
 ]
 </script>

@@ -11,7 +11,7 @@
       ondrop="return false;"
     >
       <SidebarItem
-        :label="__('Go')"
+        :label="__('Tìm kiếm')"
         class="mb-1"
         :is-collapsed="!isExpanded"
         @click="() => emitter.emit('showSearchPopup', true)"
@@ -27,7 +27,7 @@
         :is-collapsed="!isExpanded"
         class="mb-0.5"
       />
-      <SidebarItem
+      <!-- <SidebarItem
         :label="'Inbox'"
         :icon="LucideInbox"
         class="mb-0.5"
@@ -44,7 +44,7 @@
             </span>
           </div>
         </template>
-      </SidebarItem>
+      </SidebarItem> -->
       <SidebarItem
         v-for="item in sidebarItems.slice(1)"
         :key="item.label"
@@ -57,21 +57,6 @@
     </div>
     <div class="mt-auto">
       <StorageBar :is-expanded="isExpanded" />
-      <SidebarItem
-        :label="!isExpanded ? 'Expand' : 'Collapse'"
-        :is-collapsed="!isExpanded"
-        class="mt-auto py-4"
-        @click="toggleExpanded"
-      >
-        <template #icon>
-          <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-            <ArrowLeftFromLine
-              class="stroke-[1.5] size-4 text-ink-gray-7 duration-300 ease-in-out"
-              :class="{ '[transform:rotateY(180deg)]': !isExpanded }"
-            />
-          </span>
-        </template>
-      </SidebarItem>
     </div>
   </div>
 </template>
@@ -109,32 +94,32 @@ const team = computed(
 const sidebarItems = computed(() => {
   const items = [
     {
-      label: __("Home"),
+      label: __("Trang chủ"),
       route: `/t/${team.value}/`,
       icon: LucideHome,
     },
     {
-      label: __("Recents"),
+      label: __("Gần đây"),
       route: `/t/${team.value}/recents`,
       icon: LucideClock,
     },
     {
-      label: __("Favourites"),
+      label: __("Yêu thích"),
       route: `/t/${team.value}/favourites`,
       icon: LucideStar,
     },
     {
-      label: __("Team"),
+      label: __("Nhóm"),
       route: `/t/${team.value}/team`,
       icon: LucideBuilding2,
     },
     {
-      label: __("Shared"),
+      label: __("Chia sẻ"),
       route: `/shared/`,
       icon: LucideUsers,
     },
     {
-      label: __("Trash"),
+      label: __("Thùng rác"),
       route: `/t/${team.value}/trash`,
       icon: LucideTrash,
     },

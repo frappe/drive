@@ -58,22 +58,22 @@
 <script setup>
 import { ref, defineProps, markRaw, computed } from "vue"
 import { Dialog, Button } from "frappe-ui"
-import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
+// Profile removed from Settings
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
 import LucideTag from "~icons/lucide/tag"
-import LucideUser from "~icons/lucide/user"
+// import LucideUser from "~icons/lucide/user"
 import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
 
 let tabs = [
-  {
-    enabled: true,
-    label: "Profile",
-    icon: LucideUser,
-    component: markRaw(ProfileSettings),
-  },
+  // {
+  //   enabled: true,
+  //   label: "Profile",
+  //   icon: LucideUser,
+  //   component: markRaw(ProfileSettings),
+  // },
   {
     enabled: true,
     label: "Users",
