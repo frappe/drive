@@ -10,6 +10,103 @@ def get_link(entity):
     )
 
 
+def get_team_members(team_name):
+    """
+    Get all members of a team
+    :param team_name: Name of the team
+    :return: List of team member users
+    """
+    team = frappe.get_doc("Drive Team", team_name)
+    team_members = []
+    
+    if team.users:
+        for member in team.users:
+            team_members.append(member.user)
+    
+    return team_members
+
+
+def notify_team_file_upload(doc, method=None):
+    """
+    Notify all team members when a new file/folder is uploaded/created
+    :param doc: Drive File document object
+    :param method: Method name (from hook)
+    """
+    try:
+        # Skip if entity is private
+        if doc.is_private:
+            return
+            
+        # Get team members
+        team_members = get_team_members(doc.team)
+        
+        # Get current user info
+        current_user = frappe.session.user
+        current_user_full_name = frappe.db.get_value("User", current_user, "full_name")
+        
+        # Determine entity type and action
+        if doc.is_group:
+            entity_type = "folder"
+            action = "tạo"
+        elif doc.document:
+            entity_type = "document"
+            action = "tạo"
+        else:
+            entity_type = "file"
+            action = "tải"
+        
+        message = f'{current_user_full_name} đã {action} một {entity_type} mới: "{doc.title}"'
+        
+        # Send notification to all team members except the current user
+        for member in team_members:
+            if member != current_user:
+                create_notification(
+                    from_user=current_user,
+                    to_user=member,
+                    type="File Upload",
+                    entity=doc,
+                    message=message
+                )
+                
+    except Exception as e:
+        print(f"Error sending team notifications: {e}")
+
+
+def notify_team_folder_creation(entity_name):
+    """
+    Notify all team members when a new folder is created
+    :param entity_name: Name of the Drive File entity
+    """
+    try:
+        entity = frappe.get_doc("Drive File", entity_name)
+        
+        # Skip if entity is private
+        if entity.is_private:
+            return
+            
+        # Get team members
+        team_members = get_team_members(entity.team)
+        
+        # Get current user info
+        current_user = frappe.session.user
+        current_user_full_name = frappe.db.get_value("User", current_user, "full_name")
+        
+        message = f'{current_user_full_name} đã tạo một folder mới: "{entity.title}"'
+        
+        # Send notification to all team members except the current user
+        for member in team_members:
+            if member != current_user:
+                create_notification(
+                    from_user=current_user,
+                    to_user=member,
+                    type="Folder Creation",
+                    entity=entity,
+                    message=message
+                )
+                
+    except Exception as e:
+        print(f"Error sending team folder notifications: {e}")
+
 @frappe.whitelist()
 def get_notifications(only_unread):
     """
@@ -141,6 +238,7 @@ def create_notification(from_user, to_user, type, entity, message=None, comment_
     )
     try:
         notif.insert()
+        print('========================= insert: ', flush=True)
         print(f"Notification created: {notif.type}")
     except frappe.exceptions.ValidationError as e:
         print(f"Error inserting document: {e}")

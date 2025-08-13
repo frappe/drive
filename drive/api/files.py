@@ -23,7 +23,7 @@ from drive.utils.files import (
 from datetime import date, timedelta
 import magic
 from datetime import datetime
-from drive.api.notifications import notify_mentions
+from drive.api.notifications import notify_mentions, notify_team_file_upload
 from drive.api.storage import storage_bar_data
 from pathlib import Path
 from io import BytesIO
@@ -180,6 +180,13 @@ def upload_chunked_file(personal=0, parent=None, last_modified=None):
     )
     os.rename(save_path, Path(frappe.get_site_path("private/files")) / drive_file.path)
 
+    # Send team notifications for new chunked file (only for public files)
+    if not personal:
+        try:
+            notify_team_file_upload(drive_file)
+        except Exception as e:
+            print(f"Error sending team notifications for chunked file: {e}")
+
     return drive_file.name + save_path.suffix
 
 
@@ -264,6 +271,14 @@ def create_document_entity(title, personal, team, content, parent=None):
         lambda _: "",
         document=drive_doc.name,
     )
+    
+    # Send team notifications for new document (only for public documents)
+    if not personal:
+        try:
+            notify_team_file_upload(entity)
+        except Exception as e:
+            print(f"Error sending team notifications for document: {e}")
+    
     return entity
 
 
@@ -367,6 +382,13 @@ def create_folder(team, title, personal=False, parent=None):
     )
     drive_file.insert()
 
+    # Send team notifications for new folder (only for public folders)
+    if not personal:
+        try:
+            notify_team_file_upload(drive_file)
+        except Exception as e:
+            print(f"Error sending team notifications for folder: {e}")
+
     return drive_file
 
 
@@ -424,6 +446,13 @@ def create_link(team, title, link, personal=False, parent=None):
         }
     )
     drive_file.insert()
+
+    # Send team notifications for new link (only for public links)
+    if not personal:
+        try:
+            notify_team_file_upload(drive_file)
+        except Exception as e:
+            print(f"Error sending team notifications for link: {e}")
 
     return drive_file
 
