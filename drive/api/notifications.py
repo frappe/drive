@@ -134,6 +134,7 @@ def create_notification(from_user, to_user, type, entity, message=None):
             "notif_doctype": "Drive File",
             "notif_doctype_name": entity.name,
             "message": message,
+            "id_team": entity.team,
         }
     )
     try:
