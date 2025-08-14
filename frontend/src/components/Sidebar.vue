@@ -45,15 +45,23 @@
           </div>
         </template>
       </SidebarItem> -->
-      <SidebarItem
-        v-for="item in sidebarItems.slice(1)"
-        :key="item.label"
-        :icon="item.icon"
-        :label="item.label"
-        :to="item.route"
-        :is-collapsed="!isExpanded"
-        class="mb-0.5"
-      />
+      <template v-for="item in sidebarItems.slice(1)" :key="item.label">
+        <SidebarItem
+          :icon="item.icon"
+          :label="item.label"
+          :to="item.route"
+          :is-collapsed="!isExpanded"
+          class="mb-0.5"
+        />
+        <div v-if="item.label === __('Nhóm') && isExpanded" class="mb-2 ml-6 pr-2">
+          <Autocomplete
+            v-model="selectedTeam"
+            :options="teamAutocompleteOptions"
+            placeholder="Nhóm"
+            class="w-full"
+          />
+        </div>
+      </template>
     </div>
     <div class="mt-auto">
       <StorageBar :is-expanded="isExpanded" />
@@ -67,6 +75,7 @@ import StorageBar from "./StorageBar.vue"
 
 import { notifCount } from "@/resources/permissions"
 import { getTeams } from "@/resources/files"
+import { Dropdown, Button, Autocomplete } from "frappe-ui"
 
 import { computed } from "vue"
 import { useStore } from "vuex"
@@ -89,6 +98,24 @@ notifCount.fetch()
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
+)
+
+getTeams.fetch()
+const teamList = computed(() => Object.values(getTeams.data || {}))
+const selectedTeam = computed({
+  get() {
+    return teamList.value.find((t) => t.name === team.value)
+      ? { label: teamList.value.find((t) => t.name === team.value)?.title }
+      : null
+  },
+  set(val) {
+    const target = teamList.value.find((t) => t.title === val?.label)
+    if (target) window.location.href = `/drive/t/${target.name}/team`
+    
+  },
+})
+const teamAutocompleteOptions = computed(() =>
+  teamList.value.map((t) => ({ label: t.title }))
 )
 
 const sidebarItems = computed(() => {
