@@ -32,16 +32,17 @@ def create_team(email=frappe.session.user, team_name=None):
     Used for creating teams, personal or not.
     """
     domain = email.split("@")[-1] if team_name else ""
+    team_name = team_name if team_name else "Your Drive"
     exists = frappe.db.exists("Drive Team", {"team_domain": domain}) or frappe.db.exists(
         "Drive Team", {"title": team_name, "owner": email}
     )
-    if domain and exists:
+    if exists:
         return exists
 
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
-            "title": team_name if team_name else "Your Drive",
+            "title": team_name,
             "team_domain": domain,
         }
     ).insert(ignore_permissions=True)

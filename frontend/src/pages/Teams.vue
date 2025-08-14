@@ -137,7 +137,7 @@ watch(
   [getInvites, getTeams],
   ([a, b]) => {
     if (!a.data || !b.data) return
-    if (!a.data.length && !b.data.length) {
+    if (!Object.keys(a.data).length && !Object.keys(b.data).length) {
       router.replace({ name: "Setup" })
     }
   },
