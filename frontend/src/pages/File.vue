@@ -13,7 +13,7 @@
         v-else
         id="renderContainer"
         :draggable="false"
-        class="w-full px-10 md:px-32 flex-grow w-full flex justify-center align-center items-center"
+        class="w-full p-10 md:px-32 flex-grow w-full flex justify-center align-center items-center"
       >
         <LoadingIndicator
           v-if="file.loading"
@@ -25,7 +25,7 @@
         />
       </div>
       <div
-        class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 rounded shadow-xl"
+        class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 rounded shadow-xl l bg-surface-white"
       >
         <Button
           :disabled="!prevEntity?.name"

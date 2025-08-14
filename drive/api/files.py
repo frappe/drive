@@ -230,9 +230,9 @@ def create_document_entity(title, personal, team, content, parent=None):
 
 
 def get_upload_path(team_path, file_name):
-    uploads_path = Path(frappe.get_site_path("private/files"), team_path, "uploads")
+    uploads_path = Path(frappe.get_site_path("private/files"), team_path, ".uploads")
     if not os.path.exists(uploads_path):
-        uploads_path = Path(frappe.get_site_path("private/files"), team_path, "uploads")
+        uploads_path = Path(frappe.get_site_path("private/files"), team_path, ".uploads")
         uploads_path.mkdir()
     return uploads_path / file_name
 

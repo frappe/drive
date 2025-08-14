@@ -282,7 +282,6 @@ class FileManager:
                 files[Path(f_path)] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
-            print(root_folder / self.team_prefix)
             # Get files...
             team_files = {f: "team" for f in (root_folder / self.team_prefix).glob("**/*")}
 
@@ -367,18 +366,20 @@ class FileManager:
     @__not_if_flat
     def move_to_trash(self, entity: DriveFile):
         trash_path = self.__get_trash_path(entity)
-
-        if self.s3_enabled:
-            self.conn.copy_object(
-                Bucket=self.bucket,
-                CopySource={"Bucket": self.bucket, "Key": entity.path},
-                Key=str(trash_path),
-            )
-            self.conn.delete_object(Bucket=self.bucket, Key=entity.path)
-        else:
-            full_trash_path = self.site_folder / trash_path
-            full_trash_path.parent.mkdir(exist_ok=True)
-            (self.site_folder / entity.path).rename(full_trash_path)
+        try:
+            if self.s3_enabled:
+                self.conn.copy_object(
+                    Bucket=self.bucket,
+                    CopySource={"Bucket": self.bucket, "Key": entity.path},
+                    Key=str(trash_path),
+                )
+                self.conn.delete_object(Bucket=self.bucket, Key=entity.path)
+            else:
+                full_trash_path = self.site_folder / trash_path
+                full_trash_path.parent.mkdir(exist_ok=True)
+                (self.site_folder / entity.path).rename(full_trash_path)
+        except FileNotFoundError:
+            pass
 
     @__not_if_flat
     def restore(self, entity: DriveFile):

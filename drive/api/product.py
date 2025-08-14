@@ -15,15 +15,19 @@ def access_app():
 
 @frappe.whitelist()
 def get_domain_teams(domain):
-    if domain in CORPORATE_DOMAINS:
+    if domain in CORPORATE_DOMAINS or not domain:
         return False
-    return frappe.db.get_value(
-        "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
-    )
+    return False
+    # return (
+    #     frappe.db.get_all(
+    #         "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
+    #     )
+    #     or False
+    # )
 
 
 @frappe.whitelist()
-def create_team(email=frappe.session.user, team_name="Your Drive"):
+def create_team(email=frappe.session.user, team_name=None):
     """
     Used for creating teams, personal or not.
     """
@@ -31,13 +35,13 @@ def create_team(email=frappe.session.user, team_name="Your Drive"):
     exists = frappe.db.exists("Drive Team", {"team_domain": domain}) or frappe.db.exists(
         "Drive Team", {"title": team_name, "owner": email}
     )
-    if exists:
+    if domain and exists:
         return exists
 
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
-            "title": team_name,
+            "title": team_name if team_name else "Your Drive",
             "team_domain": domain,
         }
     ).insert(ignore_permissions=True)

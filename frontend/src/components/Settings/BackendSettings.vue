@@ -144,9 +144,17 @@ const s3Settings = reactive({
   signature_version: "",
 })
 
-watch([generalSettings, s3Settings], () => (edited.value = true), {
-  deep: true,
-})
+let count = 0
+watch(
+  [generalSettings, s3Settings],
+  () => {
+    if (count > 0) edited.value = true
+    else count++
+  },
+  {
+    deep: true,
+  }
+)
 
 function confirmSync() {
   // if (confirmDialog("Are you sure? This might corrupt your Drive system."))
