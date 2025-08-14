@@ -84,12 +84,6 @@
             }}
           </span>
         </li>
-        <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Modified") }}:</span
-          >
-          <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
-        </li>
       </ul>
       <div class="flex justify-between">
         <span class="text-base font-semibold">Access</span>

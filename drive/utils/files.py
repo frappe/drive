@@ -165,9 +165,7 @@ class FileManager:
             root = get_home_folder(entity.team)
 
         if self.flat:
-            return Path(root["path"]) / (
-                Path("embeds") / entity.name if embed else entity.name
-            )
+            return Path(root["path"]) / (Path("embeds") / entity.name if embed else entity.name)
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
             parent = (
