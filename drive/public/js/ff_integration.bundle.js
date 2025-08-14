@@ -71,17 +71,17 @@ frappe.ui.FileUploaderOthers = [
         </div>
       `;
 
-      const d = new frappe.ui.Dialog({
-        title: "Select Drive Folder",
-        fields: [{ fieldtype: "HTML", options: content }],
-        primary_action_label: "Select",
-        primary_action(values) {
-          // Add logic here to get selected folder
-          d.hide();
-        },
-      });
+      // const d = new frappe.ui.Dialog({
+      //   title: "Select Drive Folder",
+      //   fields: [{ fieldtype: "HTML", options: content }],
+      //   primary_action_label: "Select",
+      //   primary_action(values) {
+      //     // Add logic here to get selected folder
+      //     d.hide();
+      //   },
+      // });
 
-      d.show();
+      // d.show();
 
       // Function to load folders for selected team
       async function loadFoldersForTeam(team) {
