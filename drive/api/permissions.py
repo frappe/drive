@@ -1,5 +1,6 @@
 import frappe
 from frappe.utils import getdate
+from pypika import Field
 
 from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
 from drive.utils.users import mark_as_viewed
@@ -10,7 +11,7 @@ ENTITY_FIELDS = [
     "is_group",
     "is_link",
     "path",
-    "modified",
+    Field("_modified").as_("modified"),
     "creation",
     "file_size",
     "mime_type",

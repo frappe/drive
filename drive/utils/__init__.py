@@ -298,16 +298,13 @@ def create_drive_file(
             "mime_type": mime_type,
             "document": document,
             "is_group": is_group,
+            "_modified": datetime.fromtimestamp(last_modified) if last_modified else None,
         }
     )
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
     drive_file.path = str(entity_path(drive_file))
     drive_file.save()
-    if last_modified:
-        dt_object = datetime.fromtimestamp(last_modified)
-        formatted_datetime = dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")
-        drive_file.db_set("modified", formatted_datetime, update_modified=False)
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
     return drive_file

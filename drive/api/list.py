@@ -38,7 +38,7 @@ def files(
     only_parent=1,
 ):
     home = get_home_folder(team)["name"]
-    field, ascending = order_by.split(" ")
+    field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)
     only_parent = int(only_parent)
     folders = int(folders)

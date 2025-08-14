@@ -27,7 +27,7 @@
         v-if="$store.state.user.id !== 'Guest'"
         variant="solid"
         size="md"
-        @click="$router.replace({ path: '/' })"
+        @click="$router.replace({ name: 'Teams' })"
       >
         <div class="flex gap-2"><LucideHome class="size-4" />Go Home</div>
       </Button>
