@@ -62,19 +62,14 @@ def add_comment(
         if isinstance(mentions, str):
             mentions = json.loads(mentions)
         if mentions:
-            # frappe.enqueue(
-            #     notify_comment_mentions,
-            #     queue="long",
-            #     job_id=f"fcomment_{comment.name}",
-            #     deduplicate=True,
-            #     timeout=None,
-            #     now=False,
-            #     at_front=False,
-            #     entity_name=reference_name,
-            #     comment_doc=comment,
-            #     mentions=mentions,
-            # )
-            notify_comment_mentions(
+            frappe.enqueue(
+                notify_comment_mentions,
+                queue="long",
+                job_id=f"fcomment_{comment.name}",
+                deduplicate=True,
+                timeout=None,
+                now=False,
+                at_front=False,
                 entity_name=reference_name,
                 comment_doc=comment,
                 mentions=mentions,
