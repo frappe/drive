@@ -214,9 +214,8 @@ class FileManager:
             except:
                 raise FileNotFoundError("Cannot find this file in the S3 bucket.")
         else:
-            with DistributedLock(path, exclusive=False):
-                with open(self.site_folder / path, "rb") as fh:
-                    buf = BytesIO(fh.read())
+            with open(self.site_folder / path, "rb") as fh:
+                buf = BytesIO(fh.read())
 
         return buf
 
