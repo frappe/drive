@@ -1,5 +1,5 @@
 import frappe
-from permissions import user_has_permission
+from .permissions import user_has_permission
 
 
 @frappe.whitelist()

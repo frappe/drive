@@ -120,7 +120,7 @@
     }
   ],
   "links": [],
-  "modified": "2025-08-14 15:15:25.040072",
+  "modified": "2025-08-14 17:05:51.570605",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",
@@ -138,6 +138,15 @@
       "role": "All",
       "share": 1,
       "write": 1
+    },
+    {
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Guest",
+      "share": 1
     }
   ],
   "row_format": "Dynamic",

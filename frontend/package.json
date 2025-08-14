@@ -21,7 +21,7 @@
     "@vueuse/core": "^10.3.0",
     "date-fns": "^4.1.0",
     "dropzone": "^6.0.0-beta.2",
-    "frappe-ui": "^0.1.188",
+    "frappe-ui": "workspace:*",
     "html2pdf.js": "^0.10.3",
     "idb-keyval": "^6.2.1",
     "jszip": "^3.10.1",
@@ -34,6 +34,7 @@
     "uuid": "^9.0.0",
     "vue": "^3.5.14",
     "vue-router": "^4.1.6",
+    "vue-sonner": "^2.0.2",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

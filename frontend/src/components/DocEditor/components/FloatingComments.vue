@@ -1,6 +1,6 @@
 <template>
   <div
-    v-show="showComments"
+    v-show="showComments && filteredComments.length > 0"
     ref="scrollContainer"
     class="relative hidden md:flex min-w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5 bg-surface-white"
   >

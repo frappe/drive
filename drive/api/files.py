@@ -17,12 +17,12 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.locks.distributed_lock import DistributedLock
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -35,14 +35,7 @@ def upload_embed(is_private, folder):
     file = frappe.request.files["file"]
     file.filename = "Embed - " + folder
 
-    # Calculate file size
-    current_pos = file.tell()
-    file.seek(0, 2)
-    file_size = file.tell()
-    file.seek(current_pos)
-    frappe.form_dict.total_file_size = file_size
-
-    embed = upload_file(doc.team, is_private, parent=folder, embed=1)
+    embed = upload_file(doc.team, personal=is_private, parent=folder, embed=1)
     return {
         "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={folder}"
     }
@@ -50,7 +43,13 @@ def upload_embed(is_private, folder):
 
 @frappe.whitelist()
 def upload_file(
-    team, total_file_size, last_modified=None, personal=None, fullpath=None, parent=None, embed=0
+    team,
+    total_file_size=0,
+    last_modified=None,
+    personal=None,
+    fullpath=None,
+    parent=None,
+    embed=0,
 ):
     """
     Accept chunked file contents via a multipart upload, store the file on
@@ -69,7 +68,6 @@ def upload_file(
         int(personal) if personal else frappe.get_value("Drive File", parent, "is_private")
     )
     embed = int(embed)
-    file_size = int(total_file_size)
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
@@ -78,10 +76,6 @@ def upload_file(
 
     if not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
-
-    storage_data = storage_bar_data(team)
-    if (storage_data["limit"] - storage_data["total_size"]) < file_size:
-        frappe.throw("You're out of storage!", ValueError)
 
     # Support non-chunked uploads too
     if frappe.form_dict.chunk_index:
@@ -100,17 +94,14 @@ def upload_file(
     with temp_path.open("ab") as f:
         f.seek(offset)
         f.write(file.stream.read())
-        if not f.tell() >= file_size or current_chunk != total_chunks - 1:
+        if not f.tell() >= total_file_size or current_chunk != total_chunks - 1:
             return
 
     # Validate that file size is matching
-    if frappe.form_dict.total_file_size:
-        actual_file_size = temp_path.stat().st_size
-        if actual_file_size != file_size:
-            temp_path.unlink()
-            frappe.throw(
-                f"Size on disk  {actual_file_size} does not match specified filesize.", ValueError
-            )
+    file_size = temp_path.stat().st_size
+    storage_data = storage_bar_data(team)
+    if (storage_data["limit"] - storage_data["total_size"]) < file_size:
+        frappe.throw("You're out of storage!", ValueError)
 
     mime_type = mimemapper.get_mime_type(str(temp_path), native_first=False)
     if mime_type is None:
@@ -125,16 +116,13 @@ def upload_file(
         title,
         parent,
         mime_type,
-        lambda entity: manager.get_disk_path(entity, home_folder),
+        lambda entity: manager.get_disk_path(entity, home_folder, embed),
         file_size,
-        int(last_modified) / 1000,
+        int(last_modified) / 1000 if last_modified else None,
     )
 
     # Upload and update parent folder size
-    manager.upload_file(
-        temp_path,
-        drive_file if not embed else None,
-    )
+    manager.upload_file(temp_path, drive_file)
     update_file_size(parent, file_size)
 
     return drive_file
@@ -772,52 +760,3 @@ def get_new_title(title, parent_name, folder=False):
     if not sibling_entity_titles:
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
-
-
-@frappe.whitelist()
-def create_comment(entity_name, name, content, is_reply, parent_name=None):
-    doc = frappe.get_doc("Drive File", entity_name)
-    parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else doc
-
-    if not user_has_permission(doc, "comment"):
-        raise PermissionError("You don't have comment access")
-
-    comment = frappe.get_doc(
-        {
-            "doctype": "Drive Comment",
-            "name": name,
-            "content": content,
-        }
-    )
-    parent.append("replies" if is_reply else "comments", comment)
-    parent.save(ignore_permissions=True)
-    comment.insert(ignore_permissions=True)
-    return comment.name
-
-
-@frappe.whitelist()
-def edit_comment(name, content):
-    comment = frappe.get_doc("Drive Comment", name)
-    if comment.owner != frappe.session.user:
-        raise PermissionError("You can't edit comments you don't own.")
-    comment.content = content
-    comment.save()
-    return name
-
-
-@frappe.whitelist()
-def delete_comment(name, entire=True):
-    comment = frappe.get_doc("Drive Comment", name)
-    if comment.owner != frappe.session.user:
-        raise PermissionError("You can't edit comments you don't own.")
-    if entire:
-        for r in comment.replies:
-            r.delete()
-    comment.delete()
-
-
-@frappe.whitelist()
-def resolve_comment(name, value):
-    comment = frappe.get_doc("Drive Comment", name)
-    comment.resolved = value
-    comment.save()

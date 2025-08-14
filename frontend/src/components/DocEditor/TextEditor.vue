@@ -196,6 +196,7 @@ const editorExtensions = [
     onCommentActivated: (id) => {
       if (id) {
         activeComment.value = id
+        showComments.value = true
         document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
           behavior: "smooth",
           block: "start",
