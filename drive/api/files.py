@@ -17,12 +17,12 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.locks.distributed_lock import DistributedLock
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -94,7 +94,7 @@ def upload_file(
     with temp_path.open("ab") as f:
         f.seek(offset)
         f.write(file.stream.read())
-        if not f.tell() >= total_file_size or current_chunk != total_chunks - 1:
+        if not f.tell() >= int(total_file_size) or current_chunk != total_chunks - 1:
             return
 
     # Validate that file size is matching

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-show="showComments && filteredComments.length > 0"
+    v-show="showComments"
     ref="scrollContainer"
     class="relative hidden md:flex min-w-80 border-s-2 flex-col gap-8 justify-start self-stretch pb-5 bg-surface-white"
   >
@@ -336,10 +336,16 @@ const filteredComments = computed(() => {
     document
       .querySelectorAll("[data-resolved=true]")
       .forEach((k) => k.classList.add("display"))
+  } else {
+    document
+      .querySelectorAll("[data-resolved=true]")
+      .forEach((k) => k.classList.remove("display"))
   }
-  return showResolved.value
+  const filtered = showResolved.value
     ? comments.value
     : comments.value.filter((k) => !k.resolved)
+  if (!filtered.length) showComments.value = false
+  return filtered
 })
 watch(activeComment, (val) => {
   document
