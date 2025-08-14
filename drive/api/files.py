@@ -1,4 +1,5 @@
 import os, re, json, mimetypes
+import unicodedata
 
 import frappe
 from frappe import _
@@ -271,14 +272,14 @@ def create_document_entity(title, personal, team, content, parent=None):
         lambda _: "",
         document=drive_doc.name,
     )
-    
+
     # Send team notifications for new document (only for public documents)
     if not personal:
         try:
             notify_team_file_upload(entity)
         except Exception as e:
             print(f"Error sending team notifications for document: {e}")
-    
+
     return entity
 
 
@@ -686,22 +687,23 @@ def list_entity_comments(entity_name):
         if comment_ids:
             Reaction = frappe.qb.DocType("Comment")
             User = frappe.qb.DocType("User")
+            # Get all reactions without grouping first
             reaction_rows = (
                 frappe.qb.from_(Reaction)
-                .select(Reaction.reference_name, Reaction.content, fn.Count("*").as_("count"))
+                .select(Reaction.reference_name, Reaction.content)
                 .where(
                     (Reaction.comment_type == "Like")
                     & (Reaction.reference_doctype == "Comment")
                     & (Reaction.reference_name.isin(comment_ids))
                 )
-                .groupby(Reaction.reference_name, Reaction.content)
             ).run(as_dict=True)
 
             # map: comment_id -> { emoji -> count }
             counts = {}
             for row in reaction_rows:
-                counts.setdefault(row.reference_name, {}).setdefault(row.content, 0)
-                counts[row.reference_name][row.content] += row.count
+                normalized_emoji = unicodedata.normalize("NFC", (row.content or "").strip())
+                counts.setdefault(row.reference_name, {}).setdefault(normalized_emoji, 0)
+                counts[row.reference_name][normalized_emoji] += 1
 
             # also indicate whether current user has reacted with each emoji
             user = frappe.session.user
@@ -717,7 +719,8 @@ def list_entity_comments(entity_name):
             ).run(as_dict=True)
             user_map = {}
             for row in user_rows:
-                user_map.setdefault(row.reference_name, set()).add(row.content)
+                normalized_emoji = unicodedata.normalize("NFC", (row.content or "").strip())
+                user_map.setdefault(row.reference_name, set()).add(normalized_emoji)
 
             # get reactor full names for tooltip per emoji
             reactors_rows = (
@@ -733,18 +736,21 @@ def list_entity_comments(entity_name):
             ).run(as_dict=True)
             reactors_map = {}
             for row in reactors_rows:
-                reactors_map.setdefault(row.reference_name, {}).setdefault(row.content, []).append(
-                    row.full_name or ""
-                )
+                normalized_emoji = unicodedata.normalize("NFC", (row.content or "").strip())
+                reactors_map.setdefault(row.reference_name, {}).setdefault(
+                    normalized_emoji, []
+                ).append(row.full_name or "")
 
             for c in comments:
                 c["reactions"] = []
                 for emoji, cnt in (counts.get(c["name"], {}) or {}).items():
-                    c["reactions"].append({
-                        "emoji": emoji,
-                        "count": int(cnt),
-                        "reacted": emoji in user_map.get(c["name"], set()),
-                    })
+                    c["reactions"].append(
+                        {
+                            "emoji": emoji,
+                            "count": int(cnt),
+                            "reacted": emoji in user_map.get(c["name"], set()),
+                        }
+                    )
                 # attach reactor names list for tooltip
                 c["reaction_users"] = reactors_map.get(c["name"], {})
 
@@ -1087,10 +1093,11 @@ def get_s3_signed_url(path, mime_type, expires_in=3600):
     bucket_name = frappe.conf.s3_bucket
 
     return s3.generate_presigned_url(
-        ClientMethod='get_object',
-        Params={'Bucket': bucket_name, 'Key': path, 'ResponseContentType': mime_type},
-        ExpiresIn=expires_in
+        ClientMethod="get_object",
+        Params={"Bucket": bucket_name, "Key": path, "ResponseContentType": mime_type},
+        ExpiresIn=expires_in,
     )
+
 
 @frappe.whitelist()
 def get_file_signed_url(docname: str):
@@ -1102,7 +1109,6 @@ def get_file_signed_url(docname: str):
         "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "application/vnd.oasis.opendocument.text",
-
         # Excel
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1110,7 +1116,6 @@ def get_file_signed_url(docname: str):
         "link/googlesheets",
         "application/vnd.apple.numbers",
         "text/csv",
-
         # PowerPoint
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",

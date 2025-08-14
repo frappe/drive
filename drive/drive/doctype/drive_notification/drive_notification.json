@@ -15,7 +15,7 @@
   "entity_type",
   "id_team",
   "file_name",
-  "comment_content"
+  "comment_id"
  ],
  "fields": [
   {
@@ -42,7 +42,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Share\nMention\nTeam\nFolder Creation\nFile Upload\nReaction"
+   "options": "Share\nMention\nTeam"
   },
   {
    "fieldname": "message",
@@ -78,14 +78,14 @@
    "label": "File Name"
   },
   {
-   "fieldname": "comment_content",
-   "fieldtype": "Text",
-   "label": "Comment Content"
+   "fieldname": "comment_id",
+   "fieldtype": "Data",
+   "label": "Comment ID"
   }
  ],
  "links": [],
- "modified": "2025-08-13 22:08:27.872082",
- "modified_by": "antivenomff@gmail.com",
+ "modified": "2025-08-14 13:44:02.933204",
+ "modified_by": "hoadainhan@gmail.com",
  "module": "Drive",
  "name": "Drive Notification",
  "naming_rule": "Random",

@@ -1,4 +1,7 @@
 import frappe
+import unicodedata
+import json
+from raven.raven_bot.doctype.raven_bot.raven_bot import RavenBot
 
 
 @frappe.whitelist()
@@ -29,17 +32,24 @@ def react_to_comment(comment_id: str, emoji: str):
 
     user = frappe.session.user
     # Find existing reaction by the same user and emoji
-    existing = frappe.db.get_value(
+
+    normalized_emoji = unicodedata.normalize("NFC", emoji.strip())
+    # Fetch all reactions for this comment by this user
+    reactions = frappe.get_all(
         "Comment",
-        {
+        filters={
             "comment_type": "Like",
             "reference_doctype": "Comment",
             "reference_name": comment_id,
             "comment_email": user,
-            "content": emoji,
         },
-        "name",
+        fields=["name", "content"],
     )
+    existing = None
+    for reaction in reactions:
+        if unicodedata.normalize("NFC", (reaction["content"] or "").strip()) == normalized_emoji:
+            existing = reaction["name"]
+            break
 
     if existing:
         # Toggle off -> delete existing reaction
@@ -74,12 +84,33 @@ def react_to_comment(comment_id: str, emoji: str):
                 type="Reaction",
                 entity=entity,
                 message=message,
-                comment_content=parent.content,
+                comment_id=parent.name,
+            )
+
+            # Send bot notification
+            bot_docs = frappe.conf.get("bot_docs")
+            if not bot_docs:
+                return
+
+            message_data = {
+                "key": "reaction_comment_document",
+                "title": f'{reactor_full_name} đã thả {emoji} vào bình luận của bạn trong "{entity.title}": "{parent.content}" + {emoji}',
+                "full_name_owner": reactor_full_name,
+                "to_user": parent.comment_email,
+                "message": message,
+                "file_name": entity.title,
+                "emoji": emoji,
+                "comment_content": parent.content or "",
+                "link": f"/drive/t/{entity.team}/file/{entity.name}",
+            }
+
+            RavenBot.send_notification_to_user(
+                bot_name=bot_docs,
+                user_id=parent.comment_email,
+                message=json.dumps(message_data, ensure_ascii=False, default=str),
             )
     except Exception:
         # Do not block on notification errors
         pass
 
     return {"status": "added"}
-
-
