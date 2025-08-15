@@ -88,6 +88,7 @@
             v-if="showTeamDropdown && isExpanded"
             class="mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-60 overflow-y-auto z-50"
           >
+            <!-- Teams List -->
             <div
               v-for="teamItem in teamList"
               :key="teamItem.name"
@@ -97,6 +98,18 @@
             >
               <span class="text-sm">{{ teamItem.title }}</span>
             </div>
+            
+            <!-- Separator -->
+            <div v-if="teamList.length > 0" class="border-t border-gray-200 my-1"></div>
+            
+            <!-- Create Team Button -->
+            <div
+              @click="createNewTeam"
+              class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer text-gray-600 hover:text-gray-800"
+            >
+              <LucidePlus class="h-4 w-4 mr-2" />
+              <span class="text-sm">Tạo nhóm</span>
+            </div>
           </div>
         </div>
       </template>
@@ -104,6 +117,47 @@
     <div class="mt-auto">
       <StorageBar :is-expanded="isExpanded" />
     </div>
+
+    <!-- Create Team Modal -->
+    <Dialog
+      v-model="showCreateTeamModal"
+      :options="{
+        title: 'Tạo nhóm mới',
+        size: '2xl',
+      }"
+    >
+      <template #body-content>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Tên nhóm
+            </label>
+            <FormControl
+              v-model="newTeamName"
+              type="text"
+              placeholder="Nhập tên nhóm..."
+              :disabled="createTeam.loading"
+            />
+          </div>
+        </div>
+      </template>
+      <template #actions>
+        <Button
+          variant="ghost"
+          @click="showCreateTeamModal = false"
+          :disabled="createTeam.loading"
+        >
+          Hủy
+        </Button>
+        <Button
+          variant="solid"
+          @click="handleCreateTeam"
+          :loading="createTeam.loading"
+        >
+          Tạo nhóm
+        </Button>
+      </template>
+    </Dialog>
 
   </div>
 </template>
@@ -114,11 +168,12 @@ import StorageBar from "./StorageBar.vue"
 
 import { notifCount } from "@/resources/permissions"
 import { getTeams } from "@/resources/files"
-import { Dropdown, Button, Autocomplete } from "frappe-ui"
+import { Dropdown, Button, Autocomplete, Dialog, FormControl, createResource } from "frappe-ui"
 
 import { computed, ref, onMounted, onUnmounted } from "vue"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
+import { toast } from "@/utils/toasts"
 import LucideClock from "~icons/lucide/clock"
 import ArrowLeftFromLine from "~icons/lucide/arrow-left-from-line"
 import LucideBuilding2 from "~icons/lucide/building-2"
@@ -129,6 +184,7 @@ import LucideStar from "~icons/lucide/star"
 import LucideCommand from "~icons/lucide/command"
 import LucideInbox from "~icons/lucide/inbox"
 import LucideChevronDown from "~icons/lucide/chevron-down"
+import LucidePlus from "~icons/lucide/plus"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
@@ -137,6 +193,35 @@ notifCount.fetch()
 
 // Team dropdown state
 const showTeamDropdown = ref(false)
+
+// Create team modal state
+const showCreateTeamModal = ref(false)
+const newTeamName = ref("")
+
+// Create team resource
+const createTeam = createResource({
+  url: "drive.api.product.create_personal_team",
+  makeParams: () => ({
+    team_name: newTeamName.value,
+    email: store.state.user.id,
+  }),
+  onSuccess: (data) => {
+    if (data) {
+      toast("Nhóm đã được tạo thành công!")
+      // Refresh teams data
+      getTeams.fetch()
+      // Close modal and reset form
+      showCreateTeamModal.value = false
+      newTeamName.value = ""
+      // Navigate to new team
+      window.location.href = `/drive/t/${data}/team`
+    }
+  },
+  onError: (error) => {
+    toast("Không thể tạo nhóm. Vui lòng thử lại.")
+    console.error("Create team error:", error)
+  },
+})
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 const team = computed(
@@ -217,6 +302,19 @@ const toggleTeamDropdown = () => {
 const selectTeam = (team) => {
   showTeamDropdown.value = false
   window.location.href = `/drive/t/${team.name}/team`
+}
+
+const createNewTeam = () => {
+  showTeamDropdown.value = false
+  showCreateTeamModal.value = true
+}
+
+const handleCreateTeam = () => {
+  if (!newTeamName.value?.trim()) {
+    toast("Vui lòng nhập tên nhóm.")
+    return
+  }
+  createTeam.submit()
 }
 
 // Click outside to close dropdown
