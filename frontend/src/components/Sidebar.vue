@@ -47,25 +47,64 @@
       </SidebarItem> -->
       <template v-for="item in sidebarItems.slice(1)" :key="item.label">
         <SidebarItem
+          v-if="item.label !== __('Nhóm')"
           :icon="item.icon"
           :label="item.label"
           :to="item.route"
           :is-collapsed="!isExpanded"
           class="mb-0.5"
         />
-        <div v-if="item.label === __('Nhóm') && isExpanded" class="mb-2 ml-6 pr-2">
-          <Autocomplete
-            v-model="selectedTeam"
-            :options="teamAutocompleteOptions"
-            placeholder="Nhóm"
-            class="w-full"
-          />
+        <div v-else-if="item.label === __('Nhóm')" class="mb-0.5 relative team-dropdown-container">
+          <button
+            @click="toggleTeamDropdown"
+            class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3 hover:bg-surface-gray-2"
+            :class="{ 'bg-surface-selected shadow-sm': showTeamDropdown }"
+          >
+            <div class="flex w-full items-center justify-between duration-300 ease-in-out p-2">
+              <div class="flex items-center">
+                <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
+                  <component
+                    :is="item.icon"
+                    class="size-4 text-ink-gray-7"
+                  />
+                </span>
+                <span
+                  v-if="isExpanded"
+                  class="ml-2 flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
+                >
+                  {{ item.label }}
+                </span>
+              </div>
+              <LucideChevronDown 
+                v-if="isExpanded"
+                class="h-4 w-4 text-ink-gray-5 transition-transform duration-200"
+                :class="{ 'rotate-180': showTeamDropdown }"
+              />
+            </div>
+          </button>
+          
+          <!-- Simple Dropdown List -->
+          <div
+            v-if="showTeamDropdown && isExpanded"
+            class="mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-60 overflow-y-auto z-50"
+          >
+            <div
+              v-for="teamItem in teamList"
+              :key="teamItem.name"
+              @click="selectTeam(teamItem)"
+              class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+              :class="{ 'bg-blue-50 text-blue-600': team === teamItem.name }"
+            >
+              <span class="text-sm">{{ teamItem.title }}</span>
+            </div>
+          </div>
         </div>
       </template>
     </div>
     <div class="mt-auto">
       <StorageBar :is-expanded="isExpanded" />
     </div>
+
   </div>
 </template>
 <script setup>
@@ -77,7 +116,7 @@ import { notifCount } from "@/resources/permissions"
 import { getTeams } from "@/resources/files"
 import { Dropdown, Button, Autocomplete } from "frappe-ui"
 
-import { computed } from "vue"
+import { computed, ref, onMounted, onUnmounted } from "vue"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import LucideClock from "~icons/lucide/clock"
@@ -89,11 +128,15 @@ import LucideHome from "~icons/lucide/home"
 import LucideStar from "~icons/lucide/star"
 import LucideCommand from "~icons/lucide/command"
 import LucideInbox from "~icons/lucide/inbox"
+import LucideChevronDown from "~icons/lucide/chevron-down"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const route = useRoute()
 notifCount.fetch()
+
+// Team dropdown state
+const showTeamDropdown = ref(false)
 
 const isExpanded = computed(() => store.state.IsSidebarExpanded)
 const team = computed(
@@ -104,18 +147,25 @@ getTeams.fetch()
 const teamList = computed(() => Object.values(getTeams.data || {}))
 const selectedTeam = computed({
   get() {
-    return teamList.value.find((t) => t.name === team.value)
-      ? { label: teamList.value.find((t) => t.name === team.value)?.title }
-      : null
+    const currentTeam = teamList.value.find((t) => t.name === team.value)
+    return currentTeam ? { label: currentTeam.title } : null
   },
   set(val) {
     const target = teamList.value.find((t) => t.title === val?.label)
     if (target) window.location.href = `/drive/t/${target.name}/team`
-    
   },
 })
 const teamAutocompleteOptions = computed(() =>
   teamList.value.map((t) => ({ label: t.title }))
+)
+
+const teamDropdownOptions = computed(() =>
+  teamList.value.map((t) => ({ 
+    label: t.title, 
+    onClick: () => {
+      window.location.href = `/drive/t/${t.name}/team`
+    }
+  }))
 )
 
 const sidebarItems = computed(() => {
@@ -158,4 +208,31 @@ const sidebarItems = computed(() => {
 
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)
+
+// Team dropdown methods
+const toggleTeamDropdown = () => {
+  showTeamDropdown.value = !showTeamDropdown.value
+}
+
+const selectTeam = (team) => {
+  showTeamDropdown.value = false
+  window.location.href = `/drive/t/${team.name}/team`
+}
+
+// Click outside to close dropdown
+const handleClickOutside = (event) => {
+  const dropdown = event.target.closest('.team-dropdown-container')
+  if (!dropdown) {
+    showTeamDropdown.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 </script>
