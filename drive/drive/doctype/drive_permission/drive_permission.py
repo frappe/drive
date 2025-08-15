@@ -9,14 +9,15 @@ from drive.api.notifications import notify_share
 class DrivePermission(Document):
     def after_insert(self):
         if self.user:
-            frappe.enqueue(
-                notify_share,
-                queue="long",
-                job_id=f"fdocperm_{self.name}",
-                deduplicate=True,
-                timeout=None,
-                now=False,
-                at_front=False,
-                entity_name=self.entity,
-                docperm_name=self.name,
-            )
+            # frappe.enqueue(
+            #     notify_share,
+            #     queue="long",
+            #     job_id=f"fdocperm_{self.name}",
+            #     deduplicate=True,
+            #     timeout=None,
+            #     now=False,
+            #     at_front=False,
+            #     entity_name=self.entity,
+            #     docperm_name=self.name,
+            # )
+            notify_share(self.entity, self.name)
