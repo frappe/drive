@@ -33,35 +33,44 @@
       :get-entities="getEntities"
     />
 
-    <div
-      v-if="!props.getEntities.fetched"
-      class="m-auto"
-      style="transform: translate(0, -88.5px)"
-    >
-      <LoadingIndicator class="size-10 text-ink-gray-9" />
+    <!-- Content Area with Team Members -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col">
+        <div
+          v-if="!props.getEntities.fetched"
+          class="m-auto"
+          style="transform: translate(0, -88.5px)"
+        >
+          <LoadingIndicator class="size-10 text-ink-gray-9" />
+        </div>
+        <NoFilesSection
+          v-else-if="!props.getEntities.data?.length"
+          :icon="icon"
+          :primary-message="__(primaryMessage)"
+          :secondary-message="__(secondaryMessage)"
+        />
+        <ListView
+          v-else-if="$store.state.view === 'list'"
+          v-model="selections"
+          :folder-contents="rows && grouper(rows)"
+          :action-items="actionItems"
+          :user-data="userData"
+          @dropped="onDrop"
+        />
+        <GridView
+          v-else
+          v-model="selections"
+          :folder-contents="rows"
+          :action-items="actionItems"
+          :user-data="userData"
+          @dropped="onDrop"
+        />
+      </div>
+
+      <!-- Team Members List -->
+      <TeamMembersList v-if="showTeamMembers" />
     </div>
-    <NoFilesSection
-      v-else-if="!props.getEntities.data?.length"
-      :icon="icon"
-      :primary-message="__(primaryMessage)"
-      :secondary-message="__(secondaryMessage)"
-    />
-    <ListView
-      v-else-if="$store.state.view === 'list'"
-      v-model="selections"
-      :folder-contents="rows && grouper(rows)"
-      :action-items="actionItems"
-      :user-data="userData"
-      @dropped="onDrop"
-    />
-    <GridView
-      v-else
-      v-model="selections"
-      :folder-contents="rows"
-      :action-items="actionItems"
-      :user-data="userData"
-      @dropped="onDrop"
-    />
     <InfoPopup :entities="infoEntities" />
   </div>
 
@@ -90,6 +99,8 @@ import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import FileUploader from "@/components/FileUploader.vue"
+import TeamMembersList from "@/components/TeamMembersList.vue"
+
 import { ref, computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -123,6 +134,10 @@ const props = defineProps({
 })
 const route = useRoute()
 const store = useStore()
+
+// Show team members list only on Team page
+const showTeamMembers = computed(() => route.name === "Team")
+
 
 const dialog = ref("")
 const infoEntities = ref([])

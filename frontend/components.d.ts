@@ -150,6 +150,7 @@ declare module 'vue' {
     TagColorInput: typeof import('./src/components/TagColorInput.vue')['default']
     TagInput: typeof import('./src/components/TagInput.vue')['default']
     TagSettings: typeof import('./src/components/Settings/TagSettings.vue')['default']
+    TeamMembersList: typeof import('./src/components/TeamMembersList.vue')['default']
     TeamSwitcher: typeof import('./src/components/TeamSwitcher.vue')['default']
     TextEditor: typeof import('./src/components/DocEditor/TextEditor.vue')['default']
     TextPreview: typeof import('./src/components/FileTypePreview/TextPreview.vue')['default']
