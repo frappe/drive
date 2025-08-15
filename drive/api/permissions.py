@@ -133,7 +133,7 @@ def get_entity_with_permissions(entity_name):
     entity = frappe.db.get_value(
         "Drive File",
         {"is_active": 1, "name": entity_name},
-        ENTITY_FIELDS + ["team", "modified"],
+        ENTITY_FIELDS + ["team"],
         as_dict=1,
     )
     if not entity:

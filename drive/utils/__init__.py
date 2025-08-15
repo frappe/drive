@@ -298,7 +298,9 @@ def create_drive_file(
             "mime_type": mime_type,
             "document": document,
             "is_group": is_group,
-            "_modified": datetime.fromtimestamp(last_modified) if last_modified else None,
+            "_modified": (
+                datetime.fromtimestamp(last_modified) if last_modified else datetime.now()
+            ),
         }
     )
     drive_file.flags.file_created = True
