@@ -27,7 +27,7 @@ class DriveNotification(Document):
                 "file_name": self.file_name,
                 "link": f"/drive/t/{self.id_team}/{self.entity_type.lower()}/{self.notif_doctype_name}",
             }
-            print("message_data", message_data)
+
             RavenBot.send_notification_to_user(
                 bot_name=bot_docs,
                 user_id=self.to_user,

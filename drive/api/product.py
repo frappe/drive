@@ -1,3 +1,4 @@
+import json
 import frappe
 from frappe import _
 from frappe.rate_limiter import rate_limit
@@ -6,6 +7,7 @@ from frappe.utils import split_emails, validate_email_address
 from drive.api.permissions import is_admin
 from frappe.translate import get_all_translations
 import re
+from raven.raven_bot.doctype.raven_bot.raven_bot import RavenBot
 
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
@@ -76,11 +78,11 @@ def get_team_invites(team):
 @frappe.whitelist(allow_guest=True)
 def direct_signup(email, password, first_name, last_name=None, referrer=None):
     """Direct signup with email and password, bypassing account request system"""
-    
+
     # Validate email format
-    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+    if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
         frappe.throw("Invalid email format")
-    
+
     # Check if user already exists
     if frappe.db.exists("User", email):
         frappe.throw("User already exists")
@@ -106,7 +108,7 @@ def direct_signup(email, password, first_name, last_name=None, referrer=None):
 
     # Login the user
     frappe.local.login_manager.login_as(user.email)
-    
+
     # Create drive settings
     doc = frappe.get_doc(
         {
@@ -118,6 +120,7 @@ def direct_signup(email, password, first_name, last_name=None, referrer=None):
     doc.insert()
 
     return {"location": "/drive"}
+
 
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
@@ -337,27 +340,27 @@ def add_user_directly_to_team(team, email, access_level=1):
     Thêm người dùng trực tiếp vào nhóm mà không cần quy trình mời
     """
     from frappe.utils import validate_email_address
-    
+
     # Kiểm tra email hợp lệ
     if not validate_email_address(email, throw=False):
         frappe.throw("Địa chỉ email không hợp lệ")
-    
+
     # Kiểm tra người dùng có tồn tại không
     user_exists = frappe.db.exists("User", email)
     if not user_exists:
         frappe.throw("Người dùng không tồn tại trong hệ thống")
-    
+
     # Kiểm tra người dùng đã trong nhóm chưa
     team_doc = frappe.get_doc("Drive Team", team)
     existing_member = next((member for member in team_doc.users if member.user == email), None)
-    
+
     if existing_member:
         frappe.throw("Người dùng đã là thành viên của nhóm này")
-    
+
     # Thêm người dùng vào nhóm
     team_doc.append("users", {"user": email, "access_level": access_level})
     team_doc.save(ignore_permissions=True)
-    
+
     # Gửi email thông báo
     try:
         frappe.sendmail(
@@ -370,11 +373,31 @@ def add_user_directly_to_team(team, email, access_level=1):
                 <p><a href="{frappe.utils.get_url()}/drive/t/{team}/team">Truy cập nhóm</a></p>
                 <p>Trân trọng,<br>Drive Team</p>
             """,
-            now=True
+            now=True,
+        )
+
+        bot_docs = frappe.conf.get("bot_docs")
+        if not bot_docs:
+            return
+        full_name = (
+            frappe.get_value("User", frappe.session.user, "full_name") or frappe.session.user
+        )
+        message_data = {
+            "key": "add_user_to_drive_team",
+            "title": f'"{full_name}" đã thêm bạn tham gia nhóm "{team_doc.title}"',
+            "full_name_owner": full_name,
+            "team_name": team_doc.title,
+            "link": f"/drive/t/{team}/team",
+        }
+
+        RavenBot.send_notification_to_user(
+            bot_name=bot_docs,
+            user_id=email,
+            message=json.dumps(message_data, ensure_ascii=False, default=str),
         )
     except Exception as e:
         frappe.log_error(f"Gửi email thông báo nhóm thất bại: {str(e)}")
-    
+
     return {"success": True, "message": "Thêm người dùng vào nhóm thành công"}
 
 
@@ -427,11 +450,11 @@ def get_all_site_users():
         },
         fields=[
             "name",
-            "email", 
+            "email",
             "full_name",
             "user_image",
         ],
-        order_by="full_name"
+        order_by="full_name",
     )
     return users
 
@@ -444,17 +467,18 @@ def get_system_users():
         filters=[
             ["user_type", "=", "System User"],
             ["enabled", "=", 1],
-            ["name", "!=", "Administrator"]
+            ["name", "!=", "Administrator"],
         ],
         fields=[
             "name",
-            "email", 
+            "email",
             "full_name",
             "user_image",
         ],
         order_by="full_name asc",
     )
     return users
+
 
 @frappe.whitelist()
 def check_users_permissions(entity_name, user_emails):
@@ -464,66 +488,65 @@ def check_users_permissions(entity_name, user_emails):
     :param user_emails: List of user emails or JSON string
     """
     import json
-    
+
     if isinstance(user_emails, str):
         user_emails = json.loads(user_emails)
-    
+
     if not isinstance(user_emails, list):
         user_emails = [user_emails]
-    
+
     result = []
-    
+
     for email in user_emails:
         has_permission = False
-        
+
         try:
             # Check if user has read permission for the entity
             entity_doc = frappe.get_doc("Drive File", entity_name)
-            
+
             # Check if user is owner
             if entity_doc.owner == email:
                 has_permission = True
             else:
                 # Check Drive Permission permissions
-                share_doc = frappe.db.exists("Drive Permission", {
-                    "entity": entity_name,
-                    "user": email
-                })
-                
+                share_doc = frappe.db.exists(
+                    "Drive Permission", {"entity": entity_name, "user": email}
+                )
+
                 if share_doc:
                     share = frappe.get_doc("Drive Permission", share_doc)
                     if share.read == 1:
                         has_permission = True
-                
-                # Check if user is in a team that has access  
+
+                # Check if user is in a team that has access
                 if not has_permission:
                     # Check team permissions via Drive Permission with team user format
-                    team_shares = frappe.get_all("Drive Permission", {
-                        "entity": entity_name,
-                        "user": ("like", "$TEAM%"),
-                        "read": 1
-                    }, ["user"])
-                    
+                    team_shares = frappe.get_all(
+                        "Drive Permission",
+                        {"entity": entity_name, "user": ("like", "$TEAM%"), "read": 1},
+                        ["user"],
+                    )
+
                     for team_share in team_shares:
                         # Extract team name from user field (format: $TEAM:team_name)
-                        team_name = team_share.user.replace("$TEAM:", "") if team_share.user.startswith("$TEAM:") else team_share.user
-                        team_members = frappe.get_all("Drive Team User", {
-                            "parent": team_name,
-                            "user": email
-                        })
+                        team_name = (
+                            team_share.user.replace("$TEAM:", "")
+                            if team_share.user.startswith("$TEAM:")
+                            else team_share.user
+                        )
+                        team_members = frappe.get_all(
+                            "Drive Team User", {"parent": team_name, "user": email}
+                        )
                         if team_members:
                             has_permission = True
                             break
-                            
+
         except Exception as e:
             frappe.log_error(f"Error checking permission for {email}: {str(e)}")
             has_permission = False
-        
-        result.append({
-            "email": email,
-            "has_permission": has_permission
-        })
-    
+
+        result.append({"email": email, "has_permission": has_permission})
+
     return result
 
 
@@ -535,33 +558,28 @@ def grant_read_access_to_users(entity_name, user_emails):
     :param user_emails: List of user emails or JSON string
     """
     import json
-    
+
     if isinstance(user_emails, str):
         user_emails = json.loads(user_emails)
-    
+
     if not isinstance(user_emails, list):
         user_emails = [user_emails]
-    
+
     results = []
-    
+
     for email in user_emails:
         try:
             # Check if user exists
             user_exists = frappe.db.exists("User", email)
             if not user_exists:
-                results.append({
-                    "email": email,
-                    "success": False,
-                    "error": "User does not exist"
-                })
+                results.append({"email": email, "success": False, "error": "User does not exist"})
                 continue
-            
+
             # Check if share already exists using Drive Permission
-            existing_share = frappe.db.exists("Drive Permission", {
-                "entity": entity_name,
-                "user": email
-            })
-            
+            existing_share = frappe.db.exists(
+                "Drive Permission", {"entity": entity_name, "user": email}
+            )
+
             if existing_share:
                 # Update existing share to grant read access
                 share_doc = frappe.get_doc("Drive Permission", existing_share)
@@ -570,30 +588,26 @@ def grant_read_access_to_users(entity_name, user_emails):
             else:
                 # Create new share with read access using Drive Permission
                 share_doc = frappe.new_doc("Drive Permission")
-                share_doc.update({
-                    "entity": entity_name,
-                    "user": email,
-                    "read": 1,
-                    "write": 0,
-                    "share": 0,
-                    "comment": 0
-                })
+                share_doc.update(
+                    {
+                        "entity": entity_name,
+                        "user": email,
+                        "read": 1,
+                        "write": 0,
+                        "share": 0,
+                        "comment": 0,
+                    }
+                )
                 share_doc.insert(ignore_permissions=True)
-            
-            results.append({
-                "email": email,
-                "success": True,
-                "message": "Read access granted successfully"
-            })
-            
+
+            results.append(
+                {"email": email, "success": True, "message": "Read access granted successfully"}
+            )
+
         except Exception as e:
             frappe.log_error(f"Error granting access to {email}: {str(e)}")
-            results.append({
-                "email": email,
-                "success": False,
-                "error": str(e)
-            })
-    
+            results.append({"email": email, "success": False, "error": str(e)})
+
     return results
 
 
