@@ -86,7 +86,7 @@ const KEY_BINDS = {
 }
 for (let k in KEY_BINDS) {
   onKeyDown(k, (e) => {
-    if (e.ctrlKey) {
+    if (e.altKey) {
       KEY_BINDS[k](e)
       e.preventDefault()
     }
