@@ -332,6 +332,53 @@ def invite_users(team, emails):
 
 
 @frappe.whitelist()
+def add_user_directly_to_team(team, email, access_level=1):
+    """
+    Thêm người dùng trực tiếp vào nhóm mà không cần quy trình mời
+    """
+    from frappe.utils import validate_email_address
+    
+    # Kiểm tra email hợp lệ
+    if not validate_email_address(email, throw=False):
+        frappe.throw("Địa chỉ email không hợp lệ")
+    
+    # Kiểm tra người dùng có tồn tại không
+    user_exists = frappe.db.exists("User", email)
+    if not user_exists:
+        frappe.throw("Người dùng không tồn tại trong hệ thống")
+    
+    # Kiểm tra người dùng đã trong nhóm chưa
+    team_doc = frappe.get_doc("Drive Team", team)
+    existing_member = next((member for member in team_doc.users if member.user == email), None)
+    
+    if existing_member:
+        frappe.throw("Người dùng đã là thành viên của nhóm này")
+    
+    # Thêm người dùng vào nhóm
+    team_doc.append("users", {"user": email, "access_level": access_level})
+    team_doc.save(ignore_permissions=True)
+    
+    # Gửi email thông báo
+    try:
+        frappe.sendmail(
+            recipients=[email],
+            subject=f"Đã được thêm vào nhóm {team_doc.title}",
+            message=f"""
+                <p>Xin chào,</p>
+                <p>Bạn đã được thêm vào nhóm <strong>{team_doc.title}</strong> bởi {frappe.get_value('User', frappe.session.user, 'full_name') or frappe.session.user}.</p>
+                <p>Bạn có thể truy cập tệp của nhóm và cộng tác với các thành viên khác.</p>
+                <p><a href="{frappe.utils.get_url()}/drive/t/{team}/team">Truy cập nhóm</a></p>
+                <p>Trân trọng,<br>Drive Team</p>
+            """,
+            now=True
+        )
+    except Exception as e:
+        frappe.log_error(f"Gửi email thông báo nhóm thất bại: {str(e)}")
+    
+    return {"success": True, "message": "Thêm người dùng vào nhóm thành công"}
+
+
+@frappe.whitelist()
 def set_user_access(team, user_id, access_level):
     if not is_admin(team):
         frappe.throw("You don't have the permissions for this action.")

@@ -12,6 +12,7 @@ declare module 'vue' {
     ActivityTree: typeof import('./src/components/ActivityTree.vue')['default']
     ActivityTreeItem: typeof import('./src/components/ActivityTreeItem.vue')['default']
     ActivityTreeShare: typeof import('./src/components/ActivityTreeShare.vue')['default']
+    AddTeamMemberModal: typeof import('./src/components/AddTeamMemberModal.vue')['default']
     AlignCenter: typeof import('./src/components/DocEditor/icons/AlignCenter.vue')['default']
     AlignItemCenter: typeof import('./src/components/DocEditor/icons/align-item-center.vue')['default']
     AlignItemLeft: typeof import('./src/components/DocEditor/icons/align-item-left.vue')['default']

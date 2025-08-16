@@ -2,8 +2,21 @@
   <div class="bg-white border-l border-gray-200 w-80 h-full flex flex-col">
     <!-- Header -->
     <div class="p-4 border-b border-gray-200">
-      <h3 class="text-sm font-medium text-gray-900">Thành viên</h3>
-      <p class="text-xs text-gray-500 mt-1">{{ teamMembers.length }} thành viên</p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-medium text-gray-900">Thành viên</h3>
+          <p class="text-xs text-gray-500 mt-1">{{ teamMembers.length }} thành viên</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="showAddMemberModal = true"
+          class="flex items-center space-x-1"
+        >
+          <LucideUserPlus class="h-4 w-4" />
+          <span class="text-xs">Thêm thành viên</span>
+        </Button>
+      </div>
     </div>
 
     <!-- Members Grid -->
@@ -54,15 +67,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Add Member Modal -->
+    <AddTeamMemberModal v-model="showAddMemberModal" @success="getTeamMembers.reload()" />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue"
-import { createResource } from "frappe-ui"
+import { computed, onMounted, ref } from "vue"
+import { createResource, Button } from "frappe-ui"
 import { useRoute } from "vue-router"
+import AddTeamMemberModal from "./AddTeamMemberModal.vue"
+import LucideUserPlus from "~icons/lucide/user-plus"
 
 const route = useRoute()
+
+// Modal state
+const showAddMemberModal = ref(false)
 
 // Get team members
 const getTeamMembers = createResource({
