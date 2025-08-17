@@ -384,7 +384,7 @@ def save_doc(entity_name, doc_name, content):
 
 @frappe.whitelist()
 def create_auth_token(entity_name):
-    if not user_has_permission(entity_name):
+    if not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
     settings = frappe.get_single("Drive Disk Settings")
     key = settings.get_password("jwt_key", raise_exception=False)
