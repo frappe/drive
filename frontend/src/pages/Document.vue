@@ -60,7 +60,7 @@
       v-model:show-comments="showComments"
       :entity="entity"
       :users="allUsers.data || []"
-      :show-comments
+      :show-resolved
       @save-document="saveDocument"
     />
   </div>
