@@ -185,7 +185,8 @@ onMounted(() => {
   })
   dropzone.value.on("error", function (file, response) {
     let message
-    if (typeof response === "object") {
+    if (file.status === "canceled") message = "You cancelled this upload."
+    else if (typeof response === "object") {
       let messages = JSON.parse(response._server_messages || "[]")
       if (messages.length) message = JSON.parse(messages[0]).message
     }
