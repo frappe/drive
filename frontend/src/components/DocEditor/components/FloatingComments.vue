@@ -125,9 +125,10 @@
                 class="w-full flex justify-between items-start label-group gap-1 text-sm"
               >
                 <div class="flex gap-1">
-                  <label class="font-medium text-ink-gray-8">{{
-                    $user(reply.owner)?.full_name
-                  }}</label>
+                  <label
+                    class="font-medium text-ink-gray-8 max-w-[70%] truncate"
+                    >{{ $user(reply.owner)?.full_name }}</label
+                  >
 
                   <label class="text-ink-gray-6 truncate">
                     &#183;

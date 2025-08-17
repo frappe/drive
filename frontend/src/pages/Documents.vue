@@ -7,7 +7,6 @@
 </template>
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { createResource } from "frappe-ui"
 import LucideFileText from "~icons/lucide/file-text"
 import { getDocuments } from "@/resources/files"
 </script>

@@ -144,7 +144,6 @@ const onSuccess = (data) => {
 
   title.value = data.title
   rawContent.value = data.raw_content
-  showComments.value = !!entity.value.comments.length
   lastFetched.value = Date.now()
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
