@@ -82,6 +82,15 @@ const route = useRoute()
 const store = useStore()
 const selections = defineModel(new Set())
 
+const allRows = computed(() => {
+  if (!props.folderContents) return []
+  if (Array.isArray(props.folderContents)) {
+    return props.folderContents
+  }
+  // When grouped, props.folderContents is an object of arrays; flatten it.
+  return Object.values(props.folderContents).flat()
+})
+
 const rows = computed(() => props.folderContents)
 const action = (settings.data?.message || settings.data)?.single_click
   ? "click"
@@ -92,8 +101,6 @@ const rowEvent = ref(null)
 
 // Duplication, redesign
 const contextMenu = (event, row) => {
-  if (selections.value.size > 0) return
-  // Ctrl + click triggers context menu on Mac
   if (event.ctrlKey) openEntity(route.params.team, row, true)
   rowEvent.value = event
   selectedRow.value = row
@@ -103,6 +110,17 @@ const contextMenu = (event, row) => {
 
 const dropdownActionItems = (row) => {
   if (!row) return []
+
+  const hasSelections = selections.value.size > 0
+
+  const items = hasSelections
+    ? [...selections.value]
+        .map((name) => allRows.value.find((item) => item.name === name))
+        .filter(Boolean) 
+    : [row]
+
+  if (items.length === 0) return []
+
   return props.actionItems
     .filter((a) => !a.isEnabled || a.isEnabled(row))
     .map((a) => ({
@@ -110,7 +128,7 @@ const dropdownActionItems = (row) => {
       handler: () => {
         rowEvent.value = false
         store.commit("setActiveEntity", row)
-        a.action([row])
+        a.action(items)
       },
     }))
 }
@@ -129,7 +147,7 @@ onKeyDown("a", (e) => {
   )
     return
   if (e.metaKey) {
-    selections.value = new Set(props.folderContents.map((k) => k.name))
+    allRows.value.forEach((k) => container.value.selections.add(k.name))
     e.preventDefault()
   }
 })

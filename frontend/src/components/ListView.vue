@@ -46,6 +46,7 @@
               :rows="group.rows"
               :context-menu="contextMenu"
               :selections
+              :selected-row="selectedRow"
               @dropped="emit('dropped')"
             />
           </ListGroupRows>
@@ -58,6 +59,7 @@
             :rows="formattedRows"
             :context-menu="contextMenu"
             :selections
+            :selected-row="selectedRow"
             @dropped="(...p) => $emit('dropped', ...p)"
           />
         </div>
@@ -112,6 +114,14 @@ const selections = defineModel(new Set())
 const selectedRow = ref(null)
 
 const rowEvent = ref(null)
+
+const allRows = computed(() => {
+  if (!props.folderContents) return []
+  if (Array.isArray(props.folderContents)) {
+    return props.folderContents
+  }
+  return Object.values(props.folderContents).flat()
+})
 
 const formattedRows = computed(() => {
   if (!props.folderContents) return []
@@ -213,7 +223,7 @@ const selectedColumns = [
 ].filter((k) => !k.isEnabled || k.isEnabled(route.name))
 
 const setActive = (entityName) => {
-  const entity = props.folderContents.find((k) => k.name === entityName)
+  const entity = allRows.value.find((k) => k.name === entityName)
   selectedRow.value =
     !entity || entity.name !== store.state.activeEntity?.name ? entity : null
 }
@@ -223,6 +233,16 @@ watch(selectedRow, (k) => {
 })
 const dropdownActionItems = (row) => {
   if (!row) return []
+
+  const hasSelections = selections.value.size > 0
+
+  const items = hasSelections
+    ? [...selections.value]
+        .map((name) => allRows.value.find((item) => item.name === name))
+        .filter(Boolean) 
+    : [row]
+
+  if (items.length === 0) return []
   return props.actionItems
     .filter((a) => !a.isEnabled || a.isEnabled(row))
     .map((a) => ({
@@ -230,13 +250,12 @@ const dropdownActionItems = (row) => {
       handler: () => {
         rowEvent.value = false
         store.commit("setActiveEntity", row)
-        a.action([row])
+        a.action(items)
       },
     }))
 }
 
 const contextMenu = (event, row) => {
-  if (selections.value.size > 0) return
   // Ctrl + click triggers context menu on Mac
   if (event.ctrlKey) openEntity(route.params.team, row, true)
   rowEvent.value = event
@@ -262,7 +281,7 @@ onKeyDown("a", (e) => {
     return
   if (e.metaKey) {
     container.value.selections.clear()
-    props.folderContents.map((k) => container.value.selections.add(k.name))
+    allRows.value.forEach((k) => container.value.selections.add(k.name))
     e.preventDefault()
   }
 })

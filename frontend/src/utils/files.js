@@ -482,17 +482,20 @@ export async function updateURLSlug(title) {
   }
 }
 
-export function getLink(entity, copy = true, withDomain = true) {
+export function getLink(entities, copy = true, withDomain = true) {
   const team = router.currentRoute.value.params.team
-  let link = entity.is_link
-    ? entity.path
-    : `${
-        withDomain ? window.location.origin + "/drive" : ""
-      }/t/${team}/${getLinkStem(entity)}`
+  let links = entities.map(entity => {
+    return entity.is_link
+      ? entity.path
+      : `${withDomain ? window.location.origin + "/drive" : ""}/t/${team}/${getLinkStem(entity)}`;
+  });
 
-  if (!copy) return link
+  const combinedLinks = links.join("\n"); 
+
+  if (!copy) return combinedLinks;
+
   try {
-    copyToClipboard(link).then(() => toast("Copied to your clipboard!"))
+    copyToClipboard(combinedLinks).then(() => toast("Copied to clipboard!"))
   } catch (err) {
     if (err.name === "NotAllowedError") {
       toast({
