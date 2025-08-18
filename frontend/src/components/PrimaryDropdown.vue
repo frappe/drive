@@ -1,7 +1,8 @@
 <template>
   <div
-    class="flex items-center justify-between p-2"
-    :style="{ width: isExpanded ? '204px' : 'auto' }"
+    class="flex items-center justify-between gap-2"
+    :class="{ 'flex-wrap': !isExpanded, 'nowrap': !isExpanded }"
+    :style="{ width: isExpanded ? '100%' : 'auto' }"
   >
     <div class="flex items-center gap-2">
       <Button size="sm" variant="ghost" @click="toggleCollapsed">
@@ -34,15 +35,15 @@
 </template>
 
 <script setup>
-import { Button } from "frappe-ui"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
+import { Button } from "frappe-ui"
 import { ref } from "vue"
 import { useStore } from "vuex"
-import LucideSettings from "~icons/lucide/settings"
 import ArrowLeftFromLine from "~icons/lucide/arrow-left-from-line"
 import ArrowRightFromLine from "~icons/lucide/arrow-right-from-line"
+import LucideSettings from "~icons/lucide/settings"
 const store = useStore()
 
 const props = defineProps({

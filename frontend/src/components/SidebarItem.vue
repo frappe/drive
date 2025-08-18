@@ -1,13 +1,15 @@
 <template>
   <button
-    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+    class="flex h-10 w-full cursor-pointer items-center rounded-md duration-200 ease-in-out group transition-all"
     :class="
-      isActive ? ' bg-surface-selected shadow-sm' : 'hover:bg-surface-gray-2'
+      isActive 
+        ? 'bg-blue-600 text-white shadow-md font-semibold border border-blue-700' 
+        : 'text-gray-700 hover:bg-white hover:shadow-sm hover:text-gray-900 hover:border hover:border-gray-200'
     "
     @click="handleClick"
   >
     <div
-      class="flex w-full items-center justify-between duration-300 ease-in-out p-2"
+      class="flex w-full items-center justify-between duration-200 ease-in-out px-3 py-2"
     >
       <div class="flex items-center">
         <Tooltip
@@ -17,20 +19,23 @@
           :disabled="!isCollapsed"
         >
           <slot name="icon">
-            <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
+            <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
               <component
                 :is="icon"
-                class="size-4 text-ink-gray-7"
+                class="size-5 transition-colors"
+                :class="isActive ? 'text-white font-bold' : 'text-gray-600 group-hover:text-gray-900'"
+                :style="isActive ? 'font-weight: 900;' : ''"
               />
             </span>
           </slot>
         </Tooltip>
         <span
-          class="flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
+          class="flex-1 flex-shrink-0 text-[14px] duration-200 ease-in-out"
           :class="[
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
-              : 'ml-2 w-auto opacity-100',
+              : 'ml-3 w-auto opacity-100',
+            isActive ? 'font-semibold text-white' : 'font-medium text-gray-700 group-hover:text-gray-900'
           ]"
         >
           {{ label }}
@@ -44,9 +49,10 @@
 <script setup>
 import { Tooltip } from "frappe-ui"
 import { computed } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
-import { useRouter } from "vue-router"
 
+const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
@@ -73,8 +79,22 @@ function handleClick() {
   router.push({ path: props.to })
 }
 
-let isActive = computed(() => {
-  const first = store.state.breadcrumbs[0]
-  return first.label === props.label || first.name === props.label
+const isActive = computed(() => {
+  if (!props.to) return false
+  
+  // Check if current route matches the target route
+  const currentPath = route.path
+  const targetPath = props.to
+  
+  // Exact match for simple routes
+  if (currentPath === targetPath) return true
+  
+  // For breadcrumb fallback
+  const first = store.state.breadcrumbs?.[0]
+  if (first && (first.label === props.label || first.name === props.label)) {
+    return true
+  }
+  
+  return false
 })
 </script>
