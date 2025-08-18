@@ -101,7 +101,7 @@ onKeyDown((e) => {
   )
     return
   if (e.key == "?") emitter.emit("toggleShortcuts")
-  if (e.metaKey) {
+  if (e.ctrlKey) {
     if (e.key == ",") {
       emitter.emit("showSettings")
       e.preventDefault()
