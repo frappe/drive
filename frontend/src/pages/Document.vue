@@ -60,7 +60,7 @@
       v-model:show-comments="showComments"
       :entity="entity"
       :users="allUsers.data || []"
-      :show-comments
+      :show-resolved
       @save-document="saveDocument"
     />
   </div>
@@ -144,7 +144,6 @@ const onSuccess = (data) => {
 
   title.value = data.title
   rawContent.value = data.raw_content
-  showComments.value = !!entity.value.comments.length
   lastFetched.value = Date.now()
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")

@@ -65,7 +65,7 @@ const dialogData = computed(() => {
       url: "drive.api.files.remove_or_restore",
       onSuccess: () => {
         getTrash.setData((d) =>
-          d.filter((k) => !e.map((l) => l.name).includes(k.name))
+          d.filter((k) => !props.entities.map((l) => l.name).includes(k.name))
         )
       },
       button: {
@@ -89,7 +89,7 @@ const dialogData = computed(() => {
         getTrash.setData(
           sortEntities([
             ...getTrash.data,
-            ...e.map((k) => {
+            ...props.entities.map((k) => {
               k.modified = Date()
               k.relativeModified = useTimeAgo(k.modified)
               return k

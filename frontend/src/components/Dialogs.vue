@@ -20,8 +20,8 @@
     :entity="entities[0]"
     @success="
       ({ name, title }) => {
-        if (entities[0] !== rootResource?.data && resource.value)
-          resource.value.data.find((k) => k.name === name).title = title
+        if (listResource)
+          listResource.data.find((k) => k.name === name).title = title
         resetDialog()
       }
     "

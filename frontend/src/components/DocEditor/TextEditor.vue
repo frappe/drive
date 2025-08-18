@@ -94,7 +94,7 @@ const edited = defineModel("edited")
 
 const props = defineProps({
   entity: Object,
-  showComments: Boolean,
+  showResolved: Boolean,
   users: Object,
 })
 const comments = ref([])
@@ -190,11 +190,9 @@ const editorExtensions = [
     },
   }),
   ExtendedCommentExtension.configure({
-    HTMLAttributes: {
-      class: "",
-    },
     onCommentActivated: (id) => {
-      if (id) {
+      let isResolved = comments.value.find((k) => id === k.name)?.resolved
+      if (id && (!isResolved || showResolved)) {
         activeComment.value = id
         showComments.value = true
         document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
