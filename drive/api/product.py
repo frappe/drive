@@ -363,18 +363,18 @@ def add_user_directly_to_team(team, email, access_level=1):
 
     # Gửi email thông báo
     try:
-        frappe.sendmail(
-            recipients=[email],
-            subject=f"Đã được thêm vào nhóm {team_doc.title}",
-            message=f"""
-                <p>Xin chào,</p>
-                <p>Bạn đã được thêm vào nhóm <strong>{team_doc.title}</strong> bởi {frappe.get_value('User', frappe.session.user, 'full_name') or frappe.session.user}.</p>
-                <p>Bạn có thể truy cập tệp của nhóm và cộng tác với các thành viên khác.</p>
-                <p><a href="{frappe.utils.get_url()}/drive/t/{team}/team">Truy cập nhóm</a></p>
-                <p>Trân trọng,<br>Drive Team</p>
-            """,
-            now=True,
-        )
+        # frappe.sendmail(
+        #     recipients=[email],
+        #     subject=f"Đã được thêm vào nhóm {team_doc.title}",
+        #     message=f"""
+        #         <p>Xin chào,</p>
+        #         <p>Bạn đã được thêm vào nhóm <strong>{team_doc.title}</strong> bởi {frappe.get_value('User', frappe.session.user, 'full_name') or frappe.session.user}.</p>
+        #         <p>Bạn có thể truy cập tệp của nhóm và cộng tác với các thành viên khác.</p>
+        #         <p><a href="{frappe.utils.get_url()}/drive/t/{team}/team">Truy cập nhóm</a></p>
+        #         <p>Trân trọng,<br>Drive Team</p>
+        #     """,
+        #     now=True,
+        # )
 
         bot_docs = frappe.conf.get("bot_docs")
         if not bot_docs:
