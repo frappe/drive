@@ -8,6 +8,7 @@ import frappe
 import jwt
 import magic
 import mimemapper
+import shutil
 from pypika import Order
 from werkzeug.utils import secure_filename, send_file
 from werkzeug.wrappers import Response
@@ -201,7 +202,7 @@ def create_document_entity(title, personal, team, content, parent=None):
         )
     drive_doc = frappe.new_doc("Drive Document")
     drive_doc.title = title
-    drive_doc.content = content
+    drive_doc.raw_content = content
     drive_doc.version = 2
     drive_doc.save()
 
@@ -542,24 +543,27 @@ def remove_or_restore(entity_names):
     def depth_zero_toggle_is_active(doc):
         if doc.is_active:
             flag = 0
-            manager.move_to_trash(doc)
+            if doc.path:
+                manager.move_to_trash(doc)
         else:
             storage_data = storage_bar_data(doc.team)
             if (storage_data["limit"] - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
-            manager.restore(doc)
+            if doc.path:
+                manager.restore(doc)
             flag = 1
 
         doc.is_active = flag
-        folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
-        frappe.db.set_value(
+        doc.save()
+
+        if doc.parent_entity:
+            folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
+            frappe.db.set_value(
             "Drive File",
             doc.parent_entity,
             "file_size",
             folder_size + doc.file_size * (1 if flag else -1),
-        )
-
-        doc.save()
+            )
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
@@ -682,6 +686,79 @@ def move(entity_names, new_parent=None, is_private=None):
 
     return res
 
+@frappe.whitelist()
+def create_copy(entity_name, parent=None):
+    """
+    Creates a copy of file/files.
+
+    :param entity_name: Name of the file to copy.
+    :param parent: Optional. Parent folder.
+    """
+    original_doc = frappe.get_doc("Drive File", entity_name)
+    home_folder = get_home_folder(original_doc.team)
+    if original_doc.is_group or original_doc.is_link:
+        frappe.throw("Copying folders or links is not supported.")
+
+    destination_parent = parent or original_doc.parent_entity
+    if not user_has_permission(entity_name, "read"):
+        frappe.throw(
+            "You do not have permission to view the original file.",
+            frappe.PermissionError
+        )
+    if not user_has_permission(destination_parent, "upload"):
+        frappe.throw(
+            "You do not have permission to create a file in the destination folder.",
+            frappe.PermissionError
+        )
+
+    storage_data = storage_bar_data(original_doc.team)
+    if (storage_data["limit"] - storage_data["total_size"]) < original_doc.file_size:
+        frappe.throw("Not enough storage space to create a copy.", ValueError)
+
+    new_title = get_new_title(original_doc.title, destination_parent)
+    new_entity = None
+
+    if original_doc.document:
+        original_content = frappe.get_value(
+            "Drive Document", original_doc.document, "raw_content"
+        )
+        
+        new_entity = create_document_entity(
+            new_title,
+            original_doc.is_private,
+            original_doc.team,
+            original_content,
+            destination_parent
+        )
+        frappe.db.set_value("Drive File", new_entity.name, "title", new_title)
+
+    else:
+        manager = FileManager()
+
+        original_relative_path = manager.get_disk_path(original_doc, home_folder, embed=0)
+
+        new_entity = create_drive_file(
+            original_doc.team,
+            original_doc.is_private,
+            new_title,
+            destination_parent,
+            original_doc.mime_type,
+            lambda entity: manager.get_disk_path(entity, home_folder, embed=0),
+            original_doc.file_size
+        )
+        
+        new_relative_path = new_entity.path
+        base_private_path = frappe.get_site_path("private", "files")
+        absolute_original_path = os.path.join(base_private_path, original_relative_path)
+        absolute_new_path = os.path.join(base_private_path, new_relative_path)
+        
+        if not os.path.exists(os.path.dirname(absolute_new_path)):
+            os.makedirs(os.path.dirname(absolute_new_path))
+        
+        shutil.copy2(absolute_original_path, absolute_new_path)
+
+    update_file_size(destination_parent, original_doc.file_size)
+    # return new_entity
 
 @frappe.whitelist()
 def search(query, team):
