@@ -92,36 +92,20 @@
             </div>
             <Button
               variant="ghost"
+              :icon="upload.error ? LucideInfo : LucideFolderOpenDot"
               v-if="upload.completed"
-            >
-              <LucideInfo
-                v-if="upload.error"
-                class="size-4 text-ink-gray-6"
-              />
-              <LucideFolderOpenDot
-                v-else
-                class="size-4 text-ink-gray-6 place-items-center"
-              />
-            </Button>
-            <Button
-              v-if="hoverIndex === index"
-              v-show="!upload.completed && hoverIndex === index"
+            />
+            <ProgressRing
+              v-if="!upload.completed && !upload.error"
+              :radius="13"
+              :progress="Math.min(upload.progress, 95)"
+            />
+            <!-- <Button
               variant="ghost"
+              :icon="LucideX"
               class="rounded-full hover:bg-surface-red-4"
               @click="emitter.emit('cancelUpload', upload.uuid)"
-            >
-              <LucideX class="h-6 w-6 p-1" />
-            </Button>
-            <div
-              v-if="hoverIndex !== index"
-              v-show="!upload.completed && !upload.error"
-              class="h-6 w-6"
-            >
-              <ProgressRing
-                :radius="14"
-                :progress="upload.progress"
-              />
-            </div>
+            /> -->
           </div>
         </div>
       </div>
@@ -144,99 +128,70 @@
         ],
       }"
     />
-    <Dialog
-      v-if="showCancelDialog"
-      v-model="showCancelDialog"
-      :options="{
-        title: 'Cancel uploads',
-        message: 'Are you sure you want to cancel all ongoing uploads?',
-        size: 'sm',
-        actions: [
-          {
-            label: 'Confirm',
-            variant: 'subtle',
-            theme: 'red',
-            onClick: () => {
-              emitter.emit('cancelAllUploads')
-              showCancelDialog = false
-              $store.dispatch('clearUploads')
-            },
-          },
-        ],
-      }"
-    />
   </div>
 </template>
-<script>
-import { mapGetters } from "vuex"
+<script setup>
 import { Dialog, TabButtons } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
+import LucideInfo from "~icons/lucide/info"
+import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
+import LucideX from "~icons/lucide/x"
+import { useStore } from "vuex"
+import { useRouter } from "vue-router"
+import { ref, computed } from "vue"
 
-export default {
-  name: "UploadTracker",
-  components: {
-    ProgressRing,
-    Dialog,
-    TabButtons,
-  },
-  data() {
-    return {
-      collapsed: false,
-      hoverIndex: null,
-      showCancelDialog: false,
-      showErrorDialog: false,
-      selectedUpload: null,
-      currentTab: 1,
-      emptyMessage: "No uploads in progress",
-    }
-  },
-  computed: {
-    uploads() {
-      return this.$store.state.uploads
-    },
-    ...mapGetters(["uploadsInProgress", "uploadsCompleted", "uploadsFailed"]),
-  },
-  methods: {
-    currentTabGetter() {
-      switch (this.currentTab) {
-        case 1:
-          this.emptyMessage = "No uploads in progress"
-          return this.uploadsInProgress
-        case 2:
-          this.emptyMessage = "No uploads completed"
-          return this.uploadsCompleted
-        case 3:
-          this.emptyMessage = "No failed uploads"
-          return this.uploadsFailed
-        default:
-          this.emptyMessage = "No uploads completed"
-          return this.uploadsCompleted
-      }
-    },
-    openFile(upload) {
-      this.selectedUpload = upload
-      if (upload.error) {
-        console.log(upload.response)
-        this.showErrorDialog = true
-      }
-      if (upload.completed && upload.response) {
-        this.$router.push({
-          name: "File",
-          params: { entityName: upload.response.name },
-        })
-        this.close()
-      }
-    },
-    toggleCollapsed() {
-      this.collapsed = !this.collapsed
-    },
-    close() {
-      if (this.uploads.length === this.uploadsCompleted.length) {
-        this.$store.dispatch("clearUploads")
-      } else {
-        this.showCancelDialog = true
-      }
-    },
-  },
+const collapsed = ref(false)
+const showErrorDialog = ref(false)
+const hoverIndex = ref(null)
+const selectedUpload = ref(null)
+const currentTab = ref(1)
+const emptyMessage = ref("No uploads in progress")
+
+const store = useStore()
+const router = useRouter()
+
+const currentTabGetter = () => {
+  switch (currentTab.value) {
+    case 1:
+      emptyMessage.value = "No uploads in progress"
+      return uploadsInProgress.value
+    case 2:
+      emptyMessage.value = "No uploads completed"
+      return uploadsCompleted.value
+    case 3:
+      emptyMessage.value = "No failed uploads"
+      return uploadsFailed.value
+    default:
+      emptyMessage.value = "No uploads completed"
+      return uploadsCompleted.value
+  }
+}
+
+const mapGetters = () => {
+  return Object.fromEntries(
+    Object.keys(store.getters).map((getter) => [
+      getter,
+      computed(() => store.getters[getter]),
+    ])
+  )
+}
+const { uploadsInProgress, uploadsCompleted, uploadsFailed } = mapGetters([
+  "uploadsInProgress",
+  "uploadsCompleted",
+  "uploadsFailed",
+])
+
+const openFile = (upload) => {
+  selectedUpload.value = upload
+  if (upload.error) {
+    showErrorDialog.value = true
+  }
+  if (upload.completed && upload.response) {
+    router.push({
+      name: "File",
+      params: { entityName: upload.response.name },
+    })
+    store.dispatch("clearUploads")
+  }
 }
 </script>

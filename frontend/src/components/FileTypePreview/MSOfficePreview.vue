@@ -19,7 +19,7 @@
       <LucideSettings class="size-8 mb-6 mx-auto" />
       Please ask your site's administrator to set the access key in the
       <a
-        href="/app/drive-site-settings"
+        href="/app/drive-disk-settings"
         class="underline"
         >Settings</a
       >.

@@ -125,9 +125,10 @@
                 class="w-full flex justify-between items-start label-group gap-1 text-sm"
               >
                 <div class="flex gap-1">
-                  <label class="font-medium text-ink-gray-8">{{
-                    $user(reply.owner)?.full_name
-                  }}</label>
+                  <label
+                    class="font-medium text-ink-gray-8 max-w-[70%] truncate"
+                    >{{ $user(reply.owner)?.full_name }}</label
+                  >
 
                   <label class="text-ink-gray-6 truncate">
                     &#183;
@@ -175,9 +176,8 @@
                     "
                     variant="ghost"
                     @click="triggerRoot"
-                  >
-                    <LucideMoreVertical class="size-3" />
-                  </Button>
+                    :icon="h(LucideMoreVertical, { class: 'size-3' })"
+                  />
                 </Dropdown>
                 <LucideBadgeCheck
                   v-if="comment.resolved"
@@ -288,6 +288,7 @@ import {
   inject,
   onMounted,
   ref,
+  h,
   onBeforeUnmount,
   nextTick,
   defineAsyncComponent,
@@ -300,6 +301,7 @@ import { useDebounceFn, useEventListener } from "@vueuse/core"
 import { toast } from "@/utils/toasts"
 import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
 import LucideX from "~icons/lucide/x"
+import LucideMoreVertical from "~icons/lucide/more-vertical"
 import { useStore } from "vuex"
 
 const CommentEditor = defineAsyncComponent(() =>
@@ -332,7 +334,15 @@ const findComment = (name) => {
 
 const showResolved = inject("showResolved")
 const filteredComments = computed(() => {
-  if (showResolved.value) {
+  const filtered = showResolved.value
+    ? comments.value
+    : comments.value.filter((k) => !k.resolved)
+  if (!filtered.length) showComments.value = false
+  return filtered
+})
+watch(showResolved, async (val) => {
+  await nextTick()
+  if (val) {
     document
       .querySelectorAll("[data-resolved=true]")
       .forEach((k) => k.classList.add("display"))
@@ -341,11 +351,6 @@ const filteredComments = computed(() => {
       .querySelectorAll("[data-resolved=true]")
       .forEach((k) => k.classList.remove("display"))
   }
-  const filtered = showResolved.value
-    ? comments.value
-    : comments.value.filter((k) => !k.resolved)
-  if (!filtered.length) showComments.value = false
-  return filtered
 })
 watch(activeComment, (val) => {
   document

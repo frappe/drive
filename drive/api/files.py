@@ -16,7 +16,6 @@ from werkzeug.wsgi import wrap_file
 
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
-from drive.locks.distributed_lock import DistributedLock
 from drive.utils import (
     create_drive_file,
     extract_mentions,
@@ -154,11 +153,11 @@ def get_thumbnail(entity_name):
         frappe.throw("Cannot read this file", frappe.PermissionError)
 
     thumbnail_data = None
-    # if frappe.cache().exists(entity_name):
-    #     try:
-    #         thumbnail_data = frappe.cache().get_value(entity_name)
-    #     except:
-    #         frappe.cache().delete_value(entity_name)
+    if frappe.cache().exists(entity_name):
+        try:
+            thumbnail_data = frappe.cache().get_value(entity_name)
+        except:
+            frappe.cache().delete_value(entity_name)
 
     if not thumbnail_data:
         manager = FileManager()
@@ -386,7 +385,7 @@ def save_doc(entity_name, doc_name, content):
 
 @frappe.whitelist()
 def create_auth_token(entity_name):
-    if not user_has_permission(entity_name):
+    if not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
     settings = frappe.get_single("Drive Disk Settings")
     key = settings.get_password("jwt_key", raise_exception=False)
