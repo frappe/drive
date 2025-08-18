@@ -2,19 +2,23 @@
   <div class="bg-white border-l border-gray-200 w-80 h-full flex flex-col">
     <!-- Header -->
     <div class="p-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
+      <div class="flex items-start justify-between">
         <div>
           <h3 class="text-sm font-medium text-gray-900">Thành viên</h3>
-          <p class="text-xs text-gray-500 mt-1">{{ teamMembers.length }} thành viên</p>
+          <p class="text-xs text-gray-500 mt-1">
+            {{ teamMembers.length }} thành viên
+          </p>
         </div>
         <Button
           variant="ghost"
           size="sm"
           @click="showAddMemberModal = true"
-          class="flex items-center space-x-1"
+          class="!bg-blue-500 text-white hover:!bg-blue-600"
         >
-          <LucideUserPlus class="h-4 w-4" />
-          <span class="text-xs">Thêm thành viên</span>
+          <div class="flex flex-row items-center space-x-2">
+            <LucideUserPlus class="h-4 w-4" />
+            <span class="text-xs">Thêm thành viên</span>
+          </div>
         </Button>
       </div>
     </div>
@@ -44,7 +48,10 @@
       </div>
 
       <!-- Manager Section -->
-      <div v-if="manager" class="mt-6">
+      <div
+        v-if="manager"
+        class="mt-6"
+      >
         <h4 class="text-xs font-medium text-gray-500 mb-2">Trưởng nhóm</h4>
         <div class="flex items-center space-x-2">
           <img
@@ -69,16 +76,19 @@
     </div>
 
     <!-- Add Member Modal -->
-    <AddTeamMemberModal v-model="showAddMemberModal" @success="getTeamMembers.reload()" />
+    <AddTeamMemberModal
+      v-model="showAddMemberModal"
+      @success="getTeamMembers.reload()"
+    />
   </div>
 </template>
 
 <script setup>
+import { Button, createResource } from "frappe-ui"
 import { computed, onMounted, ref } from "vue"
-import { createResource, Button } from "frappe-ui"
 import { useRoute } from "vue-router"
-import AddTeamMemberModal from "./AddTeamMemberModal.vue"
 import LucideUserPlus from "~icons/lucide/user-plus"
+import AddTeamMemberModal from "./AddTeamMemberModal.vue"
 
 const route = useRoute()
 
@@ -97,19 +107,19 @@ const getTeamMembers = createResource({
 const teamMembers = computed(() => getTeamMembers.data || [])
 
 // Separate regular members and manager
-const regularMembers = computed(() => 
-  teamMembers.value.filter(member => member.access_level !== 2)
+const regularMembers = computed(() =>
+  teamMembers.value.filter((member) => member.access_level !== 2)
 )
 
-const manager = computed(() => 
-  teamMembers.value.find(member => member.access_level === 2)
+const manager = computed(() =>
+  teamMembers.value.find((member) => member.access_level === 2)
 )
 
 const getInitials = (fullName) => {
   if (!fullName) return "U"
   return fullName
     .split(" ")
-    .map(name => name.charAt(0))
+    .map((name) => name.charAt(0))
     .join("")
     .toUpperCase()
     .slice(0, 2)
