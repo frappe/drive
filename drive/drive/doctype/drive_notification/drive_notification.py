@@ -36,11 +36,15 @@ class DriveNotification(Document):
 
         if self.type == "Mention":
             comment_doc = frappe.get_doc("Comment", self.comment_id)
+            full_name_to_user = (
+                frappe.db.get_value("User", {"name": self.to_user}, "full_name") or self.to_user
+            )
             message_data = {
                 "key": "mention_document",
                 "title": f"{full_name} đã nhắc đến bạn trong",
                 "full_name_owner": full_name,
                 "to_user": self.to_user,
+                "full_name_to_user": full_name_to_user,
                 "type": self.type,
                 "entity_type": self.entity_type,
                 "message": self.message,
