@@ -1,124 +1,130 @@
 <template>
   <div
-    :class="isExpanded ? 'w-[220px]' : 'w-[50px]'"
-    class="border-r bg-surface-menu-bar relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out p-2"
+    :class="isExpanded ? 'min-w-[260px]' : 'w-[60px]'"
+    class="border-r border-gray-200 bg-gray-50 relative hidden sm:flex h-screen flex-col justify-start duration-300 ease-in-out"
   >
-    <PrimaryDropDown :is-expanded="isExpanded" />
+    <!-- Header Section -->
+    <div class="p-4 border-b border-gray-200">
+      <PrimaryDropDown :is-expanded="isExpanded" />
+    </div>
+    
+    <!-- Main Navigation -->
     <div
-      class="mt-2.5"
-      :class="!isExpanded ? 'flex flex-col items-start' : ''"
+      class="flex-1 py-3 px-2 space-y-1"
+      :class="!isExpanded ? 'flex flex-col items-center' : ''"
       ondragstart="return false;"
       ondrop="return false;"
     >
+      <!-- Tài liệu của tôi -->
       <SidebarItem
-        :label="__('Tìm kiếm')"
-        class="mb-1"
-        :is-collapsed="!isExpanded"
-        @click="() => emitter.emit('showSearchPopup', true)"
-      >
-        <template #icon>
-          <LucideCommand class="size-4" />
-        </template>
-      </SidebarItem>
-      <SidebarItem
-        :icon="sidebarItems[0].icon"
-        :label="sidebarItems[0].label"
+        :icon="LucideFolder"
+        :label="__('Tài liệu của tôi')"
         :to="sidebarItems[0].route"
         :is-collapsed="!isExpanded"
-        class="mb-0.5"
+        class="mb-1"
       />
-      <!-- <SidebarItem
-        :label="'Inbox'"
-        :icon="LucideInbox"
-        class="mb-0.5"
-        :is-collapsed="!isExpanded"
-        :to="'/t/' + team + '/notifications'"
-      >
-        <template #right>
-          <div
-            v-if="isExpanded && notifCount.data > 0"
-            class="flex items-center justify-start w-full duration-300 ease-in-out ml-2"
-          >
-            <span class="text-xs text-ink-gray-4 ease-in ml-auto">
-              {{ notifCount.data }}
-            </span>
-          </div>
-        </template>
-      </SidebarItem> -->
+      <!-- Nhóm Section -->
       <template v-for="item in sidebarItems.slice(1)" :key="item.label">
-        <SidebarItem
-          v-if="item.label !== __('Nhóm')"
-          :icon="item.icon"
-          :label="item.label"
-          :to="item.route"
-          :is-collapsed="!isExpanded"
-          class="mb-0.5"
-        />
-        <div v-else-if="item.label === __('Nhóm')" class="mb-0.5 relative team-dropdown-container">
-          <button
-            @click="toggleTeamDropdown"
-            class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3 hover:bg-surface-gray-2"
-            :class="{ 'bg-surface-selected shadow-sm': showTeamDropdown }"
-          >
-            <div class="flex w-full items-center justify-between duration-300 ease-in-out p-2">
-              <div class="flex items-center">
-                <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-                  <component
-                    :is="item.icon"
-                    class="size-4 text-ink-gray-7"
-                  />
-                </span>
-                <span
-                  v-if="isExpanded"
-                  class="ml-2 flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
-                >
-                  {{ item.label }}
-                </span>
-              </div>
+        <div v-if="item.label === __('Nhóm')" class="mb-2">
+          <!-- Nhóm Header với nút Toggle và Add -->
+          <div class="flex h-9 w-full items-center rounded-lg text-gray-700 px-3 py-2 mb-1">
+            <button
+              v-if="isExpanded"
+              @click="toggleTeamsExpanded"
+              class="flex items-center flex-1 hover:bg-gray-50 rounded-md px-1 py-1 transition-colors duration-150"
+            >
               <LucideChevronDown 
-                v-if="isExpanded"
-                class="h-4 w-4 text-ink-gray-5 transition-transform duration-200"
-                :class="{ 'rotate-180': showTeamDropdown }"
+                class="h-4 w-4 mr-2 text-gray-400 transition-transform duration-200"
+                :class="{ 'rotate-180': !isTeamsExpanded }"
               />
+              <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
+                <component
+                  :is="item.icon"
+                  class="size-4 text-gray-500"
+                />
+              </span>
+              <span class="ml-3 text-sm font-medium text-gray-700 ">
+                {{ item.label }}
+              </span>
+            </button>
+            <!-- Icon only when collapsed -->
+            <div v-else class="flex items-center flex-1">
+              <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
+                <component
+                  :is="item.icon"
+                  class="size-4 text-gray-500"
+                />
+              </span>
             </div>
-          </button>
+            <!-- Nút thêm nhóm -->
+            <button
+              v-if="isExpanded"
+              @click="createNewTeam"
+              class="flex h-6 w-6 items-center justify-center rounded-md hover:bg-gray-100 transition-colors duration-150 ml-1"
+              :title="__('Tạo nhóm mới')"
+            >
+              <LucidePlus class="h-3.5 w-3.5 text-gray-500 hover:text-gray-700" />
+            </button>
+          </div>
           
-          <!-- Simple Dropdown List -->
+          <!-- Teams List - Collapsible with animation -->
           <div
-            v-if="showTeamDropdown && isExpanded"
-            class="mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-60 overflow-y-auto z-50"
+            v-if="isExpanded && isTeamsExpanded"
+            class="ml-2 space-y-0.5 transition-all duration-200 ease-in-out"
           >
             <!-- Teams List -->
             <div
               v-for="teamItem in teamList"
               :key="teamItem.name"
               @click="selectTeam(teamItem)"
-              class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-              :class="{ 'bg-blue-50 text-blue-600': team === teamItem.name }"
+              class="flex items-center px-3 py-2 rounded-lg hover:bg-blue-600 hover:shadow-md hover:text-white cursor-pointer transition-colors duration-150 group"
+              :class="{ 'bg-blue-600 text-white font-semibold shadow-md border border-blue-700': team === teamItem.name }"
             >
-              <span class="text-sm">{{ teamItem.title }}</span>
-            </div>
-            
-            <!-- Separator -->
-            <div v-if="teamList.length > 0" class="border-t border-gray-200 my-1"></div>
-            
-            <!-- Create Team Button -->
-            <div
-              @click="createNewTeam"
-              class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer text-gray-600 hover:text-gray-800"
-            >
-              <LucidePlus class="h-4 w-4 mr-2" />
-              <span class="text-sm">Tạo nhóm</span>
+              <LucideBuilding2 
+                class="h-4 w-4 mr-3 text-gray-700 group-hover:text-white transition-colors" 
+                :class="{ 'text-white font-bold': team === teamItem.name }"
+                :style="team === teamItem.name ? 'font-weight: 900;' : ''"
+              />
+              <span class="text-base text-gray-700 flex-1 group-hover:text-white" :class="{ 'font-semibold text-white': team === teamItem.name }">{{ teamItem.title }}</span>
+              <LucideCheck 
+                v-if="team === teamItem.name"
+                class="h-4 w-4 text-white"
+              />
             </div>
           </div>
         </div>
+        
+        <!-- Other Navigation Items -->
+        <SidebarItem
+          v-else-if="item.label !== __('Nhóm')"
+          :icon="item.icon"
+          :label="item.label"
+          :to="item.route"
+          :is-collapsed="!isExpanded"
+          class="mb-1"
+        />
       </template>
+      
+      <!-- Search at the bottom of main nav -->
+      <div class="pt-4 border-t border-gray-100 mt-4">
+        <SidebarItem
+          :label="__('Tìm kiếm')"
+          class="mb-1 hover:bg-gray-50 transition-colors"
+          :is-collapsed="!isExpanded"
+          @click="() => emitter.emit('showSearchPopup', true)"
+        >
+          <template #icon>
+            <LucideSearch class="size-4" />
+          </template>
+        </SidebarItem>
+      </div>
     </div>
-    <div class="mt-auto">
+    <!-- Storage Bar -->
+    <div class="mt-auto p-2 border-t border-gray-100">
       <StorageBar :is-expanded="isExpanded" />
     </div>
 
-    <!-- Create Team Modal -->
+    <!-- Enhanced Create Team Modal -->
     <Dialog
       v-model="showCreateTeamModal"
       :options="{
@@ -127,16 +133,28 @@
       }"
     >
       <template #body-content>
-        <div class="space-y-4">
+        <div class="space-y-6">
+          <div class="text-center">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+              <LucideBuilding2 class="h-6 w-6 text-blue-600" />
+            </div>
+            <div class="mt-3">
+              <h3 class="text-lg font-medium text-gray-900">Tạo nhóm mới</h3>
+              <p class="mt-2 text-sm text-gray-500">
+                Tạo một nhóm mới để cộng tác và chia sẻ tài liệu với thành viên khác.
+              </p>
+            </div>
+          </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tên nhóm
+              Tên nhóm <span class="text-red-500">*</span>
             </label>
             <FormControl
               v-model="newTeamName"
               type="text"
               placeholder="Nhập tên nhóm..."
               :disabled="createTeam.loading"
+              class="w-full"
             />
           </div>
         </div>
@@ -146,6 +164,7 @@
           variant="ghost"
           @click="showCreateTeamModal = false"
           :disabled="createTeam.loading"
+          class="mr-3"
         >
           Hủy
         </Button>
@@ -153,6 +172,7 @@
           variant="solid"
           @click="handleCreateTeam"
           :loading="createTeam.loading"
+          class="bg-blue-600 hover:bg-blue-700"
         >
           Tạo nhóm
         </Button>
@@ -162,41 +182,40 @@
   </div>
 </template>
 <script setup>
-import PrimaryDropDown from "./PrimaryDropdown.vue"
 import SidebarItem from "@/components/SidebarItem.vue"
+import PrimaryDropDown from "./PrimaryDropdown.vue"
 import StorageBar from "./StorageBar.vue"
 
-import { notifCount } from "@/resources/permissions"
 import { getTeams } from "@/resources/files"
-import { Dropdown, Button, Autocomplete, Dialog, FormControl, createResource } from "frappe-ui"
+import { notifCount } from "@/resources/permissions"
+import { Button, Dialog, FormControl, createResource } from "frappe-ui"
 
-import { computed, ref, onMounted, onUnmounted } from "vue"
-import { useStore } from "vuex"
-import { useRoute } from "vue-router"
 import { toast } from "@/utils/toasts"
-import LucideClock from "~icons/lucide/clock"
-import ArrowLeftFromLine from "~icons/lucide/arrow-left-from-line"
+import { computed, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 import LucideBuilding2 from "~icons/lucide/building-2"
-import LucideUsers from "~icons/lucide/users"
-import LucideTrash from "~icons/lucide/trash"
-import LucideHome from "~icons/lucide/home"
-import LucideStar from "~icons/lucide/star"
-import LucideCommand from "~icons/lucide/command"
-import LucideInbox from "~icons/lucide/inbox"
+import LucideCheck from "~icons/lucide/check"
 import LucideChevronDown from "~icons/lucide/chevron-down"
+import LucideClock from "~icons/lucide/clock"
+import LucideFolder from "~icons/lucide/folder"
 import LucidePlus from "~icons/lucide/plus"
+import LucideStar from "~icons/lucide/star"
+import LucideTrash from "~icons/lucide/trash"
+import LucideUsers from "~icons/lucide/users"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 notifCount.fetch()
-
-// Team dropdown state
-const showTeamDropdown = ref(false)
 
 // Create team modal state
 const showCreateTeamModal = ref(false)
 const newTeamName = ref("")
+
+// Teams collapse state - default is expanded (true)
+const isTeamsExpanded = ref(true)
 
 // Create team resource
 const createTeam = createResource({
@@ -213,8 +232,8 @@ const createTeam = createResource({
       // Close modal and reset form
       showCreateTeamModal.value = false
       newTeamName.value = ""
-      // Navigate to new team
-      window.location.href = `/drive/t/${data}/team`
+      // Navigate to new team's team page using Vue Router
+      router.push(`/t/${data}/team`)
     }
   },
   onError: (error) => {
@@ -237,7 +256,7 @@ const selectedTeam = computed({
   },
   set(val) {
     const target = teamList.value.find((t) => t.title === val?.label)
-    if (target) window.location.href = `/drive/t/${target.name}/team`
+    if (target) router.push(`/t/${target.name}/team`)
   },
 })
 const teamAutocompleteOptions = computed(() =>
@@ -248,7 +267,7 @@ const teamDropdownOptions = computed(() =>
   teamList.value.map((t) => ({ 
     label: t.title, 
     onClick: () => {
-      window.location.href = `/drive/t/${t.name}/team`
+      router.push(`/t/${t.name}/team`)
     }
   }))
 )
@@ -256,9 +275,9 @@ const teamDropdownOptions = computed(() =>
 const sidebarItems = computed(() => {
   const items = [
     {
-      label: __("Trang chủ"),
+      label: __("Tài liệu của tôi"),
       route: `/t/${team.value}/`,
-      icon: LucideHome,
+      icon: LucideFolder,
     },
     {
       label: __("Gần đây"),
@@ -276,7 +295,7 @@ const sidebarItems = computed(() => {
       icon: LucideBuilding2,
     },
     {
-      label: __("Chia sẻ"),
+      label: __("Được chia sẻ với tôi"),
       route: `/shared/`,
       icon: LucideUsers,
     },
@@ -294,18 +313,16 @@ const sidebarItems = computed(() => {
 const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)
 
-// Team dropdown methods
-const toggleTeamDropdown = () => {
-  showTeamDropdown.value = !showTeamDropdown.value
+// Team methods
+const toggleTeamsExpanded = () => {
+  isTeamsExpanded.value = !isTeamsExpanded.value
 }
 
 const selectTeam = (team) => {
-  showTeamDropdown.value = false
-  window.location.href = `/drive/t/${team.name}/team`
+  router.push(`/t/${team.name}/team`)
 }
 
 const createNewTeam = () => {
-  showTeamDropdown.value = false
   showCreateTeamModal.value = true
 }
 
@@ -317,20 +334,25 @@ const handleCreateTeam = () => {
   createTeam.submit()
 }
 
-// Click outside to close dropdown
-const handleClickOutside = (event) => {
-  const dropdown = event.target.closest('.team-dropdown-container')
-  if (!dropdown) {
-    showTeamDropdown.value = false
-  }
+</script>
+
+<style scoped>
+/* Smooth transitions for sidebar expansion */
+.duration-300 {
+  transition-duration: 300ms;
 }
 
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
+.duration-200 {
+  transition-duration: 200ms;
+}
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
+/* Teams collapse animation */
+.transition-all {
+  transition-property: all;
+}
 
-</script>
+/* Chevron rotation animation */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+</style>
