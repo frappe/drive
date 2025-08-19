@@ -39,7 +39,7 @@
         variant="solid"
         :disabled="
           Object.keys(settings).every(
-            (key) => settings[key] === writerSettings.doc[key]
+            (key) => settings[key] == writerSettings.doc[key]
           )
         "
         :loading="writerSettings.loading"
