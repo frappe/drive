@@ -44,7 +44,7 @@
               v-focus
               v-on-outside-click="closeInput"
               class="bg-surface-white py-1.5"
-              placeholder="Search"
+              :placeholder="__('Search')"
               type="text"
               @input="tagInputText = $event"
               @keydown.enter="
@@ -102,7 +102,7 @@
             <span
               v-else
               class="rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
-              >No tags found</span
+              >{{ __("No tags found") }}</span
             >
           </div>
           <div class="flex items-center justify-end border-t p-1">
@@ -117,7 +117,7 @@
                   })
               "
             >
-              Create tag "{{ tagInputText }}"
+              {{ __('Create tag "{0}"').format(tagInputText) }}
             </Button>
             <Button
               class="px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
@@ -135,10 +135,10 @@
 <script setup>
 import { getRandomColor } from "@/utils/random-color"
 import { createResource, Input, Popover } from "frappe-ui"
-import { ref, computed } from "vue"
-import Tag from "./Tag.vue"
-import { useStore } from "vuex"
+import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
+import { useStore } from "vuex"
+import Tag from "./Tag.vue"
 
 const store = useStore()
 const route = useRoute()

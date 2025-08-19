@@ -22,20 +22,20 @@
           :loading="$resources.method?.loading"
           @click="$resources.method.submit()"
         >
-          {{ errorMessage ? "Try again" : dialogData.buttonMessage }}
+          {{ errorMessage ? __("Try again") : dialogData.buttonMessage }}
         </Button>
       </div>
     </template>
   </Dialog>
 </template>
 <script>
+import emitter from "@/emitter"
+import { getTrash, mutate } from "@/resources/files.js"
+import { sortEntities } from "@/utils/files.js"
+import { toast } from "@/utils/toasts.js"
+import { useTimeAgo } from "@vueuse/core"
 import { Dialog, ErrorMessage } from "frappe-ui"
 import { del } from "idb-keyval"
-import { toast } from "@/utils/toasts.js"
-import emitter from "@/emitter"
-import { mutate, getTrash } from "@/resources/files.js"
-import { sortEntities } from "@/utils/files.js"
-import { useTimeAgo } from "@vueuse/core"
 
 export default {
   name: "GeneralDialog",
@@ -68,15 +68,14 @@ export default {
     dialogData() {
       const items =
         this.entities.length === 1
-          ? `this item`
-          : `${this.entities.length} items`
+          ? __("this item")
+          : __("{0} items").format(this.entities.length)
       switch (this.for) {
         case "restore":
           return {
-            title: "Restore Items",
-            message:
-              "Selected items will be restored to their original locations.",
-            buttonMessage: "Restore",
+            title: __("Restore Items"),
+            message: __("Selected items will be restored to their original locations."),
+            buttonMessage: __("Restore"),
             onSuccess: () => {
               getTrash.setData((d) =>
                 d.filter((k) => !e.map((l) => l.name).includes(k.name))
@@ -85,16 +84,15 @@ export default {
             variant: "solid",
             buttonIcon: "refresh-ccw",
             methodName: "drive.api.files.remove_or_restore",
-            toastMessage: `Restored ${items}`,
+            toastMessage: __("Restored {0}").format(items),
           }
         case "remove":
           return {
-            title: "Move to Trash",
-            message:
-              items[0].toUpperCase() +
-              items.slice(1) +
-              " will be moved to Trash. Items in trash are deleted forever after 30 days.",
-            buttonMessage: "Move to Trash",
+            title: __("Move to Trash"),
+            message: __("{0} will be moved to Trash. Items in trash are deleted forever after 30 days.").format(
+              items.charAt(0).toUpperCase() + items.slice(1)
+            ),
+            buttonMessage: __("Move to Trash"),
             mutate: (el) => (el.is_active = 0),
             onSuccess: (e) => {
               getTrash.setData(
@@ -112,7 +110,7 @@ export default {
             variant: "subtle",
             buttonIcon: "trash-2",
             methodName: "drive.api.files.remove_or_restore",
-            toastMessage: `Moved ${items} to Trash`,
+            toastMessage: __("Moved {0} to Trash").format(items),
           }
         default:
           return {}

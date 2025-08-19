@@ -9,10 +9,10 @@
         v-model="onlyUnread"
         :buttons="[
           {
-            label: 'Unread',
+            label: __('Unread'),
             value: true,
           },
-          { label: 'All', value: false },
+          { label: __('All'), value: false },
         ]"
       />
     </div>
@@ -27,7 +27,7 @@
         icon-left="check-circle"
         @click="markAsRead.submit({ all: true }), (store.state.notifCount = 0)"
       >
-        Mark all as Read
+        {{ __("Mark all as Read") }}
       </Button>
     </div>
   </div>
@@ -45,16 +45,16 @@
     style="transform: translate(0, -42px)"
   >
     <LucideInbox class="w-14 h-auto text-ink-gray-4 pb-4" />
-    <span class="text-base text-ink-gray-5 font-medium">No Notifications</span>
+    <span class="text-base text-ink-gray-5 font-medium">{{ __("No Notifications") }}</span>
   </div>
 </template>
 <script setup>
-import { ref, h, watch } from "vue"
-import { formatTimeAgo } from "@vueuse/core"
-import { createResource, Avatar, ListView, TabButtons } from "frappe-ui"
-import { useStore } from "vuex"
-import { formatDate } from "@/utils/format"
 import emitter from "@/emitter"
+import { formatDate } from "@/utils/format"
+import { formatTimeAgo } from "@vueuse/core"
+import { Avatar, createResource, ListView, TabButtons } from "frappe-ui"
+import { h, ref, watch } from "vue"
+import { useStore } from "vuex"
 import LucideInbox from "~icons/lucide/inbox"
 
 const store = useStore()
@@ -78,13 +78,13 @@ const options = {
 
 const columns = [
   {
-    label: "Subject",
+    label: __("Subject"),
     key: "subject",
     width: "80px",
     getLabel: ({ row }) => row.type,
   },
   {
-    label: "Message",
+    label: __("Message"),
     key: "message",
     width: 4,
     getLabel: ({ row }) => row.message,

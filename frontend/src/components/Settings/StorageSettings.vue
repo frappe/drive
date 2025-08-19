@@ -1,12 +1,12 @@
 <template>
   <h1 class="font-semibold mb-4 text-ink-gray-9">
-    {{ __("Storage") }}
+    {{ __("Lưu trữ") }}
   </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
     <span class="text-base font-medium text-ink-gray-8">
-      {{ showFileStorage ? "You have" : "Your team has" }} used
-      {{ formatGB(usedSpace) }} out of {{ showFileStorage ? "your" : "" }}
+      {{ showFileStorage ? "Bạn đã" : "Nhóm của bạn đã" }} sử dụng
+      {{ formatGB(usedSpace) }} trên tổng số {{ showFileStorage ? "của bạn" : "" }}
       {{ formatGB(spaceLimit) }} ({{
         formatPercent((usedSpace / spaceLimit) * 100)
       }})
@@ -19,11 +19,11 @@
         v-model="showFileStorage"
         :buttons="[
           {
-            label: __('You'),
+            label: __('Của bạn'),
             value: true,
           },
           {
-            label: __('Team'),
+            label: __('Nhóm'),
             value: false,
           },
         ]"
@@ -62,14 +62,14 @@
     class="w-full flex flex-col items-center justify-center my-10"
   >
     <LucideCloud class="h-7 stroke-1 text-ink-gray-5" />
-    <span class="text-ink-gray-8 text-sm mt-2">No Storage Used</span>
+    <span class="text-ink-gray-8 text-sm mt-2">Chưa sử dụng dung lượng</span>
   </div>
 
   <div
     class="mt-1 text-ink-gray-8 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
-    Large Files:
+    Tệp lớn:
   </div>
 
   <div
@@ -103,21 +103,20 @@
       v-if="!storageBreakdown.data?.entities?.length"
       class="py-4 text-center w-full text-sm text-italic"
     >
-      No files found.
+      {{ __("Không tìm thấy tệp nào.") }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { formatSize, formatPercent, COLOR_MAP } from "@/utils/format"
-import { Tooltip, TabButtons } from "frappe-ui"
+import { MIME_LIST_MAP, openEntity } from "@/utils/files"
+import { COLOR_MAP, formatPercent, formatSize } from "@/utils/format"
 import { getIconUrl } from "@/utils/getIconUrl"
-import { openEntity, MIME_LIST_MAP } from "@/utils/files"
-import { createResource } from "frappe-ui"
+import { createResource, TabButtons, Tooltip } from "frappe-ui"
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
-import LucideCloud from "~icons/lucide/cloud"
 import LucideArrowRight from "~icons/lucide/arrow-right"
+import LucideCloud from "~icons/lucide/cloud"
 
 const hoveredRow = ref(null)
 const showFileStorage = ref(true)

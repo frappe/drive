@@ -29,22 +29,22 @@
     <span
       v-else
       class="rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
-      >No users found</span
+      >Không tìm thấy kết quả</span
     >
     <div class="flex items-center justify-end border-t py-1 mt-1">
       <Button
         class="px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
         @click="resetAll"
       >
-        Clear all
+        Xóa tất cả
       </Button>
     </div>
   </div>
 </template>
 <script setup>
-import { createResource, Avatar, Input } from "frappe-ui"
-import { defineEmits, computed, ref, onBeforeUnmount, onMounted } from "vue"
+import { Avatar, createResource, Input } from "frappe-ui"
 import { set } from "idb-keyval"
+import { computed, defineEmits, onBeforeUnmount, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 
 const emit = defineEmits(["addNewUsers", "submit"])

@@ -87,19 +87,19 @@
           v-if="search.length > 3"
           class="pl-2 text-base text-ink-gray-5"
         >
-          No results for <strong>"{{ search }}"</strong></span
+          Không tìm thấy kết quả <strong>"{{ search }}"</strong></span
         >
         <span
           v-else
           class="pl-2 text-sm"
-          >Type more...</span
+          >Nhập thêm...</span
         >
       </div>
       <div
         v-if="searchResults.data?.length && !search.length"
         class="flex flex-col mb-2 mt-4 first:mt-3"
       >
-        <span class="mb-1 px-4.5 text-base text-ink-gray-5">Jump to</span>
+        <span class="mb-1 px-4.5 text-base text-ink-gray-5">{{ __("Jump to") }}</span>
         <div class="px-2.5">
           <div
             class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"

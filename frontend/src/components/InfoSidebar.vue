@@ -25,7 +25,7 @@
         </div>
         <div class="space-y-6.5">
           <div v-if="entity.owner === $store.state.user.id">
-            <div class="text-base font-medium mb-4">Access</div>
+            <div class="text-base font-medium mb-4">{{ __("Access") }}</div>
             <div class="flex items-center justify-between text-ink-gray-6">
               <div class="flex">
                 <GeneralAccess
@@ -114,7 +114,7 @@
               <span class="col-span-1 text-ink-gray-5">{{ __("Owner") }}</span>
               <span class="col-span-1 text-ink-gray-8">{{
                 entity.owner +
-                (entity.owner === $store.state.user.id ? " (you)" : "")
+                (entity.owner === $store.state.user.id ? __(" (you)") : "")
               }}</span>
             </div>
           </div>
@@ -212,7 +212,7 @@
                   ref="richCommentEditor"
                   v-model="newComment"
                   :entity-name="entity.name"
-                  placeholder="Add a comment (use @ to mention users)"
+                  :placeholder="__('Add a comment (use @ to mention users)')"
                   @mentioned-users="(val) => (mentionedUsers = val)"
                 />
               </div>
@@ -302,20 +302,19 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue"
-import { useStore } from "vuex"
-import { Avatar, call, createResource } from "frappe-ui"
-import { Dropdown, Button, Tooltip } from "frappe-ui"
-import LucideSmilePlus from "~icons/lucide/smile-plus"
-import { formatDate } from "@/utils/format"
-import GeneralAccess from "@/components/GeneralAccess.vue"
-import { getThumbnailUrl } from "@/utils/getIconUrl"
-import ActivityTree from "./ActivityTree.vue"
-import TagInput from "@/components/TagInput.vue"
 import RichCommentEditor from "@/components/DocEditor/components/RichCommentEditor.vue"
+import GeneralAccess from "@/components/GeneralAccess.vue"
 import PermissionConfirmDialog from "@/components/PermissionConfirmDialog.vue"
+import TagInput from "@/components/TagInput.vue"
 import { generalAccess, userList } from "@/resources/permissions"
+import { formatDate } from "@/utils/format"
+import { getThumbnailUrl } from "@/utils/getIconUrl"
+import { Avatar, Button, call, createResource, Tooltip } from "frappe-ui"
+import { computed, ref, watch } from "vue"
+import { useStore } from "vuex"
 import LucideMessageCircle from "~icons/lucide/message-circle"
+import LucideSmilePlus from "~icons/lucide/smile-plus"
+import ActivityTree from "./ActivityTree.vue"
 
 const store = useStore()
 const tab = ref(0)

@@ -2,21 +2,22 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'Create new folder',
+      title: __('Create new folder'),
       size: 'xs',
       actions: [
         {
-          label: 'Create',
+          label: __('Create'),
           variant: 'solid',
           disabled: folderName.length === 0,
           loading: submit.loading,
           onClick: submit,
+          class: 'w-full !bg-[#0149C1] text-white hover:!opacity-90',
         },
       ],
     }"
   >
     <template #body-content>
-      <p class="text-ink-gray-5 text-sm mb-2">Folder name:</p>
+      <p class="text-ink-gray-5 text-sm mb-2">{{ __("Folder name:") }}</p>
       <TextInput
         ref="my-input"
         v-model="folderName"
@@ -31,16 +32,16 @@
         v-if="createFolder.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This folder already exists.
+        {{ __("This folder already exists.") }}
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, computed, useTemplateRef, watch } from "vue"
 import store from "@/store"
 import { Dialog, TextInput, createResource } from "frappe-ui"
+import { computed, ref, useTemplateRef, watch } from "vue"
 import { useRoute } from "vue-router"
 import { allFolders } from "../resources/files"
 
@@ -68,7 +69,7 @@ const createFolder = createResource({
   },
   validate(params) {
     if (!params?.title) {
-      return "Folder name is required"
+      return __("Folder name is required")
     }
   },
   onSuccess(data) {

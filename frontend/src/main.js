@@ -1,19 +1,19 @@
-import { createApp } from "vue"
+import emitter from "@/emitter"
 import {
-  FrappeUI,
   Button,
+  frappeRequest,
+  FrappeUI,
   onOutsideClickDirective,
   setConfig,
-  frappeRequest,
 } from "frappe-ui"
+import { createApp } from "vue"
+import VueTippy from "vue-tippy"
+import App from "./App.vue"
+import "./index.css"
+import router from "./router"
+import { initSocket, RealTimeHandler } from "./socket"
 import store from "./store"
 import translationPlugin from "./translation"
-import router from "./router"
-import App from "./App.vue"
-import emitter from "@/emitter"
-import "./index.css"
-import VueTippy from "vue-tippy"
-import { initSocket, RealTimeHandler } from "./socket"
 
 const app = createApp(App)
 setConfig("resourceFetcher", frappeRequest)

@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Are you sure?', size: 'sm' }"
+    :options="{ title: __('Are you sure?'), size: 'sm' }"
   >
     <template #body-content>
       <p class="text-ink-gray-5">
@@ -23,10 +23,10 @@
   </Dialog>
 </template>
 <script setup>
+import { clearRecent, clearTrash, toggleFav } from "@/resources/files"
 import { Dialog } from "frappe-ui"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { toggleFav, clearRecent, clearTrash } from "@/resources/files"
 
 const props = defineProps({
   modelValue: String,
@@ -48,27 +48,29 @@ document.onkeydown = (e) => {
 }
 
 const route = useRoute()
-const dialogConfigs = [
+const dialogConfigs = computed(() => [
   {
     route: "Recents",
-    message: "All your recently viewed files will be cleared.",
-    buttonText: "Clear",
+    message: __("All your recently viewed files will be cleared."),
+    buttonText: __("Clear"),
     resource: clearRecent,
   },
   {
     route: "Favourites",
-    message: "All your favourite items will be cleared.",
-    buttonText: "Clear",
+    message: __("All your favourite items will be cleared."),
+    buttonText: __("Clear"),
     resource: toggleFav,
   },
   {
     route: "Trash",
-    message:
-      "All items in your Trash will be deleted forever. This is an irreversible process.",
+    message: __("All items in your Trash will be deleted forever. This is an irreversible process."),
     buttonVariant: "solid",
-    buttonText: "Delete",
+    buttonText: __("Delete"),
     resource: clearTrash,
   },
-]
-const current = dialogConfigs.find(({ route: _route }) => _route === route.name)
+])
+
+const current = computed(() => 
+  dialogConfigs.value.find(({ route: _route }) => _route === route.name)
+)
 </script>

@@ -2,7 +2,7 @@
   <GenericPage
     :get-entities="getPersonal"
     :icon="LucideHome"
-    primary-message="No personal files"
+    primary-message="Thư mục cá nhân trống"
     :verify="{
       data: {
         write: 1,

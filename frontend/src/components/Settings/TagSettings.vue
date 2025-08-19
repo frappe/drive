@@ -1,15 +1,15 @@
 <template>
   <div class="flex items-center mb-6">
     <h1 class="font-semibold text-ink-gray-9">
-      {{ __("Tags") }}
+      {{ __("Thẻ") }}
     </h1>
     <Button
-      class="ml-auto mr-4"
+      class="ml-auto mr-4 !bg-[#0149C1] text-white hover:!opacity-90"
       variant="solid"
       icon-left="plus"
       @click="showNewTagDialog = true"
     >
-      {{ __("New") }}
+      {{ __("Tạo mới") }}
     </Button>
   </div>
   <div class="flex flex-col items-stretch justify-start overflow-y-auto">
@@ -44,14 +44,14 @@
           placement="right"
           :options="[
             {
-              label: 'Edit',
+              label: 'Chỉnh sửa',
               icon: 'edit-2',
               onClick: () => {
                 showEditDialog = true
               },
             },
             {
-              label: 'Delete',
+              label: 'Xóa',
               theme: 'red',
               icon: 'trash-2',
               onClick: () => {
@@ -77,7 +77,7 @@
       class="h-full w-full flex flex-col items-center justify-center my-auto"
     >
       <LucideTag class="h-7 stroke-1 text-ink-gray-5" />
-      <span class="text-ink-gray-8 text-sm mt-2">No Tags</span>
+      <span class="text-ink-gray-8 text-sm mt-2">Không có thẻ nào</span>
     </div>
   </div>
   <NewTagDialog
@@ -95,12 +95,12 @@
     v-if="showDeleteDialog"
     v-model="showDeleteDialog"
     :options="{
-      title: 'Delete Tag',
-      message: `Are you sure you want to delete the tag ${selectedTag.title}? This action cannot be undone`,
+      title: 'Xóa thẻ',
+      message: `Bạn có chắc chắn muốn xóa thẻ ${selectedTag.title}? Hành động này không thể hoàn tác`,
       size: 'sm',
       actions: [
         {
-          label: 'Confirm',
+          label: 'Xác nhận',
           variant: 'subtle',
           theme: 'red',
           onClick: () => {
@@ -112,9 +112,9 @@
   />
 </template>
 <script>
-import { Dropdown, Button, Dialog } from "frappe-ui"
-import NewTagDialog from "./NewTagDialog.vue"
+import { Button, Dialog, Dropdown } from "frappe-ui"
 import EditTagDialog from "./EditTagDialog.vue"
+import NewTagDialog from "./NewTagDialog.vue"
 
 export default {
   name: "TagSettings",
@@ -135,7 +135,7 @@ export default {
   },
   computed: {
     deleteMessage() {
-      return `Are you sure you want to delete the tag "blog"? This action cannot be undone. All files with this tag will also lose it.`
+      return `Bạn có chắc chắn muốn xóa thẻ "blog"? Hành động này không thể hoàn tác. Tất cả các tệp có thẻ này cũng sẽ bị mất thẻ.`
     },
   },
   resources: {

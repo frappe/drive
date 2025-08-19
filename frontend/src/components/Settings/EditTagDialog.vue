@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Edit Tag', size: 'sm' }"
+    :options="{ title: __('Edit Tag'), size: 'sm' }"
   >
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
@@ -16,7 +16,7 @@
           type="text"
           clas="w-full"
           :placeholder="props.tag.title"
-          label="Title"
+          :label="__('Title')"
           @keyup.enter="submitTag"
         />
       </div>
@@ -31,16 +31,16 @@
         class="w-full"
         @click="submitTag"
       >
-        Confirm
+        {{ __('Confirm') }}
       </Button>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { Button, Input, Dialog, createResource, ErrorMessage } from "frappe-ui"
 import TagColorInput from "@/components/TagColorInput.vue"
-import { ref, computed } from "vue"
 import { useFocus } from "@vueuse/core"
+import { Button, createResource, Dialog, ErrorMessage, Input } from "frappe-ui"
+import { computed, ref } from "vue"
 
 const inputElem = ref()
 const { focused } = useFocus(inputElem, { initialValue: true })

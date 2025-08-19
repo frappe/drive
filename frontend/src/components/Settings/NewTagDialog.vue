@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'New Tag', size: 'sm' }"
+    :options="{ title: __('New Tag'), size: 'sm' }"
   >
     <template #body-content>
       <div class="flex flex-col items-stretch justify- gap-y-4">
@@ -16,7 +16,7 @@
           type="text"
           clas="w-full"
           :placeholder="placeholder"
-          label="Title"
+          :label="__('Title')"
           @keyup.enter="submitTag"
         />
       </div>
@@ -24,20 +24,20 @@
     <template #actions>
       <Button
         variant="solid"
-        class="w-full"
+        class="w-full !bg-[#0149C1] text-white hover:!opacity-90"
         @click="submitTag"
       >
-        Confirm
+        {{ __('Confirm') }}
       </Button>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { Button, Input, Dialog, createResource } from "frappe-ui"
 import TagColorInput from "@/components/TagColorInput.vue"
 import { getRandomColor } from "@/utils/random-color"
-import { ref, computed } from "vue"
 import { useFocus } from "@vueuse/core"
+import { Button, Dialog, Input, createResource } from "frappe-ui"
+import { computed, ref } from "vue"
 
 const inputElem = ref()
 const { focused } = useFocus(inputElem, { initialValue: true })
@@ -73,14 +73,14 @@ function submitTag() {
 
 function getRandomPlaceholder() {
   const fileTags = [
-    "Marketing",
-    "Draft",
-    "Confidential",
-    "Public",
-    "Webinar",
-    "Approved",
-    "Draft",
-    "Invoice",
+    __("Marketing"),
+    __("Draft"),
+    __("Confidential"),
+    __("Public"),
+    __("Webinar"),
+    __("Approved"),
+    __("Draft"),
+    __("Invoice"),
   ]
   return fileTags[Math.floor(Math.random() * fileTags.length)]
 }

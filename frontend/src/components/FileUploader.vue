@@ -5,10 +5,10 @@
   />
 </template>
 <script setup>
-import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue"
-import { useStore } from "vuex"
-import { useRoute } from "vue-router"
 import Dropzone from "dropzone"
+import { inject, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { useRoute } from "vue-router"
+import { useStore } from "vuex"
 
 const store = useStore()
 const route = useRoute()
@@ -113,7 +113,7 @@ onMounted(() => {
     retryChunks: true,
     forceChunking: true,
     url: "/api/method/drive.api.files.upload_file",
-    dictUploadCanceled: "Upload canceled by user",
+    dictUploadCanceled: __("Upload canceled by user"),
     maxFilesize: 10 * 1024, // 10GB
     timeout: 120000, // 2 minutes
     chunkSize: 20 * 1024 * 1024, // 20MB

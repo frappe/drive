@@ -10,9 +10,9 @@
       :initial-value="{ x: width - (i + 1) * 330, y: height - 500 }"
     >
       <div
-        class="w-[300px] bg-surface-white/90 border border-outline-gray-2 rounded-xl shadow-xl p-4 backdrop-blur-md z-30"
+        class="w-[300px] bg-surface-white border border-outline-gray-2 rounded-xl shadow-xl p-4 backdrop-blur-md z-30"
       >
-        <div class="cursor-move flex justify-between items-center mb-4">
+        <div class="cursor-move flex justify-between items-start gap-1 mb-4">
           <div class="flex gap-2">
             <h2 class="text-lg font-semibold text-ink-gray-8">
               {{ entity.title }}
@@ -21,6 +21,7 @@
           <Button
             variant="ghost"
             @click="entity.visible = false"
+            class="min-w-[28px]"
           >
             <template #icon>
               <LucideX class="size-4" />
@@ -61,7 +62,7 @@
           </li> -->
         </ul>
         <div class="flex justify-between">
-          <span class="text-base font-semibold mt-2">Access </span>
+          <span class="text-base font-semibold mt-2">{{ __("Access") }} </span>
           <Button
             v-if="entity.share"
             :variant="'subtle'"
@@ -77,7 +78,7 @@
           v-if="!access[i]"
           class="text-sm text-center italic"
         >
-          Loading...
+          {{ __("Loading...") }}
         </div>
         <ul
           v-else
@@ -98,8 +99,8 @@
               <span
                 >{{
                   generalAccess?.data?.read === "public"
-                    ? "Public"
-                    : "Restricted"
+                    ? __("Public")
+                    : __("Restricted")
                 }}
               </span>
             </div>

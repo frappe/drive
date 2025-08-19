@@ -47,7 +47,7 @@
 </template>
 <script setup>
 import AppsIcon from "@/components/AppsIcon.vue"
-import { Popover, createResource, Button } from "frappe-ui"
+import { Button, Popover, createResource } from "frappe-ui"
 
 const props = defineProps({
   active: Boolean,
@@ -62,7 +62,7 @@ const apps = createResource({
       {
         name: "frappe",
         logo: "/assets/frappe/images/framework.png",
-        title: "Desk",
+        title: __("Desk"),
         route: "/app",
       },
     ]

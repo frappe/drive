@@ -31,7 +31,7 @@
                 v-if="!getTeams.data || !Object.values(getTeams.data).length"
                 class="text-center text-sm flex flex-col gap-4"
               >
-                You haven't joined any teams yet.
+                {{ __("You haven't joined any teams yet.") }}
               </p>
               <ul
                 v-else
@@ -150,11 +150,11 @@
 </template>
 <script setup>
 import { getTeams } from "@/resources/files"
-import { Badge, Tooltip } from "frappe-ui"
-import { getInvites, rejectInvite, acceptInvite } from "@/resources/permissions"
-import { useStore } from "vuex"
+import { acceptInvite, getInvites, rejectInvite } from "@/resources/permissions"
 import { formatDate } from "@/utils/format"
+import { Badge, Tooltip } from "frappe-ui"
 import { computed } from "vue"
+import { useStore } from "vuex"
 import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
 import LucidePlaneTakeoff from "~icons/lucide/plane-takeoff"
 

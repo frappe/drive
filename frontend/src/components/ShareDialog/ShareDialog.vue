@@ -1,13 +1,13 @@
 <template>
   <Dialog
     v-model="openDialog"
-    :options="{ size: 'lg' }"
+    :options="{ size: 'lg', dialogClass: 'fixed-height-dialog' }"
   >
     <template #body-main>
-      <div class="p-4 sm:px-6">
+      <div class="p-4 sm:px-6 h-full overflow-y-auto">
         <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
-            Sharing "
+            {{ __('Sharing') }} "
             <div class="truncate max-w-[80%]">
               {{ entity?.title }}
             </div>
@@ -25,7 +25,7 @@
         </div>
         <div class="mb-4 border-b pb-4">
           <div class="mb-2 text-ink-gray-5 font-medium text-base">
-            General Access
+            {{ __('General Access') }}
           </div>
           <div class="flex justify-between mt-3">
             <div class="flex flex-col gap-2">
@@ -68,11 +68,10 @@
           </div>
         </div>
         <!-- Members section -->
-        <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
+        <div class="text-ink-gray-5 font-medium text-base mb-2">{{ __('Members') }}</div>
         <div class="flex gap-3">
           <div class="flex-grow">
             <div ref="dropdownContainer" class="relative">
-
 
               <div
                 class="flex flex-col items-start justify-start rounded-md bg-surface-gray-2"
@@ -105,7 +104,7 @@
                       ref="queryInput"
                       v-focus
                       v-model="query"
-                      placeholder="Add people..."
+                      :placeholder="__('Add people...')"
                       class="text-base px-1.5 p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0 cursor-text outline-none"
                       autocomplete="off"
                       @focus="handleInputFocus"
@@ -126,14 +125,16 @@
               >
                 <div
                   v-if="isDropdownOpen"
-                  class="absolute z-[4] rounded-lg bg-surface-modal text-base shadow-2xl min-w-[300px]"
+                  class="absolute z-[9999] rounded-lg bg-surface-modal text-base shadow-2xl max-w-[330px]"
                 >
-                  <div class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5">
+                <div class="overflow-hidden h-[10rem] rounded-lg">
+
+                  <div class="max-h-[10rem] overflow-y-auto px-1.5 py-1.5">
                     <div v-if="allSiteUsers.loading" class="px-2.5 py-1.5 text-ink-gray-5 text-sm cursor-not-allowed">
-                      Loading users...
+                      {{ __('Loading users...') }}
                     </div>
                     <div v-else-if="!filteredUsers.length" class="px-2.5 py-1.5 text-ink-gray-5 text-sm cursor-not-allowed">
-                      {{ query.length ? 'No users found' : 'No users available' }}
+                      {{ query.length ? __('No users found') : __('No users available') }}
                     </div>
                     <div
                       v-for="person in filteredUsers"
@@ -145,7 +146,6 @@
                       }"
                       @click="selectUser(person)"
                     >
-                      <div class="size-4" />
                       <Avatar
                         size="sm"
                         :label="person.full_name || person.email"
@@ -161,13 +161,14 @@
                     </div>
                   </div>
                 </div>
+                </div>
               </transition>
             </div>
           </div>
           <Autocomplete
             v-model="shareAccess"
             class=""
-            placeholder="Access"
+            :placeholder="__('Access')"
             :hide-search="true"
             :options="
               advancedTweak
@@ -188,7 +189,7 @@
             v-if="!getUsersWithAccess.data?.length"
             class="text-sm w-full my-4"
           >
-            No shares yet.
+            {{ __('No shares yet.') }}
           </div>
           <div
             v-else
@@ -221,9 +222,9 @@
                   v-if="user.user === entity.owner"
                   class="flex gap-1"
                 >
-                  Owner (you)<LucideDiamond class="size-3 my-auto" />
+                  {{ __('Owner (you)') }}<LucideDiamond class="size-3 my-auto" />
                 </div>
-                <template v-else>You</template>
+                <template v-else>{{ __('You') }}</template>
               </span>
               <AccessButton
                 v-else-if="user.user !== entity.owner"
@@ -251,7 +252,7 @@
                 v-else
                 class="ml-auto flex items-center gap-1 text-ink-gray-5"
               >
-                Owner
+                {{ __('Owner') }}
                 <LucideDiamond class="size-3" />
               </span>
             </div>
@@ -272,11 +273,11 @@
             <template #prefix>
               <LucideLink2 class="w-4 text-ink-gray-6" />
             </template>
-            Copy Link
+            {{ __('Copy Link') }}
           </Button>
           <Button
             v-if="sharedUsers.length"
-            label="Invite"
+            :label="__('Invite')"
             variant="solid"
             @click="addShares"
           />
@@ -286,29 +287,28 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed, watch, useTemplateRef, markRaw, onMounted, nextTick, onUnmounted } from "vue"
 import {
+  Autocomplete,
   Avatar,
   Dialog,
-  Autocomplete,
   LoadingIndicator,
   createResource,
 } from "frappe-ui"
+import { computed, markRaw, onMounted, onUnmounted, ref, useTemplateRef, watch } from "vue"
 
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink } from "@/utils/getLink"
 
 import {
+  allSiteUsers,
   getUsersWithAccess,
   updateAccess,
-  allSiteUsers,
 } from "@/resources/permissions"
 
 import LucideBuilding2 from "~icons/lucide/building-2"
-import LucideCheck from "~icons/lucide/check"
 import LucideDiamond from "~icons/lucide/diamond"
-import LucideLock from "~icons/lucide/lock"
 import LucideGlobe2 from "~icons/lucide/globe-2"
+import LucideLock from "~icons/lucide/lock"
 
 import store from "@/store"
 
@@ -424,10 +424,10 @@ const filteredUsers = computed(() => {
 const accessOptions = computed(() => {
   return props.entity.write
     ? [
-        { value: "reader", label: "Can view" },
-        { value: "editor", label: "Can edit" },
+        { value: "reader", label: __("Can view") },
+        { value: "editor", label: __("Can edit") },
       ]
-    : [{ value: "reader", label: "Can view" }]
+    : [{ value: "reader", label: __("Can view") }]
 })
 function addShares() {
   // Used to enable future advanced config
@@ -453,19 +453,27 @@ const invalidAfter = ref()
 // General access
 const generalOptions = [
   {
-    label: "Accessible to invited members",
+    label: __("Accessible to invited members"),
     value: "restricted",
     icon: markRaw(LucideLock),
   },
   {
-    label: "Accessible to team only",
+    label: __("Accessible to team only"),
     value: "team",
     icon: markRaw(LucideBuilding2),
   },
-  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
+  { label: __("Accessible to all"), value: "public", icon: markRaw(LucideGlobe2) },
 ]
 const generalAccessLevel = ref(generalOptions[0])
-const generalAccessType = ref({ value: "reader" })
+const generalAccessType = ref() // Sẽ được set từ accessOptions
+
+// Khởi tạo generalAccessType với giá trị mặc định
+watch(accessOptions, (newOptions) => {
+  if (!generalAccessType.value && newOptions.length > 0) {
+    generalAccessType.value = newOptions[0] // "Can view"
+  }
+}, { immediate: true })
+
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({ ...params, entity: props.entity.name }),
@@ -480,7 +488,9 @@ const getGeneralAccess = createResource({
       (k) => k.value === translate[getGeneralAccess.params.user]
     )
 
-    generalAccessType.value = { value: data.write ? "editor" : "reader" }
+    // Tìm đúng option từ accessOptions thay vì tạo object mới
+    const targetValue = data.write ? "editor" : "reader"
+    generalAccessType.value = accessOptions.value.find(opt => opt.value === targetValue) || accessOptions.value[0]
   },
 })
 getGeneralAccess.fetch({ user: "" })
@@ -520,3 +530,24 @@ const filteredAccess = computed(() =>
   ACCESS_LEVELS.filter((l) => props.entity[l])
 )
 </script>
+
+<style scoped>
+:deep(.fixed-height-dialog) {
+  height: 600px !important;
+  max-height: 600px !important;
+  overflow: hidden;
+}
+
+:deep(.fixed-height-dialog .dialog-content) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.fixed-height-dialog .dialog-body) {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+</style>
