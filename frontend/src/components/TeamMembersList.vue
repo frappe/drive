@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white border-l border-gray-200 w-80 h-full flex flex-col">
+  <div class="bg-white border-l border-gray-200 w-80 h-full flex flex-col min-w-[320px]">
     <!-- Header -->
     <div class="p-4 border-b border-gray-200">
-      <div class="flex items-start justify-between">
+      <div class="flex items-start justify-between flex-wrap gap-4">
         <div>
           <h3 class="text-sm font-medium text-gray-900">Thành viên</h3>
           <p class="text-xs text-gray-500 mt-1">
@@ -13,7 +13,7 @@
           variant="ghost"
           size="sm"
           @click="showAddMemberModal = true"
-          class="!bg-blue-500 text-white hover:!bg-blue-600"
+          class="!bg-[#0149C1] text-white hover:!opacity-90"
         >
           <div class="flex flex-row items-center space-x-2">
             <LucideUserPlus class="h-4 w-4" />

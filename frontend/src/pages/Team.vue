@@ -2,8 +2,8 @@
   <GenericPage
     :get-entities="getHome"
     :icon="LucideBuilding2"
-    primary-message="Team is empty"
-    secondary-message="Add files by dropping them here."
+    primary-message="__('Team is empty')"
+    secondary-message="__('Add files by dropping them here.')"
     :verify="{
       data: {
         write,
@@ -16,10 +16,10 @@
 import GenericPage from "@/components/GenericPage.vue"
 import { getHome, getTeams } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
-import { useStore } from "vuex"
-import { useRoute } from "vue-router"
-import LucideBuilding2 from "~icons/lucide/building-2"
 import { computed, watch } from "vue"
+import { useRoute } from "vue-router"
+import { useStore } from "vuex"
+import LucideBuilding2 from "~icons/lucide/building-2"
 
 const store = useStore()
 const route = useRoute()

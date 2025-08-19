@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center mb-4">
     <h1 class="font-semibold text-ink-gray-9">
-      {{ __("Users") }}
+      {{ __("Người dùng") }}
     </h1>
     <Button
       v-if="isAdmin?.data"
@@ -10,7 +10,7 @@
       class="ml-auto mr-4"
       @click="showInvite = true"
     >
-      {{ __("Invite") }}
+      {{ __("Mời") }}
     </Button>
   </div>
 
@@ -52,10 +52,10 @@
                   {{
                     __(
                       user.access_level == 2
-                        ? "Manager"
+                        ? "Quản lý"
                         : user.access_level == 1
-                        ? "User"
-                        : "Guest"
+                        ? "Người dùng"
+                        : "Khách"
                     )
                   }}
                   <template #suffix>
@@ -72,14 +72,14 @@
                 >{{
                   __(
                     user.access_level == 2
-                      ? "Manager"
+                      ? "Quản lý"
                       : user.access_level == 1
-                      ? "User"
-                      : "Guest"
+                      ? "Người dùng"
+                      : "Khách"
                   )
                 }}
                 <template v-if="user.name === $store.state.user.id"
-                  >(you)</template
+                  >(bạn)</template
                 >
               </span>
             </div>
@@ -91,7 +91,7 @@
           v-if="!invites?.data || !invites.data.length"
           class="text-center text-p-sm py-4"
         >
-          No invites found.
+          Không tìm thấy lời mời nào.
         </div>
         <div
           v-for="(invite, index) in invites?.data"
@@ -110,8 +110,8 @@
                 <Tooltip
                   :text="
                     invite.status === 'Proposed'
-                      ? 'A person from your domain has joined Drive.'
-                      : 'This invite was sent from your team.'
+                      ? 'Một người từ domain của bạn đã tham gia Drive.'
+                      : 'Lời mời này đã được gửi từ nhóm của bạn.'
                   "
                 >
                   <Badge
@@ -166,11 +166,11 @@
   <Dialog
     v-model="showInvite"
     :options="{
-      title: 'Invite people to ' + getTeams.data[team].title,
+      title: 'Mời mọi người đến ' + getTeams.data[team].title,
       size: 'lg',
       actions: [
         {
-          label: 'Send Invitation',
+          label: 'Gửi lời mời',
           variant: 'solid',
           disabled: !emailTest().length && !invited.length,
           loading: inviteUsers.loading,
@@ -209,7 +209,7 @@
               v-model="inviteQuery"
               type="text"
               autocomplete="off"
-              placeholder="Add people..."
+              placeholder="Thêm người..."
               class="h-7 w-full rounded border-none bg-surface-gray-2 py-1.5 pl-2 pr-2 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               @focus="handleInviteInputFocus"
               @input="handleInviteInputChange"
@@ -224,10 +224,10 @@
           >
             <div class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5">
               <div v-if="allSiteUsers.loading" class="px-2.5 py-1.5 text-ink-gray-5 text-sm cursor-not-allowed">
-                Loading users...
+                Đang tải người dùng...
               </div>
               <div v-else-if="!filteredInviteUsers.length" class="px-2.5 py-1.5 text-ink-gray-5 text-sm cursor-not-allowed">
-                {{ inviteQuery.length ? 'No users found' : 'No users available' }}
+                {{ inviteQuery.length ? 'Không tìm thấy người dùng' : 'Không có người dùng khả dụng' }}
               </div>
               <div
                 v-for="person in filteredInviteUsers"
@@ -235,7 +235,6 @@
                 class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7 hover:bg-surface-gray-3 cursor-pointer"
                 @click="selectInviteUser(person)"
               >
-                <div class="size-4" />
                 <Avatar
                   size="sm"
                   :label="person.full_name || person.email"
@@ -259,15 +258,15 @@
     v-if="showRemove"
     v-model="showRemove"
     :options="{
-      title: 'Are you sure?',
+      title: __('Are you sure?'),
       size: 'md',
-      message: `Removing ${selectedUser.full_name} will completely revoke their access to your team. You can always add them back using the same email ID.`,
+      message: `${__('Removing')} ${selectedUser.full_name} ${__('will completely revoke their access to your team. You can always add them back using the same email ID.')}.`,
       actions: [
         {
           variant: 'solid',
           theme: 'red',
           label:
-            'I confirm that I want to remove ' + selectedUser.full_name + '.',
+            __('I confirm that I want to remove') + ' ' + selectedUser.full_name + '.',
           loading: removeUser.loading,
           onClick: () => {
             removeUser.submit({
@@ -284,21 +283,19 @@
 </template>
 
 <script setup>
-import { h } from "vue"
 import { getTeams } from "@/resources/files"
-import { rejectInvite, acceptInvite } from "@/resources/permissions"
+import { acceptInvite, allSiteUsers, allUsers, rejectInvite } from "@/resources/permissions"
+import { toast } from "@/utils/toasts"
 import {
   Avatar,
-  Dropdown,
-  Dialog,
   Badge,
+  Dialog,
+  Dropdown,
   Tabs,
   Tooltip,
   createResource,
 } from "frappe-ui"
-import { allUsers, allSiteUsers } from "@/resources/permissions"
-import { ref, computed, onMounted, onUnmounted } from "vue"
-import { toast } from "@/utils/toasts"
+import { computed, h, onMounted, onUnmounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import LucideMail from "~icons/lucide/mail"
@@ -324,11 +321,11 @@ const inviteDropdownContainer = ref(null)
 
 const tabs = [
   {
-    label: "Members",
+    label: __("Members"),
     icon: h(LucideUsers, { class: "size-4" }),
   },
   {
-    label: "Invites",
+    label: __("Invites"),
     icon: h(LucideMail, { class: "size-4" }),
   },
 ]
@@ -343,11 +340,11 @@ const updateAccess = (level) => {
 }
 const accessOptions = [
   {
-    label: "Manager",
+    label: __("Manager"),
     onClick: () => updateAccess(2),
   },
   {
-    label: "User",
+    label: __("User"),
     onClick: () => updateAccess(1),
   },
   // {
@@ -355,7 +352,7 @@ const accessOptions = [
   //   onClick: () => updateAccess(0),
   // },
   {
-    label: "Remove",
+    label: __("Remove"),
     class: "text-ink-red-3",
     component: () =>
       h(
@@ -366,7 +363,7 @@ const accessOptions = [
           ],
           onClick: () => (showRemove.value = true),
         },
-        "Remove"
+        __("Remove")
       ),
   },
 ]

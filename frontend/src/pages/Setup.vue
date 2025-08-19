@@ -37,18 +37,15 @@
                 <strong>corporate domain</strong>.
               </p>
               <p v-if="domainTeams.data.length">
-                Do you want to create a personal account, or request to join the
-                team (<strong>{{ domainTeams.data[0].title }}</strong
-                >) associated with your domain?
+                {{ __("Do you want to create a personal account, or request to join the team ({0}) associated with your domain?").format(domainTeams.data[0].title) }}
               </p>
               <p v-else>
-                Do you want to create a personal account, or create a team with
-                your domain?
+                {{ __("Do you want to create a personal account, or create a team with your domain?") }}
               </p>
               <FormControl
                 v-if="typeof team_name === 'string'"
                 v-model="team_name"
-                label="Team Name"
+                :label="__('Team Name')"
                 class="py-2"
                 type="text"
                 required
@@ -59,7 +56,7 @@
                   class="w-100"
                   @click="createPersonalTeam.submit()"
                 >
-                  Create Personal
+                  {{ __("Create Personal") }}
                 </Button>
                 <Button
                   v-if="domainTeams.data.length"
@@ -71,7 +68,7 @@
                       $router.replace({ path: '/drive/teams' })
                   "
                 >
-                  Join {{ domainTeams.data[0].title }}
+                  {{ __("Join {0}").format(domainTeams.data[0].title) }}
                 </Button>
                 <Button
                   v-else
@@ -82,7 +79,7 @@
                       : (team_name = '')
                   "
                 >
-                  Create Team
+                  {{ __("Create Team") }}
                 </Button>
               </div>
             </div>
@@ -94,12 +91,12 @@
 </template>
 
 <script setup>
-import { createResource, FormControl } from "frappe-ui"
-import { ref, computed } from "vue"
-import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
+import { createResource, FormControl } from "frappe-ui"
+import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
+import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 
 const route = useRoute()
 const store = useStore()

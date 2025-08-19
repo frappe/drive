@@ -4,7 +4,7 @@
     class="max-w-[450px] px-16 py-8 z-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
   >
     <LucideAlertCircle class="h-12 mb-4 fill-blue-500 stroke-white" />
-    <span class="mb-4">Cannot open file</span>
+    <span class="mb-4">{{ __("Cannot open file") }}</span>
     <span class="text-base text-center text-ink-gray-7">
       {{ error }}
     </span>
@@ -24,14 +24,14 @@
   </template>
 </template>
 <script setup>
-import MSOfficePreview from "@/components/FileTypePreview/MSOfficePreview.vue"
-import ImagePreview from "@/components/FileTypePreview/ImagePreview.vue"
-import PDFPreview from "./FileTypePreview/PDFPreview.vue"
-import VideoPreview from "./FileTypePreview/VideoPreview.vue"
-import TextPreview from "./FileTypePreview/TextPreview.vue"
 import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue"
+import ImagePreview from "@/components/FileTypePreview/ImagePreview.vue"
+import MSOfficePreview from "@/components/FileTypePreview/MSOfficePreview.vue"
 import { computed } from "vue"
 import LucideAlertCircle from "~icons/lucide/alert-circle"
+import PDFPreview from "./FileTypePreview/PDFPreview.vue"
+import TextPreview from "./FileTypePreview/TextPreview.vue"
+import VideoPreview from "./FileTypePreview/VideoPreview.vue"
 
 const props = defineProps({
   previewEntity: {

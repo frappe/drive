@@ -3,8 +3,8 @@
     class="flex h-10 w-full cursor-pointer items-center rounded-md duration-200 ease-in-out group transition-all"
     :class="
       isActive 
-        ? 'bg-blue-600 text-white shadow-md font-semibold border border-blue-700' 
-        : 'text-gray-700 hover:bg-white hover:shadow-sm hover:text-gray-900 hover:border hover:border-gray-200'
+        ? 'bg-[#d4e1f9] text-[#0149C1] shadow-sm font-semibold border border-blue-200' 
+        : 'text-gray-600 hover:bg-gray-50 hover:shadow-sm hover:text-gray-800 hover:border hover:border-gray-150'
     "
     @click="handleClick"
   >
@@ -23,7 +23,7 @@
               <component
                 :is="icon"
                 class="size-5 transition-colors"
-                :class="isActive ? 'text-white font-bold' : 'text-gray-600 group-hover:text-gray-900'"
+                :class="isActive ? 'text-blue-700 font-bold' : 'text-gray-500 group-hover:text-gray-700'"
                 :style="isActive ? 'font-weight: 900;' : ''"
               />
             </span>
@@ -35,7 +35,7 @@
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
               : 'ml-3 w-auto opacity-100',
-            isActive ? 'font-semibold text-white' : 'font-medium text-gray-700 group-hover:text-gray-900'
+            isActive ? 'font-semibold text-blue-700' : 'font-medium text-gray-600 group-hover:text-gray-800'
           ]"
         >
           {{ label }}

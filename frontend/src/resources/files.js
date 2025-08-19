@@ -1,9 +1,9 @@
-import { createResource } from "frappe-ui"
-import { toast } from "@/utils/toasts"
 import { openEntity } from "@/utils/files"
+import { toast } from "@/utils/toasts"
+import { createResource } from "frappe-ui"
 
-import store from "@/store"
 import router from "@/router"
+import store from "@/store"
 import { prettyData, setCache } from "@/utils/files"
 
 // GETTERS
@@ -160,11 +160,11 @@ export const toggleFav = createResource({
     }
   },
   onSuccess() {
-    if (!toggleFav.params.entities) toast("All favourites cleared")
+    if (!toggleFav.params.entities) toast(__("All favourites cleared"))
     if (toggleFav.params.entities.length === 1) return
     if (toggleFav.params.entities[0].is_favourite === false)
-      toast(`${toggleFav.params.entities.length} items unfavourited`)
-    else toast(`${toggleFav.params.entities.length} items favourited`)
+      toast(__("{0} items unfavourited").format(toggleFav.params.entities.length))
+    else toast(__("{0} items favourited").format(toggleFav.params.entities.length))
   },
 })
 
@@ -186,7 +186,8 @@ export const clearRecent = createResource({
   onSuccess: () => {
     const files = clearRecent.params.entity_names?.length
     toast(
-      `Removed  ${files || "all"} file${files === 1 ? "" : "s"} from Recents.`
+      files ? __("Removed {0} file{1} from Recents.").format(files, files === 1 ? "" : "s") 
+            : __("Removed all files from Recents.")
     )
   },
 })
@@ -204,7 +205,8 @@ export const clearTrash = createResource({
     // Buggy for some reason
     const files = clearTrash.params.entity_names?.length
     toast(
-      `Permanently deleted ${files || "all"} file${files === 1 ? "" : "s"}.`
+      files ? __("Permanently deleted {0} file{1}.").format(files, files === 1 ? "" : "s")
+            : __("Permanently deleted all files.")
     )
   },
 })
@@ -221,8 +223,8 @@ export const rename = createResource({
   onError(error) {
     toast({
       title: JSON.stringify(error).includes("FileExistsError")
-        ? "There is already a file with this name!"
-        : "There was an error",
+        ? __("There is already a file with this name!")
+        : __("There was an error"),
       position: "bottom-right",
       timeout: 2,
     })
@@ -257,10 +259,10 @@ export const move = createResource({
   url: "drive.api.files.move",
   onSuccess(data) {
     toast({
-      title: "Moved to " + data.title,
+      title: __("Moved to") + " " + data.title,
       buttons: [
         {
-          label: "Go",
+          label: __("Go"),
           action: () => {
             openEntity(null, {
               name: data.name,
@@ -277,7 +279,7 @@ export const move = createResource({
     updateMoved(data.name, data.team, data.is_private)
   },
   onError() {
-    toast("There was an error.")
+    toast(__("There was an error."))
   },
 })
 

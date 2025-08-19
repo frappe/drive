@@ -33,23 +33,23 @@
 </template>
 
 <script setup>
-import { fromUint8Array, toUint8Array } from "js-base64"
 import Navbar from "@/components/Navbar.vue"
+import { allUsers } from "@/resources/permissions"
+import router from "@/router"
+import { prettyData, setBreadCrumbs } from "@/utils/files"
+import { watchDebounced } from "@vueuse/core"
+import { createResource, LoadingIndicator } from "frappe-ui"
+import { fromUint8Array, toUint8Array } from "js-base64"
 import {
-  ref,
   computed,
-  inject,
-  onMounted,
   defineAsyncComponent,
+  inject,
   onBeforeUnmount,
+  onMounted,
+  ref,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { createResource, LoadingIndicator } from "frappe-ui"
-import { watchDebounced } from "@vueuse/core"
-import { setBreadCrumbs, prettyData } from "@/utils/files"
-import { allUsers } from "@/resources/permissions"
-import router from "@/router"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -132,7 +132,7 @@ const onSuccess = (data) => {
   isWritable.value = data.owner === userId.value || !!data.write
   store.commit("setHasWriteAccess", isWritable)
 
-  data.owner = data.owner === userId.value ? "You" : data.owner
+  data.owner = data.owner === userId.value ? __("You") : data.owner
   entity.value = data
   lastSaved.value = Date.now()
   contentLoaded.value = true

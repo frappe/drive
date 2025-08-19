@@ -68,7 +68,7 @@
 <script setup>
 import { getIconUrl, getThumbnailUrl } from "@/utils/getIconUrl"
 import { createResource } from "frappe-ui"
-import { ref, computed } from "vue"
+import { computed, ref } from "vue"
 const props = defineProps({ file: Object })
 
 const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(
@@ -88,7 +88,7 @@ if (!is_image) {
 }
 
 const childrenSentence = computed(() => {
-  if (!props.file.children) return "Empty"
-  return props.file.children + " item" + (props.file.children === 1 ? "" : "s")
+  if (!props.file.children) return __("Empty")
+  return props.file.children + " " + (props.file.children === 1 ? __("item") : __("items"))
 })
 </script>

@@ -15,9 +15,23 @@
       ondragstart="return false;"
       ondrop="return false;"
     >
+    
+      <!-- Search at the bottom of main nav -->
+      <div class="border-gray-300 border-b pb-3">
+        <SidebarItem
+          :label="__('Tìm kiếm')"
+          class="mb-1 hover:bg-gray-50 transition-colors"
+          :is-collapsed="!isExpanded"
+          @click="() => emitter.emit('showSearchPopup', true)"
+        >
+          <template #icon>
+            <LucideSearch class="size-4" />
+          </template>
+        </SidebarItem>
+      </div>
       <!-- Tài liệu của tôi -->
       <SidebarItem
-        :icon="LucideFolder"
+        :icon="LucideFolder"pt-4 border-t border-gray-100 mt-4
         :label="__('Tài liệu của tôi')"
         :to="sidebarItems[0].route"
         :is-collapsed="!isExpanded"
@@ -31,21 +45,23 @@
             <button
               v-if="isExpanded"
               @click="toggleTeamsExpanded"
-              class="flex items-center flex-1 hover:bg-gray-50 rounded-md px-1 py-1 transition-colors duration-150"
+              class="flex items-center justify-between flex-1 hover:bg-gray-50 rounded-md transition-colors duration-150"
             >
+              <div class="flex items-center">
+                <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
+                  <component
+                    :is="item.icon"
+                    class="size-5 text-gray-500"
+                  />
+                </span>
+                <span class="ml-3 text-sm font-medium text-gray-700 ">
+                  {{ item.label }}
+                </span>
+              </div>
               <LucideChevronDown 
                 class="h-4 w-4 mr-2 text-gray-400 transition-transform duration-200"
                 :class="{ 'rotate-180': !isTeamsExpanded }"
               />
-              <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
-                <component
-                  :is="item.icon"
-                  class="size-4 text-gray-500"
-                />
-              </span>
-              <span class="ml-3 text-sm font-medium text-gray-700 ">
-                {{ item.label }}
-              </span>
             </button>
             <!-- Icon only when collapsed -->
             <div v-else class="flex items-center flex-1">
@@ -60,10 +76,10 @@
             <button
               v-if="isExpanded"
               @click="createNewTeam"
-              class="flex h-6 w-6 items-center justify-center rounded-md hover:bg-gray-100 transition-colors duration-150 ml-1"
+              class="flex h-6 w-6 items-center bg-[#0249c1] justify-center rounded-sm hover:bg-[#0249c1] transition-colors duration-150 ml-1"
               :title="__('Tạo nhóm mới')"
             >
-              <LucidePlus class="h-3.5 w-3.5 text-gray-500 hover:text-gray-700" />
+              <LucidePlus class="h-3.5 w-3.5 !text-white" />
             </button>
           </div>
           
@@ -77,10 +93,10 @@
               v-for="teamItem in teamList"
               :key="teamItem.name"
               @click="selectTeam(teamItem)"
-              class="flex items-center px-3 py-2 rounded-lg hover:bg-blue-600 hover:shadow-md hover:text-white cursor-pointer transition-colors duration-150 group"
-              :class="{ 'bg-blue-600 text-white font-semibold shadow-md border border-blue-700': team === teamItem.name }"
+              class="flex items-center px-3 py-2 rounded-md hover:bg-[#0149C1] hover:shadow-md hover:text-white cursor-pointer transition-colors duration-150 group"
+              :class="{ 'bg-[#0149C1] text-white font-semibold shadow-md border border-blue-700': team === teamItem.name }"
             >
-              <LucideBuilding2 
+              <Dot 
                 class="h-4 w-4 mr-3 text-gray-700 group-hover:text-white transition-colors" 
                 :class="{ 'text-white font-bold': team === teamItem.name }"
                 :style="team === teamItem.name ? 'font-weight: 900;' : ''"
@@ -105,19 +121,7 @@
         />
       </template>
       
-      <!-- Search at the bottom of main nav -->
-      <div class="pt-4 border-t border-gray-100 mt-4">
-        <SidebarItem
-          :label="__('Tìm kiếm')"
-          class="mb-1 hover:bg-gray-50 transition-colors"
-          :is-collapsed="!isExpanded"
-          @click="() => emitter.emit('showSearchPopup', true)"
-        >
-          <template #icon>
-            <LucideSearch class="size-4" />
-          </template>
-        </SidebarItem>
-      </div>
+      
     </div>
     <!-- Storage Bar -->
     <div class="mt-auto p-2 border-t border-gray-100">
@@ -172,7 +176,7 @@
           variant="solid"
           @click="handleCreateTeam"
           :loading="createTeam.loading"
-          class="bg-blue-600 hover:bg-blue-700"
+          class="!bg-[#0149C1] text-white hover:!opacity-90"
         >
           Tạo nhóm
         </Button>
@@ -198,6 +202,7 @@ import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideCheck from "~icons/lucide/check"
 import LucideChevronDown from "~icons/lucide/chevron-down"
 import LucideClock from "~icons/lucide/clock"
+import Dot from "~icons/lucide/dot"
 import LucideFolder from "~icons/lucide/folder"
 import LucidePlus from "~icons/lucide/plus"
 import LucideStar from "~icons/lucide/star"

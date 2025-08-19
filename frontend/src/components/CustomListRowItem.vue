@@ -66,25 +66,12 @@
           height="16"
           class="my-auto stroke-amber-500 fill-amber-500"
         />
-        <Tooltip
-          v-else-if="
-            row.is_private &&
-            !['Home', 'Shared'].includes($store.state.breadcrumbs[0].name)
-          "
-          text="This is from your Home."
-        >
-          <LucideEyeOff
-            width="16"
-            height="16"
-            class="my-auto"
-          />
-        </Tooltip>
       </div>
     </template>
   </ListRowItem>
 </template>
 <script setup>
-import { ListRowItem, Tooltip } from "frappe-ui"
+import { ListRowItem } from "frappe-ui"
 import { ref } from "vue"
 
 const props = defineProps({

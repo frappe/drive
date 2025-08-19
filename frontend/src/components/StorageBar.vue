@@ -5,7 +5,7 @@
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
-      :label="props.isExpanded ? __('Storage') : `- used out of ${limitText}`"
+      :label="props.isExpanded ? __('Storage') : `- đã dùng / ${limitText}`"
       :is-collapsed="!props.isExpanded"
     >
       <template #icon>
@@ -36,11 +36,11 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
-import SidebarItem from "./SidebarItem.vue"
+import { computed, inject, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 import LucideCloud from "~icons/lucide/cloud"
+import SidebarItem from "./SidebarItem.vue"
 
 const emitter = inject("emitter")
 
@@ -61,7 +61,7 @@ const limitText = computed(() => {
 // Format chuỗi hiển thị chính
 const formattedString = computed(() => {
   const usedGB = (usedStorage.value / 1024 ** 3).toFixed(2)
-  return `${usedGB} GB used out of ${storageMax.value.toFixed(1)} GB`
+  return `${usedGB} GB đã dùng / ${storageMax.value.toFixed(1)} GB`
 })
 
 // Tính phần trăm đã sử dụng

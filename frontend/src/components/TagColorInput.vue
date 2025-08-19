@@ -4,7 +4,7 @@
     @update:model-value="(value) => emit('change', value)"
   >
     <template #target="{ togglePopover }">
-      <span class="mb-2 block text-sm leading-4 text-ink-gray-7"> Color </span>
+      <span class="mb-2 block text-sm leading-4 text-ink-gray-7"> {{ __('Color') }} </span>
       <div class="flex items-stretch">
         <div class="relative w-full">
           <div
@@ -31,7 +31,7 @@
           <Input
             type="text"
             class="rounded-md text-sm text-ink-gray-7 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:focus:bg-zinc-700"
-            placeholder="Set Color"
+            :placeholder="__('Set Color')"
             input-class="pl-8 pr-6"
             :value="value"
             @change="
@@ -46,8 +46,8 @@
   </ColorPicker>
 </template>
 <script setup lang="ts">
-import { Input } from "frappe-ui"
 import ColorPicker from "@/components/DocEditor/components/ColorPicker.vue"
+import { Input } from "frappe-ui"
 const emit = defineEmits(["change"])
 
 defineProps({

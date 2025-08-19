@@ -103,43 +103,42 @@
   </nav>
 </template>
 <script setup>
-import UsersBar from "./UsersBar.vue"
-import {
-  Button,
-  Breadcrumbs,
-  LoadingIndicator,
-  Dropdown,
-  Tooltip,
-} from "frappe-ui"
-import { useStore } from "vuex"
 import emitter from "@/emitter"
-import { ref, computed } from "vue"
-import { entitiesDownload } from "@/utils/download"
 import {
-  getRecents,
-  getFavourites,
-  getTrash,
   createDocument,
+  getFavourites,
+  getRecents,
+  getTrash,
   toggleFav,
 } from "@/resources/files"
+import { entitiesDownload } from "@/utils/download"
+import {
+  Breadcrumbs,
+  Button,
+  Dropdown,
+  LoadingIndicator
+} from "frappe-ui"
+import { computed, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
+import UsersBar from "./UsersBar.vue"
 
-import LucideClock from "~icons/lucide/clock"
-import LucideHome from "~icons/lucide/home"
-import LucideTrash from "~icons/lucide/trash"
-import LucideUsers from "~icons/lucide/users"
 import LucideBuilding2 from "~icons/lucide/building-2"
-import LucideStar from "~icons/lucide/star"
-import LucideShare2 from "~icons/lucide/share-2"
+import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
+import LucideFilePlus2 from "~icons/lucide/file-plus-2"
+import LucideFileUp from "~icons/lucide/file-up"
+import LucideFolderPlus from "~icons/lucide/folder-plus"
+import LucideFolderUp from "~icons/lucide/folder-up"
+import LucideHome from "~icons/lucide/home"
+import LucideInfo from "~icons/lucide/info"
 import LucideLink from "~icons/lucide/link"
 import LucideMoveUpRight from "~icons/lucide/move-up-right"
+import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
-import LucideInfo from "~icons/lucide/info"
-import LucideFileUp from "~icons/lucide/file-up"
-import LucideFolderUp from "~icons/lucide/folder-up"
-import LucideFilePlus2 from "~icons/lucide/file-plus-2"
-import LucideFolderPlus from "~icons/lucide/folder-plus"
+import LucideStar from "~icons/lucide/star"
+import LucideTrash from "~icons/lucide/trash"
+import LucideUsers from "~icons/lucide/users"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -245,7 +244,7 @@ const dropdownAction = computed(() => {
 // Functions
 const newDocument = async () => {
   let data = await createDocument.submit({
-    title: "Untitled Document",
+    title: __("Untitled Document"),
     team: route.params.team,
     personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
     content: null,
@@ -287,12 +286,12 @@ const button = computed(() =>
 
 const uploadOptions = [
   {
-    label: "Upload File",
+    label: __("Upload File"),
     icon: LucideFileUp,
     onClick: () => emitter.emit("uploadFile"),
   },
   {
-    label: "Upload Folder",
+    label: __("Upload Folder"),
     icon: LucideFolderUp,
     onClick: () => emitter.emit("uploadFolder"),
   },
@@ -300,17 +299,17 @@ const uploadOptions = [
 
 const createOptions = [
   {
-    label: "Document",
+    label: __("Document"),
     icon: LucideFilePlus2,
     onClick: newDocument,
   },
   {
-    label: "Folder",
+    label: __("Folder"),
     icon: LucideFolderPlus,
     onClick: () => emitter.emit("newFolder"),
   },
   {
-    label: "New Link",
+    label: __("New Link"),
     icon: LucideLink,
     onClick: () => emitter.emit("newLink"),
   },

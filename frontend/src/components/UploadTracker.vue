@@ -11,15 +11,13 @@
         v-if="uploadsInProgress.length > 0"
         class="font-medium truncate text-lg"
       >
-        Uploading {{ uploadsInProgress.length }}
-        {{ uploadsInProgress.length == 1 ? "file" : "files" }}
+        {{ __("Uploading {0} {1}").format(uploadsInProgress.length, uploadsInProgress.length == 1 ? __("file") : __("files")) }}
       </div>
       <div
         v-else-if="uploadsCompleted.length > 0"
         class="font-medium truncate text-lg"
       >
-        {{ uploadsCompleted.length }}
-        {{ uploadsCompleted.length == 1 ? "upload" : "uploads" }} complete
+        {{ __("{0} {1} complete").format(uploadsCompleted.length, uploadsCompleted.length == 1 ? __("upload") : __("uploads")) }}
       </div>
       <div
         v-else-if="uploadsFailed.length > 0"
@@ -52,13 +50,13 @@
         :buttons="
           uploadsFailed.length > 0
             ? [
-                { value: 1, label: 'In Progress' },
-                { value: 2, label: 'Completed' },
-                { value: 3, label: 'Failed' },
+                { value: 1, label: __('In Progress') },
+                { value: 2, label: __('Completed') },
+                { value: 3, label: __('Failed') },
               ]
             : [
-                { value: 1, label: 'In Progress' },
-                { value: 2, label: 'Completed' },
+                { value: 1, label: __('In Progress') },
+                { value: 2, label: __('Completed') },
               ]
         "
       />
@@ -130,12 +128,12 @@
       v-if="showErrorDialog"
       v-model="showErrorDialog"
       :options="{
-        title: 'Upload failed',
+        title: __('Upload failed'),
         message: selectedUpload.error,
         size: 'sm',
         actions: [
           {
-            label: 'OK',
+            label: __('OK'),
             variant: 'solid',
             onClick: () => {
               showErrorDialog = false
@@ -148,12 +146,12 @@
       v-if="showCancelDialog"
       v-model="showCancelDialog"
       :options="{
-        title: 'Cancel uploads',
-        message: 'Are you sure you want to cancel all ongoing uploads?',
+        title: __('Cancel uploads'),
+        message: __('Are you sure you want to cancel all ongoing uploads?'),
         size: 'sm',
         actions: [
           {
-            label: 'Confirm',
+            label: __('Confirm'),
             variant: 'subtle',
             theme: 'red',
             onClick: () => {
@@ -168,9 +166,9 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex"
-import { Dialog, TabButtons } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
+import { Dialog, TabButtons } from "frappe-ui"
+import { mapGetters } from "vuex"
 
 export default {
   name: "UploadTracker",

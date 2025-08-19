@@ -2,7 +2,7 @@
   <div
     class="w-screen h-screen antialiased"
     dark
-  >
+  > 
     <div
       class="bg-surface-gray-7 text-ink-white text-sm text-center py-2 sm:hidden"
     >
@@ -60,14 +60,14 @@
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
-import { Toasts } from "@/utils/toasts.js"
-import SearchPopup from "./components/SearchPopup.vue"
-import BottomBar from "./components/BottomBar.vue"
-import { useStore } from "vuex"
-import { ref, computed } from "vue"
-import { useRouter } from "vue-router"
-import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import { Toasts } from "@/utils/toasts.js"
+import { onKeyDown } from "@vueuse/core"
+import { computed, ref } from "vue"
+import { useRouter } from "vue-router"
+import { useStore } from "vuex"
+import BottomBar from "./components/BottomBar.vue"
+import SearchPopup from "./components/SearchPopup.vue"
 
 const store = useStore()
 const router = useRouter()

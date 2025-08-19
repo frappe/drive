@@ -14,14 +14,14 @@
           </h3>
           <div class="flex items-center justify-start mt-1 mb-4">
             <span class="text-ink-gray-7 text-sm"
-              >Created on {{ snapshotData.creation }} by
+              >{{ __("Created on") }} {{ snapshotData.creation }} {{ __("by") }}
               {{ snapshotData.owner }}</span
             >
             <div
               class="ml-auto flex items-center justify-end rounded cursor-pointer hover:bg-surface-gray-3 pl-2 pr-1 py-1.5"
             >
               <span class="font-medium text-ink-gray-8 text-sm mr-2"
-                >Highlight changes</span
+                >{{ __("Highlight changes") }}</span
               >
               <Switch v-model="showChanges" />
             </div>
@@ -43,11 +43,11 @@
         </div>
         <div class="flex">
           <Button
-            class="ml-auto"
+            class="ml-auto !bg-[#0149C1] text-white hover:!opacity-90"
             :variant="'solid'"
             @click="applySnapshot"
           >
-            Restore
+            {{ __("Restore") }}
           </Button>
         </div>
       </div>
@@ -56,18 +56,18 @@
 </template>
 
 <script setup>
+import { Button, Dialog, Switch } from "frappe-ui"
 import {
-  inject,
   computed,
   defineEmits,
   defineProps,
-  onMounted,
+  inject,
   onBeforeUnmount,
+  onMounted,
   ref,
 } from "vue"
-import { Dialog, Button, Switch } from "frappe-ui"
-import PreviewEditor from "../PreviewEditor.vue"
 import { encodeStateAsUpdate } from "yjs"
+import PreviewEditor from "../PreviewEditor.vue"
 
 defineOptions({
   inheritAttrs: false,

@@ -33,13 +33,13 @@
   </template>
 </template>
 <script setup>
-import { ListRow } from "frappe-ui"
-import CustomListRowItem from "./CustomListRowItem.vue"
-import { openEntity } from "@/utils/files"
 import { settings } from "@/resources/permissions"
+import { openEntity } from "@/utils/files"
+import { ListRow } from "frappe-ui"
+import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { computed, ref } from "vue"
+import CustomListRowItem from "./CustomListRowItem.vue"
 
 defineProps({
   rows: Array,

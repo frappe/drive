@@ -95,14 +95,14 @@
                 <template #prefix>
                   <Upload class="w-4 stroke-1.5" />
                 </template>
-                Upload
+                {{ __("Upload") }}
               </Button>
               <!-- <span class="text-ink-gray-7 text-base mt-2" >Or drag a file here to upload</span> -->
             </div>
             <NoFilesSection
               v-else-if="isEmpty"
               class="my-auto"
-              primary-message="No Files"
+              :primary-message="__('No Files')"
               secondary-message=" "
             />
             <div
@@ -209,19 +209,19 @@
 </template>
 
 <script setup>
-import NoFilesSection from "./NoFilesSection.vue"
-import GridItem from "./GridItem.vue"
-import { watch, defineEmits, computed, h, ref } from "vue"
 import { useTimeAgo } from "@vueuse/core"
-import { createResource, Dialog, Button, Tabs, Dropdown } from "frappe-ui"
+import { Button, createResource, Dialog, Dropdown, Tabs } from "frappe-ui"
+import { computed, defineEmits, h, ref, watch } from "vue"
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
 import LucidePlus from "~icons/lucide/plus"
 import LucideStar from "~icons/lucide/star"
-import LucideUsers from "~icons/lucide/users"
 import Upload from "~icons/lucide/upload"
+import LucideUsers from "~icons/lucide/users"
+import GridItem from "./GridItem.vue"
+import NoFilesSection from "./NoFilesSection.vue"
 
-import { formatSize, formatDate } from "@/utils/format"
+import { formatDate, formatSize } from "@/utils/format"
 import { useStore } from "vuex"
 
 const props = defineProps({

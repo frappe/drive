@@ -3,18 +3,18 @@
     :verify="currentFolder"
     :get-entities="getFolderContents"
     :icon="LucideFolderClosed"
-    :primary-message="'Folder is Empty'"
+    :primary-message="__('Folder is Empty')"
   />
 </template>
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
-import { useStore } from "vuex"
-import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
-import { setBreadCrumbs, prettyData, setCache } from "@/utils/files"
 import router from "@/router"
+import { prettyData, setBreadCrumbs, setCache } from "@/utils/files"
+import { createResource } from "frappe-ui"
+import { computed, inject, onBeforeUnmount, onMounted, watch } from "vue"
+import { useStore } from "vuex"
 import LucideFolderClosed from "~icons/lucide/folder-closed"
 
 const store = useStore()

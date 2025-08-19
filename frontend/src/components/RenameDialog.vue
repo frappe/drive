@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Rename', size: 'xs' }"
+    :options="{ title: __('Rename'), size: 'xs' }"
   >
     <template #body-content>
       <div class="flex items-center justify-center">
@@ -22,13 +22,13 @@
           {{ entity.file_ext.toUpperCase().slice(1) }}
         </span>
       </div>
-      <div class="flex mt-8">
+      <div class="flex mt-4">
         <Button
           variant="solid"
-          class="w-full"
+          class="w-full !bg-[#0149C1] text-white hover:!opacity-90"
           @click="submit"
         >
-          Rename
+          {{ __("Rename") }}
         </Button>
       </div>
     </template>
@@ -36,11 +36,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { rename } from "@/resources/files"
 import { Dialog, Input } from "frappe-ui"
+import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { rename } from "@/resources/files"
 
 const props = defineProps({ entity: Object, modelValue: String })
 const emit = defineEmits(["update:modelValue", "success"])

@@ -1,14 +1,14 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'New Link', size: 'xs' }"
+    :options="{ title: __('New Link'), size: 'xs' }"
   >
     <template #body-content>
       <TextInput
         ref="input"
         v-model="title"
         class="pb-2"
-        placeholder="Link name"
+        :placeholder="__('Link name')"
         type="text"
         @keydown="createLink.error = null"
       />
@@ -16,7 +16,7 @@
         ref="input"
         v-model="link"
         class="pt-2"
-        placeholder="URL"
+        :placeholder="__('URL')"
         type="url"
         @keydown.enter="createLink.submit"
         @keydown="createLink.error = null"
@@ -25,7 +25,7 @@
         v-if="createLink.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This file already exists.
+        {{ __("This file already exists.") }}
       </div>
       <div
         class="flex"
@@ -33,11 +33,11 @@
       >
         <Button
           variant="solid"
-          class="w-full"
+          class="w-full !bg-[#0149C1] text-white hover:!opacity-90"
           :loading="createLink.loading"
           @click="createLink.submit"
         >
-          Create
+          {{ __("Create") }}
         </Button>
       </div>
     </template>
@@ -45,9 +45,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
 import store from "@/store"
 import { Dialog, TextInput, createResource } from "frappe-ui"
+import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 const route = useRoute()
 const props = defineProps({
@@ -72,7 +72,7 @@ const createLink = createResource({
   },
   validate(params) {
     if (!params?.title) {
-      return "Folder name is required"
+      return __("Link name is required")
     }
   },
   onSuccess(data) {

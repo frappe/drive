@@ -2,16 +2,16 @@
   <GenericPage
     :get-entities="getShared"
     :icon="LucideUsers"
-    :primary-message="'No Shared Files'"
+    :primary-message="__('No Shared Files')"
   />
 </template>
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 
+import { getShared } from "@/resources/files"
 import { computed, watch } from "vue"
 import { useStore } from "vuex"
-import { getShared } from "@/resources/files"
 import LucideUsers from "~icons/lucide/users"
 
 const store = useStore()

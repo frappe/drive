@@ -51,7 +51,7 @@
             </div>
             <span class="text-sm text-ink-gray-7">
               {{ comment.get("replies").length }}
-              {{ comment.get("replies").length === 1 ? " reply" : "replies" }}
+              {{ comment.get("replies").length === 1 ? __(" reply") : __("replies") }}
             </span>
           </div>
 
@@ -163,13 +163,13 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from "vuex"
-import { ref, computed, inject } from "vue"
+import TiptapInput from "@/components/TiptapInput.vue"
+import { useTimeAgo } from "@vueuse/core"
 import { Avatar, Button, Dropdown } from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
-import { useTimeAgo } from "@vueuse/core"
+import { computed, inject, ref } from "vue"
+import { useStore } from "vuex"
 import * as Y from "yjs"
-import TiptapInput from "@/components/TiptapInput.vue"
 
 const store = useStore()
 

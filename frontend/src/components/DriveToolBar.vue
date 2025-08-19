@@ -4,8 +4,8 @@
       v-if="selections?.length"
       class="my-auto w-[40%] text-base text-ink-gray-8"
     >
-      {{ selections.length }} item{{ selections.length === 1 ? "" : "s" }}
-      selected
+      {{ selections.length }} {{ __('item') }}{{ selections.length === 1 ? "" : __('s') }}
+      {{ __('selected') }}
     </div>
     <div
       v-else-if="$route.name === 'Shared'"
@@ -15,7 +15,7 @@
         v-model="shareView"
         :buttons="[
           {
-            label: 'By',
+            label: __('By'),
             value: 'by',
             onClick: () => {
               store.commit('toggleShareView', 'by')
@@ -23,7 +23,7 @@
             disabled: !getEntities.data?.length,
           },
           {
-            label: 'With you',
+            label: __('With you'),
             value: 'with',
             onClick: () => {
               store.commit('toggleShareView', 'with')
@@ -60,7 +60,7 @@
               class="flex items-center border rounded pl-2 py-1 h-7 text-base"
             >
               <component :is="ICON_TYPES[item]" />
-              <span class="text-sm ml-2">{{ item }}</span>
+              <span class="text-sm ml-2">{{ __(item) }}</span>
               <Button
                 variant="minimal"
                 @click="activeFilters.splice(index, 1)"
@@ -118,7 +118,7 @@
           "
           placement="right"
         >
-          <Tooltip text="Filter">
+          <Tooltip :text="__('Filter')">
             <Button :disabled="!getEntities.data?.length">
               <LucideFilter class="size-4 text-ink-gray-6" />
             </Button>

@@ -77,9 +77,9 @@
   </template>
 </template>
 <script setup>
-import { useStore } from "vuex"
 import { Avatar, createResource } from "frappe-ui"
 import { computed, ref, watch } from "vue"
+import { useStore } from "vuex"
 import ArrowRight from "~icons/lucide/arrow-right"
 import { formatDate } from "../utils/format"
 import ActivityTreeItem from "./ActivityTreeItem.vue"
@@ -100,13 +100,13 @@ watch(
   entity,
   () => {
     groupedActivityLog.value = {
-      Today: [],
-      Yesterday: [],
-      "This week": [],
-      "Last week": [],
-      "This month": [],
-      "This year": [],
-      "Older than a year": [],
+      [__("Today")]: [],
+      [__("Yesterday")]: [],
+      [__("This week")]: [],
+      [__("Last week")]: [],
+      [__("This month")]: [],
+      [__("This year")]: [],
+      [__("Older than a year")]: [],
     }
     activityLog.fetch({ entity_name: entity.value.name })
   },
@@ -115,37 +115,37 @@ watch(
 
 const entityText = computed(() => {
   if (entity.value.is_group) {
-    return "folder"
+    return __("folder")
   }
-  return "file"
+  return __("file")
 })
 
 function generateMessage(activity) {
   const user = activity.full_name ? activity.full_name : activity.owner
   const creationText =
     entity.value.is_group || entity.value.document
-      ? "created this"
-      : "uploaded this"
+      ? __("created this")
+      : __("uploaded this")
 
   switch (activity.action_type) {
     case "create":
       return `${user} ${creationText} ${entityText.value}`
     case "rename":
-      return `${user} renamed this ${entityText.value}`
+      return `${user} ${__("renamed this")} ${entityText.value}`
     case "edit":
-      return `${user} edited this ${entityText.value}`
+      return `${user} ${__("edited this")} ${entityText.value}`
     case "delete":
-      return `${user} deleted this ${entityText.value}`
+      return `${user} ${__("deleted this")} ${entityText.value}`
     case "share_add":
-      return `${user} shared this ${entityText.value}`
+      return `${user} ${__("shared this")} ${entityText.value}`
     case "share_edit":
-      return `${user} updated permissions on this ${entityText.value}`
+      return `${user} ${__("updated permissions on this")} ${entityText.value}`
     case "share_remove":
-      return `${user} restricted this ${entityText.value}`
+      return `${user} ${__("restricted this")} ${entityText.value}`
     case "move":
-      return `${user} moved this ${entityText.value}`
+      return `${user} ${__("moved this")} ${entityText.value}`
     default:
-      return `Unknown action type: ${activity.action_type}`
+      return `${__("Unknown action type")}: ${activity.action_type}`
   }
 }
 
@@ -178,7 +178,7 @@ function groupAndTransform(activities) {
       }
     }
     activity.full_name =
-      activity.owner === store.state.user.id ? "You" : activity.full_name
+      activity.owner === store.state.user.id ? __("You") : activity.full_name
     activity.message = generateMessage(activity)
     activity.creation = formatDate(activity.creation)
   }
@@ -190,27 +190,27 @@ function groupAndTransform(activities) {
     const monthDiff = today.getMonth() - creationDate.getMonth() + yearDiff * 12
     switch (true) {
       case creationDate.toDateString() === today.toDateString():
-        groupedActivityLog.value.Today.push(activity)
+        groupedActivityLog.value[__("Today")].push(activity)
         break
       case creationDate.toDateString() === yesterday.toDateString():
-        groupedActivityLog.value.Yesterday.push(activity)
+        groupedActivityLog.value[__("Yesterday")].push(activity)
         break
       case creationDate >= startOfWeek:
-        groupedActivityLog.value["This week"].push(activity)
+        groupedActivityLog.value[__("This week")].push(activity)
         break
       case dayDiff <= 14 &&
         creationDate >=
           new Date(startOfWeek.getTime() - 7 * 24 * 60 * 60 * 1000):
-        groupedActivityLog.value["Last week"].push(activity)
+        groupedActivityLog.value[__("Last week")].push(activity)
         break
       case monthDiff === 0:
-        groupedActivityLog.value["This month"].push(activity)
+        groupedActivityLog.value[__("This month")].push(activity)
         break
       case yearDiff === 0:
-        groupedActivityLog.value["This year"].push(activity)
+        groupedActivityLog.value[__("This year")].push(activity)
         break
       default:
-        groupedActivityLog.value["Older than a year"].push(activity)
+        groupedActivityLog.value[__("Older than a year")].push(activity)
     }
   })
 }

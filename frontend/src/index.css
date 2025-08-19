@@ -1,8 +1,16 @@
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 /* frappe ui includes Inter*/
 @import "frappe-ui/src/style.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Apply Inter font to all elements */
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
 
 .scroll-shadow {
   /* Credit: adapted from https://css-tricks.com/books/greatest-css-tricks/scroll-shadows/ */

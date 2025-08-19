@@ -26,17 +26,16 @@
     ref="container"
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
-    <DriveToolBar
-      v-model="rows"
-      :action-items="actionItems"
-      :selections="selectedEntitities"
-      :get-entities="getEntities"
-    />
-
     <!-- Content Area with Team Members -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Main Content -->
       <div class="flex-1 flex flex-col">
+        <DriveToolBar
+          v-model="rows"
+          :action-items="actionItems"
+          :selections="selectedEntitities"
+          :get-entities="getEntities"
+        />
         <div
           v-if="!props.getEntities.fetched"
           class="m-auto"
@@ -86,29 +85,28 @@
   />
 </template>
 <script setup>
-import ListView from "@/components/ListView.vue"
-import GridView from "@/components/GridView.vue"
-import DriveToolBar from "@/components/DriveToolBar.vue"
-import Navbar from "@/components/Navbar.vue"
-import NoFilesSection from "@/components/NoFilesSection.vue"
 import Dialogs from "@/components/Dialogs.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
+import FileUploader from "@/components/FileUploader.vue"
+import GridView from "@/components/GridView.vue"
 import InfoPopup from "@/components/InfoPopup.vue"
-import { getLink } from "@/utils/getLink"
-import { toggleFav, clearRecent } from "@/resources/files"
+import ListView from "@/components/ListView.vue"
+import Navbar from "@/components/Navbar.vue"
+import NoFilesSection from "@/components/NoFilesSection.vue"
+import TeamMembersList from "@/components/TeamMembersList.vue"
+import { clearRecent, toggleFav } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import FileUploader from "@/components/FileUploader.vue"
-import TeamMembersList from "@/components/TeamMembersList.vue"
+import { getLink } from "@/utils/getLink"
 
-import { ref, computed, watch } from "vue"
-import { useRoute } from "vue-router"
-import { useStore } from "vuex"
+import { allFolders, move } from "@/resources/files"
+import { settings } from "@/resources/permissions"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
-import { move, allFolders } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
-import { settings } from "@/resources/permissions"
+import { computed, ref, watch } from "vue"
+import { useRoute } from "vue-router"
+import { useStore } from "vuex"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -137,7 +135,6 @@ const store = useStore()
 
 // Show team members list only on Team page
 const showTeamMembers = computed(() => route.name === "Team")
-
 
 const dialog = ref("")
 const infoEntities = ref([])
@@ -202,14 +199,14 @@ const actionItems = computed(() => {
   if (route.name === "Trash") {
     return [
       {
-        label: "Restore",
+        label: "Khôi phục",
         icon: LucideRotateCcw,
         action: () => (dialog.value = "restore"),
         multi: true,
         important: true,
       },
       {
-        label: "Delete forever",
+        label: "Xóa vĩnh viễn",
         icon: LucideTrash,
         action: () => (dialog.value = "d"),
         isEnabled: () => route.name === "Trash",
@@ -220,27 +217,27 @@ const actionItems = computed(() => {
   } else {
     return [
       {
-        label: __("Preview"),
+        label: "Xem trước",
         icon: LucideEye,
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => !e.is_link,
       },
       {
-        label: __("Open"),
+        label: "Mở",
         icon: LucideExternalLink,
         action: ([entity]) => openEntity(team, entity),
         isEnabled: (e) => e.is_link,
       },
       { divider: true },
       {
-        label: __("Share"),
+        label: "Chia sẻ",
         icon: LucideShare2,
         action: () => (dialog.value = "s"),
         isEnabled: (e) => e.share,
         important: true,
       },
       {
-        label: __("Download"),
+        label: "Tải xuống",
         icon: LucideDownload,
         isEnabled: (e) => !e.is_link,
         action: (entities) => entitiesDownload(team, entities),
@@ -248,14 +245,14 @@ const actionItems = computed(() => {
         important: true,
       },
       {
-        label: __("Copy Link"),
+        label: "Sao chép liên kết",
         icon: LucideLink2,
         action: ([entity]) => getLink(entity),
         important: true,
       },
       { divider: true },
       {
-        label: __("Move"),
+        label: "Di chuyển",
         icon: LucideMoveUpRight,
         action: () => (dialog.value = "m"),
         isEnabled: (e) => e.write,
@@ -263,25 +260,25 @@ const actionItems = computed(() => {
         important: true,
       },
       {
-        label: __("Rename"),
+        label: "Đổi tên",
         icon: LucideSquarePen,
         action: () => (dialog.value = "rn"),
         isEnabled: (e) => e.write,
       },
       {
-        label: __("Show Info"),
+        label: "Hiển thị thông tin",
         icon: LucideInfo,
         action: () => infoEntities.value.push(store.state.activeEntity),
         isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
       },
       {
-        label: __("Hide Info"),
+        label: "Ẩn thông tin",
         icon: LucideInfo,
         action: () => (dialog.value = "info"),
         isEnabled: () => store.state.activeEntity && store.state.showInfo,
       },
       {
-        label: __("Favourite"),
+        label: "Yêu thích",
         icon: LucideStar,
         action: (entities) => {
           entities.forEach((e) => (e.is_favourite = true))
@@ -294,7 +291,7 @@ const actionItems = computed(() => {
         multi: true,
       },
       {
-        label: __("Unfavourite"),
+        label: "Bỏ yêu thích",
         icon: LucideStar,
         class: "stroke-amber-500 fill-amber-500",
         action: (entities) => {
@@ -307,7 +304,7 @@ const actionItems = computed(() => {
         multi: true,
       },
       {
-        label: __("Remove from Recents"),
+        label: "Xóa khỏi gần đây",
         icon: LucideClock,
         action: (entities) => {
           clearRecent.submit({
@@ -320,7 +317,7 @@ const actionItems = computed(() => {
       },
       { divider: true, isEnabled: (e) => e.write },
       {
-        label: __("Delete"),
+        label: "Xóa",
         icon: LucideTrash,
         action: () => (dialog.value = "remove"),
         isEnabled: (e) => e.write,

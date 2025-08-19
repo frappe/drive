@@ -1,12 +1,12 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Delete Forever?', size: 'sm' }"
+    :options="{ title: __('Delete Forever?'), size: 'sm' }"
   >
     <template #body-content>
       <p class="text-ink-gray-5">
-        {{ entities.length === 1 ? `This item` : `${entities.length} items` }}
-        will be deleted forever. This is an irreversible process.
+        {{ entities.length === 1 ? __('This item') : __("{0} items").format(entities.length) }}
+        {{ __('will be deleted forever. This is an irreversible process.') }}
       </p>
       <div class="flex mt-5">
         <Button
@@ -17,7 +17,7 @@
           :loading="deleteEntities.loading"
           @click="deleteEntities.submit()"
         >
-          Delete — forever.
+          {{ __('Delete — forever.') }}
         </Button>
       </div>
     </template>

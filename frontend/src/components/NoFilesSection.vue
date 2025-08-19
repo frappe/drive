@@ -41,7 +41,7 @@ export default {
     },
     primaryMessage: {
       type: String,
-      default: "You don't have any files yet",
+      default: __("You don't have any files yet"),
     },
     secondaryMessage: {
       type: String,

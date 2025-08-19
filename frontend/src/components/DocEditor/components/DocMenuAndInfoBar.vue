@@ -30,7 +30,7 @@
         </span>
         <div class="space-y-6.5 h-full flex-auto flex flex-col z-0">
           <div v-if="entity.owner === 'You'">
-            <div class="text-base font-medium mb-4">Access</div>
+            <div class="text-base font-medium mb-4">{{ __("Access") }}</div>
             <div class="flex items-center justify-start">
               <Avatar
                 size="md"
@@ -68,17 +68,17 @@
           <div
             v-if="$resources.entityTags.data?.length || entity.owner === 'You'"
           >
-            <div class="text-base font-medium mb-4">Tags</div>
+            <div class="text-base font-medium mb-4">{{ __("Tags") }}</div>
             <TagInput
               class="min-w-full"
               :entity="entity"
             />
           </div>
           <div>
-            <div class="text-base font-medium mb-4">Properties</div>
+            <div class="text-base font-medium mb-4">{{ __("Properties") }}</div>
             <div class="text-base grid grid-flow-row grid-cols-2 gap-y-3">
               <span class="col-span-1 text-ink-gray-5">{{ __("Type") }}</span>
-              <span class="col-span-1">Frappe Doc</span>
+              <span class="col-span-1">{{ __("Frappe Doc") }}</span>
               <span class="col-span-1 text-ink-gray-5">{{ __("Size") }}</span>
               <span class="col-span-1">{{ formatSize(entity.file_size) }}</span>
               <span class="col-span-1 text-ink-gray-5">{{
@@ -146,11 +146,11 @@
         <span
           class="px-3 inline-flex items-center gap-2.5 text-ink-gray-8 font-medium text-lg w-full"
         >
-          Versions
+          {{ __("Versions") }}
           <Button
             class="ml-auto"
             @click="generateSnapshot"
-            >New</Button
+            >{{ __("New") }}</Button
           >
         </span>
         <div
@@ -180,7 +180,7 @@
           v-else
           class="text-ink-gray-5 text-sm my-5 px-3"
         >
-          No previous versions available for the current document
+          {{ __("No previous versions available for the current document") }}
         </div>
       </div>
 
@@ -192,7 +192,7 @@
         <span
           class="inline-flex items-center gap-2.5 px-5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
-          Activity
+          {{ __("Activity") }}
         </span>
         <ActivityTree v-if="showActivity" />
       </div>
@@ -205,9 +205,9 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
-          Style
+          {{ __("Style") }}
         </span>
-        <span class="font-medium text-ink-gray-5 text-xs my-2">TITLE</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">{{ __("TITLE") }}</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-1/3 font-semibold"
@@ -221,7 +221,7 @@
                 .run()
             "
           >
-            Title
+            {{ __("Title") }}
           </Button>
           <Button
             class="w-1/3 font-medium"
@@ -235,7 +235,7 @@
                 .run()
             "
           >
-            Subtitle
+            {{ __("Subtitle") }}
           </Button>
           <Button
             class="w-1/3"
@@ -806,14 +806,14 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
-          Transform
+          {{ __("Transform") }}
         </span>
         <div>
           <span
             v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
             class="font-medium text-ink-gray-7 text-base"
           >
-            Import
+            {{ __("Import") }}
           </span>
           <Button
             v-if="$route.meta.documentPage && $store.state.hasWriteAccess"
@@ -822,17 +822,17 @@
           >
             <template #prefix>
               <FileUp class="text-ink-gray-7 w-4 stroke-[1.5]" />
-              Import DOCX
+              {{ __("Import DOCX") }}
             </template>
           </Button>
-          <span class="font-medium text-ink-gray-7 text-base">Export</span>
+          <span class="font-medium text-ink-gray-7 text-base">{{ __("Export") }}</span>
           <Button
             class="w-full justify-start"
             @click="() => emitter.emit('printFile')"
           >
             <template #prefix>
               <FileDown class="text-ink-gray-7 w-4 stroke-[1.5]" />
-              Export PDF
+              {{ __("Export PDF") }}
             </template>
           </Button>
           <Button
@@ -841,7 +841,7 @@
           >
             <template #prefix>
               <LucideImage class="text-ink-gray-7 w-4 stroke-[1.5]" />
-              Export Media
+              {{ __("Export Media") }}
             </template>
           </Button>
           <!-- <Button class="w-full justify-start">
@@ -918,67 +918,67 @@
 </template>
 
 <script>
-import { Avatar, Input, Popover, Badge, Dropdown, Switch } from "frappe-ui"
-import TagInput from "@/components/TagInput.vue"
+import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import Tag from "@/components/Tag.vue"
+import TagInput from "@/components/TagInput.vue"
+import { entitiesDownload } from "@/utils/download"
 import { getIconUrl } from "@/utils/getIconUrl"
+import { Avatar, Badge, Dropdown, Input, Popover, Switch } from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
 import { defineAsyncComponent, markRaw } from "vue"
-import OuterCommentVue from "@/components/DocEditor/components/OuterComment.vue"
 import LineHeight from "../icons/line-height.vue"
-import { entitiesDownload } from "@/utils/download"
 
 import {
-  Plus,
-  Minus,
+  ArrowDownUp,
+  Code,
+  Code2,
+  FileClock,
+  FileDown,
+  FileText,
+  FileUp,
   Heading1,
   Heading2,
   Heading3,
-  FileUp,
-  FileDown,
-  ArrowDownUp,
-  TextQuote,
-  MessageCircle,
-  FileText,
-  FileClock,
-  LucideInfo,
-  Code,
-  Code2,
-  Table2Icon,
   LucideClock,
+  LucideInfo,
+  MessageCircle,
+  Minus,
+  Plus,
+  Table2Icon,
+  TextQuote,
 } from "lucide-vue-next"
 
-import "@fontsource/lora"
-import "@fontsource/geist-mono"
-import "@fontsource/nunito"
-import ColorInput from "../components/ColorInput.vue"
-import Bold from "../icons/Bold.vue"
-import Strikethrough from "../icons/StrikeThrough.vue"
-import Underline from "../icons/Underline.vue"
 import GeneralAccess from "@/components/GeneralAccess.vue"
-import Indent from "../icons/Indent.vue"
-import Outdent from "../icons/Outdent.vue"
-import Codeblock from "../icons/Codeblock.vue"
-import List from "../icons/List.vue"
-import OrderList from "../icons/OrderList.vue"
-import Check from "../icons/Check.vue"
-import Details from "../icons/Details.vue"
-import alignRight from "../icons/AlignRight.vue"
-import alignLeft from "../icons/AlignLeft.vue"
+import { generalAccess, userList } from "@/resources/permissions"
+import { formatDate, formatSize } from "@/utils/format"
+import "@fontsource/geist-mono"
+import "@fontsource/lora"
+import "@fontsource/nunito"
+import { TiptapTransformer } from "@hocuspocus/transformer"
+import { useTimeAgo } from "@vueuse/core"
+import { fromUint8Array, toUint8Array } from "js-base64"
+import * as Y from "yjs"
+import ActivityTree from "../../ActivityTree.vue"
+import AnnotationList from "../components/AnnotationList.vue"
+import ColorInput from "../components/ColorInput.vue"
 import alignCenter from "../icons/AlignCenter.vue"
 import alignJustify from "../icons/AlignJustify.vue"
+import alignLeft from "../icons/AlignLeft.vue"
+import alignRight from "../icons/AlignRight.vue"
 import BlockQuote from "../icons/BlockQuote.vue"
-import Style from "../icons/Style.vue"
+import Bold from "../icons/Bold.vue"
+import Check from "../icons/Check.vue"
+import Codeblock from "../icons/Codeblock.vue"
+import Details from "../icons/Details.vue"
 import Image from "../icons/Image.vue"
+import Indent from "../icons/Indent.vue"
+import List from "../icons/List.vue"
+import OrderList from "../icons/OrderList.vue"
+import Outdent from "../icons/Outdent.vue"
+import Strikethrough from "../icons/StrikeThrough.vue"
+import Style from "../icons/Style.vue"
+import Underline from "../icons/Underline.vue"
 import Video from "../icons/Video.vue"
-import { useTimeAgo } from "@vueuse/core"
-import * as Y from "yjs"
-import { TiptapTransformer } from "@hocuspocus/transformer"
-import { fromUint8Array, toUint8Array } from "js-base64"
-import { formatDate, formatSize } from "@/utils/format"
-import AnnotationList from "../components/AnnotationList.vue"
-import ActivityTree from "../../ActivityTree.vue"
-import { generalAccess, userList } from "@/resources/permissions"
 
 export default {
   name: "DocMenuAndInfoBar",
@@ -1068,38 +1068,38 @@ export default {
       docFont: this.settings.docFont,
       tabs: [
         {
-          name: "Typography",
+          name: __("Typography"),
           icon: markRaw(Style),
           write: true,
         },
         {
-          name: "Insert",
+          name: __("Insert"),
           icon: markRaw(Plus),
           write: true,
         },
         {
-          name: "Document Settings",
+          name: __("Document Settings"),
           icon: markRaw(FileText),
           write: true,
         },
         {
-          name: "Transforms",
+          name: __("Transforms"),
           icon: markRaw(ArrowDownUp),
           write: false,
         },
         {
-          name: "Information",
+          name: __("Information"),
           icon: markRaw(LucideInfo),
           write: false,
         },
         {
-          name: "Versions",
+          name: __("Versions"),
           icon: markRaw(FileClock),
           write: false,
           disabled: this.$store.state.activeEntity.write === 0,
         },
         {
-          name: "Clock",
+          name: __("Clock"),
           icon: markRaw(LucideClock),
           write: false,
           disabled: this.$store.state.user.id === "Guest",

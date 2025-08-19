@@ -3,7 +3,7 @@
     class="inline-flex gap-1 items-center justify-center text-ink-gray-8 border hover:bg-surface-gray-3 h-7 px-2 rounded group cursor-pointer"
   >
     <svg
-      v-if="entity.owner === 'You' && !allowDelete"
+      v-if="entity.owner === __('You') && !allowDelete"
       width="16"
       height="16"
       viewBox="0 0 16 16"
@@ -24,7 +24,7 @@
       {{ tag.title }}
     </span>
     <button
-      v-if="entity.owner === 'You' && allowDelete"
+      v-if="entity.owner === __('You') && allowDelete"
       icon="x"
       @click="$resources.removeTag.submit()"
     >

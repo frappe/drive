@@ -1,25 +1,24 @@
+import editorStyle from "@/components/DocEditor/editor.css?inline"
+import globalStyle from "@/index.css?inline"
+import { getRecents, getTeams, mutate } from "@/resources/files"
 import router from "@/router"
 import store from "@/store"
 import { formatSize } from "@/utils/format"
-import { useTimeAgo } from "@vueuse/core"
-import { mutate, getRecents } from "@/resources/files"
-import { getLink } from "./getLink"
-import { getTeams } from "@/resources/files"
+import { useTimeAgoVi } from "@/utils/useTimeAgoVi"
 import { set } from "idb-keyval"
-import editorStyle from "@/components/DocEditor/editor.css?inline"
-import globalStyle from "@/index.css?inline"
+import { getLink } from "./getLink"
 
 // MIME icons
-import Folder from "@/components/MimeIcons/Folder.vue"
 import Archive from "@/components/MimeIcons/Archive.vue"
-import Document from "@/components/MimeIcons/Document.vue"
-import Spreadsheet from "@/components/MimeIcons/Spreadsheet.vue"
-import Presentation from "@/components/MimeIcons/Presentation.vue"
 import Audio from "@/components/MimeIcons/Audio.vue"
+import Document from "@/components/MimeIcons/Document.vue"
+import Folder from "@/components/MimeIcons/Folder.vue"
 import Image from "@/components/MimeIcons/Image.vue"
-import Video from "@/components/MimeIcons/Video.vue"
 import PDF from "@/components/MimeIcons/PDF.vue"
+import Presentation from "@/components/MimeIcons/Presentation.vue"
+import Spreadsheet from "@/components/MimeIcons/Spreadsheet.vue"
 import Unknown from "@/components/MimeIcons/Unknown.vue"
+import Video from "@/components/MimeIcons/Video.vue"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
   store.commit("setActiveEntity", entity)
@@ -29,7 +28,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
       getRecents.setData((data) => [...(data || []), entity])
     mutate([entity], (e) => {
       e.accessed = Date()
-      entity.relativeAccessed = useTimeAgo(entity.accessed)
+      entity.relativeAccessed = useTimeAgoVi(entity.accessed)
     })
   }
   if (new_tab) {
@@ -81,16 +80,6 @@ export const sortEntities = (rows, order) => {
   return rows
 }
 
-export const manageBreadcrumbs = (to) => {
-  if (
-    store.state.breadcrumbs[store.state.breadcrumbs.length - 1]?.name !==
-    to.params.entityName
-  ) {
-    store.state.breadcrumbs.splice(1)
-    store.state.breadcrumbs.push({ loading: true })
-  }
-}
-
 export const groupByFolder = (entities) => {
   return {
     Folders: entities.filter((x) => x.is_group === 1),
@@ -101,8 +90,8 @@ export const groupByFolder = (entities) => {
 export const prettyData = (entities) => {
   return entities.map((entity) => {
     entity.file_size_pretty = formatSize(entity.file_size)
-    entity.relativeModified = useTimeAgo(entity.creation) // Changed to use upload time (creation)
-    if (entity.accessed) entity.relativeAccessed = useTimeAgo(entity.accessed)
+    entity.relativeModified = useTimeAgoVi(entity.creation) // Changed to use upload time (creation)
+    if (entity.accessed) entity.relativeAccessed = useTimeAgoVi(entity.accessed)
     return entity
   })
 }

@@ -99,38 +99,38 @@
     v-model="defaultTeam"
     placeholder="Not set"
     :options="teamOptions"
-    label="Default Team"
+    :label="__('Default Team')"
     class="mb-3"
   />
   <Switch
     v-model="singleClick"
-    label="Single click to open files and folders"
+    :label="__('Single click to open files and folders')"
     class="!px-0 hover:!bg-inherit"
   />
   <Switch
     v-model="detectLinks"
-    label="Automatically detect links"
+    :label="__('Automatically detect links')"
     class="!px-0 hover:!bg-inherit"
   />
 </template>
 <script setup>
 import {
-  Button,
-  Input,
+  Autocomplete,
   Avatar,
+  Button,
+  createDocumentResource,
   Dialog,
   FileUploader,
+  Input,
   Switch,
-  Autocomplete,
-  createDocumentResource,
 } from "frappe-ui"
 import LucideLink from "~icons/lucide/link"
 import LucideX from "~icons/lucide/x"
 
-import { useStore } from "vuex"
-import { ref, computed, watch } from "vue"
 import { getTeams } from "@/resources/files"
-import { settings, setSettings } from "@/resources/permissions"
+import { setSettings, settings } from "@/resources/permissions"
+import { computed, ref, watch } from "vue"
+import { useStore } from "vuex"
 
 const store = useStore()
 

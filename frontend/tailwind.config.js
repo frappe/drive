@@ -15,7 +15,8 @@ export default {
   },
   theme: {
     fontFamily: {
-      "fd-sans": ["InterVar", "sans-serif"],
+      sans: ["Inter", "InterVar", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "sans-serif"],
+      "fd-sans": ["Inter", "InterVar", "sans-serif"],
       "fd-serif": ["Lora", "serif"],
       "fd-mono": ["Geist Mono", "serif"],
       "fd-round": ["Nunito", "serif"],

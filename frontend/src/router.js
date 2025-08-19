@@ -1,7 +1,7 @@
 import { createResource } from "frappe-ui"
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
-import { manageBreadcrumbs } from "./utils/files"
+import { manageBreadcrumbs } from "./utils/breadcrumbs"
 
 function clearStore() {
   store.commit("setActiveEntity", null)
@@ -9,10 +9,28 @@ function clearStore() {
 
 async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
-    document.title = __(to.name)
+    // Vietnamese title mapping
+    const titleMapping = {
+      'Home': 'Trang chủ',
+      'Team': 'Nhóm',
+      'Recents': 'Gần đây',
+      'Favourites': 'Yêu thích',
+      'Trash': 'Thùng rác',
+      'Inbox': 'Hộp thư',
+      'Shared': 'Chia sẻ',
+      'Teams': 'Nhóm',
+      'Login': 'Đăng nhập',
+      'Signup': 'Đăng ký',
+      'Setup': 'Thiết lập'
+    }
+    
+    // Set Vietnamese title directly
+    const vietnameseTitle = titleMapping[to.name] || to.name
+    document.title = vietnameseTitle
+    
     if (to.name !== "Team")
       store.commit("setBreadcrumbs", [
-        { label: __(to.name), name: to.name, route: to.path },
+        { label: vietnameseTitle, name: to.name, route: to.path },
       ])
   }
 }
@@ -29,9 +47,14 @@ const routes = [
         cache: "settings",
       })
       if (!settings.data) await settings.fetch()
-      return settings.data.default_team
-        ? "/t/" + settings.data.default_team
-        : "/teams"
+      
+      // If user has default team, go there
+      if (settings.data.default_team) {
+        return "/t/" + settings.data.default_team
+      }
+
+      // If no teams available, go to teams page
+      return "/teams"
     },
   },
   {
@@ -156,6 +179,37 @@ router.beforeEach(async (to, from, next) => {
 
 router.afterEach((to) => {
   sessionStorage.setItem("currentRoute", to.href)
+})
+
+// Update breadcrumbs when translations are ready
+window.addEventListener('translationsReady', () => {
+  // Re-run setRootBreadCrumb with current route to update with translations
+  const currentRoute = router.currentRoute.value
+  if (currentRoute && store.getters.isLoggedIn) {
+    // Vietnamese title mapping
+    const titleMapping = {
+      'Home': 'Trang chủ',
+      'Team': 'Nhóm',
+      'Recents': 'Gần đây',
+      'Favourites': 'Yêu thích',
+      'Trash': 'Thùng rác',
+      'Inbox': 'Hộp thư',
+      'Shared': 'Chia sẻ',
+      'Teams': 'Nhóm',
+      'Login': 'Đăng nhập',
+      'Signup': 'Đăng ký',
+      'Setup': 'Thiết lập'
+    }
+    
+    const vietnameseTitle = titleMapping[currentRoute.name] || currentRoute.name
+    document.title = vietnameseTitle
+    
+    if (currentRoute.name !== "Team") {
+      store.commit("setBreadcrumbs", [
+        { label: vietnameseTitle, name: currentRoute.name, route: currentRoute.path },
+      ])
+    }
+  }
 })
 
 export default router

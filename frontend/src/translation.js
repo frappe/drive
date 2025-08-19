@@ -3,12 +3,17 @@ import { createResource } from "frappe-ui"
 export default function translationPlugin(app) {
   app.config.globalProperties.__ = translate
   window.__ = translate
-  if (!window.translatedMessages) fetchTranslations()
+  fetchTranslations()
 }
 
 function translate(message) {
   let translatedMessages = window.translatedMessages || {}
   let translatedMessage = translatedMessages[message] || message
+  
+  // Debug log để kiểm tra
+  if (message && translatedMessages[message] && translatedMessages[message] !== message) {
+    console.log(`Translated: "${message}" -> "${translatedMessages[message]}"`)
+  }
 
   const hasPlaceholders = /{\d+}/.test(message)
   if (!hasPlaceholders) {
@@ -26,10 +31,28 @@ function translate(message) {
 function fetchTranslations() {
   createResource({
     url: "drive.api.product.get_translations",
-    cache: "translations",
+    cache: ["translations", Date.now()], // Add timestamp to prevent caching
     auto: true,
     transform: (data) => {
-      window.translatedMessages = data
+      console.log("Loaded translations:", data)
+      console.log("Number of translations:", Object.keys(data || {}).length)
+      window.translatedMessages = data || {}
+      
+      // Test a few translations immediately
+      const testKeys = ["Home", "Search", "Settings"];
+      testKeys.forEach(key => {
+        if (window.translatedMessages[key]) {
+          console.log(`✓ ${key} -> ${window.translatedMessages[key]}`);
+        } else {
+          console.log(`✗ ${key} not found`);
+        }
+      });
+      
+      return data
     },
+    onError: (error) => {
+      console.error("Translation fetch error:", error)
+      window.translatedMessages = {}
+    }
   })
 }

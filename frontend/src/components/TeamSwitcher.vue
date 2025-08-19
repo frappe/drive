@@ -45,18 +45,17 @@
           v-else
           class="w-full text-sm text-ink-gray-7 h-7 flex justify-center items-center"
         >
-          <div>No other teams</div>
+          <div>{{ __("No other teams") }}</div>
         </div>
       </div>
     </template>
   </Popover>
 </template>
 <script setup>
+import { getTeams, LISTS } from "@/resources/files"
 import { Popover } from "frappe-ui"
-import { getTeams } from "@/resources/files"
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { LISTS } from "@/resources/files"
 
 getTeams.fetch()
 const route = useRoute()

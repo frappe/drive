@@ -27,13 +27,13 @@
         size="md"
         @click="$router.replace({ path: '/' })"
       >
-        <div class="flex gap-2"><LucideHome class="size-4" />Go Home</div>
+        <div class="flex gap-2"><LucideHome class="size-4" />{{ __("Go Home") }}</div>
       </Button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Button } from "frappe-ui"
+import { Button } from "frappe-ui";
 defineProps({ error: Object })
 </script>

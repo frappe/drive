@@ -21,17 +21,17 @@ export function getLink(entity, copy = true, withDomain = true) {
 
   if (!copy) return link
   try {
-    copyToClipboard(link).then(() => toast("Copied link"))
+    copyToClipboard(link).then(() => toast(__("Copied link")))
   } catch (err) {
     if (err.name === "NotAllowedError") {
       toast({
         icon: "alert-triangle",
         iconClasses: "text-red-700",
-        title: "Clipboard permission denied",
+        title: __("Clipboard permission denied"),
         position: "bottom-right",
       })
     } else {
-      console.error("Failed to copy link:", err)
+      console.error(__("Failed to copy link:"), err)
     }
   }
 }

@@ -56,37 +56,35 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, defineProps, markRaw, computed } from "vue"
-import { Dialog, Button } from "frappe-ui"
+import { Button, Dialog } from "frappe-ui"
+import { computed, defineProps, markRaw, ref } from "vue"
 // Profile removed from Settings
-import StorageSettings from "./StorageSettings.vue"
-import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
 import LucideTag from "~icons/lucide/tag"
+import StorageSettings from "./StorageSettings.vue"
 // import LucideUser from "~icons/lucide/user"
-import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
 
 let tabs = [
   // {
   //   enabled: true,
-  //   label: "Profile",
+  //   label: __("Profile"),
   //   icon: LucideUser,
   //   component: markRaw(ProfileSettings),
   // },
+  // {
+  //   enabled: true,
+  //   label: __("Users"),
+  //   icon: LucideUserPlus,
+  //   component: markRaw(UserListSettings),
+  // },
   {
-    enabled: true,
-    label: "Users",
-    icon: LucideUserPlus,
-    component: markRaw(UserListSettings),
-  },
-  {
-    label: "Storage",
+    label: __("Storage"),
     icon: LucideCloudCog,
     component: markRaw(StorageSettings),
   },
   {
-    label: "Tags",
+    label: __("Tags"),
     icon: LucideTag,
     component: markRaw(TagSettings),
   },
@@ -97,7 +95,8 @@ const props = defineProps({
   modelValue: Boolean,
   suggestedTab: Number,
 })
-let activeTab = ref(tabs[props.suggestedTab])
+// Mặc định luôn mở tab Storage (index 0)
+let activeTab = ref(tabs[0])
 
 const open = computed({
   get() {
@@ -105,6 +104,10 @@ const open = computed({
   },
   set(newValue) {
     emit("update:modelValue", newValue)
+    // Reset về tab Storage khi đóng dialog
+    if (!newValue) {
+      activeTab.value = tabs[0]
+    }
   },
 })
 </script>

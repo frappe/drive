@@ -11,14 +11,13 @@
         <div class="flex w-full justify-between gap-x-15 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             <template v-if="props.entities.length > 1">
-              Moving {{ props.entities.length }} items
+              {{ __('Moving') }} {{ props.entities.length }} {{ __('items') }}
             </template>
             <template v-else>
-              Moving "
-              <div class="truncate max-w-[80%]">
-                {{ props.entities[0].title }}
-              </div>
-              "
+              <span class="flex items-center">
+                {{ __('Moving') }} "
+                <span class="truncate max-w-[80%]">{{ props.entities[0].title }}</span>"
+              </span>
             </template>
           </div>
           <Button
@@ -35,7 +34,10 @@
           v-if="allFolders.data"
           v-model="folderSearch"
           class="mb-2"
-          placeholder="Search for a folder"
+          :placeholder="'Tìm kiếm thư mục...'"
+          :empty-message="'Không có thư mục nào.'"
+          :no-results-text="'Không tìm thấy kết quả'"
+          :search-placeholder="'Tìm kiếm'"
           :options="
             allFolders.data.filter((k) =>
               currentFolder === ''
@@ -43,6 +45,8 @@
                 : k.value !== currentFolder
             )
           "
+          @update:model-value="translateAutocompleteText"
+          @focus="translateAutocompleteText"
         >
           <template #suffix-icon>&#8203;</template>
         </Autocomplete>
@@ -119,7 +123,7 @@
                         >{{ node.label }}
                         <em
                           v-if="$store.state.currentFolder.name === node.value"
-                          >(current)</em
+                          >({{ __('current') }})</em
                         ></span
                       >
                       <Button
@@ -132,7 +136,7 @@
                             let obj = {
                               parent: node.value,
                               value: null,
-                              label: 'New folder',
+                              label: __('New folder'),
                             }
                             node.children.push(obj)
                             if (isCollapsed) toggleCollapsed(e)
@@ -149,7 +153,7 @@
                 v-if="!tree.children.length"
                 class="text-base text-center pt-5"
               >
-                No folders yet.
+                {{ __('No folders yet.') }}
               </p>
             </div>
           </template>
@@ -157,7 +161,7 @@
         <div class="flex items-center justify-between pt-4">
           <div class="flex flex-col">
             <div class="flex items-center my-auto justify-start">
-              <p class="text-sm pr-0.5">Moving to:</p>
+              <p class="text-sm pr-0.5">{{ __('Moving to:') }}</p>
               <Dropdown
                 v-if="dropDownBreadcrumbs.length"
                 class="h-7"
@@ -199,7 +203,7 @@
           </div>
           <Button
             variant="solid"
-            class="ml-auto"
+            class="ml-auto !bg-[#0149C1] text-white hover:!opacity-90"
             size="sm"
             :disabled="
               currentFolder === '' && breadcrumbs[0].title == $route.name
@@ -217,7 +221,7 @@
             <template #prefix>
               <LucideMoveUpRight class="size-4" />
             </template>
-            Move
+            {{ __('Move') }}
           </Button>
         </div>
       </div>
@@ -225,19 +229,19 @@
   </Dialog>
 </template>
 <script setup>
-import { watch, computed, h, ref, reactive } from "vue"
+import { computed, h, nextTick, onMounted, reactive, ref, watch } from "vue"
 
+import { allFolders, move } from "@/resources/files"
 import {
+  Autocomplete,
+  Button,
   createResource,
   Dialog,
-  Button,
-  Tabs,
   Dropdown,
-  Autocomplete,
-  Tree,
   Input,
+  Tabs,
+  Tree,
 } from "frappe-ui"
-import { move, allFolders } from "@/resources/files"
 
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -273,14 +277,14 @@ allFolders.data.forEach((item) => {
 
 const homeRoot = reactive({
   name: "",
-  label: "Home",
+  label: __("Home"),
   children: [],
   isCollapsed: true,
 })
 
 const teamRoot = reactive({
   name: "",
-  label: "Team",
+  label: __("Team"),
   children: [],
   isCollapsed: true,
 })
@@ -331,21 +335,21 @@ const dropDownBreadcrumbs = computed(() => {
 
 const tabs = [
   {
-    label: "Home",
+    label: __("Home"),
     icon: h(LucideHome, { class: "size-4" }),
   },
   {
-    label: "Team",
+    label: __("Team"),
     icon: h(LucideBuilding2, { class: "size-4" }),
   },
   // {
-  //   label: "Favourites",
+  //   label: __("Favourites"),
   //   icon: h(Star, { class: "size-4" }),
   // },
 ]
 
 const breadcrumbs = ref([
-  { name: "", title: in_home ? "Home" : "Team", is_private: in_home ? 1 : 0 },
+  { name: "", title: in_home ? __("Home") : __("Team"), is_private: in_home ? 1 : 0 },
 ])
 const folderSearch = ref(null)
 
@@ -355,7 +359,7 @@ const folderPermissions = createResource({
     entity_name: currentFolder.value,
   },
   onSuccess: (data) => {
-    let first = [{ name: "", title: data.is_private ? "Home" : "Team" }]
+    let first = [{ name: "", title: data.is_private ? __('Home') : __('Team') }]
     breadcrumbs.value = first.concat(data.breadcrumbs.slice(1))
   },
 })
@@ -377,14 +381,14 @@ watch(
     tree.value = tabIndex.value === 0 ? homeRoot : teamRoot
     switch (newValue) {
       case 0:
-        breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }]
+        breadcrumbs.value = [{ name: "", title: __('Home'), is_private: 1 }]
         folderContents.fetch({
           entity_name: "",
           personal: 1,
         })
         break
       case 1:
-        breadcrumbs.value = [{ name: "", title: "Team", is_private: 0 }]
+        breadcrumbs.value = [{ name: "", title: __('Team'), is_private: 0 }]
         folderContents.fetch({
           entity_name: "",
           personal: 0,
@@ -479,4 +483,97 @@ function closeEntity(name) {
     })
   }
 }
+
+// Function to translate Autocomplete text
+function translateAutocompleteText() {
+  nextTick(() => {
+    // Find all elements that might contain "No results found"
+    const elements = document.querySelectorAll('*')
+    elements.forEach(el => {
+      if (el.textContent === 'No results found') {
+        el.textContent = 'Không tìm thấy kết quả'
+      }
+      if (el.textContent === 'Search') {
+        el.textContent = 'Tìm kiếm'
+      }
+    })
+    
+    // Handle placeholder specifically
+    const inputs = document.querySelectorAll('input[placeholder="Search"]')
+    inputs.forEach(input => {
+      input.placeholder = 'Tìm kiếm thư mục...'
+    })
+    
+    // Handle autocomplete dropdown
+    const dropdowns = document.querySelectorAll('.dropdown-content, .autocomplete-dropdown, [role="listbox"]')
+    dropdowns.forEach(dropdown => {
+      const walker = document.createTreeWalker(
+        dropdown,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      )
+      
+      let node
+      while (node = walker.nextNode()) {
+        if (node.textContent.trim() === 'No results found') {
+          node.textContent = 'Không tìm thấy kết quả'
+        }
+      }
+    })
+  })
+}
+
+// Watch for dialog open and autocomplete changes
+watch(open, (isOpen) => {
+  if (isOpen) {
+    translateAutocompleteText()
+    // Set up observer for dynamic content
+    setTimeout(() => {
+      const observer = new MutationObserver(() => {
+        translateAutocompleteText()
+      })
+      
+      const dialog = document.querySelector('[role="dialog"]')
+      if (dialog) {
+        observer.observe(dialog, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        })
+        
+        // Cleanup observer when dialog closes
+        watch(open, (stillOpen) => {
+          if (!stillOpen) {
+            observer.disconnect()
+          }
+        })
+      }
+    }, 100)
+  }
+})
+
+// Watch folderSearch changes to trigger translation
+watch(folderSearch, () => {
+  setTimeout(translateAutocompleteText, 50)
+})
+
+onMounted(() => {
+  translateAutocompleteText()
+})
 </script>
+
+<style scoped>
+/* Simplified CSS for better performance */
+:deep(.autocomplete input) {
+  &::placeholder {
+    color: #9ca3af !important;
+  }
+}
+
+/* Ensure Vietnamese text displays correctly */
+:deep(.dropdown-content),
+:deep(.autocomplete-dropdown) {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+</style>
