@@ -20,7 +20,6 @@ body {
   caret-color: theme("colors.blue.600");
   padding: 2.5em 0;
   background: white;
-  font-size: 15px;
 }
 
 @media only screen and (max-width: 640px) {
