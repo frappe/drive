@@ -50,7 +50,7 @@ const routes = [
       
       // If user has default team, go there
       if (settings.data.default_team) {
-        return "/t/" + settings.data.default_team
+        return "/t/" + settings.data.default_team + "/team"
       }
 
       // If no teams available, go to teams page
