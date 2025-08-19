@@ -65,7 +65,7 @@ const OPTIONS = [
       }),
   },
   {
-    label: "Geist Mono",
+    label: "Geist",
     value: "geist",
     action: (editor) =>
       editor.chain().focus().setFontFamily("var(--font-geist)").run(),
