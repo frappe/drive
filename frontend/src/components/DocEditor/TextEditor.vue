@@ -94,6 +94,7 @@ import LucideMessageCircle from "~icons/lucide/message-circle"
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
+
   return editor
 })
 defineExpose({ editor })
@@ -117,6 +118,14 @@ const writerSettings = useDoc({
   doctype: "Drive Settings",
   name: store.state.user.id,
   immediate: true,
+})
+writerSettings.onSuccess(({ font_family }) => {
+  if (!rawContent.value)
+    editor.value
+      .chain()
+      .focus()
+      .setFontFamily(`var(--font-${font_family})`)
+      .run()
 })
 const createNewComment = (editor) => {
   showComments.value = true
