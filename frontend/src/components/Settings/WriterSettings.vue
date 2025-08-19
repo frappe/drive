@@ -6,63 +6,57 @@
   </div>
   <div class="overflow-y-auto ps-1">
     <div class="flex flex-col gap-4 pb-5 pr-5">
-      {{ settings }}
       <FormControl
         type="select"
         label="Font Family"
-        :options="fontFamilyOptions"
+        :options="FONT_FAMILIES"
         v-model="settings.font_family"
-        description="Choose the font family for the editor."
+        description="Choose the default font family for new documents."
       />
       <FormControl
         type="select"
         label="Font Size"
         :options="fontSizeOptions"
         v-model="settings.font_size"
-        description="Set the font size (px)."
+        description="Set the font size (px) of the editor."
       />
       <FormControl
         type="select"
         label="Line Height"
         :options="lineHeightOptions"
         v-model="settings.line_height"
-        description="Set the line height."
+        description="Set the line height of the editor."
       />
       <FormControl
         label="Custom Classes"
-        placeholder="font-lg"
+        placeholder="font-semibold"
         v-model="settings.custom_css"
-        description="Any additional classes to apply to the editor."
+        description="Any additional classes to apply."
         type="textarea"
       />
-      <!-- <Button
+      <Button
         label="Update"
         variant="solid"
-        :disabled="!edited"
-        :loading="updateSettings.isLoading"
-        @click="updateSettings.submit()"
+        :disabled="
+          Object.keys(settings).every(
+            (key) => settings[key] === writerSettings.doc[key]
+          )
+        "
+        :loading="writerSettings.loading"
+        @click="writerSettings.setValue.submit(settings)"
         class="mt-4"
-      /> -->
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, watch } from "vue"
+import { reactive, watch } from "vue"
 import { FormControl, useDoc } from "frappe-ui"
 import { useStore } from "vuex"
+import { FONT_FAMILIES } from "@/utils/files"
 
 const store = useStore()
-
-const fontFamilyOptions = [
-  { label: "Inter", value: "Inter" },
-  { label: "Serif", value: "serif" },
-  { label: "Monospace", value: "monospace" },
-  { label: "Sans-serif", value: "sans-serif" },
-  { label: "Georgia", value: "Georgia" },
-  { label: "Arial", value: "Arial" },
-  { label: "Times New Roman", value: "Times New Roman" },
-]
 
 const fontSizeOptions = [
   { label: "13px", value: 14 },
