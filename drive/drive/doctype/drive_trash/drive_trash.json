@@ -1,0 +1,71 @@
+{
+  "actions": [],
+  "autoname": "autoincrement",
+  "creation": "2025-01-23 12:12:04.979723",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": ["user", "entity", "team", "original_path", "trashed_on"],
+  "fields": [
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "User",
+      "options": "User",
+      "reqd": 1
+    },
+    {
+      "fieldname": "entity",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Drive File",
+      "options": "Drive File",
+      "reqd": 1
+    },
+    {
+      "fieldname": "team",
+      "fieldtype": "Link",
+      "label": "Team",
+      "options": "Drive Team",
+      "reqd": 1
+    },
+    {
+      "fieldname": "original_path",
+      "fieldtype": "Data",
+      "label": "Original Path"
+    },
+    {
+      "fieldname": "trashed_on",
+      "fieldtype": "Datetime",
+      "label": "Trashed On",
+      "default": "now"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2025-04-03 16:00:19.919074",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Trash",
+  "naming_rule": "Autoincrement",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "All",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "trashed_on",
+  "sort_order": "DESC",
+  "states": [],
+  "title_field": "entity"
+}
+
