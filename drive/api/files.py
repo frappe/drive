@@ -16,12 +16,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -166,7 +166,7 @@ def get_thumbnail(entity_name):
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
             elif drive_file.mime_type == "frappe_doc":
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
-                thumbnail_data = html[:1000] if html else ''
+                thumbnail_data = html[:1000] if html else ""
             else:
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
                 thumbnail_data = BytesIO(thumbnail.read())
@@ -368,7 +368,10 @@ def save_doc(entity_name, doc_name, content):
         return
 
     frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-    frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
+    file = frappe.get_doc("Drive File", entity_name)
+    file._modified = datetime.now()
+    file.file_size = len(content.encode("utf-8"))
+    file.save()
 
     mentions = extract_mentions(content)
     if mentions:
