@@ -10,7 +10,12 @@
       <FTextEditor
         ref="textEditor"
         class="min-w-full md:min-w-[65ch]"
-        editor-class="prose-sm min-h-[4rem]"
+        :editor-class="[
+          'prose-sm min-h-[4rem]',
+          `text-[${writerSettings.doc?.font_size || 15}px]`,
+          `leading-[${writerSettings.doc?.line_height || 1.5}]`,
+          writerSettings.doc?.custom_css,
+        ]"
         :content="rawContent"
         :editable="!!entity.write"
         :upload-function="
@@ -53,7 +58,12 @@
 
 <script setup>
 import { toast } from "@/utils/toasts.js"
-import { TextEditor as FTextEditor, debounce, useFileUpload } from "frappe-ui"
+import {
+  TextEditor as FTextEditor,
+  debounce,
+  useFileUpload,
+  useDoc,
+} from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
 import {
   computed,
@@ -84,6 +94,7 @@ import LucideMessageCircle from "~icons/lucide/message-circle"
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
+
   return editor
 })
 defineExpose({ editor })
@@ -103,6 +114,19 @@ const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
 
+const writerSettings = useDoc({
+  doctype: "Drive Settings",
+  name: store.state.user.id,
+  immediate: true,
+})
+writerSettings.onSuccess(({ font_family }) => {
+  if (!rawContent.value)
+    editor.value
+      .chain()
+      .focus()
+      .setFontFamily(`var(--font-${font_family})`)
+      .run()
+})
 const createNewComment = (editor) => {
   showComments.value = true
   const id = uuidv4()

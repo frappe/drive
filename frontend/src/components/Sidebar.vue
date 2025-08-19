@@ -192,53 +192,6 @@ watch(
   },
   { immediate: true }
 )
-// const settingsItems = computed(() => {
-//   return [
-//     {
-//       group: __("Manage"),
-//       hideLabel: true,
-//       items: [
-//         {
-//           component: markRaw(TeamSwitcher),
-//         },
-//         {
-//           component: markRaw(AppSwitcher),
-//         },
-//         {
-//           icon: LucideBook,
-//           label: __("Documentation"),
-//           onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
-//         },
-//         {
-//           icon: LucideBadgeHelp,
-//           label: __("Support"),
-//           onClick: () => window.open("https://t.me/frappedrive", "_blank"),
-//         },
-//         {
-//           icon: LucideMoon,
-//           label: "Toggle theme",
-//           onClick: toggleTheme,
-//         },
-//       ],
-//     },
-//     {
-//       group: __("Others"),
-//       hideLabel: true,
-//       items: [
-//         {
-//           icon: "settings",
-//           label: __("Settings"),
-//           onClick: () => (showSettings.value = true),
-//         },
-//         {
-//           icon: "log-out",
-//           label: __("Log out"),
-//           onClick: logout,
-//         },
-//       ],
-//     },
-//   ]
-// })
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute("data-theme")

@@ -5,14 +5,14 @@ body {
   --font-lora: "Lora", serif;
   --font-roboto: "Roboto", inherit;
   --font-merriweather: "Merriweather", serif;
-  --font-geist: "Geist Mono", monospace;
-  --font-ibm-plex: "IBM Plex Sans", inherit;
+  --font-geist: "Geist", serif;
+  --font-ibm-plex: "IBM Plex Sans", sans-serif;
   --font-eb-garamond: "EB Garamond", serif;
   --font-jetbrains: "JetBrains Mono", monospace;
   --font-comfortaa: "Comfortaa", cursive;
   --font-caveat: "Caveat", cursive;
-  --font-nunito: "Nunito", inherit;
-  --font-comic-sans: "Comic Sans MS", inherit;
+  --font-nunito: "Nunito", sans-serif;
+  --font-comic-sans: "Comic Sans MS", sans-serif;
 }
 
 .prose-sm {
@@ -20,7 +20,6 @@ body {
   caret-color: theme("colors.blue.600");
   padding: 2.5em 0;
   background: white;
-  font-size: 15px;
 }
 
 @media only screen and (max-width: 640px) {

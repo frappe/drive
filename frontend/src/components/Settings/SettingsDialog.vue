@@ -64,6 +64,7 @@ import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
+import LucideFileText from "~icons/lucide/file-text"
 import LucideCloudUpload from "~icons/lucide/cloud-upload"
 import LucideTag from "~icons/lucide/tag"
 import LucideX from "~icons/lucide/x"
@@ -71,6 +72,7 @@ import LucideUser from "~icons/lucide/user"
 import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
 import BackendSettings from "./BackendSettings.vue"
+import WriterSettings from "./WriterSettings.vue"
 
 let tabs = [
   {
@@ -87,6 +89,11 @@ let tabs = [
     label: "Storage",
     icon: LucideCloudCog,
     component: markRaw(StorageSettings),
+  },
+  {
+    label: "Writer",
+    icon: LucideFileText,
+    component: markRaw(WriterSettings),
   },
   {
     label: "Tags",
