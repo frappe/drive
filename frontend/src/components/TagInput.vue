@@ -22,13 +22,13 @@
               v-if="!entityTags.data?.length"
               class="text-ink-gray-7 text-base"
             >
-              This file has no tags
+              Thư mục chưa có nhãn
             </span>
             <Button
               class="ml-auto"
               @click="togglePopover()"
             >
-              Manage
+              Quản lý nhãn
             </Button>
           </div>
         </slot>
@@ -123,7 +123,7 @@
               class="px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
               @click="removeTag.submit()"
             >
-              Clear all
+              Xóa tất cả nhãn
             </Button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="entity && store.state.showInfo"
-    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[352px] sm:max-w-[452px] shrink-0 whitespace-nowrap"
+    class="transition-all duration-200 ease-in-out h-full border-l sm:min-w-[452px] sm:max-w-[452px] shrink-0 whitespace-nowrap"
   >
     <div>
       <!-- Information -->
@@ -84,7 +84,7 @@
                 class="col-span-1 text-ink-gray-8"
                 :title="entity.mime_type"
               >
-                {{ entity.file_type }}
+                  {{__(`${entity.file_type}`) }}
               </span>
               <span
                 v-if="entity.file_size"
@@ -150,7 +150,7 @@
                   <span class="font-medium text-ink-gray-8">{{
                     comment.comment_by
                   }}</span>
-                  <span>∙ {{ comment.creation }}</span>
+                  <span>• {{ __('lúc') }} {{ formatDate24(comment.creation) }}</span>
                 </div>
                 <div
                   class="my-2 text-base text-ink-gray-7 break-word leading-snug comment-content"
@@ -198,14 +198,14 @@
               </div>
             </div>
           </div>
-          <div class="flex items-center justify-start py-2">
+          <div class="flex items-start justify-start py-2">
             <Avatar
               :label="fullName"
               :image="imageURL"
               class="mr-3"
             />
             <div
-              class="flex border w-full bg-transparent rounded mr-1 focus-within:ring-2 ring-outline-gray-3 hover:bg-surface-gray-2 focus-within:bg-surface-gray-2 group"
+              class="flex w-full bg-transparent rounded ring-outline-gray-3 group"
             >
               <div class="flex-1 min-w-0">
                 <RichCommentEditor
@@ -216,7 +216,7 @@
                   @mentioned-users="(val) => (mentionedUsers = val)"
                 />
               </div>
-              <div class="flex-shrink-0 self-start pt-2 pr-2">
+              <div class="flex-shrink-0 self-start">
                 <Button
                   class="hover:bg-transparent"
                   variant="ghost"
@@ -345,6 +345,32 @@ const thumbnailUrl = computed(() => {
   return res
 })
 
+// Hàm chuyển đổi file_type sang tiếng Việt
+function getFileTypeVi(type) {
+  if (!type) return ''
+  const map = {
+    'pdf': 'Tệp PDF',
+    'doc': 'Tài liệu Word',
+    'docx': 'Tài liệu Word',
+    'xls': 'Bảng tính Excel',
+    'xlsx': 'Bảng tính Excel',
+    'ppt': 'Bản trình chiếu PowerPoint',
+    'pptx': 'Bản trình chiếu PowerPoint',
+    'jpg': 'Ảnh JPG',
+    'jpeg': 'Ảnh JPG',
+    'png': 'Ảnh PNG',
+    'gif': 'Ảnh GIF',
+    'txt': 'Tệp văn bản',
+    'csv': 'Tệp CSV',
+    'zip': 'Tệp nén ZIP',
+    'rar': 'Tệp nén RAR',
+    'mp3': 'Âm thanh MP3',
+    'mp4': 'Video MP4',
+    'folder': 'Thư mục',
+    // Thêm các loại khác nếu cần
+  }
+  return map[type.toLowerCase()] || type
+}
 function switchTab(val) {
   if (store.state.showInfo == false) {
     store.commit("setShowInfo", !store.state.showInfo)
@@ -354,6 +380,14 @@ function switchTab(val) {
   } else {
     store.commit("setInfoSidebarTab", val)
   }
+}
+
+function formatDate24(date) {
+  const d = new Date(date)
+  const day = d.toLocaleDateString("vi-VN")
+  const time = d
+    .toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false })
+  return `${day} ${time}`
 }
 
 watch(entity, (newEntity) => {
@@ -537,6 +571,13 @@ function renderCommentContent(content) {
 }
 
 /* Ensure mentions are styled in comment content */
+
+:deep(.comment-content) {
+  white-space: pre-line;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
 :deep(.comment-content span[data-type="mention"]) {
   background-color: rgba(59, 130, 246, 0.1) !important;
   color: #3b82f6 !important;

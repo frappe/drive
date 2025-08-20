@@ -249,11 +249,11 @@
                 .run()
             "
           >
-            Heading
+            Đầu đề
           </Button>
         </div>
 
-        <span class="font-medium text-ink-gray-5 text-xs my-2">CONTENT</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">Nội dung</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-1/3 font-bold"
@@ -268,7 +268,7 @@
                 .run()
             "
           >
-            Strong
+            In đậm
           </Button>
           <Button
             class="w-1/3"
@@ -282,7 +282,7 @@
                 .run()
             "
           >
-            Body
+            Nội dung
           </Button>
           <Button
             class="w-1/3"
@@ -298,10 +298,10 @@
                 .run()
             "
           >
-            Caption
+            Chú thích
           </Button>
         </div>
-        <span class="font-medium text-ink-gray-5 text-xs my-2">GROUPS</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">Nhóm</span>
         <div
           class="flex flex-row w-full bg-surface-gray-2 justify-stretch items-stretch rounded p-0.5 space-x-0.5 h-8 mb-2"
         >
@@ -489,7 +489,7 @@
         </div>
 
         <span class="font-medium text-ink-gray-5 text-xs my-2">
-          DECORATIONS
+          Trang trí
         </span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
@@ -502,7 +502,7 @@
                 class="w-4"
               />
             </template>
-            Block
+            Khuôn
           </Button>
           <Button
             class="w-full"
@@ -514,12 +514,12 @@
                 class="w-4"
               />
             </template>
-            Focus
+            Trích dẫn
           </Button>
         </div>
 
         <span class="font-medium text-ink-gray-5 text-xs mt-2 mb-1">
-          TEXT COLOR
+          MÀU VĂN BẢN
         </span>
         <ColorInput
           class="mt-0.5 mb-1"
@@ -527,7 +527,7 @@
           @change="(value) => editor.chain().focus().setColor(value).run()"
         />
         <span class="font-medium text-ink-gray-5 text-xs mt-2 mb-1">
-          BACKGROUND COLOR
+          MÀU NỀN
         </span>
         <ColorInput
           class="mt-0.5 mb-6"
@@ -536,7 +536,7 @@
             (value) => editor.chain().focus().toggleHighlight(value).run()
           "
         />
-        <span class="font-medium text-ink-gray-5 text-xs my-2">FONT</span>
+        <span class="font-medium text-ink-gray-5 text-xs my-2">CHỮ</span>
         <div class="w-full flex justify-between gap-x-1.5">
           <Button
             class="w-1/3"
@@ -594,7 +594,7 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full"
         >
-          Insert
+          Chèn
         </span>
         <div>
           <span class="font-medium text-ink-gray-5 text-base mb-1">Media</span>
@@ -605,7 +605,7 @@
             >
               <template #prefix>
                 <Image class="text-ink-gray-7 w-4" />
-                Image
+                Ảnh
               </template>
             </Button>
 
@@ -620,7 +620,7 @@
             </Button>
           </div>
         </div>
-        <span class="font-medium text-ink-gray-5 text-base mb-1">Break</span>
+        <span class="font-medium text-ink-gray-5 text-base mb-1">Ngắt</span>
         <div class="w-full flex justify-between gap-x-1.5 mb-6">
           <Button
             class="w-full px-2"
@@ -629,7 +629,7 @@
             <template #prefix>
               <Minus class="stroke-[1] text-ink-gray-7" />
             </template>
-            Rule
+            Ngắt
           </Button>
 
           <Button
@@ -675,10 +675,10 @@
                 />
               </svg>
             </template>
-            Page Break
+            Ngắt trang
           </Button>
         </div>
-        <span class="font-medium text-ink-gray-5 text-base">Table</span>
+        <span class="font-medium text-ink-gray-5 text-base">Bảng</span>
         <div class="flex space-x-2 my-2">
           <Button
             :disabled="editor.isActive('table')"
@@ -717,7 +717,7 @@
                 <path d="M16 19h6" />
                 <path d="M19 16v6" />
               </svg>
-              New Table
+              Bảng mới
             </template>
           </Button>
         </div>
@@ -731,15 +731,15 @@
         <span
           class="inline-flex items-center gap-2.5 mb-5 text-ink-gray-8 font-medium text-lg w-full px-2"
         >
-          Settings
+          Cài đặt
         </span>
         <Switch
           v-model="settings.docSize"
-          label="Small Text"
+          label="Văn bản ngắn"
         />
         <Switch
           v-model="settings.docSpellcheck"
-          label="Spellcheck"
+          label="Kiểm tra chính tả"
         />
         <!-- <Switch v-model="settings.docSize" label="Highlight Check" /> -->
         <Switch
@@ -747,7 +747,7 @@
           label="Full Width"
         />
         <span class="font-medium text-ink-gray-7 text-base my-2.5 px-2.5">
-          Default Font
+          Phông chữ mặc định
         </span>
         <div class="w-full flex justify-between gap-1 px-3">
           <Button

@@ -7,21 +7,21 @@
     <div class="flex items-center gap-2">
       <Button size="sm" variant="ghost" @click="toggleCollapsed">
         <template #icon>
-          <component :is="isExpanded ? ArrowLeftFromLine : ArrowRightFromLine" class="size-4" />
+          <component :is="isExpanded ? ArrowLeftFromLine : ArrowRightFromLine" class="size-5 text-black" />
         </template>
       </Button>
-      <span
+      <!-- <span
         class="text-lg font-semibold text-ink-gray-9"
         :class="isExpanded ? '' : 'hidden'"
       >
         Kho tài liệu
-      </span>
+      </span> -->
     </div>
-    <Button size="sm" variant="ghost" @click="showSettings = true">
+    <!-- <Button size="sm" variant="ghost" @click="showSettings = true">
       <template #icon>
         <LucideSettings class="size-4" />
       </template>
-    </Button>
+    </Button> -->
   </div>
   <SettingsDialog
     v-if="showSettings"
@@ -41,9 +41,8 @@ import emitter from "@/emitter"
 import { Button } from "frappe-ui"
 import { ref } from "vue"
 import { useStore } from "vuex"
-import ArrowLeftFromLine from "~icons/lucide/arrow-left-from-line"
-import ArrowRightFromLine from "~icons/lucide/arrow-right-from-line"
-import LucideSettings from "~icons/lucide/settings"
+import ArrowLeftFromLine from "~icons/lucide/panel-left-close"
+import ArrowRightFromLine from "~icons/lucide/panel-right-open"
 const store = useStore()
 
 const props = defineProps({

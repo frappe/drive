@@ -1,12 +1,12 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'New Version', size: 'sm' }"
+    :options="{ title: 'Phiên bản mới', size: 'sm' }"
   >
     <template #body-content>
       <Input
         v-model="snapshotMessage"
-        label="Message"
+        label="Thông điệp"
       />
     </template>
     <template #actions>
@@ -15,7 +15,7 @@
         class="w-full"
         @click="save"
       >
-        Create
+        Tạo
       </Button>
     </template>
   </Dialog>

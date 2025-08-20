@@ -2,8 +2,8 @@
   <GenericPage
     :get-entities="getHome"
     :icon="LucideBuilding2"
-    primary-message="__('Team is empty')"
-    secondary-message="__('Add files by dropping them here.')"
+    primary-message="Không có tài liệu trong nhóm"
+    secondary-message="Thả tệp vào đây để thêm."
     :verify="{
       data: {
         write,
