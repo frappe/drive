@@ -6,7 +6,7 @@
     >
       <EditorContent
         :editor="editor"
-        class="prose prose-sm max-w-none p-2 min-h-[2.5rem] max-h-[12rem] overflow-y-auto focus:outline-none"
+        class="prose prose-sm max-w-none min-h-[3.5rem] max-h-[12rem] overflow-y-auto focus:outline-none !m-0"
       />
     </div>
   </div>
@@ -237,6 +237,10 @@ export default {
 </script>
 
 <style scoped>
+:deep(.is-empty.is-editor-empty){
+  margin: 0 !important;
+}
+
 .rich-comment-editor {
   position: relative;
   width: 100%;
@@ -254,12 +258,17 @@ export default {
   overflow-wrap: break-word;
 }
 
+.rich-comment-editor :deep(.ProseMirror p) {
+  margin: 0 !important;
+}
+
 .rich-comment-editor :deep(.ProseMirror p.is-editor-empty:first-child::before) {
   content: attr(data-placeholder);
   float: left;
   color: #9ca3af;
   pointer-events: none;
   height: 0;
+  margin: 0 !important;
 }
 
 .rich-comment-editor :deep(span[data-type="mention"]) {

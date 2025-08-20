@@ -519,7 +519,7 @@ export default {
           openOnClick: false,
         }),
         Placeholder.configure({
-          placeholder: "Press / for commands",
+          placeholder: "Nhập nội dung...",
         }),
         Highlight.configure({
           multicolor: true,

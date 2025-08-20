@@ -55,7 +55,7 @@
         />
         <p class="truncate">
           {{ file.is_group ? childrenSentence + "∙" : "" }}
-          {{ file.file_type !== "Unknown" ? file.file_type + "∙" : "" }}
+          {{ file.file_type !== "Unknown" ? __(file.file_type) + "∙" : "" }}
           {{ file.relativeModified }}
         </p>
       </div>

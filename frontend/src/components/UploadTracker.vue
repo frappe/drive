@@ -185,7 +185,7 @@ export default {
       showErrorDialog: false,
       selectedUpload: null,
       currentTab: 1,
-      emptyMessage: "No uploads in progress",
+      emptyMessage: "Không có tệp nào đang tải lên",
     }
   },
   computed: {
@@ -198,7 +198,7 @@ export default {
     currentTabGetter() {
       switch (this.currentTab) {
         case 1:
-          this.emptyMessage = "No uploads in progress"
+          this.emptyMessage = "Không có tệp nào đang tải lên"
           return this.uploadsInProgress
         case 2:
           this.emptyMessage = "No uploads completed"

@@ -4,13 +4,13 @@
       <span
         class="inline-flex items-center gap-2.5 text-ink-gray-8 font-medium text-lg w-full"
       >
-        Annotations
+      Chú thích
       </span>
       <Dropdown
         :options="filterItems"
         placement="left"
       >
-        <Button>
+        <Button class="whitespace-nowrap">
           <template #prefix>
             <LucideFilter class="size-4 text-ink-gray-6" />
           </template>
@@ -156,7 +156,7 @@
         v-else
         class="text-ink-gray-5 text-sm my-5"
       >
-        There are annotations for the current document or category
+        Không có chú thích nào cho tài liệu hoặc danh mục hiện tại
       </div>
     </div>
   </div>
@@ -190,7 +190,7 @@ const allAnnotations = doc.value.getArray("docAnnotations")
 
 const currentActiveAnnotation = ref()
 const currentActiveReplyAnnotation = ref()
-const currentFilterLabel = ref("Open")
+const currentFilterLabel = ref("Mở")
 const currentFilterState = ref(0)
 const commentText = ref<string>("")
 
@@ -222,13 +222,13 @@ const allResolvedAnnotations = computed(() => {
 const currentFilter = computed(() => {
   switch (currentFilterState.value) {
     case 0:
-      currentFilterLabel.value = "Open"
+      currentFilterLabel.value = "Mới"
       return openAndAnchoredAnnotations.value
     case 1:
-      currentFilterLabel.value = "Unanchored"
+      currentFilterLabel.value = "Không gắn"
       return openAnnotations.value
     case 2:
-      currentFilterLabel.value = "Resolved"
+      currentFilterLabel.value = "Đã giải quyết"
       return allResolvedAnnotations.value
     default:
       return openAndAnchoredAnnotations.value
@@ -238,19 +238,19 @@ const currentFilter = computed(() => {
 const filterItems = computed(() => {
   return [
     {
-      label: "Open",
+      label: "Mở",
       onClick: () => {
         currentFilterState.value = 0
       },
     },
     {
-      label: "Unanchored",
+      label: "Không gắn",
       onClick: () => {
         currentFilterState.value = 1
       },
     },
     {
-      label: "Resolved",
+      label: "Đã giải quyết",
       onClick: () => {
         currentFilterState.value = 2
       },

@@ -9,11 +9,6 @@ export default function translationPlugin(app) {
 function translate(message) {
   let translatedMessages = window.translatedMessages || {}
   let translatedMessage = translatedMessages[message] || message
-  
-  // Debug log để kiểm tra
-  if (message && translatedMessages[message] && translatedMessages[message] !== message) {
-    console.log(`Translated: "${message}" -> "${translatedMessages[message]}"`)
-  }
 
   const hasPlaceholders = /{\d+}/.test(message)
   if (!hasPlaceholders) {

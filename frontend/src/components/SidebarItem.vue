@@ -4,14 +4,14 @@
     :class="
       isActive 
         ? 'bg-[#d4e1f9] text-[#0149C1] shadow-sm font-semibold border border-blue-200' 
-        : 'text-gray-600 hover:bg-gray-50 hover:shadow-sm hover:text-gray-800 hover:border hover:border-gray-150'
+        : 'text-black hover:shadow-sm hover:border hover:border-gray-150'
     "
     @click="handleClick"
   >
     <div
       class="flex w-full items-center justify-between duration-200 ease-in-out px-3 py-2"
     >
-      <div class="flex items-center">
+      <div class="flex items-center justify-start">
         <Tooltip
           :text="label"
           placement="right"
@@ -23,7 +23,7 @@
               <component
                 :is="icon"
                 class="size-5 transition-colors"
-                :class="isActive ? 'text-blue-700 font-bold' : 'text-gray-500 group-hover:text-gray-700'"
+                :class="isActive ? 'text-blue-700 font-bold' : 'text-black'"
                 :style="isActive ? 'font-weight: 900;' : ''"
               />
             </span>
@@ -35,7 +35,7 @@
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
               : 'ml-3 w-auto opacity-100',
-            isActive ? 'font-semibold text-blue-700' : 'font-medium text-gray-600 group-hover:text-gray-800'
+            isActive ? 'font-semibold text-blue-700' : 'font-medium text-black'
           ]"
         >
           {{ label }}

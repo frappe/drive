@@ -40,7 +40,7 @@
 
           <li>
             <span class="inline-block w-24">{{ __("Type") }}:</span>
-            <span class="col-span-1">{{ entity.file_type }}</span>
+            <span class="col-span-1">{{__(`${entity.file_type}`) }}</span>
           </li>
           <li v-if="entity.file_size">
             <span class="inline-block w-24">{{ __("Size") }}:</span>
@@ -145,6 +145,32 @@ import { computedAsync } from "@vueuse/core"
 const props = defineProps({
   entities: Array,
 })
+
+function getFileTypeVi(type) {
+  if (!type) return ''
+  const map = {
+    'pdf': 'Tệp PDF',
+    'doc': 'Tài liệu Word',
+    'docx': 'Tài liệu Word',
+    'xls': 'Bảng tính Excel',
+    'xlsx': 'Bảng tính Excel',
+    'ppt': 'Bản trình chiếu PowerPoint',
+    'pptx': 'Bản trình chiếu PowerPoint',
+    'jpg': 'Ảnh JPG',
+    'jpeg': 'Ảnh JPG',
+    'png': 'Ảnh PNG',
+    'gif': 'Ảnh GIF',
+    'txt': 'Tệp văn bản',
+    'csv': 'Tệp CSV',
+    'zip': 'Tệp nén ZIP',
+    'rar': 'Tệp nén RAR',
+    'mp3': 'Âm thanh MP3',
+    'mp4': 'Video MP4',
+    'folder': 'Thư mục',
+    // Thêm các loại khác nếu cần
+  }
+  return map[type.toLowerCase()] || type
+}
 
 const height = document.body.clientHeight
 const width = document.body.clientWidth
