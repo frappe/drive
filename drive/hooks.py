@@ -80,7 +80,7 @@ add_to_apps_screen = [
 # ------------
 
 # before_install = "drive.install.before_install"
-after_install = "drive.install.after_install"
+after_install = ["drive.install.after_install", "drive.install.create_core_team"]
 
 # Uninstallation
 # ------------
@@ -122,6 +122,9 @@ has_permission = {
 doc_events = {
     "Drive File": {
         "after_insert": "drive.api.notifications.notify_team_file_upload"
+    },
+    "User": {
+        "after_insert": "drive.controllers.user.add_user_to_drive_team"
     }
 }
 
