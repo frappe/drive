@@ -305,7 +305,8 @@ def create_drive_file(
     )
     drive_file.flags.file_created = True
     drive_file.insert(ignore_permissions=True)
-    drive_file.path = str(entity_path(drive_file))
+    path = entity_path(drive_file)
+    drive_file.path = str(path) if path else ""
     drive_file.save()
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)

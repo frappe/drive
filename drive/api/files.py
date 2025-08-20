@@ -282,7 +282,7 @@ def create_folder(team, title, personal=False, parent=None):
         frappe._dict(
             {
                 "title": title,
-                "parent_path": Path(parent_doc.path),
+                "parent_path": Path(parent_doc.path or ""),
                 "parent_entity": parent_doc.name,
                 "is_private": personal,
             }
