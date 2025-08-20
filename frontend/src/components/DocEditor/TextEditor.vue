@@ -8,6 +8,7 @@
       class="mx-auto cursor-text min-h-full w-full md:w-auto ps-4 md:p-0"
     >
       <FTextEditor
+        :key="editorExtensions.length"
         ref="textEditor"
         class="min-w-full md:min-w-[65ch]"
         :editor-class="[
@@ -68,6 +69,7 @@ import { v4 as uuidv4 } from "uuid"
 import {
   computed,
   defineAsyncComponent,
+  reactive,
   onMounted,
   ref,
   onBeforeUnmount,
@@ -78,9 +80,10 @@ import store from "@/store"
 import FontFamily from "./extensions/font-family"
 import FloatingQuoteButton from "./extensions/comment"
 import { CharacterCount } from "./extensions/character-count"
+import { CollaborationCursor } from "./extensions/collaboration-cursor"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import FloatingComments from "./components/FloatingComments.vue"
-import { printDoc } from "@/utils/files"
+import { printDoc, getRandomColor } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
@@ -97,7 +100,7 @@ import LucideMessageCircle from "~icons/lucide/message-circle"
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
-
+  console.log(editor)
   return editor
 })
 defineExpose({ editor })
@@ -116,8 +119,6 @@ const comments = ref([])
 const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
-
-const doc = new Y.Doc()
 
 const writerSettings = useDoc({
   doctype: "Drive Settings",
@@ -208,18 +209,19 @@ const ExtendedCommentExtension = CommentExtension.extend({
   },
 })
 
+const doc = new Y.Doc()
 const editorExtensions = [
   CharacterCount,
   FontFamily.configure({
     types: ["textStyle"],
   }),
+  Collaboration.configure({
+    document: doc,
+  }),
   FloatingQuoteButton.configure({
     onClick: () => {
       createNewComment(editor.value)
     },
-  }),
-  Collaboration.configure({
-    document: doc,
   }),
   ExtendedCommentExtension.configure({
     onCommentActivated: (id) => {
@@ -326,7 +328,8 @@ onMounted(() => {
   const provider = new TiptapCollabProvider({
     name: props.entity.name, // Document identifier
     appId: "ok01lqjm",
-    token: "notoken", // Authentication token
+    token:
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTU2NzcwOTAsIm5iZiI6MTc1NTY3NzA5MCwiZXhwIjoxNzU1NzYzNDkwLCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.CEiZ8NOaPdTnWEi8BkvQpHspwh-Ga2Prl8HtpyQpfYI",
     document: doc,
     user: store.state.user.id,
     onSynced() {
@@ -337,7 +340,16 @@ onMounted(() => {
       }
     },
   })
-  console.log(provider)
+  editorExtensions.push(
+    CollaborationCursor.configure({
+      provider,
+      user: {
+        name: store.state.user.fullName,
+        avatar: store.state.user.imageURL,
+        color: getRandomColor(),
+      },
+    })
+  )
 })
 
 onBeforeUnmount(() => {

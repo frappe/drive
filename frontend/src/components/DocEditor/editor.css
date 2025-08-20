@@ -122,3 +122,25 @@ span[data-comment-id]:not([data-resolved="true"]).active {
     margin-left: 1rem;
   }
 }
+
+.collaboration-cursor__caret {
+  border-left: 0px solid currentColor;
+  border-right: 2px solid currentColor;
+  margin-left: 0px;
+  margin-right: -2px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  border-radius: 60px;
+  border: 2px solid #0000001a;
+  color: #ffffffdf;
+  position: absolute;
+  top: -1.5em;
+  left: 0.25em;
+  user-select: none;
+  white-space: nowrap;
+}

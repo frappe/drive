@@ -71,7 +71,7 @@ def get_user_access(entity, user=None, details=False):
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
 
     valid_accesses = [user_access, public_access]
-    team_path = None
+    team_path = []
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
         team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
