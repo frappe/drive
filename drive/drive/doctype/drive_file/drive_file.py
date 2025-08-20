@@ -348,6 +348,18 @@ class DriveFile(Document):
                         frappe.throw("Not permitted to share", frappe.PermissionError)
                         break
 
+        if not user or user == "$TEAM":
+            perm_names = frappe.db.get_list(
+                "Drive Permission",
+                {
+                    "user": ["in", ["", "$TEAM"]],
+                    "entity": self.name,
+                },
+                pluck="name",
+            )
+            for perm_name in perm_names:
+                frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+
         permission = frappe.db.get_value(
             "Drive Permission",
             {
@@ -390,7 +402,7 @@ class DriveFile(Document):
         for i in absolute_path:
             if i["owner"] == user:
                 frappe.throw("User owns parent folder", frappe.PermissionError)
-        if user == "general":
+        if user in ["", "$TEAM"]:
             perm_names = frappe.db.get_list(
                 "Drive Permission",
                 {

@@ -30,7 +30,11 @@
     v-else-if="dialog === 's'"
     v-model="dialog"
     :entity="entities[0]"
-    @success="resource.fetch(resource.params)"
+    @success="
+      () => {
+        resource.fetch(resource.params)
+      }
+    "
   />
   <MoveDialog
     v-else-if="dialog === 'm'"
@@ -85,8 +89,12 @@ const props = defineProps({
   entities: Array,
 })
 const store = useStore()
-const resource = computed(() => store.state.currentResource)
 const listResource = computed(() => store.state.listResource)
+const resource = computed(() =>
+  store.state.currentResource && Object.keys(store.state.currentResource).length
+    ? store.state.currentResource
+    : listResource.value
+)
 const is_root = computed(
   () => props.entities[0].name === resource.value.data?.name
 )

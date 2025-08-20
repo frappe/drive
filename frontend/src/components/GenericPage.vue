@@ -121,6 +121,7 @@ watch(
   }
 )
 store.commit("setListResource", props.getEntities)
+store.commit("setCurrentResource", null)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
