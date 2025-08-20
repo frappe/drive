@@ -5,10 +5,10 @@ from io import BytesIO
 from pathlib import Path
 
 import frappe
-from frappe.utils import now
 import jwt
 import magic
 import mimemapper
+from frappe.utils import now
 from pypika import Order
 from werkzeug.utils import secure_filename, send_file
 from werkzeug.wrappers import Response
@@ -17,12 +17,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-    create_drive_file,
-    extract_mentions,
-    get_file_type,
-    get_home_folder,
-    if_folder_exists,
-    update_file_size,
+	create_drive_file,
+	extract_mentions,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -751,8 +751,7 @@ def get_new_title(title, parent_name, folder=False, is_private=None):
     if is_private is not None:
         filters["is_private"] = is_private
         if is_private:
-            filters["owners"] = frappe.session.user
-
+            filters["owner"] = frappe.session.user
 
     if folder:
         filters["is_group"] = 1
