@@ -318,9 +318,7 @@ class FileManager:
 
     def get_thumbnail_path(self, team, name):
         return (
-            self.get_disk_path(
-                frappe.get_doc("Drive File", {"name": name, "team": team})
-            ).parent
+            self.get_disk_path(frappe.get_doc("Drive File", {"name": name, "team": team})).parent
             / self.settings.thumbnail_prefix
             / (name + ".thumbnail")
         )

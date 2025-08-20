@@ -80,6 +80,9 @@ class DriveFile(Document):
         :return: DriveEntity doc once file is moved
         """
         new_parent = new_parent or get_home_folder(self.team).name
+        if is_private is None:
+            is_private = frappe.db.get_value("Drive File", new_parent, "is_private")
+
         if new_parent == self.parent_entity and self.is_private == is_private:
             return
 
@@ -91,20 +94,20 @@ class DriveFile(Document):
         if not frappe.db.get_value("Drive File", new_parent, "is_group"):
             raise NotADirectoryError()
 
-        # for child in self.get_children():
-        #     if child.name == self.name or child.name == new_parent:
-        #         frappe.throw(
-        #             "Cannot move into itself",
-        #             frappe.PermissionError,
-        #         )
-        #         return frappe.get_value(
-        #             "Drive File",
-        #             self.parent_entity,
-        #             ["title", "team", "name", "is_private"],
-        #             as_dict=True,
-        #         )
-        #     else:
-        #         child.move(self.name, is_private)
+        for child in self.get_children():
+            if child.name == self.name or child.name == new_parent:
+                frappe.throw(
+                    "Cannot move into itself",
+                    frappe.PermissionError,
+                )
+                return frappe.get_value(
+                    "Drive File",
+                    self.parent_entity,
+                    ["title", "team", "name", "is_private"],
+                    as_dict=True,
+                )
+            else:
+                child.move(self.name, is_private)
 
         if new_parent != self.parent_entity:
             update_file_size(self.parent_entity, -self.file_size)
