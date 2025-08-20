@@ -1,10 +1,10 @@
 <template>
   <div class="flex h-screen w-full overflow-hidden">
     <div class="w-full overflow-auto">
-      <div class="relative h-full">
+      <div class="relative h-full sm:bg-surface-menu-bar dark:bg-surface-white">
         <div class="relative z-10 mx-auto pt-8 sm:w-max sm:pt-20">
           <div
-            class="relative mx-auto w-full bg-surface-gray-2 dark:bg-surface-dark px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl flex flex-col gap-4"
+            class="relative mx-auto w-full bg-surface-white dark:bg-surface-gray-2 px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl flex flex-col gap-4"
           >
             <div
               class="text-sm absolute top-5 right-5 flex gap-1.5 text-ink-gray-8"
@@ -25,7 +25,9 @@
             </h2>
 
             <div>
-              <p class="font-semibold text-sm text-ink-gray-8 mb-1">Teams</p>
+              <p class="font-semibold text-sm text-ink-gray-8 mb-1 ms-1">
+                Teams
+              </p>
               <ul class="flex flex-col">
                 <template
                   v-for="team in Object.values(getTeams?.data)"
