@@ -1,22 +1,22 @@
 <template>
   <div
-    class="grid grid-cols-5 bg-surface-modal border-t border-outline-gray-2 standalone:pb-4"
+    class="grid grid-cols-5 bg-surface-modal border-t border-outline-gray-2 standalone:pb-4 h-[109px]"
     :style="{
       gridTemplateColumns: `repeat(${sidebarItems.length}, minmax(0, 1fr))`,
     }"
   >
-    <router-link
+    <button
       v-for="tab in sidebarItems"
       :key="tab.label"
-      class="flex flex-col items-center justify-center py-3 transition active:scale-95"
-      :to="tab.route"
+      class="flex flex-col items-center justify-center transition active:scale-95 h-[50px]"
+      @click="$router.push(tab.route)"
     >
       <component
         :is="tab.icon"
-        class="h-6 w-6"
+        class="size-6"
         :class="[tab.highlight() ? 'text-ink-gray-8' : 'text-ink-gray-5']"
       />
-    </router-link>
+    </button>
   </div>
 </template>
 <script>
