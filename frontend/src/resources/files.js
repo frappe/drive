@@ -197,7 +197,10 @@ export const clearRecent = createResource({
     }
   },
   onError: () => {
-    toast("There was an error while clearing recents.")
+    toast({
+      message: "There was an error while clearing recents.",
+      type: "error",
+    })
   },
 })
 
@@ -222,6 +225,7 @@ export const clearTrash = createResource({
       title: "There was an error",
       description: JSON.stringify(error),
       position: "bottom-right",
+      type: "error",
       timeout: 2,
     })
   },
@@ -247,10 +251,9 @@ export const rename = createResource({
   },
   onError(error) {
     toast({
-      title: JSON.stringify(error).includes("FileExistsError")
-        ? "There is already a file with this name!"
-        : "There was an error.",
+      title: error.messages[0],
       position: "bottom-right",
+      type: "error",
       timeout: 2,
     })
   },
@@ -260,24 +263,6 @@ export const createDocument = createResource({
   method: "POST",
   url: "drive.api.files.create_document_entity",
   makeParams: (params) => params,
-})
-
-export const togglePersonal = createResource({
-  method: "POST",
-  url: "drive.api.files.call_controller_method",
-  makeParams: (params) => ({ ...params, method: "toggle_personal" }),
-  onSuccess: (e) => {
-    let index = getPersonal.data.findIndex((k) => k.name === e)
-    getHome.setData((data) => {
-      data.push(getPersonal.data[index])
-      return data
-    })
-
-    getPersonal.setData((data) => {
-      data.splice(index, 1)
-      return data
-    })
-  },
 })
 
 export const move = createResource({
@@ -306,7 +291,7 @@ export const move = createResource({
     updateMoved(data.team, data.name, data.special)
   },
   onError() {
-    toast("There was an error.")
+    toast({ title: "There was an error.", type: "error" })
   },
 })
 

@@ -16,12 +16,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -87,7 +87,7 @@ def upload_file(
         total_chunks = 1
 
     file = frappe.request.files["file"]
-    title = get_new_title(file.filename, parent)
+    title = get_new_title(file.filename, parent, is_private=is_private)
     upload_session = frappe.form_dict.uuid
     temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
@@ -269,9 +269,8 @@ def create_folder(team, title, personal=False, parent=None):
             }
         )
 
-    # BROKEN: capitlization?
     if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True)
+        suggested_name = get_new_title(title, parent, folder=True, is_private=personal)
         frappe.throw(
             f"Folder '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
@@ -336,7 +335,7 @@ def create_link(team, title, link, personal=False, parent=None):
             }
         )
     if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True)
+        suggested_name = get_new_title(title, parent, folder=True, is_private=personal)
         frappe.throw(
             f"File '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
@@ -735,7 +734,7 @@ def get_translate():
 
 
 @frappe.whitelist()
-def get_new_title(title, parent_name, folder=False):
+def get_new_title(title, parent_name, folder=False, is_private=None):
     """
     Returns new title for an entity if same title exists for another entity at the same level
 
@@ -750,6 +749,9 @@ def get_new_title(title, parent_name, folder=False):
         "parent_entity": parent_name,
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
+
+    if is_private is not None:
+        filters["is_private"] = is_private
 
     if folder:
         filters["is_group"] = 1

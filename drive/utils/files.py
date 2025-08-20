@@ -363,6 +363,11 @@ class FileManager:
         return disk_parent if disk_parent != Path(".") else ""
 
     @__not_if_flat
+    def rename(self, entity):
+        new_path = self.get_disk_path(entity)
+        return self.move(entity.path, new_path)
+
+    @__not_if_flat
     def move_to_trash(self, entity: DriveFile):
         trash_path = self.__get_trash_path(entity)
         try:
@@ -403,6 +408,7 @@ class FileManager:
             self.conn.delete_object(Bucket=self.bucket, Key=old_path)
         else:
             (self.site_folder / old_path).rename(self.site_folder / new_path)
+        return new_path
 
     def delete_file(self, team, name, path):
         if self.s3_enabled:
