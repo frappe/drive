@@ -79,8 +79,48 @@ def execute():
         
         if added_count > 0:
             team.save(ignore_permissions=True)
+            print(f"Đã thêm {added_count} user mới vào team")
         else:
             print("Không có người dùng mới nào để thêm")
         
+        # Tạo Drive Settings cho tất cả users để thiết lập team làm default
+        _create_drive_settings_for_team_users(team.name, all_users)
+        
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "create_core_team_patch")
+
+
+def _create_drive_settings_for_team_users(team_name, users):
+    created_count = 0
+    updated_count = 0
+    
+    for user in users:
+        try:
+            existing_settings = frappe.db.exists("Drive Settings", {"user": user.email})
+            
+            if existing_settings:
+                settings_doc = frappe.get_doc("Drive Settings", existing_settings)
+                if settings_doc.default_team != team_name:
+                    settings_doc.default_team = team_name
+                    settings_doc.save(ignore_permissions=True)
+                    updated_count += 1
+                else:
+                    print(f"Drive Settings cho user {user.email} đã có default team {team_name}")
+            else:
+                drive_settings = frappe.get_doc({
+                    "doctype": "Drive Settings",
+                    "user": user.email,
+                    "default_team": team_name,
+                    "single_click": 1,
+                    "auto_detect_links": 0
+                })
+                
+                drive_settings.insert(ignore_permissions=True)
+                created_count += 1
+                print(f"Đã tạo Drive Settings cho user {user.email} với default team {team_name}")
+                
+        except Exception as e:
+            frappe.log_error(
+                message=f"Lỗi khi tạo/cập nhật Drive Settings cho user {user.email}: {frappe.get_traceback()}",
+                title="Drive Settings Creation Error - Patch"
+            )

@@ -9,3 +9,4 @@ from frappe.tests.utils import FrappeTestCase
 class TestDriveTrash(FrappeTestCase):
     pass
 
+
