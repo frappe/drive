@@ -249,7 +249,7 @@ export const rename = createResource({
     toast({
       title: JSON.stringify(error).includes("FileExistsError")
         ? "There is already a file with this name!"
-        : "There was an error",
+        : "There was an error.",
       position: "bottom-right",
       timeout: 2,
     })

@@ -32,7 +32,7 @@
         v-if="createFolder.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This folder already exists.
+        {{ createFolder.error.messages[0] }}
       </div>
     </template>
   </Dialog>

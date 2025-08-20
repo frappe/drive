@@ -16,12 +16,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-    create_drive_file,
-    extract_mentions,
-    get_file_type,
-    get_home_folder,
-    if_folder_exists,
-    update_file_size,
+	create_drive_file,
+	extract_mentions,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -241,7 +241,7 @@ def create_folder(team, title, personal=False, parent=None):
     parent_doc = frappe.get_cached_doc("Drive File", parent)
     if not user_has_permission(parent_doc, "upload"):
         frappe.throw(
-            "Cannot create folder due to insufficient permissions",
+            "You don't have permissions for this.",
             frappe.PermissionError,
         )
 
@@ -310,7 +310,7 @@ def create_link(team, title, link, personal=False, parent=None):
 
     if not user_has_permission(parent, "upload"):
         frappe.throw(
-            "Cannot create link due to insufficient permissions",
+            "Cannot create link due to insufficient permissions.",
             frappe.PermissionError,
         )
     if not personal:
