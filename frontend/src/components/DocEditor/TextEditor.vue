@@ -84,6 +84,9 @@ import { printDoc } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import { TiptapCollabProvider } from "@hocuspocus/provider"
+import Collaboration from "@tiptap/extension-collaboration"
+import * as Y from "yjs"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
@@ -113,6 +116,8 @@ const comments = ref([])
 const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
+
+const doc = new Y.Doc()
 
 const writerSettings = useDoc({
   doctype: "Drive Settings",
@@ -212,6 +217,9 @@ const editorExtensions = [
     onClick: () => {
       createNewComment(editor.value)
     },
+  }),
+  Collaboration.configure({
+    document: doc,
   }),
   ExtendedCommentExtension.configure({
     onCommentActivated: (id) => {
@@ -314,6 +322,22 @@ onMounted(() => {
     const pos2 = orderedComments.findIndex((k) => k.id === b.name)
     return pos1 - pos2
   })
+
+  const provider = new TiptapCollabProvider({
+    name: props.entity.name, // Document identifier
+    appId: "ok01lqjm",
+    token: "notoken", // Authentication token
+    document: doc,
+    user: store.state.user.id,
+    onSynced() {
+      if (!doc.getMap("config").get("initialContentLoaded") && editor) {
+        doc.getMap("config").set("initialContentLoaded", true)
+
+        editor.commands.setContent(entity.props.raw_content)
+      }
+    },
+  })
+  console.log(provider)
 })
 
 onBeforeUnmount(() => {
