@@ -36,7 +36,7 @@ def get_user_access(entity, user=None, details=False):
     if not user:
         user = frappe.session.user
     if isinstance(entity, str):
-        entity = frappe.get_cached_doc("Drive File", entity)
+        entity = frappe.get_doc("Drive File", entity)
 
     teams = get_teams(user)
     if user == entity.owner:
