@@ -2,7 +2,7 @@
   <Navbar
     v-if="!verify?.error && !getEntities.error"
     :root-resource="verify"
-    :entities="activeEntity ? [activeEntity] : selectedEntitities"
+    :entities="selectedEntities"
   />
 
   <ErrorPage
@@ -19,7 +19,7 @@
     <DriveToolBar
       v-model="rows"
       :action-items="actionItems"
-      :selections="selectedEntitities"
+      :selections="selectedEntities"
       :get-entities="getEntities || { data: [] }"
     />
 
@@ -69,7 +69,7 @@ import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import { getLink, pasteObj } from "@/utils/files"
-import { toggleFav, clearRecent } from "@/resources/files"
+import { toggleFav, clearRecent, copyFile } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import FileUploader from "@/components/FileUploader.vue"
@@ -95,6 +95,7 @@ import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
+import LucideCopy from "~icons/lucide/copy"
 import emitter from "../emitter"
 
 const props = defineProps({
@@ -123,12 +124,22 @@ watch(
 store.commit("setListResource", props.getEntities)
 
 const selections = ref(new Set())
-const selectedEntitities = computed(
-  () =>
-    props.getEntities.data?.filter?.(({ name }) =>
-      selections.value.has(name)
-    ) || []
-)
+const selectedEntities = computed(() => {
+  if (selections.value.size > 0) {
+    return (
+      props.getEntities.data?.filter?.(({ name }) =>
+        selections.value.has(name)
+      ) || []
+    )
+  }
+  if (activeEntity.value) {
+    const exists = props.getEntities.data?.find(
+      (e) => e.name === activeEntity.value.name
+    )
+    return exists ? [activeEntity.value] : []
+  }
+  return []
+})
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
 watchEffect(() => {
@@ -176,6 +187,8 @@ const onDrop = (targetFile, draggedItem) => {
 
 // Action Items
 const actionItems = computed(() => {
+  const invalidCopyItem = selectedEntities.value.some(e => e.is_group || e.is_link);
+
   if (route.name === "Trash") {
     return [
       {
@@ -243,7 +256,22 @@ const actionItems = computed(() => {
         label: __("Rename"),
         icon: LucideSquarePen,
         action: () => (dialog.value = "rn"),
-        isEnabled: (e) => e.write,
+        isEnabled: (e) => e.write, 
+      },
+      {
+        label: __("Create Copy"),
+        icon: LucideCopy,
+        action: (entities) => {
+          entities.forEach((entity) => {
+            copyFile.submit({
+              entity,
+              parent: entity.parent_entity,
+            });
+          });
+        },
+        isEnabled: (e) => e.write && !invalidCopyItem,
+        multi: true,
+        important: true,
       },
       {
         label: __("Show Info"),

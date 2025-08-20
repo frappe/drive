@@ -240,17 +240,21 @@ def get_file_type(r):
         except StopIteration:
             return "Unknown"
 
+def update_file_size(folder_name, size_change):
+    if not folder_name or not isinstance(size_change, (int, float)):
+        return
 
-def update_file_size(entity, delta):
-    doc = frappe.get_doc("Drive File", entity)
-    while doc.parent_entity:
-        doc.file_size += delta
-        doc.save(ignore_permissions=True)
-        doc = frappe.get_doc("Drive File", doc.parent_entity)
-    # Update root
-    doc.file_size += delta
-    doc.save(ignore_permissions=True)
-
+    frappe.db.sql("""
+        UPDATE `tabDrive File`
+        SET
+            `file_size` = `file_size` + %(size_change)s,
+            `modified` = %(now)s
+        WHERE `name` = %(folder_name)s
+    """, {
+        "size_change": size_change,
+        "folder_name": folder_name,
+        "now": frappe.utils.now()
+    }, auto_commit=True) 
 
 def if_folder_exists(team, folder_name, parent, personal):
     values = {

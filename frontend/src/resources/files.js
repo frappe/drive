@@ -262,6 +262,27 @@ export const createDocument = createResource({
   makeParams: (params) => params,
 })
 
+export const copyFile = createResource({
+  url: "drive.api.files.create_copy",
+
+  makeParams(data) {
+    return {
+      entity_name: data.entity.name,
+      parent: data.parent,
+    };
+  },
+
+  onSuccess() { toast({title: "Copied successfully!",});},
+
+  onError(error) {
+    toast({
+      title: "Error copying file!",
+      description: error.message || "Something went wrong.",
+      variant: "error",
+    });
+  },
+});
+
 export const togglePersonal = createResource({
   method: "POST",
   url: "drive.api.files.call_controller_method",
