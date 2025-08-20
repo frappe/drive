@@ -52,27 +52,27 @@
 </template>
 
 <script setup>
-import { useStore } from "vuex"
-import Navbar from "@/components/Navbar.vue"
-import {
-  ref,
-  computed,
-  onMounted,
-  defineProps,
-  onBeforeUnmount,
-  inject,
-} from "vue"
-import { Button, LoadingIndicator } from "frappe-ui"
-import FileRender from "@/components/FileRender.vue"
-import { createResource } from "frappe-ui"
-import { useRouter } from "vue-router"
-import LucideScan from "~icons/lucide/scan"
-import { onKeyStroke } from "@vueuse/core"
-import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
 import ErrorPage from "@/components/ErrorPage.vue"
+import FileRender from "@/components/FileRender.vue"
 import InfoSidebar from "@/components/InfoSidebar.vue"
+import Navbar from "@/components/Navbar.vue"
+import { enterFullScreen, prettyData, setBreadCrumbs } from "@/utils/files"
+import { onKeyStroke } from "@vueuse/core"
+import { Button, createResource, LoadingIndicator } from "frappe-ui"
+import {
+  computed,
+  defineProps,
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+} from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
+import LucideScan from "~icons/lucide/scan"
 
 const router = useRouter()
+const route = useRoute()
 const store = useStore()
 const emitter = inject("emitter")
 const realtime = inject("realtime")
@@ -102,6 +102,7 @@ function fetchFile(currentEntity) {
     router.replace({
       name: "File",
       params: { entityName: currentEntity },
+      query: route.query // Giữ lại query parameters
     })
   })
 }
@@ -122,6 +123,24 @@ const onSuccess = (entity) => {
   setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
     emitter.emit("rename")
   )
+  
+  // Debug: kiểm tra query parameters
+  console.log("Query parameters:", route.query)
+  console.log("comment_open value:", route.query.comment_open)
+  
+  // Kiểm tra query parameter để quyết định tab nào sẽ mở
+  if (route.query.comment_open === 'true') {
+    // Mở tab bình luận (tab 1)
+    console.log("Setting tab to Comments (1)")
+    store.commit("setInfoSidebarTab", 1)
+  } else {
+    // Mặc định mở tab thông tin (tab 0)
+    console.log("Setting tab to Information (0)")
+    store.commit("setInfoSidebarTab", 0)
+  }
+  
+  // Tự động mở drawer thông tin sau khi entity đã được load
+  store.commit("setShowInfo", true)
 }
 let file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
@@ -166,6 +185,10 @@ onBeforeUnmount(() => {
   store.state.connectedUsers = []
   realtime.doc_close("Drive File", file.data?.name)
   realtime.doc_unsubscribe("Drive File", file.data?.name)
+  
+  // Đóng drawer thông tin và reset tab khi rời khỏi trang file
+  store.commit("setShowInfo", false)
+  store.commit("setInfoSidebarTab", 0)
 })
 
 let userInfo = createResource({

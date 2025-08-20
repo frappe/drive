@@ -39,7 +39,8 @@ const store = createStore({
     activeEntity: null,
     notifCount: 0,
     pasteData: { entities: [], action: null },
-    showInfo: false,
+    showInfo: getJson("showInfo", false),
+    infoSidebarTab: 0, // 0: Information, 1: Comments, 2: Activity
     currentFolder: {
       name: getJson("currentFolder", {}),
       team: getJson("currentFolderTeam", {}),
@@ -134,8 +135,11 @@ const store = createStore({
       state.pasteData = payload
     },
     setShowInfo(state, payload) {
-      localStorage.setItem("showInfo", payload)
+      localStorage.setItem("showInfo", JSON.stringify(payload))
       state.showInfo = payload
+    },
+    setInfoSidebarTab(state, payload) {
+      state.infoSidebarTab = payload
     },
     setAllComments(state, payload) {
       /* localStorage.setItem("allDocComments",payload); */

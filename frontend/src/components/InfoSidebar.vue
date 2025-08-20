@@ -317,7 +317,6 @@ import LucideSmilePlus from "~icons/lucide/smile-plus"
 import ActivityTree from "./ActivityTree.vue"
 
 const store = useStore()
-const tab = ref(0)
 const newComment = ref("")
 const mentionedUsers = ref([])
 const richCommentEditor = ref(null)
@@ -330,6 +329,12 @@ const userId = computed(() => store.state.user.id)
 const fullName = computed(() => store.state.user.fullName)
 const imageURL = computed(() => store.state.user.imageURL)
 const entity = computed(() => store.state.activeEntity)
+const tab = computed({
+  get() {
+    console.log("Tab value:", store.state.infoSidebarTab)
+    return store.state.infoSidebarTab
+  }
+})
 
 const isCommentEmpty = computed(() => {
   return !newComment.value || richCommentEditor.value?.isEmpty()
@@ -343,11 +348,11 @@ const thumbnailUrl = computed(() => {
 function switchTab(val) {
   if (store.state.showInfo == false) {
     store.commit("setShowInfo", !store.state.showInfo)
-    tab.value = val
+    store.commit("setInfoSidebarTab", val)
   } else if (tab.value == val) {
     store.commit("setShowInfo", !store.state.showInfo)
   } else {
-    tab.value = val
+    store.commit("setInfoSidebarTab", val)
   }
 }
 
@@ -361,7 +366,7 @@ watch(entity, (newEntity) => {
       (!newEntity.write && tab.value === 2) ||
       (!newEntity.comment && tab.value === 1)
     )
-      tab.value = 0
+      store.commit("setInfoSidebarTab", 0)
     comments.fetch({ entity_name: newEntity.name })
     generalAccess.fetch({ entity: newEntity.name })
     userList.fetch({ entity: newEntity.name })
