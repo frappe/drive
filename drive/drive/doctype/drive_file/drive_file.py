@@ -262,14 +262,14 @@ class DriveFile(Document):
             }
         )
 
-        # Only exception
-        if entity_exists and new_title != "Untitled Document":
-            suggested_name = get_new_title(new_title, self.parent_entity, folder=self.is_group)
-            frappe.throw(
-                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{suggested_name}' ",
+        validated_name = get_new_title(
+            new_title, self.parent_entity, self.is_group, self.is_private
+        )
+        if new_title != validated_name and new_title != "Untitled Document":
+            return frappe.throw(
+                f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{validated_name}' ",
                 FileExistsError,
             )
-            return suggested_name
 
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])
         message = f"{full_name} renamed {self.title} to {new_title}"

@@ -5,6 +5,7 @@ from io import BytesIO
 from pathlib import Path
 
 import frappe
+from frappe.utils import now
 import jwt
 import magic
 import mimemapper
@@ -16,12 +17,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -367,10 +368,8 @@ def save_doc(entity_name, doc_name, content):
         return
 
     frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-    file = frappe.get_doc("Drive File", entity_name)
-    file._modified = datetime.now()
-    file.file_size = len(content.encode("utf-8"))
-    file.save()
+    frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
+    frappe.db.set_value("Drive File", entity_name, "_modified", now())
 
     mentions = extract_mentions(content)
     if mentions:
@@ -749,9 +748,11 @@ def get_new_title(title, parent_name, folder=False, is_private=None):
         "parent_entity": parent_name,
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
-
     if is_private is not None:
         filters["is_private"] = is_private
+        if is_private:
+            filters["owners"] = frappe.session.user
+
 
     if folder:
         filters["is_group"] = 1
