@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-10 rounded-2xl overflow-hidden shadow-2xl 500 bg-surface-white p-4"
+    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-10 rounded-2xl overflow-hidden shadow-2xl dark:border 500 bg-surface-white p-4"
   >
     <div
-      class="flex items-center justify-between w-full mb-4 pr-1.5"
-      :class="[collapsed ? 'cursor-pointer' : '']"
+      class="flex items-center justify-between w-full pr-1.5 text-ink-gray-8"
+      :class="[collapsed ? 'cursor-pointer' : 'mb-4']"
       @click="collapsed = false"
     >
       <div
@@ -30,11 +30,13 @@
       </div>
       <div class="ml-auto flex items-center gap-4">
         <button
-          v-if="!collapsed"
           class="focus:outline-none"
-          @click.stop="toggleCollapsed"
+          @click.stop="collapsed = !collapsed"
         >
-          <LucideMinus class="size-4 text-ink-gray-8" />
+          <component
+            :is="collapsed ? LucidePlus : LucideMinus"
+            class="size-4 text-ink-gray-8"
+          />
         </button>
         <button
           class="focus:outline-none"
@@ -45,6 +47,7 @@
       </div>
     </div>
     <div
+      v-if="!collapsed"
       class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1 mb-2"
     >
       <TabButtons
@@ -134,6 +137,8 @@
 import { Dialog, TabButtons } from "frappe-ui"
 import ProgressRing from "@/components/ProgressRing.vue"
 import LucideInfo from "~icons/lucide/info"
+import LucidePlus from "~icons/lucide/plus"
+import LucideMinus from "~icons/lucide/minus"
 import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
 import LucideX from "~icons/lucide/x"
 import { useStore } from "vuex"
