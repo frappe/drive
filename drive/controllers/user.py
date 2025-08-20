@@ -28,8 +28,9 @@ def add_user_to_drive_team(doc, method):
             return
         
         _add_user_to_team(team, doc.name)
+        _create_drive_settings(doc.name, team.name)
         
-        frappe.logger().info(f"Đã thêm user {doc.name} vào Drive Team {team.name} thành công")
+        frappe.logger().info(f"Đã thêm user {doc.name} vào Drive Team {team.name} và tạo Drive Settings thành công")
         
     except Exception as e:
         frappe.log_error(
@@ -89,3 +90,32 @@ def _add_user_to_team(team, user_email):
     })
     
     team.save(ignore_permissions=True)
+
+
+def _create_drive_settings(user_email, default_team):
+    """
+    Tạo Drive Settings cho user với team mặc định.
+    """
+    try:
+        # Kiểm tra xem Drive Settings đã tồn tại chưa
+        if frappe.db.exists("Drive Settings", {"user": user_email}):
+            frappe.logger().info(f"Drive Settings cho user {user_email} đã tồn tại")
+            return
+        
+        # Tạo Drive Settings mới
+        drive_settings = frappe.get_doc({
+            "doctype": "Drive Settings",
+            "user": user_email,
+            "default_team": default_team,
+            "single_click": 1,
+            "auto_detect_links": 0 
+        })
+        
+        drive_settings.insert(ignore_permissions=True)
+        frappe.logger().info(f"Đã tạo Drive Settings cho user {user_email} với default team {default_team}")
+        
+    except Exception as e:
+        frappe.log_error(
+            message=f"Lỗi khi tạo Drive Settings cho user {user_email}: {frappe.get_traceback()}",
+            title="Drive Settings Creation Error"
+        )
