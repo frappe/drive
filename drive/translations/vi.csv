@@ -1,0 +1,492 @@
+Source Text,Translated Text,Context
+No favourites yet,Chưa có mục yêu thích nào,Empty State Message
+Click on the star icon to favourite an item.,Nhấp vào biểu tượng ngôi sao để yêu thích một mục.,Instruction Message
+New Link,Liên kết mới,Dialog Title
+Link name,Tên liên kết,Form Placeholder
+URL,URL,Form Placeholder
+This file already exists.,Tệp này đã tồn tại.,Error Message
+Link name is required,Tên liên kết là bắt buộc,Validation Message
+Created on,Được tạo vào,Date Label
+by,bởi,Author Label
+Highlight changes,Làm nổi bật thay đổi,Feature Label
+Restore,Khôi phục,Button Label
+Create new folder,Tạo thư mục mới,Dialog Title
+Create,Tạo,Button Label
+Folder name:,Tên thư mục:,Form Label
+This folder already exists.,Thư mục này đã tồn tại.,Error Message
+Folder name is required,Tên thư mục là bắt buộc,Validation Message
+Share,Chia sẻ,Button/Menu
+Download,Tải xuống,Button/Menu
+Copy Link,Sao chép liên kết,Button/Menu
+Move,Di chuyển,Button/Menu
+Rename,Đổi tên,Button/Menu
+Show Info,Hiển thị thông tin,Button/Menu
+Hide Info,Ẩn thông tin,Button/Menu
+Favourite,Yêu thích,Button/Menu
+Unfavourite,Bỏ yêu thích,Button/Menu
+Delete,Xóa,Button/Menu
+Clear,Xóa sạch,Button/Menu
+Delete — forever.,Xóa — vĩnh viễn.,Button Label
+Access,Quyền truy cập,Section Title
+Properties,Thuộc tính,Section Title
+Frappe Doc,Tài liệu Frappe,Document Type
+Versions,Phiên bản,Section Title
+New,Mới,Button Label
+Typography,Kiểu chữ,Tab Name
+Insert,Chèn,Tab Name
+Document Settings,Cài đặt Tài liệu,Tab Name
+Transforms,Chuyển đổi,Tab Name
+Clock,Đồng hồ,Tab Name
+Loading...,Đang tải...,Loading Message
+Public,Công khai,Access Type
+Restricted,Hạn chế,Access Type
+General,Chung,Access Category
+Shared,Đã chia sẻ,Access Category
+ (you), (bạn),Owner Indicator
+Add a comment (use @ to mention users),Thêm bình luận (sử dụng @ để đề cập người dùng),Comment Placeholder,Button/Menu
+Empty,Trống,Button/Menu
+Manage,Quản lý,Button/Menu
+My Drive,Tài liệu của tôi,Sidebar
+Recent,Gần đây,Sidebar
+Favourites,Yêu thích,Sidebar
+Teams,Nhóm,Sidebar
+Shared with me,Được chia sẻ với tôi,Sidebar
+Trash,Thùng rác,Sidebar
+Search,Tìm kiếm,Sidebar/Search
+Storage,Lưu trữ,Sidebar
+Owner,Chủ sở hữu,Property
+Type,Sắp xếp,Property
+Size,Kích thước,Property
+Modified,Đã sửa đổi,Property
+Added,Đã thêm,Property
+Uploaded,Đã tải lên,Property
+Name,Tên,Property
+Information,Thông tin,Tab/Section
+Properties,Thuộc tính,Tab/Section
+Tags,Nhãn,Tab/Section
+Sharing,Chia sẻ,Dialog Title
+General Access,Quyền truy cập chung,Section Title
+Members,Thành viên,Section Title
+Add people...,Thêm người...,Input Placeholder
+Loading users...,Đang tải người dùng...,Loading Message
+No users found,Không tìm thấy người dùng,Error Message
+No users available,Không có người dùng nào,Error Message
+Access,Quyền truy cập,Select Label
+No shares yet.,Chưa có chia sẻ nào.,Empty State Message
+Owner (you),Chủ sở hữu (bạn),User Role
+You,Bạn,User Indicator
+Owner,Chủ sở hữu,User Role
+Copy Link,Sao chép liên kết,Button Label
+Invite,Mời,Button Label
+Can view,Có thể xem,Permission Level
+Can edit,Có thể chỉnh sửa,Permission Level
+Accessible to invited members,Có thể truy cập với thành viên được mời,Access Option
+Accessible to team only,Chỉ nhóm mới có thể truy cập,Access Option
+Accessible to all,Tất cả đều có thể truy cập,Access Option
+Comments,Bình luận,Tab/Section
+Activity,Hoạt động,Tab/Section
+Statistics,Thống kê,Tab/Section
+Words,Từ,Statistics
+Characters,Ký tự,Statistics
+Reading Time,Thời gian đọc,Statistics
+minutes,phút,Time
+minute,phút,Time
+person,người,Count
+people,người,Count
+Settings,Cài đặt,Dialog/Page
+Profile,Hồ sơ,Settings
+Edit profile,Chỉnh sửa hồ sơ,Settings
+Confirm,Xác nhận,Button
+Add Image,Thêm ảnh,Button
+First Name,Tên,Form field
+Last Name,Họ,Form field
+Preferences,Tùy chọn,Settings
+Users,Người dùng,Settings
+Invite,Mời,Button
+New,Mới,Button
+You,Bạn,Ownership
+Team,Nhóm,Ownership
+General,Tổng quát,Access level
+Shared,Được chia sẻ,Access level
+Public,Công khai,Access level
+Created,Đã tạo,Property
+Create new team,Tạo nhóm mới,Button tooltip
+Edit,Chỉnh sửa,Button/Menu
+Style,Kiểu dáng,Tab/Section
+Title,Tiêu đề,Style
+TITLE,TIÊU ĐỀ,Style label
+Subtitle,Phụ đề,Style
+Transform,Chuyển đổi,Tab/Section
+Import,Nhập,Transform
+Export,Xuất,Transform
+Import DOCX,Nhập DOCX,Transform
+Export PDF,Xuất PDF,Transform
+Export Media,Xuất Media,Transform
+No previous versions available for the current document,Không có phiên bản trước nào cho tài liệu hiện tại,Message
+No files found.,Không tìm thấy tệp nào.,Message
+No Files,Không có tệp,Message
+No tags found,Không tìm thấy nhãn nào,Message
+Edit Profile,Chỉnh sửa hồ sơ,Dialog Title
+Sans,Sans,Font
+Serif,Serif,Font
+Mono,Mono,Font
+Round,Round,Font
+TITLE,TIÊU ĐỀ,Style Label
+Subtitle,Phụ đề,Style
+Create tag "{0}",Tạo nhãn "{0}",TagInput
+Do you want to create a personal account, or request to join the team ({0}) associated with your domain?,Bạn có muốn tạo tài khoản cá nhân hay yêu cầu tham gia nhóm ({0}) liên kết với tên miền của bạn?,Setup
+Do you want to create a personal account, or create a team with your domain?,Bạn có muốn tạo tài khoản cá nhân hay tạo nhóm với tên miền của bạn?,Setup
+Team Name,Tên nhóm,Setup
+Create Personal,Tạo tài khoản cá nhân,Setup
+Join {0},Tham gia {0},Setup
+Create Team,Tạo nhóm,Setup
+Upload,Tải lên,Button
+Uploading {0} {1},Đang tải lên {0} {1},UploadTracker
+file,tệp,File count singular
+files,tệp,File count plural
+upload,lần tải,Upload count singular
+uploads,lần tải,Upload count plural
+{0} {1} complete,{0} {1} hoàn thành,UploadTracker
+Home,Trang chủ,Navigation
+Recents,Gần đây,Navigation
+Favourites,Yêu thích,Navigation
+Team,Nhóm,Navigation
+Shared,Được chia sẻ,Navigation
+Trash,Thùng rác,Navigation
+In Progress,Đang tiến hành,Upload Status
+Completed,Đã hoàn thành,Upload Status
+Failed,Thất bại,Upload Status
+Upload failed,Tải lên thất bại,Upload Status
+OK,Đồng ý,Button
+Cancel uploads,Hủy tải lên,Upload Action
+Confirm,Xác nhận,Button
+Folder,Thư mục,File Type
+Unread,Chưa đọc,Notification Filter
+All,Tất cả,Filter
+Subject,Chủ đề,Table Header
+Message,Tin nhắn,Table Header
+Email,Email,Form Label
+First Name,Tên,Form Label
+Last Name,Họ,Form Label
+Search,Tìm kiếm,Action
+Upload File,Tải lên tệp,Action
+Upload Folder,Tải lên thư mục,Action
+Document,Tài liệu,File Type
+New Link,Liên kết mới,Action
+Untitled Document,Tài liệu chưa đặt tên,Default Title
+Storage,Lưu trữ,Feature
+New folder,Thư mục mới,Action
+Search for a folder,Tìm kiếm thư mục,Placeholder
+Desk,Bàn làm việc,App Name
+Open,Mở,Action
+Versions,Phiên bản,Feature
+New,Mới,Action
+Transform,Chuyển đổi,Feature
+Import,Nhập,Action
+Export,Xuất,Action
+Style,Kiểu dáng,Feature
+Font,Phông chữ,Feature
+Sans,Sans,Font Type
+Serif,Serif,Font Type
+Mono,Mono,Font Type
+Round,Round,Font Type
+Import DOCX,Nhập DOCX,Action
+Export PDF,Xuất PDF,Action
+Export Media,Xuất Media,Action
+Information,Thông tin,Tab
+Properties,Thuộc tính,Tab
+Tags,Nhãn,Tab
+Comments,Bình luận,Tab
+Activity,Hoạt động,Tab
+Statistics,Thống kê,Tab
+Preview,Xem trước,Action
+Close,Đóng,Action
+Cancel,Hủy,Action
+Save,Lưu,Action
+Loading,Đang tải,Status
+Error,Lỗi,Status
+Success,Thành công,Status
+Warning,Cảnh báo,Status
+Delete Forever,Xóa vĩnh viễn,Action
+Restore,Khôi phục,Action
+Select All,Chọn tất cả,Action
+Deselect All,Bỏ chọn tất cả,Action
+Copy,Sao chép,Action
+Cut,Cắt,Action
+Paste,Dán,Action
+Undo,Hoàn tác,Action
+Redo,Làm lại,Action
+Bold,Đậm,Text Style
+Italic,Nghiêng,Text Style
+Underline,Gạch chân,Text Style
+Strikethrough,Gạch ngang,Text Style
+Align Left,Căn trái,Text Align
+Align Center,Căn giữa,Text Align
+Align Right,Căn phải,Text Align
+Justify,Căn đều,Text Align
+Bullet List,Danh sách đầu dòng,List Type
+Numbered List,Danh sách số thứ tự,List Type
+Indent,Thụt lề,Action
+Outdent,Bỏ thụt lề,Action
+Insert Link,Chèn liên kết,Action
+Insert Image,Chèn hình ảnh,Action
+Insert Table,Chèn bảng,Action
+Insert Video,Chèn video,Action
+Background Color,Màu nền,Style
+Text Color,Màu chữ,Style
+Font Size,Cỡ chữ,Style
+Line Height,Độ cao dòng,Style
+Page Break,Ngắt trang,Action
+Table,Bảng,Element
+Row,Hàng,Table Element
+Column,Cột,Table Element
+Cell,Ô,Table Element
+Header,Tiêu đề,Table Element
+Footer,Chân trang,Table Element
+Sidebar,Thanh bên,UI Element
+Navbar,Thanh điều hướng,UI Element
+Toolbar,Thanh công cụ,UI Element
+Menu,Menu,UI Element
+Dropdown,Danh sách thả xuống,UI Element
+Modal,Hộp thoại,UI Element
+Tooltip,Chú thích,UI Element
+Breadcrumb,Đường dẫn,UI Element
+Pagination,Phân trang,UI Element
+Filter,Lọc,Action
+Sort,Sắp xếp,Action
+Group,Nhóm,Action
+Archive,Lưu trữ,Action
+Pin,Ghim,Action
+Unpin,Bỏ ghim,Action
+Lock,Khóa,Action
+Unlock,Mở khóa,Action
+Public,Công khai,Permission
+Private,Riêng tư,Permission
+Restricted,Hạn chế,Permission
+View Only,Chỉ xem,Permission
+Can Edit,Có thể chỉnh sửa,Permission
+Can Comment,Có thể bình luận,Permission
+Owner,Chủ sở hữu,Role
+Editor,Biên tập viên,Role
+Viewer,Người xem,Role
+Admin,Quản trị viên,Role
+Guest,Khách,Role
+Online,Trực tuyến,Status
+Offline,Ngoại tuyến,Status
+Active,Hoạt động,Status
+Inactive,Không hoạt động,Status
+Pending,Đang chờ,Status
+Approved,Đã phê duyệt,Status
+Rejected,Đã từ chối,Status
+Draft,Bản nháp,Status
+Published,Đã xuất bản,Status
+Archived,Đã lưu trữ,Status
+Deleted,Đã xóa,Status
+Today,Hôm nay,Time
+Yesterday,Hôm qua,Time
+Last Week,Tuần trước,Time
+Last Month,Tháng trước,Time
+Last Year,Năm trước,Time
+Recent,Gần đây,Time
+Older,Cũ hơn,Time
+Never,Chưa bao giờ,Time
+Always,Luôn luôn,Time
+Auto,Tự động,Setting
+Manual,Thủ công,Setting
+Default,Mặc định,Setting
+Custom,Tùy chỉnh,Setting
+Basic,Cơ bản,Level
+Advanced,Nâng cao,Level
+Expert,Chuyên gia,Level
+Beginner,Người mới bắt đầu,Level
+General,Tổng quát,Category
+Security,Bảo mật,Category
+Privacy,Quyền riêng tư,Category
+Performance,Hiệu suất,Category
+Appearance,Giao diện,Category
+Accessibility,Khả năng tiếp cận,Category
+Language,Ngôn ngữ,Setting
+Theme,Chủ đề,Setting
+Dark Mode,Chế độ tối,Theme
+Light Mode,Chế độ sáng,Theme
+Auto Mode,Chế độ tự động,Theme
+Compact View,Chế độ xem gọn,View
+Detail View,Chế độ xem chi tiết,View
+List View,Chế độ xem danh sách,View
+Grid View,Chế độ xem lưới,View
+Card View,Chế độ xem thẻ,View
+Timeline View,Chế độ xem dòng thời gian,View
+Calendar View,Chế độ xem lịch,View
+Gantt View,Chế độ xem Gantt,View
+Kanban View,Chế độ xem Kanban,View
+Gallery View,Chế độ xem thư viện,View
+Map View,Chế độ xem bản đồ,View
+Chart View,Chế độ xem biểu đồ,View
+Report View,Chế độ xem báo cáo,View
+Export View,Chế độ xem xuất,View
+Import View,Chế độ xem nhập,View
+Settings View,Chế độ xem cài đặt,View
+Profile View,Chế độ xem hồ sơ,View
+Dashboard View,Chế độ xem tổng quan,View
+Analytics View,Chế độ xem phân tích,View
+Summary View,Chế độ xem tóm tắt,View
+Overview View,Chế độ xem tổng quan,View
+Details View,Chế độ xem chi tiết,View
+Are you sure you want to cancel all ongoing uploads?,Bạn có chắc chắn muốn hủy tất cả các lần tải lên đang tiến hành?,Confirmation Message
+Mark all as Read,Đánh dấu tất cả đã đọc,Action
+Search for a folder,Tìm kiếm thư mục,Placeholder
+New folder,Thư mục mới,Action
+Users,Người dùng,Settings Tab
+Storage,Lưu trữ,Settings Tab
+Tags,Nhãn,Settings Tab
+Manager,Quản lý,Role
+User,Người dùng,Role
+Guest,Khách,Role
+Members,Thành viên,Tab
+Default Team,Nhóm mặc định,Setting
+Single click to open files and folders,Nhấp một lần để mở tệp và thư mục,Setting
+Automatically detect links,Tự động phát hiện liên kết,Setting
+Invites,Lời mời,Tab
+Not set,Chưa thiết lập,Default Value
+Folder is Empty,Thư mục trống,Empty State Message
+No Shared Files,Không có tệp được chia sẻ,Empty State Message
+Team is empty,Nhóm trống,Empty State Message
+No favourites yet,Chưa có mục yêu thích,Empty State Message
+No Notifications,Không có thông báo,Empty State Message
+Cannot open file,Không thể mở tệp,Error Message
+No other teams,Không có nhóm khác,Empty State Message
+Files,Tệp,Category
+Jump to,Chuyển đến,Navigation
+Actions,Hành động,Category
+Members,Thành viên,Category
+No users found,Không tìm thấy người dùng,Search Result
+Access,Quyền truy cập,Property
+Profile Photo,Ảnh hồ sơ,Form Label
+No Storage Used,Không sử dụng lưu trữ,Storage Status
+No Tags,Không có nhãn,Empty State
+corporate domain,tên miền công ty,Setup Text
+Log out,Đăng xuất,Action
+Teams,Nhóm,Page Title
+Invites,Lời mời,Page Title
+Go Home,Về trang chủ,Navigation
+This is from your Home.,Đây là từ Trang chủ của bạn.,Tooltip
+Today,Hôm nay,Time Group
+Yesterday,Hôm qua,Time Group
+This week,Tuần này,Time Group
+Last week,Tuần trước,Time Group
+This month,Tháng này,Time Group
+This year,Năm này,Time Group
+Earlier this week,Đầu tuần này,Time Group
+Earlier this month,Đầu tháng này,Time Group
+Earlier this year,Đầu năm này,Time Group
+Older than a year,Cũ hơn một năm,Time Group
+folder,thư mục,Entity Type
+file,tệp,Entity Type
+By,Bởi tôi,Filter Option
+With you,Với bạn,Filter Option
+created this,đã tạo,Activity Action
+uploaded this,đã tải lên,Activity Action
+renamed this,đã đổi tên,Activity Action
+edited this,đã chỉnh sửa,Activity Action
+deleted this,đã xóa,Activity Action
+shared this,đã chia sẻ,Activity Action
+updated permissions on this,đã cập nhật quyền cho,Activity Action
+restricted this,đã hạn chế,Activity Action
+moved this,đã di chuyển,Activity Action
+Unknown action type,Loại hành động không xác định,Activity Action
+Add files by dropping them here.,Thêm tệp bằng cách kéo thả vào đây.,Empty State Message
+Upload canceled by user,Tải lên đã bị hủy bởi người dùng,Upload Message
+reply,phản hồi,Comment singular
+replies,phản hồi,Comment plural
+Moving {0} items,Đang di chuyển {0} mục,Move Dialog
+Moving "{0}",Đang di chuyển "{0}",Move Dialog
+Moving,Đang di chuyển,Move Dialog Action
+items,mục,Move Dialog Items Count
+current,hiện tại,Current Folder Indicator
+No folders yet.,Chưa có thư mục nào.,Empty State Message
+Moving to:,Di chuyển đến:,Move Dialog Location
+Moved to,Đã di chuyển đến,Toast Message
+Go,Đi đến,Button Label
+All favourites cleared,Đã xóa tất cả yêu thích,Toast Message
+{0} items unfavourited,Đã bỏ yêu thích {0} mục,Toast Message
+{0} items favourited,Đã yêu thích {0} mục,Toast Message
+Removed {0} file{1} from Recents.,Đã xóa {0} tệp{1} khỏi Gần đây.,Toast Message
+Removed all files from Recents.,Đã xóa tất cả tệp khỏi Gần đây.,Toast Message
+Permanently deleted {0} file{1}.,Đã xóa vĩnh viễn {0} tệp{1}.,Toast Message
+Permanently deleted all files.,Đã xóa vĩnh viễn tất cả tệp.,Toast Message
+There is already a file with this name!,Đã có tệp với tên này!,Error Message
+There was an error,Đã xảy ra lỗi,Error Message
+There was an error.,Đã xảy ra lỗi.,Error Message
+Try again,Thử lại,Button Label
+this item,mục này,Item Reference
+{0} items,{0} mục,Items Count
+Restore Items,Khôi phục Mục,Dialog Title
+Selected items will be restored to their original locations.,Các mục đã chọn sẽ được khôi phục về vị trí ban đầu.,Dialog Message
+Restore,Khôi phục,Button Label
+Restored {0},Đã khôi phục {0},Toast Message
+Move to Trash,Chuyển vào Thùng rác,Dialog Title/Button Label
+{0} will be moved to Trash. Items in trash are deleted forever after 30 days.,{0} sẽ được chuyển vào Thùng rác. Các mục trong thùng rác sẽ bị xóa vĩnh viễn sau 30 ngày.,Dialog Message
+Moved {0} to Trash,Đã chuyển {0} vào Thùng rác,Toast Message
+Delete Forever?,Xóa vĩnh viễn?,Dialog Title
+This item,Mục này,Item Reference
+will be deleted forever. This is an irreversible process.,sẽ bị xóa vĩnh viễn. Đây là quá trình không thể hoàn tác.,Dialog Message
+Delete — forever.,Xóa vĩnh viễn.,Button Label
+Copied link,Đã sao chép liên kết,Toast Message
+Clipboard permission denied,Quyền truy cập clipboard bị từ chối,Error Message
+Failed to copy link:,Không thể sao chép liên kết:,Error Message
+Image,Hình ảnh,File Type
+Audio,Âm thanh,File Type
+Video,Video,File Type
+PDF,PDF,File Type
+Document,Tài liệu,File Type
+Spreadsheet,Bảng tính,File Type
+Archive,Tệp nén,File Type
+Presentation,Trình chiếu,File Type
+Unknown,Không xác định,File Type
+Application,Ứng dụng,File Type
+Book,Sách,File Type
+item,mục,Selection
+s, ,Plural suffix
+selected,đã chọn,Selection Status
+Filter,Bộ lọc,Action
+Edit Tag,Chỉnh sửa Nhãn,Dialog Title
+Title,Tiêu đề,Field Label
+Confirm,Xác nhận,Button Label
+New Tag,Nhãn mới,Dialog Title
+Marketing,Marketing,Tag Example
+Draft,Bản nháp,Tag Example
+Confidential,Bảo mật,Tag Example
+Public,Công khai,Tag Example
+Webinar,Hội thảo trực tuyến,Tag Example
+Approved,Đã phê duyệt,Tag Example
+Invoice,Hóa đơn,Tag Example
+Color,Màu sắc,Field Label
+Set Color,Đặt màu,Input Placeholder
+No Tags,Không có nhãn nào,Empty State Message
+Delete Tag,Xóa nhãn,Dialog Title
+Are you sure you want to delete the tag {0}? This action cannot be undone,Bạn có chắc chắn muốn xóa nhãn {0}? Hành động này không thể hoàn tác,Dialog Message
+Are you sure you want to delete the tag "blog"? This action cannot be undone. All files with this tag will also lose it.,Bạn có chắc chắn muốn xóa nhãn "blog"? Hành động này không thể hoàn tác. Tất cả tệp có nhãn này cũng sẽ mất nhãn.,Dialog Message
+Are you sure?,Bạn có chắc chắn?,Dialog Title
+Removing,Đang xóa,Action
+Remove,Xóa,Action
+will completely revoke their access to your team. You can always add them back using the same email ID.,sẽ hoàn toàn thu hồi quyền truy cập của họ vào nhóm của bạn. Bạn luôn có thể thêm lại họ bằng cách sử dụng cùng một ID email.,Dialog Message
+I confirm that I want to remove,Tôi xác nhận muốn xóa,Confirmation
+No results found,Không tìm thấy kết quả,Search Result
+All your recently viewed files will be cleared.,Tất cả các tệp bạn đã xem gần đây sẽ bị xóa sạch.,Dialog Message
+All your favourite items will be cleared.,Tất cả các mục yêu thích của bạn sẽ bị xóa sạch.,Dialog Message
+All items in your Trash will be deleted forever. This is an irreversible process.,Tất cả các mục trong Thùng rác của bạn sẽ bị xóa vĩnh viễn. Đây là một quá trình không thể hoàn tác.,Dialog Message
+Last Accessed, Lần truy cập cuối,Property
+Last Modified, Lần sửa đổi cuối,Property
+"{0} item","{0} mục",Item Count
+"{0} items","{0} mục",Items Count
+"1 item","1 mục",Single Item Count
+"item","mục",Generic Item
+"items","mục",Generic Items
+"empty","trống",Folder State
+"You don't have any files yet","Bạn chưa có tệp nào",Empty State Message
+"You haven't joined any teams yet.","Bạn chưa tham gia nhóm nào.",Empty State Message
+"Nothing found - try something else?","Không tìm thấy gì - thử cái khác nhé?",Search Empty State
+"Last Modified","Sửa đổi lần cuối",Column Header
+"Last Accessed","Truy cập lần cuối",Column Header
+"Shared","Chia sẻ",Column Header
+"Drop to upload","Kéo để tải lên",Column Header

@@ -7,6 +7,8 @@ from frappe.utils import split_emails, validate_email_address
 from drive.api.permissions import is_admin
 from frappe.translate import get_all_translations
 import re
+import csv
+import os
 from raven.raven_bot.doctype.raven_bot.raven_bot import RavenBot
 
 
@@ -636,7 +638,99 @@ def reject_invite(key):
 def get_translations():
     """Get all translations for the frontend"""
     try:
-        return get_all_translations()
+        # Start with some hardcoded translations for testing
+        translations = {
+            "Home": "Trang chủ",
+            "Search": "Tìm kiếm",
+            "Settings": "Cài đặt",
+            "Upload": "Tải lên",
+            "Download": "Tải xuống",
+            "Delete": "Xóa",
+            "Rename": "Đổi tên",
+            "Share": "Chia sẻ",
+            "Copy Link": "Sao chép liên kết",
+            "Move": "Di chuyển",
+            "Favourites": "Yêu thích",
+            "Recent": "Gần đây",
+            "Teams": "Nhóm",
+            "Trash": "Thùng rác",
+            "My Drive": "Tài liệu của tôi",
+            "Shared": "Được chia sẻ",
+            "Users": "Người dùng",
+            "Storage": "Lưu trữ",
+            "Tags": "Nhãn",
+        }
+
+        # Try to load custom translations from CSV and merge
+        custom_translations = get_custom_translations()
+        if custom_translations:
+            translations.update(custom_translations)
+            print(f"DEBUG: Updated with {len(custom_translations)} custom translations")
+
+        print(f"DEBUG: Returning {len(translations)} total translations")
+
+        return translations
+
     except Exception as e:
         frappe.log_error(f"Translation error: {str(e)}")
-        return {}
+        print(f"DEBUG: Translation error: {str(e)}")
+        # Fallback to basic translations
+        return {"Home": "Trang chủ", "Search": "Tìm kiếm", "Settings": "Cài đặt"}
+
+
+def get_custom_translations():
+    """Load custom translations from CSV file"""
+    translations = {}
+    try:
+        # Get the path to the CSV file
+        app_path = frappe.get_app_path("drive")
+        csv_path = os.path.join(app_path, "translations", "vi.csv")
+
+        print(f"DEBUG: Looking for translations at: {csv_path}")
+        print(f"DEBUG: File exists: {os.path.exists(csv_path)}")
+
+        if os.path.exists(csv_path):
+            with open(csv_path, "r", encoding="utf-8") as f:
+                csv_reader = csv.DictReader(f)
+                print(f"DEBUG: CSV headers: {csv_reader.fieldnames}")
+
+                row_count = 0
+                for row in csv_reader:
+                    row_count += 1
+                    if row_count <= 3:  # Debug first 3 rows
+                        print(f"DEBUG: Row {row_count}: {row}")
+
+                    if row.get("Source Text") and row.get("Translated Text"):
+                        # Skip comment lines
+                        if not row["Source Text"].startswith("#"):
+                            source = row["Source Text"].strip()
+                            target = row["Translated Text"].strip()
+                            translations[source] = target
+
+                print(f"DEBUG: Total rows processed: {row_count}")
+                print(f"DEBUG: Loaded {len(translations)} translations")
+
+                # Show some examples
+                examples = ["Home", "Search", "Upload", "Settings", "Delete"]
+                for example in examples:
+                    if example in translations:
+                        print(f"DEBUG: {example} -> {translations[example]}")
+
+        else:
+            print(f"DEBUG: CSV file not found at: {csv_path}")
+            # Try alternative paths
+            alt_paths = [
+                os.path.join(app_path, "drive", "translations", "vi.csv"),
+                "./drive/translations/vi.csv",
+                "../drive/translations/vi.csv",
+            ]
+            for alt_path in alt_paths:
+                print(
+                    f"DEBUG: Checking alternative path: {alt_path} - exists: {os.path.exists(alt_path)}"
+                )
+
+    except Exception as e:
+        print(f"DEBUG: Custom translation error: {str(e)}")
+        frappe.log_error(f"Custom translation error: {str(e)}")
+
+    return translations
