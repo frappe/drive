@@ -4,7 +4,7 @@
       v-if="selections?.length"
       class="my-auto w-[40%] text-base text-ink-gray-8"
     >
-      {{ selections.length }} {{ __('item') }}{{ selections.length === 1 ? "" : __('s') }}
+      {{ selections.length }} {{ __('item') }}{{ selections.length === 1 ? "" : __('') }}
       {{ __('selected') }}
     </div>
     <div

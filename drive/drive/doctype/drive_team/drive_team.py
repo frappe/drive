@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from pathlib import Path
 import shutil
@@ -46,3 +47,39 @@ class DriveTeam(Document):
             pass
         frappe.db.delete("Drive File", {"team": self.name})
         frappe.db.commit()
+
+
+@frappe.whitelist()
+def change_team_name(team_id, new_name):
+    """
+    Phiên bản đơn giản chỉ kiểm tra membership
+    """
+    try:
+        user_id = frappe.session.user
+
+        if not new_name or not new_name.strip():
+            frappe.throw(_("Tên nhóm không được để trống."))
+
+        is_member = check_permission_user_update(team_id, user_id)
+
+        if not is_member:
+            frappe.throw(_("Bạn không có quyền thay đổi tên nhóm này."))
+
+        team = frappe.get_doc("Drive Team", team_id)
+        team.title = new_name.strip()
+        team.save()
+
+        frappe.msgprint(_("Đã cập nhật tên nhóm thành công."))
+
+    except frappe.ValidationError as e:
+        frappe.msgprint(_("Lỗi: {0}").format(e))
+
+
+@frappe.whitelist()
+def check_permission_user_update(team_id, user_id):
+    is_member = frappe.db.exists(
+        "Drive Team Member", {"parent": team_id, "user": user_id, "access_level": 2}
+    )
+    if not is_member:
+        return False
+    return True
