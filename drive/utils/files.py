@@ -398,16 +398,18 @@ class FileManager:
         """
         Move a file on disk
         """
-
-        if self.s3_enabled:
-            self.conn.copy_object(
-                Bucket=self.bucket,
-                CopySource={"Bucket": self.bucket, "Key": old_path},
-                Key=new_path,
-            )
-            self.conn.delete_object(Bucket=self.bucket, Key=old_path)
-        else:
-            (self.site_folder / old_path).rename(self.site_folder / new_path)
+        try:
+            if self.s3_enabled:
+                self.conn.copy_object(
+                    Bucket=self.bucket,
+                    CopySource={"Bucket": self.bucket, "Key": old_path},
+                    Key=new_path,
+                )
+                self.conn.delete_object(Bucket=self.bucket, Key=old_path)
+            else:
+                (self.site_folder / old_path).rename(self.site_folder / new_path)
+        except:
+            frappe.throw("This file doesn't exist on disk.")
         return new_path
 
     def delete_file(self, team, name, path):

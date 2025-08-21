@@ -121,7 +121,7 @@ class DriveFile(Document):
         self.is_private = is_private
 
         # Condition is so that old file names aren't corrupted
-        if not self.manager.flat:
+        if not self.manager.flat and not self.document:
             new_path = self.manager.get_disk_path(self)
             self.manager.move(self.path, new_path)
             self.path = new_path
