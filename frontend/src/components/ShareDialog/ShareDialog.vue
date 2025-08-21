@@ -461,7 +461,7 @@ const updateGeneralAccess = (type, perms) => {
   if (type === "restricted") {
     updateAccess.submit({
       entity_name: props.entity.name,
-      user: "general",
+      user: "$GENERAL",
       method: "unshare",
     })
   } else {

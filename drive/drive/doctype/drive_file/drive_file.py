@@ -397,7 +397,7 @@ class DriveFile(Document):
         for i in absolute_path:
             if i["owner"] == user:
                 frappe.throw("User owns parent folder", frappe.PermissionError)
-        if user in ["", "$TEAM"]:
+        if user == "$GENERAL":
             perm_names = frappe.db.get_list(
                 "Drive Permission",
                 {
