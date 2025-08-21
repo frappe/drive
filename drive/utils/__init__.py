@@ -214,19 +214,33 @@ def generate_upward_path(entity_name, user=None):
     return result
 
 
-def get_valid_breadcrumbs(user_access, paths):
+def get_valid_breadcrumbs(user_access, paths, public):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
-    # If team/admin of this entity, then entire path
-    if user_access.get("type") in ["admin", "team"]:
+    # If team/admin of this entity, then entire path - broken? should check for is_private?
+    if user_access.get("type") == "admin" or (
+        public and user_access.get("type") in ["team", "team-admin"]
+    ):
         return paths[0]
 
     # Otherwise, slice where they lose read access.
-    lose_access = max(
-        next((i for i, k in enumerate(path[::-1]) if not k["read"]), 0) for path in paths
+    index, lose_access = max(
+        (
+            (i, next((j for j, k in enumerate(path[::-1]) if not k["read"]), 0))
+            for i, path in enumerate(paths)
+        ),
+        key=lambda k: k[1],
     )
-    return paths[0][-lose_access:]
+    print(
+        "daiii",
+        [
+            (i, next((j for j, k in enumerate(path[::-1]) if not k["read"]), 0))
+            for i, path in enumerate(paths)
+        ],
+        paths[1],
+    )
+    return paths[index][-lose_access:]
 
 
 def get_file_type(r):

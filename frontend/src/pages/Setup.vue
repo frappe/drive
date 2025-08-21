@@ -132,7 +132,7 @@ const createTeam = createResource({
   url: "drive.api.product.create_team",
   makeParams: () => ({
     team_name: team_name.value,
-    email: email.value,
+    user: email.value,
   }),
   onSuccess: (data) => {
     if (data) {

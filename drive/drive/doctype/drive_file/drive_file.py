@@ -15,7 +15,10 @@ from drive.utils.files import FileManager
 class DriveFile(Document):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.manager = FileManager()
+
+    @property
+    def manager(self):
+        return FileManager()
 
     def after_insert(self):
         full_name = frappe.db.get_value("User", {"name": frappe.session.user}, ["full_name"])

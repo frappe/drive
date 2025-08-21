@@ -32,11 +32,12 @@ def get_user_access(entity, user=None, details=False):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
-    # BROKEN: no perm checks, has an allow_guest too.
+    # BROKEN: no perm checks, has an allow_guest too
+    # also leaks parent breadcrumbs
     if not user:
         user = frappe.session.user
     if isinstance(entity, str):
-        entity = frappe.get_doc("Drive File", entity)
+        entity = frappe.get_cached_doc("Drive File", entity)
 
     teams = get_teams(user)
     if user == entity.owner:
@@ -113,7 +114,6 @@ def get_teams(user=None, details=None):
             ["user", "=", user],
         ],
     )
-    print(user, frappe.get_all("Drive Team Member", fields=["user", "parent"]))
     if details:
         return {team: frappe.get_doc("Drive Team", team) for team in teams}
 
@@ -146,7 +146,7 @@ def get_entity_with_permissions(entity_name):
     owner_info = (
         frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     )
-    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(user_access, paths)}
+    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(user_access, paths, not entity.is_private)}
     favourite = frappe.db.get_value(
         "Drive Favourite",
         {

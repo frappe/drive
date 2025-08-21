@@ -27,14 +27,15 @@ def get_domain_teams(domain):
 
 
 @frappe.whitelist()
-def create_team(email=frappe.session.user, team_name=None):
+def create_team(user, team_name=None):
     """
     Used for creating teams, personal or not.
     """
-    domain = email.split("@")[-1] if team_name else ""
     team_name = team_name if team_name else "Your Drive"
+
+    domain = user.split("@")[-1] if team_name else ""
     exists = frappe.db.exists("Drive Team", {"team_domain": domain}) or frappe.db.exists(
-        "Drive Team", {"title": team_name, "owner": email}
+        "Drive Team", {"title": team_name, "owner": user}
     )
     if exists:
         return exists
@@ -46,7 +47,7 @@ def create_team(email=frappe.session.user, team_name=None):
             "team_domain": domain,
         }
     ).insert(ignore_permissions=True)
-    team.append("users", {"user": email, "access_level": 2})
+    team.append("users", {"user": user, "access_level": 2})
     team.save()
     return team.name
 
