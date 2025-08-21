@@ -179,6 +179,8 @@ def files(
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
     res = query.run(as_dict=True)
+
+    default = {entity_name in public_files: -2, entity_name in team_files: -1}.get(True, 0)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)
@@ -187,7 +189,7 @@ def files(
         elif r["name"] in team_files or not r["is_private"]:
             r["share_count"] = -1
         else:
-            r["share_count"] = share_count.get(r["name"], 0)
+            r["share_count"] = share_count.get(r["name"], default)
         r |= get_user_access(r["name"])
 
     return res
