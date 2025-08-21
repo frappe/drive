@@ -91,7 +91,7 @@
           variant="solid"
           @click="$router.push({ name: 'Login' })"
         >
-          Sign In
+          Đăng nhập
         </Button>
       </div>
     </div>
