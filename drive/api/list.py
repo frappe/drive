@@ -179,17 +179,25 @@ def files(
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
     res = query.run(as_dict=True)
+    default = 0
+    if get_user_access(entity_name, "Guest")["read"]:
+        default = -2
+    elif get_user_access(entity_name, "$TEAM")["read"]:
+        default = -1
 
-    default = {entity_name in public_files: -2, entity_name in team_files: -1}.get(True, 0)
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)
+
         if r["name"] in public_files:
             r["share_count"] = -2
-        elif r["name"] in team_files or not r["is_private"]:
+        elif default > -1 and (r["name"] in team_files or not r["is_private"]):
             r["share_count"] = -1
-        else:
+        elif default == 0:
             r["share_count"] = share_count.get(r["name"], default)
+        else:
+            r["share_count"] = default
+
         r |= get_user_access(r["name"])
 
     return res
