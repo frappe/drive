@@ -161,4 +161,6 @@ async function upload() {
   close();
   emit("complete");
 }
+
+defineExpose({ selected_node });
 </script>
