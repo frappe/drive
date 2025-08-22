@@ -4,23 +4,26 @@
       ref="reference"
       class="tree-link"
       @click="emit('node-click', node)"
+      style="width: 100%"
       :class="{ active: node.value === selected_node?.value }"
       :disabled="node.fetching"
       @mouseover="onMouseover"
       @mouseleave="onMouseleave"
     >
-      <div v-html="icon"></div>
-      <a class="tree-label">{{ node.label }}</a>
-      <!-- Icon open File record in new tab -->
-      <!-- <a
-        v-if="node.is_group"
-        :href="open_file(node.value)"
-        :disabled="node.fetching"
+      <div v-html="icon" />
+      <a
+        class="tree-label text-nowrap overflow-hidden"
+        :title="node.label"
+        style="max-width: 120px; text-overflow: ellipsis"
+        >{{ node.label }}</a
+      >
+      <a
+        v-if="!node.is_group"
+        :href="'/drive/f/' + node.value"
+        class="ml-auto file-link"
         target="_blank"
-        class="file-doc-link ml-2"
-        v-html="frappe.utils.icon('external-link', 'sm')"
-        @click.stop="node.open = !node.open"
-      /> -->
+        v-html="linkIcon"
+      />
     </span>
     <div v-if="node.file_url && frappe.utils.is_image_file(node.file_url)">
       <div v-show="isOpen" class="popover" ref="popover" role="tooltip">
@@ -63,10 +66,11 @@ let emit = defineEmits(["node-click", "load-more"]);
 
 // computed
 
+let linkIcon = frappe.utils.icon("external-link", "sm");
 let icon = computed(() => {
   let icons = {
-    open: frappe.utils.icon("folder-open", "md"),
-    closed: frappe.utils.icon("folder-normal", "md"),
+    open: frappe.utils.icon("folder-open", "xs"),
+    closed: frappe.utils.icon("folder-normal", "xs"),
     file: frappe.utils.icon("small-file", "xs"),
     link: frappe.utils.icon("link", "xs"),
     doc: frappe.utils.icon("file", "xs"),
@@ -138,5 +142,17 @@ function onMouseleave() {
 }
 .popover {
   padding: 10px;
+}
+
+.tree-link .file-link {
+  opacity: 0;
+}
+
+.tree-link:hover .file-link {
+  opacity: 0.4;
+}
+
+.tree-link .file-doc-link:hover {
+  opacity: 0.8;
 }
 </style>

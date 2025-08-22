@@ -1,170 +1,120 @@
 <template>
-  <!-- Body -->
-  <div class="p-4 space-y-4">
-    <!-- File Picker -->
-    <div
-      class="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 cursor-pointer hover:border-gray-400"
-      @click="triggerFileSelect"
+  <!-- Tabs (Home / Team) -->
+  <div class="flex justify-center" style="gap: 0.75rem">
+    <button
+      v-for="(tab, idx) in tabs"
+      :key="tab.label"
+      @click="tabIndex = idx"
+      class="btn text-sm font-medium"
+      :class="[idx === tabIndex ? 'btn-primary' : 'btn-secondary']"
     >
-      <p v-if="!files.length">Click or drag files here to upload</p>
-      <ul v-else class="text-sm w-full">
-        <li v-for="file in files" :key="file.name" class="truncate">
-          {{ file.name }}
-        </li>
-      </ul>
-      <input
-        ref="fileInput"
-        type="file"
-        class="hidden"
-        multiple
-        @change="onFileChange"
-      />
-    </div>
+      {{ tab.label }}
+    </button>
+  </div>
 
-    <!-- Tabs (Home / Team) -->
-    <div class="flex border-b space-x-4">
-      <button
-        v-for="(tab, idx) in tabs"
-        :key="tab.label"
-        @click="tabIndex = idx"
-        class="pb-2 text-sm font-medium"
-        :class="[
-          idx === tabIndex
-            ? 'border-b-2 border-blue-600 text-blue-600'
-            : 'text-gray-500 hover:text-gray-700',
-        ]"
-      >
-        {{ tab.label }}
-      </button>
+  <!-- Folder Tree -->
+  <div class="overflow-auto pt-3" style="height: 300px">
+    <div
+      v-if="currentTree.fetching"
+      class="spinner-border spinner-border-sm mx-auto my-5"
+    />
+    <div v-else-if="!currentTree.children.length" class="text-center my-5">
+      No folders found
     </div>
+    <TreeNode
+      v-else
+      v-for="child in currentTree.children"
+      :key="child.value"
+      :node="child"
+      class="tree-children pl-0"
+      :selected_node="selected_node"
+      @node-click="toggle_node"
+    />
+  </div>
 
-    <!-- Folder Tree -->
-    <div class="h-48 overflow-auto">
-      <ul>
-        <TreeNode
-          v-for="child in currentTree.children"
-          :key="child.value"
-          :node="child"
-          :selected_node="selected_node"
-          @node-click="toggle_node"
-        />
-      </ul>
-      <div
-        v-if="!currentTree.children.length"
-        class="text-center text-gray-500 py-12"
-      >
-        No folders found
-      </div>
-    </div>
-
-    <!-- Breadcrumbs -->
-    <div class="flex items-center text-sm text-gray-600">
+  <!-- Breadcrumbs -->
+  <div
+    v-if="breadcrumbs.length > 1"
+    class="flex align-center text-sm text-gray-600 pt-2"
+  >
+    Uploading from:
+    <div style="overflow: scroll">
       <template v-for="(crumb, index) in breadcrumbs" :key="crumb.name">
-        <button class="hover:underline" @click="closeEntity(crumb.name)">
+        <span class="btn text-nowrap" @click="closeEntity(crumb.name)">
           {{ crumb.title }}
-        </button>
+        </span>
         <span v-if="index < breadcrumbs.length - 1" class="mx-1">/</span>
       </template>
     </div>
   </div>
-
-  <!-- Footer -->
-  <div class="flex justify-end border-t px-4 py-3">
-    <button
-      class="px-4 py-2 rounded-lg bg-blue-600 text-white disabled:opacity-50"
-      :disabled="!files.length || uploading"
-      @click="upload"
-    >
-      {{ uploading ? "Uploading..." : "Upload" }}
-    </button>
-  </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import TreeNode from "./TreeNode.vue";
 
 // props & emits
 const emit = defineEmits(["success", "complete"]);
-
-// file state
-const files = ref([]);
-const fileInput = ref(null);
-function triggerFileSelect() {
-  fileInput.value?.click();
-}
-function onFileChange(e) {
-  files.value = Array.from(e.target.files);
-}
-
-// tabs & folder tree
 const tabs = [{ label: "Home" }, { label: "Team" }];
 const tabIndex = ref(0);
 
 const homeRoot = reactive({
   label: "Home",
   value: "",
-  is_group: true,
-  fetching: false,
-  open: true,
-  children: [
-    {
-      label: "Heyooo",
-      value: "j53da73u6v",
-      is_group: true,
-      fetching: false,
-      open: false,
-      children: [],
-    },
-  ],
+  fetching: true,
+  children: [],
 });
-
-const selected_node = ref(null);
-
 const teamRoot = reactive({
   label: "Team",
   value: "",
+  fetching: true,
   children: [],
 });
+
+const selected_node = ref(null);
+const breadcrumbs = ref([
+  {
+    name: "",
+    title: tabIndex.value === 0 ? "Home" : "Team",
+    is_private: tabIndex.value === 0 ? 1 : 0,
+  },
+]);
 
 const currentTree = computed(() =>
   tabIndex.value === 0 ? homeRoot : teamRoot
 );
 
-const currentFolder = ref("");
-const breadcrumbs = ref([{ name: "", title: "Home" }]);
-
-function closeEntity(name) {
-  const idx = breadcrumbs.value.findIndex((b) => b.name === name);
-  if (idx !== -1) {
-    breadcrumbs.value = breadcrumbs.value.slice(0, idx + 1);
-    currentFolder.value = name;
-  }
-}
+watch(
+  tabIndex,
+  (newValue) => {
+    selected_node.value = "";
+    currentTree.value = tabIndex.value === 0 ? homeRoot : teamRoot;
+    switch (newValue) {
+      case 0:
+        breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }];
+        get_files(homeRoot, 1);
+        break;
+      case 1:
+        breadcrumbs.value = [{ name: "", title: "Team", is_private: 0 }];
+        get_files(teamRoot, 0);
+        break;
+      case 2:
+        folderContents.fetch({
+          entity_name: "",
+          favourites_only: true,
+        });
+        break;
+    }
+  },
+  { immediate: true }
+);
 
 function toggle_node(node) {
   if (!node.fetched && node.is_group) {
     node.fetching = true;
     node.children_start = 0;
     node.children_loading = false;
-    frappe
-      .call("drive.api.list.files", {
-        entity_name: node.value,
-        team: "v384saici2",
-      })
-      .then(({ message }) => {
-        node.open = true;
-        node.children = message.map((k) => ({
-          value: k.name,
-          label: k.title,
-          children: [],
-          fetching: false,
-          open: false,
-          ...k,
-        }));
-        node.fetched = true;
-        node.fetching = false;
-      });
+    get_files(node);
   } else {
     node.open = !node.open;
     selected_node.value = node;
@@ -179,6 +129,25 @@ function toggle_node(node) {
         ];
       });
   }
+}
+
+async function get_files(node, personal = null) {
+  const { message } = await frappe.call("drive.api.list.files", {
+    entity_name: node.value,
+    team: "v384saici2",
+    [personal ? "personal" : ""]: personal,
+  });
+  node.open = true;
+  node.children = message.map((k) => ({
+    value: k.name,
+    label: k.title,
+    children: [],
+    fetching: false,
+    open: false,
+    ...k,
+  }));
+  node.fetched = true;
+  node.fetching = false;
 }
 
 // upload logic (stubbed)
