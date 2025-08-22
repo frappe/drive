@@ -5,7 +5,7 @@
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem
-      :label="props.isExpanded ? __('Storage') : '- used out of 5GB'"
+      :label="__('Storage')"
       :is-collapsed="!props.isExpanded"
     >
       <template #icon>
@@ -50,7 +50,7 @@ const storageMax = ref(5368709120)
 const props = defineProps(["isExpanded"])
 const formattedString = computed(() => {
   return (
-    (formatSize(usedStorage.value) || "-") +
+    formatSize(usedStorage.value) +
     " used out of " +
     base2BlockSize(storageMax.value)
   )
