@@ -60,10 +60,11 @@ def files(
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
     user_access = get_user_access(entity, user)
+    print(user)
     if not user_access["read"]:
         frappe.throw(
             f"You don't have access.",
-            frappe.exceptions.PageDoesNotExistError,
+            frappe.exceptions.PermissionError,
         )
     query = (
         frappe.qb.from_(DriveFile)
