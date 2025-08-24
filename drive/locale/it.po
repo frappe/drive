@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-08-10 10:18\n"
+"PO-Revision-Date: 2025-08-24 13:43\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -61,7 +61,7 @@ msgstr ""
 
 #: frontend/src/components/InfoSidebar.vue:197
 msgid "Activity"
-msgstr ""
+msgstr "Attività"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:77
 msgid "Add Image"
@@ -165,7 +165,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:311
 #: frontend/src/components/Navbar.vue:267
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #. Label of the notif_doctype_name (Dynamic Link) field in DocType 'Drive
 #. Notification'
@@ -187,7 +187,7 @@ msgstr ""
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Document Type"
-msgstr ""
+msgstr "Tipo Documento"
 
 #: frontend/src/components/PrimaryDropdown.vue:120
 msgid "Documentation"
@@ -359,7 +359,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
-msgstr "Nome di battesimo"
+msgstr "Nome"
 
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -470,7 +470,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:88
 msgid "Last Name"
-msgstr ""
+msgstr "Cognome"
 
 #: frontend/src/components/PrimaryDropdown.vue:146
 msgid "Log out"
@@ -510,7 +510,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Messaggio"
 
 #. Label of the meta_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -706,7 +706,7 @@ msgstr ""
 #: frontend/src/components/PrimaryDropdown.vue:141
 #: frontend/src/components/Settings/SettingsDialog.vue:15
 msgid "Settings"
-msgstr ""
+msgstr "Impostazioni"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
