@@ -2,7 +2,7 @@
   <Navbar
     v-if="!verify?.error && !getEntities.error"
     :root-resource="verify"
-    :entities="activeEntity ? [activeEntity] : selectedEntitities"
+    :entities="selectedEntities"
   />
 
   <ErrorPage
@@ -19,7 +19,7 @@
     <DriveToolBar
       v-model="rows"
       :action-items="actionItems"
-      :selections="selectedEntitities"
+      :selections="selectedEntities"
       :get-entities="getEntities || { data: [] }"
     />
 
@@ -124,12 +124,22 @@ store.commit("setListResource", props.getEntities)
 store.commit("setCurrentResource", null)
 
 const selections = ref(new Set())
-const selectedEntitities = computed(
-  () =>
-    props.getEntities.data?.filter?.(({ name }) =>
-      selections.value.has(name)
-    ) || []
-)
+const selectedEntities = computed(() => {
+  if (selections.value.size > 0) {
+    return (
+      props.getEntities.data?.filter?.(({ name }) =>
+        selections.value.has(name)
+      ) || []
+    )
+  }
+  if (activeEntity.value) {
+    const exists = props.getEntities.data?.find(
+      (e) => e.name === activeEntity.value.name
+    )
+    return exists ? [activeEntity.value] : []
+  }
+  return []
+})
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
 watchEffect(() => {
@@ -177,6 +187,8 @@ const onDrop = (targetFile, draggedItem) => {
 
 // Action Items
 const actionItems = computed(() => {
+  const isMultipleSelection = selections.value.size > 1;
+
   if (route.name === "Trash") {
     return [
       {
@@ -201,20 +213,20 @@ const actionItems = computed(() => {
         label: __("Preview"),
         icon: LucideEye,
         action: ([entity]) => openEntity(team, entity),
-        isEnabled: (e) => !e.is_link,
+        isEnabled: (e) => !e.is_link && !isMultipleSelection,
       },
       {
         label: __("Open"),
         icon: LucideExternalLink,
         action: ([entity]) => openEntity(team, entity),
-        isEnabled: (e) => e.is_link,
+        isEnabled: (e) => e.is_link && !isMultipleSelection, 
       },
-      { divider: true },
+      { divider: true, isEnabled: (e) => e.write && !isMultipleSelection },
       {
         label: __("Share"),
         icon: LucideShare2,
         action: () => (dialog.value = "s"),
-        isEnabled: (e) => e.share,
+        isEnabled: (e) => e.share && !isMultipleSelection,
         important: true,
       },
       {
@@ -228,10 +240,10 @@ const actionItems = computed(() => {
       {
         label: __("Copy Link"),
         icon: LucideLink2,
-        action: ([entity]) => getLink(entity),
+        action: (entities) => getLink(entities),
         important: true,
       },
-      { divider: true },
+      { divider: true, isEnabled: (e) => e.write && !isMultipleSelection },
       {
         label: __("Move"),
         icon: LucideArrowLeftRight,
@@ -244,13 +256,13 @@ const actionItems = computed(() => {
         label: __("Rename"),
         icon: LucideSquarePen,
         action: () => (dialog.value = "rn"),
-        isEnabled: (e) => e.write,
+        isEnabled: (e) => e.write && !isMultipleSelection, 
       },
       {
         label: __("Show Info"),
         icon: LucideInfo,
         action: () => (dialog.value = "i"),
-        isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+        isEnabled: () => (!store.state.activeEntity || !store.state.showInfo) && !isMultipleSelection,
       },
       {
         label: __("Favourite"),
