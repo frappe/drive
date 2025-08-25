@@ -7,7 +7,14 @@
       "
       class="mx-auto cursor-text min-h-full w-full md:w-auto ps-4 md:p-0"
     >
+      <div
+        v-if="!updated"
+        class="text-center h-full flex justify-center items-center text-sm font-semibold"
+      >
+        Updating...
+      </div>
       <FTextEditor
+        v-show="updated"
         :key="editorExtensions.length"
         ref="textEditor"
         class="min-w-full md:min-w-[65ch]"
@@ -17,7 +24,7 @@
           `leading-[${writerSettings.doc?.line_height || 1.5}]`,
           writerSettings.doc?.custom_css,
         ]"
-        :content="rawContent"
+        :content="!settings?.collab ? rawContent : undefined"
         :editable="!!entity.write"
         :upload-function="
           (file) => {
@@ -32,7 +39,7 @@
         @change="
           (val) => {
             rawContent = val
-            yjsContent = Y.encodeStateAsUpdate(doc)
+            if (settings.collab) yjsContent = Y.encodeStateAsUpdate(doc)
             if (db)
               db.transaction(['content'], 'readwrite')
                 .objectStore('content')
@@ -76,6 +83,7 @@ import {
   onBeforeUnmount,
   h,
   watch,
+  getCurrentInstance,
 } from "vue"
 import store from "@/store"
 import FontFamily from "./extensions/font-family"
@@ -99,6 +107,7 @@ import H3 from "./icons/h-3.vue"
 import LucideMessageCircle from "~icons/lucide/message-circle"
 
 const textEditor = ref("textEditor")
+const updated = ref(true)
 const editor = computed(() => {
   let editor = textEditor.value?.editor
   console.log(editor)
@@ -113,6 +122,7 @@ const edited = defineModel("edited")
 
 const props = defineProps({
   entity: Object,
+  settings: Object,
   showResolved: Boolean,
   users: Object,
 })
@@ -212,15 +222,11 @@ const ExtendedCommentExtension = CommentExtension.extend({
 })
 
 // Disables garbage collection
-const doc = new Y.Doc({ gc: false })
-if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+
 const editorExtensions = [
   CharacterCount,
   FontFamily.configure({
     types: ["textStyle"],
-  }),
-  Collaboration.configure({
-    document: doc,
   }),
   FloatingQuoteButton.configure({
     onClick: () => {
@@ -242,6 +248,17 @@ const editorExtensions = [
     },
   }),
 ]
+let doc
+const collab = computed(() => props.settings?.collab)
+if (collab.value) {
+  doc = new Y.Doc({ gc: false })
+  if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+  editorExtensions.push(
+    Collaboration.configure({
+      document: doc,
+    })
+  )
+}
 
 const CommentAction = {
   label: "Comment",
@@ -320,6 +337,7 @@ const bubbleMenuButtons = [
 emitter.on("printFile", () => {
   if (editor.value) printDoc(editor.value.getHTML())
 })
+const component = getCurrentInstance()
 
 onMounted(() => {
   const orderedComments = getOrderedComments(editor.value.state.doc)
@@ -328,25 +346,33 @@ onMounted(() => {
     const pos2 = orderedComments.findIndex((k) => k.id === b.name)
     return pos1 - pos2
   })
-
-  const provider = new TiptapCollabProvider({
-    name: props.entity.name, // Document identifier
-    appId: "ok01lqjm",
-    token:
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTYxMTE5NTAsIm5iZiI6MTc1NjExMTk1MCwiZXhwIjoxNzU2MTk4MzUwLCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.XRfbjwkjdOdWric-cTqcGB3XvRqMOzMeBkOf0lNxswU",
-    document: doc,
-    user: store.state.user.id,
-  })
-  editorExtensions.push(
-    CollaborationCursor.configure({
-      provider,
-      user: {
-        name: store.state.user.fullName,
-        avatar: store.state.user.imageURL,
-        color: getRandomColor(),
+  if (collab.value) {
+    if (component.vnode.key > 0) updated.value = false
+    const provider = new TiptapCollabProvider({
+      name: props.entity.name, // Document identifier
+      appId: "ok01lqjm",
+      token:
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTYxMTE5NTAsIm5iZiI6MTc1NjExMTk1MCwiZXhwIjoxNzU2MTk4MzUwLCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.XRfbjwkjdOdWric-cTqcGB3XvRqMOzMeBkOf0lNxswU",
+      document: doc,
+      user: store.state.user.id,
+      onSynced() {
+        if (component.vnode.key > 0) {
+          editor.value.commands.setContent(rawContent.value)
+          updated.value = true
+        }
       },
     })
-  )
+    editorExtensions.push(
+      CollaborationCursor.configure({
+        provider,
+        user: {
+          name: store.state.user.fullName,
+          avatar: store.state.user.imageURL,
+          color: getRandomColor(),
+        },
+      })
+    )
+  }
 })
 
 onBeforeUnmount(() => {

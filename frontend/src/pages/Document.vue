@@ -6,6 +6,29 @@
       dynamicList([
         'extend',
         {
+          onClick: (e) => {
+            e.stopPropagation()
+            e.preventDefault()
+          },
+          component: h(Switch, {
+            label: 'Collaborate',
+            icon: LucideUserRoundPen,
+            modelValue: docSettings && docSettings.doc?.settings?.collab,
+            'onUpdate:modelValue': (val) => {
+              docSettings.doc.settings.collab = val
+              docSettings.setValue.submit({
+                settings: JSON.stringify(docSettings.doc.settings),
+              })
+              if (val) {
+                // Used to rerender text editor when collab is toggled
+                switchCount++
+              } else {
+                switchCount = 0
+              }
+            },
+          }),
+        },
+        {
           icon: MessagesSquare,
           label: 'Show Comments',
           onClick: () => (showComments = true),
@@ -53,12 +76,14 @@
     class="flex w-full h-full overflow-auto"
   >
     <TextEditor
-      v-if="entity"
+      v-if="entity && docSettings"
+      :key="switchCount"
       ref="editor"
       v-model:edited="edited"
       v-model:raw-content="rawContent"
       v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
+      :settings="docSettings.doc?.settings"
       :entity="entity"
       :users="allUsers.data || []"
       :show-resolved
@@ -79,15 +104,17 @@ import {
   onBeforeUnmount,
   h,
   computed,
+  reactive,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { createResource, LoadingIndicator } from "frappe-ui"
+import { createResource, LoadingIndicator, Switch, useDoc } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import { toast } from "../utils/toasts"
 
 import MessagesSquare from "~icons/lucide/messages-square"
+import LucideUserRoundPen from "~icons/lucide/user-round-pen"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideWifiOff from "~icons/lucide/wifi-off"
@@ -109,6 +136,7 @@ const store = useStore()
 const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
+const switchCount = ref(0)
 const editor = useTemplateRef("editor")
 provide(
   "editor",
@@ -124,6 +152,8 @@ const entity = ref(null)
 const lastFetched = ref(0)
 const showComments = ref(false)
 const edited = ref(false)
+
+let docSettings
 
 const saveDocument = () => {
   if (entity.value.write || entity.value.comment) {
@@ -150,6 +180,12 @@ const onSuccess = (data) => {
   rawContent.value = data.raw_content
   yjsContent.value = toUint8Array(data.content)
   lastFetched.value = Date.now()
+  docSettings = useDoc({
+    doctype: "Drive Document",
+    name: data.document,
+    immediate: true,
+  })
+  docSettings.onSuccess((doc) => (doc.settings = JSON.parse(doc.settings)))
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
   })
@@ -168,7 +204,6 @@ store.commit("setCurrentResource", document)
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",
   onError(error) {
-    console.log(error)
     toast({
       title: "There was an error.",
       icon: LucideFileWarning,

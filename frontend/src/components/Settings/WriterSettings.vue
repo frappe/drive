@@ -91,16 +91,4 @@ writerSettings.onSuccess((doc) => {
   settings.custom_css = doc.custom_css
 })
 const settings = reactive({})
-
-watch(settings, (val) => {
-  console.log(val)
-  //   writerSettings.setValue.submit(val)
-})
-
-// reactive({
-//   font_family: "Inter",
-//   font_size: "15px",
-//   line_height: "1.5",
-//   custom_css: "",
-// })
 </script>
