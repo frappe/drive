@@ -11,7 +11,6 @@
         />
         <input
           v-model="search"
-          icon-left="search"
           type="text"
           class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
           placeholder="Find"

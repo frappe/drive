@@ -8,8 +8,8 @@ DRIVE_UPLOADER = {
   action: async ({ dialog, uploader, ...obj }) => {
     dialog.hide();
     const d = new frappe.ui.Dialog({
-      title: "Select Drive Folder",
-      primary_action_label: "Select",
+      title: "Upload from Frappe Drive",
+      primary_action_label: "Upload",
       primary_action() {
         file = component.selected_node;
         uploader.upload_file({

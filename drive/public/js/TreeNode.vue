@@ -10,7 +10,7 @@
       @mouseover="onMouseover"
       @mouseleave="onMouseleave"
     >
-      <component v-if="icon" v-html="icon" />
+      <div v-if="icon" v-html="icon" />
       <Thumbnail v-else :node="node" />
       <a
         class="tree-label text-nowrap overflow-hidden"
