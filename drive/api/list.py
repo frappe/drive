@@ -43,6 +43,7 @@ def files(
     only_parent = int(only_parent)
     folders = int(folders)
     personal = int(personal)
+    favourites_only = int(favourites_only)
     ascending = int(ascending)
 
     if not entity_name:

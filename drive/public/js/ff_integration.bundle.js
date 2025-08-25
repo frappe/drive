@@ -152,5 +152,5 @@ DRIVE_UPLOADER = {
 
 (async () => {
   await frappe.require("file_uploader.bundle.js");
-  frappe.ui.FileUploader.ExtraOptions.push(DRIVE_UPLOADER);
+  frappe.ui.FileUploader.UploadOptions.push(DRIVE_UPLOADER);
 })();

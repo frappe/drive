@@ -10,7 +10,8 @@
       @mouseover="onMouseover"
       @mouseleave="onMouseleave"
     >
-      <Thumbnail :node="node" />
+      <component v-if="icon" v-html="icon" />
+      <Thumbnail v-else :node="node" />
       <a
         class="tree-label text-nowrap overflow-hidden"
         :title="node.label"
@@ -70,28 +71,11 @@ let emit = defineEmits(["node-click", "load-more"]);
 
 let linkIcon = frappe.utils.icon("external-link", "sm");
 let icon = computed(() => {
-  let icons = {
-    open: frappe.utils.icon("folder-open", "xs"),
-    closed: frappe.utils.icon("folder-normal", "xs"),
-    file: frappe.utils.icon("small-file", "xs"),
-    link: frappe.utils.icon("link", "xs"),
-    doc: frappe.utils.icon("file", "xs"),
-    image: frappe.utils.icon("image", "xs"),
-    search: frappe.utils.icon("search"),
-  };
+  if (!props.node.is_group) return;
 
-  if (props.node.by_search) return icons.search;
-  if (props.node.is_group && props.node.open) return icons.open;
-  if (props.node.is_group) return icons.closed;
-  if (props.node.document) return icons.doc;
-  if (props.node.is_link) return icons.link;
-  if (props.node.mime_type?.startsWith?.("image")) return icons.image;
-  return icons.file;
+  if (props.node.open) return frappe.utils.icon("folder-open", "sm");
+  return frappe.utils.icon("folder-normal", "sm");
 });
-
-let open_file = (filename) => {
-  return frappe.utils.get_form_link("File", filename);
-};
 
 const reference = ref(null);
 const popover = ref(null);

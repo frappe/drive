@@ -12,12 +12,15 @@
     </button>
   </div>
 
-  <!-- Folder Tree -->
   <div class="overflow-auto pt-3" style="height: 300px">
+    <!-- mx-auto doesn't work for some reason -->
     <div
       v-if="currentTree.fetching"
-      class="spinner-border spinner-border-sm mx-auto my-5"
-    />
+      class="flex my-5"
+      style="justify-content: center"
+    >
+      <div class="spinner-border spinner-border-sm" />
+    </div>
     <div v-else-if="!currentTree.children.length" class="text-center my-5">
       No folders found
     </div>
@@ -55,8 +58,8 @@ import TreeNode from "./TreeNode.vue";
 
 // props & emits
 const emit = defineEmits(["success", "complete"]);
-const tabs = [{ label: "Home" }, { label: "Team" }];
-const tabIndex = ref(0);
+const tabs = [{ label: "Home" }, { label: "Team" }, { label: "Favourites" }];
+const tabIndex = ref(1);
 
 const homeRoot = reactive({
   label: "Home",
@@ -87,8 +90,8 @@ const currentTree = computed(() =>
 watch(
   tabIndex,
   (newValue) => {
-    selected_node.value = "";
-    currentTree.value = tabIndex.value === 0 ? homeRoot : teamRoot;
+    selected_node.value = null;
+    console.log(newValue);
     switch (newValue) {
       case 0:
         breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }];
@@ -99,10 +102,8 @@ watch(
         get_files(teamRoot, 0);
         break;
       case 2:
-        folderContents.fetch({
-          entity_name: "",
-          favourites_only: true,
-        });
+        breadcrumbs.value = [{ name: "", title: "Favourites" }];
+        get_files(teamRoot, -1, 1);
         break;
     }
   },
@@ -110,13 +111,16 @@ watch(
 );
 
 function toggle_node(node) {
-  if (!node.fetched && node.is_group) {
-    node.fetching = true;
-    node.children_start = 0;
-    node.children_loading = false;
-    get_files(node);
+  if (node.is_group) {
+    if (!node.fetched) {
+      node.fetching = true;
+      node.children_start = 0;
+      node.children_loading = false;
+      get_files(node);
+    } else {
+      node.open = !node.open;
+    }
   } else {
-    node.open = !node.open;
     selected_node.value = node;
     frappe
       .call("drive.api.permissions.get_entity_with_permissions", {
@@ -131,23 +135,24 @@ function toggle_node(node) {
   }
 }
 
-async function get_files(node, personal = null) {
+async function get_files(node, personal = null, favourites = 0) {
   const { message } = await frappe.call("drive.api.list.files", {
     entity_name: node.value,
     team: "v384saici2",
     [personal ? "personal" : ""]: personal,
+    favourites_only: favourites,
   });
   node.open = true;
   node.children = message.map((k) => ({
+    ...k,
     value: k.name,
     label: k.title,
     children: [],
     fetching: false,
     open: false,
-    ...k,
   }));
-  node.fetched = true;
   node.fetching = false;
+  node.fetched = true;
 }
 
 // upload logic (stubbed)
