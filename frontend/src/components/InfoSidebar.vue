@@ -59,7 +59,7 @@
                 v-if="$store.state.activeEntity?.share"
                 :variant="'subtle'"
                 class="rounded flex justify-center items-center"
-                @click="emitter.emit('showShareDialog')"
+                @click="emitter.emit('share')"
               >
                 {{ __("Manage") }}
               </Button>

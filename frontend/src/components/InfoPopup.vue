@@ -92,7 +92,7 @@
           :variant="'subtle'"
           size="sm"
           class="rounded flex justify-center items-center scale-[90%]"
-          @click="emitter.emit('showShareDialog')"
+          @click="emitter.emit('share')"
         >
           {{ __("Manage") }}
         </Button>

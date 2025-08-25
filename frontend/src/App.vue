@@ -42,6 +42,11 @@
     >
       <UploadTracker v-if="showUploadTracker" />
     </Transition>
+    <button
+      accesskey="u"
+      class="hidden"
+      @click="emitter.emit('uploadFile')"
+    />
   </FrappeUIProvider>
 </template>
 <script setup>
@@ -55,6 +60,7 @@ import { useRouter } from "vue-router"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 import { FrappeUIProvider } from "frappe-ui"
+import "access-key-label-polyfill"
 
 const store = useStore()
 const router = useRouter()
@@ -68,35 +74,19 @@ emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data
 })
 
-// Add keyboard shortcuts
-const KEY_BINDS = {
-  k: () => (showSearchPopup.value = true),
-  h: () => router.push({ name: "Home" }),
-  i: () => router.push({ name: "Inbox" }),
-  t: () => router.push({ name: "Team" }),
-  f: () => router.push({ name: "Favourites" }),
-  r: () => router.push({ name: "Recents" }),
-  s: () => router.push({ name: "Shared" }),
+const EMITTERS = {
   u: () => emitter.emit("uploadFile"),
-  U: () => emitter.emit("uploadFolder"),
-  u: () => emitter.emit("uploadFile"),
-  N: () => emitter.emit("newFolder"),
+  n: () => emitter.emit("newFolder"),
   m: () => store.state.activeEntity && emitter.emit("move"),
-  Enter: () => store.state.activeEntity && emitter.emit("rename"),
+  p: () => store.state.activeEntity && emitter.emit("share"),
+  e: () => store.state.activeEntity && emitter.emit("rename"),
 }
-for (let k in KEY_BINDS) {
-  onKeyDown(k, (e) => {
-    if (e.ctrlKey) {
-      if (
-        e.target.classList.contains("ProseMirror") ||
-        e.target.tagName === "INPUT" ||
-        e.target.tagName === "TEXTAREA"
-      )
-        return
-      KEY_BINDS[k](e)
-      e.preventDefault()
-    }
-  })
+for (let k in EMITTERS) {
+  const btn = document.createElement("button")
+  btn.style.display = "none"
+  btn.accessKey = k
+  btn.onclick = EMITTERS[k]
+  document.body.appendChild(btn)
 }
 
 onKeyDown((e) => {
@@ -107,6 +97,7 @@ onKeyDown((e) => {
   )
     return
   if (e.key == "?") emitter.emit("toggleShortcuts")
+
   if (e.metaKey) {
     if (e.key == ",") {
       emitter.emit("showSettings")
@@ -114,14 +105,12 @@ onKeyDown((e) => {
     }
     if (e.shiftKey) {
       if (e.key == "ArrowRight") {
-        store.commit("setSidebarCollapsed", true)
-        e.preventDefault()
-      } else if (e.key == "ArrowLeft") {
         store.commit("setSidebarCollapsed", false)
+      } else if (e.key == "ArrowLeft") {
+        store.commit("setSidebarCollapsed", true)
         e.preventDefault()
       }
     }
-    // Support Cmd + K also
     if (e.key == "k") {
       showSearchPopup.value = true
       e.preventDefault()

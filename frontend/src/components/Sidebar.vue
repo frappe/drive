@@ -63,6 +63,10 @@ notifCount.fetch()
 getTeams.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
+watch(
+  () => store.state.sidebarCollapsed,
+  (v) => (isCollapsed.value = v)
+)
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
@@ -211,6 +215,7 @@ function logout() {
   store.dispatch("logout")
   router.redirect("/")
 }
+
 const sidebarItems = computed(() => {
   const first = store.state.breadcrumbs[0]
   return [
@@ -226,6 +231,7 @@ const sidebarItems = computed(() => {
           icon: LucideInbox,
           to: "/t/" + team.value + "/inbox",
           isActive: first.name === "Inbox",
+          accessKey: "i",
         },
       ],
     },
@@ -237,15 +243,15 @@ const sidebarItems = computed(() => {
           to: `/t/${team.value}/`,
           icon: LucideHome,
           isActive: first.name == "Home",
+          accessKey: "h",
         },
-
         {
           label: "Team",
           to: `/t/${team.value}/team`,
           icon: LucideBuilding2,
           isActive: first.name == "Team",
+          accessKey: "t",
         },
-
         {
           label: "Trash",
           to: `/t/${team.value}/trash`,
@@ -263,30 +269,31 @@ const sidebarItems = computed(() => {
           to: `/t/${team.value}/recents`,
           icon: LucideClock,
           isActive: first.name == "Recents",
+          accessKey: "r",
         },
         {
           label: "Shared",
           to: `/shared/`,
           icon: LucideUsers,
           isActive: first.name == "Shared",
+          accessKey: "s",
         },
-
         {
           label: "Favourites",
           to: `/t/${team.value}/favourites`,
           icon: LucideStar,
           isActive: first.name == "Favourites",
+          accessKey: "f",
         },
         {
           label: "Documents",
           to: `/t/${team.value}/documents`,
           icon: LucideFileText,
           isActive: first.name == "Documents",
+          accessKey: "d",
         },
       ],
     },
   ]
 })
-
-watch(isCollapsed, (val) => store.commit("setSidebarCollapsed", val))
 </script>

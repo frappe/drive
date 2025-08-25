@@ -4,7 +4,10 @@
     :options="{ title: 'Keyboard Shortcuts', size: '4xl' }"
   >
     <template #body-content>
-      <div class="w-full grid grid-cols-2 gap-10 py-1">
+      <div
+        class="w-full grid grid-cols-2 gap-10 py-1"
+        v-focus
+      >
         <div
           v-for="group in shortcutGroups"
           :key="group.title"
@@ -22,7 +25,7 @@
               <div class="text-ink-gray-7 text-base">
                 {{ shortcut[1] }}
               </div>
-              <div class="flex space-x-1 w-[7rem] gap-1 justify-start">
+              <div class="flex space-x-1 w-[9rem] gap-1 justify-start">
                 <span
                   v-for="(key, kIndex) in shortcut[0]"
                   :key="kIndex"
@@ -46,34 +49,48 @@ const props = defineProps({
 })
 const emit = defineEmits(["update:modelValue"])
 
+const getLabel = (key) =>
+  document.querySelector(`[accesskey='${key}']`)?.accessKeyLabel
+
+const metaKey = computed(() => {
+  const platform = navigator.platform.toLowerCase()
+  if (platform.includes("mac")) {
+    return "⌘" // Command key
+  } else if (platform.includes("win")) {
+    return "⊞" // Windows key
+  }
+  return "Meta"
+})
 const shortcutGroups = [
   {
     title: "General",
     shortcuts: [
-      [["Ctrl", "K"], "Open Command Palette"],
-      [["Cmd", ","], "Open Settings"],
+      [[metaKey.value, "K"], "Find Files"],
+      [["Ctrl", ","], "Open Settings"],
     ],
   },
   {
     title: "Navigation",
     shortcuts: [
-      [["Ctrl", "H"], "Home"],
-      [["Ctrl", "I"], "Inbox"],
-      [["Ctrl", "R"], "Recents"],
-      [["Ctrl", "F"], "Favourites"],
-      [["Ctrl", "S"], "Shared"],
+      [getLabel("i"), "Inbox"],
+      [getLabel("h"), "Home"],
+      [getLabel("t"), "Team"],
+      [getLabel("r"), "Recents"],
+      [getLabel("f"), "Favourites"],
+      [getLabel("s"), "Shared"],
+      [getLabel("d"), "Shared"],
     ],
   },
   {
     title: "List",
     shortcuts: [
-      [["Cmd", "A"], "Select all"],
+      [[metaKey.value, "A"], "Select all"],
       [["Esc"], "Unselect all"],
-      [["Cmd", "Delete"], "Delete selected file(s)"],
-      [["Ctrl", "M"], "Move selected file(s)"],
-      [["Ctrl", "U"], "Upload a file"],
-      [["Ctrl", "Shift", "U"], "Upload a folder"],
-      [["Ctrl", "Shift", "N"], "Create a folder"],
+      [getLabel("s"), "Share selected file(s)"],
+      [getLabel("m"), "Move selected file(s)"],
+      [[metaKey.value, "Delete"], "Delete selected file(s)"],
+      [getLabel("u"), "Upload a file"],
+      [getLabel("n"), "Create a folder"],
     ],
   },
 ]
