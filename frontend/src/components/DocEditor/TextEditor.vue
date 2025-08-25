@@ -32,6 +32,7 @@
         @change="
           (val) => {
             rawContent = val
+            yjsContent = Y.encodeStateAsUpdate(doc)
             if (db)
               db.transaction(['content'], 'readwrite')
                 .objectStore('content')
@@ -106,6 +107,7 @@ const editor = computed(() => {
 defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
+const yjsContent = defineModel("yjsContent")
 const showComments = defineModel("showComments")
 const edited = defineModel("edited")
 
@@ -209,7 +211,9 @@ const ExtendedCommentExtension = CommentExtension.extend({
   },
 })
 
-const doc = new Y.Doc()
+// Disables garbage collection
+const doc = new Y.Doc({ gc: false })
+if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 const editorExtensions = [
   CharacterCount,
   FontFamily.configure({
@@ -329,16 +333,9 @@ onMounted(() => {
     name: props.entity.name, // Document identifier
     appId: "ok01lqjm",
     token:
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTU2NzcwOTAsIm5iZiI6MTc1NTY3NzA5MCwiZXhwIjoxNzU1NzYzNDkwLCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.CEiZ8NOaPdTnWEi8BkvQpHspwh-Ga2Prl8HtpyQpfYI",
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTYxMTE5NTAsIm5iZiI6MTc1NjExMTk1MCwiZXhwIjoxNzU2MTk4MzUwLCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.XRfbjwkjdOdWric-cTqcGB3XvRqMOzMeBkOf0lNxswU",
     document: doc,
     user: store.state.user.id,
-    onSynced() {
-      if (!doc.getMap("config").get("initialContentLoaded") && editor) {
-        doc.getMap("config").set("initialContentLoaded", true)
-
-        editor.commands.setContent(entity.props.raw_content)
-      }
-    },
   })
   editorExtensions.push(
     CollaborationCursor.configure({

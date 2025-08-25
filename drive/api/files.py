@@ -360,7 +360,7 @@ def create_link(team, title, link, personal=False, parent=None):
 
 
 @frappe.whitelist()
-def save_doc(entity_name, doc_name, content):
+def save_doc(entity_name, doc_name, content, yjs=None):
     access = get_user_access(frappe.get_doc("Drive File", entity_name))
     if not access["comment"] and not access["write"]:
         raise frappe.PermissionError("You do not have permission to edit this file")
@@ -368,6 +368,8 @@ def save_doc(entity_name, doc_name, content):
         return
 
     frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+    if yjs:
+        frappe.db.set_value("Drive Document", doc_name, "content", yjs)
     file = frappe.get_doc("Drive File", entity_name)
     file._modified = datetime.now()
     file.file_size = len(content.encode("utf-8"))

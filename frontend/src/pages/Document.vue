@@ -57,6 +57,7 @@
       ref="editor"
       v-model:edited="edited"
       v-model:raw-content="rawContent"
+      v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
       :entity="entity"
       :users="allUsers.data || []"
@@ -67,6 +68,7 @@
 </template>
 
 <script setup>
+import { fromUint8Array, toUint8Array } from "js-base64"
 import Navbar from "@/components/Navbar.vue"
 import {
   ref,
@@ -117,6 +119,7 @@ provide("showResolved", showResolved)
 // Reactive data properties
 const title = ref(null)
 const rawContent = ref(null)
+const yjsContent = ref(null)
 const entity = ref(null)
 const lastFetched = ref(0)
 const showComments = ref(false)
@@ -128,6 +131,7 @@ const saveDocument = () => {
       entity_name: props.entityName,
       doc_name: entity.value.document,
       content: rawContent.value,
+      yjs: fromUint8Array(yjsContent.value),
     })
     edited.value = true
     return true
@@ -144,6 +148,7 @@ const onSuccess = (data) => {
 
   title.value = data.title
   rawContent.value = data.raw_content
+  yjsContent.value = toUint8Array(data.content)
   lastFetched.value = Date.now()
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
