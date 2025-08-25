@@ -123,14 +123,25 @@ watch(
   { immediate: true }
 );
 
-watch(search, (val) => {
-  let reg = new RegExp(val, "i");
-  if (!val) {
+watch(search, async (query) => {
+  let reg = new RegExp(query, "i");
+  if (!query) {
     searchResults.value = [];
     currentTree.value.searching = false;
   } else {
-    currentTree.value.searching = true;
-    searchResults.value = recursiveSearch(currentTree.value, reg);
+    currentTree.value.searching = "searching";
+    const res = recursiveSearch(currentTree.value, reg);
+    // don't global search for favourites
+    if (res.length || tabIndex.value === 2) {
+      currentTree.value.searching = "completed";
+      searchResults.value = res;
+    } else {
+      const { message } = await frappe.call("drive.api.files.search", {
+        team,
+        query,
+      });
+      searchResults.value = files_to_nodes(message);
+    }
   }
 });
 
@@ -143,6 +154,7 @@ const bisect = (arr, cond) => {
   }
   return [res1, res2];
 };
+
 const recursiveSearch = (node, reg) => {
   const [res, out] = bisect(node.children, (k) => reg.test(k.title));
   for (let k of out) {
@@ -176,15 +188,9 @@ function toggle_node(node) {
   }
 }
 
-async function get_files(node, personal = null, favourites = 0) {
-  const { message } = await frappe.call("drive.api.list.files", {
-    entity_name: node.value,
-    team: "v384saici2",
-    [personal ? "personal" : ""]: personal,
-    favourites_only: favourites,
-  });
-  node.open = true;
-  node.children = message.map((k) => ({
+const team = "v384saici2";
+const files_to_nodes = (arr) =>
+  arr.map((k) => ({
     ...k,
     value: k.name,
     label: k.title,
@@ -192,6 +198,15 @@ async function get_files(node, personal = null, favourites = 0) {
     fetching: false,
     open: false,
   }));
+async function get_files(node, personal = null, favourites = 0) {
+  const { message } = await frappe.call("drive.api.list.files", {
+    entity_name: node.value,
+    team,
+    [personal ? "personal" : ""]: personal,
+    favourites_only: favourites,
+  });
+  node.open = true;
+  node.children = files_to_nodes(message);
   node.fetching = false;
   node.fetched = true;
 }
