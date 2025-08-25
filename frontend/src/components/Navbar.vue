@@ -5,8 +5,11 @@
     id="navbar"
     class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
   >
-    <div class="flex justify-center items-center gap-2">
-      <div id="navbar-prefix" />
+    <div class="flex justify-center items-center">
+      <div
+        id="navbar-prefix"
+        class="mr-2"
+      />
       <Breadcrumbs
         :items="store.state.breadcrumbs"
         class="select-none truncate"
@@ -33,7 +36,7 @@
     <div class="flex gap-2">
       <div
         id="navbar-content"
-        class="flex align-center"
+        class="flex items-center"
       />
       <LucideStar
         v-if="rootEntity?.is_favourite"
@@ -377,3 +380,8 @@ const newEntityOptions = [
   },
 ]
 </script>
+<style>
+#navbar-prefix:empty {
+  margin: 0;
+}
+</style>

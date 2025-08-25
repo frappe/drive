@@ -6,10 +6,27 @@
   >
     <router-link
       :to="document.data.breadcrumbs[0].route"
-      class="text-sm flex flex-col items-center group cursor-pointer"
+      class="cursor-pointer"
     >
       <LucideArrowLeft class="size-3.5" />
     </router-link>
+  </Teleport>
+  <Teleport
+    v-if="docSettings?.doc?.settings?.lock"
+    to="#navbar-content"
+    defer
+  >
+    <Button
+      :icon="LucideLock"
+      @click="
+        () => {
+          docSettings.doc.settings.lock = false
+          editor.editor.commands.focus()
+          toast('Unlocked document')
+        }
+      "
+      variant="outline"
+    />
   </Teleport>
   <Navbar
     v-if="!document.error"
@@ -197,6 +214,7 @@ import LucideUserRoundPen from "~icons/lucide/user-round-pen"
 import LucideView from "~icons/lucide/view"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
+import LucideLock from "~icons/lucide/lock"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
 import { dynamicList } from "../utils/files"
