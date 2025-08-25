@@ -1,66 +1,147 @@
 <template>
+  <Teleport
+    v-if="docSettings?.doc?.settings?.minimal"
+    to="#navbar-prefix"
+    defer
+  >
+    <router-link
+      :to="document.data.breadcrumbs[0].route"
+      class="text-sm flex flex-col items-center group cursor-pointer"
+    >
+      <LucideArrowLeft class="size-3.5" />
+    </router-link>
+  </Teleport>
   <Navbar
     v-if="!document.error"
     :root-resource="document"
-    :actions="
-      dynamicList([
-        'extend',
-        {
-          onClick: (e) => {
-            e.stopPropagation()
-            e.preventDefault()
-          },
-          component: h(Switch, {
-            label: 'Collaborate',
-            icon: LucideUserRoundPen,
-            modelValue: docSettings && docSettings.doc?.settings?.collab,
-            'onUpdate:modelValue': (val) => {
-              docSettings.doc.settings.collab = val
-              docSettings.setValue.submit({
-                settings: JSON.stringify(docSettings.doc.settings),
-              })
-              if (val) {
-                // Used to rerender text editor when collab is toggled
-                switchCount++
-              } else {
-                switchCount = 0
-              }
+    :actions="[
+      'extend',
+      {
+        group: true,
+        hideLabel: true,
+        items: [
+          {
+            onClick: (e) => {
+              e.stopPropagation()
+              e.preventDefault()
             },
-          }),
-        },
-        {
-          icon: MessagesSquare,
-          label: 'Show Comments',
-          onClick: () => (showComments = true),
-          isEnabled: () => !showComments,
-          cond: entity?.comments?.length,
-        },
-        {
-          icon: MessagesSquare,
-          label: 'Hide Comments',
-          onClick: () => (showComments = false),
-          isEnabled: () => showComments,
-          cond: entity?.comments?.length,
-        },
-        {
-          icon: MessageSquareDot,
-          label: 'Show Resolved',
-          onClick: () => {
-            showResolved = true
-            showComments = true
+            component: h(Switch, {
+              label: 'Collaborate',
+              icon: LucideUserRoundPen,
+              modelValue: docSettings && docSettings.doc?.settings?.collab,
+              'onUpdate:modelValue': (val) => {
+                docSettings.doc.settings.collab = val
+                docSettings.setValue.submit({
+                  settings: JSON.stringify(docSettings.doc.settings),
+                })
+                if (val) {
+                  // Used to rerender text editor when collab is toggled
+                  switchCount++
+                } else {
+                  switchCount = 0
+                }
+              },
+            }),
           },
-          isEnabled: () => !showResolved,
-          cond: entity?.comments?.filter((k) => k.resolved)?.length,
-        },
-        {
-          icon: MessageSquareDot,
-          label: 'Hide Resolved',
-          onClick: () => (showResolved = false),
-          isEnabled: () => showResolved,
-          cond: entity?.comments?.filter((k) => k.resolved)?.length,
-        },
-      ])
-    "
+          {
+            label: 'View',
+            icon: LucideView,
+            submenu: [
+              {
+                onClick: (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                },
+                component: h(Switch, {
+                  label: 'Lock',
+                  icon: LucideUserRoundPen,
+                  modelValue: docSettings && docSettings.doc?.settings?.lock,
+                  'onUpdate:modelValue': (val) => {
+                    document.breadcrumbs = []
+                    docSettings.doc.settings.lock = val
+                    docSettings.setValue.submit({
+                      settings: JSON.stringify(docSettings.doc.settings),
+                    })
+                  },
+                }),
+              },
+              {
+                onClick: (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                },
+                component: h(Switch, {
+                  label: 'Wide',
+                  icon: LucideUserRoundPen,
+                  modelValue: docSettings && docSettings.doc?.settings?.wide,
+                  'onUpdate:modelValue': (val) => {
+                    docSettings.doc.settings.wide = val
+                    docSettings.setValue.submit({
+                      settings: JSON.stringify(docSettings.doc.settings),
+                    })
+                  },
+                }),
+              },
+              {
+                onClick: (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                },
+                component: h(Switch, {
+                  label: 'Minimal',
+                  icon: LucideUserRoundPen,
+                  modelValue: docSettings && docSettings.doc?.settings?.minimal,
+                  'onUpdate:modelValue': (val) => {
+                    document.breadcrumbs = []
+                    docSettings.doc.settings.minimal = val
+                    docSettings.setValue.submit({
+                      settings: JSON.stringify(docSettings.doc.settings),
+                    })
+                  },
+                }),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        group: true,
+        hideLabel: true,
+        items: dynamicList([
+          {
+            icon: MessagesSquare,
+            label: 'Show Comments',
+            onClick: () => (showComments = true),
+            isEnabled: () => !showComments,
+            cond: entity?.comments?.length,
+          },
+          {
+            icon: MessagesSquare,
+            label: 'Hide Comments',
+            onClick: () => (showComments = false),
+            isEnabled: () => showComments,
+            cond: entity?.comments?.length,
+          },
+          {
+            icon: MessageSquareDot,
+            label: 'Show Resolved',
+            onClick: () => {
+              showResolved = true
+              showComments = true
+            },
+            isEnabled: () => !showResolved,
+            cond: entity?.comments?.filter((k) => k.resolved)?.length,
+          },
+          {
+            icon: MessageSquareDot,
+            label: 'Hide Resolved',
+            onClick: () => (showResolved = false),
+            isEnabled: () => showResolved,
+            cond: entity?.comments?.filter((k) => k.resolved)?.length,
+          },
+        ]),
+      },
+    ]"
   />
   <ErrorPage
     v-if="document.error"
@@ -98,13 +179,11 @@ import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   inject,
-  onMounted,
   defineAsyncComponent,
   provide,
   onBeforeUnmount,
   h,
   computed,
-  reactive,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -115,6 +194,7 @@ import { toast } from "../utils/toasts"
 
 import MessagesSquare from "~icons/lucide/messages-square"
 import LucideUserRoundPen from "~icons/lucide/user-round-pen"
+import LucideView from "~icons/lucide/view"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideWifiOff from "~icons/lucide/wifi-off"
@@ -185,7 +265,10 @@ const onSuccess = (data) => {
     name: data.document,
     immediate: true,
   })
-  docSettings.onSuccess((doc) => (doc.settings = JSON.parse(doc.settings)))
+  docSettings.onSuccess((doc) => {
+    doc.settings = JSON.parse(doc.settings)
+    toggleMinimal(doc.settings.minimal)
+  })
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
   })
@@ -203,7 +286,7 @@ store.commit("setCurrentResource", document)
 
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",
-  onError(error) {
+  onError() {
     toast({
       title: "There was an error.",
       icon: LucideFileWarning,
@@ -223,7 +306,23 @@ window.addEventListener("online", () => {
   toast({ title: "Back online!", icon: h(LucideWifi) })
 })
 
-onMounted(() => allUsers.fetch({ team: route.params?.team }))
+allUsers.fetch({ team: route.params.team })
 
 onBeforeUnmount(() => edited.value && saveDocument())
+
+let originalBreadcrumbs
+const toggleMinimal = (val) => {
+  console.log("called", val)
+  if (val) {
+    originalBreadcrumbs = store.state.breadcrumbs
+    store.commit("setBreadcrumbs", store.state.breadcrumbs.slice(-1))
+    window.document.querySelector("#sidebar").style.display = "none"
+  } else {
+    console.log(originalBreadcrumbs.length)
+    store.commit("setBreadcrumbs", originalBreadcrumbs)
+    delete window.document
+      .querySelector("#sidebar")
+      .style.removeProperty("display")
+  }
+}
 </script>

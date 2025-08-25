@@ -2,29 +2,33 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
+    id="navbar"
     class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
   >
-    <Breadcrumbs
-      :items="store.state.breadcrumbs"
-      class="select-none truncate"
-    >
-      <template #prefix="{ item, index }">
-        <LoadingIndicator
-          v-if="item.loading"
-          width="20"
-          scale="70"
-        />
-        <div
-          v-if="index == 0"
-          class="mr-1.5"
-        >
-          <component
-            :is="COMPONENT_MAP[item.name]"
-            class="size-4 text-ink-gray-6"
+    <div class="flex justify-center items-center gap-2">
+      <div id="navbar-prefix" />
+      <Breadcrumbs
+        :items="store.state.breadcrumbs"
+        class="select-none truncate"
+      >
+        <template #prefix="{ item, index }">
+          <LoadingIndicator
+            v-if="item.loading"
+            width="20"
+            scale="70"
           />
-        </div>
-      </template>
-    </Breadcrumbs>
+          <div
+            v-if="index == 0"
+            class="mr-1.5"
+          >
+            <component
+              :is="COMPONENT_MAP[item.name]"
+              class="size-4 text-ink-gray-6"
+            />
+          </div>
+        </template>
+      </Breadcrumbs>
+    </div>
 
     <div class="flex gap-2">
       <div
@@ -272,7 +276,7 @@ const defaultActions = computed(() => {
         },
       ],
     },
-    { group: true, hideLabel: true, items: actions },
+    ...actions,
   ].map((k) => {
     return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
   })

@@ -17,7 +17,8 @@
         v-show="updated"
         :key="editorExtensions.length"
         ref="textEditor"
-        class="min-w-full md:min-w-[65ch]"
+        class="min-w-full"
+        :class="settings?.wide ? 'md:min-w-[79ch]' : 'md:min-w-[65ch]'"
         :editor-class="[
           'prose-sm min-h-[4rem]',
           `text-[${writerSettings.doc?.font_size || 15}px]`,
@@ -25,7 +26,7 @@
           writerSettings.doc?.custom_css,
         ]"
         :content="!settings?.collab ? rawContent : undefined"
-        :editable="!!entity.write"
+        :editable="!!entity.write && !settings.lock"
         :upload-function="
           (file) => {
             const fileUpload = useFileUpload()
@@ -110,7 +111,6 @@ const textEditor = ref("textEditor")
 const updated = ref(true)
 const editor = computed(() => {
   let editor = textEditor.value?.editor
-  console.log(editor)
   return editor
 })
 defineExpose({ editor })
