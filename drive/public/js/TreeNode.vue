@@ -10,7 +10,7 @@
       @mouseover="onMouseover"
       @mouseleave="onMouseleave"
     >
-      <div v-html="icon" />
+      <Thumbnail :node="node" />
       <a
         class="tree-label text-nowrap overflow-hidden"
         :title="node.label"
@@ -20,7 +20,8 @@
       <a
         v-if="!node.is_group"
         :href="'/drive/f/' + node.value"
-        class="ml-auto file-link"
+        class="ml-3 file-link"
+        style="align-self: center"
         target="_blank"
         v-html="linkIcon"
       />
@@ -54,11 +55,12 @@
 <script setup>
 import { createPopper } from "@popperjs/core";
 import { ref, computed } from "vue";
+import Thumbnail from "./Thumbnail.vue";
 
 // props
 const props = defineProps({
   node: Object,
-  selected_node: Object,
+  selected_node: { type: Object, required: false },
 });
 
 // emits
