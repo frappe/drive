@@ -87,6 +87,12 @@ const KEY_BINDS = {
 for (let k in KEY_BINDS) {
   onKeyDown(k, (e) => {
     if (e.ctrlKey) {
+      if (
+        e.target.classList.contains("ProseMirror") ||
+        e.target.tagName === "INPUT" ||
+        e.target.tagName === "TEXTAREA"
+      )
+        return
       KEY_BINDS[k](e)
       e.preventDefault()
     }
