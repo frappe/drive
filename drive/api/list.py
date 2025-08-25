@@ -212,6 +212,7 @@ def shared(
     limit=1000,
     tag_list=[],
     mime_type_list=[],
+    public=0,
 ):
     """
     Returns the highest level of shared items shared with/by the current user, group or org
@@ -222,12 +223,16 @@ def shared(
     :rtype: list[frappe._dict]
     """
     by = int(by)
+    public = int(public)
     query = (
         frappe.qb.from_(DriveFile)
         .right_join(DrivePermission)
         .on(
             (DrivePermission.entity == DriveFile.name)
-            & ((DrivePermission.owner if by else DrivePermission.user) == frappe.session.user)
+            & (
+                (DrivePermission.owner if by else DrivePermission.user)
+                == ("" if public else frappe.session.user)
+            )
         )
         .limit(limit)
         .where((DrivePermission.read == 1) & (DriveFile.is_active == 1))

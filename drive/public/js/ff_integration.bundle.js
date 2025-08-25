@@ -16,7 +16,7 @@ DRIVE_UPLOADER = {
           file_url:
             "/api/method/drive.api.files.get_file_content?entity_name=" +
             file.value,
-          is_private: file.is_private,
+          private: file.share_count === -2 ? 0 : 1,
           file_name: file.label,
           ...obj,
         });

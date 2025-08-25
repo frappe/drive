@@ -69,17 +69,17 @@ import { ref, reactive, computed, watch } from "vue";
 import TreeNode from "./TreeNode.vue";
 
 const emit = defineEmits(["success", "complete"]);
-const tabs = [{ label: "Home" }, { label: "Team" }, { label: "Favourites" }];
+const tabs = [{ label: "Team" }, { label: "Public" }, { label: "Favourites" }];
 const tabIndex = ref(1);
 
-const homeRoot = reactive({
-  label: "Home",
+const teamRoot = reactive({
+  label: "Team",
   value: "",
   fetching: true,
   children: [],
 });
-const teamRoot = reactive({
-  label: "Team",
+const publicRoot = reactive({
+  label: "Public",
   value: "",
   fetching: true,
   children: [],
@@ -91,32 +91,40 @@ const search = ref("");
 const breadcrumbs = ref([
   {
     name: "",
-    title: tabIndex.value === 0 ? "Home" : "Team",
-    is_private: tabIndex.value === 0 ? 1 : 0,
+    title: tabIndex.value === 0 ? "Team" : "Public",
   },
 ]);
-
 const currentTree = computed(() =>
-  tabIndex.value === 0 ? homeRoot : teamRoot
+  tabIndex.value === 1 ? publicRoot : teamRoot
 );
 
 watch(
   tabIndex,
   (newValue) => {
     selected_node.value = null;
-    console.log(newValue);
     switch (newValue) {
       case 0:
-        breadcrumbs.value = [{ name: "", title: "Home", is_private: 1 }];
-        get_files(homeRoot, 1);
+        breadcrumbs.value = [{ name: "", title: "Team" }];
+        get_files(teamRoot, "drive.api.list.files", {
+          entity_name: "",
+          team,
+          personal: 0,
+        });
         break;
       case 1:
-        breadcrumbs.value = [{ name: "", title: "Team", is_private: 0 }];
-        get_files(teamRoot, 0);
+        breadcrumbs.value = [{ name: "", title: "Public" }];
+        get_files(publicRoot, "drive.api.list.shared", {
+          team,
+          public: 1,
+        });
         break;
       case 2:
         breadcrumbs.value = [{ name: "", title: "Favourites" }];
-        get_files(teamRoot, -1, 1);
+        get_files(teamRoot, "drive.api.list.files", {
+          entity_name: "",
+          team,
+          favourites_only: 1,
+        });
         break;
     }
   },
@@ -169,7 +177,10 @@ function toggle_node(node) {
       node.fetching = true;
       node.children_start = 0;
       node.children_loading = false;
-      get_files(node);
+      get_files(node, "drive.api.list.files", {
+        entity_name: node.value,
+        team,
+      });
     } else {
       node.open = !node.open;
     }
@@ -198,30 +209,13 @@ const files_to_nodes = (arr) =>
     fetching: false,
     open: false,
   }));
-async function get_files(node, personal = null, favourites = 0) {
-  const { message } = await frappe.call("drive.api.list.files", {
-    entity_name: node.value,
-    team,
-    [personal ? "personal" : ""]: personal,
-    favourites_only: favourites,
-  });
+
+async function get_files(node, method, params) {
+  const { message } = await frappe.call(method, params);
   node.open = true;
   node.children = files_to_nodes(message);
   node.fetching = false;
   node.fetched = true;
 }
-
-// upload logic (stubbed)
-const uploading = ref(false);
-async function upload() {
-  uploading.value = true;
-  // Replace with real API call
-  await new Promise((r) => setTimeout(r, 1500));
-  uploading.value = false;
-  emit("success");
-  close();
-  emit("complete");
-}
-
 defineExpose({ selected_node });
 </script>
