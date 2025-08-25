@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-07-25 16:11+0000\n"
-"PO-Revision-Date: 2025-07-29 05:17\n"
+"POT-Creation-Date: 2025-08-22 16:10+0000\n"
+"PO-Revision-Date: 2025-08-25 14:32\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -18,18 +18,23 @@ msgstr ""
 "X-Crowdin-File-ID: 110\n"
 "Language: eo_UY\n"
 
+#. Description of the 'Access Level' (Int) field in DocType 'Drive Team Member'
+#: drive/drive/doctype/drive_team_member/drive_team_member.json
+msgid "0 for Guest, 1 for User, 2 for Manager"
+msgstr "crwdns158558:0crwdne158558:0"
+
 #. Header text in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
-msgid "<span class=\"h4\">Drive</span>"
-msgstr "crwdns156794:0crwdne156794:0"
+msgid "<span style=\"font-size: 16px;\">Manage Drive</span>"
+msgstr "crwdns158560:0crwdne158560:0"
 
-#. Label of the aws_key (Data) field in DocType 'Drive S3 Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#. Label of the aws_key (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Key"
 msgstr "crwdns156796:0crwdne156796:0"
 
-#. Label of the aws_secret (Password) field in DocType 'Drive S3 Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#. Label of the aws_secret (Password) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Secret"
 msgstr "crwdns156798:0crwdne156798:0"
 
@@ -67,7 +72,7 @@ msgstr "crwdns156810:0crwdne156810:0"
 msgid "Add Image"
 msgstr "crwdns156812:0crwdne156812:0"
 
-#: frontend/src/components/InfoPopup.vue:55
+#: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
 msgstr "crwdns156814:0crwdne156814:0"
 
@@ -87,10 +92,18 @@ msgstr "crwdns156814:0crwdne156814:0"
 msgid "All"
 msgstr "crwdns156816:0crwdne156816:0"
 
+#: frontend/src/components/Sidebar.vue:119
+msgid "Apps"
+msgstr "crwdns158562:0crwdne158562:0"
+
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Auto Detect Links"
 msgstr "crwdns156818:0crwdne156818:0"
+
+#: frontend/src/components/Settings/BackendSettings.vue:6
+msgid "Backend"
+msgstr "crwdns158564:0crwdne158564:0"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
@@ -102,8 +115,12 @@ msgstr "crwdns156820:0crwdne156820:0"
 msgid "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare"
 msgstr "crwdns156822:0crwdne156822:0"
 
-#: frontend/src/components/Navbar.vue:302
-#: frontend/src/components/Navbar.vue:308
+#: frontend/src/components/InfoPopup.vue:68
+msgid "Characters"
+msgstr "crwdns158566:0crwdne158566:0"
+
+#: frontend/src/components/Navbar.vue:316
+#: frontend/src/components/Navbar.vue:322
 msgid "Clear"
 msgstr "crwdns156824:0crwdne156824:0"
 
@@ -115,7 +132,9 @@ msgstr "crwdns156824:0crwdne156824:0"
 msgid "Color"
 msgstr "crwdns156826:0crwdne156826:0"
 
+#. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the comment (Check) field in DocType 'Drive Permission'
+#: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Comment"
 msgstr "crwdns156828:0crwdne156828:0"
@@ -141,8 +160,8 @@ msgstr "crwdns156832:0crwdne156832:0"
 msgid "Content"
 msgstr "crwdns156834:0crwdne156834:0"
 
-#: frontend/src/components/GenericPage.vue:239
-#: frontend/src/components/Navbar.vue:203
+#: frontend/src/components/GenericPage.vue:229
+#: frontend/src/components/Navbar.vue:209
 msgid "Copy Link"
 msgstr "crwdns156836:0crwdne156836:0"
 
@@ -151,21 +170,35 @@ msgstr "crwdns156836:0crwdne156836:0"
 msgid "Core"
 msgstr "crwdns156838:0crwdne156838:0"
 
+#. Label of the custom_css (Data) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Custom CSS"
+msgstr "crwdns158568:0crwdne158568:0"
+
 #. Label of the default_team (Link) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Default Team"
 msgstr "crwdns156840:0crwdne156840:0"
 
-#. Description of the 'Signature Version' (Data) field in DocType 'Drive S3
+#. Description of the 'Signature Version' (Data) field in DocType 'Drive Disk
 #. Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "crwdns156842:0crwdne156842:0"
 
-#: frontend/src/components/GenericPage.vue:311
+#: frontend/src/components/GenericPage.vue:295
 #: frontend/src/components/Navbar.vue:267
 msgid "Delete"
 msgstr "crwdns156844:0crwdne156844:0"
+
+#: frontend/src/components/InfoPopup.vue:148
+msgid "Developer"
+msgstr "crwdns158570:0crwdne158570:0"
+
+#. Label of the flat (Check) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Do not mimic folder/file structure"
+msgstr "crwdns158572:0crwdne158572:0"
 
 #. Label of the notif_doctype_name (Dynamic Link) field in DocType 'Drive
 #. Notification'
@@ -189,12 +222,12 @@ msgstr "crwdns156850:0crwdne156850:0"
 msgid "Document Type"
 msgstr "crwdns156852:0crwdne156852:0"
 
-#: frontend/src/components/PrimaryDropdown.vue:120
+#: frontend/src/components/Sidebar.vue:124
 msgid "Documentation"
 msgstr "crwdns156854:0crwdne156854:0"
 
-#: frontend/src/components/GenericPage.vue:231
-#: frontend/src/components/Navbar.vue:197
+#: frontend/src/components/GenericPage.vue:221
+#: frontend/src/components/Navbar.vue:203
 msgid "Download"
 msgstr "crwdns156856:0crwdne156856:0"
 
@@ -207,6 +240,11 @@ msgstr "crwdns156858:0crwdne156858:0"
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Drive Comment"
 msgstr "crwdns156860:0crwdne156860:0"
+
+#. Name of a DocType
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Drive Disk Settings"
+msgstr "crwdns158574:0crwdne158574:0"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -256,19 +294,9 @@ msgid "Drive Permission"
 msgstr "crwdns156878:0crwdne156878:0"
 
 #. Name of a DocType
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
-msgid "Drive S3 Settings"
-msgstr "crwdns156880:0crwdne156880:0"
-
-#. Name of a DocType
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Drive Settings"
 msgstr "crwdns156882:0crwdne156882:0"
-
-#. Name of a DocType
-#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
-msgid "Drive Site Settings"
-msgstr "crwdns156884:0crwdne156884:0"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_tag/drive_tag.json
@@ -305,17 +333,17 @@ msgstr "crwdns156896:0crwdne156896:0"
 msgid "Email"
 msgstr "crwdns156898:0crwdne156898:0"
 
-#: frontend/src/components/Navbar.vue:314
+#: frontend/src/components/Navbar.vue:328
 msgid "Empty"
 msgstr "crwdns156900:0crwdne156900:0"
 
-#. Label of the enabled (Check) field in DocType 'Drive S3 Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#. Label of the enabled (Check) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Enabled"
 msgstr "crwdns156902:0crwdne156902:0"
 
-#. Label of the endpoint_url (Data) field in DocType 'Drive S3 Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
 msgstr "crwdns156904:0crwdne156904:0"
 
@@ -336,9 +364,9 @@ msgstr "crwdns156908:0crwdne156908:0"
 msgid "Entity Type"
 msgstr "crwdns156910:0crwdne156910:0"
 
-#. Description of the 'Endpoint URL' (Data) field in DocType 'Drive S3
+#. Description of the 'Endpoint URL' (Data) field in DocType 'Drive Disk
 #. Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Example format: https://s3.ap-south-1.amazonaws.com"
 msgstr "crwdns156912:0crwdne156912:0"
 
@@ -347,7 +375,7 @@ msgstr "crwdns156912:0crwdne156912:0"
 msgid "Expired"
 msgstr "crwdns156914:0crwdne156914:0"
 
-#: frontend/src/components/GenericPage.vue:272
+#: frontend/src/components/GenericPage.vue:256
 #: frontend/src/components/Navbar.vue:238
 msgid "Favourite"
 msgstr "crwdns156916:0crwdne156916:0"
@@ -357,16 +385,33 @@ msgstr "crwdns156916:0crwdne156916:0"
 msgid "File Size"
 msgstr "crwdns156918:0crwdne156918:0"
 
+#: frontend/src/components/Sidebar.vue:220
+msgid "Find"
+msgstr "crwdns158576:0crwdne158576:0"
+
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
 msgstr "crwdns156920:0crwdne156920:0"
+
+#. Label of the font_family (Data) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Font Family"
+msgstr "crwdns158578:0crwdne158578:0"
+
+#. Label of the font_size (Int) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Font Size"
+msgstr "crwdns158580:0crwdne158580:0"
 
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "From User"
 msgstr "crwdns156922:0crwdne156922:0"
 
-#: frontend/src/components/InfoPopup.vue:88
+#. Label of the general_section (Section Break) field in DocType 'Drive Disk
+#. Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+#: frontend/src/components/InfoPopup.vue:110
 msgid "General"
 msgstr "crwdns156924:0crwdne156924:0"
 
@@ -375,27 +420,17 @@ msgstr "crwdns156924:0crwdne156924:0"
 msgid "Geo Location"
 msgstr "crwdns156926:0crwdne156926:0"
 
-#: frontend/src/components/Sidebar.vue:14
-msgid "Go"
-msgstr "crwdns156928:0crwdne156928:0"
-
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Go to Drive"
 msgstr "crwdns156930:0crwdne156930:0"
 
 #. Name of a role
-#: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Guest"
 msgstr "crwdns156932:0crwdne156932:0"
 
-#: frontend/src/components/GenericPage.vue:266
-#: frontend/src/components/Navbar.vue:232
-msgid "Hide Info"
-msgstr "crwdns156934:0crwdne156934:0"
-
-#: frontend/src/utils/files.js:219
+#: frontend/src/utils/files.js:222
 msgid "Home"
 msgstr "crwdns156936:0crwdne156936:0"
 
@@ -409,6 +444,10 @@ msgstr "crwdns156938:0crwdne156938:0"
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "In MB"
 msgstr "crwdns156940:0crwdne156940:0"
+
+#: frontend/src/components/Sidebar.vue:225
+msgid "Inbox"
+msgstr "crwdns158582:0crwdne158582:0"
 
 #: frontend/src/components/InfoSidebar.vue:15
 msgid "Information"
@@ -424,11 +463,6 @@ msgstr "crwdns156944:0crwdne156944:0"
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Active"
 msgstr "crwdns156946:0crwdne156946:0"
-
-#. Label of the is_admin (Check) field in DocType 'Drive Team Member'
-#: drive/drive/doctype/drive_team_member/drive_team_member.json
-msgid "Is Admin"
-msgstr "crwdns156948:0crwdne156948:0"
 
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -450,12 +484,12 @@ msgstr "crwdns156954:0crwdne156954:0"
 msgid "Is Resolved"
 msgstr "crwdns156956:0crwdne156956:0"
 
-#. Label of the jwt_key (Password) field in DocType 'Drive Site Settings'
-#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
+#. Label of the jwt_key (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "JWT Key"
 msgstr "crwdns156958:0crwdne156958:0"
 
-#: frontend/src/components/ListView.vue:195
+#: frontend/src/components/ListView.vue:194
 msgid "Last Accessed"
 msgstr "crwdns156960:0crwdne156960:0"
 
@@ -464,7 +498,7 @@ msgstr "crwdns156960:0crwdne156960:0"
 msgid "Last Interaction"
 msgstr "crwdns156962:0crwdne156962:0"
 
-#: frontend/src/components/ListView.vue:187
+#: frontend/src/components/ListView.vue:186
 msgid "Last Modified"
 msgstr "crwdns156964:0crwdne156964:0"
 
@@ -472,7 +506,21 @@ msgstr "crwdns156964:0crwdne156964:0"
 msgid "Last Name"
 msgstr "crwdns156966:0crwdne156966:0"
 
-#: frontend/src/components/PrimaryDropdown.vue:146
+#. Description of the 'Do not mimic folder/file structure' (Check) field in
+#. DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Legacy option.\n"
+"<br>\n"
+"<br>\n"
+"By default, Drive stores files the way you see it. If this option is checked, the files are store flatly, with randomized names.\n"
+msgstr "crwdns158584:0crwdne158584:0"
+
+#. Label of the line_height (Data) field in DocType 'Drive Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+msgid "Line Height"
+msgstr "crwdns158586:0crwdne158586:0"
+
+#: frontend/src/components/Sidebar.vue:150
 msgid "Log out"
 msgstr "crwdns156968:0crwdne156968:0"
 
@@ -486,11 +534,16 @@ msgstr "crwdns156970:0crwdne156970:0"
 msgid "MIME Type"
 msgstr "crwdns156972:0crwdne156972:0"
 
-#: frontend/src/components/InfoPopup.vue:72
+#: frontend/src/components/InfoPopup.vue:97
 #: frontend/src/components/InfoSidebar.vue:64
-#: frontend/src/components/PrimaryDropdown.vue:109
+#: frontend/src/components/Sidebar.vue:109
 msgid "Manage"
 msgstr "crwdns156974:0crwdne156974:0"
+
+#. Label of a shortcut in the Drive Workspace
+#: drive/drive/workspace/drive/drive.json
+msgid "Manage Disk Settings"
+msgstr "crwdns158588:0crwdne158588:0"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -517,27 +570,23 @@ msgstr "crwdns156980:0crwdne156980:0"
 msgid "Meta Value"
 msgstr "crwdns156982:0crwdne156982:0"
 
-#: frontend/src/components/DriveToolBar.vue:328
-#: frontend/src/components/InfoPopup.vue:51
+#. Label of the _modified (Datetime) field in DocType 'Drive File'
+#: drive/drive/doctype/drive_file/drive_file.json
+#: frontend/src/components/DriveToolBar.vue:327
+#: frontend/src/components/InfoPopup.vue:41
 #: frontend/src/components/InfoSidebar.vue:103
 msgid "Modified"
 msgstr "crwdns156984:0crwdne156984:0"
 
-#: frontend/src/components/GenericPage.vue:246
-#: frontend/src/components/Navbar.vue:214
+#: frontend/src/components/GenericPage.vue:236
+#: frontend/src/components/Navbar.vue:220
 msgid "Move"
 msgstr "crwdns156986:0crwdne156986:0"
 
-#: frontend/src/components/DriveToolBar.vue:320
-#: frontend/src/components/ListView.vue:131
+#: frontend/src/components/DriveToolBar.vue:319
+#: frontend/src/components/ListView.vue:130
 msgid "Name"
 msgstr "crwdns156988:0crwdne156988:0"
-
-#. Description of the 'JWT Key' (Password) field in DocType 'Drive Site
-#. Settings'
-#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
-msgid "Never share this publicly! This gives complete read access to all files in your site."
-msgstr "crwdns156990:0crwdne156990:0"
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 msgid "New"
@@ -551,6 +600,10 @@ msgstr "crwdns156994:0crwdne156994:0"
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "New Value"
 msgstr "crwdns156996:0crwdne156996:0"
+
+#: drive/public/js/ff_integration.bundle.js:23
+msgid "No teams available"
+msgstr "crwdns158590:0crwdne158590:0"
 
 #. Label of the oauth_signup (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -577,18 +630,18 @@ msgstr "crwdns157004:0crwdne157004:0"
 msgid "Old Value"
 msgstr "crwdns157006:0crwdne157006:0"
 
-#: frontend/src/components/GenericPage.vue:217
+#: frontend/src/components/GenericPage.vue:207
 msgid "Open"
 msgstr "crwdns157008:0crwdne157008:0"
 
-#: frontend/src/components/PrimaryDropdown.vue:136
+#: frontend/src/components/Sidebar.vue:140
 msgid "Others"
 msgstr "crwdns157010:0crwdne157010:0"
 
-#: frontend/src/components/DriveToolBar.vue:324
-#: frontend/src/components/InfoPopup.vue:33
+#: frontend/src/components/DriveToolBar.vue:323
+#: frontend/src/components/InfoPopup.vue:19
 #: frontend/src/components/InfoSidebar.vue:114
-#: frontend/src/components/ListView.vue:145
+#: frontend/src/components/ListView.vue:144
 msgid "Owner"
 msgstr "crwdns157012:0crwdne157012:0"
 
@@ -615,11 +668,16 @@ msgstr "crwdns157018:0crwdne157018:0"
 msgid "Pending"
 msgstr "crwdns157020:0crwdne157020:0"
 
+#. Label of the personal_prefix (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Personal Prefix"
+msgstr "crwdns158592:0crwdne158592:0"
+
 #: frontend/src/components/Settings/ProfileSettings.vue:95
 msgid "Preferences"
 msgstr "crwdns157022:0crwdne157022:0"
 
-#: frontend/src/components/GenericPage.vue:211
+#: frontend/src/components/GenericPage.vue:201
 msgid "Preview"
 msgstr "crwdns157024:0crwdne157024:0"
 
@@ -653,6 +711,10 @@ msgstr "crwdns157034:0crwdne157034:0"
 msgid "Read"
 msgstr "crwdns157036:0crwdne157036:0"
 
+#: frontend/src/components/InfoPopup.vue:76
+msgid "Reading time"
+msgstr "crwdns158594:0crwdne158594:0"
+
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referral Source"
@@ -669,12 +731,12 @@ msgstr "crwdns157040:0crwdne157040:0"
 msgid "Referrer ID"
 msgstr "crwdns157042:0crwdne157042:0"
 
-#: frontend/src/components/GenericPage.vue:298
+#: frontend/src/components/GenericPage.vue:282
 msgid "Remove from Recents"
 msgstr "crwdns157044:0crwdne157044:0"
 
-#: frontend/src/components/GenericPage.vue:254
-#: frontend/src/components/Navbar.vue:220
+#: frontend/src/components/GenericPage.vue:244
+#: frontend/src/components/Navbar.vue:226
 msgid "Rename"
 msgstr "crwdns157046:0crwdne157046:0"
 
@@ -688,8 +750,25 @@ msgstr "crwdns157048:0crwdne157048:0"
 msgid "Request Key"
 msgstr "crwdns157050:0crwdne157050:0"
 
-#. Label of the bucket (Data) field in DocType 'Drive S3 Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#. Label of the root_prefix_type (Select) field in DocType 'Drive Disk
+#. Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Root Prefix Type"
+msgstr "crwdns158596:0crwdne158596:0"
+
+#. Label of the root_prefix_value (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Root Prefix Value"
+msgstr "crwdns158598:0crwdne158598:0"
+
+#. Label of the s3_section (Section Break) field in DocType 'Drive Disk
+#. Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "S3"
+msgstr "crwdns158600:0crwdne158600:0"
+
+#. Label of the bucket (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "S3 Bucket"
 msgstr "crwdns157052:0crwdne157052:0"
 
@@ -703,37 +782,32 @@ msgstr "crwdns157056:0crwdne157056:0"
 
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
-#: frontend/src/components/PrimaryDropdown.vue:141
 #: frontend/src/components/Settings/SettingsDialog.vue:15
+#: frontend/src/components/Sidebar.vue:145
 msgid "Settings"
 msgstr "crwdns157058:0crwdne157058:0"
-
-#. Label of a shortcut in the Drive Workspace
-#: drive/drive/workspace/drive/drive.json
-msgid "Setup S3"
-msgstr "crwdns157060:0crwdne157060:0"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:224
-#: frontend/src/components/Navbar.vue:191
+#: frontend/src/components/GenericPage.vue:214
+#: frontend/src/components/Navbar.vue:195
 msgid "Share"
 msgstr "crwdns157062:0crwdne157062:0"
 
-#: frontend/src/components/InfoPopup.vue:109
-#: frontend/src/components/ListView.vue:165 frontend/src/utils/files.js:204
+#: frontend/src/components/InfoPopup.vue:123
+#: frontend/src/components/ListView.vue:164 frontend/src/utils/files.js:207
 msgid "Shared"
 msgstr "crwdns157064:0crwdne157064:0"
 
-#: frontend/src/components/GenericPage.vue:260
-#: frontend/src/components/Navbar.vue:226
+#: frontend/src/components/GenericPage.vue:250
+#: frontend/src/components/Navbar.vue:232
 msgid "Show Info"
 msgstr "crwdns157066:0crwdne157066:0"
 
-#. Label of the signature_version (Data) field in DocType 'Drive S3 Settings'
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
+#. Label of the signature_version (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Signature Version"
 msgstr "crwdns157068:0crwdne157068:0"
 
@@ -747,16 +821,16 @@ msgstr "crwdns157070:0crwdne157070:0"
 msgid "Single Click"
 msgstr "crwdns157072:0crwdne157072:0"
 
-#: frontend/src/components/DriveToolBar.vue:332
-#: frontend/src/components/InfoPopup.vue:45
+#: frontend/src/components/DriveToolBar.vue:331
+#: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/InfoSidebar.vue:93
-#: frontend/src/components/ListView.vue:203
+#: frontend/src/components/ListView.vue:202
 msgid "Size"
 msgstr "crwdns157074:0crwdne157074:0"
 
-#: frontend/src/components/DriveToolBar.vue:348
-msgid "Smart sort"
-msgstr "crwdns157076:0crwdne157076:0"
+#: frontend/src/components/DriveToolBar.vue:347
+msgid "Smart"
+msgstr "crwdns158602:0crwdne158602:0"
 
 #. Label of the snapshot_data (Long Text) field in DocType 'Drive Document
 #. Version'
@@ -768,6 +842,10 @@ msgstr "crwdns157078:0crwdne157078:0"
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Size"
 msgstr "crwdns157080:0crwdne157080:0"
+
+#: frontend/src/components/InfoPopup.vue:57
+msgid "Stats"
+msgstr "crwdns158604:0crwdne158604:0"
 
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -781,20 +859,19 @@ msgstr "crwdns157082:0crwdne157082:0"
 msgid "Storage"
 msgstr "crwdns157084:0crwdne157084:0"
 
-#: frontend/src/components/PrimaryDropdown.vue:125
+#: frontend/src/components/Sidebar.vue:129
 msgid "Support"
 msgstr "crwdns157086:0crwdne157086:0"
 
 #. Name of a role
 #: drive/drive/doctype/account_request/account_request.json
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: drive/drive/doctype/drive_s3_settings/drive_s3_settings.json
 #: drive/drive/doctype/drive_settings/drive_settings.json
-#: drive/drive/doctype/drive_site_settings/drive_site_settings.json
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
@@ -827,6 +904,21 @@ msgstr "crwdns157094:0crwdne157094:0"
 msgid "Team Domain"
 msgstr "crwdns157096:0crwdne157096:0"
 
+#. Label of the team_prefix (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Team Prefix"
+msgstr "crwdns158606:0crwdne158606:0"
+
+#. Label of a shortcut in the Drive Workspace
+#: drive/drive/workspace/drive/drive.json
+msgid "Teams"
+msgstr "crwdns158608:0crwdne158608:0"
+
+#. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "Thumbnail prefix"
+msgstr "crwdns158610:0crwdne158610:0"
+
 #. Label of the title (Data) field in DocType 'Drive File'
 #. Label of the title (Data) field in DocType 'Drive Tag'
 #. Label of the title (Small Text) field in DocType 'Drive Team'
@@ -844,8 +936,8 @@ msgstr "crwdns157100:0crwdne157100:0"
 
 #. Label of the type (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
-#: frontend/src/components/DriveToolBar.vue:336
-#: frontend/src/components/InfoPopup.vue:41
+#: frontend/src/components/DriveToolBar.vue:335
+#: frontend/src/components/InfoPopup.vue:27
 #: frontend/src/components/InfoSidebar.vue:82
 msgid "Type"
 msgstr "crwdns157102:0crwdne157102:0"
@@ -855,7 +947,7 @@ msgstr "crwdns157102:0crwdne157102:0"
 msgid "URL Args"
 msgstr "crwdns157104:0crwdne157104:0"
 
-#: frontend/src/components/GenericPage.vue:285
+#: frontend/src/components/GenericPage.vue:269
 #: frontend/src/components/Navbar.vue:249
 msgid "Unfavourite"
 msgstr "crwdns157106:0crwdne157106:0"
@@ -882,7 +974,7 @@ msgstr "crwdns157110:0crwdne157110:0"
 msgid "User"
 msgstr "crwdns157112:0crwdne157112:0"
 
-#. Label of the users (Table MultiSelect) field in DocType 'Drive Team'
+#. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/UserListSettings.vue:4
 msgid "Users"
@@ -902,10 +994,21 @@ msgstr "crwdns157118:0crwdne157118:0"
 msgid "With you"
 msgstr "crwdns157120:0crwdne157120:0"
 
+#: frontend/src/components/InfoPopup.vue:60
+msgid "Words"
+msgstr "crwdns158612:0crwdne158612:0"
+
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
 msgstr "crwdns157122:0crwdne157122:0"
+
+#. Label of the writer_section (Section Break) field in DocType 'Drive
+#. Settings'
+#: drive/drive/doctype/drive_settings/drive_settings.json
+#: frontend/src/components/Settings/WriterSettings.vue:4
+msgid "Writer"
+msgstr "crwdns158614:0crwdne158614:0"
 
 #: frontend/src/components/Settings/StorageSettings.vue:21
 msgid "You"
@@ -949,13 +1052,19 @@ msgstr "crwdns157136:0crwdne157136:0"
 msgid "move"
 msgstr "crwdns157138:0crwdne157138:0"
 
-#: frontend/src/components/InfoPopup.vue:118
-#: frontend/src/components/ListView.vue:174
+#. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
+#. Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "other"
+msgstr "crwdns158616:0crwdne158616:0"
+
+#: frontend/src/components/InfoPopup.vue:132
+#: frontend/src/components/ListView.vue:173
 msgid "people"
 msgstr "crwdns157140:0crwdne157140:0"
 
-#: frontend/src/components/InfoPopup.vue:117
-#: frontend/src/components/ListView.vue:174
+#: frontend/src/components/InfoPopup.vue:132
+#: frontend/src/components/ListView.vue:173
 msgid "person"
 msgstr "crwdns157142:0crwdne157142:0"
 
@@ -986,4 +1095,16 @@ msgstr "crwdns157150:0crwdne157150:0"
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_remove"
 msgstr "crwdns157152:0crwdne157152:0"
+
+#. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
+#. Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "team_id"
+msgstr "crwdns158618:0crwdne158618:0"
+
+#. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
+#. Settings'
+#: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
+msgid "team_name"
+msgstr "crwdns158620:0crwdne158620:0"
 
