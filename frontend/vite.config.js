@@ -1,7 +1,7 @@
-import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
-import path from "path"
 import frappeui from "frappe-ui/vite"
+import path from "path"
+import { defineConfig } from "vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -36,8 +36,14 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["drive.localhost"],
+    // allowedHosts: ["drive.localhost"],
+    port: 8082,
+    host: true
   },
+  // server: {
+  //   port: 8082,
+  //   host: true
+  // },
   ssr: {
     external: { html2canvas: "html2canvas", dompurify: "dompurify" },
   },
