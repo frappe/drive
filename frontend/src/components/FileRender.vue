@@ -47,9 +47,9 @@ const props = defineProps({
 
 const error = computed(() => {
   if (!Object.keys(RENDERS).includes(props.previewEntity.file_type))
-    return "Previews are not supported for this file type. Would you like to download it instead?"
-  else if (props.previewEntity.file_size > 10 * 1024 * 1024)
-    return "This is too large to preview - would you like to download instead?"
+    return "Làm ơn tải xuống để xem tệp này. Hỗ trợ xem trước cho các loại tệp khác đang được phát triển."
+  else if (props.previewEntity.file_size > 100 * 1024 * 1024)
+    return "Tệp này quá lớn để xem trước - bạn có muốn tải xuống không?"
   return false
 })
 

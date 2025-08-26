@@ -158,7 +158,7 @@
       <StorageBar :is-expanded="isExpanded" />
     </div>
   </div>
-  
+
   <!-- Enhanced Create Team Modal -->
   <Dialog
     v-model="showCreateTeamModal"
@@ -335,7 +335,7 @@ const renameTeam = createResource({
   url: "drive.drive.doctype.drive_team.drive_team.change_team_name",
   makeParams: () => ({
     team_id: renameTargetTeam?.name,
-    new_name: renameTeamName.value.trim()
+    new_name: renameTeamName.value.trim(),
   }),
   onSuccess: (data) => {
     toast("Đã đổi tên nhóm thành công!")
@@ -348,7 +348,8 @@ const renameTeam = createResource({
   },
   onError: (error) => {
     console.error("Rename team error:", error)
-    const errorMessage = error.messages?.[0] || "Không thể đổi tên nhóm. Vui lòng thử lại."
+    const errorMessage =
+      error.messages?.[0] || "Không thể đổi tên nhóm. Vui lòng thử lại."
     toast(errorMessage)
   },
 })
@@ -427,43 +428,44 @@ const toggleExpanded = () =>
   store.commit("setIsSidebarExpanded", isExpanded.value ? false : true)
 
 // Team permission check function
+// Check if user is owner
+const settings = createResource({
+  url: "/api/method/drive.api.product.get_settings",
+  method: "GET",
+  cache: "settings",
+})
+
 function canEditTeam(teamItem) {
   const currentUserId = store.state.user.id
-  console.log(teamItem)
-  // Check if user is owner
-  if (teamItem.owner === currentUserId) {
-    return true
+
+  if (teamItem.name === settings.data?.default_team) {
+    return false
   }
-  
   // Check if user is admin in members list
-  if (teamItem.members && Array.isArray(teamItem.members)) {
-    const userMember = teamItem.members.find(
-      member => member.user === currentUserId || member.user_id === currentUserId
+  if (teamItem.users && Array.isArray(teamItem.users)) {
+    const userMember = teamItem.users.find(
+      (member) =>
+        member.user === currentUserId || member.user_id === currentUserId
     )
-    
+    console.log(userMember)
     if (userMember) {
-      // Check admin flag
-      if (userMember.is_admin === 1 || userMember.is_admin === true) {
-        return true
-      }
-      
       // Check access level (2 = admin)
       if (userMember.access_level === 2) {
         return true
       }
     }
   }
-  
+
   // Check direct user role
-  if (teamItem.user_role === 'admin' || teamItem.user_role === 'owner') {
+  if (teamItem.user_role === "admin" || teamItem.user_role === "owner") {
     return true
   }
-  
+
   // Check if teamItem has can_edit property (from enhanced API)
   if (teamItem.can_edit === true) {
     return true
   }
-  
+
   // Default: no permission
   return false
 }
@@ -496,7 +498,7 @@ function openRenameTeamDialog(teamItem) {
     toast("Bạn không có quyền đổi tên nhóm này.")
     return
   }
-  
+
   renameTargetTeam = teamItem
   renameTeamName.value = teamItem.title
   showRenameTeamModal.value = true
@@ -507,12 +509,12 @@ function handleRenameTeam() {
     toast("Vui lòng nhập tên nhóm mới.")
     return
   }
-  
+
   if (renameTeamName.value.trim() === renameTargetTeam?.title) {
     toast("Tên mới không được giống tên hiện tại.")
     return
   }
-  
+
   renameTeam.submit()
 }
 
@@ -520,7 +522,7 @@ function handleRenameTeam() {
 const teamPermissions = computed(() => {
   const permissions = {}
   if (teamList.value) {
-    teamList.value.forEach(team => {
+    teamList.value.forEach((team) => {
       permissions[team.name] = canEditTeam(team)
     })
   }

@@ -850,31 +850,29 @@ def remove_or_restore(entity_names, team):
         if doc.is_active:
             flag = 0
             # Thêm vào global trash khi chuyển vào thùng rác
-            existing_trash = frappe.db.exists({
-                "doctype": "Drive Trash",
-                "entity": doc.name,
-                "user": frappe.session.user
-            })
+            existing_trash = frappe.db.exists(
+                {"doctype": "Drive Trash", "entity": doc.name, "user": frappe.session.user}
+            )
             if not existing_trash:
-                frappe.get_doc({
-                    "doctype": "Drive Trash",
-                    "entity": doc.name,
-                    "user": frappe.session.user,
-                    "team": doc.team,
-                    "original_path": doc.path,
-                    "trashed_on": frappe.utils.now()
-                }).insert()
+                frappe.get_doc(
+                    {
+                        "doctype": "Drive Trash",
+                        "entity": doc.name,
+                        "user": frappe.session.user,
+                        "team": doc.team,
+                        "original_path": doc.path,
+                        "trashed_on": frappe.utils.now(),
+                    }
+                ).insert()
         else:
             storage_data_limit = storage_data["limit"] * 1024 * 1024
             if (storage_data_limit - storage_data["total_size"]) < doc.file_size:
                 frappe.throw("You're out of storage!", ValueError)
             flag = 1
             # Xóa khỏi global trash khi khôi phục
-            existing_trash = frappe.db.exists({
-                "doctype": "Drive Trash",
-                "entity": doc.name,
-                "user": frappe.session.user
-            })
+            existing_trash = frappe.db.exists(
+                {"doctype": "Drive Trash", "entity": doc.name, "user": frappe.session.user}
+            )
             if existing_trash:
                 frappe.delete_doc("Drive Trash", existing_trash)
 

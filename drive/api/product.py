@@ -597,7 +597,7 @@ def grant_read_access_to_users(entity_name, user_emails):
                         "read": 1,
                         "write": 0,
                         "share": 0,
-                        "comment": 0,
+                        "comment": 1,
                     }
                 )
                 share_doc.insert(ignore_permissions=True)
