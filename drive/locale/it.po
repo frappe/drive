@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-08-25 14:31\n"
+"PO-Revision-Date: 2025-08-27 15:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -861,7 +861,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:129
 msgid "Support"
-msgstr ""
+msgstr "Supporto"
 
 #. Name of a role
 #: drive/drive/doctype/account_request/account_request.json
