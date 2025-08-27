@@ -11,20 +11,20 @@
         v-if="uploadsInProgress.length > 0"
         class="font-medium truncate text-lg"
       >
-        {{ __("Uploading {0} {1}").format(uploadsInProgress.length, uploadsInProgress.length == 1 ? __("file") : __("files")) }}
+        {{ __("Đang tải {0} {1}").format(uploadsInProgress.length, uploadsInProgress.length == 1 ? __("thư mục") : __("thư mục")) }}
       </div>
       <div
         v-else-if="uploadsCompleted.length > 0"
         class="font-medium truncate text-lg"
       >
-        {{ __("{0} {1} complete").format(uploadsCompleted.length, uploadsCompleted.length == 1 ? __("upload") : __("uploads")) }}
+        {{ __("{0} {1} hoàn thành").format(uploadsCompleted.length, uploadsCompleted.length == 1 ? __("thư mục") : __("thư mục")) }}
       </div>
       <div
         v-else-if="uploadsFailed.length > 0"
         class="font-medium truncate text-lg"
       >
         {{ uploadsFailed.length }}
-        {{ uploadsFailed.length == 1 ? "upload" : "uploads" }} failed
+        {{ uploadsFailed.length == 1 ? "thư mục" : "thư mục" }} thất bại
       </div>
       <div class="ml-auto flex items-center gap-4">
         <button
@@ -128,7 +128,7 @@
       v-if="showErrorDialog"
       v-model="showErrorDialog"
       :options="{
-        title: __('Upload failed'),
+        title: __('Tải lên thất bại'),
         message: selectedUpload.error,
         size: 'sm',
         actions: [
@@ -146,12 +146,12 @@
       v-if="showCancelDialog"
       v-model="showCancelDialog"
       :options="{
-        title: __('Cancel uploads'),
-        message: __('Are you sure you want to cancel all ongoing uploads?'),
+        title: __('Hủy tải lên'),
+        message: __('Bạn có chắc chắn muốn hủy tất cả các tải lên đang diễn ra không?'),
         size: 'sm',
         actions: [
           {
-            label: __('Confirm'),
+            label: __('Xác nhận'),
             variant: 'subtle',
             theme: 'red',
             onClick: () => {
@@ -201,13 +201,13 @@ export default {
           this.emptyMessage = "Không có tệp nào đang tải lên"
           return this.uploadsInProgress
         case 2:
-          this.emptyMessage = "No uploads completed"
+          this.emptyMessage = "Không có tệp nào hoàn thành"
           return this.uploadsCompleted
         case 3:
-          this.emptyMessage = "No failed uploads"
+          this.emptyMessage = "Không có tệp nào thất bại"
           return this.uploadsFailed
         default:
-          this.emptyMessage = "No uploads completed"
+          this.emptyMessage = "Không có tệp nào hoàn thành"
           return this.uploadsCompleted
       }
     },
