@@ -6,7 +6,7 @@
     >
       <EditorContent
         :editor="editor"
-        class="prose prose-sm max-w-none min-h-[3.5rem] max-h-[12rem] overflow-y-auto focus:outline-none !m-0"
+        class="prose prose-sm max-w-none min-h-[3.5rem] max-h-[12rem] overflow-y-auto focus:outline-none !m-0 !p-0"
       />
     </div>
   </div>

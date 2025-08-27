@@ -153,7 +153,7 @@
                   <span>• {{ __('lúc') }} {{ formatDate24(comment.creation) }}</span>
                 </div>
                 <div
-                  class="my-2 text-base text-ink-gray-7 break-word leading-snug comment-content"
+                  class="my-2 text-base text-ink-gray-7 break-word leading-1 comment-content"
                   v-html="renderCommentContent(comment.content)"
                 ></div>
                 <!-- Reactions -->
