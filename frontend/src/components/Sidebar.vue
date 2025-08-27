@@ -3,7 +3,7 @@
     :class="[
       isExpanded
         ? 'w-[260px] min-w-[260px] opacity-100 translate-x-0'
-        : 'w-[60px] min-w-[60px] opacity-80',
+        : 'w-[60px] min-w-[60px] ',
       '!transition-all rounded-[8px] bg-white relative hidden sm:flex h-screen flex-col justify-start',
     ]"
   >
@@ -42,81 +42,105 @@
             <div class="flex items-center">
               <!-- Icon cố định ở bên trái -->
               <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
-                <SearchIconDrive class="w-5 h-5 text-gray-600 group-hover:text-[#0149C1] transition-colors" />
+                <SearchIconDrive
+                  class="w-5 h-5 text-gray-600 group-hover:text-[#0149C1] transition-colors"
+                />
               </span>
               <!-- Label với transition opacity -->
               <span
                 v-if="isExpanded"
                 class="ml-3 text-[14px] group-hover:text-[#0149C1] text-[#404040] font-medium sidebar-label transition-opacity duration-200"
               >
-                {{ __('Tìm kiếm') }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Tài liệu của tôi -->
-      <div class="mb-2">
-        <div class="flex h-9 w-full items-center text-gray-700">
-          <div
-            class="w-full px-3 py-[10px] !text-black rounded-[8px] group hover:!bg-[#d4e1f9] hover:!text-[#0149C1] cursor-pointer search-sidebar-item"
-            :class="isRouteActive(sidebarItems[0].route) ? '!bg-[#d4e1f9] !text-[#0149C1]' : ''"
-            @click="$router.push(sidebarItems[0].route)"
-          >
-            <div class="flex items-center">
-              <!-- Icon cố định ở bên trái -->
-              <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
-                <DocIconDrive 
-                  class="w-5 h-5 transition-colors"
-                  :class="isRouteActive(sidebarItems[0].route) ? 'text-[#0149C1] active_icon' : 'text-gray-600 group-hover:text-[#0149C1]'"
-                />
-              </span>
-              <!-- Label với transition opacity -->
-              <span
-                v-if="isExpanded"
-                class="ml-3 text-[14px] font-medium sidebar-label transition-opacity duration-200"
-                :class="isRouteActive(sidebarItems[0].route) ? 'text-[#0149C1]' : 'text-[#404040] group-hover:text-[#0149C1]'"
-              >
-                {{ __('Tài liệu của tôi') }}
+                {{ __("Tìm kiếm") }}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Nhóm Section -->
+      <!-- Tài liệu của tôi -->
+      <div class="mb-2">
+        <div class="flex h-9 w-full items-center text-gray-700">
+          <div
+            class="w-full px-3 py-[10px] !text-black rounded-[8px] group hover:!bg-[#d4e1f9] hover:!text-[#0149C1] cursor-pointer search-sidebar-item"
+            :class="
+              isRouteActive(sidebarItems[0].route)
+                ? '!bg-[#d4e1f9] !text-[#0149C1]'
+                : ''
+            "
+            @click="$router.push(sidebarItems[0].route)"
+          >
+            <div class="flex items-center">
+              <!-- Icon cố định ở bên trái -->
+              <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
+                <DocIconDrive
+                  class="w-5 h-5 transition-colors"
+                  :class="
+                    isRouteActive(sidebarItems[0].route)
+                      ? 'text-[#0149C1] active_icon'
+                      : 'text-gray-600 group-hover:text-[#0149C1]'
+                  "
+                />
+              </span>
+              <!-- Label với transition opacity -->
+              <span
+                v-if="isExpanded"
+                class="ml-3 text-[14px] font-medium sidebar-label transition-opacity duration-200"
+                :class="
+                  isRouteActive(sidebarItems[0].route)
+                    ? 'text-[#0149C1]'
+                    : 'text-[#404040] group-hover:text-[#0149C1]'
+                "
+              >
+                {{ __("Tài liệu của tôi") }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nhóm Section với Tooltip -->
       <template
         v-for="item in sidebarItems.slice(1)"
         :key="item.label"
       >
         <div
           v-if="item.label === __('Nhóm')"
-          class="mb-2"
+          class="mb-2 relative"
         >
           <!-- Nhóm Header với nút Toggle và Add -->
-          <div class="flex h-9 w-full items-center text-gray-700 mb-2">
+          <div class="flex relative h-9 w-full items-center text-gray-700 mb-2">
             <div
-              class="w-full px-3 py-[10px] !text-black rounded-[8px] group hover:!bg-[#d4e1f9] hover:!text-[#0149C1]"
+              class="w-full px-3 py-[10px] !text-black rounded-[8px] group hover:!bg-[#d4e1f9] hover:!text-[#0149C1] relative"
               :class="isTeamsExpanded ? '!bg-[#d4e1f9] !text-[#0149C1]' : ''"
+              @mouseenter="showTooltip = !isExpanded"
+              @mouseleave="showTooltip = false"
             >
               <button
                 v-if="isExpanded"
                 @click="toggleTeamsExpanded"
-                class="flex w-full cursor-pointer items-center justify-between !rounded-[8px] !border-none search-sidebar-item"
+                class="flex w-full cursor-pointer items-center justify-between !rounded-[8px] !border-none"
               >
                 <div class="flex items-center">
                   <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
                     <component
                       :is="item.icon"
                       class="size-5 transition-colors"
-                      :class="isTeamsExpanded ? 'text-[#0149C1] active_icon' : 'text-gray-600 group-hover:text-[#0149C1]'"
+                      :class="
+                        isTeamsExpanded
+                          ? 'text-[#0149C1] active_icon'
+                          : 'text-gray-600 group-hover:text-[#0149C1]'
+                      "
                     />
                   </span>
                   <span
                     v-if="isExpanded"
                     class="ml-3 text-[14px] font-medium sidebar-label"
-                    :class="isTeamsExpanded ? 'text-[#0149C1]' : 'text-[#404040] group-hover:text-[#0149C1]'"
+                    :class="
+                      isTeamsExpanded
+                        ? 'text-[#0149C1]'
+                        : 'text-[#404040] group-hover:text-[#0149C1]'
+                    "
                   >
                     {{ item.label }}
                   </span>
@@ -125,13 +149,14 @@
                   class="h-4 w-4 mr-2 transition-transform duration-200"
                   :class="[
                     { 'rotate-180': !isTeamsExpanded },
-                    isTeamsExpanded ? 'text-[#0149C1]' : 'text-black'
+                    isTeamsExpanded ? 'text-[#0149C1]' : 'text-black',
                   ]"
                 />
               </button>
               <div
                 v-else
-                class="flex items-center flex-1"
+                class="flex items-center flex-1 cursor-pointer sidebar-tooltip-anchor"
+                @click="showTooltip = !showTooltip"
               >
                 <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
                   <component
@@ -140,10 +165,90 @@
                   />
                 </span>
               </div>
+
+              <!-- Buffer area to make tooltip easier to enter -->
+              <div
+                v-if="showTooltip && !isExpanded"
+                class="fixed sidebar-tooltip-buffer"
+                :style="tooltipBufferStyle"
+                @mouseenter="showTooltip = true"
+                @mouseleave="showTooltip = false"
+              ></div>
+              <!-- Custom Tooltip cho collapsed sidebar -->
+            </div>
+            <!-- v-if="showTooltip && !isExpanded" showTooltip && !isExpanded-->
+
+            <div
+              v-if="showTooltip && !isExpanded"
+              class="fixed bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[200px] max-w-[280px] sidebar-tooltip-panel"
+              :style="tooltipPanelStyle"
+              @mouseenter="showTooltip = true"
+              @mouseleave="showTooltip = false"
+            >
+              <!-- <div class="!bg-white"> -->
+
+                <!-- Tooltip Header -->
+                <div class="px-3 py-2 border-b border-gray-100">
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ item.label }}
+                  </h3>
+                </div>
+  
+                <!-- Teams List trong Tooltip -->
+                <div class="py-1 max-h-60 overflow-y-auto">
+                  <div
+                    v-for="teamItem in teamList"
+                    :key="teamItem.name"
+                    @click="selectTeamFromTooltip(teamItem)"
+                    class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150 group"
+                    :class="{
+                      'bg-blue-50': team === teamItem.name,
+                    }"
+                  >
+                    <span
+                      class="text-sm text-gray-700 flex-1 group-hover:text-gray-900 truncate"
+                      :class="{
+                        'text-blue-600 font-medium': team === teamItem.name,
+                      }"
+                    >
+                      {{ teamItem.title }}
+                    </span>
+                    <button
+                      v-if="canEditTeam(teamItem)"
+                      class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-100 rounded-full transition-all duration-150"
+                      title="Chỉnh sửa tên nhóm"
+                      @click.stop="openRenameTeamDialog(teamItem)"
+                    >
+                      <Pencil
+                        class="h-3 w-3 text-gray-400 hover:text-gray-600"
+                      />
+                    </button>
+                  </div>
+  
+                  <!-- Tạo nhóm mới trong tooltip -->
+                  <div class="border-t border-gray-100 mt-1 pt-1">
+                    <button
+                      @click="createNewTeamFromTooltip"
+                      class="flex items-center px-3 py-2 text-sm text-[#0149C1] hover:bg-blue-50 transition-colors duration-150 w-full text-left"
+                    >
+                      <AddCircleDrive class="mr-2" />
+                      Tạo nhóm mới
+                    </button>
+                  </div>
+                </div>
+  
+                <!-- Tooltip Arrow -->
+                <div
+                  class="absolute right-full top-3 border-4 border-transparent border-r-white"
+                ></div>
+                <div
+                  class="absolute right-full top-3 mr-px border-4 border-transparent border-r-gray-200"
+                ></div>
+              <!-- </div> -->
             </div>
           </div>
 
-          <!-- Teams List - Collapsible with animation -->
+          <!-- Teams List - Collapsible with animation (chỉ hiện khi expanded) -->
           <Transition name="slide-down">
             <div
               v-if="isExpanded && isTeamsExpanded"
@@ -201,7 +306,9 @@
           <div class="flex h-9 w-full items-center text-gray-700">
             <div
               class="w-full px-3 py-[10px] !text-black rounded-[8px] group hover:!bg-[#d4e1f9] hover:!text-[#0149C1] cursor-pointer"
-              :class="isRouteActive(item.route) ? '!bg-[#d4e1f9] !text-[#0149C1]' : ''"
+              :class="
+                isRouteActive(item.route) ? '!bg-[#d4e1f9] !text-[#0149C1]' : ''
+              "
               @click="$router.push(item.route)"
             >
               <div class="flex items-center">
@@ -210,14 +317,22 @@
                   <component
                     :is="item.icon"
                     class="w-5 h-5 transition-colors"
-                    :class="isRouteActive(item.route) ? 'text-[#0149C1] active_icon' : 'text-gray-600 group-hover:text-[#0149C1]'"
+                    :class="
+                      isRouteActive(item.route)
+                        ? 'text-[#0149C1] active_icon'
+                        : 'text-gray-600 group-hover:text-[#0149C1]'
+                    "
                   />
                 </span>
                 <!-- Label với transition opacity -->
                 <span
                   v-if="isExpanded"
                   class="ml-3 text-[14px] font-medium sidebar-label transition-opacity duration-200"
-                  :class="isRouteActive(item.route) ? 'text-[#0149C1]' : 'text-[#404040] group-hover:text-[#0149C1]'"
+                  :class="
+                    isRouteActive(item.route)
+                      ? 'text-[#0149C1]'
+                      : 'text-[#404040] group-hover:text-[#0149C1]'
+                  "
                 >
                   {{ item.label }}
                 </span>
@@ -350,10 +465,15 @@ import SidebarItem from "@/components/SidebarItem.vue"
 import { getTeams } from "@/resources/files"
 import { notifCount } from "@/resources/permissions"
 import { toast } from "@/utils/toasts"
-import { Dialog, FormControl, createResource, Button as ButtonFrappe } from "frappe-ui"
+import {
+  Dialog,
+  FormControl,
+  createResource,
+  Button as ButtonFrappe,
+} from "frappe-ui"
 import { ChevronLeft, Pencil } from "lucide-vue-next"
 import { Button } from "primevue"
-import { computed, ref, watch } from "vue"
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import LucideBuilding2 from "~icons/lucide/building-2"
@@ -372,6 +492,9 @@ const newTeamName = ref("")
 // Teams collapse state - default is expanded (true)
 const isTeamsExpanded = ref(true)
 
+// Tooltip state
+const showTooltip = ref(false)
+
 // Rename team state
 const showRenameTeamModal = ref(false)
 const renameTeamName = ref("")
@@ -380,28 +503,67 @@ let renameTargetTeam = null
 // Helper function to check if route is active
 const isRouteActive = (itemRoute) => {
   const currentPath = route.path
-  
+
   // Handle exact matches for special routes
-  if (itemRoute === '/shared/' && currentPath === '/shared/') {
+  if (itemRoute === "/shared/" && currentPath === "/shared/") {
     return true
   }
-  
+
   // Handle team routes
-  if (itemRoute.includes('/t/')) {
+  if (itemRoute.includes("/t/")) {
     // Extract the route pattern (e.g., '/recents', '/favourites', '/trash')
-    const routePattern = itemRoute.split('/').pop()
-    const currentPattern = currentPath.split('/').pop()
-    
+    const routePattern = itemRoute.split("/").pop()
+    const currentPattern = currentPath.split("/").pop()
+
     // For root team route (empty pattern)
-    if (routePattern === '' || !routePattern) {
-      return currentPath === itemRoute || (currentPath.endsWith('/') && currentPath.slice(0, -1) === itemRoute.slice(0, -1))
+    if (routePattern === "" || !routePattern) {
+      return (
+        currentPath === itemRoute ||
+        (currentPath.endsWith("/") &&
+          currentPath.slice(0, -1) === itemRoute.slice(0, -1))
+      )
     }
-    
+
     // For specific patterns
     return routePattern === currentPattern
   }
-  
+
   return currentPath === itemRoute
+}
+
+const tooltipBufferStyle = ref('')
+const tooltipPanelStyle = ref('')
+
+function updateTooltipPosition() {
+  nextTick(() => {
+    const anchor = document.querySelector('.sidebar-tooltip-anchor')
+    if (!anchor) return
+    const rect = anchor.getBoundingClientRect()
+    tooltipBufferStyle.value = `top: ${rect.top}px; left: ${rect.right + 4}px; width: 18px; height: 100px; z-index:2147483647;`
+    tooltipPanelStyle.value = `top: ${rect.top}px; left: ${rect.right + 22}px; min-width:200px; max-width:280px; z-index:2147483647;`
+  })
+}
+
+watch(() => showTooltip.value, (val) => {
+  if (val) updateTooltipPosition()
+})
+onMounted(() => {
+  window.addEventListener('scroll', updateTooltipPosition, true)
+  window.addEventListener('resize', updateTooltipPosition)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateTooltipPosition, true)
+  window.removeEventListener('resize', updateTooltipPosition)
+})
+
+const selectTeamFromTooltip = (team) => {
+  showTooltip.value = false
+  selectTeam(team)
+}
+
+const createNewTeamFromTooltip = () => {
+  showTooltip.value = false
+  createNewTeam()
 }
 
 // Create team resource
@@ -750,7 +912,6 @@ const onLeave = (el) => {
   padding-bottom: 0;
 }
 
-
 /* Target SVG path trực tiếp */
 .search-sidebar-item:hover :deep(svg path) {
   stroke: #0149c1 !important;
@@ -765,12 +926,48 @@ const onLeave = (el) => {
   --icon-color: #0149c1;
 }
 
-.active_icon{
+.active_icon {
   --icon-color: #0149c1 !important;
   stroke: #0149c1 !important;
 }
 
 .search-sidebar-item :deep(svg path) {
   stroke: var(--icon-color) !important;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  right: 100%;
+  top: 12px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 6px 0;
+  border-color: transparent white transparent transparent;
+}
+
+.tooltip-arrow::before {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: -6px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 6px 0;
+  border-color: transparent #e5e7eb transparent transparent;
+}
+/* Buffer area for tooltip hover */
+.sidebar-tooltip-buffer {
+  height: 100px;
+  width: 20px;
+  background: transparent;
+  position: absolute;
+  left: 30px;
+  top: 0 !important;
+  z-index: 2147483647;
+}
+.sidebar-tooltip-panel {
+  z-index: 2147483647;
 }
 </style>

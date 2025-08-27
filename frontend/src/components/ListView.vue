@@ -1,74 +1,77 @@
 <template>
-  <FrappeListView
-    ref="container"
-    class="relative select-none p-2 sm:p-5 w-full overflow-hidden"
-    row-key="name"
-    :columns="selectedColumns"
-    :rows="formattedRows"
-    :options="{
-      selectable: true,
-      enableActive: true,
-      showTooltip: true,
-      resizeColumn: windowWidth > 640,
-      getRowRoute: () => '',
-      emptyState: {
-        description: __('Nothing found - try something else?'),
-      },
-    }"
-    @update:selections="handleSelections"
-    @update:active-row="setActive"
-  >
-    <ListHeader class="mb-[1px]" />
-    <div
-      v-if="!folderContents"
-      class="w-full text-center flex items-center justify-center py-10"
+  <div class="override_div">
+
+    <FrappeListView
+      ref="container"
+      class="select-none p-2 sm:p-5 w-full"
+      row-key="name"
+      :columns="selectedColumns"
+      :rows="formattedRows"
+      :options="{
+        selectable: true,
+        enableActive: true,
+        showTooltip: true,
+        resizeColumn: windowWidth > 640,
+        getRowRoute: () => '',
+        emptyState: {
+          description: __('Không tìm thấy - thử tìm kiếm khác?'),
+        },
+      }"
+      @update:selections="handleSelections"
+      @update:active-row="setActive"
     >
-      <LoadingIndicator class="w-8" />
-    </div>
-    <template v-else>
+      <ListHeader class="mb-[1px]" />
       <div
-        id="drop-area"
-        class="h-full overflow-x-auto overflow-y-auto pb-20 min-w-0 
-               -webkit-overflow-scrolling-touch scrollbar-thin 
-               scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        v-if="!folderContents"
+        class="w-full text-center flex items-center justify-center py-10"
       >
-        <ListEmptyState v-if="!formattedRows.length" />
-        <template v-else>
-          <!-- Grouped rows -->
-          <div
-            v-for="group in formattedRows"
-            v-if="formattedRows[0]?.group"
-            :key="group.group"
-            :data-group="group.group"
-          >
-            <div @click="toggleGroup(group.group)" style="cursor: pointer;">
-              <ListGroupHeader :group="group" />
+        <LoadingIndicator class="w-8" />
+      </div>
+      <template v-else>
+        <div
+          id="drop-area"
+          class="h-full pb-20 min-w-0 
+                 -webkit-overflow-scrolling-touch scrollbar-thin 
+                 scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        >
+          <ListEmptyState v-if="!formattedRows.length" />
+          <template v-else>
+            <!-- Grouped rows -->
+            <div
+              v-for="group in formattedRows"
+              v-if="formattedRows[0]?.group"
+              :key="group.group"
+              :data-group="group.group"
+            >
+              <div @click="toggleGroup(group.group)" style="cursor: pointer;">
+                <ListGroupHeader :group="group" />
+              </div>
+              <ListGroupRows v-if="!group.collapsed" :group="group">
+                <CustomListRow
+                  :rows="group.rows"
+                  :context-menu="contextMenu"
+                  @dropped="(...p) => emit('dropped', ...p)"
+                />
+              </ListGroupRows>
             </div>
-            <ListGroupRows v-if="!group.collapsed" :group="group">
+  
+            <!-- Ungrouped rows -->
+            <div v-else :key="'ungrouped-rows'">
               <CustomListRow
-                :rows="group.rows"
+                :rows="formattedRows"
                 :context-menu="contextMenu"
                 @dropped="(...p) => emit('dropped', ...p)"
               />
-            </ListGroupRows>
-          </div>
-
-          <!-- Ungrouped rows -->
-          <div v-else :key="'ungrouped-rows'">
-            <CustomListRow
-              :rows="formattedRows"
-              :context-menu="contextMenu"
-              @dropped="(...p) => emit('dropped', ...p)"
-            />
-          </div>
-        </template>
-      </div>
-
-      <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
-        {{ __('Drop to upload') }}
-      </p>
-    </template>
-  </FrappeListView>
+            </div>
+          </template>
+        </div>
+  
+        <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
+          {{ __('Drop to upload') }}
+        </p>
+      </template>
+    </FrappeListView>
+  </div>
 
   <ContextMenu
     v-if="rowEvent && selectedRow"
@@ -546,5 +549,9 @@ onKeyDown("Escape", (e) => {
     min-height: 44px;
     min-width: 44px;
   }
+
+}
+.override_div>div{
+  position: unset !important;
 }
 </style>
