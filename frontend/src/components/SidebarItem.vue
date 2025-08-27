@@ -1,16 +1,14 @@
 <template>
-  <button
-    class="flex h-10 w-full cursor-pointer items-center rounded-md duration-200 ease-in-out group transition-all"
+  <Button
+    class="flex w-full cursor-pointer items-center !rounded-[8px] group !py-[10px] !border-none search-sidebar-item"
     :class="
       isActive 
-        ? 'bg-[#d4e1f9] text-[#0149C1] shadow-sm font-semibold border border-blue-200' 
-        : 'text-black hover:shadow-sm hover:border hover:border-gray-150'
+        ? '!bg-[#d4e1f9] !text-[#0149C1] shadow-sm active_icon' 
+        : '!text-[#404040] !bg-white !border-white hover:!bg-[#d4e1f9] hover:!text-[#0149C1]'
     "
     @click="handleClick"
   >
-    <div
-      class="flex w-full items-center justify-between duration-200 ease-in-out px-3 py-2"
-    >
+    <div class="flex w-full items-center justify-between">
       <div class="flex items-center justify-start">
         <Tooltip
           :text="label"
@@ -22,32 +20,34 @@
             <span class="grid h-5 w-5 flex-shrink-0 place-items-center">
               <component
                 :is="icon"
-                class="size-5 transition-colors"
-                :class="isActive ? 'text-blue-700 font-bold' : 'text-black'"
-                :style="isActive ? 'font-weight: 900;' : ''"
+                class="size-5"
+                :class="isActive ? '!text-[#0149C1]' : 'theme-text-secondaryColor'"
               />
             </span>
           </slot>
         </Tooltip>
         <span
-          class="flex-1 flex-shrink-0 text-[14px] duration-200 ease-in-out"
+          class="flex-1 flex-shrink-0 text-[14px] duration-200 ease-in-out font-medium"
           :class="[
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
-              : 'ml-3 w-auto opacity-100',
-            isActive ? 'font-semibold text-blue-700' : 'font-medium text-black'
+              : 'ml-2 w-auto opacity-100',
+            isActive ? '!text-[#0149C1]' : 'theme-text-secondaryColor'
           ]"
+          style="font-weight: 500 !important;"
+          v-if="!isCollapsed"
         >
           {{ label }}
         </span>
       </div>
       <slot name="right" />
     </div>
-  </button>
+  </Button>
 </template>
 
 <script setup>
 import { Tooltip } from "frappe-ui"
+import { Button } from "primevue"
 import { computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
@@ -82,14 +82,11 @@ function handleClick() {
 const isActive = computed(() => {
   if (!props.to) return false
   
-  // Check if current route matches the target route
   const currentPath = route.path
   const targetPath = props.to
   
-  // Exact match for simple routes
   if (currentPath === targetPath) return true
   
-  // For breadcrumb fallback
   const first = store.state.breadcrumbs?.[0]
   if (first && (first.label === props.label || first.name === props.label)) {
     return true
@@ -98,3 +95,7 @@ const isActive = computed(() => {
   return false
 })
 </script>
+
+<style scoped>
+
+</style>

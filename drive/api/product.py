@@ -640,7 +640,7 @@ def get_translations():
     try:
         # Start with some hardcoded translations for testing
         translations = {
-            "Home": "Trang chủ",
+            "Home": "Tài liệu của tôi",
             "Search": "Tìm kiếm",
             "Settings": "Cài đặt",
             "Upload": "Tải lên",
@@ -675,7 +675,7 @@ def get_translations():
         frappe.log_error(f"Translation error: {str(e)}")
         print(f"DEBUG: Translation error: {str(e)}")
         # Fallback to basic translations
-        return {"Home": "Trang chủ", "Search": "Tìm kiếm", "Settings": "Cài đặt"}
+        return {"Home": "Tài liệu của tôi", "Search": "Tìm kiếm", "Settings": "Cài đặt"}
 
 
 def get_custom_translations():

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!totalStorage.loading"
-    class="flex flex-col hover:bg-surface-gray-2 rounded cursor-pointer mb-0.5"
+    class="flex flex-col  rounded mb-0.5"
     @click="emitter.emit('showSettings', 2)"
   >
     <SidebarItem

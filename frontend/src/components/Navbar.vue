@@ -2,29 +2,35 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-surface-white border-b w-full px-5 py-2.5 h-12 flex items-center justify-between"
+    class="bg-surface-white border-b w-full px-5 py-2.5  flex items-center justify-between h-[72px]"
   >
-    <Breadcrumbs
-      :items="store.state.breadcrumbs"
-      :class="'select-none'"
-    >
-      <template #prefix="{ item, index }">
-        <LoadingIndicator
-          v-if="item.loading"
-          width="20"
-          scale="70"
-        />
-        <div
-          v-if="index == 0"
-          class="mr-1.5"
-        >
-          <component
-            :is="COMPONENT_MAP[item.name]"
-            class="size-4 text-ink-gray-6"
+    <div class="flex flex-row ">
+      <Breadcrumbs
+        :items="store.state.breadcrumbs"
+        :class="'select-none truncate'"
+      >
+        <template #prefix="{ item, index }">
+          <LoadingIndicator
+            v-if="item.loading"
+            width="20"
+            scale="70"
           />
-        </div>
-      </template>
-    </Breadcrumbs>
+          <div
+            v-if="index == 0"
+            class="mr-1.5"
+          >
+            <component
+              :is="COMPONENT_MAP[item.name]"
+              class="size-4 text-ink-gray-6"
+            />
+          </div>
+        </template>
+      </Breadcrumbs>
+      <button class="flex items-center mx-4 gap-1 hover:bg-gray-200 p-1 rounded" v-if="showTeamMembers && getTeamMembers?.data" @click="$emit('show-team-members')">
+        <img src="@/assets/images/icons/memberIcon.svg" alt="Team Members" />
+        <p class="text-[14px] font-medium text-[#404040] whitespace-nowrap">{{ getTeamMembers?.data?.length }} thành viên</p>
+      </button>
+    </div>
 
     <div class="flex gap-2">
       <LucideStar
@@ -43,17 +49,17 @@
         class="flex gap-2"
       >
         <Dropdown :options="uploadOptions" placement="left">
-          <Button variant="subtle" class="rounded-lg px-3">
+          <Button variant="subtle" class="rounded-[6px] px-3 h-[40px] !bg-[#0149C1] !text-white !font-[400px] whitespace-nowrap">
             <template #prefix>
-              <LucideFolderUp class="size-4" />
+              <UploadDrive class="size-5" />
             </template>
             Tải lên
           </Button>
         </Dropdown>
         <Dropdown :options="createOptions" placement="left">
-          <Button variant="subtle" class="rounded-lg px-3">
+          <Button variant="subtle" class="rounded-[6px] px-3 h-[40px] !bg-[#0149C1] !text-white !font-[400px]">
             <template #prefix>
-              <LucideFilePlus2 class="size-4" />
+              <NewDrive class="size-5" />
             </template>
             Mới
           </Button>
@@ -116,13 +122,15 @@ import {
   Breadcrumbs,
   Button,
   Dropdown,
-  LoadingIndicator
+  LoadingIndicator,
+  createResource
 } from "frappe-ui"
 import { computed, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import UsersBar from "./UsersBar.vue"
-
+import UploadDrive from '@/assets/Icons/UploadDrive.vue'
+import NewDrive from '@/assets/Icons/NewDrive.vue'
 import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -151,6 +159,16 @@ const COMPONENT_MAP = {
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+
+const showTeamMembers = computed(() => route.name === "Team")
+
+const getTeamMembers = createResource({
+  url: "drive.api.product.get_all_users",
+  params: {
+    team: route.params.team,
+  },
+  auto: true,
+})
 
 const props = defineProps({
   actions: Array,

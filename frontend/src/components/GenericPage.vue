@@ -14,6 +14,7 @@
       () => ((selections = new Set()), store.commit('setActiveEntity', null))
     "
     :root-resource="verify"
+    @show-team-members="emit('show-team-members')"
   />
 
   <ErrorPage
@@ -67,8 +68,8 @@
         />
       </div>
 
-      <!-- Team Members List -->
-      <TeamMembersList v-if="showTeamMembers" />
+      <!-- Team Members List - Bỏ ra khỏi GenericPage -->
+      <!-- TeamMembersList sẽ được render ở component Team -->
     </div>
     <InfoPopup :entities="infoEntities" />
   </div>
@@ -130,17 +131,21 @@ const props = defineProps({
   secondaryMessage: { type: String, default: "" },
   getEntities: Object,
 })
+
+// Define emits
+const emit = defineEmits(['show-team-members'])
+
 const route = useRoute()
 const store = useStore()
-
-// Show team members list only on Team page
-const showTeamMembers = computed(() => route.name === "Team")
 
 const dialog = ref("")
 const infoEntities = ref([])
 const team = route.params.team
 const activeEntity = computed(() => store.state.activeEntity)
 const rows = ref(props.getEntities.data)
+
+// Bỏ showTeamMembersList và handleCloseTeamMembers vì sẽ được handle ở component Team
+
 watch(
   () => props.getEntities.data,
   (val) => {

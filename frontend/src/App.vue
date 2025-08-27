@@ -6,11 +6,11 @@
     <div
       class="bg-surface-gray-7 text-ink-white text-sm text-center py-2 sm:hidden"
     >
-      Drive works best on desktop.
+      Ứng dụng hoạt động tốt nhất trên máy tính để bàn.
     </div>
     <div
       v-if="isLoggedIn || $route.meta.allowGuest"
-      class="flex"
+      class="flex gap-4"
     >
       <Sidebar
         v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)"
@@ -18,7 +18,7 @@
       />
       <div
         id="dropzone"
-        class="flex flex-col h-screen flex-grow overflow-hidden bg-surface-white"
+        class="flex flex-col h-screen flex-grow overflow-hidden bg-surface-white rounded-[8px]"
       >
         <router-view
           :key="$route.fullPath"

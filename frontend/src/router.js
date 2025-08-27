@@ -11,7 +11,7 @@ async function setRootBreadCrumb(to) {
   if (store.getters.isLoggedIn) {
     // Vietnamese title mapping
     const titleMapping = {
-      'Home': 'Trang chủ',
+      'Home': 'Tài liệu của tôi',
       'Team': 'Nhóm',
       'Recents': 'Gần đây',
       'Favourites': 'Yêu thích',
@@ -188,7 +188,7 @@ window.addEventListener('translationsReady', () => {
   if (currentRoute && store.getters.isLoggedIn) {
     // Vietnamese title mapping
     const titleMapping = {
-      'Home': 'Trang chủ',
+      'Home': 'Tài liệu của tôi',
       'Team': 'Nhóm',
       'Recents': 'Gần đây',
       'Favourites': 'Yêu thích',
