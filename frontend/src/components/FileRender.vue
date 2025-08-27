@@ -13,7 +13,7 @@
       variant="solid"
       @click="download"
     >
-      Download
+      Tải xuống
     </Button>
   </div>
   <template v-else>
