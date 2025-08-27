@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-08-25 14:31\n"
+"PO-Revision-Date: 2025-08-27 15:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Thai\n"
 "MIME-Version: 1.0\n"
@@ -209,7 +209,7 @@ msgstr ""
 #. Label of the document (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Document"
-msgstr ""
+msgstr "เอกสาร"
 
 #. Label of the document_field (Data) field in DocType 'Drive Entity Activity
 #. Log'
@@ -632,7 +632,7 @@ msgstr ""
 
 #: frontend/src/components/GenericPage.vue:207
 msgid "Open"
-msgstr ""
+msgstr "เปิด"
 
 #: frontend/src/components/Sidebar.vue:140
 msgid "Others"
@@ -709,7 +709,7 @@ msgstr ""
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Read"
-msgstr ""
+msgstr "อ่านแล้ว"
 
 #: frontend/src/components/InfoPopup.vue:76
 msgid "Reading time"
@@ -927,12 +927,12 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr ""
+msgstr "ชื่อเรื่อง"
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "To User"
-msgstr ""
+msgstr "ถึงผู้ใช้"
 
 #. Label of the type (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -940,7 +940,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:27
 #: frontend/src/components/InfoSidebar.vue:82
 msgid "Type"
-msgstr ""
+msgstr "ประเภท"
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
