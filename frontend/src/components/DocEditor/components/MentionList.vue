@@ -27,7 +27,7 @@
               : 'text-gray-400',
             'flex-1'
           ]"
-          :title="item.has_permission ? 'Has access to document' : 'No access to document'"
+          :title="item.has_permission ? 'Có quyền truy cập vào tài liệu' : 'Không có quyền truy cập vào tài liệu'"
         >
           {{ item.label }}
         </span>
@@ -36,7 +36,7 @@
           class="ml-2 px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded"
           title="Will be granted access when mentioned"
         >
-          No access
+          Không có quyền truy cập
         </span>
       </button>
     </div>

@@ -2,7 +2,7 @@
   <Dialog
     v-model="show"
     :options="{
-      title: '',
+      title: 'Xác nhận',
       size: 'md',
     }"
   >
@@ -37,7 +37,7 @@
             class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           >
           <label for="grant-permission" class="ml-2 text-sm text-gray-700">
-            Grant users view permission
+            Cấp cho người dùng quyền xem
           </label>
         </div>
       </div>
@@ -50,7 +50,7 @@
           @click="handleCancel"
           class="px-4 py-2"
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           variant="solid"
@@ -58,7 +58,7 @@
           :loading="isGranting"
           class="px-4 py-2 bg-blue-600 hover:bg-blue-700"
         >
-          Post
+          Gửi
         </Button>
       </div>
     </template>
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { Dialog, Button, Avatar } from "frappe-ui"
+import { Avatar, Button, Dialog } from "frappe-ui"
 
 export default {
   name: "PermissionConfirmDialog",
