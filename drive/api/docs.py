@@ -50,3 +50,20 @@ def resolve_comment(name, value):
     comment = frappe.get_doc("Drive Comment", name)
     comment.resolved = value
     comment.save()
+
+
+@frappe.whitelist(allow_guest=True)
+def get_wiki_link(title, team):
+    title = title.strip("/")
+    possible_titles = [title, title + ".md", title + ".txt"]
+    names = (
+        frappe.get_value("Drive File", {"title": k, "team": team}, "name") for k in possible_titles
+    )
+    try:
+        name = next(k for k in names if k)
+    except StopIteration:
+        frappe.throw("Cannot get this wikilink in this team.", frappe.NotFound)
+
+    frappe.local.response["type"] = "redirect"
+    frappe.local.response["location"] = "/drive/f/" + name
+    return title

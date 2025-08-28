@@ -1,8 +1,13 @@
+import io
+
 import frappe
+import markdown
 from frappe.utils import getdate
+from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
 from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
+from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
 
 ENTITY_FIELDS = [
@@ -124,11 +129,6 @@ def get_teams(user=None, details=None):
 def get_entity_with_permissions(entity_name):
     """
     Return file data with permissions
-
-    :param entity_name: Name of file document.
-    :raises IsADirectoryError: If this DriveEntity doc is not a file
-    :return: DriveEntity with permissions
-    :rtype: frappe._dict
     """
     entity = frappe.db.get_value(
         "Drive File",
@@ -164,6 +164,21 @@ def get_entity_with_permissions(entity_name):
         | breadcrumbs
         | {"is_favourite": favourite, "file_type": file_type}
     )
+    if entity.mime_type == "text/markdown":
+        entity.document_type == "markdown"
+        manager = FileManager()
+        wrapper = io.TextIOWrapper(manager.get_file(entity.path))
+        url_builder = (
+            lambda label, base, end: f"/api/method/drive.api.docs.get_wiki_link?team={entity.team}&title={label}"
+        )
+        with wrapper as r:
+            content = r.read()
+            return_obj["raw_content"] = markdown.markdown(
+                content,
+                output_format="html",
+                extensions=["extra", WikiLinkExtension(build_url=url_builder)],
+            )
+
     if entity.document:
         entity_doc_content = (
             frappe.db.get_value(

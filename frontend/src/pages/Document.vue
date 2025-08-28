@@ -174,14 +174,14 @@
     class="flex w-full h-full overflow-auto"
   >
     <TextEditor
-      v-if="entity && docSettings"
+      v-if="entity"
       :key="switchCount"
       ref="editor"
       v-model:edited="edited"
       v-model:raw-content="rawContent"
       v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
-      :settings="docSettings.doc?.settings"
+      :settings="docSettings?.doc?.settings"
       :entity="entity"
       :users="allUsers.data || []"
       :show-resolved
@@ -255,12 +255,18 @@ let docSettings
 
 const saveDocument = () => {
   if (entity.value.write || entity.value.comment) {
-    updateDocument.submit({
-      entity_name: props.entityName,
-      doc_name: entity.value.document,
-      content: rawContent.value,
-      yjs: fromUint8Array(yjsContent.value),
-    })
+    if (entity.mime_type === "frappe/doc")
+      updateDocument.submit({
+        entity_name: props.entityName,
+        doc_name: entity.value.document,
+        content: rawContent.value,
+        yjs: fromUint8Array(yjsContent.value),
+      })
+    else
+      updateDocument.submit({
+        entity_name: props.entityName,
+        content: rawContent.value,
+      })
     edited.value = true
     return true
   }
@@ -276,21 +282,22 @@ const onSuccess = (data) => {
 
   title.value = data.title
   rawContent.value = data.raw_content
-  yjsContent.value = toUint8Array(data.content)
+  if (data.content) yjsContent.value = toUint8Array(data.content)
   lastFetched.value = Date.now()
-  docSettings = useDoc({
-    doctype: "Drive Document",
-    name: data.document,
-    immediate: true,
-    transform: (doc) => {
-      doc.settings = JSON.parse(doc.settings)
-      toggleMinimal(doc.settings.minimal)
-      return doc
-    },
-  })
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
   })
+  if (data.mime_type === "frappe/doc")
+    docSettings = useDoc({
+      doctype: "Drive Document",
+      name: data.document,
+      immediate: true,
+      transform: (doc) => {
+        doc.settings = JSON.parse(doc.settings)
+        toggleMinimal(doc.settings.minimal)
+        return doc
+      },
+    })
 }
 
 const document = createResource({

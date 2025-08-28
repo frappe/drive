@@ -219,6 +219,13 @@ class FileManager:
 
         return buf
 
+    def write_file(self, path: str | Path, content: str):
+        if self.s3_enabled:
+            pass
+        else:
+            with open(self.site_folder / path, "w") as f:
+                f.write(content)
+
     def fetch_new_files(self, team: str) -> dict[Path, tuple[str]]:
         """
         Traverse the site folder and return a list of all yet-uncreated files with information

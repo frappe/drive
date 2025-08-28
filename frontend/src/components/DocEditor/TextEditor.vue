@@ -26,7 +26,7 @@
           writerSettings.doc?.custom_css,
         ]"
         :content="!settings?.collab ? rawContent : undefined"
-        :editable="!!entity.write && !settings.lock"
+        :editable="!!entity.write && !settings?.lock"
         :upload-function="
           (file) => {
             const fileUpload = useFileUpload()
@@ -40,7 +40,7 @@
         @change="
           (val) => {
             rawContent = val
-            if (settings.collab) yjsContent = Y.encodeStateAsUpdate(doc)
+            if (settings?.collab) yjsContent = Y.encodeStateAsUpdate(doc)
             if (db)
               db.transaction(['content'], 'readwrite')
                 .objectStore('content')
@@ -340,12 +340,15 @@ emitter.on("printFile", () => {
 const component = getCurrentInstance()
 
 onMounted(() => {
-  const orderedComments = getOrderedComments(editor.value.state.doc)
-  comments.value = props.entity.comments.toSorted((a, b) => {
-    const pos1 = orderedComments.findIndex((k) => k.id === a.name)
-    const pos2 = orderedComments.findIndex((k) => k.id === b.name)
-    return pos1 - pos2
-  })
+  console.log(props.entity.raw_content)
+  if (props.entity.mime_type === "frappe/doc") {
+    const orderedComments = getOrderedComments(editor.value.state.doc)
+    comments.value = props.entity.comments.toSorted((a, b) => {
+      const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+      const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+      return pos1 - pos2
+    })
+  }
   if (collab.value) {
     if (component.vnode.key > 0) updated.value = false
     const provider = new TiptapCollabProvider({
