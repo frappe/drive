@@ -214,7 +214,7 @@ def generate_upward_path(entity_name, user=None):
     return result
 
 
-def get_valid_breadcrumbs(user_access, paths):
+def get_valid_breadcrumbs(user_access, paths, is_private=None):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
