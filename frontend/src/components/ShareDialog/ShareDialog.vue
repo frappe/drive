@@ -30,7 +30,7 @@
           </div>
           <div class="flex justify-between mt-3">
             <div class="flex flex-col gap-2">
-              <FCombobox
+              <Select
                 v-model="generalAccessLevel"
                 :options="generalOptions"
                 @update:model-value="
@@ -49,19 +49,17 @@
                     class="size-4 text-ink-gray-6"
                   />
                 </template>
-              </FCombobox>
+              </Select>
             </div>
-            <div class="my-auto w-32">
-              <FCombobox
-                v-if="generalAccessLevel !== 'restricted'"
-                v-model="generalAccessType"
-                class="my-auto"
-                :options="accessOptions"
-                @update:model-value="
-                  (val) => updateGeneralAccess(generalAccessType, val)
-                "
-              />
-            </div>
+            <Select
+              class="w-32"
+              v-if="generalAccessLevel !== 'restricted'"
+              v-model="generalAccessType"
+              :options="accessOptions"
+              @update:model-value="
+                (val) => updateGeneralAccess(generalAccessType, val)
+              "
+            />
           </div>
         </div>
         <!-- Members section -->
@@ -196,7 +194,7 @@
               </transition>
             </Combobox>
           </div>
-          <FCombobox
+          <Select
             v-model="shareAccess"
             class="flex items-start w-32"
             :options="
@@ -320,9 +318,9 @@ import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
 import {
   Avatar,
   Dialog,
-  Combobox as FCombobox,
   LoadingIndicator,
   createResource,
+  Select,
 } from "frappe-ui"
 import {
   Combobox,

@@ -1,10 +1,12 @@
 <template>
-  <Combobox
-    :options="FONT_FAMILIES"
-    v-model="selected"
-    placeholder="Font Family"
-    class="min-w-[10rem]"
-  />
+  <div>
+    <Combobox
+      :options="FONT_FAMILIES"
+      v-model="selected"
+      placeholder="Font Family"
+      class="min-w-[10rem]"
+    />
+  </div>
 </template>
 <script setup>
 import { Combobox } from "frappe-ui"

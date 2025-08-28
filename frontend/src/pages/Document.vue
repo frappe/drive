@@ -330,13 +330,11 @@ onBeforeUnmount(() => edited.value && saveDocument())
 
 let originalBreadcrumbs
 const toggleMinimal = (val) => {
-  console.log("called", val)
   if (val) {
     originalBreadcrumbs = store.state.breadcrumbs
     store.commit("setBreadcrumbs", store.state.breadcrumbs.slice(-1))
     window.document.querySelector("#sidebar").style.display = "none"
-  } else {
-    console.log(originalBreadcrumbs.length)
+  } else if (originalBreadcrumbs) {
     store.commit("setBreadcrumbs", originalBreadcrumbs)
     delete window.document
       .querySelector("#sidebar")
