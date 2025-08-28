@@ -282,10 +282,11 @@ const onSuccess = (data) => {
     doctype: "Drive Document",
     name: data.document,
     immediate: true,
-  })
-  docSettings.onSuccess((doc) => {
-    doc.settings = JSON.parse(doc.settings)
-    toggleMinimal(doc.settings.minimal)
+    transform: (doc) => {
+      doc.settings = JSON.parse(doc.settings)
+      toggleMinimal(doc.settings.minimal)
+      return doc
+    },
   })
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
