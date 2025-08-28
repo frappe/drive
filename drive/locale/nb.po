@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-08-27 15:21\n"
+"PO-Revision-Date: 2025-08-28 15:17\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +74,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
-msgstr ""
+msgstr "Lagt til"
 
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -94,7 +94,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:119
 msgid "Apps"
-msgstr ""
+msgstr "Apper"
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -122,7 +122,7 @@ msgstr ""
 #: frontend/src/components/Navbar.vue:316
 #: frontend/src/components/Navbar.vue:322
 msgid "Clear"
-msgstr ""
+msgstr "Tøm"
 
 #. Label of the color (Data) field in DocType 'Drive File'
 #. Label of the color (Data) field in DocType 'Drive Tag'
@@ -130,14 +130,14 @@ msgstr ""
 #: drive/drive/doctype/drive_tag/drive_tag.json
 #: frontend/src/components/TagColorInput.vue:8
 msgid "Color"
-msgstr ""
+msgstr "Farge"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the comment (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. Label of the comments (Table) field in DocType 'Drive Document'
 #. Label of the comments2 (JSON) field in DocType 'Drive Document'
@@ -158,7 +158,7 @@ msgstr ""
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Content"
-msgstr ""
+msgstr "Innhold"
 
 #: frontend/src/components/GenericPage.vue:229
 #: frontend/src/components/Navbar.vue:209
@@ -340,7 +340,7 @@ msgstr ""
 #. Label of the enabled (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Enabled"
-msgstr ""
+msgstr "Aktivert"
 
 #. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -447,7 +447,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:225
 msgid "Inbox"
-msgstr ""
+msgstr "Innboks"
 
 #: frontend/src/components/InfoSidebar.vue:15
 msgid "Information"
@@ -522,7 +522,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:150
 msgid "Log out"
-msgstr ""
+msgstr "Logg ut"
 
 #. Label of the login_count (Int) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -599,7 +599,7 @@ msgstr ""
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "New Value"
-msgstr ""
+msgstr "Ny verdi"
 
 #: drive/public/js/ff_integration.bundle.js:23
 msgid "No teams available"
@@ -709,7 +709,7 @@ msgstr ""
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Read"
-msgstr ""
+msgstr "Lest"
 
 #: frontend/src/components/InfoPopup.vue:76
 msgid "Reading time"
@@ -794,7 +794,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:214
 #: frontend/src/components/Navbar.vue:195
 msgid "Share"
-msgstr ""
+msgstr "Del"
 
 #: frontend/src/components/InfoPopup.vue:123
 #: frontend/src/components/ListView.vue:164 frontend/src/utils/files.js:207
@@ -955,7 +955,7 @@ msgstr ""
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Upload"
-msgstr ""
+msgstr "Last opp"
 
 #: frontend/src/components/InfoSidebar.vue:109
 msgid "Uploaded"
@@ -978,7 +978,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/UserListSettings.vue:4
 msgid "Users"
-msgstr ""
+msgstr "Brukere"
 
 #. Label of the valid_until (Datetime) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
