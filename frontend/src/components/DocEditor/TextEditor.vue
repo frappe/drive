@@ -13,6 +13,23 @@
       >
         Updating...
       </div>
+      <Button
+        @click="clearSnapshot"
+        label="Clear"
+      />
+      <div
+        v-if="editor"
+        v-for="(version, i) in entity.versions"
+      >
+        <div
+          class="version-list"
+          @click="
+            renderVersion(editor.view, version, entity.versions[i - 1] || null)
+          "
+        >
+          {{ version.title || version.snapshot.slice(1, 10) }}
+        </div>
+      </div>
       <FTextEditor
         v-show="updated"
         :key="editorExtensions.length"
@@ -47,6 +64,7 @@
                 .put({ val, saved: new Date() }, props.entity.name)
             edited = true
             autosave()
+            autoversion()
           }
         "
         :mentions="users"
@@ -78,7 +96,6 @@ import { v4 as uuidv4 } from "uuid"
 import {
   computed,
   defineAsyncComponent,
-  reactive,
   onMounted,
   ref,
   onBeforeUnmount,
@@ -98,14 +115,25 @@ import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 import { TiptapCollabProvider } from "@hocuspocus/provider"
+import { TiptapTransformer } from "@hocuspocus/transformer"
 import Collaboration from "@tiptap/extension-collaboration"
 import * as Y from "yjs"
+import {
+  ySyncPlugin,
+  ySyncPluginKey,
+  yCursorPlugin,
+  yUndoPlugin,
+  undo,
+  redo,
+} from "y-prosemirror"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 
 import LucideMessageCircle from "~icons/lucide/message-circle"
+import { fromUint8Array } from "js-base64"
+import { toUint8Array } from "js-base64"
 
 const textEditor = ref("textEditor")
 const updated = ref(true)
@@ -125,12 +153,51 @@ const props = defineProps({
   settings: Object,
   showResolved: Boolean,
   users: Object,
+  currentVersion: { required: false, type: Object },
 })
 const comments = ref([])
 
-const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
+const emit = defineEmits(["newVersion", "saveDocument"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
+const autoversion = debounce(() => {
+  const snap = Y.encodeSnapshot(Y.snapshot(doc))
+  emit("newVersion", snap)
+}, 5000)
+
+const clearSnapshot = () => {
+  const binding = ySyncPluginKey.getState(editor.value.view.state).binding
+  if (binding != null) {
+    binding.unrenderSnapshot()
+  }
+}
+watch(
+  () => props.currentVersion,
+  (val) => {
+    if (!val) return
+    toast("Changing version")
+    const { view } = editor.value
+    console.log(val[0], val[1])
+    view.dispatch(
+      view.state.tr.setMeta(ySyncPluginKey, {
+        snapshot: Y.decodeSnapshot(val[1].snapshot),
+        prevSnapshot: Y.decodeSnapshot(val[0].snapshot),
+      })
+    )
+  }
+)
+
+const renderVersion = (editorview, version, prevSnapshot) => {
+  editorview.dispatch(
+    editorview.state.tr.setMeta(ySyncPluginKey, {
+      snapshot: Y.decodeSnapshot(toUint8Array(version.snapshot)),
+      prevSnapshot:
+        prevSnapshot == null
+          ? Y.emptySnapshot
+          : Y.decodeSnapshot(toUint8Array(version.snapshot)),
+    })
+  )
+}
 
 const writerSettings = useDoc({
   doctype: "Drive Settings",
@@ -145,6 +212,7 @@ writerSettings.onSuccess(({ font_family }) => {
       .setFontFamily(`var(--font-${font_family})`)
       .run()
 })
+
 const createNewComment = (editor) => {
   showComments.value = true
   const id = uuidv4()
@@ -253,9 +321,20 @@ const collab = computed(() => props.settings?.collab)
 if (collab.value) {
   doc = new Y.Doc({ gc: false })
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+  const permanentUserData = new Y.PermanentUserData(doc)
+  permanentUserData.setUserMapping(doc, doc.clientID, "Administrator")
+  const colors = [
+    { light: "#ecd44433", dark: "#ecd444" },
+    { light: "#ee635233", dark: "#ee6352" },
+    { light: "#6eeb8333", dark: "#6eeb83" },
+  ]
   editorExtensions.push(
     Collaboration.configure({
       document: doc,
+      ySyncOptions: {
+        permanentUserData,
+        colors,
+      },
     })
   )
 }
@@ -340,8 +419,7 @@ emitter.on("printFile", () => {
 const component = getCurrentInstance()
 
 onMounted(() => {
-  console.log(props.entity.raw_content)
-  if (props.entity.mime_type === "frappe/doc") {
+  if (props.entity.mime_type === "frappe_doc") {
     const orderedComments = getOrderedComments(editor.value.state.doc)
     comments.value = props.entity.comments.toSorted((a, b) => {
       const pos1 = orderedComments.findIndex((k) => k.id === a.name)
@@ -355,9 +433,12 @@ onMounted(() => {
       name: props.entity.name, // Document identifier
       appId: "ok01lqjm",
       token:
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTYxMTE5NTAsIm5iZiI6MTc1NjExMTk1MCwiZXhwIjoxNzU2MTk4MzUwLCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.XRfbjwkjdOdWric-cTqcGB3XvRqMOzMeBkOf0lNxswU",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTYzODAzMTcsIm5iZiI6MTc1NjM4MDMxNywiZXhwIjoxNzU2NDY2NzE3LCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.uLHfx9Ov4wYVcU_7KPllMUvArvkf26N97krAkEz6C-I",
       document: doc,
       user: store.state.user.id,
+      onAuthenticationFailed() {
+        toast({ type: "error", title: "Realtime authentication failed." })
+      },
       onSynced() {
         if (component.vnode.key > 0) {
           editor.value.commands.setContent(rawContent.value)
@@ -385,6 +466,9 @@ onBeforeUnmount(() => {
 })
 
 onKeyDown("Enter", evalImplicitTitle)
+debounce()
+onKeyDown("V", () => {})
+
 onKeyDown("S", (e) => {
   if (!e.metaKey) {
     return

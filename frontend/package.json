@@ -13,6 +13,7 @@
     "@headlessui-float/vue": "^0.13.3",
     "@headlessui/vue": "^1.7.23",
     "@hocuspocus/provider": "^2.15.3",
+    "@hocuspocus/transformer": "^3.2.3",
     "@sereneinserenade/tiptap-comment-extension": "^0.1.2",
     "@tiptap/core": "^2.26.1",
     "@tiptap/extension-collaboration": "^2.26.1",

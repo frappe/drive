@@ -1,85 +1,93 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "hash",
- "creation": "2023-04-05 11:32:23.940763",
- "default_view": "List",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "content",
-  "settings",
-  "comments2",
-  "raw_content",
-  "mentions",
-  "version",
-  "comments"
- ],
- "fields": [
-  {
-   "default": "AAA=",
-   "fieldname": "content",
-   "fieldtype": "Long Text",
-   "label": "Content"
-  },
-  {
-   "default": "{\n   \"docWidth\": false,\n   \"docSize\": true,\n   \"docFont\": \"font-fd-sans\",\n   \"docHeader\": false\n}",
-   "fieldname": "settings",
-   "fieldtype": "JSON",
-   "label": "Settings"
-  },
-  {
-   "fieldname": "comments",
-   "fieldtype": "Table",
-   "label": "Comments",
-   "options": "Drive Comment"
-  },
-  {
-   "fieldname": "raw_content",
-   "fieldtype": "Long Text",
-   "label": "Raw Content"
-  },
-  {
-   "fieldname": "mentions",
-   "fieldtype": "JSON",
-   "label": "Mentions"
-  },
-  {
-   "fieldname": "version",
-   "fieldtype": "Int",
-   "label": "Version"
-  },
-  {
-   "fieldname": "comments2",
-   "fieldtype": "JSON",
-   "label": "Comments"
-  }
- ],
- "grid_page_length": 50,
- "links": [],
- "modified": "2025-07-29 08:33:41.590787",
- "modified_by": "Administrator",
- "module": "Drive",
- "name": "Drive Document",
- "naming_rule": "Random",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "All",
-   "share": 1,
-   "write": 1
-  }
- ],
- "row_format": "Dynamic",
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "hash",
+  "creation": "2023-04-05 11:32:23.940763",
+  "default_view": "List",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "content",
+    "settings",
+    "comments2",
+    "raw_content",
+    "mentions",
+    "version",
+    "comments",
+    "versions"
+  ],
+  "fields": [
+    {
+      "default": "AAA=",
+      "fieldname": "content",
+      "fieldtype": "Long Text",
+      "label": "Content"
+    },
+    {
+      "default": "{\n   \"docWidth\": false,\n   \"docSize\": true,\n   \"docFont\": \"font-fd-sans\",\n   \"docHeader\": false\n}",
+      "fieldname": "settings",
+      "fieldtype": "JSON",
+      "label": "Settings"
+    },
+    {
+      "fieldname": "comments",
+      "fieldtype": "Table",
+      "label": "Comments",
+      "options": "Drive Comment"
+    },
+    {
+      "fieldname": "raw_content",
+      "fieldtype": "Long Text",
+      "label": "Raw Content"
+    },
+    {
+      "fieldname": "mentions",
+      "fieldtype": "JSON",
+      "label": "Mentions"
+    },
+    {
+      "fieldname": "version",
+      "fieldtype": "Int",
+      "label": "Version"
+    },
+    {
+      "fieldname": "comments2",
+      "fieldtype": "JSON",
+      "label": "Comments"
+    },
+    {
+      "fieldname": "versions",
+      "fieldtype": "Table",
+      "label": "Versions",
+      "options": "Drive Doc Version"
+    }
+  ],
+  "grid_page_length": 50,
+  "links": [],
+  "modified": "2025-08-28 17:25:41.408050",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Document",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "All",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
 }

@@ -118,7 +118,6 @@ def get_teams(user=None, details=None):
             ["user", "=", user],
         ],
     )
-    print(user, frappe.get_all("Drive Team Member", fields=["user", "parent"]))
     if details:
         return {team: frappe.get_doc("Drive Team", team) for team in teams}
 
@@ -180,20 +179,14 @@ def get_entity_with_permissions(entity_name):
             )
 
     if entity.document:
-        entity_doc_content = (
-            frappe.db.get_value(
-                "Drive Document",
-                entity.document,
-                ["content", "raw_content", "settings", "version"],
-                as_dict=1,
-            )
-            or {}
-        )
+        k = frappe.get_doc("Drive Document", entity.document)
+        entity_doc_content = k.as_dict()
         comments = frappe.get_all(
             "Drive Comment",
             filters={"parenttype": "Drive File", "parent": entity.name},
             fields=["content", "owner", "creation", "name", "resolved"],
         )
+
         for k in comments:
             k["replies"] = frappe.get_all(
                 "Drive Comment",

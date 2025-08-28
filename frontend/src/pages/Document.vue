@@ -22,7 +22,7 @@
         () => {
           docSettings.doc.settings.lock = false
           editor.editor.commands.focus()
-          toast('Unlocked document')
+          toast('Unlocked document.')
         }
       "
       variant="outline"
@@ -127,6 +127,22 @@
         items: dynamicList([
           {
             icon: MessagesSquare,
+            label: 'Versions',
+            onClick: () => {
+              currentVersion = [
+                {
+                  ...entity.versions[0],
+                  snapshot: toUint8Array(entity.versions[0].snapshot),
+                },
+                {
+                  ...entity.versions[1],
+                  snapshot: toUint8Array(entity.versions[0].snapshot),
+                },
+              ]
+            },
+          },
+          {
+            icon: MessagesSquare,
             label: 'Show Comments',
             onClick: () => (showComments = true),
             isEnabled: () => !showComments,
@@ -181,11 +197,19 @@
       v-model:raw-content="rawContent"
       v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
-      :settings="docSettings?.doc?.settings"
-      :entity="entity"
-      :users="allUsers.data || []"
+      :current-version
       :show-resolved
+      :entity
+      :settings="docSettings?.doc?.settings"
+      :users="allUsers.data || []"
       @save-document="saveDocument"
+      @new-version="
+        (snap) => {
+          newVersion.submit({
+            snapshot: fromUint8Array(snap),
+          })
+        }
+      "
     />
   </div>
 </template>
@@ -235,6 +259,7 @@ const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
 const switchCount = ref(0)
+const currentVersion = ref()
 const editor = useTemplateRef("editor")
 provide(
   "editor",
@@ -255,7 +280,7 @@ let docSettings
 
 const saveDocument = () => {
   if (entity.value.write || entity.value.comment) {
-    if (entity.mime_type === "frappe/doc")
+    if (entity.value.mime_type === "frappe_doc")
       updateDocument.submit({
         entity_name: props.entityName,
         doc_name: entity.value.document,
@@ -287,7 +312,7 @@ const onSuccess = (data) => {
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
   })
-  if (data.mime_type === "frappe/doc")
+  if (data.mime_type === "frappe_doc")
     docSettings = useDoc({
       doctype: "Drive Document",
       name: data.document,
@@ -319,6 +344,11 @@ const updateDocument = createResource({
       text: "We can't save your file. Please contact support.",
     })
   },
+})
+
+const newVersion = createResource({
+  url: "drive.api.docs.create_version",
+  makeParams: (k) => ({ ...k, doc: entity.value.document }),
 })
 
 window.addEventListener("offline", () => {

@@ -1,4 +1,5 @@
 import frappe
+from datetime import datetime
 
 from .permissions import user_has_permission
 
@@ -67,3 +68,17 @@ def get_wiki_link(title, team):
     frappe.local.response["type"] = "redirect"
     frappe.local.response["location"] = "/drive/f/" + name
     return title
+
+
+@frappe.whitelist()
+def create_version(doc, snapshot, manual=0, title=""):
+    doc = frappe.get_doc("Drive Document", doc)
+    doc.append(
+        "versions",
+        {
+            "snapshot": snapshot,
+            "manual": int(manual),
+            "title": title if title else datetime.now(),
+        },
+    )
+    doc.save()

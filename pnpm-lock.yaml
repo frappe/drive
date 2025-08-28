@@ -247,6 +247,9 @@ importers:
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.2
+      js-base64:
+        specifier: ^3.7.8
+        version: 3.7.8
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -6913,6 +6916,12 @@ packages:
         integrity: sha512-twQoecYPiVA5K/h6SxtORw/Bs3ar+mLUtoPSc7iMXzQzK8d7eJ/R09wmTwAjiamETn1cXYPGfNnu7DMoHgu12w==,
       }
     hasBin: true
+
+  js-base64@3.7.8:
+    resolution:
+      {
+        integrity: sha512-hNngCeKxIUQiEUN3GPJOkz4wF/YvdUdbNL9hsBcMQTkKzboD7T/q3OYOuuPZLUE6dBxSGpwhk5mwuDud7JVAow==,
+      }
 
   js-tokens@4.0.0:
     resolution:
@@ -15261,6 +15270,8 @@ snapshots:
   jiti@1.21.7: {}
 
   jiti@2.5.1: {}
+
+  js-base64@3.7.8: {}
 
   js-tokens@4.0.0: {}
 
