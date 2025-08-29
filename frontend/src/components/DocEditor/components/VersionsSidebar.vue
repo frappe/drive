@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="editor"
-    class="self-stretch w-80 border-s-2 overflow-y-auto"
+    class="self-stretch w-96 border-s-2 h-full overflow-hidden"
   >
-    <h3 class="px-3 py-3 text-large text-ink-gray-9 font-semibold">
+    <h3 class="p-3 border-b text-large text-ink-gray-9 font-semibold">
       Versions
       <Button
         :icon="LucideX"
@@ -13,7 +13,7 @@
       />
     </h3>
     <div
-      class="flex p-2 flex-col justify-start pb-5 bg-surface-white overflow-y-auto"
+      class="flex p-2 flex-col justify-start pb-5 bg-surface-white h-full overflow-y-auto pb-15"
     >
       <Button
         v-for="(version, i) in versions"
@@ -45,12 +45,15 @@ import { toUint8Array } from "js-base64"
 import LucideX from "~icons/lucide/x"
 import { ref } from "vue"
 import { formatDate } from "@/utils/format"
+import emitter from "@/emitter"
 
 const props = defineProps({
   editor: Object,
   versions: Array,
 })
+const emit = defineEmits(["saveDocument"])
 const current = defineModel()
+const showVersions = defineModel("showVersions")
 
 const renderSnapshot = (version, prevSnapshot) => {
   current.value = version
@@ -70,5 +73,19 @@ const clearSnapshot = () => {
   if (binding != null) {
     binding.unrenderSnapshot()
   }
+  showVersions.value = false
 }
+
+emitter.on("restore-snapshot", () => {
+  const view = props.editor.view
+  view.dispatch(
+    view.state.tr.setMeta(ySyncPluginKey, {
+      snapshot: null,
+      prevSnapshot: null,
+    })
+  )
+  showVersions.value = false
+  emit("saveDocument")
+})
+emitter.on("clear-snapshot", clearSnapshot)
 </script>

@@ -21,6 +21,9 @@
       @click="
         () => {
           docSettings.doc.settings.lock = false
+          docSettings.setValue.submit({
+            settings: docSettings.doc.settings,
+          })
           editor.editor.commands.focus()
           toast('Unlocked document.')
         }
@@ -128,18 +131,7 @@
           {
             icon: MessagesSquare,
             label: 'Versions',
-            onClick: () => {
-              currentVersion = [
-                {
-                  ...entity.versions[0],
-                  snapshot: toUint8Array(entity.versions[0].snapshot),
-                },
-                {
-                  ...entity.versions[1],
-                  snapshot: toUint8Array(entity.versions[0].snapshot),
-                },
-              ]
-            },
+            onClick: () => (showVersions = true),
           },
           {
             icon: MessagesSquare,
@@ -197,6 +189,7 @@
       v-model:raw-content="rawContent"
       v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
+      v-model:current="current"
       :current-version
       :show-resolved
       :entity
@@ -211,6 +204,14 @@
         }
       "
     />
+    <VersionsSidebar
+      v-if="showVersions"
+      v-model="current"
+      v-model:show-versions="showVersions"
+      :editor="editor?.editor"
+      :versions="entity.versions"
+      @save-document="saveDocument"
+    />
   </div>
 </template>
 
@@ -223,6 +224,7 @@ import {
   defineAsyncComponent,
   provide,
   onBeforeUnmount,
+  watch,
   h,
   computed,
 } from "vue"
@@ -231,6 +233,7 @@ import { useStore } from "vuex"
 import { createResource, LoadingIndicator, Switch, useDoc } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
+import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import { toast } from "../utils/toasts"
 
 import MessagesSquare from "~icons/lucide/messages-square"
@@ -259,7 +262,6 @@ const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
 const switchCount = ref(0)
-const currentVersion = ref()
 const editor = useTemplateRef("editor")
 provide(
   "editor",
@@ -272,9 +274,14 @@ const title = ref(null)
 const rawContent = ref(null)
 const yjsContent = ref(null)
 const entity = ref(null)
+const current = ref(null)
 const lastFetched = ref(0)
 const showComments = ref(false)
+const showVersions = ref(false)
 const edited = ref(false)
+watch(showVersions, (v) => {
+  if (!v) current.value = null
+})
 
 let docSettings
 

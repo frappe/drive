@@ -3,7 +3,7 @@
     <div class="flex-1 ps-4 md:w-auto md:p-0">
       <div
         v-if="current"
-        class="bg-surface-blue-2 text-ink-gray-8 p-2 text-base flex justify-between items-center"
+        class="bg-surface-blue-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
       >
         <div class="flex flex-col gap-1">
           <div>
@@ -18,10 +18,12 @@
           <Button
             variant="ghost"
             label="Exit"
+            @click="emitter.emit('clear-snapshot')"
             class="hover:!bg-surface-blue-2 hover:underline"
           />
           <Button
             variant="solid"
+            @click="emitter.emit('restore-snapshot')"
             label="Restore"
           />
         </div>
@@ -65,7 +67,7 @@
           "
           @change="
             (val) => {
-              if (val === rawContent) return
+              if (val === rawContent || current) return
               rawContent = val
               if (settings?.collab) yjsContent = Y.encodeStateAsUpdate(doc)
               if (db)
@@ -84,12 +86,6 @@
         />
       </div>
     </div>
-    <VersionsSidebar
-      v-if="entity.versions?.length"
-      v-model="current"
-      :editor
-      :versions="entity.versions"
-    />
     <FloatingComments
       v-if="comments.length"
       :entity="entity"
@@ -149,13 +145,12 @@ import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 
 import LucideMessageCircle from "~icons/lucide/message-circle"
-import VersionsSidebar from "./components/VersionsSidebar.vue"
 import { useTimeAgo } from "@vueuse/core"
 import { formatDate } from "../../utils/format"
 
 const textEditor = ref("textEditor")
 const updated = ref(true)
-const current = ref(null)
+const current = defineModel("current")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
@@ -182,7 +177,7 @@ const autosave = debounce(() => emit("saveDocument"), 2000)
 const autoversion = debounce(() => {
   const snap = Y.encodeSnapshot(Y.snapshot(doc))
   emit("newVersion", snap)
-}, 60000)
+}, 200)
 
 watch(
   () => props.currentVersion,
@@ -434,7 +429,7 @@ onMounted(() => {
       name: props.entity.name, // Document identifier
       appId: "ok01lqjm",
       token:
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTYzODAzMTcsIm5iZiI6MTc1NjM4MDMxNywiZXhwIjoxNzU2NDY2NzE3LCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.uLHfx9Ov4wYVcU_7KPllMUvArvkf26N97krAkEz6C-I",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTY0NjA3NjksIm5iZiI6MTc1NjQ2MDc2OSwiZXhwIjoxNzU2NTQ3MTY5LCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.cIiC3gpODr2iHXo9mVJNfkmKdmInFBnLZOH411-9XpU",
       document: doc,
       user: store.state.user.id,
       onAuthenticationFailed() {
