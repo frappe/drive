@@ -45,80 +45,59 @@
               e.stopPropagation()
               e.preventDefault()
             },
-            component: h(Switch, {
-              label: 'Collaborate',
-              icon: LucideUserRoundPen,
-              modelValue: docSettings && docSettings.doc?.settings?.collab,
-              'onUpdate:modelValue': (val) => {
-                docSettings.doc.settings.collab = val
-                docSettings.setValue.submit({
-                  settings: JSON.stringify(docSettings.doc.settings),
-                })
-                if (val) {
-                  // Used to rerender text editor when collab is toggled
-                  switchCount++
-                } else {
-                  switchCount = 0
-                }
-              },
-            }),
+            label: 'Collaborate',
+            icon: LucideUserPen,
+            switch: true,
+            onClick: (val) => {
+              docSettings.doc.settings.collab = val
+              docSettings.setValue.submit({
+                settings: JSON.stringify(docSettings.doc.settings),
+              })
+              if (val) {
+                // Used to rerender text editor when collab is toggled
+                switchCount++
+              } else {
+                switchCount = 0
+              }
+            },
           },
           {
             label: 'View',
             icon: LucideView,
             submenu: [
               {
-                onClick: (e) => {
-                  e.stopPropagation()
-                  e.preventDefault()
+                label: 'Lock',
+                switch: true,
+                icon: LucideLock,
+                onClick: (val) => {
+                  docSettings.doc.settings.lock = val
+                  docSettings.setValue.submit({
+                    settings: JSON.stringify(docSettings.doc.settings),
+                  })
                 },
-                component: h(Switch, {
-                  label: 'Lock',
-                  icon: LucideUserRoundPen,
-                  modelValue: docSettings && docSettings.doc?.settings?.lock,
-                  'onUpdate:modelValue': (val) => {
-                    document.breadcrumbs = []
-                    docSettings.doc.settings.lock = val
-                    docSettings.setValue.submit({
-                      settings: JSON.stringify(docSettings.doc.settings),
-                    })
-                  },
-                }),
               },
               {
-                onClick: (e) => {
-                  e.stopPropagation()
-                  e.preventDefault()
+                label: 'Wide',
+                icon: LucideRulerDimensionLine,
+                switch: true,
+                onClick: (val) => {
+                  docSettings.doc.settings.wide = val
+                  docSettings.setValue.submit({
+                    settings: JSON.stringify(docSettings.doc.settings),
+                  })
                 },
-                component: h(Switch, {
-                  label: 'Wide',
-                  icon: LucideUserRoundPen,
-                  modelValue: docSettings && docSettings.doc?.settings?.wide,
-                  'onUpdate:modelValue': (val) => {
-                    docSettings.doc.settings.wide = val
-                    docSettings.setValue.submit({
-                      settings: JSON.stringify(docSettings.doc.settings),
-                    })
-                  },
-                }),
               },
               {
-                onClick: (e) => {
-                  e.stopPropagation()
-                  e.preventDefault()
+                onClick: (val) => {
+                  document.breadcrumbs = []
+                  docSettings.doc.settings.minimal = val
+                  docSettings.setValue.submit({
+                    settings: JSON.stringify(docSettings.doc.settings),
+                  })
                 },
-                component: h(Switch, {
-                  label: 'Minimal',
-                  icon: LucideUserRoundPen,
-                  modelValue: docSettings && docSettings.doc?.settings?.minimal,
-                  'onUpdate:modelValue': (val) => {
-                    document.breadcrumbs = []
-                    docSettings.doc.settings.minimal = val
-                    docSettings.setValue.submit({
-                      settings: JSON.stringify(docSettings.doc.settings),
-                    })
-                  },
-                }),
+                switch: true,
+                label: 'Minimal',
+                icon: LucideEraser,
               },
             ],
           },
@@ -237,7 +216,9 @@ import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.v
 import { toast } from "../utils/toasts"
 
 import MessagesSquare from "~icons/lucide/messages-square"
-import LucideUserRoundPen from "~icons/lucide/user-round-pen"
+import LucideRulerDimensionLine from "~icons/lucide/ruler-dimension-line"
+import LucideUserPen from "~icons/lucide/user-pen"
+import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
@@ -261,6 +242,7 @@ const store = useStore()
 const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
+const test = ref(true)
 const switchCount = ref(0)
 const editor = useTemplateRef("editor")
 provide(

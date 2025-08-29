@@ -181,6 +181,7 @@ def get_entity_with_permissions(entity_name):
     if entity.document:
         k = frappe.get_doc("Drive Document", entity.document)
         entity_doc_content = k.as_dict()
+        entity_doc_content.pop("name")
         comments = frappe.get_all(
             "Drive Comment",
             filters={"parenttype": "Drive File", "parent": entity.name},
