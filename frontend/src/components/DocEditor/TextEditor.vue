@@ -1,78 +1,95 @@
 <template>
-  <div class="flex w-full h-100 overflow-y-auto">
-    <div
-      @click="
-        $event.target.tagName === 'DIV' &&
-          textEditor.editor?.chain?.().focus?.().run?.()
-      "
-      class="mx-auto cursor-text min-h-full w-full md:w-auto ps-4 md:p-0"
-    >
+  <div class="flex w-full h-100 overflow-y-hidden">
+    <div class="flex-1 ps-4 md:w-auto md:p-0">
       <div
-        v-if="!updated"
-        class="text-center h-full flex justify-center items-center text-sm font-semibold"
+        v-if="current"
+        class="bg-surface-blue-2 text-ink-gray-8 p-2 text-base flex justify-between items-center"
       >
-        Updating...
-      </div>
-      <Button
-        @click="clearSnapshot"
-        label="Clear"
-      />
-      <div
-        v-if="editor"
-        v-for="(version, i) in entity.versions"
-      >
-        <div
-          class="version-list"
-          @click="
-            renderVersion(editor.view, version, entity.versions[i - 1] || null)
-          "
-        >
-          {{ version.title || version.snapshot.slice(1, 10) }}
+        <div class="flex flex-col gap-1">
+          <div>
+            This is a snapshot of this document from
+            {{ formatDate(current.title) }}.
+          </div>
+          <div class="text-xs text-ink-gray-7">
+            Editing is disabled until you exit this preview.
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <Button
+            variant="ghost"
+            label="Exit"
+            class="hover:!bg-surface-blue-2 hover:underline"
+          />
+          <Button
+            variant="solid"
+            label="Restore"
+          />
         </div>
       </div>
-      <FTextEditor
-        v-show="updated"
-        :key="editorExtensions.length"
-        ref="textEditor"
-        class="min-w-full"
-        :class="settings?.wide ? 'md:min-w-[79ch]' : 'md:min-w-[65ch]'"
-        :editor-class="[
-          'prose-sm min-h-[4rem]',
-          `text-[${writerSettings.doc?.font_size || 15}px]`,
-          `leading-[${writerSettings.doc?.line_height || 1.5}]`,
-          writerSettings.doc?.custom_css,
-        ]"
-        :content="!settings?.collab ? rawContent : undefined"
-        :editable="!!entity.write && !settings?.lock"
-        :upload-function="
-          (file) => {
-            const fileUpload = useFileUpload()
-            return fileUpload.upload(file, {
-              private: entity.is_private,
-              folder: entity.name,
-              upload_endpoint: `/api/method/drive.api.files.upload_embed`,
-            })
-          }
+      <div
+        @click="
+          $event.target.tagName === 'DIV' &&
+            textEditor.editor?.chain?.().focus?.().run?.()
         "
-        @change="
-          (val) => {
-            rawContent = val
-            if (settings?.collab) yjsContent = Y.encodeStateAsUpdate(doc)
-            if (db)
-              db.transaction(['content'], 'readwrite')
-                .objectStore('content')
-                .put({ val, saved: new Date() }, props.entity.name)
-            edited = true
-            autosave()
-            autoversion()
-          }
-        "
-        :mentions="users"
-        placeholder="Start writing here..."
-        :bubble-menu="bubbleMenuButtons"
-        :extensions="editorExtensions"
-      />
+        class="mx-auto cursor-text min-h-full w-full ps-4 overflow-y-auto"
+      >
+        <div
+          v-if="!updated"
+          class="text-center h-full flex justify-center items-center text-sm font-semibold"
+        >
+          Updating...
+        </div>
+        <FTextEditor
+          v-show="updated"
+          :key="editorExtensions.length"
+          ref="textEditor"
+          class="min-w-full"
+          :class="settings?.wide ? 'md:min-w-[79ch]' : 'md:min-w-[65ch]'"
+          :editor-class="[
+            'prose-sm min-h-[4rem] !min-w-0 mx-auto',
+            `text-[${writerSettings.doc?.font_size || 15}px]`,
+            `leading-[${writerSettings.doc?.line_height || 1.5}]`,
+            writerSettings.doc?.custom_css,
+          ]"
+          :content="!settings?.collab ? rawContent : undefined"
+          :editable="!!entity.write && !settings?.lock"
+          :upload-function="
+            (file) => {
+              const fileUpload = useFileUpload()
+              return fileUpload.upload(file, {
+                private: entity.is_private,
+                folder: entity.name,
+                upload_endpoint: `/api/method/drive.api.files.upload_embed`,
+              })
+            }
+          "
+          @change="
+            (val) => {
+              if (val === rawContent) return
+              rawContent = val
+              if (settings?.collab) yjsContent = Y.encodeStateAsUpdate(doc)
+              if (db)
+                db.transaction(['content'], 'readwrite')
+                  .objectStore('content')
+                  .put({ val, saved: new Date() }, props.entity.name)
+              edited = true
+              autosave()
+              autoversion()
+            }
+          "
+          :mentions="users"
+          placeholder="Start writing here..."
+          :bubble-menu="bubbleMenuButtons"
+          :extensions="editorExtensions"
+        />
+      </div>
     </div>
+    <VersionsSidebar
+      v-if="entity.versions?.length"
+      v-model="current"
+      :editor
+      :versions="entity.versions"
+    />
     <FloatingComments
       v-if="comments.length"
       :entity="entity"
@@ -132,11 +149,13 @@ import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 
 import LucideMessageCircle from "~icons/lucide/message-circle"
-import { fromUint8Array } from "js-base64"
-import { toUint8Array } from "js-base64"
+import VersionsSidebar from "./components/VersionsSidebar.vue"
+import { useTimeAgo } from "@vueuse/core"
+import { formatDate } from "../../utils/format"
 
 const textEditor = ref("textEditor")
 const updated = ref(true)
+const current = ref(null)
 const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
@@ -163,14 +182,8 @@ const autosave = debounce(() => emit("saveDocument"), 2000)
 const autoversion = debounce(() => {
   const snap = Y.encodeSnapshot(Y.snapshot(doc))
   emit("newVersion", snap)
-}, 5000)
+}, 60000)
 
-const clearSnapshot = () => {
-  const binding = ySyncPluginKey.getState(editor.value.view.state).binding
-  if (binding != null) {
-    binding.unrenderSnapshot()
-  }
-}
 watch(
   () => props.currentVersion,
   (val) => {
@@ -186,18 +199,6 @@ watch(
     )
   }
 )
-
-const renderVersion = (editorview, version, prevSnapshot) => {
-  editorview.dispatch(
-    editorview.state.tr.setMeta(ySyncPluginKey, {
-      snapshot: Y.decodeSnapshot(toUint8Array(version.snapshot)),
-      prevSnapshot:
-        prevSnapshot == null
-          ? Y.emptySnapshot
-          : Y.decodeSnapshot(toUint8Array(version.snapshot)),
-    })
-  )
-}
 
 const writerSettings = useDoc({
   doctype: "Drive Settings",
