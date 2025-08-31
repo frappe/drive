@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-08-28 15:17\n"
+"PO-Revision-Date: 2025-08-31 16:09\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -845,7 +845,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:57
 msgid "Stats"
-msgstr ""
+msgstr "Statistikk"
 
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
