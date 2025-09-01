@@ -86,13 +86,15 @@ export const getSlides = createResource({
   url: "slides.slides.doctype.presentation.presentation.get_all_presentations",
   cache: "slides-folder-contents",
   transform(data) {
-    return data.map((k) => ({
+    data = data.map((k) => ({
       ...k,
       mime_type: "frappe/slides",
       file_type: "Presentation",
       path: k.name,
       external: true,
     }))
+    prettyData(data)
+    return data
   },
 })
 

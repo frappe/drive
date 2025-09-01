@@ -146,24 +146,18 @@ def get_thumbnail(entity_name):
         ],
         as_dict=1,
     )
-    if (
-        not drive_file
-        or drive_file.is_group
-        or drive_file.is_link
-        or drive_file.mime_type == "frappe/slides"
-    ):
+    if not drive_file or drive_file.is_group or drive_file.is_link:
         return
 
     if user_has_permission(drive_file, "read") is False:
         return
 
     thumbnail_data = None
-    if frappe.cache().exists(entity_name):
-        try:
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        except:
-            frappe.cache().delete_value(entity_name)
-
+    # if frappe.cache().exists(entity_name):
+    #     try:
+    #         thumbnail_data = frappe.cache().get_value(entity_name)
+    #     except:
+    #         frappe.cache().delete_value(entity_name)
     if not thumbnail_data:
         manager = FileManager()
         try:
@@ -173,11 +167,22 @@ def get_thumbnail(entity_name):
             elif drive_file.mime_type == "frappe_doc":
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
                 thumbnail_data = html[:1000] if html else ""
+            elif drive_file.mime_type == "frappe/slides":
+                thumbnail_data = "none"
+                # Use this until the thumbnail method is whitelisted
+                thumbnails = frappe.call(
+                    "slides.slides.doctype.presentation.presentation.get_slide_thumbnails",
+                    presentation=drive_file.path,
+                )
+                frappe.local.response["type"] = "redirect"
+                frappe.local.response["location"] = thumbnails[0]
+                return
             else:
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
                 thumbnail_data = BytesIO(thumbnail.read())
-                frappe.cache().set_value(entity_name, thumbnail_data, expires_in_sec=60 * 60)
-        except FileNotFoundError:
+                thumbnail.close()
+        except FileNotFoundError as e:
+            print(e)
             return ""
 
     if thumbnail_data:

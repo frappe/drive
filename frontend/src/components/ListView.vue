@@ -135,7 +135,7 @@ const selectedColumns = [
         : title.slice(0, title.lastIndexOf(".")),
     getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
     prefix: ({ row }) => {
-      return getThumbnailUrl(row.name, row.file_type)
+      return getThumbnailUrl(row)
     },
     width: "50%",
   },

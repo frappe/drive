@@ -280,6 +280,9 @@ const defaultActions = computed(() => {
     return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
   })
 })
+const isPrivate = computed(() =>
+  store.state.breadcrumbs[0].name === "Home" ? 1 : 0
+)
 
 // Functions
 const newExternal = async (type) => {
@@ -287,7 +290,7 @@ const newExternal = async (type) => {
     (type === "Document" ? createDocument : createPresentation).submit({
       title: "Untitled " + type,
       team: route.params.team,
-      personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
+      personal: isPrivate.value,
       parent: store.state.currentFolder.name,
     }),
     {
@@ -369,7 +372,7 @@ const newEntityOptions = [
         label: "Presentation",
         icon: LucideGalleryVerticalEnd,
         onClick: () => (dialog.value = "p"),
-        cond: apps.data?.find?.((k) => k.name === "slides"),
+        cond: isPrivate.value && apps.data?.find?.((k) => k.name === "slides"),
       },
       {
         label: "Folder",
