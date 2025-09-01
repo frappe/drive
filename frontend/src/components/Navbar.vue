@@ -122,6 +122,7 @@ import {
   getFavourites,
   getTrash,
   createDocument,
+  createPresentation,
   toggleFav,
   getDocuments,
 } from "@/resources/files"
@@ -145,6 +146,7 @@ import LucideInfo from "~icons/lucide/info"
 import LucideFileUp from "~icons/lucide/file-up"
 import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
+import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
 import FrappeDriveLogo from "./FrappeDriveLogo.vue"
 
@@ -279,29 +281,32 @@ const defaultActions = computed(() => {
 })
 
 // Functions
-const newDocument = async () => {
+const newExternal = async (type) => {
   toast.promise(
-    createDocument.submit({
-      title: "Untitled Document",
+    (type === "Document" ? createDocument : createPresentation).submit({
+      title: "Untitled " + type,
       team: route.params.team,
       personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
-      content: null,
       parent: store.state.currentFolder.name,
     }),
     {
       successDuration: 1,
-      loading: "Creating document...",
+      loading: `Creating ${type}...`,
       success: (data) => {
         prettyData([data])
-        data.file_type = "Document"
+        data.file_type = type
         store.state.listResource.data?.push?.(data)
         getDocuments.data?.push(data)
-        window.open(
-          router.resolve({
-            name: "Document",
-            params: { team: route.params.team, entityName: data.name },
-          }).href
-        )
+        if (type === "Document") {
+          window.open(
+            router.resolve({
+              name: "Document",
+              params: { team: route.params.team, entityName: data.name },
+            }).href
+          )
+        } else if (type === "Presentation") {
+          window.open("/slides/presentation/" + data.name)
+        }
         return "Created"
       },
       error: "Failed to create document",
@@ -357,7 +362,12 @@ const newEntityOptions = [
       {
         label: "Document",
         icon: LucideFilePlus2,
-        onClick: newDocument,
+        onClick: () => newExternal("Document"),
+      },
+      {
+        label: "Presentation",
+        icon: LucideGalleryVerticalEnd,
+        onClick: () => (dialog.value = "p"),
       },
       {
         label: "Folder",
@@ -365,7 +375,7 @@ const newEntityOptions = [
         onClick: () => (dialog.value = "f"),
       },
       {
-        label: "New Link",
+        label: "Link",
         icon: LucideLink,
         onClick: () => (dialog.value = "l"),
       },

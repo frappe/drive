@@ -17,12 +17,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -188,6 +188,34 @@ def get_thumbnail(entity_name):
         return response
     else:
         return thumbnail_data
+
+
+@frappe.whitelist()
+def create_presentation(title, personal, team, parent=None):
+    home_directory = get_home_folder(team)
+    parent = parent or home_directory.name
+    if not user_has_permission(parent, "upload"):
+        frappe.throw(
+            "Cannot access folder due to insufficient permissions",
+            frappe.PermissionError,
+        )
+    try:
+        r = frappe.call(
+            "slides.slides.doctype.presentation.presentation.create_presentation",
+            title=title,
+            theme="1mjgj61m8j",
+        )
+    except BaseException as e:
+        print("Couldn't create", e)
+    entity = create_drive_file(
+        team,
+        personal,
+        title,
+        parent,
+        "frappe/slides",
+        lambda _: r.name,
+    )
+    return entity
 
 
 @frappe.whitelist()

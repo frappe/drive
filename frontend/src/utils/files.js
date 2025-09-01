@@ -28,7 +28,7 @@ import Unknown from "@/components/MimeIcons/Unknown.vue"
 export const openEntity = (team = null, entity, new_tab = false) => {
   if (entity.external) {
     if (entity.mime_type === "frappe/slides") {
-      window.open("/slides/presentation/" + entity.name, "_blank")
+      window.open("/slides/presentation/" + entity.path, "_blank")
     }
     return
   }
@@ -68,7 +68,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
       `This will open an external link to ${origin} - are you sure you want to open?`
     ) && window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe/slides") {
-    window.open("/slides/presentation/" + entity.name, "_blank")
+    window.open("/slides/presentation/" + entity.path, "_blank")
   } else if (entity.mime_type === "frappe_doc") {
     router.push({
       name: "Document",

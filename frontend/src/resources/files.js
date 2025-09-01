@@ -279,6 +279,11 @@ export const createDocument = createResource({
   makeParams: (params) => params,
 })
 
+export const createPresentation = createResource({
+  method: "POST",
+  url: "drive.api.files.create_presentation",
+})
+
 export const move = createResource({
   url: "drive.api.files.move",
   onSuccess(data) {

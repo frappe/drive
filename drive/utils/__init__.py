@@ -41,6 +41,7 @@ MIME_LIST_MAP = {
         "application/vnd.apple.numbers",
     ],
     "Presentation": [
+        "frappe/slides",
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/vnd.oasis.opendocument.presentation",

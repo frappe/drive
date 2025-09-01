@@ -120,8 +120,10 @@ class DriveFile(Document):
         self.title = get_new_title(self.title, new_parent, self.is_group, is_private)
         self.is_private = is_private
 
+        not_in_disk = self.document or self.mime_type == "frappe/slides" or self.is_link
+
         # Condition is so that old file names aren't corrupted
-        if not self.manager.flat and not self.document:
+        if not self.manager.flat and not not_in_disk:
             new_path = self.manager.get_disk_path(self)
             self.manager.move(self.path, new_path)
             self.path = new_path
