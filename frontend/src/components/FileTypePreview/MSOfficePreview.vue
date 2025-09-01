@@ -2,7 +2,7 @@
   <iframe
     v-if="warned && jwt_token"
     :src="'https://view.officeapps.live.com/op/embed.aspx?src=' + srcUrl"
-    class="w-4/5 mx-auto h-hull"
+    class="w-4/5 mx-auto h-full"
     frameborder="0"
   >
     This is an embedded Microsoft Office document, powered by Office

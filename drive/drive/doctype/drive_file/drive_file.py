@@ -257,16 +257,6 @@ class DriveFile(Document):
         if new_title == self.title:
             return self
 
-        entity_exists = frappe.db.exists(
-            {
-                "doctype": "Drive File",
-                "parent_entity": self.parent_entity,
-                "title": new_title,
-                "mime_type": self.mime_type,
-                "is_group": self.is_group,
-            }
-        )
-
         validated_name = get_new_title(
             new_title, self.parent_entity, self.is_group, self.is_private
         )
@@ -287,7 +277,9 @@ class DriveFile(Document):
             field_new_value=new_title,
         )
         self.title = new_title
-        self.path = self.manager.rename(self)
+        path = self.manager.rename(self)
+        if path:
+            self.path = path
         self.save()
         return self
 
