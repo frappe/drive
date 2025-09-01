@@ -85,6 +85,12 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
+    path: "/t/:team/slides",
+    name: "Slides",
+    component: () => import("@/pages/Slides.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
     path: "/t/:team/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),

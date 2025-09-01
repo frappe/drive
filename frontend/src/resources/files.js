@@ -81,6 +81,20 @@ export const getDocuments = createResource({
   cache: "document-folder-contents",
 })
 
+export const getSlides = createResource({
+  ...COMMON_OPTIONS,
+  url: "slides.slides.doctype.presentation.presentation.get_all_presentations",
+  cache: "slides-folder-contents",
+  transform(data) {
+    return data.map((k) => ({
+      ...k,
+      mime_type: "frappe/slides",
+      file_type: "Presentation",
+      external: true,
+    }))
+  },
+})
+
 export const getShared = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.shared",

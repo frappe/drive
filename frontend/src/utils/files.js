@@ -26,6 +26,12 @@ import PDF from "@/components/MimeIcons/PDF.vue"
 import Unknown from "@/components/MimeIcons/Unknown.vue"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
+  if (entity.external) {
+    if (entity.mime_type === "frappe/slides") {
+      window.open("/slides/presentation/" + entity.name, "_blank")
+    }
+    return
+  }
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
   if (!entity.is_group) {
@@ -61,6 +67,8 @@ export const openEntity = (team = null, entity, new_tab = false) => {
     confirm(
       `This will open an external link to ${origin} - are you sure you want to open?`
     ) && window.open(entity.path, "_blank")
+  } else if (entity.mime_type === "frappe/slides") {
+    window.open("/slides/presentation/" + entity.name, "_blank")
   } else if (entity.mime_type === "frappe_doc") {
     router.push({
       name: "Document",
@@ -484,12 +492,15 @@ export async function updateURLSlug(title) {
 
 export function getLink(entity, copy = true, withDomain = true) {
   const team = router.currentRoute.value.params.team
-  let link = entity.is_link
-    ? entity.path
-    : `${
-        withDomain ? window.location.origin + "/drive" : ""
-      }/t/${team}/${getLinkStem(entity)}`
-
+  let link
+  if (entity.is_link) link = entity.path
+  else if (entity.mime_type === "frappe/slides") {
+    link = window.location.origin + "/slides/presentation/" + entity.name
+  } else {
+    link = `${
+      withDomain ? window.location.origin + "/drive" : ""
+    }/t/${team}/${getLinkStem(entity)}`
+  }
   if (!copy) return link
   try {
     copyToClipboard(link).then(() => toast("Copied to your clipboard!"))

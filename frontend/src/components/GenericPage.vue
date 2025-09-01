@@ -220,7 +220,7 @@ const actionItems = computed(() => {
       {
         label: __("Download"),
         icon: LucideDownload,
-        isEnabled: (e) => !e.is_link,
+        isEnabled: (e) => !e.is_link && e.mime_type !== "frappe/slides",
         action: (entities) => entitiesDownload(team, entities),
         multi: true,
         important: true,
@@ -231,7 +231,7 @@ const actionItems = computed(() => {
         action: ([entity]) => getLink(entity),
         important: true,
       },
-      { divider: true },
+      { divider: true, isEnabled: (e) => !e.external },
       {
         label: __("Move"),
         icon: LucideArrowLeftRight,
@@ -250,7 +250,8 @@ const actionItems = computed(() => {
         label: __("Show Info"),
         icon: LucideInfo,
         action: () => (dialog.value = "i"),
-        isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+        isEnabled: (e) =>
+          !store.state.activeEntity || (!store.state.showInfo && !e.external),
       },
       {
         label: __("Favourite"),
@@ -261,7 +262,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => !e.is_favourite,
+        isEnabled: (e) => !e.is_favourite && !e.external,
         important: true,
         multi: true,
       },
@@ -274,7 +275,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => e.is_favourite,
+        isEnabled: (e) => e.is_favourite && !e.external,
         important: true,
         multi: true,
       },
