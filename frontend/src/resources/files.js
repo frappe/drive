@@ -90,6 +90,7 @@ export const getSlides = createResource({
       ...k,
       mime_type: "frappe/slides",
       file_type: "Presentation",
+      path: k.name,
       external: true,
     }))
   },

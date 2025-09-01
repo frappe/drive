@@ -57,11 +57,14 @@ const dialogType = defineModel()
 const open = ref(true)
 
 const presentationName = ref("")
-const submit = () =>
-  createPresentation.submit({
+const submit = async () => {
+  const data = await createPresentation.submit({
     parent: props.parent,
     title: presentationName.value.trim(),
     team: route.params.team,
     personal: store.state.breadcrumbs[0].name == "Home" ? 1 : 0,
   })
+  console.log(data)
+  emit("success", data)
+}
 </script>

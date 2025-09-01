@@ -10,7 +10,7 @@
     v-else-if="dialog === 'p'"
     v-model="dialog"
     :parent="$route.params.entityName"
-    @success="(data) => addToList(data, 'Folder')"
+    @success="(data) => addToList(data, 'Presentation')"
   />
   <NewLinkDialog
     v-else-if="dialog === 'l'"

@@ -30,8 +30,9 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import StorageBar from "./StorageBar.vue"
 import { Sidebar, createResource } from "frappe-ui"
 
-import { notifCount } from "@/resources/permissions"
+import { notifCount, apps } from "@/resources/permissions"
 import { getTeams, LISTS } from "@/resources/files"
+import { dynamicList } from "@/utils/files"
 
 import { useStore } from "vuex"
 import LucideClock from "~icons/lucide/clock"
@@ -43,6 +44,7 @@ import LucideStar from "~icons/lucide/star"
 import LucideInbox from "~icons/lucide/inbox"
 import LucideSearch from "~icons/lucide/search"
 import LucideFileText from "~icons/lucide/file-text"
+import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
@@ -61,42 +63,13 @@ const router = useRouter()
 const route = useRoute()
 notifCount.fetch()
 getTeams.fetch()
+apps.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
-watch(
-  () => store.state.sidebarCollapsed,
-  (v) => (isCollapsed.value = v)
-)
+watch(isCollapsed, (v) => store.commit("setSidebarCollapsed", v))
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
-
-const apps = createResource({
-  url: "frappe.apps.get_apps",
-  cache: "apps",
-  auto: true,
-  transform: (data) => {
-    let apps = [
-      {
-        name: "frappe",
-        logo: "/assets/frappe/images/framework.png",
-        title: "Desk",
-        route: "/app",
-      },
-    ]
-    data.map((app) => {
-      if (app.name === "drive") return
-      apps.push({
-        name: app.name,
-        logo: app.logo,
-        title: app.title,
-        route: app.route,
-      })
-    })
-
-    return apps
-  },
-})
 
 const showSettings = ref(false)
 const showShortcuts = ref(false)
@@ -263,7 +236,7 @@ const sidebarItems = computed(() => {
     {
       label: "Views",
       collapsible: true,
-      items: [
+      items: dynamicList([
         {
           label: "Recents",
           to: `/t/${team.value}/recents`,
@@ -292,7 +265,14 @@ const sidebarItems = computed(() => {
           isActive: first.name == "Documents",
           accessKey: "d",
         },
-      ],
+        {
+          label: "Slides",
+          to: `/t/${team.value}/slides`,
+          icon: LucideGalleryVerticalEnd,
+          isActive: first.name == "Slides",
+          cond: apps.data?.find?.((k) => k.name === "slides"),
+        },
+      ]),
     },
   ]
 })

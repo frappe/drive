@@ -126,8 +126,9 @@ import {
   toggleFav,
   getDocuments,
 } from "@/resources/files"
+import { apps } from "@/resources/permissions"
 import { useRoute, useRouter } from "vue-router"
-import { getLink, prettyData } from "@/utils/files"
+import { getLink, prettyData, dynamicList } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
@@ -305,7 +306,7 @@ const newExternal = async (type) => {
             }).href
           )
         } else if (type === "Presentation") {
-          window.open("/slides/presentation/" + data.name)
+          window.open("/slides/presentation/" + data.path)
         }
         return "Created"
       },
@@ -358,7 +359,7 @@ const newEntityOptions = [
   },
   {
     group: "Create",
-    items: [
+    items: dynamicList([
       {
         label: "Document",
         icon: LucideFilePlus2,
@@ -368,6 +369,7 @@ const newEntityOptions = [
         label: "Presentation",
         icon: LucideGalleryVerticalEnd,
         onClick: () => (dialog.value = "p"),
+        cond: apps.data?.find?.((k) => k.name === "slides"),
       },
       {
         label: "Folder",
@@ -379,7 +381,7 @@ const newEntityOptions = [
         icon: LucideLink,
         onClick: () => (dialog.value = "l"),
       },
-    ],
+    ]),
   },
 ]
 </script>

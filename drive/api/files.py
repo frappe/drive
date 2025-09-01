@@ -146,11 +146,16 @@ def get_thumbnail(entity_name):
         ],
         as_dict=1,
     )
-    if not drive_file or drive_file.is_group or drive_file.is_link:
-        frappe.throw("No thumbnail for this type.", ValueError)
+    if (
+        not drive_file
+        or drive_file.is_group
+        or drive_file.is_link
+        or drive_file.mime_type == "frappe/slides"
+    ):
+        return
 
     if user_has_permission(drive_file, "read") is False:
-        frappe.throw("Cannot read this file", frappe.PermissionError)
+        return
 
     thumbnail_data = None
     if frappe.cache().exists(entity_name):
