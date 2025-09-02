@@ -44,6 +44,7 @@ def edit_comment(name, content):
     return name
 
 
+@frappe.whitelist()
 def delete_comment(name, entire=True):
     comment = frappe.get_doc("Drive Comment", name)
     if comment.owner != frappe.session.user and comment.user != "Guest":
