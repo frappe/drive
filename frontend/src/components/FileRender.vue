@@ -31,6 +31,7 @@ import TextPreview from "./FileTypePreview/TextPreview.vue"
 import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue"
 import { computed } from "vue"
 import LucideAlertCircle from "~icons/lucide/alert-circle"
+import { diskSettings } from "@/resources/permissions"
 
 const props = defineProps({
   previewEntity: {
@@ -44,11 +45,14 @@ const props = defineProps({
   },
 })
 
+diskSettings.fetch()
 const error = computed(() => {
+  const limit = diskSettings.data?.preview_size || 100
   if (!Object.keys(RENDERS).includes(props.previewEntity.file_type))
     return "Previews are not supported for this file type. Would you like to download it instead?"
-  else if (props.previewEntity.file_size > 10 * 1024 * 1024)
+  else if (props.previewEntity.file_size > limit * 1024 * 1024)
     return "This is too large to preview - would you like to download instead?"
+  console.log(limit, props.previewEntity.file_size > limit * 1024 * 1024)
   return false
 })
 

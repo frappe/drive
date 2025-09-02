@@ -97,3 +97,9 @@ export const apps = createResource({
     return apps
   },
 })
+
+export const diskSettings = createResource({
+  url: "drive.api.product.disk_settings",
+  method: "GET",
+  cache: "disk-settings",
+})

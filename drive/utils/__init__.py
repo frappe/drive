@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 import frappe
+from bs4 import BeautifulSoup
 
 DriveFile = frappe.qb.DocType("Drive File")
 MIME_LIST_MAP = {
@@ -220,7 +221,7 @@ def get_valid_breadcrumbs(user_access, paths, is_private=None):
     Determine user access and generate upward path (breadcrumbs).
     """
     # If team/admin of this entity, then entire path
-    if user_access.get("type") in ["admin", "team"]:
+    if user_access.get("type") in ["admin", "team", "team-admin"]:
         return paths[0]
 
     # Otherwise, slice where they lose read access.
@@ -322,3 +323,16 @@ def create_drive_file(
 def extract_mentions(content):
     pattern = r'<span class="mention" data-type="mention" data-id="([^"]+)"'
     return re.findall(pattern, content)
+
+
+def strip_comment_spans(html: str) -> str:
+    """
+    Remove only <span> tags with a data-comment-id attribute.
+    Keeps their inner content.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+
+    for span in soup.find_all("span", attrs={"data-comment-id": True}):
+        span.unwrap()  # remove the tag, keep its children
+
+    return str(soup)

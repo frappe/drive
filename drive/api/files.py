@@ -8,6 +8,8 @@ import frappe
 import jwt
 import magic
 import mimemapper
+from bs4 import BeautifulSoup
+from frappe.rate_limiter import rate_limit
 from frappe.utils import now
 from pypika import Order
 from werkzeug.utils import secure_filename, send_file
@@ -17,16 +19,17 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-    create_drive_file,
-    extract_mentions,
-    get_file_type,
-    get_home_folder,
-    if_folder_exists,
-    update_file_size,
+	create_drive_file,
+	extract_mentions,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	strip_comment_spans,
+	update_file_size,
 )
 from drive.utils.files import FileManager
 
-from .permissions import get_user_access, user_has_permission
+from .permissions import user_has_permission
 
 
 @frappe.whitelist()
@@ -397,11 +400,18 @@ def create_link(team, title, link, personal=False, parent=None):
     return drive_file
 
 
-@frappe.whitelist()
-def save_doc(entity_name, doc_name, content):
-    access = get_user_access(frappe.get_doc("Drive File", entity_name))
-    if not access["comment"] and not access["write"]:
+@frappe.whitelist(allow_guest=True)
+def save_doc(entity_name, doc_name, content, comment=False):
+    can_write = user_has_permission(entity_name, "write")
+    if comment and not can_write:
+        old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
+        print(strip_comment_spans(old_content), strip_comment_spans(content))
+        if not strip_comment_spans(old_content) == strip_comment_spans(content):
+            raise frappe.PermissionError("You cannot edit file while commenting.")
+        return frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+    elif not can_write:
         raise frappe.PermissionError("You do not have permission to edit this file")
+
     if not content:
         return
 

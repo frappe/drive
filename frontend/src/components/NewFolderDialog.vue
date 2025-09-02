@@ -43,7 +43,6 @@ import { ref } from "vue"
 import store from "@/store"
 import { Dialog, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
-import { allFolders } from "@/resources/files"
 
 const route = useRoute()
 const props = defineProps({
@@ -74,7 +73,6 @@ const createFolder = createResource({
   onSuccess(data) {
     open.value = false
     emit("success", data)
-    allFolders.fetch()
   },
 })
 const submit = () => createFolder.submit(folderName.value.trim())

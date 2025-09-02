@@ -203,6 +203,7 @@ const getSettings = createResource({
     generalSettings.backend_type = data.enabled ? "s3" : "disk"
   },
 })
+
 const updateSettings = createResource({
   url: "drive.api.product.disk_settings",
   method: "PUT",

@@ -6,13 +6,15 @@
   "engine": "InnoDB",
   "field_order": [
     "general_section",
+    "jwt_key",
+    "preview_size",
+    "disk_section",
     "flat",
     "root_prefix_type",
     "root_prefix_value",
     "team_prefix",
     "personal_prefix",
     "thumbnail_prefix",
-    "jwt_key",
     "s3_section",
     "enabled",
     "aws_key",
@@ -113,13 +115,27 @@
       "fieldtype": "Data",
       "label": "JWT Key",
       "options": "Dangerous - if leaked, all files can be accessed."
+    },
+    {
+      "default": "100",
+      "description": "Used to configure maximum file sizes of in-browser previews (in megabytes).",
+      "fieldname": "preview_size",
+      "fieldtype": "Int",
+      "in_list_view": 1,
+      "label": "Preview size",
+      "reqd": 1
+    },
+    {
+      "fieldname": "disk_section",
+      "fieldtype": "Section Break",
+      "label": "Disk"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-08-13 15:08:58.492140",
+  "modified": "2025-09-02 17:33:01.169789",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Disk Settings",

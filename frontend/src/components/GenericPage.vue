@@ -79,7 +79,7 @@ import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
-import { move, allFolders } from "@/resources/files"
+import { move } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
 
@@ -191,9 +191,8 @@ watch(
 )
 emitter.on("refresh", refreshData)
 
-if (team) {
+if (team && !allUsers.data) {
   allUsers.fetch({ team })
-  allFolders.fetch({ team })
 }
 if (!settings.fetched) settings.fetch()
 
