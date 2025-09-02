@@ -191,10 +191,10 @@ watch(
 )
 emitter.on("refresh", refreshData)
 
-if (team && !allUsers.data) {
+if (team && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team })
 }
-if (!settings.fetched) settings.fetch()
+if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 
 // Drag and drop
 const onDrop = (targetFile, draggedItem) => {

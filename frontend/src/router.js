@@ -30,7 +30,7 @@ const routes = [
         method: "GET",
         cache: "settings",
       })
-      if (!settings.data) await settings.fetch()
+      if (!settings.fetched) await settings.fetch()
       return settings.data.default_team
         ? "/t/" + settings.data.default_team
         : "/teams"

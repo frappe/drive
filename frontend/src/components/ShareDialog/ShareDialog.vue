@@ -17,7 +17,7 @@
           <Button
             class="ml-auto shrink-0"
             variant="ghost"
-            @click="$emit('update:modelValue', false)"
+            @click="open = false"
           >
             <template #icon>
               <LucideX class="size-4" />
@@ -348,7 +348,7 @@ import LucideGlobe2 from "~icons/lucide/globe-2"
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
-const emit = defineEmits(["update:modelValue", "success"])
+const emit = defineEmits(["success"])
 const dialogType = defineModel()
 const open = ref(true)
 
@@ -452,7 +452,11 @@ const getGeneralAccess = createResource({
       (k) => k.value === translate[getGeneralAccess.params.user]
     ).value
 
-    generalAccessPerms.value = data.write ? "editor" : "reader"
+    generalAccessPerms.value = data.write
+      ? "editor"
+      : data.upload
+      ? "upload"
+      : "reader"
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
@@ -471,6 +475,7 @@ const updateGeneralAccess = (type, perms) => {
       read: 1,
       comment: 1,
       share: 1,
+      upload: +(perms === "upload"),
       write: perms === "editor",
     })
   }
