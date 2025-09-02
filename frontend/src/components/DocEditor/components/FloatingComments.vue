@@ -39,6 +39,7 @@
         <div
           v-show="
             activeComment === comment.name &&
+            $store.state.user.id !== 'Guest' &&
             !comment.new &&
             (comment.owner == $store.state.user.id || entity.write)
           "
@@ -76,7 +77,10 @@
             Unresolve
           </Button>
           <Button
-            v-if="comment.owner == $store.state.user.id"
+            v-if="
+              comment.owner == $store.state.user.id ||
+              (comment.owner === 'Guest' && entity.write)
+            "
             :disabled="comment.loading"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
@@ -127,7 +131,7 @@
                 <div class="flex gap-1">
                   <label
                     class="font-medium text-ink-gray-8 max-w-[70%] truncate"
-                    >{{ $user(reply.owner)?.full_name }}</label
+                    >{{ $user(reply.owner)?.full_name || reply.owner }}</label
                   >
 
                   <label class="text-ink-gray-6 truncate">
@@ -371,7 +375,7 @@ const createComment = createResource({
   url: "drive.api.docs.create_comment",
   onSuccess: () => {
     findComment(createComment.params.name).loading = false
-    emit("autosave")
+    emit("save")
   },
   onError: () => {
     toast({

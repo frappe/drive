@@ -49,7 +49,7 @@
       v-if="comments.length"
       :entity="entity"
       :editor
-      @save="$emit('saveDocument')"
+      @save="$emit('saveComment')"
       @autosave="autosave"
       v-model:show-comments="showComments"
       v-model:active-comment="activeComment"
@@ -112,7 +112,12 @@ const props = defineProps({
 })
 const comments = ref([])
 
-const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
+const emit = defineEmits([
+  "updateTitle",
+  "saveDocument",
+  "saveComment",
+  "mentionedUsers",
+])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
 
@@ -150,7 +155,6 @@ const createNewComment = (editor) => {
     return pos1 - pos2
   })
   activeComment.value = id
-  emit("saveDocument")
 }
 
 const ExtendedCommentExtension = CommentExtension.extend({
@@ -210,11 +214,12 @@ const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
   }),
-  FloatingQuoteButton.configure({
-    onClick: () => {
-      createNewComment(editor.value)
-    },
-  }),
+  props.entity.comment &&
+    FloatingQuoteButton.configure({
+      onClick: () => {
+        createNewComment(editor.value)
+      },
+    }),
   ExtendedCommentExtension.configure({
     onCommentActivated: (id) => {
       let isResolved = comments.value.find((k) => id === k.name)?.resolved

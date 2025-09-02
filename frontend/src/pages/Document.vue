@@ -62,6 +62,7 @@
       :users="allUsers.data || []"
       :show-resolved
       @save-document="saveDocument"
+      @save-comment="saveDocument(true)"
     />
   </div>
 </template>
@@ -122,12 +123,14 @@ const lastFetched = ref(0)
 const showComments = ref(false)
 const edited = ref(false)
 
-const saveDocument = () => {
-  if (entity.value.write || entity.value.comment) {
+const saveDocument = (comment = false) => {
+  console.log("saving", comment)
+  if (entity.value.write || (comment && entity.value.comment)) {
     updateDocument.submit({
       entity_name: props.entityName,
       doc_name: entity.value.document,
       content: rawContent.value,
+      comment,
     })
     edited.value = true
     return true
