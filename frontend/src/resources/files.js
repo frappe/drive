@@ -1,4 +1,4 @@
-import { createResource, toast as nToast } from "frappe-ui"
+import { createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import { openEntity, setTitle } from "@/utils/files"
 import store from "@/store"
@@ -239,11 +239,8 @@ export const clearTrash = createResource({
   },
   onError(error) {
     toast({
-      title: "There was an error",
-      description: JSON.stringify(error),
-      position: "bottom-right",
-      type: "error",
-      timeout: 2,
+      text: JSON.stringify(error),
+      error: true,
     })
   },
 })

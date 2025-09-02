@@ -49,6 +49,8 @@
       v-if="comments.length"
       :entity="entity"
       :editor
+      @save="$emit('saveDocument')"
+      @autosave="autosave"
       v-model:show-comments="showComments"
       v-model:active-comment="activeComment"
       v-model:comments="comments"

@@ -141,6 +141,7 @@ let file = createResource({
     if (!store.getters.isLoggedIn) router.push({ name: "Login" })
   },
 })
+store.commit("setCurrentResource", file)
 
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value

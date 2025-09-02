@@ -103,7 +103,7 @@
       />
       <ul
         v-else
-        class="space-y-3 text-sm py-2 mb-4"
+        class="space-y-3 text-sm py-2"
       >
         <li class="flex">
           <span class="inline-block w-24 text-ink-gray-5"
@@ -141,8 +141,8 @@
         </li>
       </ul>
       <ul
-        class="space-y-3 text-sm text-ink-gray-9"
         v-if="developer"
+        class="space-y-3 text-sm text-ink-gray-9 mb-4"
       >
         <div>
           <span class="text-base font-semibold">{{ __("Developer") }}</span>

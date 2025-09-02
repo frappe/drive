@@ -105,6 +105,7 @@ const resource = computed(() =>
 const is_root = computed(
   () => props.entities[0].name === resource.value.data?.name
 )
+
 const dialog = defineModel(String)
 const open = ref(false)
 watch(dialog, (val) => {
@@ -151,9 +152,9 @@ function removeFromList(entities, move = true) {
     } else {
       resetDialog()
       openEntity(null, {
-        team: resource.value.data.team,
+        ...resource.value.data,
         name: resource.value.data.parent_entity,
-        is_group: true,
+        breadcrumbs: resource.value.data.breadcrumbs.slice(0, -1),
       })
     }
   } else {

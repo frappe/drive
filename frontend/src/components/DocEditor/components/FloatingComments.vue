@@ -311,6 +311,7 @@ const props = defineProps({
   entity: Object,
   editor: Object,
 })
+const emit = defineEmits(["save"])
 
 const store = useStore()
 
@@ -370,6 +371,7 @@ const createComment = createResource({
   url: "drive.api.docs.create_comment",
   onSuccess: () => {
     findComment(createComment.params.name).loading = false
+    emit("autosave")
   },
   onError: () => {
     toast({
@@ -380,12 +382,21 @@ const createComment = createResource({
 })
 const editComment = createResource({
   url: "drive.api.docs.edit_comment",
+  onSuccess: () => {
+    emit("save")
+  },
 })
 const deleteComment = createResource({
   url: "drive.api.docs.delete_comment",
+  onSuccess: () => {
+    emit("save")
+  },
 })
 const resolveComment = createResource({
   url: "drive.api.docs.resolve_comment",
+  onSuccess: () => {
+    emit("save")
+  },
 })
 
 // Functions
@@ -412,7 +423,10 @@ const newReply = (comment, editor) => {
 }
 
 const removeComment = (name, entire, server = true) => {
-  if (server) deleteComment.submit({ name, entire })
+  if (server) {
+    deleteComment.submit({ name, entire })
+  }
+
   props.editor.commands.unsetComment(name)
   for (let [i, val] of Object.entries(comments.value)) {
     if (val.name === name) {

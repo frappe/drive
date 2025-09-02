@@ -32,8 +32,14 @@ export const openEntity = (team = null, entity, new_tab = false) => {
     }
     return
   }
+
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
+  console.log(entity, entity.breadcrumbs?.length)
+  if (entity.breadcrumbs?.length === 0) {
+    console.log("rereouting")
+    return router.push({ name: entity.is_private ? "Home" : "Team" })
+  }
   if (!entity.is_group) {
     if (!getRecents.data?.some?.((k) => k.name === entity.name))
       getRecents.setData((data) => [...(data || []), entity])

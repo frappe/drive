@@ -229,7 +229,7 @@ def create_presentation(title, personal, team, parent=None):
 
 
 @frappe.whitelist()
-def create_document_entity(title, personal, team, content, parent=None):
+def create_document_entity(title, personal, team, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
     if not user_has_permission(parent, "upload"):
@@ -239,7 +239,6 @@ def create_document_entity(title, personal, team, content, parent=None):
         )
     drive_doc = frappe.new_doc("Drive Document")
     drive_doc.title = title
-    drive_doc.content = content
     drive_doc.version = 2
     drive_doc.save()
 
@@ -388,6 +387,7 @@ def create_link(team, title, link, personal=False, parent=None):
             "path": link,
             "is_link": 1,
             "mime_type": "link/unknown",
+            "_modified": datetime.now(),
             "parent_entity": parent,
             "is_private": personal,
         }
