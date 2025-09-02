@@ -73,9 +73,12 @@ const store = createStore({
       )
       Object.assign(state.uploads[index], payload)
     },
-    setSortOrder(state, payload) {
-      localStorage.setItem("sortOrder", JSON.stringify(payload))
-      state.sortOrder = payload
+    setSortOrder(state, [entity, value]) {
+      if (!state.sortOrder) {
+        state.sortOrder = {}
+      }
+      state.sortOrder[entity] = value
+      localStorage.setItem("sortOrder", JSON.stringify(state.sortOrder))
     },
     toggleView(state, payload) {
       localStorage.setItem("view", JSON.stringify(payload))

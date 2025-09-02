@@ -210,14 +210,7 @@
   </div>
 </template>
 <script setup>
-import {
-  Button,
-  Tooltip,
-  Dropdown,
-  TextInput,
-  TabButtons,
-  Switch,
-} from "frappe-ui"
+import { Button, Dropdown, TextInput, TabButtons, Switch } from "frappe-ui"
 import {
   ref,
   computed,
@@ -232,7 +225,7 @@ import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideFilter from "~icons/lucide/filter"
 
-const rows = defineModel(Array)
+const sortOrder = defineModel(Object)
 const props = defineProps({
   selections: Array,
   actionItems: Array,
@@ -240,16 +233,6 @@ const props = defineProps({
 })
 const store = useStore()
 
-const name = computed(
-  () => props.getEntities.params?.entity_name || props.getEntities.params?.team
-)
-const sortOrder = reactive(
-  store.state.sortOrder[name.value] || {
-    label: "Modified",
-    field: "modified",
-    ascending: false,
-  }
-)
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
 
@@ -258,23 +241,24 @@ const viewState = ref(store.state.view)
 watch(viewState, (val) => store.commit("toggleView", val))
 const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef("search-input")
+
 // Do this as the resource data is updated by a lagging `fetch`
-watch(
-  [sortOrder, () => props.getEntities.loading],
-  ([val, loading]) => {
-    if (!rows.value || loading) return
-    sortEntities(rows.value, val)
-    props.getEntities.setData(rows.value)
-    store.commit("setCurrentFolder", {
-      entities: rows.value.filter?.((k) => k.title[0] !== "."),
-    })
-    if (name.value) {
-      store.state.sortOrder[name.value] = val
-      store.commit("setSortOrder", store.state.sortOrder)
-    }
-  },
-  { immediate: true }
-)
+// watch(
+//   [sortOrder, () => props.getEntities.loading],
+//   ([val, loading]) => {
+//     if (!rows.value || loading) return
+//     sortEntities(rows.value, val)
+//     props.getEntities.setData(rows.value)
+//     store.commit("setCurrentFolder", {
+//       entities: rows.value.filter?.((k) => k.title[0] !== "."),
+//     })
+//     if (name.value) {
+//       store.state.sortOrder[name.value] = val
+//       store.commit("setSortOrder", store.state.sortOrder)
+//     }
+//   },
+//   { immediate: true }
+// )
 
 watch(activeFilters.value, (val) => {
   if (!val.length) {
@@ -305,13 +289,13 @@ const orderByItems = computed(() => {
   return columnHeaders.map((header) => ({
     ...header,
     onClick: () => {
-      sortOrder.field = header.field
-      sortOrder.label = header.label
+      sortOrder.value.field = header.field
+      sortOrder.value.label = header.label
     },
   }))
 })
 const toggleAscending = () => {
-  sortOrder.ascending = !sortOrder.ascending
+  sortOrder.value.ascending = !sortOrder.value.ascending
 }
 
 const columnHeaders = [
@@ -345,9 +329,9 @@ const columnHeaders = [
             return () =>
               h(Switch, {
                 label: __("Smart"),
-                disabled: sortOrder.field !== "title",
-                modelValue: sortOrder.smart,
-                "onUpdate:modelValue": (val) => (sortOrder.smart = val),
+                disabled: sortOrder.value.field !== "title",
+                modelValue: sortOrder.value.smart,
+                "onUpdate:modelValue": (val) => (sortOrder.value.smart = val),
               })
           },
         }),

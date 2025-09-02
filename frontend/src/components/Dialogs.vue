@@ -136,12 +136,7 @@ function addToList(data, file_type) {
     comment: 1,
     relativeModified: useTimeAgo(now),
   }
-  const newData = [...listResource.value.data, data]
-  sortEntities(
-    newData,
-    store.state.sortOrder[listResource.value.params.entityName]
-  )
-  listResource.value.setData(newData)
+  listResource.value.data.push(data)
 }
 
 function removeFromList(entities, move = true) {

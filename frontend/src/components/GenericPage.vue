@@ -17,7 +17,7 @@
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
-      v-model="rows"
+      v-model="sortOrder"
       :action-items="actionItems"
       :selections="selectedEntitities"
       :get-entities="getEntities || { data: [] }"
@@ -96,6 +96,7 @@ import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
 import emitter from "../emitter"
+import { sortEntities } from "../utils/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -111,15 +112,51 @@ const store = useStore()
 
 const dialog = ref("")
 provide("dialog", dialog)
+
 const team = route.params.team || localStorage.getItem("recentTeam")
 const activeEntity = computed(() => store.state.activeEntity)
+
+const sortId = computed(
+  () =>
+    props.getEntities.params?.entity_name || props.getEntities.params?.personal
+)
+const sortOrder = ref(
+  store.state.sortOrder[sortId.value] || {
+    label: "Modified",
+    field: "modified",
+    ascending: false,
+  }
+)
 const rows = ref(props.getEntities.data)
+watch(sortId, (id) => {
+  if (store.state.sortOrder[id]) sortOrder.value = store.state.sortOrder[id]
+})
+
+watch(
+  sortOrder,
+  (order) => {
+    console.log(order, rows.value)
+    rows.value = sortEntities([...rows.value], order)
+    props.getEntities.setData(rows.value)
+    if (sortId.value) {
+      store.commit("setSortOrder", [sortId.value, order])
+    }
+  },
+  { deep: true }
+)
+
 watch(
   () => props.getEntities.data,
   (val) => {
-    rows.value = val
-  }
+    if (!val) return
+    rows.value = sortEntities([...val], sortOrder.value)
+    store.commit("setCurrentFolder", {
+      entities: rows.value.filter?.((k) => k.title[0] !== "."),
+    })
+  },
+  { immediate: true, deep: true }
 )
+
 store.commit("setListResource", props.getEntities)
 store.commit("setCurrentResource", null)
 
@@ -137,12 +174,13 @@ watchEffect(() => {
 })
 
 const refreshData = () => {
-  const sortOrder = store.state.sortOrder[props.getEntities.params?.entityName]
   const params = { team }
-  if (sortOrder)
-    params.order_by = sortOrder.field + (sortOrder.ascending ? " 1" : " 0")
+  if (sortOrder.value)
+    params.order_by =
+      sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
   props.getEntities.fetch(params)
 }
+
 watch(
   verifyAccess,
   (data) => {
