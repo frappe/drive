@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-09-01 16:19\n"
+"PO-Revision-Date: 2025-09-02 16:19\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -391,7 +391,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
-msgstr ""
+msgstr "Fornavn"
 
 #. Label of the font_family (Data) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
