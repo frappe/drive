@@ -43,6 +43,7 @@ def files(
     only_parent = int(only_parent)
     folders = int(folders)
     personal = int(personal)
+    favourites_only = int(favourites_only)
     ascending = int(ascending)
 
     if not entity_name:
@@ -60,10 +61,11 @@ def files(
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
     user_access = get_user_access(entity, user)
+    print(user)
     if not user_access["read"]:
         frappe.throw(
             f"You don't have access.",
-            frappe.exceptions.PageDoesNotExistError,
+            frappe.exceptions.PermissionError,
         )
     query = (
         frappe.qb.from_(DriveFile)
@@ -210,6 +212,7 @@ def shared(
     limit=1000,
     tag_list=[],
     mime_type_list=[],
+    public=0,
 ):
     """
     Returns the highest level of shared items shared with/by the current user, group or org
@@ -220,12 +223,16 @@ def shared(
     :rtype: list[frappe._dict]
     """
     by = int(by)
+    public = int(public)
     query = (
         frappe.qb.from_(DriveFile)
         .right_join(DrivePermission)
         .on(
             (DrivePermission.entity == DriveFile.name)
-            & ((DrivePermission.owner if by else DrivePermission.user) == frappe.session.user)
+            & (
+                (DrivePermission.owner if by else DrivePermission.user)
+                == ("" if public else frappe.session.user)
+            )
         )
         .limit(limit)
         .where((DrivePermission.read == 1) & (DriveFile.is_active == 1))

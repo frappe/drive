@@ -13,4 +13,5 @@ drive/www/drive.html
 **/__pycache__
 node_modules/
 experiments/*
+drive/public/dist
 *.sql
