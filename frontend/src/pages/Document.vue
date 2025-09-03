@@ -12,27 +12,37 @@
     </router-link>
   </Teleport>
   <Teleport
-    v-if="docSettings?.doc?.settings?.lock"
+    v-if="docSettings?.doc?.settings"
     to="#navbar-content"
     defer
   >
     <Button
+      v-if="docSettings?.doc?.settings?.lock"
       :icon="LucideLock"
       @click="
         () => {
-          docSettings.doc.settings.lock = false
-          docSettings.setValue.submit({
-            settings: docSettings.doc.settings,
-          })
+          docSettings.doc.settings.lock = null
           editor.editor.commands.focus()
-          toast('Unlocked document.')
+          toast('Unlocked document temporarily.')
+        }
+      "
+      variant="outline"
+    />
+    <Button
+      v-if="docSettings?.doc?.settings?.lock === null"
+      :icon="LucideLockOpen"
+      @click="
+        () => {
+          docSettings.doc.settings.lock = true
+          editor.editor.commands.blur()
+          toast('Locked document.')
         }
       "
       variant="outline"
     />
   </Teleport>
   <Navbar
-    v-if="!document.error"
+    v-if="!document.error && docSettings?.doc"
     :root-resource="document"
     :actions="[
       'extend',
@@ -48,6 +58,7 @@
             label: 'Collaborate',
             icon: LucideUserPen,
             switch: true,
+            switchValue: docSettings.doc.settings.collab,
             onClick: (val) => {
               docSettings.doc.settings.collab = val
               docSettings.setValue.submit({
@@ -68,8 +79,10 @@
               {
                 label: 'Lock',
                 switch: true,
+                switchValue: docSettings.doc.settings.lock,
                 icon: LucideLock,
                 onClick: (val) => {
+                  console.log(val)
                   docSettings.doc.settings.lock = val
                   docSettings.setValue.submit({
                     settings: JSON.stringify(docSettings.doc.settings),
@@ -80,6 +93,7 @@
                 label: 'Wide',
                 icon: LucideRulerDimensionLine,
                 switch: true,
+                switchValue: docSettings.doc.settings.wide,
                 onClick: (val) => {
                   docSettings.doc.settings.wide = val
                   docSettings.setValue.submit({
@@ -96,6 +110,7 @@
                   })
                 },
                 switch: true,
+                switchValue: docSettings.doc.settings.minimal,
                 label: 'Minimal',
                 icon: LucideEraser,
               },
@@ -223,6 +238,7 @@ import LucideView from "~icons/lucide/view"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideLock from "~icons/lucide/lock"
+import LucideLockOpen from "~icons/lucide/lock-open"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
 import { dynamicList } from "../utils/files"

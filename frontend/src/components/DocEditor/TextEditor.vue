@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full h-100 overflow-y-hidden">
-    <div class="flex-1 ps-4 md:w-auto md:p-0">
+    <div class="flex-1 md:w-auto md:p-0">
       <div
         v-if="current"
         class="bg-surface-blue-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
@@ -33,7 +33,7 @@
           $event.target.tagName === 'DIV' &&
             textEditor.editor?.chain?.().focus?.().run?.()
         "
-        class="mx-auto cursor-text min-h-full w-full ps-4 overflow-y-auto"
+        class="mx-auto cursor-text w-full flex justify-center h-full"
       >
         <div
           v-if="!updated"
@@ -45,8 +45,7 @@
           v-show="updated"
           :key="editorExtensions.length"
           ref="textEditor"
-          class="min-w-full"
-          :class="settings?.wide ? 'md:min-w-[79ch]' : 'md:min-w-[65ch]'"
+          class="min-w-full h-full"
           :editor-class="[
             'prose-sm min-h-[4rem] !min-w-0 mx-auto',
             `text-[${writerSettings.doc?.font_size || 15}px]`,
@@ -54,7 +53,7 @@
             writerSettings.doc?.custom_css,
           ]"
           :content="!settings?.collab ? rawContent : undefined"
-          :editable="!!entity.write && !settings?.lock"
+          :editable
           :upload-function="
             (file) => {
               const fileUpload = useFileUpload()
@@ -65,6 +64,7 @@
               })
             }
           "
+          @click="console.log($event)"
           @change="
             (val) => {
               if (val === rawContent || current) return
@@ -83,7 +83,21 @@
           placeholder="Start writing here..."
           :bubble-menu="bubbleMenuButtons"
           :extensions="editorExtensions"
-        />
+        >
+          <template #top>
+            <TextEditorFixedMenu
+              v-if="editable"
+              class="w-full overflow-x-auto border-b border-outline-gray-modals justify-center py-1.5"
+              :buttons="bubbleMenuButtons"
+            />
+          </template>
+          <template #editor="{ editor }">
+            <EditorContent
+              :editor="editor"
+              class="h-full overflow-y-auto"
+            />
+          </template>
+        </FTextEditor>
       </div>
     </div>
     <FloatingComments
@@ -101,6 +115,7 @@
 import { toast } from "@/utils/toasts.js"
 import {
   TextEditor as FTextEditor,
+  TextEditorFixedMenu,
   debounce,
   useFileUpload,
   useDoc,
@@ -117,6 +132,7 @@ import {
   getCurrentInstance,
 } from "vue"
 import store from "@/store"
+import { EditorContent } from "@tiptap/vue-3"
 import FontFamily from "./extensions/font-family"
 import FloatingQuoteButton from "./extensions/comment"
 import { CharacterCount } from "./extensions/character-count"
@@ -155,6 +171,7 @@ const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
 })
+const editable = computed(() => !!props.entity.write && !props.settings?.lock)
 defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
