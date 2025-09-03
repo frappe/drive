@@ -314,7 +314,7 @@ def create_drive_file(
     drive_file.insert(ignore_permissions=True)
     path = entity_path(drive_file)
     drive_file.path = str(path) if path else ""
-    drive_file.save()
+    drive_file.save(ignore_permissions=True)
     if owner:
         drive_file.db_set("owner", owner, update_modified=False)
     return drive_file
@@ -333,6 +333,8 @@ def strip_comment_spans(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
 
     for span in soup.find_all("span", attrs={"data-comment-id": True}):
-        span.unwrap()  # remove the tag, keep its children
+        span.unwrap()
+    for span in soup.find_all("img"):
+        span.unwrap()
 
     return str(soup)

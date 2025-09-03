@@ -12,12 +12,9 @@
     >
       <div v-if="icon" v-html="icon" />
       <Thumbnail v-else :node="node" />
-      <a
-        class="tree-label text-nowrap overflow-hidden"
-        :title="node.label"
-        style="max-width: 120px; text-overflow: ellipsis"
-        >{{ node.label }}</a
-      >
+      <a class="tree-label text-nowrap overflow-hidden" :title="node.label">{{
+        node.label
+      }}</a>
       <a
         v-if="!node.is_group"
         :href="'/drive/f/' + node.value"
@@ -25,6 +22,11 @@
         style="align-self: center"
         target="_blank"
         v-html="linkIcon"
+      />
+      <div
+        v-if="node.value === selected_node?.value"
+        v-html="checkIcon"
+        class="ml-auto"
       />
     </span>
     <div v-if="node.file_url && frappe.utils.is_image_file(node.file_url)">
@@ -70,6 +72,7 @@ let emit = defineEmits(["node-click", "load-more"]);
 // computed
 
 let linkIcon = frappe.utils.icon("external-link", "sm");
+let checkIcon = frappe.utils.icon("tick", "sm", "", "", "check-icon");
 let icon = computed(() => {
   if (!props.node.is_group) return;
 
@@ -126,8 +129,14 @@ function onMouseleave() {
   margin-left: 1.6rem;
   margin-top: 0.5rem;
 }
+
 .popover {
   padding: 10px;
+}
+.tree-label {
+  user-select: none;
+  max-width: 300px;
+  text-overflow: ellipsis;
 }
 
 .tree-link .file-link {
@@ -140,5 +149,13 @@ function onMouseleave() {
 
 .tree-link .file-doc-link:hover {
   opacity: 0.8;
+}
+</style>
+<style>
+.check-icon {
+  stroke: white;
+  background: black;
+  border-radius: 100%;
+  padding: 3.5px;
 }
 </style>

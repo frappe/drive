@@ -61,7 +61,7 @@ def files(
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
     user_access = get_user_access(entity, user)
-    print(user)
+
     if not user_access["read"]:
         frappe.throw(
             f"You don't have access.",
@@ -213,6 +213,7 @@ def shared(
     tag_list=[],
     mime_type_list=[],
     public=0,
+    team=None,
 ):
     """
     Returns the highest level of shared items shared with/by the current user, group or org
@@ -252,6 +253,9 @@ def shared(
         order_by.split()[0],
         order=Order.desc if order_by.endswith("desc") else Order.asc,
     )
+
+    if team:
+        query = query.where(DriveFile.team == team)
 
     if tag_list:
         tag_list = json.loads(tag_list)

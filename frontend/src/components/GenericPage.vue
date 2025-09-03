@@ -97,6 +97,7 @@ import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
 import emitter from "../emitter"
 import { sortEntities } from "../utils/files"
+import { allFolders } from "../resources/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -193,6 +194,7 @@ emitter.on("refresh", refreshData)
 
 if (team && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team })
+  if (!allFolders.fetched) allFolders.fetch({ team })
 }
 if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 

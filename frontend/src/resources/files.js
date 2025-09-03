@@ -259,6 +259,7 @@ export const rename = createResource({
     if (l.name === rename.params.entity_name) {
       l.label = rename.params.new_title
       store.state.activeEntity.title = rename.params.new_title
+      store.state.activeEntity.modified = new Date()
       setTitle(rename.params.new_title)
       updateURLSlug(rename.params.new_title)
     }
