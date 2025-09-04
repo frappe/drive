@@ -3,7 +3,7 @@
     v-if="editor"
     class="self-stretch w-96 border-s-2 h-full overflow-hidden"
   >
-    <h3 class="p-3 border-b text-large text-ink-gray-9 font-semibold">
+    <h3 class="p-2 px-3 border-b text-large text-ink-gray-9 font-semibold">
       Versions
       <Button
         :icon="LucideX"

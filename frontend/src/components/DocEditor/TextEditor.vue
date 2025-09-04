@@ -42,8 +42,10 @@
           Updating...
         </div>
         <FTextEditor
-          v-show="updated"
-          :key="editorExtensions.length"
+          v-if="
+            !collab ||
+            editorExtensions.find((k) => k.name === 'collaborationCursor')
+          "
           ref="textEditor"
           class="min-w-full h-full"
           :editor-class="[
@@ -64,7 +66,6 @@
               })
             }
           "
-          @click="console.log($event)"
           @change="
             (val) => {
               if (val === rawContent || current) return
@@ -75,8 +76,8 @@
                   .objectStore('content')
                   .put({ val, saved: new Date() }, props.entity.name)
               edited = true
-              autosave()
-              autoversion()
+              // autosave()
+              // autoversion()
             }
           "
           :mentions="users"
@@ -143,10 +144,9 @@ import { printDoc, getRandomColor } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
-import { TiptapCollabProvider } from "@hocuspocus/provider"
-import { TiptapTransformer } from "@hocuspocus/transformer"
 import Collaboration from "@tiptap/extension-collaboration"
 import * as Y from "yjs"
+import { IndexeddbPersistence } from "y-indexeddb"
 import { ySyncPluginKey } from "y-prosemirror"
 import { WebrtcProvider } from "y-webrtc"
 
@@ -188,7 +188,7 @@ const autoversion = debounce(() => {
   if (!collab.value) return
   const snap = Y.encodeSnapshot(Y.snapshot(doc))
   emit("newVersion", snap)
-}, 60000)
+}, 20000)
 
 watch(
   () => props.currentVersion,
@@ -196,7 +196,6 @@ watch(
     if (!val) return
     toast("Changing version")
     const { view } = editor.value
-    console.log(val[0], val[1])
     view.dispatch(
       view.state.tr.setMeta(ySyncPluginKey, {
         snapshot: Y.decodeSnapshot(val[1].snapshot),
@@ -296,8 +295,6 @@ const ExtendedCommentExtension = CommentExtension.extend({
   },
 })
 
-// Disables garbage collection
-
 const editorExtensions = [
   CharacterCount,
   FontFamily.configure({
@@ -323,12 +320,12 @@ const editorExtensions = [
     },
   }),
 ]
-const doc = new Y.Doc({ gc: false })
-// if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
-let prov
-const collab = computed(() => true)
+let prov, doc
+const collab = computed(() => props.settings.collab)
 if (collab.value) {
+  doc = new Y.Doc({ gc: false })
+
   const permanentUserData = new Y.PermanentUserData(doc)
   permanentUserData.setUserMapping(doc, doc.clientID, "Administrator")
   const colors = [
@@ -336,12 +333,34 @@ if (collab.value) {
     { light: "#ee635233", dark: "#ee6352" },
     { light: "#6eeb8333", dark: "#6eeb83" },
   ]
+  const localstorage = new IndexeddbPersistence(
+    "fdoc-" + props.entity.name,
+    doc
+  )
+  if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+  localstorage.on("synced", (db) => {
+    console.log(db.doc)
+    console.log("content from the database is loaded")
+  })
+  prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
+    signaling: ["wss://signal.frappe.cloud"],
+  })
+
   editorExtensions.push(
     Collaboration.configure({
       document: doc,
+      field: "default",
       ySyncOptions: {
         permanentUserData,
         colors,
+      },
+    }),
+    CollaborationCursor.configure({
+      provider: prov,
+      user: {
+        name: store.state.user.fullName,
+        avatar: store.state.user.imageURL,
+        color: getRandomColor(),
       },
     })
   )
@@ -437,21 +456,6 @@ onMounted(() => {
   }
   if (collab.value) {
     if (component.vnode.key > 0) updated.value = false
-    prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
-      signaling: ["wss://signal.frappe.cloud"],
-    })
-    // prov.on("synced", (e) => {
-    // })
-    // editorExtensions.push(
-    //   CollaborationCursor.configure({
-    //     provider: prov,
-    //     user: {
-    //       name: store.state.user.fullName,
-    //       avatar: store.state.user.imageURL,
-    //       color: getRandomColor(),
-    //     },
-    //   })
-    // )
   }
 })
 
@@ -496,7 +500,7 @@ function getOrderedComments(doc) {
 // Local saving
 const db = ref()
 watch(db, (db) => {
-  if (!props.entity.write) return
+  if (!props.entity.write || collab.value) return
   db
     .transaction(["content"])
     .objectStore("content")

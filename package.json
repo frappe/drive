@@ -9,5 +9,10 @@
     "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd ..",
     "disable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh disable",
     "enable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh enable"
+  },
+  "pnpm": {
+    "overrides": {
+      "yjs": "13.6.27"
+    }
   }
 }

@@ -53,9 +53,7 @@
       @dropped="onDrop"
     />
   </div>
-  <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
-    Drop to upload
-  </p>
+  <p class="absolute text-center top-[50%] z-10 font-bold">Drop to upload</p>
   <FileUploader
     v-if="$store.state.user.id"
     @success="getEntities.fetch"
