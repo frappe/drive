@@ -42,12 +42,14 @@
     >
       <UploadTracker v-if="showUploadTracker" />
     </Transition>
+    <FDialogs />
   </FrappeUIProvider>
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
 import UploadTracker from "@/components/UploadTracker.vue"
 import SearchPopup from "./components/SearchPopup.vue"
+import FDialogs from "./components/FDialogs.vue"
 import BottomBar from "./components/BottomBar.vue"
 import { useStore } from "vuex"
 import { ref, computed } from "vue"

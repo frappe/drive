@@ -47,12 +47,13 @@
             editorExtensions.find((k) => k.name === 'collaborationCursor')
           "
           ref="textEditor"
-          class="min-w-full h-full"
+          class="min-w-full h-full flex flex-col"
           :editor-class="[
             'prose-sm min-h-[4rem] !min-w-0 mx-auto',
             `text-[${writerSettings.doc?.font_size || 15}px]`,
             `leading-[${writerSettings.doc?.line_height || 1.5}]`,
             writerSettings.doc?.custom_css,
+            current ? 'pb-24' : '',
           ]"
           :content="!collab ? rawContent : undefined"
           :editable
@@ -76,8 +77,8 @@
                   .objectStore('content')
                   .put({ val, saved: new Date() }, props.entity.name)
               edited = true
-              // autosave()
-              // autoversion()
+              autosave()
+              autoversion()
             }
           "
           :mentions="users"
@@ -188,7 +189,7 @@ const autoversion = debounce(() => {
   if (!collab.value) return
   const snap = Y.encodeSnapshot(Y.snapshot(doc))
   emit("newVersion", snap)
-}, 20000)
+}, 1000)
 
 watch(
   () => props.currentVersion,
@@ -338,10 +339,6 @@ if (collab.value) {
     doc
   )
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
-  localstorage.on("synced", (db) => {
-    console.log(db.doc)
-    console.log("content from the database is loaded")
-  })
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
     signaling: ["wss://signal.frappe.cloud"],
   })

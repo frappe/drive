@@ -116,6 +116,13 @@
               },
             ],
           },
+          {
+            onClick: (val) => {
+              showSettings = true
+            },
+            label: 'Settings',
+            icon: LucideSettings,
+          },
         ],
       },
       {
@@ -205,6 +212,11 @@
       :versions="entity.versions"
       @save-document="saveDocument"
     />
+    <WriterSettings
+      v-if="showSettings"
+      v-model="showSettings"
+      :doc-settings
+    />
   </div>
 </template>
 
@@ -225,8 +237,10 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { createResource, LoadingIndicator, Switch, useDoc } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
+import { createDialog } from "@/utils/dialogs"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
+import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
 import { toast } from "../utils/toasts"
 
 import MessagesSquare from "~icons/lucide/messages-square"
@@ -234,6 +248,7 @@ import LucideRulerDimensionLine from "~icons/lucide/ruler-dimension-line"
 import LucideUserPen from "~icons/lucide/user-pen"
 import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
+import LucideSettings from "~icons/lucide/settings"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideLock from "~icons/lucide/lock"
@@ -275,6 +290,7 @@ const current = ref(null)
 const lastFetched = ref(0)
 const showComments = ref(false)
 const showVersions = ref(false)
+const showSettings = ref(false)
 const edited = ref(false)
 watch(showVersions, (v) => {
   if (!v) current.value = null
