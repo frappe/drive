@@ -1,18 +1,18 @@
 <template>
   <Teleport
-    v-if="docSettings?.doc?.settings?.minimal"
+    v-if="docSettings?.doc?.settings?.minimal && entity.write"
     to="#navbar-prefix"
     defer
   >
     <router-link
-      :to="document.data.breadcrumbs[0].route"
+      :to="originalBreadcrumbs?.[0]?.route"
       class="cursor-pointer"
     >
       <LucideArrowLeft class="size-3.5" />
     </router-link>
   </Teleport>
   <Teleport
-    v-if="docSettings?.doc?.settings"
+    v-if="docSettings?.doc?.settings && entity.write"
     to="#navbar-content"
     defer
   >
@@ -49,7 +49,7 @@
       {
         group: true,
         hideLabel: true,
-        items: [
+        items: dynamicList([
           {
             onClick: (e) => {
               e.stopPropagation()
@@ -75,6 +75,7 @@
           {
             label: 'View',
             icon: LucideView,
+            cond: entity.write,
             submenu: [
               {
                 label: 'Lock',
@@ -123,7 +124,7 @@
             label: 'Settings',
             icon: LucideSettings,
           },
-        ],
+        ]),
       },
       {
         group: true,
@@ -183,8 +184,6 @@
     class="flex w-full h-full overflow-auto"
   >
     <TextEditor
-      v-if="entity"
-      :key="switchCount"
       ref="editor"
       v-model:edited="edited"
       v-model:raw-content="rawContent"
@@ -237,7 +236,6 @@ import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { createResource, LoadingIndicator, Switch, useDoc } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
-import { createDialog } from "@/utils/dialogs"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
@@ -339,7 +337,7 @@ const onSuccess = (data) => {
       immediate: true,
       transform: (doc) => {
         doc.settings = JSON.parse(doc.settings)
-        toggleMinimal(doc.settings.minimal)
+        if (entity.value.write) toggleMinimal(doc.settings.minimal)
         return doc
       },
     })
@@ -384,19 +382,21 @@ window.addEventListener("online", () => {
 
 allUsers.fetch({ team: route.params.team })
 
-onBeforeUnmount(() => edited.value && saveDocument())
+onBeforeUnmount(() => {
+  if (edited.value) saveDocument()
+  window.document.querySelector("#sidebar").style.removeProperty("display")
+})
 
 let originalBreadcrumbs
 const toggleMinimal = (val) => {
   if (val) {
-    originalBreadcrumbs = store.state.breadcrumbs
+    originalBreadcrumbs = [...store.state.breadcrumbs]
     store.commit("setBreadcrumbs", store.state.breadcrumbs.slice(-1))
     window.document.querySelector("#sidebar").style.display = "none"
   } else if (originalBreadcrumbs) {
+    console.log(originalBreadcrumbs.length)
     store.commit("setBreadcrumbs", originalBreadcrumbs)
-    delete window.document
-      .querySelector("#sidebar")
-      .style.removeProperty("display")
+    window.document.querySelector("#sidebar").style.removeProperty("display")
   }
 }
 </script>

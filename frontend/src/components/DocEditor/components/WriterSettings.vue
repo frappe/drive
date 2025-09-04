@@ -75,22 +75,22 @@ const store = useStore()
 const open = ref(true)
 const model = defineModel()
 
-const tabIndex = ref(0)
-
 const props = defineProps({
   docSettings: { required: true, type: Object },
+  editable: Boolean,
 })
-const tabs = [
-  { label: "This document", icon: LucideFileText },
+const tabs = dynamicList([
   { label: "Everywhere", icon: LucideGlobe2 },
-]
+  { label: "This document", icon: LucideFileText, cond: props.editable },
+])
+const tabIndex = ref(props.editable ? 1 : 0)
 
 const fontOptions = computed(() =>
   dynamicList([
     {
       label: "Automatic",
       value: "global",
-      cond: tabIndex.value === 0,
+      cond: tabIndex.value === 1,
     },
     ...FONT_FAMILIES,
   ])
@@ -100,7 +100,7 @@ const fontSizeOptions = computed(() =>
     {
       label: "Automatic",
       value: "global",
-      cond: tabIndex.value === 0,
+      cond: tabIndex.value === 1,
     },
     { label: "13px", value: 14 },
     { label: "14px", value: 14 },
@@ -116,7 +116,7 @@ const lineHeightOptions = computed(() =>
     {
       label: "Automatic",
       value: "global",
-      cond: tabIndex.value === 0,
+      cond: tabIndex.value === 1,
     },
     { label: "1.2", value: "1.2" },
     { label: "1.4", value: "1.4" },
@@ -140,10 +140,10 @@ const globalSettings = useDoc({
   },
 })
 const resource = computed(() =>
-  tabIndex.value === 0 ? props.docSettings : globalSettings
+  tabIndex.value === 1 ? props.docSettings : globalSettings
 )
 const key = computed(() =>
-  tabIndex.value === 0 ? "settings" : "writer_settings"
+  tabIndex.value === 1 ? "settings" : "writer_settings"
 )
 
 const KEYS = ["font_family", "font_size", "line_height"]

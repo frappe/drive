@@ -183,7 +183,7 @@ const props = defineProps({
 })
 const comments = ref([])
 const settings = computed(() => {
-  for (let [k, v] in Object.entries(props.settings)) {
+  for (let [k, v] of Object.entries(props.settings)) {
     if (v === "global") delete props.settings[k]
   }
   return {

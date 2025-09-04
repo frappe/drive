@@ -16,7 +16,7 @@
       />
     </h3>
     <div
-      class="flex p-2 flex-col justify-start pb-5 bg-surface-white h-full overflow-y-auto pb-15"
+      class="flex p-2 flex-col justify-start bg-surface-white h-full overflow-y-auto pb-12"
     >
       <Button
         v-for="(version, i) in versions"

@@ -17,12 +17,12 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -369,9 +369,18 @@ def save_doc(entity_name, content, doc_name=None, yjs=None):
         return
 
     if doc_name:
-        frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-        if yjs:
-            frappe.db.set_value("Drive Document", doc_name, "content", yjs)
+        try:
+            frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+            if yjs:
+                frappe.db.set_value("Drive Document", doc_name, "content", yjs)
+        except frappe.exceptions.QueryDeadlockError:
+            if yjs:
+                # Pass if there's a deadlock, as CRDT is supposed to take care of it.
+                frappe.log_error(
+                    f"There was a collision, not storing data -{entity_name}, {doc_name}"
+                )
+            else:
+                frappe.throw("There was a conflict - consider turning on collaborative mode.")
     else:
         # Text based files
         h = html2text.HTML2Text()
