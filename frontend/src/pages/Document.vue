@@ -184,7 +184,6 @@
       v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
       v-model:current="current"
-      :current-version
       :show-resolved
       :entity
       :settings="docSettings?.doc?.settings"

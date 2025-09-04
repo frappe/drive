@@ -52,7 +52,7 @@
             `leading-[${writerSettings.doc?.line_height || 1.5}]`,
             writerSettings.doc?.custom_css,
           ]"
-          :content="!settings?.collab ? rawContent : undefined"
+          :content="!collab ? rawContent : undefined"
           :editable
           :upload-function="
             (file) => {
@@ -69,7 +69,7 @@
             (val) => {
               if (val === rawContent || current) return
               rawContent = val
-              if (settings?.collab) yjsContent = Y.encodeStateAsUpdate(doc)
+              if (collab) yjsContent = Y.encodeStateAsUpdate(doc)
               if (db)
                 db.transaction(['content'], 'readwrite')
                   .objectStore('content')
@@ -147,21 +147,14 @@ import { TiptapCollabProvider } from "@hocuspocus/provider"
 import { TiptapTransformer } from "@hocuspocus/transformer"
 import Collaboration from "@tiptap/extension-collaboration"
 import * as Y from "yjs"
-import {
-  ySyncPlugin,
-  ySyncPluginKey,
-  yCursorPlugin,
-  yUndoPlugin,
-  undo,
-  redo,
-} from "y-prosemirror"
+import { ySyncPluginKey } from "y-prosemirror"
+import { WebrtcProvider } from "y-webrtc"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 
 import LucideMessageCircle from "~icons/lucide/message-circle"
-import { useTimeAgo } from "@vueuse/core"
 import { formatDate } from "../../utils/format"
 
 const textEditor = ref("textEditor")
@@ -192,9 +185,10 @@ const emit = defineEmits(["newVersion", "saveDocument"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
 const autoversion = debounce(() => {
+  if (!collab.value) return
   const snap = Y.encodeSnapshot(Y.snapshot(doc))
   emit("newVersion", snap)
-}, 200)
+}, 60000)
 
 watch(
   () => props.currentVersion,
@@ -329,11 +323,12 @@ const editorExtensions = [
     },
   }),
 ]
-let doc
-const collab = computed(() => props.settings?.collab)
+const doc = new Y.Doc({ gc: false })
+// if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+
+let prov
+const collab = computed(() => true)
 if (collab.value) {
-  doc = new Y.Doc({ gc: false })
-  if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
   const permanentUserData = new Y.PermanentUserData(doc)
   permanentUserData.setUserMapping(doc, doc.clientID, "Administrator")
   const colors = [
@@ -442,33 +437,21 @@ onMounted(() => {
   }
   if (collab.value) {
     if (component.vnode.key > 0) updated.value = false
-    const provider = new TiptapCollabProvider({
-      name: props.entity.name, // Document identifier
-      appId: "ok01lqjm",
-      token:
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTY0NjA3NjksIm5iZiI6MTc1NjQ2MDc2OSwiZXhwIjoxNzU2NTQ3MTY5LCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJvazAxbHFqbSJ9.cIiC3gpODr2iHXo9mVJNfkmKdmInFBnLZOH411-9XpU",
-      document: doc,
-      user: store.state.user.id,
-      onAuthenticationFailed() {
-        toast({ type: "error", title: "Realtime authentication failed." })
-      },
-      onSynced() {
-        if (component.vnode.key > 0) {
-          editor.value.commands.setContent(rawContent.value)
-          updated.value = true
-        }
-      },
+    prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
+      signaling: ["wss://signal.frappe.cloud"],
     })
-    editorExtensions.push(
-      CollaborationCursor.configure({
-        provider,
-        user: {
-          name: store.state.user.fullName,
-          avatar: store.state.user.imageURL,
-          color: getRandomColor(),
-        },
-      })
-    )
+    // prov.on("synced", (e) => {
+    // })
+    // editorExtensions.push(
+    //   CollaborationCursor.configure({
+    //     provider: prov,
+    //     user: {
+    //       name: store.state.user.fullName,
+    //       avatar: store.state.user.imageURL,
+    //       color: getRandomColor(),
+    //     },
+    //   })
+    // )
   }
 })
 
@@ -476,6 +459,10 @@ onBeforeUnmount(() => {
   comments.value
     .filter((k) => k.new)
     .filter(({ name }) => editor.value.commands.unsetComment(name))
+  if (prov) {
+    prov.disconnect()
+    prov.destroy()
+  }
 })
 
 onKeyDown("Enter", evalImplicitTitle)
