@@ -48,11 +48,12 @@
           "
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
+          :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
           :editor-class="[
             'prose-sm min-h-[4rem] !min-w-0 mx-auto',
-            `text-[${writerSettings.doc?.font_size || 15}px]`,
-            `leading-[${writerSettings.doc?.line_height || 1.5}]`,
-            writerSettings.doc?.custom_css,
+            `text-[${settings?.font_size || 15}px]`,
+            `leading-[${settings?.line_height || 1.5}]`,
+            settings?.custom_css,
             current ? 'pb-24' : '',
           ]"
           :content="!collab ? rawContent : undefined"
@@ -181,6 +182,15 @@ const props = defineProps({
   currentVersion: { required: false, type: Object },
 })
 const comments = ref([])
+const settings = computed(() => {
+  for (let [k, v] in Object.entries(props.settings)) {
+    if (v === "global") delete props.settings[k]
+  }
+  return {
+    ...writerSettings.doc?.settings,
+    ...props.settings,
+  }
+})
 
 const emit = defineEmits(["newVersion", "saveDocument"])
 const activeComment = ref(null)
@@ -210,6 +220,10 @@ const writerSettings = useDoc({
   doctype: "Drive Settings",
   name: store.state.user.id,
   immediate: true,
+  transform: (doc) => {
+    doc.settings = JSON.parse(doc.writer_settings)
+    return doc
+  },
 })
 writerSettings.onSuccess(({ font_family }) => {
   if (!rawContent.value)
@@ -334,10 +348,7 @@ if (collab.value) {
     { light: "#ee635233", dark: "#ee6352" },
     { light: "#6eeb8333", dark: "#6eeb83" },
   ]
-  const localstorage = new IndexeddbPersistence(
-    "fdoc-" + props.entity.name,
-    doc
-  )
+  new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
     signaling: ["wss://signal.frappe.cloud"],
@@ -467,18 +478,15 @@ onBeforeUnmount(() => {
 })
 
 onKeyDown("Enter", evalImplicitTitle)
-debounce()
-onKeyDown("V", () => {})
-
-onKeyDown("S", (e) => {
-  if (!e.metaKey) {
+onKeyDown("s", (e) => {
+  if (!e.metaKey || !e.shiftKey) {
     return
   }
   e.preventDefault()
-  emit("saveDocument") &&
-    toast({
-      title: "Document saved",
-    })
+  emit("saveDocument")
+  toast({
+    title: "Saving document",
+  })
 })
 
 function getOrderedComments(doc) {
