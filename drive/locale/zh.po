@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-08-25 14:31\n"
+"PO-Revision-Date: 2025-09-05 17:01\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -21,22 +21,22 @@ msgstr ""
 #. Description of the 'Access Level' (Int) field in DocType 'Drive Team Member'
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "0 for Guest, 1 for User, 2 for Manager"
-msgstr ""
+msgstr "0 表示访客，1 表示用户，2 表示管理员"
 
 #. Header text in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "<span style=\"font-size: 16px;\">Manage Drive</span>"
-msgstr ""
+msgstr "<span style=\"font-size: 16px;\">管理云盘</span>"
 
 #. Label of the aws_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Key"
-msgstr ""
+msgstr "AWS 密钥"
 
 #. Label of the aws_secret (Password) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Secret"
-msgstr ""
+msgstr "AWS 密钥"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -46,17 +46,17 @@ msgstr "已接受"
 #. Label of the accepted_on (Datetime) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Accepted On"
-msgstr ""
+msgstr "接受于"
 
 #. Label of the access_level (Int) field in DocType 'Drive Team Member'
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Access Level"
-msgstr ""
+msgstr "访问级别"
 
 #. Name of a DocType
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Account Request"
-msgstr ""
+msgstr "账户请求"
 
 #. Label of the action_type (Select) field in DocType 'Drive Entity Activity
 #. Log'
@@ -70,7 +70,7 @@ msgstr "活动"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:77
 msgid "Add Image"
-msgstr ""
+msgstr "添加图片"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -99,11 +99,11 @@ msgstr "应用"
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Auto Detect Links"
-msgstr ""
+msgstr "自动检测链接"
 
 #: frontend/src/components/Settings/BackendSettings.vue:6
 msgid "Backend"
-msgstr ""
+msgstr "后端"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
@@ -113,11 +113,11 @@ msgstr "由"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare"
-msgstr ""
+msgstr "可以包含访问日志所需的任何元数据值。例如：用于在 DriveDocShare 上存储访问级别 1、2、3 等"
 
 #: frontend/src/components/InfoPopup.vue:68
 msgid "Characters"
-msgstr ""
+msgstr "字符数"
 
 #: frontend/src/components/Navbar.vue:316
 #: frontend/src/components/Navbar.vue:322
@@ -178,13 +178,13 @@ msgstr "自定义CSS"
 #. Label of the default_team (Link) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Default Team"
-msgstr ""
+msgstr "默认团队"
 
 #. Description of the 'Signature Version' (Data) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
-msgstr ""
+msgstr "默认为 \"s3v4\"。一些提供商仅支持 \"s3\"。"
 
 #: frontend/src/components/GenericPage.vue:295
 #: frontend/src/components/Navbar.vue:267
@@ -193,12 +193,12 @@ msgstr "删除"
 
 #: frontend/src/components/InfoPopup.vue:148
 msgid "Developer"
-msgstr ""
+msgstr "开发者"
 
 #. Label of the flat (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Do not mimic folder/file structure"
-msgstr ""
+msgstr "不模拟文件夹/文件结构"
 
 #. Label of the notif_doctype_name (Dynamic Link) field in DocType 'Drive
 #. Notification'
@@ -215,7 +215,7 @@ msgstr "文档"
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Document Field"
-msgstr ""
+msgstr "文档字段"
 
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -234,89 +234,89 @@ msgstr "下载"
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
 msgid "Drive"
-msgstr ""
+msgstr "云盘"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Drive Comment"
-msgstr ""
+msgstr "云盘评论"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Disk Settings"
-msgstr ""
+msgstr "云盘磁盘设置"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Drive Document"
-msgstr ""
+msgstr "云盘文档"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Drive Document Version"
-msgstr ""
+msgstr "云盘文档版本"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Drive Entity Activity Log"
-msgstr ""
+msgstr "云盘实体活动日志"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Drive Entity Log"
-msgstr ""
+msgstr "云盘实体日志"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Drive Entity Tag"
-msgstr ""
+msgstr "云盘实体标签"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 msgid "Drive Favourite"
-msgstr ""
+msgstr "云盘收藏"
 
 #. Label of the entity (Link) field in DocType 'Drive Favourite'
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Drive File"
-msgstr ""
+msgstr "云盘文件"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Drive Notification"
-msgstr ""
+msgstr "云盘通知"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Drive Permission"
-msgstr ""
+msgstr "云盘权限"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Drive Settings"
-msgstr ""
+msgstr "云盘设置"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_tag/drive_tag.json
 msgid "Drive Tag"
-msgstr ""
+msgstr "云盘标签"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Drive Team"
-msgstr ""
+msgstr "云盘团队"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Drive Team Member"
-msgstr ""
+msgstr "云盘团队成员"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
-msgstr ""
+msgstr "云盘用户邀请"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
@@ -324,7 +324,7 @@ msgstr "编辑个人资料"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
-msgstr ""
+msgstr "编辑个人资料"
 
 #. Label of the email (Data) field in DocType 'Account Request'
 #. Label of the email (Data) field in DocType 'Drive User Invitation'
@@ -368,7 +368,7 @@ msgstr "实体类型"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Example format: https://s3.ap-south-1.amazonaws.com"
-msgstr ""
+msgstr "示例格式：https://s3.ap-south-1.amazonaws.com"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -378,7 +378,7 @@ msgstr "已过期"
 #: frontend/src/components/GenericPage.vue:256
 #: frontend/src/components/Navbar.vue:238
 msgid "Favourite"
-msgstr ""
+msgstr "收藏"
 
 #. Label of the file_size (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -387,7 +387,7 @@ msgstr "文件大小"
 
 #: frontend/src/components/Sidebar.vue:220
 msgid "Find"
-msgstr ""
+msgstr "查找"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
@@ -396,7 +396,7 @@ msgstr "姓名"
 #. Label of the font_family (Data) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Font Family"
-msgstr ""
+msgstr "字体"
 
 #. Label of the font_size (Int) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -418,12 +418,12 @@ msgstr "正常"
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Geo Location"
-msgstr ""
+msgstr "地理位置"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Go to Drive"
-msgstr ""
+msgstr "前往云盘"
 
 #. Name of a role
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -443,7 +443,7 @@ msgstr "IP地址"
 #. Description of the 'Quota' (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "In MB"
-msgstr ""
+msgstr "单位：MB"
 
 #: frontend/src/components/Sidebar.vue:225
 msgid "Inbox"
@@ -451,13 +451,13 @@ msgstr "收件箱"
 
 #: frontend/src/components/InfoSidebar.vue:15
 msgid "Information"
-msgstr ""
+msgstr "信息"
 
 #. Label of the invite (Link) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 #: frontend/src/components/Settings/UserListSettings.vue:13
 msgid "Invite"
-msgstr ""
+msgstr "邀请"
 
 #. Label of the is_active (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -472,7 +472,7 @@ msgstr "是组"
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Link"
-msgstr ""
+msgstr "是否链接"
 
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -482,25 +482,25 @@ msgstr "是否私有"
 #. Label of the resolved (Check) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Is Resolved"
-msgstr ""
+msgstr "是否已解决"
 
 #. Label of the jwt_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "JWT Key"
-msgstr ""
+msgstr "JWT 密钥"
 
 #: frontend/src/components/ListView.vue:194
 msgid "Last Accessed"
-msgstr ""
+msgstr "最近访问"
 
 #. Label of the last_interaction (Datetime) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Last Interaction"
-msgstr ""
+msgstr "最后一次互动"
 
 #: frontend/src/components/ListView.vue:186
 msgid "Last Modified"
-msgstr ""
+msgstr "最后修改"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:88
 msgid "Last Name"
@@ -513,12 +513,12 @@ msgid "Legacy option.\n"
 "<br>\n"
 "<br>\n"
 "By default, Drive stores files the way you see it. If this option is checked, the files are store flatly, with randomized names.\n"
-msgstr ""
+msgstr "旧版选项。<br><br>默认情况下，云盘按您看到的方式存储文件。如果选中此选项，文件将以随机名称扁平化存储。"
 
 #. Label of the line_height (Data) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Line Height"
-msgstr ""
+msgstr "行高"
 
 #: frontend/src/components/Sidebar.vue:150
 msgid "Log out"
@@ -527,12 +527,12 @@ msgstr "退出系统"
 #. Label of the login_count (Int) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Login Count"
-msgstr ""
+msgstr "登录次数"
 
 #. Label of the mime_type (Data) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "MIME Type"
-msgstr ""
+msgstr "MIME 类型"
 
 #: frontend/src/components/InfoPopup.vue:97
 #: frontend/src/components/InfoSidebar.vue:64
@@ -543,7 +543,7 @@ msgstr "管理"
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Manage Disk Settings"
-msgstr ""
+msgstr "管理磁盘设置"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -568,7 +568,7 @@ msgstr "信息"
 #. Label of the meta_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Meta Value"
-msgstr ""
+msgstr "元数值"
 
 #. Label of the _modified (Datetime) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -576,7 +576,7 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:41
 #: frontend/src/components/InfoSidebar.vue:103
 msgid "Modified"
-msgstr ""
+msgstr "修改时间"
 
 #: frontend/src/components/GenericPage.vue:236
 #: frontend/src/components/Navbar.vue:220
@@ -594,7 +594,7 @@ msgstr "新建"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
-msgstr ""
+msgstr "新标签"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -603,32 +603,32 @@ msgstr "新值"
 
 #: drive/public/js/ff_integration.bundle.js:23
 msgid "No teams available"
-msgstr ""
+msgstr "暂无可用团队"
 
 #. Label of the oauth_signup (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OAuth Signup"
-msgstr ""
+msgstr "OAuth 注册"
 
 #. Label of the otp (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OTP"
-msgstr ""
+msgstr "一次性密码 (OTP)"
 
 #. Label of the otp_generated_at (Datetime) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OTP Generated at"
-msgstr ""
+msgstr "OTP 生成于"
 
 #. Label of the old_name (Data) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Old Name"
-msgstr ""
+msgstr "曾用名"
 
 #. Label of the old_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Old Value"
-msgstr ""
+msgstr "旧值"
 
 #: frontend/src/components/GenericPage.vue:207
 msgid "Open"
@@ -656,7 +656,7 @@ msgstr "上级单据"
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Parent Entity"
-msgstr ""
+msgstr "上级实体"
 
 #. Label of the path (Text) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -671,11 +671,11 @@ msgstr "待处理"
 #. Label of the personal_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Personal Prefix"
-msgstr ""
+msgstr "个人前缀"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:95
 msgid "Preferences"
-msgstr ""
+msgstr "偏好设置"
 
 #: frontend/src/components/GenericPage.vue:201
 msgid "Preview"
@@ -687,22 +687,22 @@ msgstr "个人资料"
 
 #: frontend/src/components/InfoSidebar.vue:79
 msgid "Properties"
-msgstr ""
+msgstr "属性"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
-msgstr ""
+msgstr "建议"
 
 #. Label of the quota (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Quota"
-msgstr ""
+msgstr "配额"
 
 #. Label of the raw_content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Raw Content"
-msgstr ""
+msgstr "原始内容"
 
 #. Label of the read (Check) field in DocType 'Drive Notification'
 #. Label of the read (Check) field in DocType 'Drive Permission'
@@ -713,27 +713,27 @@ msgstr "读"
 
 #: frontend/src/components/InfoPopup.vue:76
 msgid "Reading time"
-msgstr ""
+msgstr "阅读时间"
 
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referral Source"
-msgstr ""
+msgstr "推荐来源"
 
 #. Label of the referrer_data (Section Break) field in DocType 'Account
 #. Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referrer Data"
-msgstr ""
+msgstr "推荐人数据"
 
 #. Label of the referrer_id (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referrer ID"
-msgstr ""
+msgstr "推荐人 ID"
 
 #: frontend/src/components/GenericPage.vue:282
 msgid "Remove from Recents"
-msgstr ""
+msgstr "从最近中移除"
 
 #: frontend/src/components/GenericPage.vue:244
 #: frontend/src/components/Navbar.vue:226
@@ -748,29 +748,29 @@ msgstr "回复"
 #. Label of the request_key (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Request Key"
-msgstr ""
+msgstr "请求密钥"
 
 #. Label of the root_prefix_type (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Type"
-msgstr ""
+msgstr "根前缀类型"
 
 #. Label of the root_prefix_value (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Value"
-msgstr ""
+msgstr "根前缀值"
 
 #. Label of the s3_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "S3"
-msgstr ""
+msgstr "S3"
 
 #. Label of the bucket (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "S3 Bucket"
-msgstr ""
+msgstr "S3 存储桶"
 
 #: frontend/src/components/DriveToolBar.vue:42
 msgid "Search"
@@ -778,7 +778,7 @@ msgstr "搜索"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
-msgstr ""
+msgstr "设置颜色"
 
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -804,22 +804,22 @@ msgstr "已共享"
 #: frontend/src/components/GenericPage.vue:250
 #: frontend/src/components/Navbar.vue:232
 msgid "Show Info"
-msgstr ""
+msgstr "显示信息"
 
 #. Label of the signature_version (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Signature Version"
-msgstr ""
+msgstr "签名版本"
 
 #. Label of the signed_up (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Signed Up"
-msgstr ""
+msgstr "已注册"
 
 #. Label of the single_click (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Single Click"
-msgstr ""
+msgstr "单击"
 
 #: frontend/src/components/DriveToolBar.vue:331
 #: frontend/src/components/InfoPopup.vue:33
@@ -830,18 +830,18 @@ msgstr "大小"
 
 #: frontend/src/components/DriveToolBar.vue:347
 msgid "Smart"
-msgstr ""
+msgstr "智能"
 
 #. Label of the snapshot_data (Long Text) field in DocType 'Drive Document
 #. Version'
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Data"
-msgstr ""
+msgstr "快照数据"
 
 #. Label of the snapshot_size (Int) field in DocType 'Drive Document Version'
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Size"
-msgstr ""
+msgstr "快照大小"
 
 #: frontend/src/components/InfoPopup.vue:57
 msgid "Stats"
@@ -857,7 +857,7 @@ msgstr "状态"
 #: frontend/src/components/Settings/StorageSettings.vue:3
 #: frontend/src/components/StorageBar.vue:8
 msgid "Storage"
-msgstr ""
+msgstr "存储"
 
 #: frontend/src/components/Sidebar.vue:129
 msgid "Support"
@@ -902,22 +902,22 @@ msgstr "团队"
 #. Label of the team_domain (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Team Domain"
-msgstr ""
+msgstr "团队域名"
 
 #. Label of the team_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Team Prefix"
-msgstr ""
+msgstr "团队前缀"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Teams"
-msgstr ""
+msgstr "团队"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
-msgstr ""
+msgstr "缩略图前缀"
 
 #. Label of the title (Data) field in DocType 'Drive File'
 #. Label of the title (Data) field in DocType 'Drive Tag'
@@ -945,12 +945,12 @@ msgstr "类型"
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "URL Args"
-msgstr ""
+msgstr "URL 参数"
 
 #: frontend/src/components/GenericPage.vue:269
 #: frontend/src/components/Navbar.vue:249
 msgid "Unfavourite"
-msgstr ""
+msgstr "取消收藏"
 
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
@@ -959,7 +959,7 @@ msgstr "上传"
 
 #: frontend/src/components/InfoSidebar.vue:109
 msgid "Uploaded"
-msgstr ""
+msgstr "已上传"
 
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
 #. Label of the user (Link) field in DocType 'Drive Favourite'
@@ -983,7 +983,7 @@ msgstr "用户"
 #. Label of the valid_until (Datetime) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Valid Until"
-msgstr ""
+msgstr "有效期至"
 
 #. Label of the version (Int) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -992,11 +992,11 @@ msgstr "版本"
 
 #: frontend/src/components/DriveToolBar.vue:27
 msgid "With you"
-msgstr ""
+msgstr "与您共享"
 
 #: frontend/src/components/InfoPopup.vue:60
 msgid "Words"
-msgstr ""
+msgstr "字数"
 
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
@@ -1008,7 +1008,7 @@ msgstr "写入"
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: frontend/src/components/Settings/WriterSettings.vue:4
 msgid "Writer"
-msgstr ""
+msgstr "编写器"
 
 #: frontend/src/components/Settings/StorageSettings.vue:21
 msgid "You"
@@ -1040,11 +1040,11 @@ msgstr "编辑"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "item"
-msgstr "物料"
+msgstr "项目"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "items"
-msgstr "物料列表"
+msgstr "项目"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
@@ -1061,7 +1061,7 @@ msgstr "其他"
 #: frontend/src/components/InfoPopup.vue:132
 #: frontend/src/components/ListView.vue:173
 msgid "people"
-msgstr ""
+msgstr "人员"
 
 #: frontend/src/components/InfoPopup.vue:132
 #: frontend/src/components/ListView.vue:173
@@ -1072,39 +1072,39 @@ msgstr "个人"
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "rename"
-msgstr "修改单据编号(名称)"
+msgstr "重命名"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
-msgstr ""
+msgstr "已选择"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_add"
-msgstr ""
+msgstr "添加共享"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_edit"
-msgstr ""
+msgstr "编辑共享"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_remove"
-msgstr ""
+msgstr "删除共享"
 
 #. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "team_id"
-msgstr ""
+msgstr "团队ID"
 
 #. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "team_name"
-msgstr ""
+msgstr "团队名称"
 
