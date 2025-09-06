@@ -3,7 +3,7 @@ import os
 from datetime import date, datetime, timedelta
 from io import BytesIO
 from pathlib import Path
-
+import re
 import frappe
 import jwt
 import magic
@@ -18,13 +18,13 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -404,8 +404,6 @@ def save_doc(entity_name, doc_name, content, comment=False):
     can_write = user_has_permission(entity_name, "write")
     if comment and not can_write:
         old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
-        print(strip_comment_spans(old_content))
-        print(strip_comment_spans(content))
         if not strip_comment_spans(old_content) == strip_comment_spans(content):
             raise frappe.PermissionError("You cannot edit file while commenting.")
         return frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
@@ -502,6 +500,49 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
             download_name=drive_file.title,
             environ=frappe.request.environ,
         )
+
+
+@frappe.whitelist(allow_guest=True)
+def stream_file_content(entity_name):
+    """
+    Stream file content and optionally trigger download
+
+    :param entity_name: Document-name of the file whose content is to be streamed
+    :param drive_entity: Drive Entity record object
+    """
+    range_header = frappe.request.headers.get("Range")
+    entity = frappe.get_doc("Drive File", entity_name)
+    if not user_has_permission(entity, "read"):
+        raise frappe.PermissionError("You do not have permission to view this file")
+    size = entity.file_size
+    byte1, byte2 = 0, None
+
+    m = re.search("(\d+)-(\d*)", range_header)
+    g = m.groups()
+
+    if g[0]:
+        byte1 = int(g[0])
+    if g[1]:
+        byte2 = int(g[1])
+
+    length = size - byte1
+
+    max_length = 20 * 1024 * 1024  # 20 MB in bytes
+    if length > max_length:
+        length = max_length
+
+    if byte2 is not None:
+        length = byte2 - byte1
+
+    manager = FileManager()
+    data = None
+    with manager.open_file(entity.path) as f:
+        f.seek(byte1)
+        data = f.read(length)
+
+    res = Response(data, 206, mimetype=entity.mime_type, direct_passthrough=True)
+    res.headers.add("Content-Range", "bytes {0}-{1}/{2}".format(byte1, byte1 + length - 1, size))
+    return res
 
 
 @frappe.whitelist(allow_guest=True)

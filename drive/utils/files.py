@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 from pathlib import Path
+from contextlib import contextmanager
 
 import boto3
 import cv2
@@ -218,6 +219,27 @@ class FileManager:
                 buf = BytesIO(fh.read())
 
         return buf
+
+    @contextmanager
+    def open_file(self, path):
+        """
+        Context manager that yields a file-like object.
+        - On disk: opens in binary mode, closes automatically.
+        - On S3: yields the botocore StreamingBody, closes automatically.
+        """
+        if self.s3_enabled:
+            obj = self.conn.get_object(Bucket=self.bucket, Key=path)
+            body = obj["Body"]
+            try:
+                yield body  # StreamingBody is already a file-like object
+            finally:
+                body.close()
+        else:
+            f = open(self.site_folder / path, "rb")
+            try:
+                yield f
+            finally:
+                f.close()
 
     def fetch_new_files(self, team: str) -> dict[Path, tuple[str]]:
         """

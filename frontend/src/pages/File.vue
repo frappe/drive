@@ -13,7 +13,7 @@
         v-else
         id="renderContainer"
         :draggable="false"
-        class="w-full p-10 md:px-32 flex-grow w-full flex justify-center align-center items-center"
+        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center"
       >
         <LoadingIndicator
           v-if="file.loading"

@@ -7,7 +7,7 @@
     v-show="!loading"
     :key="src"
     ref="mediaRef"
-    class="h-fit"
+    class="max-h-[70vh] max-w-full rounded-lg"
     autoplay
     muted
     preload="none"
@@ -39,7 +39,7 @@ const props = defineProps({
 })
 const loading = ref(true)
 const src = ref(
-  `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
+  `/api/method/drive.api.files.stream_file_content?entity_name=${props.previewEntity.name}`
 )
 const type = ref(
   props.previewEntity.mime_type === "video/quicktime"
@@ -59,7 +59,7 @@ watch(
   () => props.previewEntity,
   (newValue) => {
     loading.value = true
-    src.value = `/api/method/drive.api.files.get_file_content?entity_name=${newValue.name}`
+    src.value = `/api/method/drive.api.files.stream_file_content?entity_name=${newValue.name}`
     type.value = newValue.mime_type
   }
 )
