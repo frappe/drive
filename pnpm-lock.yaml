@@ -226,6 +226,9 @@ importers:
       "@vueuse/core":
         specifier: ^10.3.0
         version: 10.11.1(vue@3.5.18(typescript@5.9.2))
+      access-key-label-polyfill:
+        specifier: ^1.0.0
+        version: 1.0.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -2341,6 +2344,13 @@ packages:
         integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==,
       }
     deprecated: Use your platform's native atob() and btoa() methods instead
+
+  access-key-label-polyfill@1.0.0:
+    resolution:
+      {
+        integrity: sha512-Pv/+JoGT0v4Y2/qEglBW42sk5vFZgJgVwUBrjIyCMLrtOQDxXNV5f3KN1H6/l7ndd5HHuv4dz/uRICagH5H/Bw==,
+      }
+    engines: { node: ">=18" }
 
   acorn-globals@7.0.1:
     resolution:
@@ -7570,6 +7580,8 @@ snapshots:
       vue: 3.5.18(typescript@5.9.2)
 
   abab@2.0.6: {}
+
+  access-key-label-polyfill@1.0.0: {}
 
   acorn-globals@7.0.1:
     dependencies:

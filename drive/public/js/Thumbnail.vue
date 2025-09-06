@@ -20,7 +20,7 @@ function getThumbnailUrl(name, file_type) {
   const IMAGE_THUMBNAILS = ["Image", "Video", "PDF", "Presentation"];
   const is_image = IMAGE_THUMBNAILS.includes(file_type);
   if (!file_type) console.log(props.node);
-  const iconURL = `/src/assets/images/icons/${file_type.toLowerCase()}.svg`;
+  const iconURL = `/assets/drive/frontend//icons/${file_type.toLowerCase()}.svg`;
   if (!is_image && !HTML_THUMBNAILS.includes(file_type))
     return [null, iconURL, true];
   return [
