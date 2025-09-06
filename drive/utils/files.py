@@ -1,7 +1,7 @@
 import os
+from contextlib import contextmanager
 from io import BytesIO
 from pathlib import Path
-from contextlib import contextmanager
 
 import boto3
 import cv2
@@ -170,7 +170,7 @@ class FileManager:
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
             parent = (
-                Path(frappe.get_value("Drive File", entity.parent_entity, "path"))
+                Path(frappe.get_value("Drive File", entity.parent_entity, "path") or "")
                 if not hasattr(entity, "parent_path")
                 else Path(entity.parent_path)
             )

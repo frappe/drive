@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-10 rounded-2xl overflow-hidden shadow-2xl dark:border 500 bg-surface-white p-4"
+    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-1 rounded-2xl overflow-hidden shadow-2xl dark:border 500 bg-surface-white p-4"
   >
     <div
       class="flex items-center justify-between w-full pr-1.5 text-ink-gray-8"
@@ -40,7 +40,7 @@
         </button>
         <button
           class="focus:outline-none"
-          @click="close"
+          @click="store.commit('clearUploads')"
         >
           <LucideX class="size-4 text-ink-gray-8" />
         </button>
@@ -103,6 +103,13 @@
               :radius="13"
               :progress="Math.min(upload.progress, 95)"
             />
+            <Button
+              v-if="upload.error"
+              variant="ghost"
+              :icon="LucideRefreshCcw"
+              class="rounded-full hover:bg-surface-gray-2"
+              @click.stop="emitter.emit('retryUpload', upload.uuid)"
+            />
             <!-- <Button
               variant="ghost"
               :icon="LucideX"
@@ -141,6 +148,7 @@ import LucidePlus from "~icons/lucide/plus"
 import LucideMinus from "~icons/lucide/minus"
 import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
 import LucideX from "~icons/lucide/x"
+import LucideRefreshCcw from "~icons/lucide/refresh-ccw"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import { ref, computed } from "vue"
@@ -196,7 +204,6 @@ const openFile = (upload) => {
       name: "File",
       params: { entityName: upload.response.name },
     })
-    store.dispatch("clearUploads")
   }
 }
 </script>

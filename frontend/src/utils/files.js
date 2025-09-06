@@ -185,7 +185,6 @@ export const sortEntities = (rows, order) => {
 }
 
 export const manageBreadcrumbs = (to) => {
-  store.dispatch("clearUploads")
   if (
     store.state.breadcrumbs[store.state.breadcrumbs.length - 1]?.name !==
     to.params.entityName

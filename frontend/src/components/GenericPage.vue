@@ -17,7 +17,8 @@
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
-      v-model="sortOrder"
+      v-model:sort-order="sortOrder"
+      v-model:search="search"
       :action-items="actionItems"
       :selections="selectedEntitities"
       :get-entities="getEntities || { data: [] }"
@@ -56,10 +57,17 @@
   <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
     Drop to upload
   </p>
-  <FileUploader
-    v-if="$store.state.user.id"
-    @success="getEntities.fetch"
-  />
+  <Transition
+    v-if="store.state.uploads.length > 0"
+    enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+    enter-from-class="translate-y-1 opacity-0"
+    enter-to-class="translate-y-0 opacity-100"
+    leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
+    leave-from-class="translate-y-0 opacity-100"
+    leave-to-class="translate-y-1 opacity-0"
+  >
+    <UploadTracker />
+  </Transition>
 </template>
 <script setup>
 import ListView from "@/components/ListView.vue"
@@ -67,12 +75,12 @@ import GridView from "@/components/GridView.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
+import UploadTracker from "@/components/UploadTracker.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import FileUploader from "@/components/FileUploader.vue"
 import { ref, computed, watch, watchEffect, provide } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
@@ -128,6 +136,7 @@ const sortOrder = ref(
     ascending: false,
   }
 )
+const search = ref("")
 const rows = ref(props.getEntities.data)
 watch(sortId, (id) => {
   if (store.state.sortOrder[id]) sortOrder.value = store.state.sortOrder[id]
@@ -136,7 +145,6 @@ watch(sortId, (id) => {
 watch(
   sortOrder,
   (order) => {
-    console.log(order, rows.value)
     rows.value = sortEntities([...rows.value], order)
     props.getEntities.setData(rows.value)
     if (sortId.value) {
@@ -146,6 +154,10 @@ watch(
   { deep: true }
 )
 
+watch(search, (val) => {
+  const search = new RegExp(val, "i")
+  rows.value = props.getEntities.data.filter((k) => search.test(k.title))
+})
 watch(
   () => props.getEntities.data,
   (val) => {

@@ -17,10 +17,9 @@ const emit = defineEmits(["success"])
 const dropzone = ref()
 const computedFullPath = ref("")
 const emitter = inject("emitter")
-const uploadResponse = ref("")
 
 watch(route, (to) => {
-  if (to.name === "Document") {
+  if (to.name === "Document" || to.name === "File") {
     dropzone.value.removeEventListeners()
   } else {
     dropzone.value.setupEventListeners()
@@ -95,8 +94,14 @@ function NonMergeMode(file) {
   }
   return s
 }
-
 onMounted(() => {
+  try {
+    const existing = Dropzone.forElement("div#dropzone")
+    if (existing) {
+      dropzone.value = existing
+      return
+    }
+  } catch {}
   dropzone.value = new Dropzone("div#dropzone", {
     paramName: "file",
     parallelUploads: 1,
@@ -104,12 +109,9 @@ onMounted(() => {
     clickable: "#fileSelection",
     disablePreviews: true,
     addRemoveLinks: true,
-    createImageThumbnails: false,
     hiddenInputContainer: "#fileSelection",
     // Do we want to allow multi uploads?
-    uploadMultiple: false,
     chunking: true,
-    forceChunking: true,
     url: "/api/method/drive.api.files.upload_file",
     dictUploadCanceled: "Upload canceled by user",
     maxFilesize: 10 * 1024, // 10GB
@@ -119,7 +121,10 @@ onMounted(() => {
       "X-Frappe-CSRF-Token": window.csrf_token,
       Accept: "application/json",
     },
+    addRemoveLinks: true,
     accept: function (file, done) {
+      if (route.name === "Home") file.personal = 1
+      file.team = store.state.currentFolder.team
       if (file.size == 0) {
         done("Empty files will not be uploaded.")
       } else {
@@ -127,8 +132,8 @@ onMounted(() => {
       }
     },
     sending: function (file, _, formData) {
-      formData.append("team", store.state.currentFolder.team)
-      if (route.name === "Home") formData.append("personal", 1)
+      formData.append("team", file.team)
+      if (file.personal) formData.append("personal", 1)
       if (file.lastModified) formData.append("last_modified", file.lastModified)
       if (file.parent) formData.append("parent", file.parent)
       const path = file.newFullPath || file.webkitRelativePath || file.fullPath
@@ -149,7 +154,7 @@ onMounted(() => {
   })
   dropzone.value.on("addedfile", function (file) {
     file.parent = store.state.currentFolder.name
-    store.commit("pushToUploads", {
+    store.commit("addUpload", {
       uuid: file.upload.uuid,
       name: file.name,
       progress: 0,
@@ -172,8 +177,10 @@ onMounted(() => {
     }
   })
   dropzone.value.on("queuecomplete", function () {
-    dropzone.value.files = []
-    computedFullPath.value = ""
+    dropzone.value.files = dropzone.value.files.filter(
+      (file) => file.status === Dropzone.ERROR
+    )
+    if (!dropzone.value.files.length) computedFullPath.value = ""
     emitter.emit("fetchFolderContents")
   })
 
@@ -183,6 +190,7 @@ onMounted(() => {
       progress: progress,
     })
   })
+
   dropzone.value.on("error", function (file, response) {
     let message
     if (file.status === "canceled") message = "You cancelled this upload."
@@ -191,15 +199,15 @@ onMounted(() => {
       if (messages.length) message = JSON.parse(messages[0]).message
     }
     message = message || "Please contact support."
-    console.log(response)
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       error: message,
+      completed: false,
     })
   })
+  // REDO COMPONENT
   dropzone.value.on("success", function (file, response) {
-    emit("success")
-    uploadResponse.value = response.message
+    emitter.emit("refresh")
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       response: response.message,
@@ -211,32 +219,47 @@ onMounted(() => {
       completed: true,
     })
   })
-  emitter.on("uploadFile", () => {
-    if (dropzone.value.hiddenFileInput) {
-      dropzone.value.hiddenFileInput.removeAttribute("webkitdirectory")
-      dropzone.value.hiddenFileInput.click()
+})
+emitter.on("uploadFile", () => {
+  if (dropzone.value.hiddenFileInput) {
+    dropzone.value.hiddenFileInput.removeAttribute("webkitdirectory")
+    dropzone.value.hiddenFileInput.click()
+  }
+})
+emitter.on("cancelUpload", (uuid) => {
+  var files = dropzone.value.files
+  for (var i = 0; i < files.length; i++) {
+    if (files[i].upload.uuid === uuid) {
+      dropzone.value.removeFile(files[i])
     }
-  })
-  emitter.on("cancelUpload", (uuid) => {
-    var files = dropzone.value.files
-    for (var i = 0; i < files.length; i++) {
-      if (files[i].upload.uuid === uuid) {
-        dropzone.value.removeFile(files[i])
-      }
-    }
-  })
-  emitter.on("cancelAllUploads", () => {
-    dropzone.value.removeAllFiles(true)
-  })
-  emitter.on("uploadFolder", () => {
-    if (dropzone.value.hiddenFileInput) {
-      dropzone.value.hiddenFileInput.setAttribute("webkitdirectory", true)
-      dropzone.value.hiddenFileInput.click()
-    }
-  })
+  }
+})
+emitter.on("retryUpload", (uuid) => {
+  const file = dropzone.value.files.find((f) => f.upload.uuid === uuid)
+  console.log(dropzone.value.files, uuid)
+  if (file) {
+    file.status = Dropzone.ADDED
+    dropzone.value.enqueueFile(file)
+    dropzone.value.processFile(file)
+    store.commit("updateUpload", {
+      uuid,
+      error: null,
+      progress: 0,
+      completed: false,
+    })
+  }
+})
+emitter.on("cancelAllUploads", () => {
+  dropzone.value.removeAllFiles(true)
+})
+emitter.on("uploadFolder", () => {
+  if (dropzone.value.hiddenFileInput) {
+    dropzone.value.hiddenFileInput.setAttribute("webkitdirectory", true)
+    dropzone.value.hiddenFileInput.click()
+  }
 })
 
 onBeforeUnmount(() => {
-  dropzone.value.destroy()
+  // dropzone.value.destroy()
 })
 </script>

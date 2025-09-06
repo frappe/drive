@@ -48,6 +48,12 @@
           >
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5"
+            >{{ __("Tags") }}:</span
+          >
+          <span class="col-span-1">{{ entity }}</span>
+        </li>
       </ul>
 
       <ul
@@ -85,7 +91,7 @@
           </span>
         </li>
       </ul>
-      <div class="flex justify-between">
+      <div class="flex justify-between items-center">
         <span class="text-base font-semibold">Access</span>
         <Button
           v-if="entity.share"

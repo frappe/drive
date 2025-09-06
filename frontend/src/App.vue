@@ -32,44 +32,31 @@
       v-if="isLoggedIn && showSearchPopup"
       v-model="showSearchPopup"
     />
-    <Transition
-      enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-      enter-from-class="translate-y-1 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-      leave-from-class="translate-y-0 opacity-100"
-      leave-to-class="translate-y-1 opacity-0"
-    >
-      <UploadTracker v-if="showUploadTracker" />
-    </Transition>
+
     <button
       accesskey="u"
       class="hidden"
       @click="emitter.emit('uploadFile')"
     />
+    <FileUploader />
   </FrappeUIProvider>
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
-import UploadTracker from "@/components/UploadTracker.vue"
 import SearchPopup from "./components/SearchPopup.vue"
 import BottomBar from "./components/BottomBar.vue"
+import FileUploader from "@/components/FileUploader.vue"
 import { useStore } from "vuex"
 import { ref, computed } from "vue"
-import { useRouter } from "vue-router"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 import { FrappeUIProvider } from "frappe-ui"
 import "access-key-label-polyfill"
 
 const store = useStore()
-const router = useRouter()
 
 const showSearchPopup = ref(false)
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
-const showUploadTracker = computed(
-  () => isLoggedIn.value && store.state.uploads.length > 0
-)
 emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data
 })

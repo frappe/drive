@@ -49,29 +49,27 @@ const store = createStore({
     isLoggedIn: (state) => {
       return state.user.id && state.user.id !== "Guest"
     },
-    uploadsInProgress: (state) => {
-      return state.uploads.filter((upload) => !upload.completed)
-    },
-    uploadsFailed: (state) => {
-      return state.uploads.filter((upload) => upload.error)
-    },
-    uploadsCompleted: (state) => {
-      return state.uploads.filter((upload) => upload.completed && !upload.error)
-    },
+    uploadsInProgress: (state) =>
+      state.uploads.filter((u) => !u.completed && !u.completed),
+    uploadsCompleted: (state) =>
+      state.uploads.filter((u) => u.completed && !u.error),
+    uploadsFailed: (state) => state.uploads.filter((u) => u.error),
   },
   mutations: {
-    setUploads(state, uploads) {
-      state.uploads = uploads
-    },
-
-    pushToUploads(state, upload) {
-      state.uploads.push(upload)
+    addUpload(state, payload) {
+      state.uploads.push(payload)
     },
     updateUpload(state, payload) {
-      let index = state.uploads.findIndex(
-        (upload) => upload.uuid == payload.uuid
-      )
-      Object.assign(state.uploads[index], payload)
+      const idx = state.uploads.findIndex((u) => u.uuid === payload.uuid)
+      if (idx > -1) {
+        state.uploads[idx] = { ...state.uploads[idx], ...payload }
+      }
+    },
+    clearUploads(state) {
+      state.uploads = []
+    },
+    removeUpload(state, uuid) {
+      state.uploads = state.uploads.filter((u) => u.uuid !== uuid)
     },
     setSortOrder(state, [entity, value]) {
       if (!state.sortOrder) {
@@ -134,9 +132,6 @@ const store = createStore({
       await call("logout")
       clear()
       window.location.reload()
-    },
-    clearUploads({ commit }) {
-      commit("setUploads", [])
     },
   },
 })

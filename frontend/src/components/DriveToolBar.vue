@@ -225,7 +225,8 @@ import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideFilter from "~icons/lucide/filter"
 
-const sortOrder = defineModel(Object)
+const sortOrder = defineModel("sortOrder")
+const search = defineModel("search")
 const props = defineProps({
   selections: Array,
   actionItems: Array,
@@ -236,29 +237,10 @@ const store = useStore()
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
 
-const search = ref("")
 const viewState = ref(store.state.view)
 watch(viewState, (val) => store.commit("toggleView", val))
 const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef("search-input")
-
-// Do this as the resource data is updated by a lagging `fetch`
-// watch(
-//   [sortOrder, () => props.getEntities.loading],
-//   ([val, loading]) => {
-//     if (!rows.value || loading) return
-//     sortEntities(rows.value, val)
-//     props.getEntities.setData(rows.value)
-//     store.commit("setCurrentFolder", {
-//       entities: rows.value.filter?.((k) => k.title[0] !== "."),
-//     })
-//     if (name.value) {
-//       store.state.sortOrder[name.value] = val
-//       store.commit("setSortOrder", store.state.sortOrder)
-//     }
-//   },
-//   { immediate: true }
-// )
 
 watch(activeFilters.value, (val) => {
   if (!val.length) {
@@ -274,10 +256,6 @@ watch(activeFilters.value, (val) => {
     ({ mime_type, is_group }) =>
       mime_types.includes(mime_type) || (isFolder && is_group)
   )
-})
-watch(search, (val) => {
-  const search = new RegExp(val, "i")
-  rows.value = props.getEntities.data.filter((k) => search.test(k.title))
 })
 
 onKeyDown("Escape", () => {
