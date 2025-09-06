@@ -6,6 +6,7 @@ from io import BytesIO
 from pathlib import Path
 
 import frappe
+import html2text
 import jwt
 import magic
 import mimemapper
@@ -401,7 +402,7 @@ def create_link(team, title, link, personal=False, parent=None):
 
 
 @frappe.whitelist(allow_guest=True)
-def save_doc(entity_name, doc_name, content, comment=False):
+def save_doc(entity_name, content, doc_name=None, yjs=None, comment=False):
     can_write = user_has_permission(entity_name, "write")
     if comment and not can_write:
         old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
@@ -414,9 +415,31 @@ def save_doc(entity_name, doc_name, content, comment=False):
     if not content:
         return
 
-    frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
-    frappe.db.set_value("Drive File", entity_name, "file_size", len(content.encode("utf-8")))
-    frappe.db.set_value("Drive File", entity_name, "_modified", now())
+    if doc_name:
+        try:
+            frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+            if yjs:
+                frappe.db.set_value("Drive Document", doc_name, "content", yjs)
+        except frappe.exceptions.QueryDeadlockError:
+            if yjs:
+                # Pass if there's a deadlock, as CRDT is supposed to take care of it.
+                frappe.log_error(
+                    f"There was a collision, not storing data -{entity_name}, {doc_name}"
+                )
+            else:
+                frappe.throw("There was a conflict - consider turning on collaborative mode.")
+    else:
+        # Text based files
+        h = html2text.HTML2Text()
+        h.body_width = 0
+        md_content = h.handle(content)
+        path = frappe.db.get_value("Drive File", entity_name, "path")
+        FileManager().write_file(path, md_content)
+
+    file = frappe.get_doc("Drive File", entity_name)
+    file._modified = datetime.now()
+    file.file_size = len(content.encode("utf-8"))
+    file.save()
 
     mentions = extract_mentions(content)
     if mentions:

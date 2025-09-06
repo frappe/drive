@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import frappe
 from frappe.rate_limiter import rate_limit
 
@@ -60,3 +62,41 @@ def resolve_comment(name, value):
     comment = frappe.get_doc("Drive Comment", name)
     comment.resolved = value
     comment.save()
+
+
+@frappe.whitelist(allow_guest=True)
+def get_wiki_link(title, team):
+    title = title.strip("/")
+    possible_titles = [title, title + ".md", title + ".txt"]
+    names = (
+        frappe.get_value("Drive File", {"title": k, "team": team}, "name") for k in possible_titles
+    )
+    try:
+        name = next(k for k in names if k)
+    except StopIteration:
+        frappe.throw("Cannot get this wikilink in this team.", frappe.NotFound)
+
+    frappe.local.response["type"] = "redirect"
+    frappe.local.response["location"] = "/drive/f/" + name
+    return title
+
+
+@frappe.whitelist()
+def create_version(doc, snapshot, manual=0, title=""):
+    doc = frappe.get_doc("Drive Document", doc)
+    title = title if title else str(datetime.now())[:16]
+
+    if not manual:
+        if frappe.db.exists({"doctype": "Drive Doc Version", "parent": doc.name, "title": title}):
+            return {}
+
+    doc.append(
+        "versions",
+        {
+            "snapshot": snapshot,
+            "manual": int(manual),
+            "title": title,
+        },
+    )
+    doc.save()
+    return doc

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "precommit": "pretty-quick --staged",
@@ -12,11 +12,15 @@
   "dependencies": {
     "@headlessui-float/vue": "^0.13.3",
     "@headlessui/vue": "^1.7.23",
+    "@hocuspocus/provider": "^2.15.3",
+    "@hocuspocus/transformer": "^3.2.3",
     "@sereneinserenade/tiptap-comment-extension": "^0.1.2",
     "@tiptap/core": "^2.26.1",
+    "@tiptap/extension-collaboration": "^2.26.1",
     "@tiptap/extension-font-family": "^2.26.1",
     "@tiptap/extension-text-style": "^2.26.1",
-    "@tiptap/pm": "^2.7.0",
+    "@tiptap/pm": "^2.26.1",
+    "@tiptap/vue-3": "2.26.1",
     "@vueuse/components": "^13.1.0",
     "@vueuse/core": "^10.3.0",
     "access-key-label-polyfill": "^1.0.0",
@@ -25,6 +29,7 @@
     "frappe-ui": "^0.1.197",
     "html2pdf.js": "^0.10.3",
     "idb-keyval": "^6.2.1",
+    "js-base64": "^3.7.8",
     "jszip": "^3.10.1",
     "mitt": "^3.0.0",
     "reka-ui": "^2.4.1",
@@ -36,7 +41,11 @@
     "vue": "^3.5.14",
     "vue-router": "^4.1.6",
     "vue-sonner": "^2.0.2",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "y-indexeddb": "^9.0.12",
+    "y-prosemirror": "^1.3.7",
+    "y-webrtc": "^10.3.0",
+    "yjs": "^13.6.27"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
@@ -53,5 +62,10 @@
     "tailwindcss": "^3.4.17",
     "vite": "^4.5.14",
     "vite-plugin-top-level-await": "^1.4.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "yjs": "13.6.27"
+    }
   }
 }

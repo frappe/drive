@@ -14,7 +14,8 @@
     "font_family",
     "font_size",
     "line_height",
-    "custom_css"
+    "custom_css",
+    "writer_settings"
   ],
   "fields": [
     {
@@ -69,12 +70,18 @@
       "fieldname": "font_family",
       "fieldtype": "Data",
       "label": "Font Family"
+    },
+    {
+      "default": "{\"font_family\":\"inter\",\"font_size\":\"17\",\"line_height\":\"1.5\", \"custom_css\": \"\"}",
+      "fieldname": "writer_settings",
+      "fieldtype": "JSON",
+      "label": "Writer Settings"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-08-19 22:53:49.781916",
+  "modified": "2025-09-04 17:59:24.948818",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",

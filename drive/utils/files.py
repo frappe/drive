@@ -220,6 +220,13 @@ class FileManager:
 
         return buf
 
+    def write_file(self, path: str | Path, content: str):
+        if self.s3_enabled:
+            pass
+        else:
+            with open(self.site_folder / path, "w") as f:
+                f.write(content)
+
     @contextmanager
     def open_file(self, path):
         """

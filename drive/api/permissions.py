@@ -1,8 +1,13 @@
+import io
+
 import frappe
+import markdown
 from frappe.utils import getdate
+from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
 from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
+from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
 
 ENTITY_FIELDS = [
@@ -72,7 +77,7 @@ def get_user_access(entity, user=None, details=False):
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
 
     valid_accesses = [user_access, public_access]
-    team_path = None
+    team_path = []
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
         team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
@@ -124,11 +129,6 @@ def get_teams(user=None, details=None):
 def get_entity_with_permissions(entity_name):
     """
     Return file data with permissions
-
-    :param entity_name: Name of file document.
-    :raises IsADirectoryError: If this DriveEntity doc is not a file
-    :return: DriveEntity with permissions
-    :rtype: frappe._dict
     """
     entity = frappe.db.get_value(
         "Drive File",
@@ -164,21 +164,31 @@ def get_entity_with_permissions(entity_name):
         | breadcrumbs
         | {"is_favourite": favourite, "file_type": file_type}
     )
-    if entity.document:
-        entity_doc_content = (
-            frappe.db.get_value(
-                "Drive Document",
-                entity.document,
-                ["content", "raw_content", "settings", "version"],
-                as_dict=1,
-            )
-            or {}
+    if entity.mime_type == "text/markdown":
+        entity.document_type == "markdown"
+        manager = FileManager()
+        wrapper = io.TextIOWrapper(manager.get_file(entity.path))
+        url_builder = (
+            lambda label, base, end: f"/api/method/drive.api.docs.get_wiki_link?team={entity.team}&title={label}"
         )
+        with wrapper as r:
+            content = r.read()
+            return_obj["raw_content"] = markdown.markdown(
+                content,
+                output_format="html",
+                extensions=["extra", WikiLinkExtension(build_url=url_builder)],
+            )
+
+    if entity.document:
+        k = frappe.get_doc("Drive Document", entity.document)
+        entity_doc_content = k.as_dict()
+        entity_doc_content.pop("name")
         comments = frappe.get_all(
             "Drive Comment",
             filters={"parenttype": "Drive File", "parent": entity.name},
             fields=["content", "owner", "creation", "name", "resolved"],
         )
+
         for k in comments:
             k["replies"] = frappe.get_all(
                 "Drive Comment",

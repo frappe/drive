@@ -54,9 +54,7 @@
       @dropped="onDrop"
     />
   </div>
-  <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
-    Drop to upload
-  </p>
+  <p class="absolute text-center top-[50%] z-10 font-bold">Drop to upload</p>
   <Transition
     v-if="store.state.uploads.length > 0"
     enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"

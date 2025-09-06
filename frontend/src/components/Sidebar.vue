@@ -1,6 +1,7 @@
 <template>
   <Sidebar
     v-model:collapsed="isCollapsed"
+    id="sidebar"
     class="hidden sm:flex"
     :header="{
       title: getTeams.data?.[$route.params.team]?.title || 'Drive',

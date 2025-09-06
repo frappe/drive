@@ -1,49 +1,107 @@
 <template>
-  <div class="flex w-full h-100 overflow-y-auto">
-    <div
-      @click="
-        $event.target.tagName === 'DIV' &&
-          textEditor.editor?.chain?.().focus?.().run?.()
-      "
-      class="mx-auto cursor-text min-h-full w-full md:w-auto ps-4 md:p-0"
-    >
-      <FTextEditor
-        ref="textEditor"
-        class="min-w-full md:min-w-[65ch]"
-        :editor-class="[
-          'prose-sm min-h-[4rem]',
-          `text-[${writerSettings.doc?.font_size || 15}px]`,
-          `leading-[${writerSettings.doc?.line_height || 1.5}]`,
-          writerSettings.doc?.custom_css,
-        ]"
-        :content="rawContent"
-        :editable="!!entity.write"
-        :upload-function="
-          (file) => {
-            const fileUpload = useFileUpload()
-            return fileUpload.upload(file, {
-              private: entity.is_private,
-              folder: entity.name,
-              upload_endpoint: `/api/method/drive.api.files.upload_embed`,
-            })
-          }
+  <div class="flex w-full h-100 overflow-y-hidden">
+    <div class="flex-1 md:w-auto md:p-0">
+      <div
+        v-if="current"
+        class="bg-surface-blue-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
+      >
+        <div class="flex flex-col gap-1">
+          <div>
+            This is a snapshot of this document from
+            {{ formatDate(current.title) }}.
+          </div>
+          <div class="text-xs text-ink-gray-7">
+            Editing is disabled until you exit this preview.
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <Button
+            variant="ghost"
+            label="Exit"
+            @click="emitter.emit('clear-snapshot')"
+            class="hover:!bg-surface-blue-2 hover:underline"
+          />
+          <Button
+            variant="solid"
+            @click="emitter.emit('restore-snapshot')"
+            label="Restore"
+          />
+        </div>
+      </div>
+      <div
+        @click="
+          $event.target.tagName === 'DIV' &&
+            textEditor.editor?.chain?.().focus?.().run?.()
         "
-        @change="
-          (val) => {
-            rawContent = val
-            if (db)
-              db.transaction(['content'], 'readwrite')
-                .objectStore('content')
-                .put({ val, saved: new Date() }, props.entity.name)
-            edited = true
-            autosave()
-          }
-        "
-        :mentions="users"
-        placeholder="Start writing here..."
-        :bubble-menu="bubbleMenuButtons"
-        :extensions="editorExtensions"
-      />
+        class="mx-auto cursor-text w-full flex justify-center h-full"
+      >
+        <div
+          v-if="!updated"
+          class="text-center h-full flex justify-center items-center text-sm font-semibold"
+        >
+          Updating...
+        </div>
+        <FTextEditor
+          v-if="
+            !collab ||
+            editorExtensions.find((k) => k.name === 'collaborationCursor')
+          "
+          ref="textEditor"
+          class="min-w-full h-full flex flex-col"
+          :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
+          :editor-class="[
+            'prose-sm min-h-[4rem] !min-w-0 mx-auto',
+            `text-[${settings?.font_size || 15}px]`,
+            `leading-[${settings?.line_height || 1.5}]`,
+            settings?.custom_css,
+            current ? 'pb-24' : '',
+          ]"
+          :content="!collab ? rawContent : undefined"
+          :editable
+          :upload-function="
+            (file) => {
+              const fileUpload = useFileUpload()
+              return fileUpload.upload(file, {
+                private: entity.is_private,
+                folder: entity.name,
+                upload_endpoint: `/api/method/drive.api.files.upload_embed`,
+              })
+            }
+          "
+          @change="
+            (val) => {
+              if (val === rawContent || current) return
+              rawContent = val
+              if (collab) yjsContent = Y.encodeStateAsUpdate(doc)
+              if (db)
+                db.transaction(['content'], 'readwrite')
+                  .objectStore('content')
+                  .put({ val, saved: new Date() }, props.entity.name)
+              edited = true
+              autosave()
+              autoversion()
+            }
+          "
+          :mentions="users"
+          placeholder="Start writing here..."
+          :bubble-menu="bubbleMenuButtons"
+          :extensions="editorExtensions"
+        >
+          <template #top>
+            <TextEditorFixedMenu
+              v-if="editable"
+              class="w-full overflow-x-auto border-b border-outline-gray-modals justify-center py-1.5"
+              :buttons="bubbleMenuButtons"
+            />
+          </template>
+          <template #editor="{ editor }">
+            <EditorContent
+              :editor="editor"
+              class="h-full overflow-y-auto"
+            />
+          </template>
+        </FTextEditor>
+      </div>
     </div>
     <FloatingComments
       v-if="comments.length"
@@ -62,6 +120,7 @@
 import { toast } from "@/utils/toasts.js"
 import {
   TextEditor as FTextEditor,
+  TextEditorFixedMenu,
   debounce,
   useFileUpload,
   useDoc,
@@ -75,56 +134,98 @@ import {
   onBeforeUnmount,
   h,
   watch,
+  getCurrentInstance,
 } from "vue"
 import store from "@/store"
+import { EditorContent } from "@tiptap/vue-3"
 import FontFamily from "./extensions/font-family"
 import FloatingQuoteButton from "./extensions/comment"
 import { CharacterCount } from "./extensions/character-count"
+import { CollaborationCursor } from "./extensions/collaboration-cursor"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import FloatingComments from "./components/FloatingComments.vue"
-import { printDoc } from "@/utils/files"
+import { printDoc, getRandomColor } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import Collaboration from "@tiptap/extension-collaboration"
+import * as Y from "yjs"
+import { IndexeddbPersistence } from "y-indexeddb"
+import { ySyncPluginKey } from "y-prosemirror"
+import { WebrtcProvider } from "y-webrtc"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 
 import LucideMessageCircle from "~icons/lucide/message-circle"
+import { formatDate } from "../../utils/format"
 
 const textEditor = ref("textEditor")
+const updated = ref(true)
+const current = defineModel("current")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
-
   return editor
 })
+const editable = computed(() => !!props.entity.write && !props.settings?.lock)
 defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
+const yjsContent = defineModel("yjsContent")
 const showComments = defineModel("showComments")
 const edited = defineModel("edited")
 
 const props = defineProps({
   entity: Object,
+  settings: Object,
   showResolved: Boolean,
   users: Object,
+  currentVersion: { required: false, type: Object },
 })
 const comments = ref([])
+const settings = computed(() => {
+  for (let [k, v] of Object.entries(props.settings)) {
+    if (v === "global") delete props.settings[k]
+  }
+  return {
+    ...writerSettings.doc?.settings,
+    ...props.settings,
+  }
+})
 
-const emit = defineEmits([
-  "updateTitle",
-  "saveDocument",
-  "saveComment",
-  "mentionedUsers",
-])
+const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
+const autoversion = debounce(() => {
+  if (!collab.value) return
+  const snap = Y.encodeSnapshot(Y.snapshot(doc))
+  emit("newVersion", snap)
+}, 1000)
+
+watch(
+  () => props.currentVersion,
+  (val) => {
+    if (!val) return
+    toast("Changing version")
+    const { view } = editor.value
+    view.dispatch(
+      view.state.tr.setMeta(ySyncPluginKey, {
+        snapshot: Y.decodeSnapshot(val[1].snapshot),
+        prevSnapshot: Y.decodeSnapshot(val[0].snapshot),
+      })
+    )
+  }
+)
 
 const writerSettings = useDoc({
   doctype: "Drive Settings",
   name: store.state.user.id,
   immediate: true,
+  transform: (doc) => {
+    doc.settings = JSON.parse(doc.writer_settings)
+    return doc
+  },
 })
 writerSettings.onSuccess(({ font_family }) => {
   if (!rawContent.value)
@@ -134,6 +235,7 @@ writerSettings.onSuccess(({ font_family }) => {
       .setFontFamily(`var(--font-${font_family})`)
       .run()
 })
+
 const createNewComment = (editor) => {
   showComments.value = true
   const id = uuidv4()
@@ -236,6 +338,44 @@ const editorExtensions = [
   }),
 ]
 
+let prov, doc
+const collab = computed(() => props.settings.collab)
+if (collab.value) {
+  doc = new Y.Doc({ gc: false })
+
+  const permanentUserData = new Y.PermanentUserData(doc)
+  permanentUserData.setUserMapping(doc, doc.clientID, "Administrator")
+  const colors = [
+    { light: "#ecd44433", dark: "#ecd444" },
+    { light: "#ee635233", dark: "#ee6352" },
+    { light: "#6eeb8333", dark: "#6eeb83" },
+  ]
+  new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
+  if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+  prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
+    signaling: ["wss://signal.frappe.cloud"],
+  })
+
+  editorExtensions.push(
+    Collaboration.configure({
+      document: doc,
+      field: "default",
+      ySyncOptions: {
+        permanentUserData,
+        colors,
+      },
+    }),
+    CollaborationCursor.configure({
+      provider: prov,
+      user: {
+        name: store.state.user.fullName,
+        avatar: store.state.user.imageURL,
+        color: getRandomColor(),
+      },
+    })
+  )
+}
+
 const CommentAction = {
   label: "Comment",
   icon: LucideMessageCircle,
@@ -313,32 +453,42 @@ const bubbleMenuButtons = [
 emitter.on("printFile", () => {
   if (editor.value) printDoc(editor.value.getHTML())
 })
+const component = getCurrentInstance()
 
 onMounted(() => {
-  const orderedComments = getOrderedComments(editor.value.state.doc)
-  comments.value = props.entity.comments.toSorted((a, b) => {
-    const pos1 = orderedComments.findIndex((k) => k.id === a.name)
-    const pos2 = orderedComments.findIndex((k) => k.id === b.name)
-    return pos1 - pos2
-  })
+  if (props.entity.mime_type === "frappe_doc") {
+    const orderedComments = getOrderedComments(editor.value.state.doc)
+    comments.value = props.entity.comments.toSorted((a, b) => {
+      const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+      const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+      return pos1 - pos2
+    })
+  }
+  if (collab.value) {
+    if (component.vnode.key > 0) updated.value = false
+  }
 })
 
 onBeforeUnmount(() => {
   comments.value
     .filter((k) => k.new)
     .filter(({ name }) => editor.value.commands.unsetComment(name))
+  if (prov) {
+    prov.disconnect()
+    prov.destroy()
+  }
 })
 
 onKeyDown("Enter", evalImplicitTitle)
-onKeyDown("S", (e) => {
-  if (!e.metaKey) {
+onKeyDown("s", (e) => {
+  if (!e.metaKey || !e.shiftKey) {
     return
   }
   e.preventDefault()
-  emit("saveDocument") &&
-    toast({
-      title: "Document saved",
-    })
+  emit("saveDocument")
+  toast({
+    title: "Saving document",
+  })
 })
 
 function getOrderedComments(doc) {
@@ -357,7 +507,7 @@ function getOrderedComments(doc) {
 // Local saving
 const db = ref()
 watch(db, (db) => {
-  if (!props.entity.write) return
+  if (!props.entity.write || collab.value) return
   db
     .transaction(["content"])
     .objectStore("content")

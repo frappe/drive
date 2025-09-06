@@ -22,6 +22,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
       "tailwind.config.js": path.resolve(__dirname, "tailwind.config.js"),
     },
+    dedupe: ["yjs"],
   },
   build: {
     sourcemap: true,
@@ -47,6 +48,7 @@ export default defineConfig({
       "frappe-ui > feather-icons",
       "frappe-ui > lowlight",
       "frappe-ui > interactjs",
+      "yjs",
     ],
   },
 })

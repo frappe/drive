@@ -4,7 +4,7 @@
 *.swp
 tags
 drive/docs/current
-drive/public/frontend
+drive/public/
 node_modules
 frontend/node_modules
 drive/public/node_modules

@@ -32,18 +32,19 @@
       v-if="isLoggedIn && showSearchPopup"
       v-model="showSearchPopup"
     />
-
     <button
       accesskey="u"
       class="hidden"
       @click="emitter.emit('uploadFile')"
     />
     <FileUploader />
+    <FDialogs />
   </FrappeUIProvider>
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
 import SearchPopup from "./components/SearchPopup.vue"
+import FDialogs from "./components/FDialogs.vue"
 import BottomBar from "./components/BottomBar.vue"
 import FileUploader from "@/components/FileUploader.vue"
 import { useStore } from "vuex"
