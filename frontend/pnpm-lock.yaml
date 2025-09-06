@@ -21,7 +21,7 @@ importers:
         version: 2.15.3(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       "@hocuspocus/transformer":
         specifier: ^3.2.3
-        version: 3.2.3(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)
+        version: 3.2.3(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)
       "@sereneinserenade/tiptap-comment-extension":
         specifier: ^0.1.2
         version: 0.1.2(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
@@ -30,10 +30,13 @@ importers:
         version: 2.26.1(@tiptap/pm@2.26.1)
       "@tiptap/extension-collaboration":
         specifier: ^2.26.1
-        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))
+        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))
       "@tiptap/extension-font-family":
         specifier: ^2.26.1
         version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))
+      "@tiptap/extension-table-of-contents":
+        specifier: 2.26.1
+        version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
       "@tiptap/extension-text-style":
         specifier: ^2.26.1
         version: 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
@@ -59,8 +62,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: ^0.1.197
-        version: 0.1.197(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
+        specifier: ^0.1.198
+        version: 0.1.198(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
       html2pdf.js:
         specifier: ^0.10.3
         version: 0.10.3
@@ -111,7 +114,7 @@ importers:
         version: 9.0.12(yjs@13.6.27)
       y-prosemirror:
         specifier: ^1.3.7
-        version: 1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+        version: 1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       y-webrtc:
         specifier: ^10.3.0
         version: 10.3.0(yjs@13.6.27)
@@ -2712,6 +2715,15 @@ packages:
     peerDependencies:
       "@tiptap/core": ^2.7.0
 
+  "@tiptap/extension-table-of-contents@2.26.1":
+    resolution:
+      {
+        integrity: sha512-s4mJtDvRYXBBf/2PTJoL2gGAT1tY9Eupz0+nrYzxABaS/ukMd9xDxlyt/jezObCGIwkkaQ7hz50e7aD1chcGyw==,
+      }
+    peerDependencies:
+      "@tiptap/core": ^2.7.0
+      "@tiptap/pm": ^2.7.0
+
   "@tiptap/extension-table-row@2.26.1":
     resolution:
       {
@@ -4643,10 +4655,10 @@ packages:
         integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==,
       }
 
-  frappe-ui@0.1.197:
+  frappe-ui@0.1.198:
     resolution:
       {
-        integrity: sha512-uI+jXaMj/qAdgOVzS7xvkJhwuvpxuzpqs13zjZkY11lH6071MjPl9TvIiEa40YshwRVr8ZTwNhgVAwjEdhOzag==,
+        integrity: sha512-e4CPRNp8PDJgyBYrmM2CZdPvEfQza2rLXzDvg5QJlnY94FzVMtTmi+gt17wMKsRGPR/xBoWwtyF5rMxoYMDI6Q==,
       }
     peerDependencies:
       vue: ">=3.5.0"
@@ -5569,12 +5581,6 @@ packages:
         integrity: sha512-8ngQgLhcT0t3YBdn9CGkZqCYlvwW9pm7aWJwd7AxseVWf1RU8ZHCQvG1mt3N5vvUme+pXTcHB8G/7fE666U8Vw==,
       }
     engines: { node: ">=20.18.0" }
-
-  magic-string@0.30.17:
-    resolution:
-      {
-        integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==,
-      }
 
   magic-string@0.30.18:
     resolution:
@@ -6782,6 +6788,12 @@ packages:
         integrity: sha512-BVypCAJ4SL6jOiTsDffP3Wp6wD69lRhI4zg/iT8JXjp3ccZFiq5WyguxvMKmdKFC3prhaig7wSr8dneDToHE1Q==,
       }
 
+  prosemirror-model@1.25.3:
+    resolution:
+      {
+        integrity: sha512-dY2HdaNXlARknJbrManZ1WyUtos+AP97AmvqdOQtWtrrC5g4mohVX5DTi9rXNFSk09eczLq9GuNTtq3EfMeMGA==,
+      }
+
   prosemirror-schema-basic@1.2.4:
     resolution:
       {
@@ -6804,6 +6816,12 @@ packages:
     resolution:
       {
         integrity: sha512-eRQ97Bf+i9Eby99QbyAiyov43iOKgWa7QCGly+lrDt7efZ1v8NWolhXiB43hSDGIXT1UXgbs4KJN3a06FGpr1Q==,
+      }
+
+  prosemirror-tables@1.8.1:
+    resolution:
+      {
+        integrity: sha512-DAgDoUYHCcc6tOGpLVPSU1k84kCUWTWnfWX3UDy2Delv4ryH0KqTD6RBI6k4yi9j9I8gl3j8MkPpRD/vWPZbug==,
       }
 
   prosemirror-trailing-node@3.0.0:
@@ -8899,12 +8917,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  "@hocuspocus/transformer@3.2.3(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)":
+  "@hocuspocus/transformer@3.2.3(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
       "@tiptap/pm": 2.26.1
       "@tiptap/starter-kit": 3.4.1
-      y-prosemirror: 1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      y-prosemirror: 1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       yjs: 13.6.27
 
   "@humanwhocodes/config-array@0.13.0":
@@ -8929,8 +8947,8 @@ snapshots:
       debug: 4.4.1
       globals: 15.15.0
       kolorist: 1.8.0
-      local-pkg: 1.1.1
-      mlly: 1.7.4
+      local-pkg: 1.1.2
+      mlly: 1.8.0
     transitivePeerDependencies:
       - supports-color
 
@@ -9785,11 +9803,11 @@ snapshots:
     dependencies:
       "@tiptap/core": 3.4.1(@tiptap/pm@3.4.1)
 
-  "@tiptap/extension-collaboration@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))":
+  "@tiptap/extension-collaboration@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(y-prosemirror@1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
       "@tiptap/pm": 2.26.1
-      y-prosemirror: 1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      y-prosemirror: 1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
 
   "@tiptap/extension-color@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))":
     dependencies:
@@ -9952,6 +9970,12 @@ snapshots:
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
 
+  "@tiptap/extension-table-of-contents@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)":
+    dependencies:
+      "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
+      "@tiptap/pm": 2.26.1
+      uuid: 10.0.0
+
   "@tiptap/extension-table-row@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))":
     dependencies:
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
@@ -10011,12 +10035,12 @@ snapshots:
       prosemirror-keymap: 1.2.3
       prosemirror-markdown: 1.13.2
       prosemirror-menu: 1.2.5
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-schema-basic: 1.2.4
       prosemirror-schema-list: 1.5.1
       prosemirror-state: 1.4.3
-      prosemirror-tables: 1.7.1
-      prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)
+      prosemirror-tables: 1.8.1
+      prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.40.1
 
@@ -11269,7 +11293,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.197(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
+  frappe-ui@0.1.198(@babel/parser@7.28.4)(@nuxt/kit@3.19.1(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
     dependencies:
       "@floating-ui/vue": 1.1.8(vue@3.5.21(typescript@5.9.2))
       "@headlessui/vue": 1.7.23(vue@3.5.21(typescript@5.9.2))
@@ -11844,10 +11868,6 @@ snapshots:
   magic-string-ast@1.0.2:
     dependencies:
       magic-string: 0.30.18
-
-  magic-string@0.30.17:
-    dependencies:
-      "@jridgewell/sourcemap-codec": 1.5.4
 
   magic-string@0.30.18:
     dependencies:
@@ -12713,7 +12733,7 @@ snapshots:
 
   prosemirror-commands@1.7.1:
     dependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
@@ -12726,7 +12746,7 @@ snapshots:
   prosemirror-gapcursor@1.3.2:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-view: 1.40.1
 
@@ -12751,7 +12771,7 @@ snapshots:
     dependencies:
       "@types/markdown-it": 14.1.2
       markdown-it: 14.1.0
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
 
   prosemirror-menu@1.2.5:
     dependencies:
@@ -12764,19 +12784,23 @@ snapshots:
     dependencies:
       orderedmap: 2.1.1
 
+  prosemirror-model@1.25.3:
+    dependencies:
+      orderedmap: 2.1.1
+
   prosemirror-schema-basic@1.2.4:
     dependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
 
   prosemirror-schema-list@1.5.1:
     dependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
   prosemirror-state@1.4.3:
     dependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.40.1
 
@@ -12784,6 +12808,14 @@ snapshots:
     dependencies:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.2
+      prosemirror-state: 1.4.3
+      prosemirror-transform: 1.10.4
+      prosemirror-view: 1.40.1
+
+  prosemirror-tables@1.8.1:
+    dependencies:
+      prosemirror-keymap: 1.2.3
+      prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.40.1
@@ -12796,13 +12828,21 @@ snapshots:
       prosemirror-state: 1.4.3
       prosemirror-view: 1.40.1
 
+  prosemirror-trailing-node@3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1):
+    dependencies:
+      "@remirror/core-constants": 3.0.0
+      escape-string-regexp: 4.0.0
+      prosemirror-model: 1.25.3
+      prosemirror-state: 1.4.3
+      prosemirror-view: 1.40.1
+
   prosemirror-transform@1.10.4:
     dependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
 
   prosemirror-view@1.40.1:
     dependencies:
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
@@ -13411,12 +13451,12 @@ snapshots:
       acorn: 8.15.0
       escape-string-regexp: 5.0.0
       estree-walker: 3.0.3
-      local-pkg: 1.1.1
-      magic-string: 0.30.17
-      mlly: 1.7.4
+      local-pkg: 1.1.2
+      magic-string: 0.30.18
+      mlly: 1.8.0
       pathe: 2.0.3
       picomatch: 4.0.3
-      pkg-types: 2.2.0
+      pkg-types: 2.3.0
       scule: 1.3.0
       strip-literal: 3.0.0
       tinyglobby: 0.2.14
@@ -13442,8 +13482,8 @@ snapshots:
 
   unplugin-auto-import@19.3.0(@nuxt/kit@3.19.1(magicast@0.3.5))(@vueuse/core@10.11.1(vue@3.5.21(typescript@5.9.2))):
     dependencies:
-      local-pkg: 1.1.1
-      magic-string: 0.30.17
+      local-pkg: 1.1.2
+      magic-string: 0.30.18
       picomatch: 4.0.3
       unimport: 4.2.0
       unplugin: 2.3.10
@@ -13457,7 +13497,7 @@ snapshots:
       "@antfu/install-pkg": 1.1.0
       "@iconify/utils": 2.3.0
       debug: 4.4.1
-      local-pkg: 1.1.1
+      local-pkg: 1.1.2
       unplugin: 2.3.10
     optionalDependencies:
       "@vue/compiler-sfc": 3.5.21
@@ -13478,9 +13518,9 @@ snapshots:
     dependencies:
       chokidar: 3.6.0
       debug: 4.4.1
-      local-pkg: 1.1.1
-      magic-string: 0.30.17
-      mlly: 1.7.4
+      local-pkg: 1.1.2
+      magic-string: 0.30.18
+      mlly: 1.8.0
       tinyglobby: 0.2.14
       unplugin: 2.3.10
       unplugin-utils: 0.2.5
@@ -13859,10 +13899,10 @@ snapshots:
       lib0: 0.2.114
       yjs: 13.6.27
 
-  y-prosemirror@1.3.7(prosemirror-model@1.25.2)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27):
+  y-prosemirror@1.3.7(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27):
     dependencies:
       lib0: 0.2.114
-      prosemirror-model: 1.25.2
+      prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-view: 1.40.1
       y-protocols: 1.0.6(yjs@13.6.27)

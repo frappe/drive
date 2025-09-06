@@ -48,7 +48,6 @@
           "
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
-          :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
           :editor-class="[
             'prose-sm min-h-[4rem] !min-w-0 mx-auto',
             `text-[${settings?.font_size || 15}px]`,
@@ -84,25 +83,34 @@
           "
           :mentions="users"
           placeholder="Start writing here..."
-          :bubble-menu="bubbleMenuButtons"
+          :bubble-menu="settings.minimal && bubbleMenuButtons"
           :extensions="editorExtensions"
         >
           <template #top>
             <TextEditorFixedMenu
-              v-if="editable"
-              class="w-full overflow-x-auto border-b border-outline-gray-modals justify-center py-1.5"
+              v-if="editable && !settings.minimal"
+              class="w-full overflow-x-auto border-b border-outline-gray-modals justify-center py-1.5 shrink-0"
               :buttons="bubbleMenuButtons"
             />
           </template>
           <template #editor="{ editor }">
-            <EditorContent
-              :editor="editor"
-              class="h-full overflow-y-auto"
-            />
+            <div class="flex h-full">
+              <EditorContent
+                :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
+                :editor="editor"
+                class="h-full overflow-y-auto flex-1"
+              />
+              <ToC
+                v-if="anchors.length > 1"
+                :editor
+                :anchors
+              />
+            </div>
           </template>
         </FTextEditor>
       </div>
     </div>
+
     <FloatingComments
       v-if="comments.length"
       :entity="entity"
@@ -143,6 +151,11 @@ import FloatingQuoteButton from "./extensions/comment"
 import { CharacterCount } from "./extensions/character-count"
 import { CollaborationCursor } from "./extensions/collaboration-cursor"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
+import {
+  default as TableOfContents,
+  getHierarchicalIndexes,
+} from "@tiptap/extension-table-of-contents"
+
 import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc, getRandomColor } from "@/utils/files"
 import { rename } from "@/resources/files"
@@ -168,7 +181,6 @@ const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
 })
-const editable = computed(() => !!props.entity.write && !props.settings?.lock)
 defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
@@ -179,6 +191,7 @@ const edited = defineModel("edited")
 const props = defineProps({
   entity: Object,
   settings: Object,
+  editable: Boolean,
   showResolved: Boolean,
   users: Object,
   currentVersion: { required: false, type: Object },
@@ -196,6 +209,7 @@ const settings = computed(() => {
 
 const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const activeComment = ref(null)
+const anchors = ref([])
 const autosave = debounce(() => emit("saveDocument"), 2000)
 const autoversion = debounce(() => {
   if (!collab.value) return
@@ -313,6 +327,11 @@ const ExtendedCommentExtension = CommentExtension.extend({
 
 const editorExtensions = [
   CharacterCount,
+  TableOfContents.configure({
+    onUpdate: (val) => (anchors.value = val),
+    getIndex: getHierarchicalIndexes,
+    scrollParent: () => editor.value?.view?.dom?.parentElement,
+  }),
   FontFamily.configure({
     types: ["textStyle"],
   }),

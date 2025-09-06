@@ -81,7 +81,7 @@ const props = defineProps({
 })
 const tabs = dynamicList([
   { label: "Everywhere", icon: LucideGlobe2 },
-  { label: "This document", icon: LucideFileText, cond: props.editable },
+  { label: "This document", icon: LucideFileText },
 ])
 const tabIndex = ref(props.editable ? 1 : 0)
 

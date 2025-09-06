@@ -118,7 +118,7 @@
             ],
           },
           {
-            onClick: (val) => {
+            onClick: () => {
               showSettings = true
             },
             label: 'Settings',
@@ -190,10 +190,11 @@
       v-model:yjs-content="yjsContent"
       v-model:show-comments="showComments"
       v-model:current="current"
-      :show-resolved
       :entity
+      :editable
       :settings="docSettings?.doc?.settings"
       :users="allUsers.data || []"
+      :show-resolved
       @save-document="saveDocument"
       @new-version="
         (snap) => {
@@ -216,11 +217,7 @@
       v-if="showSettings"
       v-model="showSettings"
       :doc-settings
-    />
-    <WriterSettings
-      v-if="showSettings"
-      v-model="showSettings"
-      :doc-settings
+      :editable
     />
   </div>
 </template>
@@ -296,6 +293,9 @@ const showComments = ref(false)
 const showVersions = ref(false)
 const showSettings = ref(false)
 const edited = ref(false)
+const editable = computed(
+  () => !!entity?.value?.write && !docSettings?.doc?.settings?.lock
+)
 watch(showVersions, (v) => {
   if (!v) current.value = null
 })
@@ -401,7 +401,6 @@ const toggleMinimal = (val) => {
     store.commit("setBreadcrumbs", store.state.breadcrumbs.slice(-1))
     window.document.querySelector("#sidebar").style.display = "none"
   } else if (originalBreadcrumbs) {
-    console.log(originalBreadcrumbs.length)
     store.commit("setBreadcrumbs", originalBreadcrumbs)
     window.document.querySelector("#sidebar").style.removeProperty("display")
   }

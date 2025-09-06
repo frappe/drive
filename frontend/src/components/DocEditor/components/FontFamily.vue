@@ -5,6 +5,7 @@
       v-model="selected"
       placeholder="Font Family"
       class="min-w-[10rem]"
+      :style="selected && { fontFamily: `var(--font-${selected})` }"
     />
   </div>
 </template>
