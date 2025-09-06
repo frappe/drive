@@ -1,40 +1,43 @@
 <template>
-  <div>
+  <div class="dropdown">
     <button
-      v-for="(tab, idx) in tabs"
-      :key="tab.label"
-      @click="$emit('update:modelValue', idx)"
-      :class="{ active: idx === modelValue }"
-    >
-      {{ tab.label }}
-    </button>
+      class="dropdown-toggle"
+      v-html="filterIcon"
+      data-toggle="dropdown"
+    />
+
+    <div class="dropdown-menu dropdown-menu-right">
+      <div
+        v-for="tab in tabs"
+        class="dropdown-item"
+        @click="$emit('update:modelValue', tab)"
+      >
+        {{ tab.label }}
+        <div
+          v-if="modelValue?.label === tab.label"
+          v-html="tickIcon"
+          style="display: flex"
+        />
+      </div>
+    </div>
   </div>
 </template>
+
 <script setup>
-import { version } from "vue";
 defineProps({
   tabs: Array,
-  modelValue: Number,
+  modelValue: Object,
 });
-
+const filterIcon = frappe.utils.icon("filter", "md");
+const tickIcon = frappe.utils.icon("tick", "sm");
 defineEmits(["update:modelValue"]);
 </script>
-<style scoped>
-div {
-  border-radius: 0.625rem;
-  height: 1.75rem;
-  width: fit-content;
-  align-items: center;
-  display: flex;
-  font-size: 13px;
-  line-height: 1.15;
-  letter-spacing: 0.02em;
-  font-weight: 420;
-  background: #f3f3f3;
-  padding: 0 1px;
-  gap: 0.125rem;
-}
 
+<style scoped>
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
 button {
   flex-shrink: 0;
   background: #f3f3f3;
@@ -48,9 +51,40 @@ button {
   border: none;
 }
 
-button.active {
-  background: white;
-  box-shadow: 0 0 #0000, 0 0 #0000, 0px 0px 1px rgba(0, 0, 0, 0.45),
-    0px 1px 2px rgba(0, 0, 0, 0.1);
+.dropdown-toggle:focus {
+  outline: none;
+}
+.dropdown-toggle::after {
+  content: none;
+}
+
+.dropdown-menu {
+  left: 0;
+  margin-top: 4px;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 1.75rem;
+  width: 100%;
+  border-radius: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  line-height: 1.5rem;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+  color: black !important;
+}
+
+.dropdown-item:active {
+  background: #f0f0f0;
+  color: black !important;
 }
 </style>

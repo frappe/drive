@@ -13,14 +13,14 @@
     </select>
   </div>
   <template v-if="team">
-    <div class="flex justify-center">
+    <div class="flex" style="align-items: center; gap: 0.5rem">
+      <input v-model="search" class="my-3" placeholder="Search" />
       <TabButtons
-        :model-value="tabIndex"
+        :model-value="selectedTab"
         :tabs="tabs"
-        @update:modelValue="tabIndex = $event"
+        @update:modelValue="selectedTab = $event"
       />
     </div>
-    <input v-model="search" class="my-3" placeholder="Search" />
     <div class="overflow-auto" style="height: 300px">
       <!-- mx-auto doesn't work for some reason -->
       <div
@@ -82,7 +82,7 @@ import TabButtons from "./TabButtons.vue";
 
 const emit = defineEmits(["success", "complete"]);
 const tabs = [{ label: "Team" }, { label: "Public" }, { label: "Favourites" }];
-const tabIndex = ref(1);
+const selectedTab = ref(tabs[0]);
 
 const teamRoot = reactive({
   label: "Team",
@@ -103,17 +103,17 @@ const search = ref("");
 const breadcrumbs = ref([
   {
     name: "",
-    title: tabIndex.value === 0 ? "Team" : "Public",
+    title: selectedTab.value.label,
   },
 ]);
 const currentTree = computed(() =>
-  tabIndex.value === 1 ? publicRoot : teamRoot
+  selectedTab.value.label === "Public" ? publicRoot : teamRoot
 );
 
 const team = ref(localStorage.getItem("drive-recent-team"));
 
 watch(
-  [tabIndex, team],
+  [selectedTab, team],
   ([newValue, team]) => {
     if (!team) return;
     selected_node.value = null;
@@ -122,24 +122,22 @@ watch(
     currentTree.value.searching = false;
     currentTree.value.fetching = true;
     localStorage.setItem("drive-recent-team", team);
-    switch (newValue) {
-      case 0:
-        breadcrumbs.value = [{ name: "", title: "Team" }];
+    breadcrumbs.value = [{ name: "", title: newValue.label }];
+    switch (newValue.label) {
+      case "Team":
         get_files(teamRoot, "drive.api.list.files", {
           entity_name: "",
           team,
           personal: 0,
         });
         break;
-      case 1:
-        breadcrumbs.value = [{ name: "", title: "Public" }];
+      case "Public":
         get_files(publicRoot, "drive.api.list.shared", {
           team,
           public: 1,
         });
         break;
-      case 2:
-        breadcrumbs.value = [{ name: "", title: "Favourites" }];
+      case "Favourites":
         get_files(teamRoot, "drive.api.list.files", {
           entity_name: "",
           team,
@@ -156,21 +154,17 @@ watch(search, async (query) => {
     searchResults.value = [];
     currentTree.value.searching = false;
   } else {
-    currentTree.value.searching = "searching";
-    let reg = new RegExp(query, "i");
-    const res = recursiveSearch(currentTree.value, reg);
-    // don't global search for favourites
-    if (res.length || tabIndex.value === 2) {
-      currentTree.value.searching = "completed";
-      searchResults.value = res;
-    } else {
-      currentTree.value.searching = "completed";
-      const { message } = await frappe.call("drive.api.files.search", {
-        team: team.value,
-        query,
-      });
-      searchResults.value = files_to_nodes(message);
+    currentTree.value.searching = "completed";
+    let { message } = await frappe.call("drive.api.list.files", {
+      team: team.value,
+      search: query,
+      only_parent: 0,
+      favourites_only: selectedTab.value.label === "Favourites" ? 1 : 0,
+    });
+    if (selectedTab.value.label == "Public") {
+      message = message.filter((k) => k.share_count === -2);
     }
+    searchResults.value = files_to_nodes(message);
   }
 });
 

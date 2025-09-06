@@ -36,6 +36,7 @@ def files(
     personal=-1,
     folders=0,
     only_parent=1,
+    search=None,
 ):
     home = get_home_folder(team)["name"]
     field, ascending = order_by.replace("modified", "_modified").split(" ")
@@ -116,7 +117,9 @@ def files(
         query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
     elif not is_active:
         query = query.where(DriveFile.owner == frappe.session.user)
-
+    if search:
+        # escape wildcards or lower() depending on DB
+        query = query.where(DriveFile.title.like(f"%{search}%"))
     if personal == 0:
         query = query.where(DriveFile.is_private == 0)
     elif personal == 1:
