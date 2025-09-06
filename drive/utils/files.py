@@ -144,7 +144,7 @@ class FileManager:
                 if self.s3_enabled:
                     # Removes original file
                     os.remove(file_path)
-                    self.conn.upload_file(final_path, self.bucket, final_path)
+                    self.conn.upload_file(disk_path, self.bucket, final_path)
                     disk_path.unlink()
                 else:
                     disk_path.rename(final_path)

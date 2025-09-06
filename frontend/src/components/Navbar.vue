@@ -93,7 +93,7 @@
     </div>
     <Button
       v-if="!isLoggedIn"
-      class="fixed bottom-4 right-4 text-sm"
+      class="fixed bottom-4 right-4 text-sm z-1"
       variant="outline"
       :icon-left="h(FrappeDriveLogo, { class: 'w-4.5 h-4.5' })"
       label="Try out Drive"
