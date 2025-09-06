@@ -5,7 +5,7 @@ import {
   onOutsideClickDirective,
   setConfig,
   frappeRequest,
-  Button
+  Button,
 } from "frappe-ui"
 
 import store from "./store"
@@ -14,9 +14,8 @@ import router from "./router"
 import App from "./App.vue"
 import emitter from "@/emitter"
 import "./index.css"
-import VueTippy from "vue-tippy"
 import { initSocket, RealTimeHandler } from "./socket"
-import focusDirective from './utils/focus'
+import focusDirective from "./utils/focus"
 import { allUsers } from "@/resources/permissions"
 
 const app = createApp(App)

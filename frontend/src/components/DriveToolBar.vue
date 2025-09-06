@@ -147,10 +147,15 @@
             </Button>
 
             <Button
-              class="text-sm h-7 rounded-l-none flex-1 md:block"
+              class="text-sm h-7 rounded-l-none flex-1"
               :disabled="!getEntities.data?.length"
             >
-              {{ __(sortOrder.label) }}
+              <div class="flex items-center gap-2">
+                {{ __(sortOrder.label) }}
+                <template v-if="sortOrder.smart">
+                  <LucideSparkles class="size-3" />
+                </template>
+              </div>
             </Button>
           </div>
         </Dropdown>
@@ -185,35 +190,27 @@
             )"
           :key="item.label"
         >
-          <Tooltip :text="item.label">
-            <Button
-              variant="outline"
-              size="md"
-              @click.once="item.action(selections)"
-            >
-              <template #icon>
-                <component
-                  :is="item.icon"
-                  class="size-4 text-ink-gray-6"
-                  :class="[item.class, item.danger ? 'text-ink-red-3' : '']"
-                />
-              </template>
-            </Button>
-          </Tooltip>
+          <Button
+            variant="outline"
+            :tooltip="item.label"
+            size="md"
+            @click.once="item.action(selections)"
+          >
+            <template #icon>
+              <component
+                :is="item.icon"
+                class="size-4 text-ink-gray-6"
+                :class="[item.class, item.theme ? 'text-ink-red-3' : '']"
+              />
+            </template>
+          </Button>
         </template>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import {
-  Button,
-  Tooltip,
-  Dropdown,
-  TextInput,
-  TabButtons,
-  Switch,
-} from "frappe-ui"
+import { Button, Dropdown, TextInput, TabButtons, Switch } from "frappe-ui"
 import {
   ref,
   computed,
@@ -228,7 +225,7 @@ import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideFilter from "~icons/lucide/filter"
 
-const rows = defineModel(Array)
+const sortOrder = defineModel(Object)
 const props = defineProps({
   selections: Array,
   actionItems: Array,
@@ -236,16 +233,6 @@ const props = defineProps({
 })
 const store = useStore()
 
-const name = computed(
-  () => props.getEntities.params?.entity_name || props.getEntities.params?.team
-)
-const sortOrder = reactive(
-  store.state.sortOrder[name.value] || {
-    label: "Modified",
-    field: "modified",
-    ascending: false,
-  }
-)
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
 
@@ -254,23 +241,24 @@ const viewState = ref(store.state.view)
 watch(viewState, (val) => store.commit("toggleView", val))
 const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef("search-input")
+
 // Do this as the resource data is updated by a lagging `fetch`
-watch(
-  [sortOrder, () => props.getEntities.loading],
-  ([val, loading]) => {
-    if (!rows.value || loading) return
-    sortEntities(rows.value, val)
-    props.getEntities.setData(rows.value)
-    store.commit("setCurrentFolder", {
-      entities: rows.value.filter?.((k) => k.title[0] !== "."),
-    })
-    if (name.value) {
-      store.state.sortOrder[name.value] = val
-      store.commit("setSortOrder", store.state.sortOrder)
-    }
-  },
-  { immediate: true }
-)
+// watch(
+//   [sortOrder, () => props.getEntities.loading],
+//   ([val, loading]) => {
+//     if (!rows.value || loading) return
+//     sortEntities(rows.value, val)
+//     props.getEntities.setData(rows.value)
+//     store.commit("setCurrentFolder", {
+//       entities: rows.value.filter?.((k) => k.title[0] !== "."),
+//     })
+//     if (name.value) {
+//       store.state.sortOrder[name.value] = val
+//       store.commit("setSortOrder", store.state.sortOrder)
+//     }
+//   },
+//   { immediate: true }
+// )
 
 watch(activeFilters.value, (val) => {
   if (!val.length) {
@@ -301,13 +289,13 @@ const orderByItems = computed(() => {
   return columnHeaders.map((header) => ({
     ...header,
     onClick: () => {
-      sortOrder.field = header.field
-      sortOrder.label = header.label
+      sortOrder.value.field = header.field
+      sortOrder.value.label = header.label
     },
   }))
 })
 const toggleAscending = () => {
-  sortOrder.ascending = !sortOrder.ascending
+  sortOrder.value.ascending = !sortOrder.value.ascending
 }
 
 const columnHeaders = [
@@ -340,10 +328,10 @@ const columnHeaders = [
           setup() {
             return () =>
               h(Switch, {
-                label: __("Smart sort"),
-                disabled: sortOrder.field !== "title",
-                modelValue: sortOrder.smart,
-                "onUpdate:modelValue": (val) => (sortOrder.smart = val),
+                label: __("Smart"),
+                disabled: sortOrder.value.field !== "title",
+                modelValue: sortOrder.value.smart,
+                "onUpdate:modelValue": (val) => (sortOrder.value.smart = val),
               })
           },
         }),

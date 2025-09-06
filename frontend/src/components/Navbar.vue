@@ -2,11 +2,11 @@
   <nav
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-surface-white border-b w-full px-5 py-2.5 h-12 flex items-center justify-between"
+    class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
   >
     <Breadcrumbs
       :items="store.state.breadcrumbs"
-      :class="'select-none'"
+      class="select-none truncate"
     >
       <template #prefix="{ item, index }">
         <LoadingIndicator
@@ -37,13 +37,25 @@
         height="16"
         class="my-auto stroke-amber-500 fill-amber-500"
       />
+      <template v-if="!isLoggedIn">
+        <Button
+          label="Download"
+          variant="outline"
+          @click="entitiesDownload($route.params.team, [rootEntity])"
+        />
+        <Button
+          variant="solid"
+          @click="$router.push({ name: 'Login' })"
+        >
+          Sign In
+        </Button>
+      </template>
       <Dropdown
-        v-if="defaultActions"
+        v-else-if="defaultActions"
         :options="defaultActions"
         placement="right"
         :button="{
           variant: 'ghost',
-          tooltip: 'Actions',
           onClick: () => {
             $store.commit('setActiveEntity', rootEntity)
           },
@@ -78,48 +90,45 @@
         </template>
         {{ button.label }}
       </Button>
-
-      <div
-        v-if="connectedUsers.length > 1 && isLoggedIn"
-        class="hidden sm:flex bg-surface-gray-3 rounded justify-center items-center px-1"
-      >
-        <UsersBar />
-      </div>
-
-      <div
-        v-if="!isLoggedIn"
-        class="ml-auto"
-      >
-        <Button
-          variant="solid"
-          @click="$router.push({ name: 'Login' })"
-        >
-          Sign In
-        </Button>
-      </div>
     </div>
+    <Button
+      v-if="!isLoggedIn"
+      class="fixed bottom-4 right-4 text-sm z-1"
+      variant="outline"
+      :icon-left="h(FrappeDriveLogo, { class: 'w-4.5 h-4.5' })"
+      label="Try out Drive"
+      @click="open('https://frappe.io/drive')"
+    />
     <Dialogs
       v-model="dialog"
-      :entities="rootEntity ? [rootEntity] : []"
+      :entities="entities?.length ? entities : [rootEntity]"
     />
   </nav>
 </template>
 <script setup>
-import UsersBar from "./UsersBar.vue"
-import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from "frappe-ui"
+import {
+  Button,
+  Breadcrumbs,
+  LoadingIndicator,
+  Dropdown,
+  toast,
+} from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
-import { ref, computed } from "vue"
+import { ref, computed, inject, h } from "vue"
 import { entitiesDownload } from "@/utils/download"
 import {
   getRecents,
   getFavourites,
   getTrash,
   createDocument,
+  createPresentation,
   toggleFav,
+  getDocuments,
 } from "@/resources/files"
+import { apps } from "@/resources/permissions"
 import { useRoute, useRouter } from "vue-router"
-import { getLink } from "@/utils/files"
+import { getLink, prettyData, dynamicList } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
@@ -130,15 +139,17 @@ import LucideStar from "~icons/lucide/star"
 import LucideMoreHorizontal from "~icons/lucide/more-horizontal"
 import LucideShare2 from "~icons/lucide/share-2"
 import LucideDownload from "~icons/lucide/download"
+import LucidePlus from "~icons/lucide/plus"
 import LucideLink from "~icons/lucide/link"
 import LucideArrowLeftRight from "~icons/lucide/arrow-left-right"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideInfo from "~icons/lucide/info"
-import LucidePlus from "~icons/lucide/plus"
 import LucideFileUp from "~icons/lucide/file-up"
 import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
+import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
+import FrappeDriveLogo from "./FrappeDriveLogo.vue"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -151,16 +162,25 @@ const COMPONENT_MAP = {
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const open = (url) => {
+  window.open(url, "_blank")
+}
 
 const props = defineProps({
-  actions: Array,
-  triggerRoot: Function,
   rootResource: Object,
+  actions: { type: Array, required: false },
+  // Used to pass into dialogs
+  entities: {
+    type: Array,
+    default: [],
+  },
 })
+
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
-const connectedUsers = computed(() => store.state.connectedUsers)
-const dialog = ref("")
-const rootEntity = computed(() => props.rootResource?.data)
+const dialog = inject("dialog", ref(""))
+const rootEntity = computed(
+  () => props.rootResource?.data?.title && props.rootResource?.data
+)
 
 const defaultActions = computed(() => {
   if (!rootEntity.value?.title) return
@@ -260,21 +280,41 @@ const defaultActions = computed(() => {
     return { ...k, items: k.items.filter((l) => !l.isEnabled || l.isEnabled()) }
   })
 })
+const isPrivate = computed(() =>
+  store.state.breadcrumbs[0].name === "Home" ? 1 : 0
+)
 
 // Functions
-const newDocument = async () => {
-  let data = await createDocument.submit({
-    title: "Untitled Document",
-    team: route.params.team,
-    personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
-    content: null,
-    parent: store.state.currentFolder.name,
-  })
-  window.open(
-    router.resolve({
-      name: "Document",
-      params: { team: route.params.team, entityName: data.name },
-    }).href
+const newExternal = async (type) => {
+  toast.promise(
+    (type === "Document" ? createDocument : createPresentation).submit({
+      title: "Untitled " + type,
+      team: route.params.team,
+      personal: isPrivate.value,
+      parent: store.state.currentFolder.name,
+    }),
+    {
+      successDuration: 1,
+      loading: `Creating ${type}...`,
+      success: (data) => {
+        prettyData([data])
+        data.file_type = type
+        store.state.listResource.data?.push?.(data)
+        getDocuments.data?.push(data)
+        if (type === "Document") {
+          window.open(
+            router.resolve({
+              name: "Document",
+              params: { team: route.params.team, entityName: data.name },
+            }).href
+          )
+        } else if (type === "Presentation") {
+          window.open("/slides/presentation/" + data.path)
+        }
+        return "Created"
+      },
+      error: "Failed to create document",
+    }
   )
 }
 
@@ -322,11 +362,17 @@ const newEntityOptions = [
   },
   {
     group: "Create",
-    items: [
+    items: dynamicList([
       {
         label: "Document",
         icon: LucideFilePlus2,
-        onClick: newDocument,
+        onClick: () => newExternal("Document"),
+      },
+      {
+        label: "Presentation",
+        icon: LucideGalleryVerticalEnd,
+        onClick: () => (dialog.value = "p"),
+        cond: isPrivate.value && apps.data?.find?.((k) => k.name === "slides"),
       },
       {
         label: "Folder",
@@ -334,11 +380,11 @@ const newEntityOptions = [
         onClick: () => (dialog.value = "f"),
       },
       {
-        label: "New Link",
+        label: "Link",
         icon: LucideLink,
         onClick: () => (dialog.value = "l"),
       },
-    ],
+    ]),
   },
 ]
 </script>

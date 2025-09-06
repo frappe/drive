@@ -1,9 +1,9 @@
 import frappe
 from frappe.utils import getdate
+from pypika import Field
 
+from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
 from drive.utils.users import mark_as_viewed
-from drive.utils.files import get_valid_breadcrumbs, generate_upward_path, get_file_type
-
 
 ENTITY_FIELDS = [
     "name",
@@ -11,7 +11,7 @@ ENTITY_FIELDS = [
     "is_group",
     "is_link",
     "path",
-    "modified",
+    Field("_modified").as_("modified"),
     "creation",
     "file_size",
     "mime_type",
@@ -24,7 +24,7 @@ ENTITY_FIELDS = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_user_access(entity, user=None):
+def get_user_access(entity, user=None, details=False):
     """
     Return the user specific access permissions for an entity if it exists or general access permissions
 
@@ -32,16 +32,17 @@ def get_user_access(entity, user=None):
     :return: Dict of general access permissions (read, write)
     :rtype: frappe._dict or None
     """
+    # BROKEN: no perm checks, has an allow_guest too
+    # also leaks parent breadcrumbs
     if not user:
         user = frappe.session.user
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
-    if user == entity.owner:
-        return {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
 
-    # Default access based on public or team view
     teams = get_teams(user)
-    if entity.team in teams and entity.is_private == 0:
+    if user == entity.owner:
+        access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
+    elif entity.team in teams and entity.is_private == 0:
         # Everyone can upload to team folders, and admins can edit all files
         access_level = get_access_level(entity.team)
         access = {
@@ -62,24 +63,29 @@ def get_user_access(entity, user=None):
         }
 
     path = generate_upward_path(entity.name, user)
+
     user_access = {k: v for k, v in path[-1].items() if k in access.keys()}
     if user == "Guest":
-        return user_access
+        return (user_access, (path,)) if details else user_access
 
     public_path = generate_upward_path(entity.name, "Guest")
     public_access = {k: v for k, v in public_path[-1].items() if k in access.keys()}
 
     valid_accesses = [user_access, public_access]
+    team_path = None
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
         team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
         valid_accesses.append(team_access)
+
     for access_type in valid_accesses:
         for type, v in access_type.items():
             if v:
                 access[type] = 1
-
-    return access
+    if details:
+        return access, (path, team_path, public_path)
+    else:
+        return access
 
 
 @frappe.whitelist()
@@ -127,20 +133,20 @@ def get_entity_with_permissions(entity_name):
     entity = frappe.db.get_value(
         "Drive File",
         {"is_active": 1, "name": entity_name},
-        ENTITY_FIELDS + ["team", "modified"],
+        ENTITY_FIELDS + ["team"],
         as_dict=1,
     )
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
 
-    user_access = get_user_access(entity, frappe.session.user)
+    user_access, paths = get_user_access(entity, details=True)
     if user_access.get("read") == 0:
         frappe.throw("You don't have access to this file.", {"error": frappe.PermissionError})
 
     owner_info = (
         frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     )
-    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity, user_access)}
+    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(user_access, paths, not entity.is_private)}
     favourite = frappe.db.get_value(
         "Drive Favourite",
         {
@@ -194,10 +200,9 @@ def get_shared_with_list(entity):
     :return: List of users, with permissions and last modified datetime
     :rtype: list[frappe._dict]
     """
-    if not frappe.has_permission(
-        doctype="Drive File", doc=entity, ptype="share", user=frappe.session.user
-    ):
-        raise frappe.PermissionError
+    if not user_has_permission(entity, "share"):
+        raise frappe.PermissionError("You do not have permission to share this file.")
+
     permissions = frappe.db.get_all(
         "Drive Permission",
         filters=[["entity", "=", entity], ["user", "!=", ""], ["user", "!=", "$TEAM"]],
@@ -246,7 +251,6 @@ def user_has_permission(doc, ptype, user=None):
     if user == "Administrator":
         return True
     access = get_user_access(doc, user)
-    print(user, access, ptype in access)
     if ptype in access:
         return bool(access[ptype])
 

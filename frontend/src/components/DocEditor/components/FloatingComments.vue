@@ -39,6 +39,7 @@
         <div
           v-show="
             activeComment === comment.name &&
+            $store.state.user.id !== 'Guest' &&
             !comment.new &&
             (comment.owner == $store.state.user.id || entity.write)
           "
@@ -76,7 +77,10 @@
             Unresolve
           </Button>
           <Button
-            v-if="comment.owner == $store.state.user.id"
+            v-if="
+              comment.owner == $store.state.user.id ||
+              (comment.owner === 'Guest' && entity.write)
+            "
             :disabled="comment.loading"
             variant="ghost"
             class="!h-5 !text-xs !px-1.5 !rounded-sm"
@@ -125,9 +129,10 @@
                 class="w-full flex justify-between items-start label-group gap-1 text-sm"
               >
                 <div class="flex gap-1">
-                  <label class="font-medium text-ink-gray-8">{{
-                    $user(reply.owner)?.full_name
-                  }}</label>
+                  <label
+                    class="font-medium text-ink-gray-8 max-w-[70%] truncate"
+                    >{{ $user(reply.owner)?.full_name || reply.owner }}</label
+                  >
 
                   <label class="text-ink-gray-6 truncate">
                     &#183;
@@ -175,9 +180,8 @@
                     "
                     variant="ghost"
                     @click="triggerRoot"
-                  >
-                    <LucideMoreVertical class="size-3" />
-                  </Button>
+                    :icon="h(LucideMoreVertical, { class: 'size-3' })"
+                  />
                 </Dropdown>
                 <LucideBadgeCheck
                   v-if="comment.resolved"
@@ -288,6 +292,7 @@ import {
   inject,
   onMounted,
   ref,
+  h,
   onBeforeUnmount,
   nextTick,
   defineAsyncComponent,
@@ -300,6 +305,7 @@ import { useDebounceFn, useEventListener } from "@vueuse/core"
 import { toast } from "@/utils/toasts"
 import LucideMessageCircleWarning from "~icons/lucide/message-circle-warning"
 import LucideX from "~icons/lucide/x"
+import LucideMoreVertical from "~icons/lucide/more-vertical"
 import { useStore } from "vuex"
 
 const CommentEditor = defineAsyncComponent(() =>
@@ -309,6 +315,7 @@ const props = defineProps({
   entity: Object,
   editor: Object,
 })
+const emit = defineEmits(["save"])
 
 const store = useStore()
 
@@ -332,14 +339,23 @@ const findComment = (name) => {
 
 const showResolved = inject("showResolved")
 const filteredComments = computed(() => {
-  if (showResolved.value) {
+  const filtered = showResolved.value
+    ? comments.value
+    : comments.value.filter((k) => !k.resolved)
+  if (!filtered.length) showComments.value = false
+  return filtered
+})
+watch(showResolved, async (val) => {
+  await nextTick()
+  if (val) {
     document
       .querySelectorAll("[data-resolved=true]")
       .forEach((k) => k.classList.add("display"))
+  } else {
+    document
+      .querySelectorAll("[data-resolved=true]")
+      .forEach((k) => k.classList.remove("display"))
   }
-  return showResolved.value
-    ? comments.value
-    : comments.value.filter((k) => !k.resolved)
 })
 watch(activeComment, (val) => {
   document
@@ -356,9 +372,10 @@ watch(activeComment, (val) => {
 
 // Resources
 const createComment = createResource({
-  url: "drive.api.files.create_comment",
+  url: "drive.api.docs.create_comment",
   onSuccess: () => {
     findComment(createComment.params.name).loading = false
+    emit("save")
   },
   onError: () => {
     toast({
@@ -368,13 +385,22 @@ const createComment = createResource({
   },
 })
 const editComment = createResource({
-  url: "drive.api.files.edit_comment",
+  url: "drive.api.docs.edit_comment",
+  onSuccess: () => {
+    emit("save")
+  },
 })
 const deleteComment = createResource({
-  url: "drive.api.files.delete_comment",
+  url: "drive.api.docs.delete_comment",
+  onSuccess: () => {
+    emit("save")
+  },
 })
 const resolveComment = createResource({
-  url: "drive.api.files.resolve_comment",
+  url: "drive.api.docs.resolve_comment",
+  onSuccess: () => {
+    emit("save")
+  },
 })
 
 // Functions
@@ -401,7 +427,10 @@ const newReply = (comment, editor) => {
 }
 
 const removeComment = (name, entire, server = true) => {
-  if (server) deleteComment.submit({ name, entire })
+  if (server) {
+    deleteComment.submit({ name, entire })
+  }
+
   props.editor.commands.unsetComment(name)
   for (let [i, val] of Object.entries(comments.value)) {
     if (val.name === name) {

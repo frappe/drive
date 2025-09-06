@@ -15,28 +15,32 @@
             {{ __("Settings") }}
           </h1>
           <div class="mt-3 space-y-1">
-            <button
+            <template
               v-for="tab in tabs"
               :key="tab.label"
-              class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
-              :class="[
-                activeTab?.label == tab.label
-                  ? 'bg-surface-gray-4'
-                  : 'hover:bg-surface-gray-2',
-              ]"
-              @click="activeTab = tab"
             >
-              <component
-                :is="tab.icon"
-                class="size-4 text-ink-gray-7 stroke-[1.5]"
-              />
-              <span class="text-base text-ink-gray-8">
-                {{ __(tab.label) }}
-              </span>
-            </button>
+              <button
+                v-if="tab.enabled?.value !== false"
+                class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
+                :class="[
+                  activeTab?.label == tab.label
+                    ? 'bg-surface-gray-4'
+                    : 'hover:bg-surface-gray-2',
+                ]"
+                @click="activeTab = tab"
+              >
+                <component
+                  :is="tab.icon"
+                  class="size-4 text-ink-gray-7 stroke-[1.5]"
+                />
+                <span class="text-base text-ink-gray-8">
+                  {{ __(tab.label) }}
+                </span>
+              </button>
+            </template>
           </div>
         </div>
-        <div class="flex flex-1 flex-col px-8 pt-6 overflow-y-auto">
+        <div class="flex flex-1 flex-col p-8">
           <component
             :is="activeTab.component"
             v-if="activeTab"
@@ -45,37 +49,38 @@
         <Button
           class="m-3 absolute right-0"
           variant="ghost"
+          :icon="LucideX"
           @click="$emit('update:modelValue', false)"
-        >
-          <template #icon>
-            <LucideX class="size-4" />
-          </template>
-        </Button>
+        />
       </div>
     </template>
   </Dialog>
 </template>
 <script setup>
-import { ref, defineProps, markRaw, computed } from "vue"
+import { ref, markRaw, computed } from "vue"
 import { Dialog, Button } from "frappe-ui"
+import { isAdmin } from "@/resources/permissions"
 import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
+import LucideFileText from "~icons/lucide/file-text"
+import LucideCloudUpload from "~icons/lucide/cloud-upload"
 import LucideTag from "~icons/lucide/tag"
+import LucideX from "~icons/lucide/x"
 import LucideUser from "~icons/lucide/user"
 import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
+import BackendSettings from "./BackendSettings.vue"
+import WriterSettings from "./WriterSettings.vue"
 
 let tabs = [
   {
-    enabled: true,
     label: "Profile",
     icon: LucideUser,
     component: markRaw(ProfileSettings),
   },
   {
-    enabled: true,
     label: "Users",
     icon: LucideUserPlus,
     component: markRaw(UserListSettings),
@@ -86,11 +91,23 @@ let tabs = [
     component: markRaw(StorageSettings),
   },
   {
+    label: "Writer",
+    icon: LucideFileText,
+    component: markRaw(WriterSettings),
+  },
+  {
     label: "Tags",
     icon: LucideTag,
     component: markRaw(TagSettings),
   },
+  {
+    enabled: computed(() => isAdmin.data?.is_admin || false),
+    label: "Backend",
+    icon: LucideCloudUpload,
+    component: markRaw(BackendSettings),
+  },
 ]
+if (!isAdmin.data) isAdmin.fetch()
 
 const emit = defineEmits(["update:modelValue"])
 const props = defineProps({

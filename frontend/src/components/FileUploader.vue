@@ -50,7 +50,7 @@ function rootFolderFullPathNewName(k, file_parent) {
   const url =
     window.location.origin +
     "/api/method/" +
-    `drive.utils.files.get_new_title?title=${k}&parent_name=${file_parent}&folder=${true}}`
+    `drive.api.files.get_new_title?title=${k}&parent_name=${file_parent}&folder=${true}}`
 
   const xhr = new XMLHttpRequest()
   xhr.open("GET", url, false) // Here i am seeting third parameter as false for a synchronous request
@@ -105,12 +105,10 @@ onMounted(() => {
     disablePreviews: true,
     addRemoveLinks: true,
     createImageThumbnails: false,
-    retryChunksLimit: 5,
     hiddenInputContainer: "#fileSelection",
     // Do we want to allow multi uploads?
     uploadMultiple: false,
     chunking: true,
-    retryChunks: true,
     forceChunking: true,
     url: "/api/method/drive.api.files.upload_file",
     dictUploadCanceled: "Upload canceled by user",
@@ -187,7 +185,8 @@ onMounted(() => {
   })
   dropzone.value.on("error", function (file, response) {
     let message
-    if (typeof response === "object") {
+    if (file.status === "canceled") message = "You cancelled this upload."
+    else if (typeof response === "object") {
       let messages = JSON.parse(response._server_messages || "[]")
       if (messages.length) message = JSON.parse(messages[0]).message
     }

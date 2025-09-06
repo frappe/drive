@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="relative select-none p-5"
+    class="relative select-none p-5 md:pb-15"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -27,14 +27,8 @@
       <LoadingIndicator class="w-8" />
     </div>
     <template v-else>
-      <div
-        id="drop-area"
-        class="h-full overflow-y-auto"
-      >
-        <ListEmptyState
-          v-if="!formattedRows.length"
-          class="py-5"
-        />
+      <div class="h-full overflow-y-auto">
+        <ListEmptyState v-if="!formattedRows.length" />
         <div
           v-for="group in formattedRows"
           v-else-if="formattedRows[0].group"
@@ -51,6 +45,7 @@
             <CustomListRow
               :rows="group.rows"
               :context-menu="contextMenu"
+              :selections
               @dropped="emit('dropped')"
             />
           </ListGroupRows>
@@ -62,13 +57,11 @@
           <CustomListRow
             :rows="formattedRows"
             :context-menu="contextMenu"
+            :selections
             @dropped="(...p) => $emit('dropped', ...p)"
           />
         </div>
       </div>
-      <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
-        Drop to upload
-      </p>
     </template>
   </FrappeListView>
   <ContextMenu
@@ -142,7 +135,7 @@ const selectedColumns = [
         : title.slice(0, title.lastIndexOf(".")),
     getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
     prefix: ({ row }) => {
-      return getThumbnailUrl(row.name, row.file_type)
+      return getThumbnailUrl(row)
     },
     width: "50%",
   },
@@ -302,14 +295,3 @@ onKeyDown("Escape", (e) => {
   e.preventDefault()
 })
 </script>
-<style>
-.dz-drag-hover #drop-area {
-  opacity: 0.5;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.dz-drag-hover #drop-area + p {
-  display: block;
-}
-</style>

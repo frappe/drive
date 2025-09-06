@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = 'l'"
+    @close="dialogType = ''"
     :options="{
       title: 'Create a Folder',
       size: 'xs',
@@ -32,7 +32,7 @@
         v-if="createFolder.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This folder already exists.
+        {{ createFolder.error.messages[0] }}
       </div>
     </template>
   </Dialog>
@@ -43,7 +43,6 @@ import { ref } from "vue"
 import store from "@/store"
 import { Dialog, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
-import { allFolders } from "@/resources/files"
 
 const route = useRoute()
 const props = defineProps({
@@ -74,7 +73,6 @@ const createFolder = createResource({
   onSuccess(data) {
     open.value = false
     emit("success", data)
-    allFolders.fetch()
   },
 })
 const submit = () => createFolder.submit(folderName.value.trim())

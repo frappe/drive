@@ -4,7 +4,6 @@
 # import frappe
 from frappe.tests import IntegrationTestCase, UnitTestCase
 
-
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded
 # Use these module variables to add/remove to/from that list
@@ -12,18 +11,18 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class UnitTestDriveSiteSettings(UnitTestCase):
+class UnitTestDriveDiskSettings(UnitTestCase):
     """
-    Unit tests for DriveSiteSettings.
+    Unit tests for DriveDiskSettings.
     Use this class for testing individual functions and methods.
     """
 
     pass
 
 
-class IntegrationTestDriveSiteSettings(IntegrationTestCase):
+class IntegrationTestDriveDiskSettings(IntegrationTestCase):
     """
-    Integration tests for DriveSiteSettings.
+    Integration tests for DriveDiskSettings.
     Use this class for testing interactions between multiple components.
     """
 

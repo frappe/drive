@@ -17,7 +17,7 @@
           <Button
             class="ml-auto shrink-0"
             variant="ghost"
-            @click="$emit('update:modelValue', false)"
+            @click="open = false"
           >
             <template #icon>
               <LucideX class="size-4" />
@@ -31,15 +31,15 @@
           <div class="flex justify-between mt-3">
             <div class="flex flex-col gap-2">
               <FCombobox
-                v-model="generalAccessLevel"
+                v-model="generalAccessType"
                 :options="generalOptions"
                 @update:model-value="
-                  (val) => updateGeneralAccess(val, generalAccessLevel)
+                  (val) => updateGeneralAccess(val, generalAccessPerms)
                 "
               >
                 <template #prefix>
                   <component
-                    :is="generalAccessLevel.icon"
+                    :is="generalAccessType.icon"
                     class="mr-2 size-4 text-ink-gray-6"
                   />
                 </template>
@@ -53,8 +53,8 @@
             </div>
             <div class="my-auto w-32">
               <FCombobox
-                v-if="generalAccessLevel !== 'restricted'"
-                v-model="generalAccessType"
+                v-if="generalAccessType !== 'restricted'"
+                v-model="generalAccessPerms"
                 class="my-auto"
                 :options="accessOptions"
                 @update:model-value="
@@ -259,7 +259,7 @@
                 v-else-if="user.user !== entity.owner"
                 class="text-ink-gray-7 relative flex-shrink-0 ml-auto"
                 :access-obj="user"
-                :access-levels="filteredAccess"
+                :access-permss="filteredAccess"
                 @update-access="
                   (access) =>
                     updateAccess.submit({
@@ -348,7 +348,7 @@ import LucideGlobe2 from "~icons/lucide/globe-2"
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
-const emit = defineEmits(["update:modelValue", "success"])
+const emit = defineEmits(["success"])
 const dialogType = defineModel()
 const open = ref(true)
 
@@ -431,10 +431,10 @@ const generalOptions = [
   },
   { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
 ]
-const generalAccessLevel = ref(
+const generalAccessType = ref(
   generalOptions[props.entity.is_private ? 0 : 1].value
 )
-const generalAccessType = ref("reader")
+const generalAccessPerms = ref("reader")
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({
@@ -448,29 +448,35 @@ const getGeneralAccess = createResource({
       return
     }
     const translate = { Guest: "public", $TEAM: "team" }
-    generalAccessLevel.value = generalOptions.find(
+    generalAccessType.value = generalOptions.find(
       (k) => k.value === translate[getGeneralAccess.params.user]
     ).value
 
-    generalAccessType.value = data.write ? "editor" : "reader"
+    generalAccessPerms.value = data.write
+      ? "editor"
+      : data.upload
+      ? "upload"
+      : "reader"
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
 
-const updateGeneralAccess = (type, level) => {
-  updateAccess.submit({
-    entity_name: props.entity.name,
-    user: "general",
-    method: "unshare",
-  })
-  if (type !== "restricted") {
+const updateGeneralAccess = (type, perms) => {
+  if (type === "restricted") {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: "$GENERAL",
+      method: "unshare",
+    })
+  } else {
     updateAccess.submit({
       entity_name: props.entity.name,
       user: type === "public" ? "" : "$TEAM",
       read: 1,
       comment: 1,
       share: 1,
-      write: level === "editor",
+      upload: +(perms === "upload"),
+      write: perms === "editor",
     })
   }
   emit("success")

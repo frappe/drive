@@ -1,17 +1,14 @@
 import { format } from "date-fns"
 export function formatSize(size, nDigits = 1) {
   if (size === 0) return ""
-  const k = 1000 // Change base to 1000 for decimal prefixes
-  const digits = nDigits < 0 ? 0 : nDigits
-  const sizes = [" B", " KB", " MB", " GB", " TB", " PB"] // Adjusted for decimal prefixes
-  const i = Math.floor(Math.log(size) / Math.log(k))
-  let decSize = parseFloat((size / Math.pow(k, i)).toFixed(digits)) + sizes[i]
-  if (i === 0 || i === 1) {
-    decSize = Math.round(size / Math.pow(k, i))
-  } else {
-    decSize = parseFloat((size / Math.pow(k, i)).toFixed(digits))
-  }
-  return decSize + sizes[i]
+  var i = -1
+  var byteUnits = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+  do {
+    size /= 1000
+    i++
+  } while (size > 1000)
+
+  return Math.max(size, 0.1).toFixed(nDigits) + " " + byteUnits[i]
 }
 
 export function base2BlockSize(bytes) {

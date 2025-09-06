@@ -1,8 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-../../env/bin/black drive/
-
-cd frontend/
-
-npm run precommit

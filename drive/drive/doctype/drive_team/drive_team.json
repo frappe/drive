@@ -1,83 +1,77 @@
 {
- "actions": [],
- "autoname": "hash",
- "creation": "2025-01-23 12:12:04.979723",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "title",
-  "users",
-  "storage",
-  "quota",
-  "team_domain"
- ],
- "fields": [
-  {
-   "fieldname": "title",
-   "fieldtype": "Small Text",
-   "label": "Title"
-  },
-  {
-   "fieldname": "users",
-   "fieldtype": "Table",
-   "label": "Users",
-   "options": "Drive Team Member"
-  },
-  {
-   "default": "5120",
-   "description": "In MB",
-   "fieldname": "storage",
-   "fieldtype": "Int",
-   "label": "Storage"
-  },
-  {
-   "default": "5120",
-   "description": "In MB",
-   "fieldname": "quota",
-   "fieldtype": "Int",
-   "label": "Quota"
-  },
-  {
-   "fieldname": "team_domain",
-   "fieldtype": "Data",
-   "label": "Team Domain"
-  }
- ],
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-28 17:13:16.358447",
- "modified_by": "Administrator",
- "module": "Drive",
- "name": "Drive Team",
- "naming_rule": "Random",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "All",
-   "share": 1,
-   "write": 1
-  }
- ],
- "row_format": "Dynamic",
- "sort_field": "creation",
- "sort_order": "DESC",
- "states": [],
- "title_field": "title"
+  "actions": [],
+  "autoname": "hash",
+  "creation": "2025-01-23 12:12:04.979723",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": ["title", "users", "storage", "quota", "team_domain"],
+  "fields": [
+    {
+      "fieldname": "title",
+      "fieldtype": "Small Text",
+      "label": "Title"
+    },
+    {
+      "fieldname": "users",
+      "fieldtype": "Table",
+      "label": "Users",
+      "options": "Drive Team Member"
+    },
+    {
+      "default": "5120",
+      "description": "In MB",
+      "fieldname": "storage",
+      "fieldtype": "Int",
+      "label": "Storage"
+    },
+    {
+      "default": "5120",
+      "description": "In MB",
+      "fieldname": "quota",
+      "fieldtype": "Int",
+      "label": "Quota"
+    },
+    {
+      "fieldname": "team_domain",
+      "fieldtype": "Data",
+      "label": "Team Domain"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2025-08-07 16:42:47.114887",
+  "modified_by": "Administrator",
+  "module": "Drive",
+  "name": "Drive Team",
+  "naming_rule": "Random",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "All",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": [],
+  "title_field": "title"
 }

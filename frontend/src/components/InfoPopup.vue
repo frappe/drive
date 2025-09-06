@@ -48,11 +48,8 @@
           >
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
-        <!-- <li>
-          <span class="inline-block w-24">Path:</span>
-          <span class="col-span-1">{{ entity.path }}</span>
-        </li> -->
       </ul>
+
       <ul
         v-if="editor?.storage?.characterCount"
         class="space-y-3 text-sm mb-4 text-ink-gray-9"
@@ -82,16 +79,10 @@
             {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
             {{
               Math.ceil(editor.storage.characterCount.words() / 200) > 1
-                ? "mins"
-                : "min"
+                ? "minutes"
+                : "minute"
             }}
           </span>
-        </li>
-        <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Modified") }}:</span
-          >
-          <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
         </li>
       </ul>
       <div class="flex justify-between">
@@ -101,13 +92,13 @@
           :variant="'subtle'"
           size="sm"
           class="rounded flex justify-center items-center scale-[90%]"
-          @click="emitter.emit('showShareDialog')"
+          @click="emitter.emit('share')"
         >
           {{ __("Manage") }}
         </Button>
       </div>
       <LoadingIndicator
-        v-if="!access"
+        v-if="!getGeneralAccess.data?.type"
         class="size-4 mx-auto my-1"
       />
       <ul
@@ -121,38 +112,64 @@
           <div class="col-span-1 flex gap-2">
             <GeneralAccess
               size="sm"
+              :access-type="getGeneralAccess.data.type"
+              :show-text="true"
               class="-mr-[3px] outline outline-white"
-              :access-type="generalAccessType(access)"
             />
-            <span>
-              {{
-                access.general?.data?.read === "public"
-                  ? "Public"
-                  : "Restricted"
-              }}
-            </span>
           </div>
         </li>
         <li>
           <span class="inline-block w-24 text-ink-gray-5"
             >{{ __("Shared") }}:</span
           >
-          <span class="col-span-1">
+          <span
+            v-if="userAccess.data?.length"
+            class="col-span-1"
+          >
             {{
-              access.users.message.length
-                ? access.users.message.length +
-                  " " +
-                  (access.users.message.length === 1
-                    ? __("person")
-                    : __("people"))
-                : "-"
+              userAccess.data.length +
+              " " +
+              (userAccess.data.length === 1 ? __("person") : __("people"))
             }}
             {{
-              access.users.message.length > 0 && access.users.message.length < 3
-                ? "(" + access.users.message.map((k) => k.user).join(", ") + ")"
+              userAccess.data.length < 3
+                ? "(" + userAccess.data.map((k) => k.user).join(", ") + ")"
                 : ""
             }}
           </span>
+          <span v-else>-</span>
+        </li>
+      </ul>
+      <ul
+        v-if="developer"
+        class="space-y-3 text-sm text-ink-gray-9 mb-4"
+      >
+        <div>
+          <span class="text-base font-semibold">{{ __("Developer") }}</span>
+          <Button
+            variant="subtle"
+            size="sm"
+            class="scale-[90%] float-right"
+            @click=""
+          >
+            <a
+              :href="'/app/drive-file/' + entity.name"
+              target="_blank"
+              >Open in Desk</a
+            >
+          </Button>
+        </div>
+        <li>
+          <span class="inline-block w-24">Disk path:</span>
+          <span class="col-span-1">{{ entity.path }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">Private:</span>
+          <span class="col-span-1">{{ entity.is_private }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">MIME type:</span>
+          <span class="col-span-1">{{ entity.mime_type }}</span>
         </li>
       </ul>
     </template>
@@ -161,45 +178,53 @@
 
 <script setup>
 import { formatDate } from "@/utils/format"
-import { Dialog, Button, LoadingIndicator } from "frappe-ui"
-import { computedAsync } from "@vueuse/core"
-import { ref, inject, watch } from "vue"
+import { Dialog, Button, LoadingIndicator, createResource } from "frappe-ui"
+import { ref, inject } from "vue"
+import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 
 const dialogType = defineModel()
 const open = ref(true)
 
 const editor = inject("editor")
-watch(
-  editor,
-  () => {
-    window.editor = editor?.value
-  },
-  { immediate: true }
-)
 const props = defineProps({
   entity: Object,
 })
 
-const access = computedAsync(async () => {
-  const users = await fetch(
-    "/api/method/drive.api.permissions.get_shared_with_list?entity=" +
-      props.entity.name
-  )
-  const general = await fetch(
-    "/api/method/drive.api.permissions.get_user_access?user=Guest&entity=" +
-      props.entity.name
-  )
-  return {
-    users: await users.json(),
-    general: await general.json(),
-  }
+// Refactor to share with ShareDialog
+const getGeneralAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  makeParams: (params) => ({
+    ...params,
+    entity: props.entity.name,
+  }),
+  transform: (data) => {
+    if (!data || !data.read) {
+      if (getGeneralAccess.params.user === "Guest")
+        getGeneralAccess.fetch({ user: "$TEAM" })
+      else
+        return {
+          type: "restricted",
+        }
+    } else {
+      const translate = {
+        Guest: "public",
+        $TEAM: "team",
+      }
+      return { ...data, type: translate[getGeneralAccess.params.user] }
+    }
+  },
+})
+getGeneralAccess.fetch({ user: "Guest" })
+
+const userAccess = createResource({
+  url: "drive.api.permissions.get_shared_with_list",
+  params: { entity: props.entity.name },
+  auto: true,
 })
 
-function generalAccessType(item) {
-  // fallback for old logic
-  if (item?.general?.data?.read === 1) return "public"
-  if (item?.general?.data?.read === "public") return "public"
-  return "restricted"
-}
+const developer = ref(false)
+onKeyDown("D", () => {
+  developer.value = !developer.value
+})
 </script>

@@ -2,7 +2,7 @@
   <div
     v-if="actionItems.length > 0"
     ref="contextMenu"
-    class="w-[208px] p-1.5 absolute mt-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+    class="w-[208px] p-1.5 fixed mt-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
     :style="{
       left: `${calculateX}px`,
       top: `${calculateY}px`,
@@ -29,11 +29,11 @@
         <component
           :is="item.icon"
           class="mr-2 size-4 flex-shrink-0"
-          :class="item.danger ? 'text-[#E03636]' : 'text-ink-gray-7'"
+          :class="item.theme ? 'text-[#E03636]' : 'text-ink-gray-7'"
         />
         <span
           class="whitespace-nowrap"
-          :class="item.danger ? 'text-ink-red-4' : 'text-ink-gray-7'"
+          :class="item.theme ? 'text-ink-red-4' : 'text-ink-gray-7'"
         >
           {{ item.label }}
         </span>

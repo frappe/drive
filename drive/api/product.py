@@ -1,11 +1,10 @@
 import frappe
-from frappe.rate_limiter import rate_limit
-from frappe.utils import escape_html
-from frappe.utils import split_emails, validate_email_address
-from drive.api.permissions import is_admin
-from frappe.translate import get_all_translations
 from frappe import _
+from frappe.rate_limiter import rate_limit
+from frappe.translate import get_all_translations
+from frappe.utils import escape_html, split_emails, validate_email_address
 
+from drive.api.permissions import is_admin
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
@@ -16,24 +15,39 @@ def access_app():
 
 @frappe.whitelist()
 def get_domain_teams(domain):
-    return frappe.db.get_all(
-        "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
-    )
+    if domain in CORPORATE_DOMAINS or not domain:
+        return False
+    return False
+    # return (
+    #     frappe.db.get_all(
+    #         "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
+    #     )
+    #     or False
+    # )
 
 
 @frappe.whitelist()
-def create_personal_team(email=frappe.session.user, team_name=None):
+def create_team(user, team_name=None):
     """
     Used for creating teams, personal or not.
     """
+    team_name = team_name if team_name else "Your Drive"
+
+    domain = user.split("@")[-1] if team_name else ""
+    exists = frappe.db.exists("Drive Team", {"team_domain": domain}) or frappe.db.exists(
+        "Drive Team", {"title": team_name, "owner": user}
+    )
+    if exists:
+        return exists
+
     team = frappe.get_doc(
         {
             "doctype": "Drive Team",
-            "title": team_name if team_name else "Your Drive",
-            "team_domain": email.split("@")[-1] if team_name else "",
+            "title": team_name,
+            "team_domain": domain,
         }
     ).insert(ignore_permissions=True)
-    team.append("users", {"user": email, "access_level": 2})
+    team.append("users", {"user": user, "access_level": 2})
     team.save()
     return team.name
 
@@ -124,7 +138,7 @@ def signup(account_request, first_name, last_name=None, team=None):
     #     # Create team for this user
     #     domain = user.email.split("@")[-1]
     #     if domain in CORPORATE_DOMAINS:
-    #         team = create_personal_team(user.email)
+    #         team = create_team(user.email)
     #     else:
     #         return get_domain_teams(domain)
 
@@ -226,6 +240,7 @@ def set_settings(updates):
     except:
         settings = frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user})
         settings.insert()
+
     if "single_click" in updates:
         settings.single_click = int(updates["single_click"])
     if "auto_detect_links" in updates:
@@ -348,3 +363,36 @@ def get_translations():
         language = frappe.db.get_single_value("System Settings", "language")
 
     return get_all_translations(language)
+
+
+@frappe.whitelist()
+def check_is_admin():
+    return {"is_admin": "Drive Admin" in frappe.get_roles()}
+
+
+@frappe.whitelist()
+def disk_settings(**kwargs):
+    if not check_is_admin()["is_admin"]:
+        frappe.throw("Only admins can access this endpoint", frappe.PermissionError)
+    if frappe.request.method == "GET":
+        return frappe.get_single("Drive Disk Settings")
+    settings = frappe.get_single("Drive Disk Settings")
+    field_map = {
+        "root_prefix_type": "team_id",
+        "root_prefix_value": None,
+        "team_prefix": "team",
+        "personal_prefix": "personal",
+        "aws_key": None,
+        "aws_secret": None,
+        "bucket": None,
+        "endpoint_url": None,
+        "signature_version": "s3v4",
+    }
+    settings.enabled = 1
+    for field, value in kwargs.items():
+        if field in field_map and value:
+            setattr(settings, field, value)
+        elif field == "backend_type":
+            # If backend is s3, enable it. Otherwise, disable.
+            settings.enabled = 1 if value == "s3" else 0
+    settings.save()

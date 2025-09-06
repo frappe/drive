@@ -30,8 +30,9 @@ import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import StorageBar from "./StorageBar.vue"
 import { Sidebar, createResource } from "frappe-ui"
 
-import { notifCount } from "@/resources/permissions"
-import { getTeams } from "@/resources/files"
+import { notifCount, apps } from "@/resources/permissions"
+import { getTeams, LISTS } from "@/resources/files"
+import { dynamicList } from "@/utils/files"
 
 import { useStore } from "vuex"
 import LucideClock from "~icons/lucide/clock"
@@ -43,13 +44,14 @@ import LucideStar from "~icons/lucide/star"
 import LucideInbox from "~icons/lucide/inbox"
 import LucideSearch from "~icons/lucide/search"
 import LucideFileText from "~icons/lucide/file-text"
+import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
 import { ref, computed, watch, shallowRef, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
@@ -57,40 +59,17 @@ import LucideMoon from "~icons/lucide/moon"
 
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
+const router = useRouter()
 const route = useRoute()
 notifCount.fetch()
+getTeams.fetch()
+apps.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
+watch(isCollapsed, (v) => store.commit("setSidebarCollapsed", v))
 const team = computed(
   () => route.params.team || localStorage.getItem("recentTeam")
 )
-
-const apps = createResource({
-  url: "frappe.apps.get_apps",
-  cache: "apps",
-  auto: true,
-  transform: (data) => {
-    let apps = [
-      {
-        name: "frappe",
-        logo: "/assets/frappe/images/framework.png",
-        title: "Desk",
-        route: "/app",
-      },
-    ]
-    data.map((app) => {
-      if (app.name === "drive") return
-      apps.push({
-        name: app.name,
-        logo: app.logo,
-        title: app.title,
-        route: app.route,
-      })
-    })
-
-    return apps
-  },
-})
 
 const showSettings = ref(false)
 const showShortcuts = ref(false)
@@ -153,9 +132,10 @@ const settingsItems = shallowRef([
 ])
 
 watch(
-  [() => apps.data, () => getTeams.data],
-  ([a, b]) => {
-    if (!a || !b) return
+  [() => apps.data, () => getTeams.data, () => route.params.team],
+  ([a, b, team], prev) => {
+    if (!a || !b || (!team && !!prev[2])) return
+
     const teams = Object.entries(b).filter(([k, _]) => k !== route.params.team)
     let appsMenuIndex = 1
     if (!teams.length) {
@@ -189,53 +169,6 @@ watch(
   },
   { immediate: true }
 )
-// const settingsItems = computed(() => {
-//   return [
-//     {
-//       group: __("Manage"),
-//       hideLabel: true,
-//       items: [
-//         {
-//           component: markRaw(TeamSwitcher),
-//         },
-//         {
-//           component: markRaw(AppSwitcher),
-//         },
-//         {
-//           icon: LucideBook,
-//           label: __("Documentation"),
-//           onClick: () => window.open("https://docs.frappe.io/drive", "_blank"),
-//         },
-//         {
-//           icon: LucideBadgeHelp,
-//           label: __("Support"),
-//           onClick: () => window.open("https://t.me/frappedrive", "_blank"),
-//         },
-//         {
-//           icon: LucideMoon,
-//           label: "Toggle theme",
-//           onClick: toggleTheme,
-//         },
-//       ],
-//     },
-//     {
-//       group: __("Others"),
-//       hideLabel: true,
-//       items: [
-//         {
-//           icon: "settings",
-//           label: __("Settings"),
-//           onClick: () => (showSettings.value = true),
-//         },
-//         {
-//           icon: "log-out",
-//           label: __("Log out"),
-//           onClick: logout,
-//         },
-//       ],
-//     },
-//   ]
-// })
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute("data-theme")
@@ -255,6 +188,7 @@ function logout() {
   store.dispatch("logout")
   router.redirect("/")
 }
+
 const sidebarItems = computed(() => {
   const first = store.state.breadcrumbs[0]
   return [
@@ -270,6 +204,7 @@ const sidebarItems = computed(() => {
           icon: LucideInbox,
           to: "/t/" + team.value + "/inbox",
           isActive: first.name === "Inbox",
+          accessKey: "i",
         },
       ],
     },
@@ -281,15 +216,15 @@ const sidebarItems = computed(() => {
           to: `/t/${team.value}/`,
           icon: LucideHome,
           isActive: first.name == "Home",
+          accessKey: "h",
         },
-
         {
           label: "Team",
           to: `/t/${team.value}/team`,
           icon: LucideBuilding2,
           isActive: first.name == "Team",
+          accessKey: "t",
         },
-
         {
           label: "Trash",
           to: `/t/${team.value}/trash`,
@@ -301,36 +236,44 @@ const sidebarItems = computed(() => {
     {
       label: "Views",
       collapsible: true,
-      items: [
+      items: dynamicList([
         {
           label: "Recents",
           to: `/t/${team.value}/recents`,
           icon: LucideClock,
           isActive: first.name == "Recents",
+          accessKey: "r",
         },
         {
           label: "Shared",
           to: `/shared/`,
           icon: LucideUsers,
           isActive: first.name == "Shared",
+          accessKey: "s",
         },
-
         {
           label: "Favourites",
           to: `/t/${team.value}/favourites`,
           icon: LucideStar,
           isActive: first.name == "Favourites",
+          accessKey: "f",
         },
         {
           label: "Documents",
           to: `/t/${team.value}/documents`,
           icon: LucideFileText,
           isActive: first.name == "Documents",
+          accessKey: "d",
         },
-      ],
+        {
+          label: "Slides",
+          to: `/t/${team.value}/slides`,
+          icon: LucideGalleryVerticalEnd,
+          isActive: first.name == "Slides",
+          cond: apps.data?.find?.((k) => k.name === "slides"),
+        },
+      ]),
     },
   ]
 })
-
-watch(isCollapsed, (val) => store.commit("setSidebarCollapsed", val))
 </script>

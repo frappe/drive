@@ -1,10 +1,13 @@
 # Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+from datetime import datetime
+
 import frappe
 from frappe.model.document import Document
+
 from drive.api.notifications import create_notification
-from drive.utils.files import extract_mentions
+from drive.utils import extract_mentions
 
 
 class DriveComment(Document):
@@ -29,7 +32,6 @@ class DriveComment(Document):
             doc = frappe.get_doc("Drive File", self.parent_doc.parent)
 
         for mention in mentions:
-            print(doc, from_owner)
             create_notification(
                 self.owner,
                 mention,

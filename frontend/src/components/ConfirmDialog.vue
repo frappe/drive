@@ -8,11 +8,11 @@
       <div class="flex items-center justify-start">
         <div class="text-base text-ink-gray-6">
           <template v-if="props.entities.length"
-            >"{{
+            >{{
               props.entities.length > 1
-                ? "These items"
-                : props.entities[0].title
-            }}"
+                ? "These items "
+                : `"${props.entities[0].title}" `
+            }}
           </template>
           <span v-html="dialogData.message" />
         </div>
@@ -26,8 +26,7 @@
 </template>
 <script setup>
 import { ref, computed } from "vue"
-import { createResource, Dialog, ErrorMessage } from "frappe-ui"
-import { toast } from "@/utils/toasts.js"
+import { createResource, Dialog, ErrorMessage, toast } from "frappe-ui"
 import { useTimeAgo } from "@vueuse/core"
 
 import {
@@ -48,7 +47,7 @@ const props = defineProps({
     required: true,
   },
 })
-const emit = defineEmits("success")
+const emit = defineEmits(["success"])
 const dialogType = defineModel()
 const open = ref(true)
 
@@ -66,7 +65,7 @@ const dialogData = computed(() => {
       url: "drive.api.files.remove_or_restore",
       onSuccess: () => {
         getTrash.setData((d) =>
-          d.filter((k) => !e.map((l) => l.name).includes(k.name))
+          d.filter((k) => !props.entities.map((l) => l.name).includes(k.name))
         )
       },
       button: {
@@ -90,7 +89,7 @@ const dialogData = computed(() => {
         getTrash.setData(
           sortEntities([
             ...getTrash.data,
-            ...e.map((k) => {
+            ...props.entities.map((k) => {
               k.modified = Date()
               k.relativeModified = useTimeAgo(k.modified)
               return k
@@ -173,7 +172,7 @@ const updateResource = createResource({
     if (dialogData.value.mutate) mutate(props.entities, props.dialogData.mutate)
     if (dialogData.value.onSuccess)
       dialogData.value.onSuccess(props.entities, data)
-    toast(dialogData.value.toastMessage)
+    toast.success(dialogData.value.toastMessage)
   },
 })
 </script>

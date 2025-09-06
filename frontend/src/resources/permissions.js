@@ -9,7 +9,7 @@ export const getUsersWithAccess = createResource({
 export const updateAccess = createResource({
   url: "drive.api.files.call_controller_method",
   makeParams: (params) => ({ ...params, method: params.method || "share" }),
-  onError: () => toast("You can't perform this action"),
+  onError: (error) => toast({ type: "error", title: error.messages[0] }),
 })
 
 export const notifCount = createResource({
@@ -34,12 +34,10 @@ export const setSettings = createResource({
 
 export const generalAccess = createResource({
   url: "drive.api.permissions.get_user_access",
-  auto: false,
 })
 
 export const userList = createResource({
   url: "drive.api.permissions.get_shared_with_list",
-  auto: false,
 })
 
 export const allUsers = createResource({
@@ -68,4 +66,40 @@ export const acceptInvite = createResource({
 export const rejectInvite = createResource({
   url: "drive.api.product.reject_invite",
   onSuccess: () => toast("Removed invite"),
+})
+
+export const isAdmin = createResource({
+  url: "drive.api.product.check_is_admin",
+})
+
+export const apps = createResource({
+  url: "frappe.apps.get_apps",
+  cache: "apps",
+  transform: (data) => {
+    let apps = [
+      {
+        name: "frappe",
+        logo: "/assets/frappe/images/framework.png",
+        title: "Desk",
+        route: "/app",
+      },
+    ]
+    data.map((app) => {
+      if (app.name === "drive") return
+      apps.push({
+        name: app.name,
+        logo: app.logo,
+        title: app.title,
+        route: app.route,
+      })
+    })
+
+    return apps
+  },
+})
+
+export const diskSettings = createResource({
+  url: "drive.api.product.disk_settings",
+  method: "GET",
+  cache: "disk-settings",
 })

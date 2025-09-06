@@ -7,7 +7,7 @@
       :row="row"
       class="group"
       :class="[
-        row.name === selectedName
+        row.name === selectedName || selections.has(row.name)
           ? 'bg-surface-gray-2 hover:!bg-surface-gray-3'
           : 'bg-surface-white',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
@@ -44,6 +44,7 @@ import { computed, ref } from "vue"
 defineProps({
   rows: Array,
   contextMenu: Function,
+  selections: Set,
 })
 const emit = defineEmits(["dropped"])
 
@@ -52,7 +53,7 @@ const draggedItem = ref()
 const route = useRoute()
 const store = useStore()
 const action = computed(() =>
-  (settings.data.message || settings.data).single_click ? "click" : "dblclick"
+  settings.data?.single_click ? "click" : "dblclick"
 )
 
 // Used as right-click doesn't trigger active in frappe-ui

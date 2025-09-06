@@ -31,7 +31,17 @@
                 class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"
               />
             </div>
-            <div class="flex flex-col text-md gap-2">
+            <div
+              v-else-if="!domainTeams.data"
+              class="flex flex-col py-5 gap-3"
+            >
+              <LoadingIndicator class="size-5 self-center" />
+              <div class="text-sm text-center">Just a minute...</div>
+            </div>
+            <div
+              v-else-if="domainTeams.data.length"
+              class="flex flex-col text-md gap-2"
+            >
               <p>
                 We noticed that you are on a
                 <strong>corporate domain</strong>.
@@ -57,7 +67,7 @@
                 <Button
                   variant="subtle"
                   class="w-100"
-                  @click="createPersonalTeam.submit()"
+                  @click="createTeam.submit()"
                 >
                   Create Personal
                 </Button>
@@ -78,7 +88,7 @@
                   variant="solid"
                   @click="
                     typeof team_name === 'string'
-                      ? createPersonalTeam.submit({ team_name, email })
+                      ? createTeam.submit({ team_name, email })
                       : (team_name = '')
                   "
                 >
@@ -98,10 +108,9 @@ import { createResource, FormControl } from "frappe-ui"
 import { ref, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
-import { useRoute } from "vue-router"
 import { useStore } from "vuex"
+import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 
-const route = useRoute()
 const store = useStore()
 const team_name = ref(null)
 const email = computed(() => store.state.user.id)
@@ -112,13 +121,18 @@ const domainTeams = createResource({
   params: {
     domain: email.value.split("@").slice(-1)[0],
   },
+  onSuccess(data) {
+    if (data === false) {
+      createTeam.submit()
+    }
+  },
 })
 
-const createPersonalTeam = createResource({
-  url: "drive.api.product.create_personal_team",
+const createTeam = createResource({
+  url: "drive.api.product.create_team",
   makeParams: () => ({
     team_name: team_name.value,
-    email: email.value,
+    user: email.value,
   }),
   onSuccess: (data) => {
     if (data) {

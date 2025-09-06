@@ -5,12 +5,17 @@
         $event.target.tagName === 'DIV' &&
           textEditor.editor?.chain?.().focus?.().run?.()
       "
-      class="mx-auto cursor-text min-h-full w-full md:w-auto px-3 md:px-0"
+      class="mx-auto cursor-text min-h-full w-full md:w-auto ps-4 md:p-0"
     >
       <FTextEditor
         ref="textEditor"
-        class="min-w-full md:min-w-[65ch] px-5"
-        editor-class="prose-sm min-h-[4rem] p-5"
+        class="min-w-full md:min-w-[65ch]"
+        :editor-class="[
+          'prose-sm min-h-[4rem]',
+          `text-[${writerSettings.doc?.font_size || 15}px]`,
+          `leading-[${writerSettings.doc?.line_height || 1.5}]`,
+          writerSettings.doc?.custom_css,
+        ]"
         :content="rawContent"
         :editable="!!entity.write"
         :upload-function="
@@ -44,6 +49,8 @@
       v-if="comments.length"
       :entity="entity"
       :editor
+      @save="$emit('saveComment')"
+      @autosave="autosave"
       v-model:show-comments="showComments"
       v-model:active-comment="activeComment"
       v-model:comments="comments"
@@ -53,7 +60,12 @@
 
 <script setup>
 import { toast } from "@/utils/toasts.js"
-import { TextEditor as FTextEditor, debounce, useFileUpload } from "frappe-ui"
+import {
+  TextEditor as FTextEditor,
+  debounce,
+  useFileUpload,
+  useDoc,
+} from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
 import {
   computed,
@@ -84,9 +96,10 @@ import LucideMessageCircle from "~icons/lucide/message-circle"
 const textEditor = ref("textEditor")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
+
   return editor
 })
-defineExpose(editor)
+defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
 const showComments = defineModel("showComments")
@@ -94,15 +107,33 @@ const edited = defineModel("edited")
 
 const props = defineProps({
   entity: Object,
-  showComments: Boolean,
+  showResolved: Boolean,
   users: Object,
 })
 const comments = ref([])
 
-const emit = defineEmits(["updateTitle", "saveDocument", "mentionedUsers"])
+const emit = defineEmits([
+  "updateTitle",
+  "saveDocument",
+  "saveComment",
+  "mentionedUsers",
+])
 const activeComment = ref(null)
 const autosave = debounce(() => emit("saveDocument"), 2000)
 
+const writerSettings = useDoc({
+  doctype: "Drive Settings",
+  name: store.state.user.id,
+  immediate: true,
+})
+writerSettings.onSuccess(({ font_family }) => {
+  if (!rawContent.value)
+    editor.value
+      .chain()
+      .focus()
+      .setFontFamily(`var(--font-${font_family})`)
+      .run()
+})
 const createNewComment = (editor) => {
   showComments.value = true
   const id = uuidv4()
@@ -124,7 +155,6 @@ const createNewComment = (editor) => {
     return pos1 - pos2
   })
   activeComment.value = id
-  emit("saveDocument")
 }
 
 const ExtendedCommentExtension = CommentExtension.extend({
@@ -184,18 +214,18 @@ const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
   }),
-  FloatingQuoteButton.configure({
-    onClick: () => {
-      createNewComment(editor.value)
-    },
-  }),
+  props.entity.comment &&
+    FloatingQuoteButton.configure({
+      onClick: () => {
+        createNewComment(editor.value)
+      },
+    }),
   ExtendedCommentExtension.configure({
-    HTMLAttributes: {
-      class: "",
-    },
     onCommentActivated: (id) => {
-      if (id) {
+      let isResolved = comments.value.find((k) => id === k.name)?.resolved
+      if (id && (!isResolved || showResolved)) {
         activeComment.value = id
+        showComments.value = true
         document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
           behavior: "smooth",
           block: "start",

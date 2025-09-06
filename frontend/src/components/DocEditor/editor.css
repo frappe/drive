@@ -1,11 +1,11 @@
 @import url("../../assets/fonts/fonts.css");
 
 body {
-  --font-inter: "InterVar", "Inter", sans-serif;
+  --font-inter: "InterVar", inherit;
   --font-lora: "Lora", serif;
-  --font-roboto: "Roboto", sans-serif;
+  --font-roboto: "Roboto", inherit;
   --font-merriweather: "Merriweather", serif;
-  --font-geist: "Geist Mono", monospace;
+  --font-geist: "Geist", serif;
   --font-ibm-plex: "IBM Plex Sans", sans-serif;
   --font-eb-garamond: "EB Garamond", serif;
   --font-jetbrains: "JetBrains Mono", monospace;
@@ -20,7 +20,6 @@ body {
   caret-color: theme("colors.blue.600");
   padding: 2.5em 0;
   background: white;
-  font-size: 15px;
 }
 
 @media only screen and (max-width: 640px) {

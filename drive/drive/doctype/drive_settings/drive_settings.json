@@ -5,7 +5,17 @@
   "creation": "2025-04-24 17:38:30.853130",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["user", "default_team", "single_click", "auto_detect_links"],
+  "field_order": [
+    "user",
+    "default_team",
+    "single_click",
+    "auto_detect_links",
+    "writer_section",
+    "font_family",
+    "font_size",
+    "line_height",
+    "custom_css"
+  ],
   "fields": [
     {
       "fieldname": "user",
@@ -31,12 +41,40 @@
       "fieldname": "auto_detect_links",
       "fieldtype": "Check",
       "label": "Auto Detect Links"
+    },
+    {
+      "fieldname": "writer_section",
+      "fieldtype": "Section Break",
+      "label": "Writer"
+    },
+    {
+      "fieldname": "custom_css",
+      "fieldtype": "Data",
+      "label": "Custom CSS"
+    },
+    {
+      "default": "15",
+      "fieldname": "font_size",
+      "fieldtype": "Int",
+      "label": "Font Size"
+    },
+    {
+      "default": "1.5",
+      "fieldname": "line_height",
+      "fieldtype": "Data",
+      "label": "Line Height"
+    },
+    {
+      "default": "inter",
+      "fieldname": "font_family",
+      "fieldtype": "Data",
+      "label": "Font Family"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-05-29 11:38:36.385483",
+  "modified": "2025-08-19 22:53:49.781916",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",

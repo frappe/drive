@@ -10,8 +10,8 @@ import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
-import { useFileUpload } from "frappe-ui"
-import emitter from '@/emitter'
+import { useFileUpload, toast as nToast } from "frappe-ui"
+import emitter from "@/emitter"
 
 // MIME icons
 import Folder from "@/components/MimeIcons/Folder.vue"
@@ -26,8 +26,20 @@ import PDF from "@/components/MimeIcons/PDF.vue"
 import Unknown from "@/components/MimeIcons/Unknown.vue"
 
 export const openEntity = (team = null, entity, new_tab = false) => {
+  if (entity.external) {
+    if (entity.mime_type === "frappe/slides") {
+      window.open("/slides/presentation/" + entity.path, "_blank")
+    }
+    return
+  }
+
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
+  console.log(entity, entity.breadcrumbs?.length)
+  if (entity.breadcrumbs?.length === 0) {
+    console.log("rereouting")
+    return router.push({ name: entity.is_private ? "Home" : "Team" })
+  }
   if (!entity.is_group) {
     if (!getRecents.data?.some?.((k) => k.name === entity.name))
       getRecents.setData((data) => [...(data || []), entity])
@@ -61,6 +73,8 @@ export const openEntity = (team = null, entity, new_tab = false) => {
     confirm(
       `This will open an external link to ${origin} - are you sure you want to open?`
     ) && window.open(entity.path, "_blank")
+  } else if (entity.mime_type === "frappe/slides") {
+    window.open("/slides/presentation/" + entity.path, "_blank")
   } else if (entity.mime_type === "frappe_doc") {
     router.push({
       name: "Document",
@@ -484,12 +498,15 @@ export async function updateURLSlug(title) {
 
 export function getLink(entity, copy = true, withDomain = true) {
   const team = router.currentRoute.value.params.team
-  let link = entity.is_link
-    ? entity.path
-    : `${
-        withDomain ? window.location.origin + "/drive" : ""
-      }/t/${team}/${getLinkStem(entity)}`
-
+  let link
+  if (entity.is_link) link = entity.path
+  else if (entity.mime_type === "frappe/slides") {
+    link = window.location.origin + "/slides/presentation/" + entity.name
+  } else {
+    link = `${
+      withDomain ? window.location.origin + "/drive" : ""
+    }/t/${team}/${getLinkStem(entity)}`
+  }
   if (!copy) return link
   try {
     copyToClipboard(link).then(() => toast("Copied to your clipboard!"))
@@ -544,16 +561,139 @@ export const pasteObj = (e) => {
         parent: route.params.entityName || "",
         personal: store.state.breadcrumbs[0].name === "Home" ? 1 : 0,
         total_file_size: file.size,
+        last_modified: file.lastModified,
       })
       nToast.promise(entity, {
-			loading: "Uploading...",
-			success: () => {
-        emitter.emit('refresh')
-				return "Uploaded";
-			},
-			error: () => "Failed to upload",
-			duration: 500,
-		});
+        loading: "Uploading...",
+        success: () => {
+          emitter.emit("refresh")
+          return "Uploaded"
+        },
+        error: () => "Failed to upload",
+        duration: 500,
+      })
     }
   }
 }
+
+export const FONT_FAMILIES = [
+  {
+    label: "Caveat",
+    value: "caveat",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-caveat)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-caveat)",
+      }),
+  },
+  {
+    label: "Comic Sans",
+    value: "comic-sans",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-comic-sans)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-comic-sans)",
+      }),
+  },
+  {
+    label: "Comfortaa",
+    value: "comfortaa",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-comfortaa)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-comfortaa)",
+      }),
+  },
+  {
+    label: "EB Garamond",
+    value: "eb-garamond",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-eb-garamond)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-eb-garamond)",
+      }),
+  },
+  {
+    label: "Fantasy",
+    value: "fantasy",
+    action: (editor) => editor.chain().focus().setFontFamily("fantasy").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "fantasy",
+      }),
+  },
+  {
+    label: "Geist",
+    value: "geist",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-geist)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-geist)",
+      }),
+  },
+  {
+    label: "IBM Plex Sans",
+    value: "ibm-plex",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-ibm-plex)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-ibm-plex)",
+      }),
+  },
+  {
+    label: "Inter",
+    value: "inter",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-inter)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-inter)",
+      }),
+  },
+  {
+    label: "JetBrains Mono",
+    value: "jetbrains",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-jetbrains)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-jetbrains)",
+      }),
+  },
+  {
+    label: "Lora",
+    value: "lora",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-lora)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-lora)",
+      }),
+  },
+  {
+    label: "Merriweather",
+    value: "merriweather",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-merriweather)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-merriweather)",
+      }),
+  },
+  {
+    label: "Nunito",
+    value: "nunito",
+    action: (editor) =>
+      editor.chain().focus().setFontFamily("var(--font-nunito)").run(),
+    isActive: (editor) =>
+      editor.isActive("textStyle", {
+        fontFamily: "var(--font-nunito)",
+      }),
+  },
+]

@@ -1,33 +1,22 @@
 <template>
-  <div class="border-r bg-surface-menu-bar transition-all">
-    <div
-      ondragstart="return false;"
-      ondrop="return false;"
-      class="grid grid-cols-6 h-14 items-center border-y border-outline-gray-2 standalone:pb-4 px-1"
+  <div
+    class="grid grid-cols-5 bg-surface-modal border-t border-outline-gray-2 standalone:pb-4 h-[109px]"
+    :style="{
+      gridTemplateColumns: `repeat(${sidebarItems.length}, minmax(0, 1fr))`,
+    }"
+  >
+    <button
+      v-for="tab in sidebarItems"
+      :key="tab.label"
+      class="flex flex-col items-center justify-center transition active:scale-95 h-[50px]"
+      @click="$router.push(tab.route)"
     >
-      <router-link
-        v-for="item in sidebarItems"
-        :key="item.label"
-        v-slot="{ href, navigate }"
-        :to="item.route"
-      >
-        <a
-          class="flex flex-col items-center justify-center py-3 transition active:scale-95 rounded"
-          :class="[
-            item.highlight()
-              ? 'bg-surface-white shadow-sm border-[0.5px] border-outline-gray-2'
-              : ' hover:bg-surface-gray-2',
-          ]"
-          :href="href"
-          @click="navigate && $emit('toggleMobileSidebar')"
-        >
-          <component
-            :is="item.icon"
-            class="stroke-1.5 self-center w-auto h-5.5 text-ink-gray-8"
-          />
-        </a>
-      </router-link>
-    </div>
+      <component
+        :is="tab.icon"
+        class="size-6"
+        :class="[tab.highlight() ? 'text-ink-gray-8' : 'text-ink-gray-5']"
+      />
+    </button>
   </div>
 </template>
 <script>
@@ -35,7 +24,6 @@ import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
 import LucideStar from "~icons/lucide/star"
-import LucideTrash from "~icons/lucide/trash"
 import LucideUsers from "~icons/lucide/users"
 
 export default {
@@ -55,34 +43,12 @@ export default {
     },
     sidebarItems() {
       return [
-        // {
-        //   label: "Search",
-        //   route: () => {},
-        //   icon: "search",
-        //   highlight: () => {},
-        // },
         {
           label: "Home",
           route: "/t/" + this.team,
           icon: LucideHome,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Home"
-          },
-        },
-        {
-          label: "Recents",
-          route: "/t/" + this.team + "/recents",
-          icon: LucideClock,
-          highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Recents"
-          },
-        },
-        {
-          label: "Favourites",
-          route: "/t/" + this.team + "/favourites",
-          icon: LucideStar,
-          highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Favourites"
           },
         },
         {
@@ -94,6 +60,15 @@ export default {
           },
         },
         {
+          label: "Recents",
+          route: "/t/" + this.team + "/recents",
+          icon: LucideClock,
+          highlight: () => {
+            return this.$store.state.breadcrumbs[0].name === "Recents"
+          },
+        },
+
+        {
           label: "Shared",
           route: "/shared",
           icon: LucideUsers,
@@ -102,11 +77,11 @@ export default {
           },
         },
         {
-          label: "Trash",
-          route: "/t/" + this.team + "/trash",
-          icon: LucideTrash,
+          label: "Favourites",
+          route: "/t/" + this.team + "/favourites",
+          icon: LucideStar,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Trash"
+            return this.$store.state.breadcrumbs[0].name === "Favourites"
           },
         },
       ]

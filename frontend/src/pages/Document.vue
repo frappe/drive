@@ -48,7 +48,10 @@
     :error="document.error"
     class="w-10 h-full text-neutral-100 mx-auto"
   />
-  <div class="flex w-full h-full overflow-auto">
+  <div
+    v-else
+    class="flex w-full h-full overflow-auto"
+  >
     <TextEditor
       v-if="entity"
       ref="editor"
@@ -57,8 +60,9 @@
       v-model:show-comments="showComments"
       :entity="entity"
       :users="allUsers.data || []"
-      :show-comments
+      :show-resolved
       @save-document="saveDocument"
+      @save-comment="saveDocument(true)"
     />
   </div>
 </template>
@@ -73,6 +77,7 @@ import {
   provide,
   onBeforeUnmount,
   h,
+  computed,
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
@@ -104,7 +109,10 @@ const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
 const editor = useTemplateRef("editor")
-provide("editor", editor)
+provide(
+  "editor",
+  computed(() => editor.value.editor)
+)
 provide("showResolved", showResolved)
 
 // Reactive data properties
@@ -115,12 +123,14 @@ const lastFetched = ref(0)
 const showComments = ref(false)
 const edited = ref(false)
 
-const saveDocument = () => {
-  if (entity.value.write || entity.value.comment) {
+const saveDocument = (comment = false) => {
+  console.log("saving", comment)
+  if (entity.value.write || (comment && entity.value.comment)) {
     updateDocument.submit({
       entity_name: props.entityName,
       doc_name: entity.value.document,
       content: rawContent.value,
+      comment,
     })
     edited.value = true
     return true
@@ -137,7 +147,6 @@ const onSuccess = (data) => {
 
   title.value = data.title
   rawContent.value = data.raw_content
-  showComments.value = !!entity.value.comments.length
   lastFetched.value = Date.now()
   setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
     data.write && emitter.emit("rename")
@@ -152,11 +161,12 @@ const document = createResource({
   },
   onSuccess,
 })
+store.commit("setCurrentResource", document)
 
 const updateDocument = createResource({
   url: "drive.api.files.save_doc",
-  onError(data) {
-    console.log(data)
+  onError(error) {
+    console.log(error)
     toast({
       title: "There was an error.",
       icon: LucideFileWarning,

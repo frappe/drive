@@ -15,10 +15,6 @@
   background-size: 100% 30px, 100% 30px, 100% 15px, 100% 15px;
   background-attachment: local, local, scroll, scroll;
 }
-Add comment * {
-  scrollbar-width: thin;
-  scrollbar-color: #c0c6cc #ebeef0;
-}
 
 html {
   scrollbar-width: auto;

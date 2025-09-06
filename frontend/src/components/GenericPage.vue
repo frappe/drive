@@ -1,13 +1,8 @@
 <template>
   <Navbar
     v-if="!verify?.error && !getEntities.error"
-    :actions="null"
-    :trigger-root="
-      () => (
-        (selections = new Set()), store.commit('setActiveEntity', verify.data)
-      )
-    "
     :root-resource="verify"
+    :entities="activeEntity ? [activeEntity] : selectedEntitities"
   />
 
   <ErrorPage
@@ -18,10 +13,11 @@
   <div
     v-else
     ref="container"
+    id="drop-area"
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
-      v-model="rows"
+      v-model="sortOrder"
       :action-items="actionItems"
       :selections="selectedEntitities"
       :get-entities="getEntities || { data: [] }"
@@ -32,7 +28,7 @@
       class="m-auto"
       style="transform: translate(0, -88.5px)"
     >
-      <LoadingIndicator class="size-10 text-ink-gray-9" />
+      <LoadingIndicator class="size-5 text-ink-gray-9" />
     </div>
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"
@@ -57,15 +53,12 @@
       @dropped="onDrop"
     />
   </div>
-
-  <Dialogs
-    v-model="dialog"
-    :entities="activeEntity ? [activeEntity] : selectedEntitities"
-    :get-entities="getEntities"
-  />
+  <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
+    Drop to upload
+  </p>
   <FileUploader
     v-if="$store.state.user.id"
-    @success="getEntities.fetch()"
+    @success="getEntities.fetch"
   />
 </template>
 <script setup>
@@ -74,20 +67,19 @@ import GridView from "@/components/GridView.vue"
 import DriveToolBar from "@/components/DriveToolBar.vue"
 import Navbar from "@/components/Navbar.vue"
 import NoFilesSection from "@/components/NoFilesSection.vue"
-import Dialogs from "@/components/Dialogs.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
 import FileUploader from "@/components/FileUploader.vue"
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, watchEffect, provide } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
 import { openEntity } from "@/utils/files"
 import { toast } from "@/utils/toasts"
-import { move, allFolders } from "@/resources/files"
+import { move } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
 
@@ -104,6 +96,8 @@ import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
 import emitter from "../emitter"
+import { sortEntities } from "../utils/files"
+import { allFolders } from "../resources/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
@@ -118,16 +112,54 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref("")
+provide("dialog", dialog)
+
 const team = route.params.team || localStorage.getItem("recentTeam")
 const activeEntity = computed(() => store.state.activeEntity)
+
+const sortId = computed(
+  () =>
+    props.getEntities.params?.entity_name || props.getEntities.params?.personal
+)
+const sortOrder = ref(
+  store.state.sortOrder[sortId.value] || {
+    label: "Modified",
+    field: "modified",
+    ascending: false,
+  }
+)
 const rows = ref(props.getEntities.data)
+watch(sortId, (id) => {
+  if (store.state.sortOrder[id]) sortOrder.value = store.state.sortOrder[id]
+})
+
+watch(
+  sortOrder,
+  (order) => {
+    console.log(order, rows.value)
+    rows.value = sortEntities([...rows.value], order)
+    props.getEntities.setData(rows.value)
+    if (sortId.value) {
+      store.commit("setSortOrder", [sortId.value, order])
+    }
+  },
+  { deep: true }
+)
+
 watch(
   () => props.getEntities.data,
   (val) => {
-    rows.value = val
-  }
+    if (!val) return
+    rows.value = sortEntities([...val], sortOrder.value)
+    store.commit("setCurrentFolder", {
+      entities: rows.value.filter?.((k) => k.title[0] !== "."),
+    })
+  },
+  { immediate: true, deep: true }
 )
-useEventListener("paste", pasteObj)
+
+store.commit("setListResource", props.getEntities)
+store.commit("setCurrentResource", null)
 
 const selections = ref(new Set())
 const selectedEntitities = computed(
@@ -138,29 +170,33 @@ const selectedEntitities = computed(
 )
 
 const verifyAccess = computed(() => props.verify?.data || !props.verify)
+watchEffect(() => {
+  if (verifyAccess.value?.write) useEventListener("paste", pasteObj)
+})
 
 const refreshData = () => {
-  const sortOrder = store.state.sortOrder[props.getEntities.params?.entityName]
   const params = { team }
-  if (sortOrder)
-    params.order_by = sortOrder.field + (sortOrder.ascending ? " 1" : " 0")
+  if (sortOrder.value)
+    params.order_by =
+      sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
   props.getEntities.fetch(params)
 }
+
 watch(
   verifyAccess,
   (data) => {
     if (!data) return
     refreshData()
   },
-  { immediate: true }
+  { immediate: true, deep: false }
 )
 emitter.on("refresh", refreshData)
 
-if (team) {
+if (team && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team })
-  allFolders.fetch({ team })
+  if (!allFolders.fetched) allFolders.fetch({ team })
 }
-if (!settings.fetched) settings.fetch()
+if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 
 // Drag and drop
 const onDrop = (targetFile, draggedItem) => {
@@ -223,7 +259,7 @@ const actionItems = computed(() => {
       {
         label: __("Download"),
         icon: LucideDownload,
-        isEnabled: (e) => !e.is_link,
+        isEnabled: (e) => !e.is_link && e.mime_type !== "frappe/slides",
         action: (entities) => entitiesDownload(team, entities),
         multi: true,
         important: true,
@@ -234,7 +270,7 @@ const actionItems = computed(() => {
         action: ([entity]) => getLink(entity),
         important: true,
       },
-      { divider: true },
+      { divider: true, isEnabled: (e) => !e.external },
       {
         label: __("Move"),
         icon: LucideArrowLeftRight,
@@ -253,7 +289,8 @@ const actionItems = computed(() => {
         label: __("Show Info"),
         icon: LucideInfo,
         action: () => (dialog.value = "i"),
-        isEnabled: () => !store.state.activeEntity || !store.state.showInfo,
+        isEnabled: (e) =>
+          !store.state.activeEntity || (!store.state.showInfo && !e.external),
       },
       {
         label: __("Favourite"),
@@ -264,7 +301,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => !e.is_favourite,
+        isEnabled: (e) => !e.is_favourite && !e.external,
         important: true,
         multi: true,
       },
@@ -277,7 +314,7 @@ const actionItems = computed(() => {
           props.getEntities.setData(props.getEntities.data)
           toggleFav.submit({ entities })
         },
-        isEnabled: (e) => e.is_favourite,
+        isEnabled: (e) => e.is_favourite && !e.external,
         important: true,
         multi: true,
       },
@@ -301,8 +338,7 @@ const actionItems = computed(() => {
         isEnabled: (e) => e.write,
         important: true,
         multi: true,
-        danger: true,
-        theme: "blue",
+        theme: "red",
       },
     ]
   }
@@ -318,7 +354,7 @@ async function newLink() {
     const text = await navigator.clipboard.readText()
     if (localStorage.getItem("prevClip") === text) return
     localStorage.setItem("prevClip", text)
-    url = new URL(text)
+    const url = new URL(text)
     if (url.host)
       toast({
         title: "Link detected",
@@ -326,7 +362,7 @@ async function newLink() {
         buttons: [
           {
             label: "Add",
-            action: () => {
+            onClick: () => {
               dialog.value = "l"
             },
           },
@@ -342,3 +378,14 @@ if (settings.data?.auto_detect_links) {
   window.addEventListener("copy", newLink)
 }
 </script>
+<style>
+.dz-drag-hover #drop-area {
+  opacity: 0.5;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dz-drag-hover #drop-area + p {
+  display: block;
+}
+</style>

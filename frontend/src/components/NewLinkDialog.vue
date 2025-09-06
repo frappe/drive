@@ -36,7 +36,7 @@
         v-if="createLink.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This link already exists.
+        {{ createLink.error.messages[0] }}
       </div>
     </template>
   </Dialog>

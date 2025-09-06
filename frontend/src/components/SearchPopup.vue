@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ size: '2xl', position: 'top' }"
+    :options="{ size: 'xl', position: 'top' }"
   >
     <template #body>
       <div class="flex px-4 py-3 gap-1 items-center border-b">
@@ -11,7 +11,6 @@
         />
         <input
           v-model="search"
-          icon-left="search"
           type="text"
           class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
           placeholder="Find"
@@ -19,9 +18,9 @@
       </div>
       <div
         v-if="searchResults.data?.length"
-        class="flex flex-col py-4 px-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
+        class="flex flex-col p-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
       >
-        <span class="mb-2 pl-1 text-base text-ink-gray-5"
+        <span class="mb-2 pl-1 text-sm text-ink-gray-5"
           >Results for <strong>{{ search }}:</strong></span
         >
         <div
@@ -83,17 +82,12 @@
         v-if="!searchResults.data?.length && search.length"
         class="flex flex-col py-4 px-2.5"
       >
-        <span
-          v-if="search.length > 2"
-          class="pl-2 text-base text-ink-gray-5"
-        >
-          No results for <strong>"{{ search }}"</strong></span
-        >
-        <span
-          v-else
-          class="pl-2 text-xs"
-          >type more...</span
-        >
+        <span class="pl-2 text-sm text-ink-gray-6">
+          <template v-if="search.length > 2">
+            No results for <strong>"{{ search }}"</strong>
+          </template>
+          <span v-else>type more...</span>
+        </span>
       </div>
       <div
         v-if="searchResults.data?.length && !search.length"
@@ -178,7 +172,6 @@ const search = ref("")
 const route = useRoute()
 
 const open = defineModel()
-console.log(open.value)
 
 const searchResults = createResource({
   auto: false,

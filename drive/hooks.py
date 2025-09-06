@@ -28,7 +28,7 @@ add_to_apps_screen = [
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/drive/css/drive.css"
-# app_include_js = "/assets/drive/js/drive.js"
+app_include_js = "ff_integration.bundle.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/drive/css/drive.css"
@@ -98,13 +98,20 @@ after_install = "drive.install.after_install"
 # -----------
 # Permissions evaluated in scripted ways
 
+# permission_query_conditions = {
+# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+# }
+#
+
 permission_query_conditions = {
-    "Drive File": "drive.api.permissions.get_permission_query_conditions"
-}
-
-
-has_permission = {
-    "Drive File": "drive.api.permissions.user_has_permission",
+    "Drive Team": "drive.utils.overrides.filter_drive_team",
+    "Drive File": "drive.utils.overrides.filter_drive_file",
+    "Drive Permission": "drive.utils.overrides.filter_drive_permission",
+    "Drive Document": "drive.utils.overrides.filter_drive_document",
+    "Drive Comment": "drive.utils.overrides.filter_drive_comment",
+    "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
+    "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
+    "Drive Notification": "drive.utils.overrides.filter_drive_notif",
 }
 
 # DocType Class
@@ -112,7 +119,7 @@ has_permission = {
 # Override standard doctype classes
 
 # override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
+# 	"ToDo": "custom_app.utils.overrides.CustomToDo"
 # }
 
 # Document Events

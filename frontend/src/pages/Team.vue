@@ -30,7 +30,7 @@ store.commit("setCurrentFolder", { name: "", team: props.team })
 const write = computed(
   () =>
     allUsers.data &&
-    allUsers.data.find((k) => k.name === store.state.user.id).access_level > 0
+    allUsers.data.find((k) => k.name === store.state.user.id)?.access_level > 0
 )
 if (getTeams.data)
   store.commit("setBreadcrumbs", [

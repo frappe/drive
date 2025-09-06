@@ -21,6 +21,7 @@ async function setRootBreadCrumb(to) {
 const routes = [
   {
     path: "/",
+    name: "Base",
     component: () => null,
     beforeEnter: async () => {
       if (!store.getters.isLoggedIn) return "/login"
@@ -29,7 +30,7 @@ const routes = [
         method: "GET",
         cache: "settings",
       })
-      if (!settings.data) await settings.fetch()
+      if (!settings.fetched) await settings.fetch()
       return settings.data.default_team
         ? "/t/" + settings.data.default_team
         : "/teams"
@@ -64,7 +65,7 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
     props: true,
   },
-  
+
   {
     path: "/t/:team/trash",
     name: "Trash",
@@ -77,10 +78,16 @@ const routes = [
     component: () => import("@/pages/Recents.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
-   {
+  {
     path: "/t/:team/documents",
     name: "Documents",
     component: () => import("@/pages/Documents.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/t/:team/slides",
+    name: "Slides",
+    component: () => import("@/pages/Slides.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {

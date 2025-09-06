@@ -35,6 +35,22 @@
   font-display: swap;
 }
 
+/* Comic Sans MS */
+@font-face {
+  font-family: "Comic Sans MS";
+  src: url("./Comic_Sans_MS/Comic-Sans-MS.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Comic Sans MS";
+  src: url("./Comic_Sans_MS/Comic-Sans-MS-Italics.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* Comfortaa */
 @font-face {
   font-family: "Comfortaa";
@@ -127,7 +143,7 @@
 /* Geist */
 @font-face {
   font-family: "Geist";
-  src: url("./Geist/Geist-Variable.ttf") format("truetype");
+  src: url("./Geist/Geist-VariableFont_wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;

@@ -12,5 +12,6 @@ drive/www/drive.html
 .yarn-integrity
 **/__pycache__
 node_modules/
-experiments
+experiments/*
+drive/public/dist
 *.sql

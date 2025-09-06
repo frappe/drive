@@ -1,9 +1,13 @@
+from io import BytesIO
+from pathlib import Path
+
 import frappe
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from pathlib import Path
-from drive.utils.files import FileManager, get_home_folder
-from io import BytesIO
+
+from drive.api.permissions import user_has_permission
+from drive.utils import get_home_folder
+from drive.utils.files import FileManager
 
 
 @frappe.whitelist(allow_guest=True)
@@ -27,13 +31,9 @@ def get_file_content(embed_name, parent_entity_name):
     if old_parent_name:
         parent_entity_name = old_parent_name[0]["name"]
 
-    if not frappe.has_permission(
-        doctype="Drive File",
-        doc=parent_entity_name,
-        ptype="read",
-        user=frappe.session.user,
-    ):
+    if not user_has_permission(parent_entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
+
     cache_key = "embed-" + embed_name
     embed_data = None
     if frappe.cache().exists(cache_key):
@@ -45,7 +45,7 @@ def get_file_content(embed_name, parent_entity_name):
             ["document", "title", "mime_type", "file_size", "owner", "path", "team"],
             as_dict=1,
         )
-        
+
         if not drive_entity:
             drive_entity = frappe.get_list(
                 "Drive File",
