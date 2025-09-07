@@ -6,7 +6,7 @@ from drive.api.permissions import get_teams
 def common_filters(func):
     def decorator(user):
         user = user or frappe.session.user
-        if user == "Administrator":
+        if user == "Administrator" or "Drive Admin" in frappe.get_roles():
             return ""
         return func(frappe.db.escape(user))
 

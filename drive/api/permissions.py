@@ -265,6 +265,12 @@ def user_has_permission(doc, ptype, user=None):
         return bool(access[ptype])
 
 
+def user_has_permission_doc(doc, ptype, user=None):
+    return user_has_permission(
+        frappe.get_value("Drive File", {"document": doc}, "entity_name"), ptype
+    )
+
+
 def get_permission_query_conditions(user):
     """
     Limit the query to only show records owned by the user

@@ -98,11 +98,6 @@ after_install = "drive.install.after_install"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-
 permission_query_conditions = {
     "Drive Team": "drive.utils.overrides.filter_drive_team",
     "Drive File": "drive.utils.overrides.filter_drive_file",
@@ -114,6 +109,10 @@ permission_query_conditions = {
     "Drive Notification": "drive.utils.overrides.filter_drive_notif",
 }
 
+has_permission = {
+    "Drive File": "drive.api.permissions.user_has_permission",
+    "Drive Document": "drive.api.permissions.user_has_permission_doc",
+}
 # DocType Class
 # ---------------
 # Override standard doctype classes
