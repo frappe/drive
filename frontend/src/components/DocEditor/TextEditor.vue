@@ -363,21 +363,10 @@ const editorExtensions = [
 ]
 
 let prov, doc
-const collab = computed(() => props.settings.collab)
+const collab = computed(() => props.settings?.collab)
 if (collab.value) {
   doc = new Y.Doc({ gc: false })
-
-  const permanentUserData = new Y.PermanentUserData(doc)
-  permanentUserData.setUserMapping(doc, doc.clientID, "Administrator")
-  const colors = [
-    { light: "#ecd44433", dark: "#ecd444" },
-    { light: "#ee635233", dark: "#ee6352" },
-    { light: "#6eeb8333", dark: "#6eeb83" },
-  ]
-  const localstorage = new IndexeddbPersistence(
-    "fdoc-" + props.entity.name,
-    doc
-  )
+  new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
@@ -388,15 +377,12 @@ if (collab.value) {
     Collaboration.configure({
       document: doc,
       field: "default",
-      ySyncOptions: {
-        permanentUserData,
-        colors,
-      },
     }),
     CollaborationCursor.configure({
       provider: prov,
       user: {
         name: store.state.user.fullName,
+        id: store.state.user.id,
         avatar: store.state.user.imageURL,
         color: getRandomColor(),
       },
@@ -579,4 +565,7 @@ function evalImplicitTitle() {
 
 <style>
 @import url("./editor.css");
+iframe {
+  border: 1px solid var(--surface-gray-4) !important;
+}
 </style>

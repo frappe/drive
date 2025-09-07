@@ -1,16 +1,13 @@
 <template>
-  <Popover
+  <Dropdown
     transition="default"
-    placement="bottom-end"
-    popover-class="border-t-8 border-transparent"
+    placement="right"
+    :options="users"
   >
-    <template #target="{ togglePopover }">
-      <div
-        class="ml-2.5 flex items-center rounded-md cursor-pointer"
-        @click="togglePopover()"
-      >
+    <template #default>
+      <div class="ml-2.5 flex items-center rounded-md cursor-pointer">
         <div
-          v-for="user in connectedUsers"
+          v-for="user in users"
           :key="user.name"
           class="-ml-2.5 -py-0.5 flex items-center rounded-full"
         >
@@ -29,52 +26,47 @@
         </div>
       </div>
     </template>
-    <template #body-main>
-      <div class="px-3 py-1">
-        <div
-          v-for="user in connectedUsers"
-          :key="user.name"
-          class="flex justifty items-center gap-2 py-1"
-        >
+    <template #item="{ item }">
+      <div
+        class="flex items-center justify-between py-1.5 px-2 hover:outline-none focus:outline-none"
+      >
+        <div class="flex gap-2 items-center">
           <Avatar
             :size="'md'"
-            :image="user.avatar"
-            :label="user.name"
-            :title="user.name"
+            :image="item.avatar"
+            :label="item.name"
+            :title="item.name"
           />
-          <span class="text-sm text-ink-gray-8 mr-4">{{ user.name }}</span>
-          <svg
-            class="ml-auto"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="8"
-              cy="8"
-              r="4.5"
-              fill="transparent"
-              :stroke="user.color"
-              stroke-width="3"
-            />
-          </svg>
+          <div class="text-sm text-ink-gray-8 mr-4 flex flex-col gap-0.5">
+            <span>{{ item.name }}</span>
+            <span class="text-xs text-ink-gray-5">{{ item.id }}</span>
+          </div>
         </div>
+        <svg
+          class="ml-auto"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="8"
+            cy="8"
+            r="4.5"
+            fill="transparent"
+            :stroke="item.color"
+            stroke-width="3"
+          />
+        </svg>
       </div>
     </template>
-  </Popover>
+  </Dropdown>
 </template>
-<script>
-import { Avatar, Popover } from "frappe-ui"
-import { mapState } from "vuex"
+<script setup>
+import { Avatar, Dropdown } from "frappe-ui"
 
-export default {
-  name: "UsersBar",
-  components: {
-    Avatar,
-    Popover,
-  },
-  computed: mapState(["connectedUsers"]),
-}
+defineProps({
+  users: Array,
+})
 </script>

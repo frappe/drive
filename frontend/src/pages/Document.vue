@@ -1,4 +1,17 @@
 <template>
+  <div
+    v-if="inIframe"
+    class="p-1.5 border-b text-base text-ink-gray-7 flex justify-between items-center relative"
+  >
+    <div class="font-semibold">{{ entity.title }}</div>
+    <div class="flex gap-3 items-center text-ink-gray-5 text-xs">
+      Edited {{ entity.relativeModified }}
+      <!-- <LucideSquareArrowOutUpRight
+        class="size-3.5 hover:text-ink-gray-7 cursor-pointer"
+        @click="window.open(window.location.href, true)"
+      /> -->
+    </div>
+  </div>
   <Teleport
     v-if="docSettings?.doc?.settings?.minimal && entity.write"
     to="#navbar-prefix"
@@ -16,6 +29,11 @@
     to="#navbar-content"
     defer
   >
+    <UsersBar
+      v-if="editorValue"
+      :users="editorValue.storage.collaborationCursor.users"
+    />
+
     <Button
       v-if="docSettings?.doc?.settings?.lock"
       :icon="LucideLock"
@@ -184,6 +202,7 @@
     class="flex w-full h-full overflow-auto"
   >
     <TextEditor
+      v-if="docSettings?.doc?.settings"
       ref="editor"
       v-model:edited="edited"
       v-model:raw-content="rawContent"
@@ -258,6 +277,7 @@ import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
 import { dynamicList } from "../utils/files"
 import { useTemplateRef } from "vue"
+import UsersBar from "@/components/UsersBar.vue"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -273,13 +293,10 @@ const store = useStore()
 const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
-const test = ref(true)
 const switchCount = ref(0)
 const editor = useTemplateRef("editor")
-provide(
-  "editor",
-  computed(() => editor.value.editor)
-)
+const editorValue = computed(() => editor.value?.editor)
+provide("editor", editorValue)
 provide("showResolved", showResolved)
 
 // Reactive data properties
