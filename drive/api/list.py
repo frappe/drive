@@ -74,9 +74,7 @@ def files(
         .left_join(DrivePermission)
         .on((DrivePermission.entity == DriveFile.name) & (DrivePermission.user == user))
         # Give defaults as a team member
-        .select(
-            *ENTITY_FIELDS,
-        )
+        .select(*ENTITY_FIELDS, "team")
         .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
     )
 

@@ -20,13 +20,13 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -402,7 +402,7 @@ def create_link(team, title, link, personal=False, parent=None):
 
 
 @frappe.whitelist(allow_guest=True)
-def save_doc(entity_name, content, doc_name=None, yjs=None, comment=False):
+def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
     can_write = user_has_permission(entity_name, "write")
     if comment and not can_write:
         old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
@@ -417,7 +417,8 @@ def save_doc(entity_name, content, doc_name=None, yjs=None, comment=False):
 
     if doc_name:
         try:
-            frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
+            if content:
+                frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
             if yjs:
                 frappe.db.set_value("Drive Document", doc_name, "content", yjs)
         except frappe.exceptions.QueryDeadlockError:

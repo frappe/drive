@@ -18,14 +18,14 @@ body {
 .prose-sm {
   min-width: 100%;
   caret-color: theme("colors.blue.600");
-  padding: 2.5em 0;
+  padding-top: 1rem;
   padding-bottom: 4rem;
 }
 
 @media only screen and (max-width: 640px) {
   .prose-sm {
     display: block;
-    padding: 2.5em 1rem;
+    padding: 1rem;
     max-width: 100%;
     min-width: 100%;
   }

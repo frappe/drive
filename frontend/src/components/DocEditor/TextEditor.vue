@@ -143,6 +143,7 @@ import {
   h,
   watch,
   getCurrentInstance,
+  inject,
 } from "vue"
 import store from "@/store"
 import { EditorContent } from "@tiptap/vue-3"
@@ -150,6 +151,7 @@ import FontFamily from "./extensions/font-family"
 import FloatingQuoteButton from "./extensions/comment"
 import { CharacterCount } from "./extensions/character-count"
 import { CollaborationCursor } from "./extensions/collaboration-cursor"
+import EmbedExtension from "./extensions/embed-extension"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import {
   default as TableOfContents,
@@ -325,6 +327,7 @@ const ExtendedCommentExtension = CommentExtension.extend({
   },
 })
 
+const inIframe = inject("inIframe")
 const editorExtensions = [
   CharacterCount,
   TableOfContents.configure({
@@ -335,7 +338,9 @@ const editorExtensions = [
   FontFamily.configure({
     types: ["textStyle"],
   }),
+  EmbedExtension,
   props.entity.comment &&
+    !inIframe &&
     FloatingQuoteButton.configure({
       onClick: () => {
         createNewComment(editor.value)
@@ -369,8 +374,12 @@ if (collab.value) {
     { light: "#ee635233", dark: "#ee6352" },
     { light: "#6eeb8333", dark: "#6eeb83" },
   ]
-  new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
+  const localstorage = new IndexeddbPersistence(
+    "fdoc-" + props.entity.name,
+    doc
+  )
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
+
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
     signaling: ["wss://signal.frappe.cloud"],
   })
@@ -450,6 +459,7 @@ const bubbleMenuButtons = [
   CommentAction,
   "Image",
   "Video",
+  "Iframe",
   "Blockquote",
   "Code",
   [

@@ -48,12 +48,12 @@
           >
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
-        <li>
+        <!-- <li>
           <span class="inline-block w-24 text-ink-gray-5"
             >{{ __("Tags") }}:</span
           >
           <span class="col-span-1">{{ entity }}</span>
-        </li>
+        </li> -->
       </ul>
 
       <ul

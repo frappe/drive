@@ -223,9 +223,7 @@ onMounted(() => {
         completed: true,
       })
     })
-  } catch (e) {
-    console.log(e)
-  }
+  } catch (e) {}
 })
 emitter.on("uploadFile", () => {
   if (dropzone.value.hiddenFileInput) {

@@ -4,7 +4,11 @@
       v-if="isLoggedIn || $route.meta.allowGuest"
       class="flex flex-col sm:flex-row h-full"
     >
-      <Sidebar v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)" />
+      <Sidebar
+        v-if="
+          !inIframe && isLoggedIn && !['Teams', 'Setup'].includes($route.name)
+        "
+      />
       <div
         id="dropzone"
         class="flex flex-col flex-1 overflow-hidden bg-surface-white"
@@ -17,7 +21,7 @@
         </router-view>
       </div>
       <BottomBar
-        v-if="isLoggedIn"
+        v-if="!inIframe && isLoggedIn"
         class="w-full sm:hidden"
       />
     </div>
@@ -48,13 +52,15 @@ import FDialogs from "./components/FDialogs.vue"
 import BottomBar from "./components/BottomBar.vue"
 import FileUploader from "@/components/FileUploader.vue"
 import { useStore } from "vuex"
-import { ref, computed } from "vue"
+import { ref, computed, provide } from "vue"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 import { FrappeUIProvider } from "frappe-ui"
 import "access-key-label-polyfill"
 
 const store = useStore()
+const inIframe = window.self !== window.top
+provide("inIframe", inIframe)
 
 const showSearchPopup = ref(false)
 const isLoggedIn = computed(() => store.getters.isLoggedIn)

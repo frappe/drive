@@ -42,7 +42,7 @@
     />
   </Teleport>
   <Navbar
-    v-if="!document.error && docSettings?.doc"
+    v-if="!document.error && docSettings?.doc && !inIframe"
     :root-resource="document"
     :actions="[
       'extend',
@@ -191,7 +191,7 @@
       v-model:show-comments="showComments"
       v-model:current="current"
       :entity
-      :editable
+      :editable="inIframe ? false : editable"
       :settings="docSettings?.doc?.settings"
       :users="allUsers.data || []"
       :show-resolved
@@ -304,23 +304,27 @@ let docSettings
 
 const saveDocument = (comment = false) => {
   if (entity.value.write || (comment && entity.value.comment)) {
-    if (entity.value.mime_type === "frappe_doc")
-      updateDocument.submit({
+    if (entity.value.mime_type === "frappe_doc") {
+      const params = {
         entity_name: props.entityName,
         doc_name: entity.value.document,
         content: rawContent.value,
         yjs: fromUint8Array(yjsContent.value),
-      })
-    else
+        comment,
+      }
+      if (docSettings.doc.settings.collab) delete params.content
+      else delete params.yjs
+      updateDocument.submit(params)
+    } else
       updateDocument.submit({
         entity_name: props.entityName,
         content: rawContent.value,
-        comment,
       })
     edited.value = true
     return true
   }
 }
+const inIframe = inject("inIframe")
 
 const onSuccess = (data) => {
   window.document.title = data.title

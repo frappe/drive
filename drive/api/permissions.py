@@ -267,7 +267,7 @@ def user_has_permission(doc, ptype, user=None):
 
 def user_has_permission_doc(doc, ptype, user=None):
     return user_has_permission(
-        frappe.get_value("Drive File", {"document": doc}, "entity_name"), ptype
+        frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user
     )
 
 
