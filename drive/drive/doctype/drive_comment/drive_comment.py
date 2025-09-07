@@ -1,8 +1,6 @@
 # Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from datetime import datetime
-
 import frappe
 from frappe.model.document import Document
 
@@ -19,6 +17,7 @@ class DriveComment(Document):
     def after_insert(self):
         """
         Does not create a notification until it's mentioned
+        Always notifies owner for fresh comments
         """
         mentions = extract_mentions(self.content)
         if not mentions:

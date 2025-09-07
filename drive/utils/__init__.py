@@ -321,8 +321,13 @@ def create_drive_file(
 
 
 def extract_mentions(content):
-    pattern = r'<span class="mention" data-type="mention" data-id="([^"]+)"'
-    return re.findall(pattern, content)
+    soup = BeautifulSoup(content, "html.parser")
+    mentions = []
+    for span in soup.find_all("span", class_="mention", attrs={"data-type": "mention"}):
+        data_id = span.get("data-id")
+        if data_id:
+            mentions.append(data_id)
+    return mentions
 
 
 def strip_comment_spans(html: str) -> str:
