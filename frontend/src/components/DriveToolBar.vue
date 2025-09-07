@@ -220,7 +220,7 @@ import {
   reactive,
   defineComponent,
 } from "vue"
-import { ICON_TYPES, MIME_LIST_MAP, sortEntities } from "@/utils/files"
+import { ICON_TYPES, MIME_LIST_MAP } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideFilter from "~icons/lucide/filter"
