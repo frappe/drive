@@ -20,13 +20,13 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-    create_drive_file,
-    extract_mentions,
-    get_file_type,
-    get_home_folder,
-    if_folder_exists,
-    strip_comment_spans,
-    update_file_size,
+	create_drive_file,
+	extract_mentions,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	strip_comment_spans,
+	update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -403,6 +403,8 @@ def create_link(team, title, link, personal=False, parent=None):
 
 @frappe.whitelist(allow_guest=True)
 def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
+    # BROKEN
+    # In Collab mode file size is off + mentions don't work.
     can_write = user_has_permission(entity_name, "write")
     if comment and not can_write:
         old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")
@@ -411,9 +413,6 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
         return frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
     elif not can_write:
         raise frappe.PermissionError("You do not have permission to edit this file")
-
-    if not content:
-        return
 
     if doc_name:
         try:
@@ -439,19 +438,23 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
 
     file = frappe.get_doc("Drive File", entity_name)
     file._modified = datetime.now()
-    file.file_size = len(content.encode("utf-8"))
+    if content:
+        file.file_size = len(content.encode("utf-8"))
+    if yjs:
+        file.file_size = len(yjs.encode("utf-8"))
     file.save()
 
-    mentions = extract_mentions(content)
-    if mentions:
-        frappe.enqueue(
-            notify_mentions,
-            job_id=f"doc_{entity_name}",
-            now=True,
-            deduplicate=True,
-            entity_name=entity_name,
-            mentions=mentions,
-        )
+    if content:
+        mentions = extract_mentions(content)
+        if mentions:
+            frappe.enqueue(
+                notify_mentions,
+                job_id=f"doc_{entity_name}",
+                now=True,
+                deduplicate=True,
+                entity_name=entity_name,
+                mentions=mentions,
+            )
 
 
 @frappe.whitelist()

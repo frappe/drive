@@ -30,7 +30,7 @@
     defer
   >
     <UsersBar
-      v-if="editorValue"
+      v-if="editorValue?.storage?.collaborationCursor?.users?.length > 1"
       :users="editorValue.storage.collaborationCursor.users"
     />
 
@@ -78,16 +78,12 @@
             switch: true,
             switchValue: docSettings.doc.settings.collab,
             onClick: (val) => {
+              saveDocument()
               docSettings.doc.settings.collab = val
               docSettings.setValue.submit({
                 settings: JSON.stringify(docSettings.doc.settings),
               })
-              if (val) {
-                // Used to rerender text editor when collab is toggled
-                switchCount++
-              } else {
-                switchCount = 0
-              }
+              collabTurned = val
             },
           },
           {
@@ -101,7 +97,6 @@
                 switchValue: docSettings.doc.settings.lock,
                 icon: LucideLock,
                 onClick: (val) => {
-                  console.log(val)
                   docSettings.doc.settings.lock = val
                   docSettings.setValue.submit({
                     settings: JSON.stringify(docSettings.doc.settings),
@@ -211,6 +206,7 @@
       v-model:current="current"
       :entity
       :editable="inIframe ? false : editable"
+      :collab-turned
       :settings="docSettings?.doc?.settings"
       :users="allUsers.data || []"
       :show-resolved
@@ -293,7 +289,7 @@ const store = useStore()
 const route = useRoute()
 const emitter = inject("emitter")
 const showResolved = ref(false)
-const switchCount = ref(0)
+const collabTurned = ref(null)
 const editor = useTemplateRef("editor")
 const editorValue = computed(() => editor.value?.editor)
 provide("editor", editorValue)
@@ -326,7 +322,7 @@ const saveDocument = (comment = false) => {
         entity_name: props.entityName,
         doc_name: entity.value.document,
         content: rawContent.value,
-        yjs: fromUint8Array(yjsContent.value),
+        yjs: fromUint8Array(yjsContent.value || ""),
         comment,
       }
       if (docSettings.doc.settings.collab) delete params.content

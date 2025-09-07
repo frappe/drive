@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="items.length"
-      class="min-w-40 rounded-lg bg-surface-white p-1 text-base shadow-lg max-h-64 overflow-y-scroll"
+      class="w-60 rounded-lg bg-surface-white p-1 text-base shadow-lg max-h-64 overflow-y-auto"
     >
       <button
         class="flex flex-col items-start gap-0.5"
@@ -15,7 +15,7 @@
         @click="selectItem(index)"
         @mouseover="selectedIndex = index"
       >
-        <div>{{ item.title }}</div>
+        <div class="truncate">{{ item.title }}</div>
         <div class="text-xs text-ink-gray-6">
           Edited {{ item.relativeModified }}
         </div>

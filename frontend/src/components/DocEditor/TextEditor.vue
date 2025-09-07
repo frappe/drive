@@ -42,6 +42,7 @@
           Updating...
         </div>
         <FTextEditor
+          :key="editorExtensions.length"
           v-if="
             !collab ||
             editorExtensions.find((k) => k.name === 'collaborationCursor')
@@ -65,6 +66,14 @@
                 folder: entity.name,
                 upload_endpoint: `/api/method/drive.api.files.upload_embed`,
               })
+            }
+          "
+          @transaction="
+            (editor) => {
+              if (collabTurned && doc) {
+                yjsContent = Y.encodeStateAsUpdate(doc)
+                emit('saveDocument')
+              }
             }
           "
           @change="
@@ -195,6 +204,7 @@ const props = defineProps({
   settings: Object,
   editable: Boolean,
   showResolved: Boolean,
+  collabTurned: Boolean,
   users: Object,
   currentVersion: { required: false, type: Object },
 })
@@ -362,11 +372,48 @@ const editorExtensions = [
   }),
 ]
 
-let prov, doc
+let prov, doc, localstorage
 const collab = computed(() => props.settings?.collab)
+window.addEventListener("unhandledrejection", (event) => {
+  if (`${event.reason.stack}`.startsWith("RangeError") && props.collabTurned)
+    window.location.reload()
+})
+
+watch(collab, (now, prev) => {
+  // BREAKS when prev is stored in cache - need to double reload
+  if (now && prev === false) {
+    doc = new Y.Doc({ gc: false })
+    new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
+    prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
+      signaling: ["wss://signal.frappe.cloud"],
+    })
+    editorExtensions.push(
+      Collaboration.configure({
+        document: doc,
+        field: "default",
+      }),
+      CollaborationCursor.configure({
+        provider: prov,
+        user: {
+          name: store.state.user.fullName,
+          id: store.state.user.id,
+          avatar: store.state.user.imageURL,
+          color: getRandomColor(),
+        },
+      })
+    )
+    editor.value.commands.setContent(rawContent.value)
+  }
+  if (!now && prov) {
+    prov.disconnect()
+    prov.destroy()
+    localstorage
+  }
+})
+
 if (collab.value) {
   doc = new Y.Doc({ gc: false })
-  new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
+  localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
