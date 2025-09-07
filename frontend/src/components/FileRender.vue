@@ -70,7 +70,6 @@ const RENDERS = {
   Presentation: MSOfficePreview,
   Text: TextPreview,
   Code: TextPreview,
-  Markdown: TextPreview,
 }
 
 const EXCEPTIONS = {

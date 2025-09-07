@@ -3,10 +3,7 @@
     v-if="editor"
     class="self-stretch w-96 border-s-2 h-full overflow-hidden"
   >
-    <h3
-      class="px-3 border-b text-large text-ink-gray-9 font-semibold"
-      :class="current ? 'p-4' : 'p-2'"
-    >
+    <h3 class="px-3 border-b text-large text-ink-gray-9 font-semibold p-3">
       Versions
       <Button
         :icon="LucideX"

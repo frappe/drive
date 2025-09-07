@@ -75,7 +75,10 @@ export const openEntity = (team = null, entity, new_tab = false) => {
     ) && window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe/slides") {
     window.open("/slides/presentation/" + entity.path, "_blank")
-  } else if (entity.mime_type === "frappe_doc") {
+  } else if (
+    entity.mime_type === "frappe_doc" ||
+    entity.mime_type === "text/markdown"
+  ) {
     router.push({
       name: "Document",
       params: { team, entityName: entity.name },

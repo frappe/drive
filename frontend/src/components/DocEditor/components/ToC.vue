@@ -1,11 +1,11 @@
 <template>
   <div
     class="hidden md:flex"
-    :class="{ 'absolute right-0': !show }"
+    :class="{ relative: !show }"
   >
     <div
       v-show="show"
-      class="pt-6 ps-6 table-of-contents"
+      class="pt-7 px-3 table-of-contents"
     >
       <div
         v-for="anchor in anchors"
@@ -30,12 +30,12 @@
     <Button
       variant="ghost"
       :tooltip="show ? 'Hide' : 'Table of Contents'"
-      class="!w-5.5 !h-5.5 mr-1.5 mt-1.5"
+      class="!w-5.5 !h-5.5 mr-1.5 mt-1.5 absolute right-0"
       @click="show = !show"
     >
       <template #icon>
         <component
-          :is="show ? LucideX : LucidePlus"
+          :is="show ? LucideMinus : LucidePlus"
           class="size-3.5"
       /></template>
     </Button>
@@ -44,7 +44,7 @@
 
 <script setup>
 import { TextSelection } from "@tiptap/pm/state"
-import LucideX from "~icons/lucide/x"
+import LucideMinus from "~icons/lucide/minus"
 import LucidePlus from "~icons/lucide/plus"
 import { ref, watch } from "vue"
 

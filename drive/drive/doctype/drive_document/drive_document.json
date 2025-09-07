@@ -65,7 +65,7 @@
   ],
   "grid_page_length": 50,
   "links": [],
-  "modified": "2025-09-04 13:36:01.893424",
+  "modified": "2025-09-06 21:06:08.094901",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
@@ -83,6 +83,15 @@
       "role": "All",
       "share": 1,
       "write": 1
+    },
+    {
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Guest",
+      "share": 1
     }
   ],
   "row_format": "Dynamic",
