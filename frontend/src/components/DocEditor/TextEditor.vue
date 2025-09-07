@@ -35,17 +35,12 @@
         "
         class="mx-auto cursor-text w-full flex justify-center h-full"
       >
-        <div
-          v-if="!updated"
-          class="text-center h-full flex justify-center items-center text-sm font-semibold"
-        >
-          Updating...
-        </div>
         <FTextEditor
           :key="editorExtensions.length"
           v-if="
             !collab ||
-            editorExtensions.find((k) => k.name === 'collaborationCursor')
+            editorExtensions.find((k) => k.name === 'collaborationCursor') ||
+            !isFrappeDoc
           "
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
@@ -69,7 +64,7 @@
             }
           "
           @transaction="
-            (editor) => {
+            () => {
               if (collabTurned && doc) {
                 yjsContent = Y.encodeStateAsUpdate(doc)
                 emit('saveDocument')
@@ -168,7 +163,7 @@ import {
 } from "@tiptap/extension-table-of-contents"
 
 import FloatingComments from "./components/FloatingComments.vue"
-import { printDoc, getRandomColor } from "@/utils/files"
+import { printDoc, getRandomColor, dynamicList } from "@/utils/files"
 import { rename } from "@/resources/files"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
@@ -186,7 +181,6 @@ import LucideMessageCircle from "~icons/lucide/message-circle"
 import { formatDate } from "../../utils/format"
 
 const textEditor = ref("textEditor")
-const updated = ref(true)
 const current = defineModel("current")
 const editor = computed(() => {
   let editor = textEditor.value?.editor
@@ -203,6 +197,7 @@ const props = defineProps({
   entity: Object,
   settings: Object,
   editable: Boolean,
+  isFrappeDoc: Boolean,
   showResolved: Boolean,
   collabTurned: Boolean,
   users: Object,
@@ -210,6 +205,7 @@ const props = defineProps({
 })
 const comments = ref([])
 const settings = computed(() => {
+  if (!props.isFrappeDoc) return {}
   for (let [k, v] of Object.entries(props.settings)) {
     if (v === "global") delete props.settings[k]
   }
@@ -444,7 +440,7 @@ const CommentAction = {
   isActive: () => false,
 }
 
-const bubbleMenuButtons = [
+const bubbleMenuButtons = dynamicList([
   "Paragraph",
   [
     {
@@ -475,24 +471,28 @@ const bubbleMenuButtons = [
   "Link",
   "Strikethrough",
   "Separator",
-  {
-    label: "Inter",
-    class: "font-inter",
-    component: h(
-      defineAsyncComponent(() => import("./components/FontFamily.vue")),
-      { editor }
-    ),
-  },
-  "FontColor",
-  "Separator",
   ["Bullet List", "Numbered List", "Task List"],
   "Separator",
   ["Align Left", "Align Center", "Align Right"],
-  "Separator",
-  CommentAction,
-  "Image",
-  "Video",
-  "Iframe",
+  ...(props.isFrappeDoc
+    ? [
+        "Separator",
+        {
+          label: "Inter",
+          class: "font-inter",
+          component: h(
+            defineAsyncComponent(() => import("./components/FontFamily.vue")),
+            { editor }
+          ),
+        },
+        "FontColor",
+        "Separator",
+        CommentAction,
+        "Image",
+        "Video",
+        "Iframe",
+      ]
+    : []),
   "Blockquote",
   "Code",
   [
@@ -510,12 +510,11 @@ const bubbleMenuButtons = [
     "ToggleHeaderCell",
     "DeleteTable",
   ],
-]
+])
 
 emitter.on("printFile", () => {
   if (editor.value) printDoc(editor.value.getHTML())
 })
-const component = getCurrentInstance()
 
 onMounted(() => {
   if (props.entity.mime_type === "frappe_doc") {
@@ -525,9 +524,6 @@ onMounted(() => {
       const pos2 = orderedComments.findIndex((k) => k.id === b.name)
       return pos1 - pos2
     })
-  }
-  if (collab.value) {
-    if (component.vnode.key > 0) updated.value = false
   }
 })
 

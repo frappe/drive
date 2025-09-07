@@ -466,7 +466,8 @@ function getLinkStem(entity) {
     {
       true: "file",
       [new Boolean(entity.is_group)]: "folder",
-      [new Boolean(entity.document)]: "document",
+      [new Boolean(entity.document || entity.mime_type === "text/markdown")]:
+        "document",
     }[true]
   }/${entity.name}/${slugger(entity.title)}`
 }

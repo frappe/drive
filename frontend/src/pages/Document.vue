@@ -60,128 +60,132 @@
     />
   </Teleport>
   <Navbar
-    v-if="!document.error && docSettings?.doc && !inIframe"
+    v-if="!inIframe && (docSettings?.doc || !isFrappeDoc)"
     :root-resource="document"
-    :actions="[
-      'extend',
-      {
-        group: true,
-        hideLabel: true,
-        items: dynamicList([
-          {
-            onClick: (e) => {
-              e.stopPropagation()
-              e.preventDefault()
-            },
-            label: 'Collaborate',
-            icon: LucideUserPen,
-            switch: true,
-            switchValue: docSettings.doc.settings.collab,
-            onClick: (val) => {
-              saveDocument()
-              docSettings.doc.settings.collab = val
-              docSettings.setValue.submit({
-                settings: JSON.stringify(docSettings.doc.settings),
-              })
-              collabTurned = val
-            },
-          },
-          {
-            label: 'View',
-            icon: LucideView,
-            cond: entity.write,
-            submenu: [
-              {
-                label: 'Lock',
-                switch: true,
-                switchValue: docSettings.doc.settings.lock,
-                icon: LucideLock,
-                onClick: (val) => {
-                  docSettings.doc.settings.lock = val
-                  docSettings.setValue.submit({
-                    settings: JSON.stringify(docSettings.doc.settings),
-                  })
+    :actions="
+      isFrappeDoc
+        ? [
+            'extend',
+            {
+              group: true,
+              hideLabel: true,
+              items: dynamicList([
+                {
+                  onClick: (e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                  },
+                  label: 'Collaborate',
+                  icon: LucideUserPen,
+                  switch: true,
+                  switchValue: docSettings.doc.settings.collab,
+                  onClick: (val) => {
+                    saveDocument()
+                    docSettings.doc.settings.collab = val
+                    docSettings.setValue.submit({
+                      settings: JSON.stringify(docSettings.doc.settings),
+                    })
+                    collabTurned = val
+                  },
                 },
-              },
-              {
-                label: 'Wide',
-                icon: LucideRulerDimensionLine,
-                switch: true,
-                switchValue: docSettings.doc.settings.wide,
-                onClick: (val) => {
-                  docSettings.doc.settings.wide = val
-                  docSettings.setValue.submit({
-                    settings: JSON.stringify(docSettings.doc.settings),
-                  })
+                {
+                  label: 'View',
+                  icon: LucideView,
+                  cond: entity.write,
+                  submenu: [
+                    {
+                      label: 'Lock',
+                      switch: true,
+                      switchValue: docSettings.doc.settings.lock,
+                      icon: LucideLock,
+                      onClick: (val) => {
+                        docSettings.doc.settings.lock = val
+                        docSettings.setValue.submit({
+                          settings: JSON.stringify(docSettings.doc.settings),
+                        })
+                      },
+                    },
+                    {
+                      label: 'Wide',
+                      icon: LucideRulerDimensionLine,
+                      switch: true,
+                      switchValue: docSettings.doc.settings.wide,
+                      onClick: (val) => {
+                        docSettings.doc.settings.wide = val
+                        docSettings.setValue.submit({
+                          settings: JSON.stringify(docSettings.doc.settings),
+                        })
+                      },
+                    },
+                    {
+                      onClick: (val) => {
+                        document.breadcrumbs = []
+                        docSettings.doc.settings.minimal = val
+                        docSettings.setValue.submit({
+                          settings: JSON.stringify(docSettings.doc.settings),
+                        })
+                      },
+                      switch: true,
+                      switchValue: docSettings.doc.settings.minimal,
+                      label: 'Minimal',
+                      icon: LucideEraser,
+                    },
+                  ],
                 },
-              },
-              {
-                onClick: (val) => {
-                  document.breadcrumbs = []
-                  docSettings.doc.settings.minimal = val
-                  docSettings.setValue.submit({
-                    settings: JSON.stringify(docSettings.doc.settings),
-                  })
+                {
+                  onClick: () => {
+                    showSettings = true
+                  },
+                  label: 'Settings',
+                  icon: LucideSettings,
                 },
-                switch: true,
-                switchValue: docSettings.doc.settings.minimal,
-                label: 'Minimal',
-                icon: LucideEraser,
-              },
-            ],
-          },
-          {
-            onClick: () => {
-              showSettings = true
+              ]),
             },
-            label: 'Settings',
-            icon: LucideSettings,
-          },
-        ]),
-      },
-      {
-        group: true,
-        hideLabel: true,
-        items: dynamicList([
-          {
-            icon: MessagesSquare,
-            label: 'Versions',
-            onClick: () => (showVersions = true),
-          },
-          {
-            icon: MessagesSquare,
-            label: 'Show Comments',
-            onClick: () => (showComments = true),
-            isEnabled: () => !showComments,
-            cond: entity?.comments?.length,
-          },
-          {
-            icon: MessagesSquare,
-            label: 'Hide Comments',
-            onClick: () => (showComments = false),
-            isEnabled: () => showComments,
-            cond: entity?.comments?.length,
-          },
-          {
-            icon: MessageSquareDot,
-            label: 'Show Resolved',
-            onClick: () => {
-              showResolved = true
-              showComments = true
+            {
+              group: true,
+              hideLabel: true,
+              items: dynamicList([
+                {
+                  icon: MessagesSquare,
+                  label: 'Versions',
+                  onClick: () => (showVersions = true),
+                },
+                {
+                  icon: MessagesSquare,
+                  label: 'Show Comments',
+                  onClick: () => (showComments = true),
+                  isEnabled: () => !showComments,
+                  cond: entity?.comments?.length,
+                },
+                {
+                  icon: MessagesSquare,
+                  label: 'Hide Comments',
+                  onClick: () => (showComments = false),
+                  isEnabled: () => showComments,
+                  cond: entity?.comments?.length,
+                },
+                {
+                  icon: MessageSquareDot,
+                  label: 'Show Resolved',
+                  onClick: () => {
+                    showResolved = true
+                    showComments = true
+                  },
+                  isEnabled: () => !showResolved,
+                  cond: entity?.comments?.filter((k) => k.resolved)?.length,
+                },
+                {
+                  icon: MessageSquareDot,
+                  label: 'Hide Resolved',
+                  onClick: () => (showResolved = false),
+                  isEnabled: () => showResolved,
+                  cond: entity?.comments?.filter((k) => k.resolved)?.length,
+                },
+              ]),
             },
-            isEnabled: () => !showResolved,
-            cond: entity?.comments?.filter((k) => k.resolved)?.length,
-          },
-          {
-            icon: MessageSquareDot,
-            label: 'Hide Resolved',
-            onClick: () => (showResolved = false),
-            isEnabled: () => showResolved,
-            cond: entity?.comments?.filter((k) => k.resolved)?.length,
-          },
-        ]),
-      },
-    ]"
+          ]
+        : null
+    "
   />
   <ErrorPage
     v-if="document.error"
@@ -197,7 +201,7 @@
     class="flex w-full h-full overflow-auto"
   >
     <TextEditor
-      v-if="docSettings?.doc?.settings"
+      v-if="!isFrappeDoc || docSettings?.doc?.settings"
       ref="editor"
       v-model:edited="edited"
       v-model:raw-content="rawContent"
@@ -207,6 +211,7 @@
       :entity
       :editable="inIframe ? false : editable"
       :collab-turned
+      :is-frappe-doc
       :settings="docSettings?.doc?.settings"
       :users="allUsers.data || []"
       :show-resolved
@@ -314,10 +319,12 @@ watch(showVersions, (v) => {
 })
 
 let docSettings
-
+const isFrappeDoc = computed(
+  () => entity.value && entity.value.mime_type === "frappe_doc"
+)
 const saveDocument = (comment = false) => {
   if (entity.value.write || (comment && entity.value.comment)) {
-    if (entity.value.mime_type === "frappe_doc") {
+    if (isFrappeDoc.value) {
       const params = {
         entity_name: props.entityName,
         doc_name: entity.value.document,

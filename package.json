@@ -3,7 +3,7 @@
   "scripts": {
     "check-pnpm": "chmod +x ./scripts/install-pnpm.sh && ./scripts/install-pnpm.sh",
     "frontend:pnpm_install": "npm run check-pnpm && cd frontend && pnpm install",
-    "postinstall": "npm run frontend:pnpm_install",
+    "postinstall": "echo 'Root postinstall disabled as workspaces are active'",
     "dev": "cd frontend && pnpm dev",
     "build": "cd frontend && pnpm build",
     "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd ..",
