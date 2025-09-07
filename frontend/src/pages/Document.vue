@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="inIframe"
+    v-if="inIframe && entity"
     class="p-1.5 border-b text-base text-ink-gray-7 flex justify-between items-center relative"
   >
     <div class="font-semibold">{{ entity.title }}</div>

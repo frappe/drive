@@ -4,6 +4,7 @@ import { getDocuments } from "@/resources/files"
 import DocumentList from "../components/DocumentList.vue"
 import tippy from "tippy.js"
 
+import { watch, ref, computed } from "vue"
 import router from "@/router"
 import { VueRenderer } from "@tiptap/vue-3"
 
@@ -42,15 +43,44 @@ const EmbedExtension = Node.create({
               state.doc.textBetween(start, from, "", "") + text
 
             if (existingText === "[[") {
+              triggerPosition = start
               openEmbedSuggestion(view, from, editor)
+            }
+            if (popup && component && text != "[") {
+              search.value =
+                state.doc.textBetween(triggerPosition + 2, to, "", "") + text
+              //       search = query
+              //           console.log(text)
+              // search = search + text
+
+              // const { team, entityName } = router.currentRoute.value.params
+              // getDocuments.fetch({ team, only_parent: 0, search })
+
+              // component.updateProps({
+              //   items: getDocuments.data
+              //     .sort((a, b) => (a.modified > b.modified ? -1 : 1))
+              //     .filter((k) => k.name !== entityName && k.name.includes(search))
+              // })
+
+              return false
             }
           },
           handleKeyDown(view, event) {
             if (!popup) return false
-
-            if (event.key === "Escape" || event.key === "Backspace") {
+            const inPopup = popup && component
+            if (component) {
+              const val = component.ref.onKeyDown({ event })
+              if (val) return val
+            }
+            if (
+              event.key === "Escape" ||
+              (event.key === "Backspace" && !inPopup)
+            ) {
               closePopup()
               return true
+            }
+            if (event.key === "Backspace" && inPopup) {
+              search.value = search.value.slice(0, -1)
             }
 
             return false
@@ -62,21 +92,23 @@ const EmbedExtension = Node.create({
 })
 
 export default EmbedExtension
-let popup, component
-export function openEmbedSuggestion(view, from, editor) {
+let popup, component, triggerPosition
+const search = ref(null)
+const items = computed(() =>
+  getDocuments.data
+    .sort((a, b) => (a.modified > b.modified ? -1 : 1))
+    .filter((k) => k.name !== router.currentRoute.value.params.entityName)
+)
+export async function openEmbedSuggestion(view, from, editor) {
   const { team, entityName } = router.currentRoute.value.params
-  if (!getDocuments.fetched) {
-    getDocuments.fetch({ team })
-  }
   component = new VueRenderer(DocumentList, {
     editor,
     props: {
       editor,
       range: { from, to: from },
       close,
-      items: getDocuments.data
-        .sort((a, b) => (a.modified > b.modified ? -1 : 1))
-        .filter((k) => k.name !== entityName),
+      items: items.value,
+      loading: true,
     },
   })
 
@@ -99,6 +131,7 @@ export function openEmbedSuggestion(view, from, editor) {
     placement: "bottom-start",
   })
   popup[0].show()
+  search.value = ""
 }
 
 // Cleanup function
@@ -108,3 +141,20 @@ function closePopup() {
   component = null
   popup = null
 }
+
+watch(search, async (val) => {
+  getDocuments.fetch(
+    {
+      team: router.currentRoute.value.params.team,
+      only_parent: 0,
+      search: search.value,
+    },
+    {
+      onSuccess: (i) => {
+        component.updateProps({
+          items: items.value,
+        })
+      },
+    }
+  )
+})

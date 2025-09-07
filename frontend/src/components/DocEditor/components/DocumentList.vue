@@ -1,7 +1,6 @@
 <template>
   <div>
     <div
-      v-if="items.length"
       class="w-60 rounded-lg bg-surface-white p-1 text-base shadow-lg max-h-64 overflow-y-auto"
     >
       <button
@@ -31,16 +30,8 @@ export default {
       type: Array,
       required: true,
     },
-    command: {
-      type: Function,
-      required: true,
-    },
     editor: {
       type: Object,
-      required: true,
-    },
-    close: {
-      type: Function,
       required: true,
     },
   },
@@ -84,7 +75,6 @@ export default {
       const item = this.items[index]
       if (item) {
         this.editor.commands.embedDocument(item)
-        // this.close()
       }
     },
   },
