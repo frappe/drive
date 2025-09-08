@@ -44,8 +44,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: ^0.1.191
-        version: 0.1.191(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
+        specifier: ^0.1.198
+        version: 0.1.198(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2))
       html2pdf.js:
         specifier: ^0.10.3
         version: 0.10.3
@@ -878,6 +878,14 @@ packages:
       }
     peerDependencies:
       tailwindcss: ">=3.0.0 || >= 3.0.0-alpha.1 || >= 4.0.0-alpha.20 || >= 4.0.0-beta.1"
+
+  "@tailwindcss/line-clamp@0.4.4":
+    resolution:
+      {
+        integrity: sha512-5U6SY5z8N42VtrCrKlsTAA35gy2VSyYtHWCsg1H87NU1SXnEfekTVlrga9fzUDrrHcGi2Lb5KenUWb4lRQT5/g==,
+      }
+    peerDependencies:
+      tailwindcss: ">=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1"
 
   "@tailwindcss/typography@0.5.16":
     resolution:
@@ -2248,10 +2256,10 @@ packages:
         integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==,
       }
 
-  frappe-ui@0.1.191:
+  frappe-ui@0.1.198:
     resolution:
       {
-        integrity: sha512-Esx15VGpT5qleNz2SLeOqfvzzhuiU1fEjO8LSN0mTi+zHOud2kIKquQup1bs/iy8euBLtkuk1up5PftFtlWO0Q==,
+        integrity: sha512-e4CPRNp8PDJgyBYrmM2CZdPvEfQza2rLXzDvg5QJlnY94FzVMtTmi+gt17wMKsRGPR/xBoWwtyF5rMxoYMDI6Q==,
       }
     peerDependencies:
       vue: ">=3.5.0"
@@ -3493,6 +3501,14 @@ packages:
     peerDependencies:
       vue: ">= 3.2.0"
 
+  reka-ui@2.5.0:
+    resolution:
+      {
+        integrity: sha512-81aMAmJeVCy2k0E6x7n1kypDY6aM1ldLis5+zcdV1/JtoAlSDck5OBsyLRJU9CfgbrQp1ImnRnBSmC4fZ2fkZQ==,
+      }
+    peerDependencies:
+      vue: ">= 3.2.0"
+
   resolve-from@4.0.0:
     resolution:
       {
@@ -4570,6 +4586,10 @@ snapshots:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.4.17
 
+  "@tailwindcss/line-clamp@0.4.4(tailwindcss@3.4.17)":
+    dependencies:
+      tailwindcss: 3.4.17
+
   "@tailwindcss/typography@0.5.16(tailwindcss@3.4.17)":
     dependencies:
       lodash.castarray: 4.4.0
@@ -5442,12 +5462,13 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.191(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2)):
+  frappe-ui@0.1.198(@babel/parser@7.28.0)(@vue/compiler-sfc@3.5.18)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)))(vue@3.5.18(typescript@5.9.2)):
     dependencies:
       "@floating-ui/vue": 1.1.8(vue@3.5.18(typescript@5.9.2))
       "@headlessui/vue": 1.7.23(vue@3.5.18(typescript@5.9.2))
       "@popperjs/core": 2.11.8
       "@tailwindcss/forms": 0.5.10(tailwindcss@3.4.17)
+      "@tailwindcss/line-clamp": 0.4.4(tailwindcss@3.4.17)
       "@tailwindcss/typography": 0.5.16(tailwindcss@3.4.17)
       "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
       "@tiptap/extension-code-block": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
@@ -5486,7 +5507,7 @@ snapshots:
       ora: 5.4.1
       prettier: 3.6.2
       radix-vue: 1.9.17(vue@3.5.18(typescript@5.9.2))
-      reka-ui: 2.4.1(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2))
+      reka-ui: 2.5.0(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2))
       socket.io-client: 4.8.1
       tippy.js: 6.3.7
       typescript: 5.9.2
@@ -6214,6 +6235,23 @@ snapshots:
     optional: true
 
   reka-ui@2.4.1(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2)):
+    dependencies:
+      "@floating-ui/dom": 1.7.3
+      "@floating-ui/vue": 1.1.8(vue@3.5.18(typescript@5.9.2))
+      "@internationalized/date": 3.8.2
+      "@internationalized/number": 3.6.4
+      "@tanstack/vue-virtual": 3.13.12(vue@3.5.18(typescript@5.9.2))
+      "@vueuse/core": 12.8.2(typescript@5.9.2)
+      "@vueuse/shared": 12.8.2(typescript@5.9.2)
+      aria-hidden: 1.2.6
+      defu: 6.1.4
+      ohash: 2.0.11
+      vue: 3.5.18(typescript@5.9.2)
+    transitivePeerDependencies:
+      - "@vue/composition-api"
+      - typescript
+
+  reka-ui@2.5.0(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2)):
     dependencies:
       "@floating-ui/dom": 1.7.3
       "@floating-ui/vue": 1.1.8(vue@3.5.18(typescript@5.9.2))
