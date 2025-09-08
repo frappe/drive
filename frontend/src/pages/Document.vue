@@ -323,6 +323,7 @@ const isFrappeDoc = computed(
   () => entity.value && entity.value.mime_type === "frappe_doc"
 )
 const saveDocument = (comment = false) => {
+  if (!edited.value) return
   if (entity.value.write || (comment && entity.value.comment)) {
     if (isFrappeDoc.value) {
       const params = {
@@ -340,7 +341,6 @@ const saveDocument = (comment = false) => {
         entity_name: props.entityName,
         content: rawContent.value,
       })
-    edited.value = true
     return true
   }
 }

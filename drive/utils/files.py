@@ -256,9 +256,10 @@ class FileManager:
         """
         root_folder = Path(get_home_folder(team)["path"])
         if self.s3_enabled:
+            print("getting")
             objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
+            print("got!")
             basic_files = {}
-
             # Get files...
             for obj in objects:
                 obj_path = Path(obj["Key"])

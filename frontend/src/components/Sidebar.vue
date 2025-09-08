@@ -4,7 +4,7 @@
     id="sidebar"
     class="hidden sm:flex"
     :header="{
-      title: getTeams.data?.[$route.params.team]?.title || 'Drive',
+      title: 'Drive',
       subtitle: $store.state.user.fullName,
       menuItems: settingsItems,
       logo: FrappeDriveLogo,
@@ -29,7 +29,7 @@
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 
 import StorageBar from "./StorageBar.vue"
-import { Sidebar, createResource } from "frappe-ui"
+import { Sidebar } from "frappe-ui"
 
 import { notifCount, apps } from "@/resources/permissions"
 import { getTeams, LISTS } from "@/resources/files"
@@ -220,25 +220,6 @@ const sidebarItems = computed(() => {
           accessKey: "h",
         },
         {
-          label: "Team",
-          to: `/t/${team.value}/team`,
-          icon: LucideBuilding2,
-          isActive: first.name == "Team",
-          accessKey: "t",
-        },
-        {
-          label: "Trash",
-          to: `/t/${team.value}/trash`,
-          icon: LucideTrash,
-          isActive: first.name == "Trash",
-        },
-      ],
-    },
-    {
-      label: "Views",
-      collapsible: true,
-      items: dynamicList([
-        {
           label: "Recents",
           to: `/t/${team.value}/recents`,
           icon: LucideClock,
@@ -252,6 +233,31 @@ const sidebarItems = computed(() => {
           isActive: first.name == "Shared",
           accessKey: "s",
         },
+        {
+          label: "Trash",
+          to: `/t/${team.value}/trash`,
+          icon: LucideTrash,
+          isActive: first.name == "Trash",
+        },
+      ],
+    },
+    {
+      label: "Teams",
+      collapsible: true,
+      items:
+        getTeams.data &&
+        Object.values(getTeams.data).map((team, i) => ({
+          label: team.title,
+          to: `/t/${team.name}/team`,
+          icon: { 0: LucideBuilding2, 1: LucideContact }[i],
+          isActive: first.label == team.title,
+          accessKey: "t",
+        })),
+    },
+    {
+      label: "Views",
+      collapsible: true,
+      items: dynamicList([
         {
           label: "Favourites",
           to: `/t/${team.value}/favourites`,

@@ -46,6 +46,10 @@
       #suffix
     >
       <div class="flex flex-row grow justify-end gap-2 w-[20px]">
+        <component
+          v-if="column.suffix"
+          :is="column.suffix({ row })"
+        />
         <LucideStar
           v-if="row.is_favourite && $route.name !== 'Favourites'"
           name="star"

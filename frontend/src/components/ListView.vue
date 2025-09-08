@@ -137,6 +137,12 @@ const selectedColumns = [
     prefix: ({ row }) => {
       return getThumbnailUrl(row)
     },
+    suffix: ({ row }) => {
+      if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
+      else if (row.share_count === -1 && row.is_private)
+        return h(LucideBuilding2, { class: "size-4" })
+      else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
+    },
     width: "50%",
   },
 
@@ -160,28 +166,28 @@ const selectedColumns = [
     },
     width: "10%",
   },
-  {
-    label: __("Shared"),
-    key: "",
-    getLabel: ({ row }) => {
-      if (row.share_count === -2) return "Public"
-      else if (row.share_count === -1) return "Team"
-      else if (row.share_count > 0)
-        return (
-          row.share_count +
-          " " +
-          (row.share_count === 1 ? __("person") : __("people"))
-        )
-      return "-"
-    },
-    prefix: ({ row }) => {
-      if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
-      else if (row.share_count === -1)
-        return h(LucideBuilding2, { class: "size-4" })
-      else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
-    },
-    width: "10%",
-  },
+  // {
+  //   label: __("Shared"),
+  //   key: "",
+  //   getLabel: ({ row }) => {
+  //     if (row.share_count === -2) return "Public"
+  //     else if (row.share_count === -1) return "Team"
+  //     else if (row.share_count > 0)
+  //       return (
+  //         row.share_count +
+  //         " " +
+  //         (row.share_count === 1 ? __("person") : __("people"))
+  //       )
+  //     return "-"
+  //   },
+  //   prefix: ({ row }) => {
+  //     if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
+  //     else if (row.share_count === -1)
+  //       return h(LucideBuilding2, { class: "size-4" })
+  //     else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
+  //   },
+  //   width: "10%",
+  // },
   {
     label: __("Last Modified"),
     getLabel: ({ row }) => row.relativeModified,
@@ -206,7 +212,7 @@ const selectedColumns = [
         ? row.children
           ? row.children + " item" + (row.children === 1 ? "" : "s")
           : "empty"
-        : row.file_size_pretty,
+        : row.file_size_pretty || "-",
     width: "8%",
   },
   { label: "", key: "options", align: "right", width: "5%" },

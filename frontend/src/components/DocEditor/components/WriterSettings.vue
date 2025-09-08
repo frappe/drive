@@ -15,7 +15,7 @@
           <div class="overflow-y-auto ps-1 pt-4">
             <div class="flex flex-col gap-4 pb-5 pr-5">
               <Form>
-                <template #default="{ dirty }">
+                <template #default="{ dirty, setDirty }">
                   <FormControl
                     type="select"
                     label="Font Family"
@@ -39,19 +39,22 @@
                     v-model="settings.line_height"
                     description="Set the line height of the editor."
                   />
-                  <FormControl
+                  <!-- <FormControl
                     label="Custom Classes"
                     placeholder="font-semibold"
                     v-model="settings.custom_css"
                     description="Any additional classes to apply."
                     type="textarea"
-                  />
+                  /> -->
                   <Button
                     label="Update"
                     variant="solid"
                     :disabled="!dirty"
                     :loading="resource.loading"
-                    @click="resource.setValue.submit({ [key]: settings })"
+                    @click="
+                      resource.setValue.submit({ [key]: settings }),
+                        setDirty(false)
+                    "
                     class="mt-4"
                   />
                 </template>

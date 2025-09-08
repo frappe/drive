@@ -1,14 +1,8 @@
 <template>
-  <!-- Hack padding for select clip -->
   <div class="flex items-center mb-4 ps-1">
-    <div>
-      <h1 class="font-semibold text-ink-gray-9">
-        {{ __("Backend") }}
-      </h1>
-      <p class="text-sm text-ink-gray-6">
-        These are Drive-level settings. Handle with care.
-      </p>
-    </div>
+    <h1 class="font-semibold text-ink-gray-9">
+      {{ __("S3 Integration") }}
+    </h1>
     <Button
       label="Sync"
       @click="confirmSync"
@@ -26,36 +20,6 @@
     >
       <FormControl
         type="select"
-        label="Root Folder Type"
-        :options="[
-          { label: 'Team ID', value: 'team_id' },
-          { label: 'Team Name', value: 'team_name' },
-          { label: 'Other', value: 'other' },
-        ]"
-        v-model="generalSettings.root_prefix_type"
-        description="The root folder name for each team, defaults to team ID."
-      />
-      <FormControl
-        v-if="generalSettings.root_prefix_type === 'other'"
-        label="Root Folder Name"
-        placeholder="team"
-        v-model="generalSettings.root_prefix_value"
-        description="Value to use for the root folder. Use / to not use a separate folder."
-      />
-      <FormControl
-        label="Team Prefix"
-        placeholder="team"
-        v-model="generalSettings.team_prefix"
-        description="Team files will be placed inside this folder. Use / to place directly in the root folder."
-      />
-      <FormControl
-        label="Personal Prefix"
-        placeholder="personal"
-        v-model="generalSettings.personal_prefix"
-        description="Personal folders will be created under this prefix."
-      />
-      <FormControl
-        type="select"
         label="Backend Type"
         :options="[
           { label: 'Disk', value: 'disk' },
@@ -65,7 +29,7 @@
       />
       <div
         v-if="generalSettings.backend_type === 's3'"
-        class="flex flex-col gap-2 mt-2"
+        class="flex flex-col gap-4 mt-2"
       >
         <h3 class="font-semibold text-md">S3 Settings</h3>
         <FormControl
@@ -100,6 +64,36 @@
           v-model="s3Settings.signature_version"
           description="Optional. Some providers only support 's3'."
         />
+        <FormControl
+          type="select"
+          label="Root Folder Type"
+          :options="[
+            { label: 'Team ID', value: 'team_id' },
+            { label: 'Team Name', value: 'team_name' },
+            { label: 'Other', value: 'other' },
+          ]"
+          v-model="generalSettings.root_prefix_type"
+          description="The root folder name for each team, defaults to team ID."
+        />
+        <FormControl
+          v-if="generalSettings.root_prefix_type === 'other'"
+          label="Root Folder Name"
+          placeholder="team"
+          v-model="generalSettings.root_prefix_value"
+          description="Value to use for the root folder. Use / to not use a separate folder."
+        />
+        <FormControl
+          label="Team Prefix"
+          placeholder="team"
+          v-model="generalSettings.team_prefix"
+          description="Team files will be placed inside this folder. Use / to place directly in the root folder."
+        />
+        <FormControl
+          label="Personal Prefix"
+          placeholder="personal"
+          v-model="generalSettings.personal_prefix"
+          description="Personal folders will be created under this prefix."
+        />
       </div>
       <Button
         label="Update"
@@ -114,7 +108,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from "vue"
+import { ref, reactive, watch, h } from "vue"
 import {
   FormControl,
   Button,
@@ -123,7 +117,8 @@ import {
 } from "frappe-ui"
 import { useRoute } from "vue-router"
 import { toast } from "@/utils/toasts"
-import emitter from "@/emitter"
+import { createDialog } from "@/utils/dialogs"
+import SyncBreakdown from "@/components/SyncBreakdown.vue"
 
 const route = useRoute()
 
@@ -157,38 +152,11 @@ watch(
 )
 
 function confirmSync() {
-  // if (confirmDialog("Are you sure? This might corrupt your Drive system."))
-  syncFromDisk.submit()
+  createDialog({
+    title: "Sync files from S3",
+    component: h(SyncBreakdown, { team: route.params.team }),
+  })
 }
-
-const syncFromDisk = createResource({
-  url: "drive.api.scripts.sync_from_disk",
-  params: { team: route.params.team },
-  beforeSubmit: () => {
-    toast({
-      icon: LucideFolderSync,
-      title: "Starting syncing.",
-      text: "We'll give you an update when it's done.",
-    })
-  },
-  onSuccess: (d) => {
-    toast({
-      icon: LucideCloudCheck,
-      title: "Successfully synced from disk.",
-      text: d.length
-        ? `Added ${d.length} item${d.length > 1 ? "s" : ""}`
-        : "No new files were added.",
-    })
-    emitter.emit("refresh")
-  },
-  onError: () => {
-    toast({
-      icon: LucideCloudAlert,
-      title: "There was an error.",
-      text: "Is there an issue with your configuration?",
-    })
-  },
-})
 
 const getSettings = createResource({
   url: "drive.api.product.disk_settings",

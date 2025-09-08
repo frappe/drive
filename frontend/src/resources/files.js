@@ -92,6 +92,7 @@ export const getSlides = createResource({
       file_type: "Presentation",
       path: k.name,
       external: true,
+      file_size: 0,
     }))
     prettyData(data)
     return data

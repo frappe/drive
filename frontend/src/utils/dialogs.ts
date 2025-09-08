@@ -12,12 +12,12 @@ const dialogs = ref<DialogOptions[]>([])
 
 export function createDialog(options: UserDialogOptions) {
   const dialog = reactive<DialogOptions>({
-    ...options,
     key: "dialog-" + dialogs.value.length,
     modelValue: false,
+    options,
   })
 
-  dialog.remove = (dialog: DialogOptions) => {
+  dialog.remove = () => {
     dialogs.value = dialogs.value.filter((d) => d.key !== dialog.key)
   }
 

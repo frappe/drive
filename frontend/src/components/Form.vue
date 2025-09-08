@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, computed, toRaw } from "vue"
+import { reactive, onMounted, ref, toRaw, watchEffect } from "vue"
 
 const slots = defineSlots()
 const initialValues = reactive({})
@@ -14,24 +14,25 @@ onMounted(() => {
     }
   }
 })
-
-const isDirty = computed(() => {
+const dirty = ref(false)
+watchEffect(() => {
   const inputs = slots.default?.(false) || []
-  let dirty = false
+  dirty.value = false
   for (const input of inputs) {
     if (input?.props && "modelValue" in input.props) {
       const initial = initialValues[getKey(input)]
-      console.log(toRaw(input.props.modelValue))
       if (toRaw(input.props.modelValue) !== initial) {
-        dirty = true
+        dirty.value = true
       }
     }
   }
-  console.log(dirty)
-  return dirty
 })
+const setDirty = (val) => (dirty.value = val)
 </script>
 
 <template>
-  <slot :dirty="isDirty" />
+  <slot
+    :dirty
+    :setDirty
+  />
 </template>

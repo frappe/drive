@@ -5,8 +5,15 @@
       :key="dialog.key"
       v-model="dialog.modelValue"
       :options="dialog.options"
-      @close="removeDialog(dialog)"
-    />
+      @close="dialog.remove"
+    >
+      <template
+        #body-content
+        v-if="dialog.options.component"
+      >
+        <component :is="dialog.options.component" />
+      </template>
+    </Dialog>
   </div>
 </template>
 

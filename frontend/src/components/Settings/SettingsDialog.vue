@@ -96,7 +96,7 @@ let tabs = [
   },
   {
     enabled: computed(() => isAdmin.data?.is_admin || false),
-    label: "Backend",
+    label: "S3 Integration",
     icon: LucideCloudUpload,
     component: markRaw(BackendSettings),
   },
