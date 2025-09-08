@@ -16,7 +16,10 @@ dependencies = [
     "PyJWT>=2.8.0",
     "thumbnail>=1.5.0",
     "boto3==1.37.31",
-    "pycrdt==0.12.26"
+    "pycrdt==0.12.26",
+    "Markdown==3.8.2",
+    "beautifulsoup4==4.13.5",
+    "html2text==2025.4.15"
 ]
 
 [build-system]
