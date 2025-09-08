@@ -3,6 +3,12 @@
     <div
       class="w-60 rounded-lg bg-surface-white p-1 text-base shadow-lg max-h-64 overflow-y-auto"
     >
+      <div
+        v-if="!items.length"
+        class="text-center text-ink-gray-6 text-sm py-2"
+      >
+        No documents found
+      </div>
       <button
         class="flex flex-col items-start gap-0.5"
         :class="[

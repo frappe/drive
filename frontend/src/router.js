@@ -2,8 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { manageBreadcrumbs } from "./utils/files"
 import { createResource } from "frappe-ui"
-import { getTeams } from "./resources/files"
-
+import Dummy from "@/pages/Dummy.vue"
 function clearStore() {
   store.commit("setActiveEntity", null)
 }
@@ -36,13 +35,32 @@ const routes = [
         : "/teams"
     },
   },
-
   {
     path: "/:team/",
     redirect: (to) => ({
       name: "Home",
       team: to.params.team,
     }),
+  },
+  {
+    path: "/f/:entityName/",
+    component: Dummy,
+    beforeEnter: async (to) => {
+      const entity = createResource({
+        url: "/api/method/drive.api.files.get_entity_type",
+        method: "GET",
+        params: {
+          entity_name: to.params.entityName,
+        },
+      })
+      await entity.fetch()
+      console.log(
+        `/t/${entity.data.team}/${entity.data.type}/${entity.data.name}`
+      )
+      return {
+        path: `/t/${entity.data.team}/${entity.data.type}/${entity.data.name}`,
+      }
+    },
   },
   {
     path: "/t/:team/",

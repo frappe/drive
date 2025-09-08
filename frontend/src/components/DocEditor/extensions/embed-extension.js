@@ -67,7 +67,7 @@ const EmbedExtension = Node.create({
           },
           handleKeyDown(view, event) {
             if (!popup) return false
-            const inPopup = popup && component
+            const inPopup = popup && component && search.value
             if (component) {
               const val = component.ref.onKeyDown({ event })
               if (val) return val
@@ -150,10 +150,11 @@ watch(search, async (val) => {
       search: search.value,
     },
     {
-      onSuccess: (i) => {
-        component.updateProps({
-          items: items.value,
-        })
+      onSuccess: () => {
+        component &&
+          component.updateProps({
+            items: items.value,
+          })
       },
     }
   )

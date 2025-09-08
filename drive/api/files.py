@@ -20,13 +20,13 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -882,3 +882,20 @@ def get_new_title(title, parent_name, folder=False, is_private=None):
     if not sibling_entity_titles:
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
+
+
+@frappe.whitelist(allow_guest=True)
+def get_entity_type(entity_name):
+    entity = frappe.db.get_value(
+        "Drive File",
+        {"is_active": 1, "name": entity_name},
+        ["team", "name", "mime_type", "is_group", "document"],
+        as_dict=1,
+    )
+    if entity.document or entity.mime_type == "text/markdown":
+        entity["type"] = "document"
+    elif entity.is_group:
+        entity["type"] = "folder"
+    else:
+        entity["type"] = "file"
+    return entity
