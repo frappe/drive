@@ -100,6 +100,7 @@
       "label": "Team Prefix"
     },
     {
+      "default": "personal",
       "fieldname": "personal_prefix",
       "fieldtype": "Data",
       "label": "Personal Prefix"
