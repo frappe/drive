@@ -77,14 +77,19 @@
                   },
                   label: 'Collaborate',
                   icon: LucideUserPen,
+                  cond: editor?.editor && editor.editor.getText().length == 0,
                   switch: true,
                   switchValue: docSettings.doc.settings.collab,
-                  onClick: (val) => {
-                    saveDocument()
-                    docSettings.doc.settings.collab = val
-                    docSettings.setValue.submit({
-                      settings: JSON.stringify(docSettings.doc.settings),
+                  onClick: async (val) => {
+                    // saveDocument()
+                    await docSettings.setValue.submit({
+                      settings: JSON.stringify({
+                        ...docSettings.doc.settings,
+                        collab: val,
+                      }),
                     })
+                    $router.go()
+                    // docSettings.doc.settings.collab = val
                     collabTurned = val
                   },
                 },

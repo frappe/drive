@@ -17,7 +17,7 @@
           <Button
             class="ml-auto shrink-0"
             variant="ghost"
-            @click="open = false"
+            @click="$emit('update:modelValue', false)"
           >
             <template #icon>
               <LucideX class="size-4" />
@@ -34,12 +34,12 @@
                 v-model="generalAccessLevel"
                 :options="generalOptions"
                 @update:model-value="
-                  (val) => updateGeneralAccess(val, generalAccessPerms)
+                  (val) => updateGeneralAccess(val, generalAccessLevel)
                 "
               >
                 <template #prefix>
                   <component
-                    :is="generalAccessType.icon"
+                    :is="generalAccessLevel.icon"
                     class="mr-2 size-4 text-ink-gray-6"
                   />
                 </template>
@@ -52,6 +52,7 @@
               </Select>
             </div>
             <Select
+              class="w-32"
               v-if="generalAccessLevel !== 'restricted'"
               v-model="generalAccessType"
               :options="accessOptions"
@@ -256,7 +257,7 @@
                 v-else-if="user.user !== entity.owner"
                 class="text-ink-gray-7 relative flex-shrink-0 ml-auto"
                 :access-obj="user"
-                :access-permss="filteredAccess"
+                :access-levels="filteredAccess"
                 @update-access="
                   (access) =>
                     updateAccess.submit({
@@ -314,13 +315,7 @@
 </template>
 <script setup>
 import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
-import {
-  Avatar,
-  Dialog,
-  LoadingIndicator,
-  createResource,
-  Select,
-} from "frappe-ui"
+import { Avatar, Dialog, LoadingIndicator, createResource } from "frappe-ui"
 import {
   Combobox,
   ComboboxInput,
@@ -329,6 +324,7 @@ import {
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
 import { getLink, dynamicList } from "@/utils/files"
+import Select from "@/components/Select.vue"
 
 import {
   getUsersWithAccess,
@@ -345,7 +341,7 @@ import LucideGlobe2 from "~icons/lucide/globe-2"
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
-const emit = defineEmits(["success"])
+const emit = defineEmits(["update:modelValue", "success"])
 const dialogType = defineModel()
 const open = ref(true)
 
@@ -384,12 +380,18 @@ const filteredUsers = computed(() => {
 
 const accessOptions = computed(() =>
   dynamicList([
-    { value: "reader", label: "Can view" },
-    { value: "editor", label: "Can edit", cond: props.entity.write },
+    { value: "reader", label: "Can view", icon: LucideEye },
+    {
+      value: "editor",
+      label: "Can edit",
+      cond: props.entity.write,
+      icon: LucidePencil,
+    },
     {
       value: "upload",
       label: "Can upload",
       cond: props.entity.is_group && props.entity.upload,
+      icon: LucideUpload,
     },
   ])
 )
@@ -428,10 +430,10 @@ const generalOptions = [
   },
   { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
 ]
-const generalAccessType = ref(
+const generalAccessLevel = ref(
   generalOptions[props.entity.is_private ? 0 : 1].value
 )
-const generalAccessPerms = ref("reader")
+const generalAccessType = ref("reader")
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({
@@ -445,35 +447,29 @@ const getGeneralAccess = createResource({
       return
     }
     const translate = { Guest: "public", $TEAM: "team" }
-    generalAccessType.value = generalOptions.find(
+    generalAccessLevel.value = generalOptions.find(
       (k) => k.value === translate[getGeneralAccess.params.user]
     ).value
 
-    generalAccessPerms.value = data.write
-      ? "editor"
-      : data.upload
-      ? "upload"
-      : "reader"
+    generalAccessType.value = data.write ? "editor" : "reader"
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
 
-const updateGeneralAccess = (type, perms) => {
-  if (type === "restricted") {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user: "$GENERAL",
-      method: "unshare",
-    })
-  } else {
+const updateGeneralAccess = (type, level) => {
+  updateAccess.submit({
+    entity_name: props.entity.name,
+    user: "general",
+    method: "unshare",
+  })
+  if (type !== "restricted") {
     updateAccess.submit({
       entity_name: props.entity.name,
       user: type === "public" ? "" : "$TEAM",
       read: 1,
       comment: 1,
       share: 1,
-      upload: +(perms === "upload"),
-      write: perms === "editor",
+      write: level === "editor",
     })
   }
   emit("success")

@@ -210,7 +210,7 @@ const settings = computed(() => {
     if (v === "global") delete props.settings[k]
   }
   return {
-    ...writerSettings.doc?.settings,
+    ...(writerSettings.doc ? writerSettings.doc?.settings : {}),
     ...props.settings,
   }
 })
@@ -243,19 +243,11 @@ watch(
 const writerSettings = useDoc({
   doctype: "Drive Settings",
   name: store.state.user.id,
-  immediate: true,
+  immediate: store.state.user.id !== "Guest",
   transform: (doc) => {
     doc.settings = JSON.parse(doc.writer_settings)
     return doc
   },
-})
-writerSettings.onSuccess(({ font_family }) => {
-  if (!rawContent.value)
-    editor.value
-      .chain()
-      .focus()
-      .setFontFamily(`var(--font-${font_family})`)
-      .run()
 })
 
 const createNewComment = (editor) => {
@@ -375,37 +367,37 @@ window.addEventListener("unhandledrejection", (event) => {
     window.location.reload()
 })
 
-watch(collab, (now, prev) => {
-  // BREAKS when prev is stored in cache - need to double reload
-  if (now && prev === false) {
-    doc = new Y.Doc({ gc: false })
-    new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
-    prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
-      signaling: ["wss://signal.frappe.cloud"],
-    })
-    editorExtensions.push(
-      Collaboration.configure({
-        document: doc,
-        field: "default",
-      }),
-      CollaborationCursor.configure({
-        provider: prov,
-        user: {
-          name: store.state.user.fullName,
-          id: store.state.user.id,
-          avatar: store.state.user.imageURL,
-          color: getRandomColor(),
-        },
-      })
-    )
-    editor.value.commands.setContent(rawContent.value)
-  }
-  if (!now && prov) {
-    prov.disconnect()
-    prov.destroy()
-    localstorage
-  }
-})
+// watch(collab, (now, prev) => {
+//   // BREAKS when prev is stored in cache - need to double reload
+//   if (now && prev === false) {
+//     doc = new Y.Doc({ gc: false })
+//     new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
+//     prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
+//       signaling: ["wss://signal.frappe.cloud"],
+//     })
+//     editorExtensions.push(
+//       Collaboration.configure({
+//         document: doc,
+//         field: "default",
+//       }),
+//       CollaborationCursor.configure({
+//         provider: prov,
+//         user: {
+//           name: store.state.user.fullName,
+//           id: store.state.user.id,
+//           avatar: store.state.user.imageURL,
+//           color: getRandomColor(),
+//         },
+//       })
+//     )
+//     editor.value.commands.setContent(rawContent.value)
+//   }
+//   if (!now && prov) {
+//     prov.disconnect()
+//     prov.destroy()
+//     localstorage
+//   }
+// })
 
 if (collab.value) {
   doc = new Y.Doc({ gc: false })
@@ -430,6 +422,13 @@ if (collab.value) {
         color: getRandomColor(),
       },
     })
+  )
+  console.log(
+    Boolean(
+      !collab ||
+        editorExtensions.find((k) => k.name === "collaborationCursor") ||
+        !isFrappeDoc
+    )
   )
 }
 

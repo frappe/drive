@@ -154,7 +154,7 @@ const syncFromDisk = createResource({
   onSuccess: (d) => {
     toast({
       icon: LucideCloudCheck,
-      title: "Successfully synced from disk.",
+      title: "Successfully synced",
       text: d.length
         ? `Added ${d.length} item${d.length > 1 ? "s" : ""}`
         : "No new files were added.",
