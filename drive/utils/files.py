@@ -427,7 +427,7 @@ class FileManager:
         self.move(str(current_path), entity.path)
 
     @__not_if_flat
-    def move(self, old_path: str, new_path: str):
+    def move(self, old_path: str | Path, new_path: str):
         """
         Move a file on disk
         """
@@ -441,7 +441,7 @@ class FileManager:
                 self.conn.delete_object(Bucket=self.bucket, Key=old_path)
             else:
                 (self.site_folder / old_path).rename(self.site_folder / new_path)
-        except:
+        except BaseException as e:
             frappe.throw("This file doesn't exist on disk.")
         return new_path
 

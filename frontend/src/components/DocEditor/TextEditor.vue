@@ -3,14 +3,14 @@
     <div class="flex-1 md:w-auto md:p-0">
       <div
         v-if="current"
-        class="bg-surface-blue-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
+        class="bg-surface-gray-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
       >
         <div class="flex flex-col gap-1">
           <div>
             This is a snapshot of this document from
             {{ formatDate(current.title) }}.
           </div>
-          <div class="text-xs text-ink-gray-7">
+          <div class="text-xs text-ink-gray-5">
             Editing is disabled until you exit this preview.
           </div>
         </div>
@@ -19,7 +19,7 @@
             variant="ghost"
             label="Exit"
             @click="emitter.emit('clear-snapshot')"
-            class="hover:!bg-surface-blue-2 hover:underline"
+            class="hover:!bg-surface-gray-2 hover:underline"
           />
           <Button
             variant="solid"
@@ -206,6 +206,7 @@ const props = defineProps({
 const comments = ref([])
 const settings = computed(() => {
   if (!props.isFrappeDoc) return {}
+  console.log()
   for (let [k, v] of Object.entries(props.settings)) {
     if (v === "global") delete props.settings[k]
   }

@@ -125,7 +125,7 @@ class DriveFile(Document):
         # Condition is so that old file names aren't corrupted
         if not self.manager.flat and not not_in_disk:
             new_path = self.manager.get_disk_path(self)
-            self.manager.move(self.path, new_path)
+            self.manager.move(self.path, str(new_path))
             self.path = new_path
 
         self.save()

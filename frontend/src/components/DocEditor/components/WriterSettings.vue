@@ -13,16 +13,38 @@
       >
         <template #tab-panel>
           <div class="overflow-y-auto ps-1 pt-4">
-            <div class="flex flex-col gap-4 pb-5 pr-5">
-              <Form>
-                <template #default="{ dirty, setDirty }">
+            <Form>
+              <template #default="{ dirty, setDirty, error }">
+                <h3 class="text-sm font-medium text-ink-gray-7 mb-3">
+                  Configuration
+                </h3>
+                <div class="flex flex-col gap-4 pb-5 pr-5">
+                  <FormControl
+                    type="number"
+                    min="1"
+                    label="Versioning Frequency"
+                    :options="[]"
+                    v-model="settings.versioning"
+                    :validate="
+                      (k) =>
+                        k > 1
+                          ? true
+                          : 'Please give a positive whole number for versioning frequency.'
+                    "
+                    :description="`How often to take automated versions for ${
+                      tabIndex === 1 ? 'this document' : 'new documents'
+                    } (minutes).`"
+                  />
+                </div>
+                <h3 class="text-sm font-medium text-ink-gray-7 mb-3">Styles</h3>
+                <div class="flex flex-col gap-4 pb-5 pr-5">
                   <FormControl
                     type="select"
                     label="Font Family"
                     :options="fontOptions"
                     v-model="settings.font_family"
                     :description="`Choose the default font family for ${
-                      tabIndex === 0 ? 'this document' : 'new documents'
+                      tabIndex === 1 ? 'this document' : 'new documents'
                     }.`"
                   />
                   <FormControl
@@ -46,20 +68,28 @@
                     description="Any additional classes to apply."
                     type="textarea"
                   /> -->
-                  <Button
-                    label="Update"
-                    variant="solid"
-                    :disabled="!dirty"
-                    :loading="resource.loading"
-                    @click="
-                      resource.setValue.submit({ [key]: settings }),
-                        setDirty(false)
-                    "
-                    class="mt-4"
-                  />
-                </template>
-              </Form>
-            </div>
+                  <div class="mt-2">
+                    <div
+                      v-if="error"
+                      class="text-xs text-ink-red-4"
+                    >
+                      {{ error }}
+                    </div>
+                    <Button
+                      label="Update"
+                      variant="solid"
+                      class="w-full mt-3"
+                      :disabled="!dirty || error"
+                      :loading="resource.loading"
+                      @click="
+                        resource.setValue.submit({ [key]: settings }),
+                          setDirty(false)
+                      "
+                    />
+                  </div>
+                </div>
+              </template>
+            </Form>
           </div>
         </template>
       </Tabs>
@@ -139,6 +169,8 @@ const globalSettings = useDoc({
   immediate: true,
   transform: (doc) => {
     doc.writer_settings = JSON.parse(doc.writer_settings) || {}
+    console.log(doc.writer_settings)
+    // doc.writer_settings.versioning = JSON.parse(doc.writer_settings.versioning)
     return doc
   },
 })
@@ -149,7 +181,7 @@ const key = computed(() =>
   tabIndex.value === 1 ? "settings" : "writer_settings"
 )
 
-const KEYS = ["font_family", "font_size", "line_height"]
+const KEYS = ["font_family", "font_size", "line_height", "versioning"]
 
 const settings = reactive({})
 

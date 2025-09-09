@@ -30,7 +30,7 @@ export function formatDate(date) {
   if (hourCycle === "en-US") {
     formattedTime = format(dateObj, "hh:mm a", { timeZone })
   } else {
-    formattedTime = format(dateObj, "HH:mm", { timeZone })
+    formattedTime = format(dateObj, "hh:mm a", { timeZone })
   }
   return `${formattedDate}, ${formattedTime}`
 }

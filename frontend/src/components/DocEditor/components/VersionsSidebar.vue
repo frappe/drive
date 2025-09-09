@@ -1,9 +1,11 @@
 <template>
   <div
     v-if="editor"
-    class="self-stretch w-96 border-s-2 h-full overflow-hidden"
+    class="self-stretch w-64 border-e h-full overflow-hidden"
   >
-    <h3 class="px-3 border-b text-large text-ink-gray-9 font-semibold p-3">
+    <h3
+      class="ps-3 p-1.5 flex items-center justify-between text-large border-b text-ink-gray-9 font-semibold mb-1"
+    >
       Versions
       <Button
         :icon="LucideX"
@@ -12,39 +14,32 @@
         @click="clearSnapshot"
       />
     </h3>
-    <div
-      class="flex p-2 flex-col justify-start bg-surface-white h-full overflow-y-auto pb-12"
-    >
-      <Button
-        v-for="(version, i) in versions"
-        variant="ghost"
-        class="!h-12"
-        :class="{ '!bg-surface-gray-4': version.name === current?.name }"
-        @click="renderSnapshot(version, versions[i - 1] || null)"
-        :label="
-          version.title
-            ? formatDate(version.title)
-            : version.snapshot.slice(1, 10)
-        "
-      />
+    <div class="p-3.5 gap-4 flex flex-col">
+      <div
+        v-for="[title, group] in Object.entries(groupedVersions)"
+        class="flex flex-col gap-0.5 justify-start bg-surface-white"
+      >
+        <div class="text-ink-gray-8 text-sm font-medium mb-1">{{ title }}:</div>
+        <Button
+          v-for="(version, i) in group"
+          :variant="version.name === current?.name ? 'solid' : 'ghost'"
+          class="text-start text-sm py-4"
+          @click="renderSnapshot(version, group[i - 1] || null)"
+          :label="
+            version.manual ? version.title : formatDate(version.title).slice(10)
+          "
+        />
+      </div>
     </div>
   </div>
 </template>
 <script setup>
 import * as Y from "yjs"
-import {
-  ySyncPlugin,
-  ySyncPluginKey,
-  yCursorPlugin,
-  yUndoPlugin,
-  undo,
-  redo,
-} from "y-prosemirror"
-import { TiptapTransformer } from "@hocuspocus/transformer"
+import { ySyncPluginKey } from "y-prosemirror"
 import { toUint8Array } from "js-base64"
 import LucideX from "~icons/lucide/x"
-import { ref } from "vue"
 import { formatDate } from "@/utils/format"
+import { computed } from "vue"
 import emitter from "@/emitter"
 
 const props = defineProps({
@@ -54,6 +49,16 @@ const props = defineProps({
 const emit = defineEmits(["saveDocument"])
 const current = defineModel()
 const showVersions = defineModel("showVersions")
+const groupedVersions = computed(() =>
+  props.versions.reduce((acc, version) => {
+    const date = formatDate(version.title).slice(0, 8)
+    if (!acc[date]) {
+      acc[date] = []
+    }
+    acc[date].push(version)
+    return acc
+  }, {})
+)
 
 const renderSnapshot = (version, prevSnapshot) => {
   current.value = version

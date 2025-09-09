@@ -83,13 +83,12 @@ def get_wiki_link(title, team):
 
 
 @frappe.whitelist()
-def create_version(doc, snapshot, manual=0, title=""):
+def create_version(doc, snapshot, manual=0, title="", duration=""):
     doc = frappe.get_doc("Drive Document", doc)
     title = title if title else str(datetime.now())[:16]
 
-    if not manual:
-        if frappe.db.exists({"doctype": "Drive Doc Version", "parent": doc.name, "title": title}):
-            return {}
+    if not manual and duration:
+        last_version = frappe.db.get_value({"doctype": "Drive Doc Version", "parent": doc.name, "title": title}):
 
     doc.append(
         "versions",

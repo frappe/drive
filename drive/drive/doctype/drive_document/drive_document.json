@@ -65,7 +65,7 @@
   ],
   "grid_page_length": 50,
   "links": [],
-  "modified": "2025-09-06 21:06:08.094901",
+  "modified": "2025-09-09 16:24:46.952397",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
@@ -97,6 +97,5 @@
   "row_format": "Dynamic",
   "sort_field": "modified",
   "sort_order": "DESC",
-  "states": [],
-  "track_changes": 1
+  "states": []
 }

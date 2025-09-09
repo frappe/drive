@@ -19,11 +19,12 @@
       >
         <a
           :href="'#' + anchor.id"
-          class="max-w-40 truncate px-2"
+          class="px-2"
+          :title="anchor.textContent"
           @click.prevent="onAnchorClick(anchor.id)"
           :data-item-index="anchor.itemIndex"
         >
-          {{ anchor.textContent }}
+          <span class="max-w-40 w-40 truncate">{{ anchor.textContent }}</span>
         </a>
       </div>
     </div>

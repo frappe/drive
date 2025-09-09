@@ -4,7 +4,7 @@
   "creation": "2025-01-23 12:12:04.979723",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["title", "users", "storage", "quota", "team_domain"],
+  "field_order": ["title", "users", "storage", "quota", "team_domain", "icon"],
   "fields": [
     {
       "fieldname": "title",
@@ -35,11 +35,16 @@
       "fieldname": "team_domain",
       "fieldtype": "Data",
       "label": "Team Domain"
+    },
+    {
+      "fieldname": "icon",
+      "fieldtype": "Data",
+      "label": "Icon"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-08-07 16:42:47.114887",
+  "modified": "2025-09-09 15:19:55.203625",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Team",

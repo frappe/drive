@@ -36,8 +36,8 @@ import { getTeams, LISTS } from "@/resources/files"
 import { dynamicList } from "@/utils/files"
 
 import { useStore } from "vuex"
+import * as icons from "lucide-vue-next"
 import LucideClock from "~icons/lucide/clock"
-import LucideBuilding2 from "~icons/lucide/building-2"
 import LucideUsers from "~icons/lucide/users"
 import LucideTrash from "~icons/lucide/trash"
 import LucideHome from "~icons/lucide/home"
@@ -50,7 +50,15 @@ import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
-import { ref, computed, watch, shallowRef, onMounted, h } from "vue"
+import {
+  ref,
+  computed,
+  watch,
+  shallowRef,
+  onMounted,
+  h,
+  defineAsyncComponent,
+} from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
 import { useRoute, useRouter } from "vue-router"
 
@@ -246,10 +254,14 @@ const sidebarItems = computed(() => {
       collapsible: true,
       items:
         getTeams.data &&
-        Object.values(getTeams.data).map((team, i) => ({
+        Object.values(getTeams.data).map((team) => ({
           label: team.title,
           to: `/t/${team.name}/team`,
-          icon: { 0: LucideBuilding2, 1: LucideContact }[i],
+          icon: h(icons[team.icon || "Building"], {
+            size: 4,
+            color: "currentColor",
+            strokeWidth: "1.5",
+          }),
           isActive: first.label == team.title,
           accessKey: "t",
         })),

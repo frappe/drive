@@ -205,6 +205,15 @@
     v-else
     class="flex w-full h-full overflow-auto"
   >
+    <VersionsSidebar
+      v-if="showVersions"
+      v-model="current"
+      v-model:show-versions="showVersions"
+      :editor="editor?.editor"
+      :versions="entity.versions"
+      @save-document="saveDocument"
+      @save-comment="saveDocument(true)"
+    />
     <TextEditor
       v-if="!isFrappeDoc || docSettings?.doc?.settings"
       ref="editor"
@@ -229,15 +238,7 @@
         }
       "
     />
-    <VersionsSidebar
-      v-if="showVersions"
-      v-model="current"
-      v-model:show-versions="showVersions"
-      :editor="editor?.editor"
-      :versions="entity.versions"
-      @save-document="saveDocument"
-      @save-comment="saveDocument(true)"
-    />
+
     <WriterSettings
       v-if="showSettings"
       v-model="showSettings"
