@@ -34,6 +34,7 @@
             textEditor.editor?.chain?.().focus?.().run?.()
         "
         class="mx-auto cursor-text w-full flex justify-center h-full"
+        :class="current ? 'pb-15' : ''"
       >
         <FTextEditor
           :key="editorExtensions.length"
@@ -146,7 +147,6 @@ import {
   onBeforeUnmount,
   h,
   watch,
-  getCurrentInstance,
   inject,
 } from "vue"
 import store from "@/store"
@@ -204,9 +204,18 @@ const props = defineProps({
   currentVersion: { required: false, type: Object },
 })
 const comments = ref([])
+const writerSettings = useDoc({
+  doctype: "Drive Settings",
+  name: store.state.user.id,
+  immediate: store.state.user.id !== "Guest",
+  transform: (doc) => {
+    doc.settings = JSON.parse(doc.writer_settings)
+    return doc
+  },
+})
+
 const settings = computed(() => {
   if (!props.isFrappeDoc) return {}
-  console.log()
   for (let [k, v] of Object.entries(props.settings)) {
     if (v === "global") delete props.settings[k]
   }
@@ -215,16 +224,34 @@ const settings = computed(() => {
     ...props.settings,
   }
 })
+watch(settings, (val, prev) => {
+  if (val.versioning === prev?.versioning && autoversion) return
+  const duration = Math.max(0.9, +val.versioning - 1) * 1000
+  autoversion = debounce(() => {
+    if (!collab.value) return
+    const snap = Y.snapshot(doc)
+    const prevVersion = props.entity.versions[props.entity.versions.length - 1]
+    const prevSnapshot = prevVersion
+      ? Y.decodeSnapshot(toUint8Array(prevVersion.snapshot))
+      : Y.emptySnapshot
+    if (prevVersion != null) {
+      // account for the action of adding a version to ydoc
+      prevSnapshot.sv.set(
+        prevVersion.clientID,
+        /** @type {number} */ (prevSnapshot.sv.get(prevVersion.clientID)) + 1
+      )
+    }
+    if (!Y.equalSnapshots(prevSnapshot, snap)) {
+      emit("newVersion", Y.encodeSnapshot(snap), +settings.value.versioning)
+    }
+  }, duration)
+})
 
 const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const activeComment = ref(null)
 const anchors = ref([])
 const autosave = debounce(() => emit("saveDocument"), 2000)
-const autoversion = debounce(() => {
-  if (!collab.value) return
-  const snap = Y.encodeSnapshot(Y.snapshot(doc))
-  emit("newVersion", snap)
-}, 1000)
+let autoversion
 
 watch(
   () => props.currentVersion,
@@ -240,16 +267,6 @@ watch(
     )
   }
 )
-
-const writerSettings = useDoc({
-  doctype: "Drive Settings",
-  name: store.state.user.id,
-  immediate: store.state.user.id !== "Guest",
-  transform: (doc) => {
-    doc.settings = JSON.parse(doc.writer_settings)
-    return doc
-  },
-})
 
 const createNewComment = (editor) => {
   showComments.value = true
@@ -327,7 +344,38 @@ const ExtendedCommentExtension = CommentExtension.extend({
 })
 
 const inIframe = inject("inIframe")
+import Paragraph from "@tiptap/extension-paragraph"
+import { toUint8Array } from "js-base64"
 const editorExtensions = [
+  Paragraph.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        ychange: {
+          default: null,
+          renderHTML: (attrs) => {
+            if (!attrs.ychange) return {}
+            console.log(attrs)
+            return {
+              ychange_user: attrs.ychange.user,
+              ychange_type: attrs.ychange.type,
+            }
+          },
+          parseHTML: (element) => {
+            if (element.hasAttribute("ychange_user")) {
+              return {
+                ychange: {
+                  user: element.getAttribute("ychange_user"),
+                  type: element.getAttribute("ychange_type"),
+                },
+              }
+            }
+            return {}
+          },
+        },
+      }
+    },
+  }),
   CharacterCount,
   TableOfContents.configure({
     onUpdate: (val) => (anchors.value = val),
@@ -368,40 +416,15 @@ window.addEventListener("unhandledrejection", (event) => {
     window.location.reload()
 })
 
-// watch(collab, (now, prev) => {
-//   // BREAKS when prev is stored in cache - need to double reload
-//   if (now && prev === false) {
-//     doc = new Y.Doc({ gc: false })
-//     new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
-//     prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
-//       signaling: ["wss://signal.frappe.cloud"],
-//     })
-//     editorExtensions.push(
-//       Collaboration.configure({
-//         document: doc,
-//         field: "default",
-//       }),
-//       CollaborationCursor.configure({
-//         provider: prov,
-//         user: {
-//           name: store.state.user.fullName,
-//           id: store.state.user.id,
-//           avatar: store.state.user.imageURL,
-//           color: getRandomColor(),
-//         },
-//       })
-//     )
-//     editor.value.commands.setContent(rawContent.value)
-//   }
-//   if (!now && prov) {
-//     prov.disconnect()
-//     prov.destroy()
-//     localstorage
-//   }
-// })
-
 if (collab.value) {
   doc = new Y.Doc({ gc: false })
+  const permanentUserData = new Y.PermanentUserData(doc)
+  permanentUserData.setUserMapping(doc, doc.clientID, "Administrator")
+  const colors = [
+    { light: "#ecd44433", dark: "#ecd444" },
+    { light: "#ee635233", dark: "#ee6352" },
+    { light: "#6eeb8333", dark: "#6eeb83" },
+  ]
   localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
@@ -411,8 +434,11 @@ if (collab.value) {
 
   editorExtensions.push(
     Collaboration.configure({
-      document: doc,
-      field: "default",
+      fragment: doc.getXmlFragment("prosemirror", Y.XmlFragment),
+      ySyncOptions: {
+        permanentUserData,
+        colors,
+      },
     }),
     CollaborationCursor.configure({
       provider: prov,
@@ -423,13 +449,6 @@ if (collab.value) {
         color: getRandomColor(),
       },
     })
-  )
-  console.log(
-    Boolean(
-      !collab ||
-        editorExtensions.find((k) => k.name === "collaborationCursor") ||
-        !isFrappeDoc
-    )
   )
 }
 
@@ -610,5 +629,10 @@ function evalImplicitTitle() {
 @import url("./editor.css");
 iframe {
   border: 1px solid var(--surface-gray-4) !important;
+}
+
+.h-full.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
 }
 </style>

@@ -4,7 +4,7 @@
     class="self-stretch w-64 border-e h-full overflow-hidden"
   >
     <h3
-      class="ps-3 p-1.5 flex items-center justify-between text-large border-b text-ink-gray-9 font-semibold mb-1"
+      class="ps-3 p-1.5 flex items-center justify-between text-large border-b text-ink-gray-9 font-medium mb-1"
     >
       Versions
       <Button
@@ -62,19 +62,24 @@ const groupedVersions = computed(() =>
 
 const renderSnapshot = (version, prevSnapshot) => {
   current.value = version
-  props.editor.view.dispatch(
-    props.editor.view.state.tr.setMeta(ySyncPluginKey, {
-      snapshot: Y.decodeSnapshot(toUint8Array(version.snapshot)),
-      prevSnapshot:
-        prevSnapshot == null
-          ? Y.emptySnapshot
-          : Y.decodeSnapshot(toUint8Array(version.snapshot)),
-    })
+  const binding = ySyncPluginKey.getState(props.editor.view.state).binding
+  binding.renderSnapshot(
+    Y.decodeSnapshot(toUint8Array(version.snapshot)),
+    prevSnapshot ? Y.decodeSnapshot(toUint8Array(prevSnapshot.snapshot)) : null
   )
+  // props.editor.view.dispatch(
+  //   props.editor.view.state.tr.setMeta(ySyncPluginKey, {
+  //     snapshot: Y.decodeSnapshot(toUint8Array(version.snapshot)),
+  //     prevSnapshot:
+  //       prevSnapshot == null
+  //         ? Y.emptySnapshot
+  //         : Y.decodeSnapshot(toUint8Array(version.snapshot)),
+  //   })
+  // )
 }
 
 const clearSnapshot = () => {
-  const binding = ySyncPluginKey.getState(props.editor.view.state).binding
+  const binding = ySyncPluginKey.getState(props.editor.view.state)?.binding
   if (binding != null) {
     binding.unrenderSnapshot()
   }
