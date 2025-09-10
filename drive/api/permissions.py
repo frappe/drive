@@ -258,7 +258,7 @@ def auto_delete_expired_perms():
 def user_has_permission(doc, ptype, user=None):
     if not user:
         user = frappe.session.user
-    if user == "Administrator":
+    if user == "Administrator" or ptype == "create":
         return True
     access = get_user_access(doc, user)
     if ptype in access:

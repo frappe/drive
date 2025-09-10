@@ -20,6 +20,7 @@ class DriveTeam(Document):
                 "name": self.name,
                 "doctype": "Drive File",
                 "title": f"Drive - {self.name}",
+                "path": "",
                 "is_group": 1,
                 "team": self.name,
             }

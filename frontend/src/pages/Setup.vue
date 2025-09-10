@@ -142,7 +142,7 @@ const createTeam = createResource({
     }
   },
   onError() {
-    toast("Failed to create team. Please try again.")
+    toast({ title: "Failed to create team. Please try again.", type: "error" })
   },
 })
 
