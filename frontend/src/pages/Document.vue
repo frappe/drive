@@ -6,10 +6,6 @@
     <div class="font-semibold">{{ entity.title }}</div>
     <div class="flex gap-3 items-center text-ink-gray-5 text-xs">
       Edited {{ entity.relativeModified }}
-      <!-- <LucideSquareArrowOutUpRight
-        class="size-3.5 hover:text-ink-gray-7 cursor-pointer"
-        @click="window.open(window.location.href, true)"
-      /> -->
     </div>
   </div>
   <Teleport
@@ -153,6 +149,7 @@
                 {
                   icon: MessagesSquare,
                   label: 'Versions',
+                  cond: docSettings?.doc?.settings.collab,
                   onClick: () => (showVersions = true),
                 },
                 {
@@ -231,10 +228,12 @@
       :show-resolved
       @save-document="saveDocument"
       @new-version="
-        (snap, duration) => {
+        (snap, duration, title) => {
           newVersion.submit({
             snapshot: fromUint8Array(snap),
             duration,
+            title,
+            manual: !!title,
           })
         }
       "
@@ -406,7 +405,7 @@ const newVersion = createResource({
   url: "drive.api.docs.create_version",
   makeParams: (k) => ({ ...k, doc: entity.value.document }),
   onSuccess(data) {
-    if (data.length != entity.value.versions.length)
+    if (data && data.length != entity.value.versions.length)
       entity.value.versions = data
   },
 })

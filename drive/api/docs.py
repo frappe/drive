@@ -97,8 +97,8 @@ def create_version(doc, snapshot, duration, manual=0, title=""):
             prev_time = datetime.strptime(title, "%Y-%m-%d %H:%M")
             now_time = datetime.now()
             diff = now_time - prev_time
-            # if diff < timedelta(minutes=duration):
-            #     return False
+            if diff < timedelta(minutes=duration):
+                return False
             title = datetime.strftime(now_time, "%Y-%m-%d %H:%M")
         else:
             title = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")

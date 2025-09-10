@@ -6,8 +6,11 @@
         class="bg-surface-gray-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
       >
         <div class="flex flex-col gap-1">
-          <div>
-            This is a snapshot of this document from
+          <div v-if="current.manual">
+            <span class="font-medium">{{ current.title }}</span>
+          </div>
+          <div v-else>
+            This is a automatic snapshot of this document from
             {{ formatDate(current.title) }}.
           </div>
           <div class="text-xs text-ink-gray-5">
@@ -93,7 +96,7 @@
         >
           <template #top>
             <TextEditorFixedMenu
-              v-if="editable && !settings.minimal"
+              v-if="editable && !settings.minimal && !current"
               class="w-full overflow-x-auto border-b border-outline-gray-modals justify-center py-1.5 shrink-0"
               :buttons="bubbleMenuButtons"
             />
@@ -252,6 +255,10 @@ const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const activeComment = ref(null)
 const anchors = ref([])
 const autosave = debounce(() => emit("saveDocument"), 2000)
+emitter.on("create-version", (title) => {
+  const snap = Y.snapshot(doc)
+  emit("newVersion", Y.encodeSnapshot(snap), 0, title)
+})
 let autoversion
 
 watch(
@@ -385,38 +392,6 @@ window.addEventListener("unhandledrejection", (event) => {
   if (`${event.reason.stack}`.startsWith("RangeError") && props.collabTurned)
     window.location.reload()
 })
-
-// watch(collab, (now, prev) => {
-//   // BREAKS when prev is stored in cache - need to double reload
-//   if (now && prev === false) {
-//     doc = new Y.Doc({ gc: false })
-//     new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
-//     prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
-//       signaling: ["wss://signal.frappe.cloud"],
-//     })
-//     editorExtensions.push(
-//       Collaboration.configure({
-//         document: doc,
-//         field: "default",
-//       }),
-//       CollaborationCursor.configure({
-//         provider: prov,
-//         user: {
-//           name: store.state.user.fullName,
-//           id: store.state.user.id,
-//           avatar: store.state.user.imageURL,
-//           color: getRandomColor(),
-//         },
-//       })
-//     )
-//     editor.value.commands.setContent(rawContent.value)
-//   }
-//   if (!now && prov) {
-//     prov.disconnect()
-//     prov.destroy()
-//     localstorage
-//   }
-// })
 
 if (collab.value) {
   doc = new Y.Doc({ gc: false })
@@ -633,10 +608,14 @@ function evalImplicitTitle() {
   }
 }
 </script>
-
 <style>
 @import url("./editor.css");
 iframe {
   border: 1px solid var(--surface-gray-4) !important;
+}
+
+.h-full.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
 }
 </style>
