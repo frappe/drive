@@ -399,3 +399,10 @@ def disk_settings(**kwargs):
             # If backend is s3, enable it. Otherwise, disable.
             settings.enabled = 1 if value == "s3" else 0
     settings.save()
+
+
+def after_request(request):
+    if request.path.startswith("/drive/t/"):
+        frappe.local.response_headers["Content-Security-Policy"] = (
+            "frame-ancestors https://*.frappe.cloud 'self'"
+        )

@@ -93,7 +93,6 @@ after_install = "drive.install.after_install"
 # See frappe.core.notifications.get_notification_config
 
 # notification_config = "drive.notifications.get_notification_config"
-
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways
@@ -144,6 +143,7 @@ scheduler_events = {
     "hourly": ["drive.api.permissions.auto_delete_expired_perms"],
 }
 
+after_request = 'drive.api.product.after_request'
 # Testing
 # -------
 
