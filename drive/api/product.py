@@ -404,5 +404,7 @@ def disk_settings(**kwargs):
 def after_request(request):
     if request.path.startswith("/drive/t/"):
         frappe.local.response_headers["Content-Security-Policy"] = (
-            "frame-ancestors https://*.frappe.cloud 'self'"
+            "frame-ancestors https://gameplan.frappe.cloud 'self'"
         )
+        if "X-Frame-Options" in frappe.local.response_headers:
+            del frappe.local.response_headers["X-Frame-Options"]

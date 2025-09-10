@@ -143,7 +143,7 @@ scheduler_events = {
     "hourly": ["drive.api.permissions.auto_delete_expired_perms"],
 }
 
-after_request = 'drive.api.product.after_request'
+after_request = "drive.api.product.after_request"
 # Testing
 # -------
 
