@@ -231,9 +231,10 @@
       :show-resolved
       @save-document="saveDocument"
       @new-version="
-        (snap) => {
+        (snap, duration) => {
           newVersion.submit({
             snapshot: fromUint8Array(snap),
+            duration,
           })
         }
       "
@@ -404,6 +405,10 @@ const updateDocument = createResource({
 const newVersion = createResource({
   url: "drive.api.docs.create_version",
   makeParams: (k) => ({ ...k, doc: entity.value.document }),
+  onSuccess(data) {
+    if (data.length != entity.value.versions.length)
+      entity.value.versions = data
+  },
 })
 
 window.addEventListener("offline", () => {

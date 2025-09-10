@@ -34,6 +34,7 @@
             textEditor.editor?.chain?.().focus?.().run?.()
         "
         class="mx-auto cursor-text w-full flex justify-center h-full"
+        :class="current ? 'pb-15' : ''"
       >
         <FTextEditor
           :key="editorExtensions.length"
@@ -146,7 +147,6 @@ import {
   onBeforeUnmount,
   h,
   watch,
-  getCurrentInstance,
   inject,
 } from "vue"
 import store from "@/store"
@@ -157,6 +157,7 @@ import { CharacterCount } from "./extensions/character-count"
 import { CollaborationCursor } from "./extensions/collaboration-cursor"
 import EmbedExtension from "./extensions/embed-extension"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
+import { toUint8Array } from "js-base64"
 import {
   default as TableOfContents,
   getHierarchicalIndexes,
@@ -204,6 +205,15 @@ const props = defineProps({
   currentVersion: { required: false, type: Object },
 })
 const comments = ref([])
+const writerSettings = useDoc({
+  doctype: "Drive Settings",
+  name: store.state.user.id,
+  immediate: store.state.user.id !== "Guest",
+  transform: (doc) => {
+    doc.settings = JSON.parse(doc.writer_settings)
+    return doc
+  },
+})
 const settings = computed(() => {
   if (!props.isFrappeDoc) return {}
   console.log()
@@ -215,16 +225,34 @@ const settings = computed(() => {
     ...props.settings,
   }
 })
+watch(settings, (val, prev) => {
+  if (val.versioning === prev?.versioning && autoversion) return
+  const duration = Math.max(0.9, +val.versioning - 1) * 1000
+  autoversion = debounce(() => {
+    if (!collab.value) return
+    const snap = Y.snapshot(doc)
+    const prevVersion = props.entity.versions[props.entity.versions.length - 1]
+    const prevSnapshot = prevVersion
+      ? Y.decodeSnapshot(toUint8Array(prevVersion.snapshot))
+      : Y.emptySnapshot
+    if (prevVersion != null) {
+      // account for the action of adding a version to ydoc
+      prevSnapshot.sv.set(
+        prevVersion.clientID,
+        prevSnapshot.sv.get(prevVersion.clientID) + 1
+      )
+    }
+    if (!Y.equalSnapshots(prevSnapshot, snap)) {
+      emit("newVersion", Y.encodeSnapshot(snap), +settings.value.versioning)
+    }
+  }, duration)
+})
 
 const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const activeComment = ref(null)
 const anchors = ref([])
 const autosave = debounce(() => emit("saveDocument"), 2000)
-const autoversion = debounce(() => {
-  if (!collab.value) return
-  const snap = Y.encodeSnapshot(Y.snapshot(doc))
-  emit("newVersion", snap)
-}, 1000)
+let autoversion
 
 watch(
   () => props.currentVersion,
@@ -240,16 +268,6 @@ watch(
     )
   }
 )
-
-const writerSettings = useDoc({
-  doctype: "Drive Settings",
-  name: store.state.user.id,
-  immediate: store.state.user.id !== "Guest",
-  transform: (doc) => {
-    doc.settings = JSON.parse(doc.writer_settings)
-    return doc
-  },
-})
 
 const createNewComment = (editor) => {
   showComments.value = true
@@ -408,11 +426,21 @@ if (collab.value) {
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {
     signaling: ["wss://signal.frappe.cloud"],
   })
-
+  const permanentUserData = new Y.PermanentUserData(doc)
+  permanentUserData.setUserMapping(doc, doc.clientID, store.state.user.id)
+  const colors = [
+    { light: "#ecd44433", dark: "#ecd444" },
+    { light: "#ee635233", dark: "#ee6352" },
+    { light: "#6eeb8333", dark: "#6eeb83" },
+  ]
   editorExtensions.push(
     Collaboration.configure({
       document: doc,
       field: "default",
+      ySyncOptions: {
+        permanentUserData,
+        colors,
+      },
     }),
     CollaborationCursor.configure({
       provider: prov,

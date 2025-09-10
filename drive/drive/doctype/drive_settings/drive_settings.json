@@ -11,10 +11,6 @@
     "single_click",
     "auto_detect_links",
     "writer_section",
-    "font_family",
-    "font_size",
-    "line_height",
-    "custom_css",
     "writer_settings"
   ],
   "fields": [
@@ -49,30 +45,7 @@
       "label": "Writer"
     },
     {
-      "fieldname": "custom_css",
-      "fieldtype": "Data",
-      "label": "Custom CSS"
-    },
-    {
-      "default": "15",
-      "fieldname": "font_size",
-      "fieldtype": "Int",
-      "label": "Font Size"
-    },
-    {
-      "default": "1.5",
-      "fieldname": "line_height",
-      "fieldtype": "Data",
-      "label": "Line Height"
-    },
-    {
-      "default": "inter",
-      "fieldname": "font_family",
-      "fieldtype": "Data",
-      "label": "Font Family"
-    },
-    {
-      "default": "{\"font_family\":\"inter\",\"font_size\":\"17\",\"line_height\":\"1.5\", \"custom_css\": \"\"}",
+      "default": "{\"font_family\":\"inter\",\"font_size\":\"17\",\"line_height\":\"1.5\", \"versioning\": 10}",
       "fieldname": "writer_settings",
       "fieldtype": "JSON",
       "label": "Writer Settings"
@@ -81,7 +54,7 @@
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-09-04 17:59:24.948818",
+  "modified": "2025-09-10 14:13:22.423045",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",

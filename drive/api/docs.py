@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import frappe
 from frappe.rate_limiter import rate_limit
@@ -83,13 +83,27 @@ def get_wiki_link(title, team):
 
 
 @frappe.whitelist()
-def create_version(doc, snapshot, manual=0, title="", duration=""):
+def create_version(doc, snapshot, duration, manual=0, title=""):
+    if not manual:
+        versions = frappe.get_list(
+            "Drive Doc Version",
+            filters={"parent": doc, "manual": 0},
+            fields=["*"],
+            order_by="idx desc",
+            limit_page_length=1,
+        )
+        if versions:
+            title = frappe.get_doc("Drive Doc Version", versions[0].name).title
+            prev_time = datetime.strptime(title, "%Y-%m-%d %H:%M")
+            now_time = datetime.now()
+            diff = now_time - prev_time
+            # if diff < timedelta(minutes=duration):
+            #     return False
+            title = datetime.strftime(now_time, "%Y-%m-%d %H:%M")
+        else:
+            title = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+
     doc = frappe.get_doc("Drive Document", doc)
-    title = title if title else str(datetime.now())[:16]
-
-    if not manual and duration:
-        last_version = frappe.db.get_value({"doctype": "Drive Doc Version", "parent": doc.name, "title": title}):
-
     doc.append(
         "versions",
         {
@@ -98,5 +112,17 @@ def create_version(doc, snapshot, manual=0, title="", duration=""):
             "title": title,
         },
     )
-    doc.save()
-    return doc
+    try:
+        doc.save()
+    except frappe.QueryDeadlockError:
+        doc = frappe.get_doc("Drive Document", doc.name)
+        doc.append(
+            "versions",
+            {
+                "snapshot": snapshot,
+                "manual": int(manual),
+                "title": title,
+            },
+        )
+        doc.save()
+    return doc.versions

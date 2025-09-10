@@ -4,7 +4,7 @@
     class="self-stretch w-64 border-e h-full overflow-hidden"
   >
     <h3
-      class="ps-3 p-1.5 flex items-center justify-between text-large border-b text-ink-gray-9 font-semibold mb-1"
+      class="ps-3 p-1.5 flex items-center justify-between text-large border-b text-ink-gray-9 font-medium mb-1"
     >
       Versions
       <Button
@@ -14,7 +14,7 @@
         @click="clearSnapshot"
       />
     </h3>
-    <div class="p-3.5 gap-4 flex flex-col">
+    <div class="p-3.5 gap-4 flex flex-col h-full overflow-y-auto">
       <div
         v-for="[title, group] in Object.entries(groupedVersions)"
         class="flex flex-col gap-0.5 justify-start bg-surface-white"
@@ -74,7 +74,7 @@ const renderSnapshot = (version, prevSnapshot) => {
 }
 
 const clearSnapshot = () => {
-  const binding = ySyncPluginKey.getState(props.editor.view.state).binding
+  const binding = ySyncPluginKey.getState(props.editor.view.state)?.binding
   if (binding != null) {
     binding.unrenderSnapshot()
   }
