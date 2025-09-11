@@ -36,7 +36,7 @@ import { getTeams, LISTS } from "@/resources/files"
 import { dynamicList } from "@/utils/files"
 
 import { useStore } from "vuex"
-import * as icons from "lucide-vue-next"
+import icons from "@/utils/icons"
 import LucideClock from "~icons/lucide/clock"
 import LucideUsers from "~icons/lucide/users"
 import LucideTrash from "~icons/lucide/trash"
@@ -76,9 +76,7 @@ apps.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
 watch(isCollapsed, (v) => store.commit("setSidebarCollapsed", v))
-const team = computed(
-  () => route.params.team || localStorage.getItem("recentTeam")
-)
+const team = computed(() => route.params.team)
 
 const showSettings = ref(false)
 const showShortcuts = ref(false)
@@ -200,7 +198,10 @@ function logout() {
 
 const sidebarItems = computed(() => {
   const first = store.state.breadcrumbs[0]
-  return [
+  const teamId = route.params.team
+  const isTeamActive = (name) => name === teamId
+
+  return dynamicList([
     {
       items: [
         {
@@ -251,18 +252,15 @@ const sidebarItems = computed(() => {
     },
     {
       label: "Teams",
+      cond: getTeams.data && Object.keys(getTeams.data).length > 1,
       collapsible: true,
       items:
         getTeams.data &&
         Object.values(getTeams.data).map((team) => ({
           label: team.title,
           to: `/t/${team.name}/team`,
-          icon: h(icons[team.icon || "Building"], {
-            size: 4,
-            color: "currentColor",
-            strokeWidth: "1.5",
-          }),
-          isActive: first.label == team.title,
+          icon: h(icons[team.icon || "building"]),
+          isActive: isTeamActive(team.name),
           accessKey: "t",
         })),
     },
@@ -293,6 +291,6 @@ const sidebarItems = computed(() => {
         },
       ]),
     },
-  ]
+  ])
 })
 </script>

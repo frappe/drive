@@ -147,7 +147,7 @@
               hideLabel: true,
               items: dynamicList([
                 {
-                  icon: MessagesSquare,
+                  icon: LucideHistory,
                   label: 'Versions',
                   cond: docSettings?.doc?.settings.collab,
                   onClick: () => (showVersions = true),
@@ -276,6 +276,7 @@ import LucideUserPen from "~icons/lucide/user-pen"
 import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import LucideSettings from "~icons/lucide/settings"
+import LucideHistory from "~icons/lucide/history"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
 import LucideLock from "~icons/lucide/lock"

@@ -20,6 +20,7 @@ from drive.api.storage import storage_bar_data
 from drive.utils import (
 	create_drive_file,
 	extract_mentions,
+	get_default_team,
 	get_file_type,
 	get_home_folder,
 	if_folder_exists,
@@ -45,7 +46,7 @@ def upload_embed(is_private, folder):
 
 @frappe.whitelist(allow_guest=True)
 def upload_file(
-    team,
+    team=None,
     total_file_size=0,
     last_modified=None,
     personal=None,
@@ -64,6 +65,9 @@ def upload_file(
     :raises ValueError: If the size of the stored file does not match the specified filesize
     :return: DriveEntity doc once the entire file has been uploaded
     """
+    if not team:
+        team = get_default_team()
+    print(team)
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
     if not user_has_permission(parent, "upload"):

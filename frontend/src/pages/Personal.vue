@@ -18,8 +18,5 @@ import { useStore } from "vuex"
 import LucideHome from "~icons/lucide/home"
 
 const store = useStore()
-const props = defineProps({
-  team: String,
-})
-store.commit("setCurrentFolder", { name: "", team: props.team })
+store.commit("setCurrentFolder", { name: "", team: "" })
 </script>

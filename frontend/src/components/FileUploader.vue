@@ -127,7 +127,7 @@ onMounted(() => {
     addRemoveLinks: true,
     accept: function (file, done) {
       if (route.name === "Home") file.personal = 1
-      file.team = store.state.currentFolder.team
+      file.team = store.state.currentFolder.team || ""
       if (file.size == 0) {
         done("Empty files will not be uploaded.")
       } else {

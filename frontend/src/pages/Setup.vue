@@ -107,9 +107,9 @@
 import { createResource, FormControl } from "frappe-ui"
 import { ref, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
-import { toast } from "@/utils/toasts"
 import { useStore } from "vuex"
 import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
+import { createTeam } from "@/resources/permissions"
 
 const store = useStore()
 const team_name = ref(null)
@@ -122,29 +122,23 @@ const domainTeams = createResource({
     domain: email.value.split("@").slice(-1)[0],
   },
   onSuccess(data) {
-    if (data === false) {
-      createTeam.submit()
-    }
+    if (data === false)
+      createTeam.submit(
+        { personal: 1 },
+        {
+          onSuccess,
+        }
+      )
   },
 })
 
-const createTeam = createResource({
-  url: "drive.api.product.create_team",
-  makeParams: () => ({
-    team_name: team_name.value,
-    user: email.value,
-  }),
-  onSuccess: (data) => {
-    if (data) {
-      window.location.replace("/drive/t/" + data)
-    } else {
-      window.location.reload()
-    }
-  },
-  onError() {
-    toast({ title: "Failed to create team. Please try again.", type: "error" })
-  },
-})
+const onSuccess = (data) => {
+  if (data) {
+    window.location.replace("/drive/t/" + data)
+  } else {
+    window.location.reload()
+  }
+}
 
 const requestInvite = createResource({
   url: "drive.api.product.request_invite",

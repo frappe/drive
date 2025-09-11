@@ -105,23 +105,22 @@ def get_access_level(team):
 
 
 @frappe.whitelist()
-def get_teams(user=None, details=None):
+def get_teams(user=None, details=None, exclude_personal=True):
     """
     Returns all the teams that the current user is part of.
     """
     if not user:
         user = frappe.session.user
+
     teams = frappe.get_all(
         "Drive Team Member",
         pluck="parent",
-        filters=[
-            ["parenttype", "=", "Drive Team"],
-            ["user", "=", user],
-        ],
+        filters=[["parenttype", "=", "Drive Team"], ["user", "=", user]],
     )
     if details:
-        return {team: frappe.get_doc("Drive Team", team) for team in teams}
-
+        teams_info = {team: frappe.get_doc("Drive Team", team) for team in teams}
+        if exclude_personal:
+            return {t: team for t, team in teams_info.items() if not team.personal}
     return teams
 
 

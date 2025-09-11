@@ -4,7 +4,7 @@ import frappe
 from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
-from drive.utils import MIME_LIST_MAP, get_file_type, get_home_folder
+from drive.utils import MIME_LIST_MAP, get_default_team, get_file_type, get_home_folder
 
 from .permissions import ENTITY_FIELDS, get_user_access
 
@@ -23,7 +23,7 @@ Binary = CustomFunction("BINARY", ["expression"])
 
 @frappe.whitelist(allow_guest=True)
 def files(
-    team,
+    team=None,
     entity_name=None,
     order_by="modified 1",
     is_active=1,
@@ -38,6 +38,9 @@ def files(
     only_parent=1,
     search=None,
 ):
+    if not team:
+        team = get_default_team()
+    print(team)
     home = get_home_folder(team)["name"]
     field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)

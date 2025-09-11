@@ -1,10 +1,11 @@
-import { createResource } from "frappe-ui"
+import { createResource, useList } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import { openEntity, setTitle } from "@/utils/files"
 import store from "@/store"
 import router from "@/router"
 import { prettyData, setCache } from "@/utils/files"
 import { updateURLSlug } from "@/utils/files"
+import { computed } from "vue"
 
 // GETTERS
 export const COMMON_OPTIONS = {
@@ -24,7 +25,7 @@ export const COMMON_OPTIONS = {
   },
 }
 
-export const getHome = createResource({
+export const getTeam = createResource({
   ...COMMON_OPTIONS,
   url: "drive.api.list.files",
   makeParams: (params) => {
@@ -33,7 +34,7 @@ export const getHome = createResource({
       personal: 0,
     }
   },
-  cache: "home-folder-contents",
+  cache: "team-folder-contents",
 })
 
 export const getTeams = createResource({
@@ -120,7 +121,7 @@ export const getTrash = createResource({
 // SETTERS
 export const LISTS = [
   getPersonal,
-  getHome,
+  getTeam,
   getRecents,
   getShared,
   getFavourites,
@@ -164,7 +165,7 @@ export const updateMoved = (team, new_parent, special) => {
         : {}
     )
   } else {
-    ;(move.params.is_private ? getPersonal : getHome).fetch({ team })
+    ;(move.params.is_private ? getPersonal : getTeam).fetch({ team })
   }
 }
 
@@ -342,7 +343,7 @@ export const translate = createResource({
   cache: "translate",
 })
 
-setCache(getHome, "home-folder-contents")
+setCache(getTeam, "home-folder-contents")
 setCache(getShared, "shared-folder-contents")
 setCache(getRecents, "recents-folder-contents")
 setCache(getFavourites, "favourite-folder-contents")

@@ -18,38 +18,43 @@ def get_domain_teams(domain):
     if domain in CORPORATE_DOMAINS or not domain:
         return False
     return False
-    # return (
-    #     frappe.db.get_all(
-    #         "Drive Team", filters={"team_domain": ["like", "%" + domain]}, fields=["name", "title"]
-    #     )
-    #     or False
-    # )
 
 
 @frappe.whitelist()
-def create_team(user, team_name=None):
+def create_team(user, team_name=None, icon=None, personal=0):
     """
     Used for creating teams, personal or not.
     """
-    team_name = team_name if team_name else "Your Drive"
-
-    domain = user.split("@")[-1] if team_name else ""
-    exists = frappe.db.exists("Drive Team", {"team_domain": domain}) or frappe.db.exists(
-        "Drive Team", {"title": team_name, "owner": user}
-    )
+    team_name = team_name if team_name else "Home"
+    exists = frappe.db.exists("Drive Team", {"title": team_name, "owner": user})
     if exists:
-        return exists
+        raise ValueError("There already exists a team with this title:", exists)
 
     team = frappe.get_doc(
-        {
-            "doctype": "Drive Team",
-            "title": team_name,
-            "team_domain": domain,
-        }
-    ).insert(ignore_permissions=True)
-    team.append("users", {"user": user, "access_level": 2})
+        {"doctype": "Drive Team", "title": team_name, "icon": icon, "personal": personal}
+    ).insert()
     team.save()
     return team.name
+
+
+@frappe.whitelist()
+def edit_team(team, icon, team_name):
+    team = frappe.get_doc("Drive Team", team)
+    if team_name:
+        team.title = team_name
+    if icon is not None:
+        team.icon = icon
+    team.save()
+    return team.name
+
+
+@frappe.whitelist()
+def leave_team(team):
+    drive_team = {k.user: k for k in frappe.get_doc("Drive Team", team).users}
+    if frappe.session.user not in drive_team:
+        frappe.throw("User doesn't belong to team")
+
+    frappe.delete_doc("Drive Team Member", drive_team[frappe.session.user].name)
 
 
 @frappe.whitelist()
@@ -63,11 +68,11 @@ def request_invite(team, email=None):
 
 
 @frappe.whitelist()
-def get_invites(email):
+def get_invites():
     invites = frappe.db.get_list(
         "Drive User Invitation",
         fields=["creation", "status", "team", "name"],
-        filters={"email": email, "status": ("in", ("Proposed", "Pending"))},
+        filters={"email": frappe.session.user, "status": ("in", ("Proposed", "Pending"))},
     )
     for i in invites:
         i["team_name"] = frappe.db.get_value("Drive Team", i["team"], "title")
@@ -78,7 +83,7 @@ def get_invites(email):
 def get_team_invites(team):
     invites = frappe.db.get_list(
         "Drive User Invitation",
-        fields=["creation", "status", "email", "name"],
+        fields=["creation", "status", "email", "name", "owner"],
         filters={"team": team, "status": ("in", ("Proposed", "Pending"))},
     )
     for i in invites:

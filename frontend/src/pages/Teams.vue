@@ -106,7 +106,15 @@
                     class="my-auto"
                     variant="outline"
                     @click="
-                      acceptInvite.submit({ key: invite.name, redirect: 0 })
+                      acceptInvite.submit(
+                        { key: invite.name },
+                        {
+                          onSuccess: (data) => {
+                            if (data) window.location.replace(data)
+                            else toast('Added to the team')
+                          },
+                        }
+                      )
                     "
                   >
                     <LucideCheck class="size-4" />
@@ -130,10 +138,8 @@ import { computed, watch } from "vue"
 import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
 import { useRouter } from "vue-router"
 
-const store = useStore()
 const router = useRouter()
-const email = computed(() => store.state.user.id)
-getInvites.fetch({ email: email.value })
+getInvites.fetch()
 
 watch(
   [getInvites, getTeams],
