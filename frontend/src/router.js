@@ -20,27 +20,10 @@ async function setRootBreadCrumb(to) {
 const routes = [
   {
     path: "/",
-    name: "Base",
-    component: () => null,
-    beforeEnter: async () => {
-      if (!store.getters.isLoggedIn) return "/login"
-      const settings = createResource({
-        url: "/api/method/drive.api.product.get_settings",
-        method: "GET",
-        cache: "settings",
-      })
-      if (!settings.fetched) await settings.fetch()
-      return settings.data.default_team
-        ? "/t/" + settings.data.default_team
-        : "/teams"
-    },
-  },
-  {
-    path: "/:team/",
-    redirect: (to) => ({
-      name: "Home",
-      team: to.params.team,
-    }),
+    name: "Home",
+    component: () => import("@/pages/Personal.vue"),
+    beforeEnter: [setRootBreadCrumb],
+    props: true,
   },
   {
     path: "/f/:entityName/",
@@ -62,13 +45,13 @@ const routes = [
       }
     },
   },
-  {
-    path: "/t/:team/",
-    name: "Home",
-    component: () => import("@/pages/Personal.vue"),
-    beforeEnter: [setRootBreadCrumb],
-    props: true,
-  },
+  // {
+  //   path: "/t/:team/",
+  //   name: "Home",
+  //   component: () => import("@/pages/Personal.vue"),
+  //   beforeEnter: [setRootBreadCrumb],
+  //   props: true,
+  // },
   {
     path: "/t/:team/inbox",
     name: "Inbox",
@@ -77,7 +60,7 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/team",
+    path: "/t/:team/",
     name: "Team",
     component: () => import("@/pages/Team.vue"),
     beforeEnter: [setRootBreadCrumb],

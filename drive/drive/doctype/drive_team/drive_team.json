@@ -4,7 +4,15 @@
   "creation": "2025-01-23 12:12:04.979723",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["title", "users", "storage", "quota", "team_domain", "icon"],
+  "field_order": [
+    "title",
+    "users",
+    "storage",
+    "quota",
+    "team_domain",
+    "icon",
+    "personal"
+  ],
   "fields": [
     {
       "fieldname": "title",
@@ -40,11 +48,17 @@
       "fieldname": "icon",
       "fieldtype": "Data",
       "label": "Icon"
+    },
+    {
+      "default": "0",
+      "fieldname": "personal",
+      "fieldtype": "Check",
+      "label": "Personal"
     }
   ],
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-09-09 15:19:55.203625",
+  "modified": "2025-09-11 17:40:32.062994",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Team",
@@ -64,6 +78,7 @@
       "write": 1
     },
     {
+      "create": 1,
       "email": 1,
       "export": 1,
       "print": 1,

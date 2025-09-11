@@ -1,6 +1,6 @@
 <template>
   <GenericPage
-    :get-entities="getHome"
+    :get-entities="getTeam"
     :icon="LucideBuilding2"
     primary-message="Team is empty"
     secondary-message="Add files by dropping them here."
@@ -14,7 +14,7 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { getHome, getTeams } from "@/resources/files"
+import { getTeam, getTeams } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"

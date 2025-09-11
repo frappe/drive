@@ -1,20 +1,112 @@
 <template>
   <div class="flex items-center mb-4">
     <h1 class="font-semibold text-ink-gray-9">
-      {{ __("Users") }}
+      {{ __("Teams") }}
     </h1>
     <Button
-      v-if="isAdmin?.data"
       variant="solid"
-      icon-left="plus"
+      icon="plus"
       class="ml-auto mr-4"
-      @click="showInvite = true"
+      @click="showAddTeam = true"
     >
-      {{ __("Invite") }}
+      {{ __("New team") }}
     </Button>
   </div>
+  <Alert
+    v-if="invite"
+    type="info"
+    :icon="LucideMail"
+    class="mb-4"
+  >
+    <template #actions>
+      <Button
+        :variant="invite.status === 'Pending' ? 'ghost' : 'outline'"
+        class="my-auto"
+        @click="
+          rejectInvite.submit({ key: invite.name }),
+            getInvites.data.splice(index, 1)
+        "
+      >
+        <LucideX
+          v-if="invite.status === 'Pending'"
+          class="size-4"
+        />
+        <LucideTrash
+          v-else
+          class="size-4"
+        />
+      </Button>
 
+      <Button
+        v-if="invite.status === 'Pending'"
+        class="my-auto"
+        variant="outline"
+        @click="
+          acceptInvite.submit(
+            { key: invite.name, redirect: 0 },
+            {
+              onSuccess: () => {
+                getTeams.fetch()
+                getInvites.fetch()
+              },
+            }
+          )
+        "
+      >
+        <LucideCheck class="size-4" />
+      </Button>
+    </template>
+    <div class="py-1 flex justify-between">
+      <div>
+        You have an invite to join
+        <span class="font-medium">{{ invite.team_name }}</span
+        >.
+      </div>
+    </div>
+  </Alert>
+  <div
+    class="flex gap-2 mb-2"
+    v-if="team"
+  >
+    <Combobox
+      :options="
+        Object.values(getTeams.data).map((k) => ({
+          label: k.title,
+          value: k.name,
+          icon: icons[k.icon || 'building'],
+        }))
+      "
+      v-model="team"
+    />
+    <Dropdown
+      :button="{
+        variant: 'ghost',
+        icon: LucideMoreVertical,
+      }"
+      :options="
+        dynamicList([
+          {
+            label: 'Invite',
+            icon: LucideMail,
+            onClick: () => (showInvite = true),
+            cond: isAdmin.data,
+          },
+          {
+            label: 'Edit',
+            icon: LucidePencil,
+            onClick: () => (showEditTeam = true),
+          },
+          {
+            label: 'Leave',
+            icon: LucideLogOut,
+            onClick: () => leaveTeam.submit({ team }),
+          },
+        ])
+      "
+    />
+  </div>
   <Tabs
+    v-if="team"
     :tabs
     v-model="tabIndex"
   >
@@ -111,9 +203,14 @@
           />
           <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
             <div class="flex justify-between w-full">
-              <span class="text-base my-auto text-ink-gray-8">{{
-                invite.email
-              }}</span>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-base my-auto text-ink-gray-8">{{
+                  invite.email
+                }}</span>
+                <span class="text-xs text-ink-gray-5"
+                  >Invited by <UserTooltip :email="invite.owner" />
+                </span>
+              </div>
               <div class="flex">
                 <Tooltip
                   :text="
@@ -155,6 +252,7 @@
                   <Button
                     v-if="invite.status === 'Proposed'"
                     class="my-auto"
+                    :loading="acceptInvite.loading"
                     variant="outline"
                     @click="
                       acceptInvite.submit({ key: invite.name, redirect: 0 }),
@@ -170,11 +268,19 @@
       ></template>
     </template>
   </Tabs>
+  <div>
+    <div
+      v-if="!team"
+      class="text-center text-p-sm py-4"
+    >
+      No teams yet. Create one to get started.
+    </div>
+  </div>
 
   <Dialog
     v-model="showInvite"
     :options="{
-      title: 'Invite people to ' + getTeams.data[team].title,
+      title: 'Invite people to ' + teamData.title,
       size: 'lg',
       actions: [
         {
@@ -254,12 +360,129 @@
       ],
     }"
   />
+  <Dialog
+    v-model="showAddTeam"
+    :options="{ title: __('New Team'), size: 'sm' }"
+  >
+    <template #body-content>
+      <div class="flex flex-col gap-2">
+        <FormControl
+          required
+          :label="__('Name')"
+          type="input"
+          v-model="teamName"
+        />
+        <div>
+          <FormLabel
+            :label="__('Icon')"
+            class="mb-1"
+          />
+          <Combobox
+            :options="
+              Object.keys(icons).map((k) => ({
+                label: k
+                  .split('-')
+                  .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
+                  .join(' '),
+                value: k,
+                icon: icons[k],
+              }))
+            "
+            v-model="selectedIcon"
+          />
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <Button
+        :disabled="!teamName.trim().length"
+        variant="solid"
+        @click="
+          createTeam.submit(
+            { team_name: teamName, icon: selectedIcon },
+            {
+              onSuccess: () => {
+                showAddTeam = false
+                teamName = ''
+                selectedIcon = ''
+                getTeams.fetch()
+              },
+            }
+          )
+        "
+      >
+        {{ __("Add") }}
+      </Button>
+    </template>
+  </Dialog>
+  <Dialog
+    v-model="showEditTeam"
+    :options="{ title: __('Edit ' + teamData.title), size: 'sm' }"
+  >
+    <template #body-content>
+      <div class="flex flex-col gap-2">
+        <FormControl
+          required
+          :label="__('Name')"
+          type="input"
+          v-model="teamName"
+        />
+        <div>
+          <FormLabel
+            :label="__('Icon')"
+            class="mb-1"
+          />
+          <Combobox
+            :options="
+              Object.keys(icons).map((k) => ({
+                label: k
+                  .split('-')
+                  .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
+                  .join(' '),
+                value: k,
+                icon: icons[k],
+              }))
+            "
+            v-model="selectedIcon"
+          />
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <Button
+        :disabled="!teamName.trim().length"
+        variant="solid"
+        class="w-full"
+        @click="
+          editTeam.submit(
+            { team, team_name: teamName, icon: selectedIcon },
+            {
+              onSuccess: () => {
+                showEditTeam = false
+                teamName = ''
+                selectedIcon = ''
+                getTeams.fetch()
+              },
+            }
+          )
+        "
+      >
+        {{ __("Edit") }}
+      </Button>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
-import { h } from "vue"
+import { h, computed } from "vue"
 import { getTeams } from "@/resources/files"
-import { rejectInvite, acceptInvite } from "@/resources/permissions"
+import icons from "@/utils/icons"
+import {
+  getInvites,
+  rejectInvite,
+  acceptInvite,
+  createTeam,
+} from "@/resources/permissions"
 import {
   Avatar,
   Dropdown,
@@ -268,25 +491,68 @@ import {
   Tabs,
   Tooltip,
   createResource,
+  FormControl,
+  Combobox,
+  FormLabel,
 } from "frappe-ui"
 import { allUsers } from "@/resources/permissions"
-import { ref, computed } from "vue"
+import { ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
 import LucideMail from "~icons/lucide/mail"
 import LucideUsers from "~icons/lucide/users"
+import LucideMoreVertical from "~icons/lucide/more-vertical"
+import LucideLogOut from "~icons/lucide/log-out"
+import LucidePencil from "~icons/lucide/pencil"
+import router from "@/router"
+import Alert from "@/components/Alert.vue"
+import UserTooltip from "@/components/UserTooltip.vue"
+import { dynamicList } from "../../utils/files"
 
 const route = useRoute()
-const team = computed(
-  () => route.params.team || localStorage.getItem("recentTeam")
-)
-
 const tabIndex = ref(0)
+getTeams.fetch()
+const team = ref(
+  route.params.team || getTeams.data ? Object.keys(getTeams.data)[0] : null
+)
+const teamData = computed(() => getTeams.data?.[team.value] || {})
+watch(
+  team,
+  (team) => {
+    allUsers.fetch({ team })
+    tabIndex.value = 0
+  },
+  { immediate: true }
+)
 const selectedUser = ref(null)
 const invited = ref("")
 const emailInput = ref("")
 const showInvite = ref(false)
 const showRemove = ref(false)
+
+// New team
+const showAddTeam = ref(false)
+const showEditTeam = ref(false)
+const teamName = ref("")
+const selectedIcon = ref("")
+watch(showEditTeam, (val) => {
+  if (val) {
+    teamName.value = teamData.value.title
+    selectedIcon.value = teamData.value.icon
+  }
+})
+const editTeam = createResource({
+  url: "drive.api.product.edit_team",
+})
+const leaveTeam = createResource({
+  url: "drive.api.product.leave_team",
+  onSuccess: () => {
+    getTeams.fetch()
+    team.value = getTeams.data ? Object.keys(getTeams.data)[0] : null
+    router.push({ name: "Team", params: { team: team.value } })
+    toast("You have left the team.")
+  },
+})
 
 const tabs = [
   {
@@ -336,7 +602,7 @@ const accessOptions = [
       ),
   },
 ]
-allUsers.fetch({ team: team.value })
+
 function emailTest() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailInput.value
@@ -370,6 +636,10 @@ const invites = createResource({
   auto: true,
   params: { team: team.value },
 })
+getInvites.fetch()
+const invite = computed(() =>
+  getInvites.data?.length ? getInvites.data[0] : null
+)
 
 const removeUser = createResource({
   url: "drive.api.product.remove_user",

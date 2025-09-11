@@ -124,7 +124,7 @@ const store = useStore()
 const dialog = ref("")
 provide("dialog", dialog)
 
-const team = route.params.team || localStorage.getItem("recentTeam")
+const team = computed(() => route.params.team)
 const activeEntity = computed(() => store.state.activeEntity)
 
 const sortId = computed(
@@ -189,10 +189,11 @@ watchEffect(() => {
 })
 
 const refreshData = () => {
-  const params = { team }
+  const params = team.value ? { team: team.value } : {}
   if (sortOrder.value)
     params.order_by =
       sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
+  console.log(params.team)
   props.getEntities.fetch(params)
 }
 
@@ -206,9 +207,9 @@ watch(
 )
 emitter.on("refresh", refreshData)
 
-if (team && !allUsers.fetched && store.getters.isLoggedIn) {
-  allUsers.fetch({ team })
-  if (!allFolders.fetched) allFolders.fetch({ team })
+if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
+  allUsers.fetch({ team: team.value })
+  if (!allFolders.fetched) allFolders.fetch({ team: team.value })
 }
 if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 
@@ -253,13 +254,13 @@ const actionItems = computed(() => {
       {
         label: __("Preview"),
         icon: LucideEye,
-        action: ([entity]) => openEntity(team, entity),
+        action: ([entity]) => openEntity(team.value, entity),
         isEnabled: (e) => !e.is_link,
       },
       {
         label: __("Open"),
         icon: LucideExternalLink,
-        action: ([entity]) => openEntity(team, entity),
+        action: ([entity]) => openEntity(team.value, entity),
         isEnabled: (e) => e.is_link,
       },
       { divider: true },
@@ -274,7 +275,7 @@ const actionItems = computed(() => {
         label: __("Download"),
         icon: LucideDownload,
         isEnabled: (e) => !e.is_link && e.mime_type !== "frappe/slides",
-        action: (entities) => entitiesDownload(team, entities),
+        action: (entities) => entitiesDownload(team.value, entities),
         multi: true,
         important: true,
       },

@@ -80,7 +80,7 @@ let tabs = [
     component: markRaw(ProfileSettings),
   },
   {
-    label: "Users",
+    label: "Teams",
     icon: LucideUserPlus,
     component: markRaw(UserListSettings),
   },

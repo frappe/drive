@@ -1,5 +1,6 @@
 import { createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
+import store from "@/store"
 
 export const getUsersWithAccess = createResource({
   url: "drive.api.permissions.get_shared_with_list",
@@ -57,10 +58,6 @@ export const getInvites = createResource({
 
 export const acceptInvite = createResource({
   url: "drive.api.product.accept_invite",
-  onSuccess: (data) => {
-    if (data) window.location.replace(data)
-    else toast("Added to the team")
-  },
 })
 
 export const rejectInvite = createResource({
@@ -102,4 +99,21 @@ export const diskSettings = createResource({
   url: "drive.api.product.disk_settings",
   method: "GET",
   cache: "disk-settings",
+})
+
+export const createTeam = createResource({
+  url: "drive.api.product.create_team",
+  makeParams: (params) => ({
+    ...params,
+    user: store.state.user.id,
+  }),
+  onError() {
+    toast({ title: "Failed to create team. Please try again.", type: "error" })
+  },
+})
+
+export const getHome = createResource({
+  url: "drive.api.files.get_personal_team",
+  method: "GET",
+  cache: "home",
 })
