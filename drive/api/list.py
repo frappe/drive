@@ -40,7 +40,7 @@ def files(
 ):
     if not team:
         team = get_default_team()
-    print(team)
+
     home = get_home_folder(team)["name"]
     field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)

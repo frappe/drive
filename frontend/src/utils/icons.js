@@ -9,6 +9,7 @@ import CornerUpRight from "~icons/lucide/corner-up-right"
 import ZapOff from "~icons/lucide/zap-off"
 import BarChart2 from "~icons/lucide/bar-chart-2"
 import Home from "~icons/lucide/home"
+import Contact from "~icons/lucide/contact"
 import Coffee from "~icons/lucide/coffee"
 import GitBranch from "~icons/lucide/git-branch"
 import TrendingUp from "~icons/lucide/trending-up"
@@ -698,6 +699,7 @@ const icons = {
   "volume-x": VolumeX,
   list: List,
   building: Building,
+  contact: Contact,
 }
 
 export default icons

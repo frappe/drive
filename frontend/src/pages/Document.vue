@@ -293,7 +293,6 @@ const TextEditor = defineAsyncComponent(() =>
 
 const props = defineProps({
   entityName: String,
-  team: String,
   slug: String,
 })
 
@@ -421,8 +420,6 @@ window.addEventListener("offline", () => {
 window.addEventListener("online", () => {
   toast({ title: "Back online!", icon: h(LucideWifi) })
 })
-
-allUsers.fetch({ team: route.params.team })
 
 onBeforeUnmount(() => {
   if (edited.value) saveDocument()

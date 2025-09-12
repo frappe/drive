@@ -50,15 +50,7 @@ import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
-import {
-  ref,
-  computed,
-  watch,
-  shallowRef,
-  onMounted,
-  h,
-  defineAsyncComponent,
-} from "vue"
+import { ref, computed, watch, shallowRef, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
 import { useRoute, useRouter } from "vue-router"
 
@@ -223,28 +215,28 @@ const sidebarItems = computed(() => {
       items: [
         {
           label: "Home",
-          to: `/t/${team.value}/`,
+          to: `/`,
           icon: LucideHome,
           isActive: first.name == "Home",
           accessKey: "h",
         },
         {
           label: "Recents",
-          to: `/t/${team.value}/recents`,
+          to: `/recents`,
           icon: LucideClock,
           isActive: first.name == "Recents",
           accessKey: "r",
         },
         {
           label: "Shared",
-          to: `/shared/`,
+          to: `/shared`,
           icon: LucideUsers,
           isActive: first.name == "Shared",
           accessKey: "s",
         },
         {
           label: "Trash",
-          to: `/t/${team.value}/trash`,
+          to: `/trash`,
           icon: LucideTrash,
           isActive: first.name == "Trash",
         },
@@ -258,7 +250,7 @@ const sidebarItems = computed(() => {
         getTeams.data &&
         Object.values(getTeams.data).map((team) => ({
           label: team.title,
-          to: `/t/${team.name}/team`,
+          to: `/t/${team.name}/`,
           icon: h(icons[team.icon || "building"]),
           isActive: isTeamActive(team.name),
           accessKey: "t",

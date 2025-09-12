@@ -347,3 +347,15 @@ def strip_comment_spans(html: str) -> str:
 
 def get_default_team():
     return frappe.get_value("Drive Team", {"owner": frappe.session.user, "personal": 1}, "name")
+
+
+def default_team(func):
+    def wrapper(*args, **kwargs):
+        # Handle weird frappe thing
+        if "cmd" in kwargs:
+            kwargs.pop("cmd")
+        if not kwargs.get("team"):
+            kwargs["team"] = get_default_team()
+        return func(*args, **kwargs)
+
+    return wrapper

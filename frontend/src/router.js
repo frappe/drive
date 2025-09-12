@@ -37,9 +37,7 @@ const routes = [
         },
       })
       await entity.fetch()
-      console.log(
-        `/t/${entity.data.team}/${entity.data.type}/${entity.data.name}`
-      )
+
       return {
         path: `/t/${entity.data.team}/${entity.data.type}/${entity.data.name}`,
       }
@@ -68,37 +66,37 @@ const routes = [
   },
 
   {
-    path: "/t/:team/trash",
+    path: "/trash",
     name: "Trash",
     component: () => import("@/pages/Trash.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/recents",
+    path: "/recents",
     name: "Recents",
     component: () => import("@/pages/Recents.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/documents",
+    path: "/t/documents",
     name: "Documents",
     component: () => import("@/pages/Documents.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/slides",
+    path: "/presentations",
     name: "Slides",
     component: () => import("@/pages/Slides.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/favourites",
+    path: "/favourites",
     name: "Favourites",
     component: () => import("@/pages/Favourites.vue"),
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/:team/file/:entityName/:slug?",
+    path: "/f/:entityName/:slug?",
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { allowGuest: true, filePage: true },
@@ -114,7 +112,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/t/:team/document/:entityName/:slug?",
+    path: "/d/:entityName/:slug?",
     name: "Document",
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
