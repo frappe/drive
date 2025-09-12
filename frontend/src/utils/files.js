@@ -35,9 +35,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
 
   store.commit("setActiveEntity", entity)
   if (!team) team = entity.team
-  console.log(entity, entity.breadcrumbs?.length)
   if (entity.breadcrumbs?.length === 0) {
-    console.log("rereouting")
     return router.push({ name: entity.is_private ? "Home" : "Team" })
   }
   if (!entity.is_group) {
@@ -81,12 +79,12 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   ) {
     router.push({
       name: "Document",
-      params: { team, entityName: entity.name },
+      params: { entityName: entity.name },
     })
   } else {
     router.push({
       name: "File",
-      params: { team, entityName: entity.name },
+      params: { entityName: entity.name },
     })
   }
 }

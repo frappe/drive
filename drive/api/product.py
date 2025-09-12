@@ -5,6 +5,7 @@ from frappe.translate import get_all_translations
 from frappe.utils import escape_html, split_emails, validate_email_address
 
 from drive.api.permissions import is_admin
+from drive.utils import get_default_team
 
 CORPORATE_DOMAINS = ["gmail.com", "icloud.com", "frappemail.com"]
 
@@ -321,7 +322,9 @@ def remove_user(team, user_id):
 
 
 @frappe.whitelist()
-def get_all_users(team):
+def get_all_users(team=None):
+    if not team:
+        team = get_default_team()
     team_users = {k.user: k.access_level for k in frappe.get_doc("Drive Team", team).users}
     users = frappe.get_all(
         doctype="User",

@@ -18,14 +18,14 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	extract_mentions,
-	get_default_team,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    extract_mentions,
+    default_team,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -45,6 +45,7 @@ def upload_embed(is_private, folder):
 
 
 @frappe.whitelist(allow_guest=True)
+@default_team
 def upload_file(
     team=None,
     total_file_size=0,
@@ -65,9 +66,6 @@ def upload_file(
     :raises ValueError: If the size of the stored file does not match the specified filesize
     :return: DriveEntity doc once the entire file has been uploaded
     """
-    if not team:
-        team = get_default_team()
-    print(team)
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
     if not user_has_permission(parent, "upload"):
@@ -159,11 +157,11 @@ def get_thumbnail(entity_name):
         return
 
     thumbnail_data = None
-    # if frappe.cache().exists(entity_name):
-    #     try:
-    #         thumbnail_data = frappe.cache().get_value(entity_name)
-    #     except:
-    #         frappe.cache().delete_value(entity_name)
+    if frappe.cache().exists(entity_name):
+        try:
+            thumbnail_data = frappe.cache().get_value(entity_name)
+        except:
+            frappe.cache().delete_value(entity_name)
     if not thumbnail_data:
         manager = FileManager()
         try:
@@ -207,6 +205,7 @@ def get_thumbnail(entity_name):
 
 
 @frappe.whitelist()
+@default_team
 def create_presentation(title, personal, team, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
@@ -235,6 +234,7 @@ def create_presentation(title, personal, team, parent=None):
 
 
 @frappe.whitelist()
+@default_team
 def create_document_entity(title, personal, team, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name

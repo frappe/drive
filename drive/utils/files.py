@@ -415,7 +415,7 @@ class FileManager:
                 full_trash_path = self.site_folder / trash_path
                 full_trash_path.parent.mkdir(exist_ok=True)
                 (self.site_folder / entity.path).rename(full_trash_path)
-        except FileNotFoundError:
+        except (FileNotFoundError, self.conn.exceptions.NoSuchKey):
             pass
 
     @__not_if_flat
