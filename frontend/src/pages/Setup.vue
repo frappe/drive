@@ -134,7 +134,7 @@ const domainTeams = createResource({
 
 const onSuccess = (data) => {
   if (data) {
-    window.location.replace("/drive/t/" + data)
+    window.location.replace("/drive")
   } else {
     window.location.reload()
   }

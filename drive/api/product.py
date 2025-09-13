@@ -26,7 +26,7 @@ def create_team(user, team_name=None, icon=None, personal=0):
     """
     Used for creating teams, personal or not.
     """
-    team_name = team_name if team_name else "Home"
+    team_name = team_name if team_name else frappe.session.user
     exists = frappe.db.exists("Drive Team", {"title": team_name, "owner": user})
     if exists:
         raise ValueError("There already exists a team with this title:", exists)
@@ -391,8 +391,6 @@ def disk_settings(**kwargs):
     field_map = {
         "root_prefix_type": "team_id",
         "root_prefix_value": None,
-        "team_prefix": "team",
-        "personal_prefix": "personal",
         "aws_key": None,
         "aws_secret": None,
         "bucket": None,

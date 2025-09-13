@@ -36,8 +36,6 @@ class FileManager:
         self.s3_enabled = settings.enabled
         self.flat = settings.flat
         self.bucket = settings.bucket
-        self.team_prefix = settings.team_prefix
-        self.personal_prefix = settings.personal_prefix
         self.site_folder = Path(frappe.get_site_path("private/files"))
         if self.s3_enabled:
             self.conn = boto3.client(
@@ -174,20 +172,7 @@ class FileManager:
                 if not hasattr(entity, "parent_path")
                 else Path(entity.parent_path)
             )
-            if root["name"] == entity.parent_entity:
-                # Root files are placed in either team or personal folders
-                if entity.is_private:
-                    user_folder = parent / self.personal_prefix / frappe.session.user
-                    if not self.s3_enabled and not (self.site_folder / user_folder).exists():
-                        (self.site_folder / user_folder).mkdir()
-                        (self.site_folder / user_folder / ".thumbnails").mkdir()
-                    path = user_folder / entity.title
-                else:
-                    path = parent / self.team_prefix / entity.title
-            else:
-                # Otherwise, rely on the parent already having a perms-adjusted path
-                path = parent / entity.title
-            return path
+            return parent / entity.title
 
     @__not_if_flat
     def create_folder(self, drive_entity, root):
@@ -264,12 +249,8 @@ class FileManager:
             for obj in objects:
                 obj_path = Path(obj["Key"])
                 personal = False
-                if obj_path.is_relative_to(root_folder / self.team_prefix):
-                    basic_files[obj["Key"]] = (obj, "team")
-                elif obj_path.is_relative_to(root_folder / self.personal_prefix):
-                    # TBD
-                    basic_files[obj["Key"]] = (obj, "personal")
-                    personal = "personal"
+                # BREAK: Redo with personal
+                basic_files[obj["Key"]] = (obj, "team")
 
                 # Used to "calculate" natural folders, folders created by Drive are already counted
                 # Don't count root folder
@@ -312,21 +293,13 @@ class FileManager:
         else:
             root_folder = self.site_folder / root_folder
             # Get files...
-            team_files = {f: "team" for f in (root_folder / self.team_prefix).glob("**/*")}
+            team_files = {f: "team" for f in root_folder.glob("**/*")}
 
-            personal_files = {}
-            if self.personal_prefix:
-                personal_users = [
-                    f.name for f in (root_folder / self.personal_prefix).iterdir() if f.is_dir()
-                ]
-                for user in personal_users:
-                    user_folder = root_folder / self.personal_prefix / user
-                    for f in user_folder.glob("**/*"):
-                        personal_files[f] = user
+            # BROKEN: Somehow make this worse for personal files
 
             # ... and stitch them together with information
             files = {}
-            for f, loc in (team_files | personal_files).items():
+            for f, loc in (team_files).items():
                 path = f.relative_to(self.site_folder)
                 exists = frappe.get_value(
                     "Drive File",
@@ -365,30 +338,7 @@ class FileManager:
 
     def __get_trash_path(self, entity: DriveFile):
         root = get_home_folder(entity.team)
-        if entity.is_private:
-            trash_path = (
-                Path(root["path"])
-                / self.personal_prefix
-                / frappe.session.user
-                / ".trash"
-                / entity.title
-            )
-        else:
-            trash_path = Path(root["path"]) / self.team_prefix / ".trash" / entity.title
-        return trash_path
-
-    def get_parent_path(self, path: Path, team, is_private: bool) -> Path:
-        """
-        Function to get the DB parent path for a given file or folder
-        Used because root files are placed in either team or personal folders, but DB path is shared.
-        """
-        disk_parent = path.parent
-        root = Path(get_home_folder(team)["path"])
-        if not is_private and root / self.team_prefix == disk_parent:
-            disk_parent = root
-        elif is_private and root / self.personal_prefix == disk_parent.parent:
-            disk_parent = root
-        return disk_parent if disk_parent != Path(".") else ""
+        return Path(root["path"]) / ".trash" / entity.title
 
     @__not_if_flat
     def rename(self, entity):

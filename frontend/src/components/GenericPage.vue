@@ -193,7 +193,6 @@ const refreshData = () => {
   if (sortOrder.value)
     params.order_by =
       sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
-  console.log(params.team)
   props.getEntities.fetch(params)
 }
 
