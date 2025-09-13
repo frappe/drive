@@ -102,6 +102,8 @@ def get_home_folder(team):
         )
         if team_names:
             error_msg += f"<br /><br />Or maybe you want <a class='text-black' href='/drive/t/{team_names[0]}'>{frappe.db.get_value('Drive Team', team_names[0], 'title')}</a>?"
+        if not team_names:
+            error_msg += f"<br /><br />Please <a class='text-black' href='/drive/setup'>setup</a> an account."
         frappe.throw(error_msg, {"error": frappe.NotFound})
     return ls[0]
 

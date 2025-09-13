@@ -10,10 +10,8 @@
     "preview_size",
     "disk_section",
     "flat",
-    "root_prefix_type",
     "root_prefix_value",
-    "team_prefix",
-    "personal_prefix",
+    "root_prefix_type",
     "thumbnail_prefix",
     "s3_section",
     "enabled",
@@ -85,25 +83,12 @@
       "fieldname": "root_prefix_type",
       "fieldtype": "Select",
       "label": "Root Prefix Type",
-      "options": "team_id\nteam_name\nother"
+      "options": "team_id\nteam_name\nnone"
     },
     {
-      "depends_on": "root_prefix_type === 'other'",
       "fieldname": "root_prefix_value",
       "fieldtype": "Data",
       "label": "Root Prefix Value"
-    },
-    {
-      "default": "team",
-      "fieldname": "team_prefix",
-      "fieldtype": "Data",
-      "label": "Team Prefix"
-    },
-    {
-      "default": "personal",
-      "fieldname": "personal_prefix",
-      "fieldtype": "Data",
-      "label": "Personal Prefix"
     },
     {
       "default": ".thumbnails",
@@ -136,7 +121,7 @@
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-09-02 17:33:01.169789",
+  "modified": "2025-09-13 20:33:44.358813",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Disk Settings",

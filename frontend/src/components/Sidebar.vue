@@ -63,7 +63,15 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 notifCount.fetch()
-getTeams.fetch()
+getTeams.fetch(null, {
+  onSuccess: (data) => {
+    if (localStorage.getItem("first_time")) return
+    if (!data || !Object.keys(data).length) {
+      router.replace({ name: "Setup" })
+      localStorage.setItem("first_time", "1")
+    }
+  },
+})
 apps.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)

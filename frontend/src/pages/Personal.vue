@@ -20,6 +20,5 @@ import LucideHome from "~icons/lucide/home"
 
 const store = useStore()
 store.commit("setCurrentFolder", { name: "", team: "" })
-allUsers.fetch()
-console.log(allUsers.data)
+allUsers.fetch(null)
 </script>

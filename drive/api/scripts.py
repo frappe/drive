@@ -59,7 +59,7 @@ def sync_from_disk(team):
     for file, (loc, file_size, last_modified, mime_type) in sorted_files:
         is_private = loc != "team"
         owner = loc if is_private else None
-        parent_path = str(manager.get_parent_path(file, team, is_private))
+        parent_path = file.parent
         parent = frappe.get_value(
             "Drive File",
             {"path": parent_path + "/" if parent_path else "", "team": team},

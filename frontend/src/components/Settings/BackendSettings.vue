@@ -82,18 +82,6 @@
           v-model="generalSettings.root_prefix_value"
           description="Value to use for the root folder. Use / to not use a separate folder."
         />
-        <FormControl
-          label="Team Prefix"
-          placeholder="team"
-          v-model="generalSettings.team_prefix"
-          description="Team files will be placed inside this folder. Use / to place directly in the root folder."
-        />
-        <FormControl
-          label="Personal Prefix"
-          placeholder="personal"
-          v-model="generalSettings.personal_prefix"
-          description="Personal folders will be created under this prefix."
-        />
       </div>
       <Button
         label="Update"
@@ -127,8 +115,6 @@ const edited = ref(false)
 const generalSettings = reactive({
   root_prefix_type: "team_id",
   root_prefix_value: "",
-  team_prefix: "",
-  personal_prefix: "",
   backend_type: "disk",
 })
 const s3Settings = reactive({

@@ -12,6 +12,6 @@ class DriveDiskSettings(Document):
         However, this causes a lot of problems with `Path`, so override empty prefixes.
         """
         val = object.__getattribute__(self, attr)
-        if attr in ["team_prefix", "root_prefix", "personal_prefix"]:
+        if attr == "root_prefix":
             return val if val != "/" else ""
         return val

@@ -259,6 +259,9 @@ def user_has_permission(doc, ptype, user=None):
         user = frappe.session.user
     if user == "Administrator" or ptype == "create":
         return True
+    if "ptype" not in ("read", "write", "comment", "share", "upload"):
+        # Should ideally deflect to Framework
+        ptype = "write"
     access = get_user_access(doc, user)
     if ptype in access:
         return bool(access[ptype])
@@ -268,15 +271,3 @@ def user_has_permission_doc(doc, ptype, user=None):
     return user_has_permission(
         frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user
     )
-
-
-def get_permission_query_conditions(user):
-    """
-    Limit the query to only show records owned by the user
-    Should be more granular in the future, but Drive permissions are so complicated that it's better to enforce
-    developers to use Drive's whitelisted methods.
-    """
-    if not user:
-        user = frappe.session.user
-    if not "Desk User" in frappe.get_roles(user):
-        return """(`tabDrive File`.owner = {user})""".format(user=frappe.db.escape(user))
