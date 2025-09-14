@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-08-22 16:10+0000\n"
-"PO-Revision-Date: 2025-09-12 18:48\n"
+"PO-Revision-Date: 2025-09-14 19:18\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -563,7 +563,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Melding"
 
 #. Label of the meta_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -887,7 +887,7 @@ msgstr ""
 #: frontend/src/components/InfoSidebar.vue:70
 #: frontend/src/components/Settings/TagSettings.vue:4
 msgid "Tags"
-msgstr ""
+msgstr "Merkelapper"
 
 #. Label of the team (Link) field in DocType 'Drive File'
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
