@@ -19,8 +19,8 @@ from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
     create_drive_file,
-    extract_mentions,
     default_team,
+    extract_mentions,
     get_file_type,
     get_home_folder,
     if_folder_exists,
@@ -269,6 +269,7 @@ def get_upload_path(team_path, file_name):
 
 
 @frappe.whitelist()
+@default_team
 def create_folder(team, title, personal=False, parent=None):
     """
     Create a new folder.
