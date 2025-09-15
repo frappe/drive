@@ -34,7 +34,7 @@ class DriveTeam(Document):
         root_folder = (
             Path(settings.root_prefix_value)
             / {
-                settings.root_prefix_type == "team_id": d.name,
+                settings.root_prefix_type == "team_id": self.name,
                 settings.root_prefix_type == "team_name": self.title,
                 settings.root_prefix_type == "none": "",
             }[True]
