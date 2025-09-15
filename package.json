@@ -16,7 +16,7 @@
     }
   },
   "devDependencies": {
-    "cypress": "^15.2.0",
+    "cypress": "^14.5.2",
     "cypress-file-upload": "^5.0.8"
   }
 }
