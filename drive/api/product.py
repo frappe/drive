@@ -383,11 +383,13 @@ def check_is_admin():
 
 @frappe.whitelist()
 def disk_settings(**kwargs):
-    if not check_is_admin()["is_admin"]:
-        frappe.throw("Only admins can access this endpoint", frappe.PermissionError)
-    if frappe.request.method == "GET":
-        return frappe.get_single("Drive Disk Settings")
     settings = frappe.get_single("Drive Disk Settings")
+    if not check_is_admin()["is_admin"]:
+        # Return only safe values
+        return {"preview_size": settings.preview_size}
+
+    if frappe.request.method == "GET":
+        return settings
     field_map = {
         "root_prefix_type": "team_id",
         "root_prefix_value": None,
