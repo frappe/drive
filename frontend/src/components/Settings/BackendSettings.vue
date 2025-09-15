@@ -147,7 +147,6 @@ function confirmSync() {
 const getSettings = createResource({
   url: "drive.api.product.disk_settings",
   method: "GET",
-  auto: true,
   onSuccess: (data) => {
     delete data.aws_secret
     for (let [key, value] of Object.entries(data)) {
@@ -157,6 +156,7 @@ const getSettings = createResource({
     generalSettings.backend_type = data.enabled ? "s3" : "disk"
   },
 })
+getSettings.fetch()
 
 const updateSettings = createResource({
   url: "drive.api.product.disk_settings",
