@@ -61,8 +61,7 @@
             (file) => {
               const fileUpload = useFileUpload()
               return fileUpload.upload(file, {
-                private: entity.is_private,
-                folder: entity.name,
+                doc: entity.name,
                 upload_endpoint: `/api/method/drive.api.files.upload_embed`,
               })
             }

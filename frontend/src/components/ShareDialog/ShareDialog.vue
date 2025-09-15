@@ -431,7 +431,7 @@ const generalOptions = [
   { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
 ]
 const generalAccessLevel = ref(
-  generalOptions[props.entity.is_private ? 0 : 1].value
+  generalOptions[props.entity.in_home ? 0 : 1].value
 )
 const generalAccessType = ref("reader")
 const getGeneralAccess = createResource({

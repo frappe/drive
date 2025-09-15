@@ -171,7 +171,7 @@
         </li>
         <li>
           <span class="inline-block w-24">Private:</span>
-          <span class="col-span-1">{{ entity.is_private }}</span>
+          <span class="col-span-1">{{ entity.team }}</span>
         </li>
         <li>
           <span class="inline-block w-24">MIME type:</span>

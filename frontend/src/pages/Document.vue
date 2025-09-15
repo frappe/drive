@@ -364,9 +364,7 @@ const onSuccess = (data) => {
   rawContent.value = data.raw_content
   if (data.content) yjsContent.value = toUint8Array(data.content)
   lastFetched.value = Date.now()
-  setBreadCrumbs(data.breadcrumbs, data.is_private, () => {
-    data.write && emitter.emit("rename")
-  })
+  setBreadCrumbs(data)
   if (data.mime_type === "frappe_doc")
     docSettings = useDoc({
       doctype: "Drive Document",

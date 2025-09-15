@@ -63,9 +63,7 @@ onBeforeUnmount(() => {
 const onSuccess = (entity) => {
   if (router.currentRoute.value.params.entityName !== entity.name) return
   document.title = "Folder - " + entity.title
-  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
-    emitter.emit("rename")
-  )
+  setBreadCrumbs(entity)
   updateURLSlug(entity.title)
 }
 

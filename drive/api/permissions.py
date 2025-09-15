@@ -6,7 +6,12 @@ from frappe.utils import getdate
 from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
-from drive.utils import generate_upward_path, get_file_type, get_valid_breadcrumbs
+from drive.utils import (
+    generate_upward_path,
+    get_file_type,
+    get_valid_breadcrumbs,
+    get_default_team,
+)
 from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
 
@@ -44,6 +49,13 @@ def get_user_access(entity, user=None, details=False):
         entity = frappe.get_cached_doc("Drive File", entity)
 
     teams = get_teams(user)
+    access = {
+        "read": 0,
+        "comment": 0,
+        "share": 0,
+        "write": 0,
+        "upload": 0,
+    }
     if user == entity.owner:
         access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
     elif entity.team in teams:
@@ -128,7 +140,7 @@ def get_entity_with_permissions(entity_name):
     )
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
-
+    entity["in_home"] = entity.team == get_default_team()
     user_access, paths = get_user_access(entity, details=True)
     if user_access.get("read") == 0:
         frappe.throw("You don't have access to this file.", {"error": frappe.PermissionError})

@@ -122,9 +122,7 @@ onKeyStroke("ArrowRight", (e) => {
 
 const onSuccess = async (entity) => {
   document.title = entity.title
-  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
-    emitter.emit("rename")
-  )
+  setBreadCrumbs(entity)
   updateURLSlug(entity.title)
 }
 

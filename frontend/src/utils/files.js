@@ -210,12 +210,9 @@ export const prettyData = (entities) => {
     return entity
   })
 }
-export const setBreadCrumbs = (
-  breadcrumbs,
-  is_private,
-  final_func = () => {}
-) => {
-  const route = router.currentRoute.value
+export const setBreadCrumbs = (entity) => {
+  const breadcrumbs = entity.breadcrumbs
+  const in_home = entity.in_home
   let res = [
     {
       label: __("Shared"),
@@ -223,32 +220,31 @@ export const setBreadCrumbs = (
       route: store.getters.isLoggedIn && "/shared",
     },
   ]
-  const lastEl = breadcrumbs[breadcrumbs.length - 1]
-  const partOfTeam =
-    getTeams.data && Object.keys(getTeams.data).includes(lastEl.team)
-  if (partOfTeam || lastEl.owner == store.state.user.id) {
+  const team = getTeams.data?.[breadcrumbs[0].team]
+  if (team || in_home)
     res = [
       {
-        label: is_private
-          ? __("Home")
-          : getTeams.data[breadcrumbs[0].team].title,
-        name: is_private ? "Home" : "Team",
-        route: is_private
-          ? "/"
-          : `/t/${getTeams.data[breadcrumbs[0].team].name}`,
+        label: in_home ? __("Home") : team.title,
+        name: in_home ? "Home" : team.name,
+        route: in_home ? "/" : `/t/${team.name}`,
       },
     ]
-  }
+
   if (!breadcrumbs[0].parent_entity) breadcrumbs.splice(0, 1)
   const popBreadcrumbs = (item) => () =>
     res.splice(res.findIndex((k) => k.name === item.name) + 1)
-  breadcrumbs.forEach((item, idx) => {
+
+  breadcrumbs.forEach((folder, idx) => {
     const final = idx === breadcrumbs.length - 1
     res.push({
-      label: item.title,
-      name: item.name,
-      onClick: final ? final_func : popBreadcrumbs(item),
-      route: final ? null : `/folder/` + item.name,
+      label: folder.title,
+      name: folder.name,
+      onClick: final
+        ? () => {
+            entity.write && emitter.emit("rename")
+          }
+        : popBreadcrumbs(folder),
+      route: final ? null : `/folder/${folder.name}`,
     })
   })
   store.commit("setBreadcrumbs", res)

@@ -4,7 +4,13 @@ import frappe
 from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
-from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
+from drive.utils import (
+    MIME_LIST_MAP,
+    default_team,
+    get_file_type,
+    get_home_folder,
+    get_default_team,
+)
 
 from .permissions import ENTITY_FIELDS, get_user_access
 
@@ -61,7 +67,6 @@ def files(
 
     if not team == entity.team:
         team = entity.team
-    home = get_home_folder(team)["name"]
 
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
@@ -177,6 +182,7 @@ def files(
     elif get_user_access(entity_name, "$TEAM")["read"]:
         default = -1
 
+    home = get_default_team()
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)
@@ -189,7 +195,6 @@ def files(
             r["share_count"] = share_count.get(r["name"], default)
         else:
             r["share_count"] = default
-
         r |= get_user_access(r["name"])
 
     return res

@@ -88,6 +88,7 @@ emitter.on("showSettings", (val = 0) => {
 emitter.on("toggleShortcuts", () => {
   showShortcuts.value = !showShortcuts.value
 })
+
 const settingsItems = computed(() => [
   {
     group: __("Manage"),
@@ -173,9 +174,7 @@ function logout() {
 
 const sidebarItems = computed(() => {
   const first = store.state.breadcrumbs[0]
-  const teamId = route.params.team
-  const isTeamActive = (name) => name === teamId
-
+  console.log(first)
   return dynamicList([
     {
       items: [
@@ -235,7 +234,7 @@ const sidebarItems = computed(() => {
           label: team.title,
           to: `/t/${team.name}/`,
           icon: h(icons[team.icon || "building"]),
-          isActive: isTeamActive(team.name),
+          isActive: team.name === first.name,
           accessKey: "t",
         })),
     },
