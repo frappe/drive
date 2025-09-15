@@ -43,15 +43,8 @@ const routes = [
       }
     },
   },
-  // {
-  //   path: "/t/:team/",
-  //   name: "Home",
-  //   component: () => import("@/pages/Personal.vue"),
-  //   beforeEnter: [setRootBreadCrumb],
-  //   props: true,
-  // },
   {
-    path: "/t/:team/inbox",
+    path: "/inbox",
     name: "Inbox",
     // Load a skeleton template directly?
     component: () => import("@/pages/Notifications.vue"),
@@ -78,7 +71,7 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
-    path: "/t/documents",
+    path: "/documents",
     name: "Documents",
     component: () => import("@/pages/Documents.vue"),
     beforeEnter: [setRootBreadCrumb],
@@ -104,7 +97,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/t/:team/folder/:entityName/:slug?",
+    path: "/folder/:entityName/:slug?",
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { allowGuest: true },

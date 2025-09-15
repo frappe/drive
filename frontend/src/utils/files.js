@@ -226,17 +226,16 @@ export const setBreadCrumbs = (
   const lastEl = breadcrumbs[breadcrumbs.length - 1]
   const partOfTeam =
     getTeams.data && Object.keys(getTeams.data).includes(lastEl.team)
-  if (
-    (partOfTeam && !lastEl.is_private) ||
-    lastEl.owner == store.state.user.id
-  ) {
+  if (partOfTeam || lastEl.owner == store.state.user.id) {
     res = [
       {
         label: is_private
           ? __("Home")
           : getTeams.data[breadcrumbs[0].team].title,
         name: is_private ? "Home" : "Team",
-        route: `/t/${route.params.team}` + (is_private ? "/" : "/team"),
+        route: is_private
+          ? "/"
+          : `/t/${getTeams.data[breadcrumbs[0].team].name}`,
       },
     ]
   }
@@ -249,7 +248,7 @@ export const setBreadCrumbs = (
       label: item.title,
       name: item.name,
       onClick: final ? final_func : popBreadcrumbs(item),
-      route: final ? null : `/t/${item.team}/folder/` + item.name,
+      route: final ? null : `/folder/` + item.name,
     })
   })
   store.commit("setBreadcrumbs", res)

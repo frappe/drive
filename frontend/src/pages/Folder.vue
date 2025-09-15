@@ -28,10 +28,9 @@ const emitter = inject("emitter")
 
 const props = defineProps({
   entityName: String,
-  team: String,
   slug: String,
 })
-store.commit("setCurrentFolder", { name: props.entityName, team: props.team })
+store.commit("setCurrentFolder", { name: props.entityName })
 
 const getFolderContents = createResource({
   ...COMMON_OPTIONS,
@@ -39,7 +38,6 @@ const getFolderContents = createResource({
   makeParams: (params) => ({
     ...params,
     entity_name: props.entityName,
-    team: props.team,
   }),
   cache: ["folder", props.entityName],
 })

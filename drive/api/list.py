@@ -4,7 +4,7 @@ import frappe
 from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
-from drive.utils import MIME_LIST_MAP, get_default_team, get_file_type, get_home_folder
+from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
 
 from .permissions import ENTITY_FIELDS, get_user_access
 
@@ -22,6 +22,7 @@ Binary = CustomFunction("BINARY", ["expression"])
 
 
 @frappe.whitelist(allow_guest=True)
+@default_team
 def files(
     team=None,
     entity_name=None,
@@ -38,10 +39,7 @@ def files(
     only_parent=1,
     search=None,
 ):
-    if not team:
-        team = get_default_team()
 
-    home = get_home_folder(team)["name"]
     field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)
     only_parent = int(only_parent)
@@ -51,16 +49,19 @@ def files(
     ascending = int(ascending)
 
     if not entity_name:
-        # If not specified, get home folder
-        entity_name = home
-    entity = frappe.get_doc("Drive File", entity_name)
+        entity_name = get_home_folder(team)["name"]
 
+    entity = frappe.get_doc("Drive File", entity_name)
     # Verify that entity exists and is part of the team
-    if not entity or entity.team != team:
+    if not entity:
         frappe.throw(
-            f"Not found - entity {entity_name} has team {team} ",
+            f"Not found ({entity_name}) ",
             frappe.exceptions.PageDoesNotExistError,
         )
+
+    if not team == entity.team:
+        team = entity.team
+    home = get_home_folder(team)["name"]
 
     # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
