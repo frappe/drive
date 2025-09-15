@@ -1,6 +1,7 @@
 [pre_model_sync]
 drive.patches.team_restructure #8
 drive.patches.update_roles
+drive.patches.remove_personal
 
 
 [post_model_sync]
