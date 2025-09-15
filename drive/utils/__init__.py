@@ -173,7 +173,6 @@ def generate_upward_path(entity_name, user=None):
                     `tabDrive File`.name,
                     `tabDrive File`.team,
                     `tabDrive File`.parent_entity,
-                    `tabDrive File`.is_private,
                     `tabDrive File`.owner,
                     0 AS level
                 FROM
@@ -186,7 +185,6 @@ def generate_upward_path(entity_name, user=None):
                     t.name,
                     t.team,
                     t.parent_entity,
-                    t.is_private,
                     t.owner,
                     gp.level + 1
                 FROM
@@ -198,7 +196,6 @@ def generate_upward_path(entity_name, user=None):
             gp.name,
             gp.owner,
             gp.parent_entity,
-            gp.is_private,
             gp.team,
             p.read,
             p.upload,
@@ -218,12 +215,12 @@ def generate_upward_path(entity_name, user=None):
     return result
 
 
-def get_valid_breadcrumbs(user_access, paths, is_private=None):
+def get_valid_breadcrumbs(user_access, paths):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
     # If team/admin of this entity, then entire path
-    if user_access.get("type") in ["admin", "team", "team-admin"]:
+    if user_access.get("type") in ["admin", "user"]:
         return paths[0]
 
     # Otherwise, slice where they lose read access.
@@ -261,14 +258,13 @@ def update_file_size(entity, delta):
     doc.save(ignore_permissions=True)
 
 
-def if_folder_exists(team, folder_name, parent, personal):
+def if_folder_exists(team, folder_name, parent):
     values = {
         "title": folder_name,
         "is_group": 1,
         "is_active": 1,
         "team": team,
         "owner": frappe.session.user,
-        "is_private": personal,
         "parent_entity": parent,
     }
     existing_folder = frappe.db.get_value(
@@ -285,7 +281,6 @@ def if_folder_exists(team, folder_name, parent, personal):
 
 def create_drive_file(
     team,
-    is_private,
     title,
     parent,
     mime_type,
@@ -300,7 +295,6 @@ def create_drive_file(
         {
             "doctype": "Drive File",
             "team": team,
-            "is_private": is_private,
             "title": title,
             "parent_entity": parent,
             "file_size": file_size,

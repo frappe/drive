@@ -39,7 +39,7 @@ class DriveTeam(Document):
                 settings.root_prefix_type == "none": "",
             }[True]
         )
-        d.path = str(root_folder)
+        d.path = str(root_folder) 
         d.save()
         # Create even with S3 as we need local folders before uploading to S3
         user_directory_path = Path(frappe.get_site_path("private/files")) / root_folder

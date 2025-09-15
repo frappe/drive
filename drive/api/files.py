@@ -18,14 +18,14 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	default_team,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    default_team,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -33,14 +33,14 @@ from .permissions import user_has_permission
 
 
 @frappe.whitelist()
-def upload_embed(is_private, folder):
-    doc = frappe.get_doc("Drive File", folder)
+def upload_embed(doc):
+    doc = frappe.get_doc("Drive File", doc)
     file = frappe.request.files["file"]
-    file.filename = "Embed - " + folder
+    file.filename = "Embed - " + doc
 
-    embed = upload_file(doc.team, personal=is_private, parent=folder, embed=1)
+    embed = upload_file(doc.team, parent=doc, embed=1)
     return {
-        "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={folder}"
+        "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={doc}"
     }
 
 
@@ -50,7 +50,6 @@ def upload_file(
     team=None,
     total_file_size=0,
     last_modified=None,
-    personal=None,
     fullpath=None,
     parent=None,
     embed=0,
@@ -70,16 +69,12 @@ def upload_file(
     parent = parent or home_folder["name"]
     if not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
-
-    is_private = (
-        int(personal) if personal else frappe.get_value("Drive File", parent, "is_private")
-    )
     embed = int(embed)
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
         for i in dirname:
-            parent = if_folder_exists(team, i, parent, is_private)
+            parent = if_folder_exists(team, i, parent)
 
     # Support non-chunked uploads too
     if frappe.form_dict.chunk_index:
@@ -92,7 +87,7 @@ def upload_file(
         total_chunks = 1
 
     file = frappe.request.files["file"]
-    title = get_new_title(file.filename, parent, is_private=is_private)
+    title = get_new_title(file.filename, parent)
     upload_session = frappe.form_dict.uuid
     temp_path = get_upload_path(home_folder["path"], f"{upload_session}_{secure_filename(title)}")
     with temp_path.open("ab") as f:
@@ -116,7 +111,6 @@ def upload_file(
     # Create DB record
     drive_file = create_drive_file(
         team,
-        is_private,
         title,
         parent,
         mime_type,
@@ -289,33 +283,18 @@ def create_folder(team, title, personal=False, parent=None):
             "You don't have permissions for this.",
             frappe.PermissionError,
         )
-
-    if not personal:
-        entity_exists = frappe.db.exists(
-            {
-                "doctype": "Drive File",
-                "parent_entity": parent,
-                "is_group": 1,
-                "title": title,
-                "is_active": 1,
-                "is_private": 0,
-            }
-        )
-    else:
-        entity_exists = frappe.db.exists(
-            {
-                "doctype": "Drive File",
-                "parent_entity": parent,
-                "title": title,
-                "is_group": 1,
-                "is_active": 1,
-                "owner": frappe.session.user,
-                "is_private": 1,
-            }
-        )
+    entity_exists = frappe.db.exists(
+        {
+            "doctype": "Drive File",
+            "parent_entity": parent,
+            "is_group": 1,
+            "title": title,
+            "is_active": 1,
+        }
+    )
 
     if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True, is_private=personal)
+        suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(
             f"Folder '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
@@ -328,7 +307,6 @@ def create_folder(team, title, personal=False, parent=None):
                 "title": title,
                 "parent_path": Path(parent_doc.path or ""),
                 "parent_entity": parent_doc.name,
-                "is_private": personal,
             }
         ),
         home_folder,
@@ -357,30 +335,18 @@ def create_link(team, title, link, personal=False, parent=None):
             "Cannot create link due to insufficient permissions.",
             frappe.PermissionError,
         )
-    if not personal:
-        entity_exists = frappe.db.exists(
-            {
-                "doctype": "Drive File",
-                "parent_entity": parent,
-                "title": title,
-                "is_active": 1,
-                "is_link": 1,
-            }
-        )
-    else:
-        entity_exists = frappe.db.exists(
-            {
-                "doctype": "Drive File",
-                "parent_entity": parent,
-                "title": title,
-                "is_link": 1,
-                "is_active": 1,
-                "owner": frappe.session.user,
-                "is_private": 1,
-            }
-        )
+    entity_exists = frappe.db.exists(
+        {
+            "doctype": "Drive File",
+            "parent_entity": parent,
+            "is_group": 1,
+            "title": title,
+            "is_active": 1,
+        }
+    )
+
     if entity_exists:
-        suggested_name = get_new_title(title, parent, folder=True, is_private=personal)
+        suggested_name = get_new_title(title, parent, folder=True)
         frappe.throw(
             f"File '{title}' already exists.\n Suggested: {suggested_name}",
             FileExistsError,
@@ -396,7 +362,6 @@ def create_link(team, title, link, personal=False, parent=None):
             "mime_type": "link/unknown",
             "_modified": datetime.now(),
             "parent_entity": parent,
-            "is_private": personal,
         }
     )
     drive_file.insert()
@@ -779,7 +744,7 @@ def clear_deleted_files():
 
 
 @frappe.whitelist()
-def move(entity_names, new_parent=None, is_private=None):
+def move(entity_names, new_parent=None):
     """
     Move file or folder to the new parent folder
 
@@ -795,10 +760,11 @@ def move(entity_names, new_parent=None, is_private=None):
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
-        res = doc.move(new_parent, is_private)
+        res = doc.move(new_parent)
 
     if res["title"] == "Drive - " + res["team"]:
-        res["title"] = "Home" if is_private else "Team"
+        # BROKEN: redo moving.
+        res["title"] = res["team"]
         res["special"] = True
 
     return res
@@ -829,7 +795,6 @@ def search(query, team):
         LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
         WHERE `tabDrive File`.team = {team}
             AND `tabDrive File`.`is_active` = 1
-            AND (`tabDrive File`.`owner` = {user} OR `tabDrive File`.is_private = 0)
             AND `tabDrive File`.`parent_entity` <> ''
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
         GROUP  BY `tabDrive File`.`name`
@@ -854,7 +819,7 @@ def get_translate():
 
 
 @frappe.whitelist()
-def get_new_title(title, parent_name, folder=False, is_private=None):
+def get_new_title(title, parent_name, folder=False):
     """
     Returns new title for an entity if same title exists for another entity at the same level
 
@@ -869,10 +834,6 @@ def get_new_title(title, parent_name, folder=False, is_private=None):
         "parent_entity": parent_name,
         "title": ["like", f"{entity_title}%{entity_ext}"],
     }
-    if is_private is not None:
-        filters["is_private"] = is_private
-        if is_private:
-            filters["owner"] = frappe.session.user
 
     if folder:
         filters["is_group"] = 1

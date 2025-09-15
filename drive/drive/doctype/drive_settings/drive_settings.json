@@ -28,7 +28,7 @@
       "options": "Drive Team"
     },
     {
-      "default": "0",
+      "default": "1",
       "fieldname": "single_click",
       "fieldtype": "Check",
       "label": "Single Click"
@@ -54,7 +54,7 @@
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-09-10 14:13:22.423045",
+  "modified": "2025-09-15 15:21:45.911223",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",

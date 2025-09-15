@@ -72,7 +72,7 @@ class DriveFile(Document):
         return decorator
 
     @__update
-    def move(self, new_parent=None, is_private=None):
+    def move(self, new_parent=None):
         """
         Move file or folder to the new parent folder
         If not owned by current user, copies it.
@@ -83,10 +83,8 @@ class DriveFile(Document):
         :return: DriveEntity doc once file is moved
         """
         new_parent = new_parent or get_home_folder(self.team).name
-        if is_private is None:
-            is_private = frappe.db.get_value("Drive File", new_parent, "is_private")
 
-        if new_parent == self.parent_entity and self.is_private == is_private:
+        if new_parent == self.parent_entity:
             return
 
         if new_parent == self.name:
@@ -106,19 +104,18 @@ class DriveFile(Document):
                 return frappe.get_value(
                     "Drive File",
                     self.parent_entity,
-                    ["title", "team", "name", "is_private"],
+                    ["title", "team", "name"],
                     as_dict=True,
                 )
             else:
-                child.move(self.name, is_private)
+                child.move(self.name)
 
         if new_parent != self.parent_entity:
             update_file_size(self.parent_entity, -self.file_size)
             update_file_size(new_parent, +self.file_size)
             self.parent_entity = new_parent
 
-        self.title = get_new_title(self.title, new_parent, self.is_group, is_private)
-        self.is_private = is_private
+        self.title = get_new_title(self.title, new_parent, self.is_group)
 
         not_in_disk = self.document or self.mime_type == "frappe/slides" or self.is_link
 
@@ -130,9 +127,7 @@ class DriveFile(Document):
 
         self.save()
 
-        return frappe.get_value(
-            "Drive File", new_parent, ["title", "team", "name", "is_private"], as_dict=True
-        )
+        return frappe.get_value("Drive File", new_parent, ["title", "team", "name"], as_dict=True)
 
     @frappe.whitelist()
     def copy(self, new_parent=None, parent_user_directory=None):
@@ -257,9 +252,7 @@ class DriveFile(Document):
         if new_title == self.title:
             return self
 
-        validated_name = get_new_title(
-            new_title, self.parent_entity, self.is_group, self.is_private
-        )
+        validated_name = get_new_title(new_title, self.parent_entity, self.is_group)
         if new_title != validated_name and new_title != "Untitled Document":
             return frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{validated_name}' ",

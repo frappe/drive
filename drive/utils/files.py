@@ -241,16 +241,15 @@ class FileManager:
         """
         root_folder = Path(get_home_folder(team)["path"])
         if self.s3_enabled:
-            print("getting")
+
             objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
-            print("got!")
+
             basic_files = {}
             # Get files...
             for obj in objects:
                 obj_path = Path(obj["Key"])
                 personal = False
-                # BREAK: Redo with personal
-                basic_files[obj["Key"]] = (obj, "team")
+                basic_files[obj["Key"]] = obj
 
                 # Used to "calculate" natural folders, folders created by Drive are already counted
                 # Don't count root folder
@@ -268,7 +267,7 @@ class FileManager:
                     )
 
             files = {}
-            for f_path, (f, loc) in basic_files.items():
+            for f_path, f in basic_files.items():
                 # Drive-created folders - registered S3 objects - have trailing slashes.
                 is_group = f.get("Folder") or f_path.endswith("/")
                 exists = frappe.get_value(
@@ -289,17 +288,13 @@ class FileManager:
                     if is_group
                     else mimemapper.get_mime_type(str(f_path), native_first=False)
                 )
-                files[Path(f_path)] = (loc, f["Size"], f["LastModified"].timestamp(), mime_type)
+                files[Path(f_path)] = (f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
-            # Get files...
-            team_files = {f: "team" for f in root_folder.glob("**/*")}
-
-            # BROKEN: Somehow make this worse for personal files
 
             # ... and stitch them together with information
             files = {}
-            for f, loc in (team_files).items():
+            for f in root_folder.glob("**/*"):
                 path = f.relative_to(self.site_folder)
                 exists = frappe.get_value(
                     "Drive File",
@@ -316,7 +311,7 @@ class FileManager:
                 if mime_type is None:
                     mime_type = magic.from_buffer(open(f, "rb").read(2048), mime=True)
 
-                files[path] = (loc, f.stat().st_size, f.stat().st_mtime, mime_type)
+                files[path] = (f.stat().st_size, f.stat().st_mtime, mime_type)
         return files
 
     def get_thumbnail_path(self, team, name):

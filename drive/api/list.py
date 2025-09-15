@@ -115,26 +115,11 @@ def files(
             .orderby(DriveFile[field], order=Order.asc if ascending else Order.desc)
         )
 
-    if favourites_only or recents_only:
-        query = query.where((DriveFile.is_private == 0) | (DriveFile.owner == frappe.session.user))
-    elif not is_active:
+    if not is_active:
         query = query.where(DriveFile.owner == frappe.session.user)
     if search:
         # escape wildcards or lower() depending on DB
         query = query.where(DriveFile.title.like(f"%{search}%"))
-    if personal == 0:
-        query = query.where(DriveFile.is_private == 0)
-    elif personal == 1:
-        query = query.where(DriveFile.is_private == 1)
-        # Temporary hack: the correct way would be to check permissions on all children
-        if entity_name == home:
-            query = query.where(DriveFile.owner == frappe.session.user)
-    # Only filter in home folder; previously private shared folders showed up empty
-    elif personal == -1 and entity_name == home:
-        query = query.where(
-            (DriveFile.is_private == 0)
-            | ((DriveFile.is_private == 1) & (DriveFile.owner == frappe.session.user))
-        )
 
     query = query.select(Recents.last_interaction.as_("accessed"))
     if tag_list:
@@ -198,7 +183,7 @@ def files(
 
         if r["name"] in public_files:
             r["share_count"] = -2
-        elif default > -1 and (r["name"] in team_files or not r["is_private"]):
+        elif default > -1 and (r["name"] in team_files):
             r["share_count"] = -1
         elif default == 0:
             r["share_count"] = share_count.get(r["name"], default)

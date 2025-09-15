@@ -24,7 +24,6 @@ ENTITY_FIELDS = [
     "document",
     "owner",
     "parent_entity",
-    "is_private",
 ]
 
 
@@ -47,8 +46,7 @@ def get_user_access(entity, user=None, details=False):
     teams = get_teams(user)
     if user == entity.owner:
         access = {"read": 1, "comment": 1, "share": 1, "upload": 1, "write": 1, "type": "admin"}
-    elif entity.team in teams and entity.is_private == 0:
-        # Everyone can upload to team folders, and admins can edit all files
+    elif entity.team in teams:
         access_level = get_access_level(entity.team)
         access = {
             "read": 1,
@@ -56,15 +54,7 @@ def get_user_access(entity, user=None, details=False):
             "share": 1,
             "upload": int(entity.is_group),
             "write": int(access_level == 2 or entity.owner == user),
-            "type": {2: "team-admin", 1: "team", 0: "guest"}[access_level],
-        }
-    else:
-        access = {
-            "read": 0,
-            "comment": 0,
-            "share": 0,
-            "write": 0,
-            "upload": 0,
+            "type": {2: "admin", 1: "user", 0: "guest"}[access_level],
         }
 
     path = generate_upward_path(entity.name, user)
@@ -78,6 +68,7 @@ def get_user_access(entity, user=None, details=False):
 
     valid_accesses = [user_access, public_access]
     team_path = []
+    # BROKEN: replace team permission with sharing with a team.
     if entity.team in teams:
         team_path = generate_upward_path(entity.name, "$TEAM")
         team_access = {k: v for k, v in team_path[-1].items() if k in access.keys()}
@@ -145,7 +136,7 @@ def get_entity_with_permissions(entity_name):
     owner_info = (
         frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     )
-    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(user_access, paths, not entity.is_private)}
+    breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(user_access, paths)}
     favourite = frappe.db.get_value(
         "Drive Favourite",
         {
