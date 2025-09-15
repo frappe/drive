@@ -5,11 +5,11 @@ from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
 from drive.utils import (
-    MIME_LIST_MAP,
-    default_team,
-    get_file_type,
-    get_home_folder,
-    get_default_team,
+	MIME_LIST_MAP,
+	default_team,
+	get_default_team,
+	get_file_type,
+	get_home_folder,
 )
 
 from .permissions import ENTITY_FIELDS, get_user_access

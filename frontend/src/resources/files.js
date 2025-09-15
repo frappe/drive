@@ -1,11 +1,10 @@
-import { createResource, useList } from "frappe-ui"
+import { createResource } from "frappe-ui"
 import { toast } from "@/utils/toasts"
 import { openEntity, setTitle } from "@/utils/files"
 import store from "@/store"
 import router from "@/router"
 import { prettyData, setCache } from "@/utils/files"
 import { updateURLSlug } from "@/utils/files"
-import { computed } from "vue"
 
 // GETTERS
 export const COMMON_OPTIONS = {
@@ -297,11 +296,9 @@ export const move = createResource({
           label: "Go",
           onClick: () => {
             if (!data.special)
-              openEntity(null, {
+              openEntity({
                 name: data.name,
-                team: data.team,
                 is_group: true,
-                is_private: data.is_private,
               })
             else router.push({ name: data.title })
           },
@@ -333,7 +330,6 @@ export const allFolders = createResource({
       value: k.name,
       label: k.title,
       parent: k.parent_entity,
-      is_private: k.is_private,
     })),
 })
 

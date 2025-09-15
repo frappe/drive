@@ -58,6 +58,5 @@ const action = computed(() =>
 
 // Used as right-click doesn't trigger active in frappe-ui
 const selectedName = computed(() => store.state.activeEntity?.name)
-const open = (row) =>
-  route.name !== "Trash" && openEntity(route.params.team, row)
+const open = (row) => route.name !== "Trash" && openEntity(row)
 </script>

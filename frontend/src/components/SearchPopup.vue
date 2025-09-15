@@ -27,7 +27,7 @@
           v-for="entity in searchResults.data"
           :key="entity.name"
           class="grid grid-flow-col grid-cols-8 gap-2 w-full items-center rounded px-2 py-2 text-base cursor-pointer hover:bg-surface-gray-2"
-          @click="openEntity(null, entity), (open = false)"
+          @click="openEntity(entity), (open = false)"
         >
           <div class="flex items-center gap-2 w-full col-span-6">
             <svg
@@ -90,7 +90,7 @@
         </span>
       </div>
       <div
-        v-if="searchResults.data?.length && !search.length"
+        v-if="false"
         class="flex flex-col mb-2 mt-4 first:mt-3"
       >
         <span class="mb-1 px-4.5 text-base text-ink-gray-5">Jump to</span>
@@ -167,7 +167,6 @@ import LucideFilePlus2 from "~icons/lucide/file-plus-2"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
 import LucideStar from "~icons/lucide/star"
 
-const emit = defineEmits(["openEntity", "update:open"])
 const search = ref("")
 const route = useRoute()
 

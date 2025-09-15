@@ -83,6 +83,7 @@
     <span class="text-ink-gray-8 text-sm mt-2">No Storage Used</span>
   </div>
   <div
+    v-if="storageBreakdown.data?.entities?.length"
     class="mt-1 text-ink-gray-8 font-medium text-base py-2"
     :class="storageBreakdown.data?.entities?.length ? 'border-b' : ''"
   >
@@ -107,18 +108,12 @@
           v-if="hoveredRow === i.name"
           variant="ghost"
           class="self-center"
-          @click="openEntity($route.params.team, i), $emit('close')"
+          @click="openEntity(i), $emit('close')"
         >
           <LucideArrowRight class="size-4 text-ink-gray-5" />
         </Button>
         {{ formatSize(i.file_size) }}
       </div>
-    </div>
-    <div
-      v-if="!storageBreakdown.data?.entities?.length"
-      class="py-4 text-center w-full text-sm text-italic"
-    >
-      No files found.
     </div>
   </div>
 </template>

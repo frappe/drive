@@ -71,9 +71,9 @@ emitter.on("showSearchPopup", (data) => {
 const EMITTERS = {
   u: () => emitter.emit("uploadFile"),
   n: () => emitter.emit("newFolder"),
-  m: () => store.state.activeEntity && emitter.emit("move"),
-  p: () => store.state.activeEntity && emitter.emit("share"),
-  e: () => store.state.activeEntity && emitter.emit("rename"),
+  m: () => emitter.emit("move"),
+  p: () => emitter.emit("share"),
+  e: () => emitter.emit("rename"),
 }
 for (let k in EMITTERS) {
   const btn = document.createElement("button")

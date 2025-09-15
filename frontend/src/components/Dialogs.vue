@@ -80,7 +80,7 @@
 import { ref, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { useTimeAgo } from "@vueuse/core"
-import { sortEntities, openEntity } from "@/utils/files"
+import { openEntity } from "@/utils/files"
 
 import emitter from "@/emitter"
 
@@ -146,7 +146,7 @@ function removeFromList(entities, move = true) {
       store.state.breadcrumbs.push({ loading: true })
     } else {
       resetDialog()
-      openEntity(null, {
+      openEntity({
         ...resource.value.data,
         name: resource.value.data.parent_entity,
         breadcrumbs: resource.value.data.breadcrumbs.slice(0, -1),

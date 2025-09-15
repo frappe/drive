@@ -19,100 +19,6 @@ async function setRootBreadCrumb(to) {
 
 const routes = [
   {
-    path: "/",
-    name: "Home",
-    component: () => import("@/pages/Personal.vue"),
-    beforeEnter: [setRootBreadCrumb],
-    props: true,
-  },
-  {
-    path: "/f/:entityName/",
-    component: Dummy,
-    beforeEnter: async (to) => {
-      const entity = createResource({
-        url: "/api/method/drive.api.files.get_entity_type",
-        method: "GET",
-        params: {
-          entity_name: to.params.entityName,
-        },
-      })
-      await entity.fetch()
-
-      return {
-        path: `/t/${entity.data.team}/${entity.data.type}/${entity.data.name}`,
-      }
-    },
-  },
-  {
-    path: "/inbox",
-    name: "Inbox",
-    // Load a skeleton template directly?
-    component: () => import("@/pages/Notifications.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/",
-    name: "Team",
-    component: () => import("@/pages/Team.vue"),
-    beforeEnter: [setRootBreadCrumb],
-    props: true,
-  },
-
-  {
-    path: "/trash",
-    name: "Trash",
-    component: () => import("@/pages/Trash.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/recents",
-    name: "Recents",
-    component: () => import("@/pages/Recents.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/documents",
-    name: "Documents",
-    component: () => import("@/pages/Documents.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/presentations",
-    name: "Slides",
-    component: () => import("@/pages/Slides.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/favourites",
-    name: "Favourites",
-    component: () => import("@/pages/Favourites.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/f/:entityName/:slug?",
-    name: "File",
-    component: () => import("@/pages/File.vue"),
-    meta: { allowGuest: true, filePage: true },
-    beforeEnter: [manageBreadcrumbs],
-    props: true,
-  },
-  {
-    path: "/folder/:entityName/:slug?",
-    name: "Folder",
-    component: () => import("@/pages/Folder.vue"),
-    meta: { allowGuest: true },
-    beforeEnter: [manageBreadcrumbs],
-    props: true,
-  },
-  {
-    path: "/d/:entityName/:slug?",
-    name: "Document",
-    meta: { documentPage: true, allowGuest: true },
-    component: () => import("@/pages/Document.vue"),
-    props: true,
-    beforeEnter: [manageBreadcrumbs],
-  },
-  {
     path: "/signup",
     name: "Signup",
     component: () => import("@/pages/LoginSignup.vue"),
@@ -131,14 +37,28 @@ const routes = [
     meta: { allowGuest: true },
   },
   {
-    path: "/teams",
-    name: "Teams",
-    component: () => import("@/pages/Teams.vue"),
-  },
-  {
     path: "/setup",
     name: "Setup",
     component: () => import("@/pages/Setup.vue"),
+  },
+  {
+    path: "/",
+    name: "Home",
+    component: () => import("@/pages/Personal.vue"),
+    beforeEnter: [setRootBreadCrumb],
+    props: true,
+  },
+  {
+    path: "/inbox",
+    name: "Inbox",
+    // Load a skeleton template directly?
+    component: () => import("@/pages/Notifications.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/teams",
+    name: "Teams",
+    component: () => import("@/pages/Teams.vue"),
   },
   {
     path: "/shared",
@@ -146,6 +66,89 @@ const routes = [
     component: () => import("@/pages/Shared.vue"),
     beforeEnter: [setRootBreadCrumb],
     meta: { allowGuest: true },
+  },
+  {
+    path: "/recents",
+    name: "Recents",
+    component: () => import("@/pages/Recents.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/favourites",
+    name: "Favourites",
+    component: () => import("@/pages/Favourites.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/documents",
+    name: "Documents",
+    component: () => import("@/pages/Documents.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/presentations",
+    name: "Slides",
+    component: () => import("@/pages/Slides.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/trash",
+    name: "Trash",
+    component: () => import("@/pages/Trash.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/g/:entityName/",
+    component: Dummy,
+    beforeEnter: async (to) => {
+      const entity = createResource({
+        url: "/api/method/drive.api.files.get_entity_type",
+        method: "GET",
+        params: {
+          entity_name: to.params.entityName,
+        },
+      })
+      await entity.fetch()
+      const letter = {
+        folder: "d",
+        document: "w",
+        file: "f",
+      }[entity.data.type]
+      return {
+        path: `/${letter}/${entity.data.name}`,
+      }
+    },
+  },
+  {
+    path: "/t/:team/",
+    name: "Team",
+    component: () => import("@/pages/Team.vue"),
+    beforeEnter: [setRootBreadCrumb],
+    props: true,
+  },
+  {
+    path: "/f/:entityName/:slug?",
+    name: "File",
+    component: () => import("@/pages/File.vue"),
+    meta: { allowGuest: true, filePage: true },
+    beforeEnter: [manageBreadcrumbs],
+    props: true,
+  },
+  {
+    path: "/d/:entityName/:slug?",
+    name: "Folder",
+    component: () => import("@/pages/Folder.vue"),
+    meta: { allowGuest: true },
+    beforeEnter: [manageBreadcrumbs],
+    props: true,
+  },
+  {
+    path: "/w/:entityName/:slug?",
+    name: "Document",
+    meta: { documentPage: true, allowGuest: true },
+    component: () => import("@/pages/Document.vue"),
+    props: true,
+    beforeEnter: [manageBreadcrumbs],
   },
 ]
 

@@ -25,27 +25,17 @@ import Video from "@/components/MimeIcons/Video.vue"
 import PDF from "@/components/MimeIcons/PDF.vue"
 import Unknown from "@/components/MimeIcons/Unknown.vue"
 
-export const openEntity = (team = null, entity, new_tab = false) => {
-  if (entity.external) {
-    if (entity.mime_type === "frappe/slides") {
-      window.open("/slides/presentation/" + entity.path, "_blank")
-    }
-    return
-  }
-
-  store.commit("setActiveEntity", entity)
-  if (!team) team = entity.team
-  if (entity.breadcrumbs?.length === 0) {
-    return router.push({ name: entity.is_private ? "Home" : "Team" })
-  }
+export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
     if (!getRecents.data?.some?.((k) => k.name === entity.name))
       getRecents.setData((data) => [...(data || []), entity])
+
     mutate([entity], (e) => {
       e.accessed = Date()
       entity.relativeAccessed = useTimeAgo(entity.accessed)
     })
   }
+
   if (new_tab) {
     return window.open(getLink(entity, false), "_blank")
   }
@@ -56,6 +46,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
     route: null,
   })
 
+  // hm?
   if (entity.name === "") {
     router.push({
       name: entity.is_private ? "Home" : "Team",
@@ -64,7 +55,7 @@ export const openEntity = (team = null, entity, new_tab = false) => {
   } else if (entity.is_group) {
     router.push({
       name: "Folder",
-      params: { team, entityName: entity.name },
+      params: { entityName: entity.name },
     })
   } else if (entity.is_link) {
     const origin = new URL(entity.path).origin
@@ -226,7 +217,9 @@ export const setBreadCrumbs = (entity) => {
       {
         label: in_home ? __("Home") : team.title,
         name: in_home ? "Home" : team.name,
-        route: in_home ? "/" : `/t/${team.name}`,
+        route: in_home
+          ? { name: "Home" }
+          : { name: "Team", params: { team: team.name } },
       },
     ]
 
@@ -244,7 +237,9 @@ export const setBreadCrumbs = (entity) => {
             entity.write && emitter.emit("rename")
           }
         : popBreadcrumbs(folder),
-      route: final ? null : `/folder/${folder.name}`,
+      route: final
+        ? null
+        : { name: "Folder", params: { entityName: folder.name } },
     })
   })
   store.commit("setBreadcrumbs", res)
@@ -457,10 +452,10 @@ function slugger(title) {
 function getLinkStem(entity) {
   return `${
     {
-      true: "file",
-      [new Boolean(entity.is_group)]: "folder",
+      true: "f",
+      [new Boolean(entity.is_group)]: "d",
       [new Boolean(entity.document || entity.mime_type === "text/markdown")]:
-        "document",
+        "w",
     }[true]
   }/${entity.name}/${slugger(entity.title)}`
 }
@@ -501,7 +496,7 @@ export function getLink(entity, copy = true, withDomain = true) {
   } else {
     link = `${
       withDomain ? window.location.origin + "/drive" : ""
-    }/t/${team}/${getLinkStem(entity)}`
+    }/${getLinkStem(entity)}`
   }
   if (!copy) return link
   try {

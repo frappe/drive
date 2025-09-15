@@ -7,10 +7,10 @@ from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
 from drive.utils import (
-    generate_upward_path,
-    get_file_type,
-    get_valid_breadcrumbs,
-    get_default_team,
+	generate_upward_path,
+	get_default_team,
+	get_file_type,
+	get_valid_breadcrumbs,
 )
 from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed

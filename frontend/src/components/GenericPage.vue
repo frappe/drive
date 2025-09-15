@@ -253,13 +253,13 @@ const actionItems = computed(() => {
       {
         label: __("Preview"),
         icon: LucideEye,
-        action: ([entity]) => openEntity(team.value, entity),
+        action: ([entity]) => openEntity(entity),
         isEnabled: (e) => !e.is_link,
       },
       {
         label: __("Open"),
         icon: LucideExternalLink,
-        action: ([entity]) => openEntity(team.value, entity),
+        action: ([entity]) => openEntity(entity),
         isEnabled: (e) => e.is_link,
       },
       { divider: true },

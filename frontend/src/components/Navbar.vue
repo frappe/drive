@@ -63,9 +63,6 @@
         placement="right"
         :button="{
           variant: 'ghost',
-          onClick: () => {
-            $store.commit('setActiveEntity', rootEntity)
-          },
           icon: LucideMoreHorizontal,
         }"
       />

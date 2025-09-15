@@ -170,7 +170,7 @@
           <span class="col-span-1">{{ entity.path }}</span>
         </li>
         <li>
-          <span class="inline-block w-24">Private:</span>
+          <span class="inline-block w-24">Team:</span>
           <span class="col-span-1">{{ entity.team }}</span>
         </li>
         <li>

@@ -174,7 +174,6 @@ function logout() {
 
 const sidebarItems = computed(() => {
   const first = store.state.breadcrumbs[0]
-  console.log(first)
   return dynamicList([
     {
       items: [
