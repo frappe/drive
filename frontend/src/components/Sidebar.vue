@@ -88,20 +88,34 @@ emitter.on("showSettings", (val = 0) => {
 emitter.on("toggleShortcuts", () => {
   showShortcuts.value = !showShortcuts.value
 })
-const settingsItems = shallowRef([
+const settingsItems = computed(() => [
   {
     group: __("Manage"),
     hideLabel: true,
     items: [
       {
-        icon: LucideUser,
-        label: __(route.params.team ? "Switch Team" : "Go to"),
-        submenu: [],
-      },
-      {
         icon: AppsIcon,
         label: __("Apps"),
-        submenu: [],
+        submenu: apps.data?.map?.((app) => ({
+          label: app.title,
+          icon: app.logo,
+          component: h(
+            "a",
+            {
+              class:
+                "flex items-center gap-2 p-1.5 rounded hover:bg-surface-gray-2",
+              href: app.route,
+            },
+            [
+              h("img", { src: app.logo, class: "size-6" }),
+              h(
+                "span",
+                { class: "max-w-18 text-sm w-full truncate" },
+                app.title
+              ),
+            ]
+          ),
+        })),
       },
       {
         icon: LucideBook,
@@ -137,45 +151,6 @@ const settingsItems = shallowRef([
     ],
   },
 ])
-
-watch(
-  [() => apps.data, () => getTeams.data, () => route.params.team],
-  ([a, b, team], prev) => {
-    if (!a || !b || (!team && !!prev[2])) return
-
-    const teams = Object.entries(b).filter(([k, _]) => k !== route.params.team)
-    let appsMenuIndex = 1
-    if (!teams.length) {
-      settingsItems.value[0].items.shift()
-      appsMenuIndex--
-    } else
-      settingsItems.value[0].items[0].submenu = teams.map(([k, v]) => ({
-        label: v.title,
-        onClick: () => {
-          router.push({ name: "Home", params: { team: k } })
-          LISTS.forEach((l) => l.reset())
-        },
-      }))
-
-    settingsItems.value[0].items[appsMenuIndex].submenu = a.map((app) => ({
-      label: app.title,
-      icon: app.logo,
-      component: h(
-        "a",
-        {
-          class:
-            "flex items-center gap-2 p-1.5 rounded hover:bg-surface-gray-2",
-          href: app.route,
-        },
-        [
-          h("img", { src: app.logo, class: "size-6" }),
-          h("span", { class: "max-w-18 text-sm w-full truncate" }, app.title),
-        ]
-      ),
-    }))
-  },
-  { immediate: true }
-)
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute("data-theme")
@@ -252,7 +227,7 @@ const sidebarItems = computed(() => {
     },
     {
       label: "Teams",
-      cond: getTeams.data && Object.keys(getTeams.data).length > 1,
+      cond: getTeams.data && Object.keys(getTeams.data).length > 0,
       collapsible: true,
       items:
         getTeams.data &&
