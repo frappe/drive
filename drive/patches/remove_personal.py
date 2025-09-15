@@ -12,7 +12,7 @@ def execute():
 
     # Insert personal team for every user if not exists
     MAP = {}
-    for user in frappe.get_all("Drive Team", pluck="name"):
+    for user in frappe.get_all("User", pluck="name"):
         team = frappe.get_doc({"doctype": "Drive Team", "personal": 1})
         team.insert()
         print(f"Created personal team {team.name} for user {user}")

@@ -148,7 +148,7 @@
       </ul>
       <ul
         v-if="developer"
-        class="space-y-3 text-sm text-ink-gray-9 mb-4"
+        class="space-y-3 text-sm text-ink-gray-9 mb-4 mt-2"
       >
         <div>
           <span class="text-base font-semibold">{{ __("Developer") }}</span>
@@ -165,6 +165,10 @@
             >
           </Button>
         </div>
+        <li>
+          <span class="inline-block w-24">ID:</span>
+          <span class="col-span-1">{{ entity.name }}</span>
+        </li>
         <li>
           <span class="inline-block w-24">Disk path:</span>
           <span class="col-span-1">{{ entity.path }}</span>
