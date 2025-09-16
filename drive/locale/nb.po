@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-15 19:46\n"
+"PO-Revision-Date: 2025-09-16 20:17\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -328,11 +328,11 @@ msgstr ""
 #: drive/drive/doctype/account_request/account_request.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Email"
-msgstr ""
+msgstr "E-post"
 
 #: frontend/src/components/Navbar.vue:344
 msgid "Empty"
-msgstr ""
+msgstr "Tom"
 
 #. Label of the enabled (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -351,7 +351,7 @@ msgstr ""
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Entity"
-msgstr ""
+msgstr "Enhet"
 
 #. Label of the entity_name (Link) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
@@ -361,7 +361,7 @@ msgstr "Enhetsnavn"
 #. Label of the entity_type (Data) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Entity Type"
-msgstr ""
+msgstr "Enhet Type"
 
 #. Description of the 'Endpoint URL' (Data) field in DocType 'Drive Disk
 #. Settings'
@@ -372,21 +372,21 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Expired"
-msgstr ""
+msgstr "Utløpt"
 
 #: frontend/src/components/GenericPage.vue:310
 #: frontend/src/components/Navbar.vue:248
 msgid "Favourite"
-msgstr ""
+msgstr "Favoritt"
 
 #. Label of the file_size (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "File Size"
-msgstr ""
+msgstr "Fil Størrelse"
 
 #: frontend/src/components/Sidebar.vue:207
 msgid "Find"
-msgstr ""
+msgstr "Finn"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
@@ -395,7 +395,7 @@ msgstr "Fornavn"
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "From User"
-msgstr ""
+msgstr "Fra Bruker"
 
 #. Label of the general_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
@@ -407,27 +407,27 @@ msgstr "Generell"
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Geo Location"
-msgstr ""
+msgstr "Geografisk Plassering"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Go to Drive"
-msgstr ""
+msgstr "Gå til Drive"
 
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Guest"
-msgstr ""
+msgstr "Gjest"
 
 #: frontend/src/utils/files.js:238
 msgid "Home"
-msgstr ""
+msgstr "Hjem"
 
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "IP Address"
-msgstr ""
+msgstr "IP Adresse"
 
 #. Label of the icon (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -438,7 +438,7 @@ msgstr "Ikon"
 #. Description of the 'Quota' (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "In MB"
-msgstr ""
+msgstr "I MB"
 
 #: frontend/src/components/Sidebar.vue:212
 msgid "Inbox"
@@ -448,7 +448,7 @@ msgstr "Innboks"
 #: drive/drive/doctype/account_request/account_request.json
 #: frontend/src/components/Settings/UserListSettings.vue:13
 msgid "Invite"
-msgstr ""
+msgstr "Invitere"
 
 #. Label of the is_active (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
