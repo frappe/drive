@@ -111,9 +111,3 @@ export const createTeam = createResource({
     toast({ title: "Failed to create team. Please try again.", type: "error" })
   },
 })
-
-export const getHome = createResource({
-  url: "drive.api.files.get_personal_team",
-  method: "GET",
-  cache: "home",
-})

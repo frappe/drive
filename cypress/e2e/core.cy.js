@@ -4,9 +4,9 @@ describe("Core functionality", () => {
       method: "POST",
       url: "/api/method/drive.test_api.clear_data",
     });
-    cy.login();
   });
   beforeEach(() => {
+    cy.login();
     cy.visit("/drive");
   });
   it("Defaults to home", () => {

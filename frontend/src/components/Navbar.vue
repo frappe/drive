@@ -105,7 +105,7 @@
     />
     <Dialogs
       v-model="dialog"
-      :entities="entities?.length ? entities : [rootEntity]"
+      :entities="rootEntity ? [rootEntity] : entities"
     />
   </nav>
 </template>
@@ -294,7 +294,6 @@ const newExternal = async (type) => {
     (type === "Document" ? createDocument : createPresentation).submit({
       title: "Untitled " + type,
       team: route.params.team,
-      personal: isPrivate.value,
       parent: store.state.currentFolder.name,
     }),
     {

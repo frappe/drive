@@ -5,11 +5,11 @@ from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
 from drive.utils import (
-	MIME_LIST_MAP,
-	default_team,
-	get_default_team,
-	get_file_type,
-	get_home_folder,
+    MIME_LIST_MAP,
+    default_team,
+    get_default_team,
+    get_file_type,
+    get_home_folder,
 )
 
 from .permissions import ENTITY_FIELDS, get_user_access
@@ -45,7 +45,7 @@ def files(
     only_parent=1,
     search=None,
 ):
-
+    # Clean files
     field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)
     only_parent = int(only_parent)

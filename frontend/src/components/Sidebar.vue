@@ -12,7 +12,10 @@
     :sections="sidebarItems"
   >
     <template #footer-items="{ isCollapsed }">
-      <StorageBar :is-expanded="!isCollapsed" />
+      <StorageBar
+        v-if="teamExists.data"
+        :is-expanded="!isCollapsed"
+      />
     </template>
   </Sidebar>
   <SettingsDialog
@@ -29,7 +32,7 @@
 import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 
 import StorageBar from "./StorageBar.vue"
-import { Sidebar } from "frappe-ui"
+import { Sidebar, createResource } from "frappe-ui"
 
 import { notifCount, apps } from "@/resources/permissions"
 import { getTeams, LISTS } from "@/resources/files"
@@ -63,16 +66,16 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 notifCount.fetch()
-getTeams.fetch(null, {
-  onSuccess: (data) => {
-    if (localStorage.getItem("first_time")) return
-    if (!data || !Object.keys(data).length) {
-      router.replace({ name: "Setup" })
-      localStorage.setItem("first_time", "1")
-    }
+getTeams.fetch()
+apps.fetch()
+
+const teamExists = createResource({
+  url: "drive.utils.get_default_team",
+  auto: true,
+  onSuccess: (d) => {
+    !d && router.replace({ name: "Setup" })
   },
 })
-apps.fetch()
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
 watch(isCollapsed, (v) => store.commit("setSidebarCollapsed", v))

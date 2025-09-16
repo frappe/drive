@@ -1,5 +1,6 @@
-import re
+import inspect
 from datetime import datetime
+from functools import wraps
 
 import frappe
 from bs4 import BeautifulSoup
@@ -341,17 +342,24 @@ def strip_comment_spans(html: str) -> str:
     return str(soup)
 
 
+@frappe.whitelist()
 def get_default_team():
     return frappe.get_value("Drive Team", {"owner": frappe.session.user, "personal": 1}, "name")
 
 
 def default_team(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         # Handle weird frappe thing
         if "cmd" in kwargs:
             kwargs.pop("cmd")
-        if not kwargs.get("team"):
+
+        sig = inspect.signature(func)
+        bound_args = sig.bind_partial(*args, **kwargs)
+        bound_args.apply_defaults()
+        if "team" not in bound_args.arguments or not bound_args.arguments["team"]:
             kwargs["team"] = get_default_team()
+        print(bound_args.arguments, bound_args, kwargs)
         return func(*args, **kwargs)
 
     return wrapper

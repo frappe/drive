@@ -31,7 +31,7 @@ Cypress.Commands.add("iconButton", (text) => {
 });
 
 Cypress.Commands.add("dialog", (selector) => {
-  return cy.get(`[role=dialog] ${selector}`);
+  return cy.get(selector ? `[role=dialog] ${selector}` : "[role=dialog]");
 });
 
 Cypress.Commands.add("paste", { prevSubject: true }, (subject, text) => {

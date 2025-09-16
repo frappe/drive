@@ -339,6 +339,12 @@ export const translate = createResource({
   cache: "translate",
 })
 
+export const storageBar = createResource({
+  url: "drive.api.storage.storage_bar_data",
+  method: "GET",
+  cache: "total_storage",
+})
+
 setCache(getTeam, "home-folder-contents")
 setCache(getShared, "shared-folder-contents")
 setCache(getRecents, "recents-folder-contents")

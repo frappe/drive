@@ -4,7 +4,7 @@
     :get-entities="getRecents"
     :show-sort="false"
     :icon="LucideClock"
-    primary-message="No recent files"
+    primary-message="No recent files."
     secondary-message="Try opening something!"
   />
 </template>

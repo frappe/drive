@@ -4,11 +4,7 @@
       v-if="isLoggedIn || $route.meta.allowGuest"
       class="flex flex-col sm:flex-row h-full"
     >
-      <Sidebar
-        v-if="
-          !inIframe && isLoggedIn && !['Teams', 'Setup'].includes($route.name)
-        "
-      />
+      <Sidebar v-if="normalView" />
       <div
         id="dropzone"
         class="flex flex-col flex-1 overflow-hidden bg-surface-white"
@@ -41,7 +37,7 @@
       class="hidden"
       @click="emitter.emit('uploadFile')"
     />
-    <FileUploader />
+    <FileUploader v-if="normalView" />
     <FDialogs />
   </FrappeUIProvider>
 </template>
@@ -56,14 +52,22 @@ import { ref, computed, provide } from "vue"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 import { FrappeUIProvider } from "frappe-ui"
+import { useRoute } from "vue-router"
 import "access-key-label-polyfill"
 
 const store = useStore()
+const route = useRoute()
 const inIframe = window.self !== window.top
 provide("inIframe", inIframe)
 
 const showSearchPopup = ref(false)
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
+const normalView = computed(
+  () =>
+    !inIframe.value &&
+    isLoggedIn.value &&
+    !["Teams", "Setup"].includes(route.name)
+)
 emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data
 })

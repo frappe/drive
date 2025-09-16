@@ -68,7 +68,6 @@ const createLink = createResource({
     link: link.value.trim(),
     team: route.params.team,
     parent: props.parent,
-    personal: store.state.breadcrumbs[0].name == "Home" ? 1 : 0,
   }),
   validate(params) {
     if (!params?.title) {

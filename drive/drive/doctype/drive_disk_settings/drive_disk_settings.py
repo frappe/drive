@@ -13,5 +13,5 @@ class DriveDiskSettings(Document):
         """
         val = object.__getattribute__(self, attr)
         if attr == "root_prefix_value":
-            return val if val != "/" else ""
+            return val if val and val != "/" else ""
         return val

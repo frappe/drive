@@ -62,7 +62,6 @@ const createFolder = createResource({
       title,
       team: route.params.team,
       parent: props.parent,
-      personal: store.state.breadcrumbs[0].name == "Home" ? 1 : 0,
     }
   },
   validate(params) {

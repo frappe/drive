@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!totalStorage.loading"
+    v-if="!storageBar.loading"
     class="flex flex-col hover:bg-surface-gray-2 rounded cursor-pointer mb-0.5"
     @click="emitter.emit('showSettings', 2)"
   >
@@ -16,7 +16,7 @@
       <div
         class="h-1 rounded-full"
         :class="
-          (100 * usedStorage) / storageMax > 100
+          (100 * storageBar.data.total_size) / storageMax > 100
             ? 'bg-surface-red-500'
             : 'bg-surface-gray-7'
         "
@@ -35,29 +35,29 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, watch } from "vue"
+import { computed, inject, watch } from "vue"
 import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
+import { storageBar } from "@/resources/files"
 import { useRoute } from "vue-router"
 import LucideCloud from "~icons/lucide/cloud"
 
 const emitter = inject("emitter")
 
-const usedStorage = ref(0)
-const storageMax = ref(5368709120)
+const storageMax = computed(() => storageBar.data.limit || 5368709120)
 
 const props = defineProps(["isExpanded"])
 const formattedString = computed(() => {
   return (
-    formatSize(usedStorage.value) +
+    formatSize(storageBar.data.total_size || 0) +
     " used out of " +
     base2BlockSize(storageMax.value)
   )
 })
 
 const calculatePercent = computed(() => {
-  let num = (100 * usedStorage.value) / storageMax.value
+  let num = (100 * storageBar.data.total_size) / storageMax.value
   return new Intl.NumberFormat("default", {
     style: "percent",
     minimumFractionDigits: 1,
@@ -65,24 +65,9 @@ const calculatePercent = computed(() => {
   }).format(num / 100)
 })
 const route = useRoute()
-const team = computed(
-  () => route.params.team || localStorage.getItem("recentTeam")
-)
+const team = computed(() => route.params.team)
 
-let totalStorage = createResource({
-  url: "drive.api.storage.storage_bar_data",
-  method: "GET",
-  cache: "total_storage",
-  onSuccess(data) {
-    usedStorage.value = data.total_size
-    storageMax.value = data.limit
-  },
-})
-watch(team, (val) => val && totalStorage.fetch({ team: val }), {
+watch(team, (val) => storageBar.fetch({ team: val || "" }), {
   immediate: true,
-})
-
-emitter.on("recalculate", () => {
-  setTimeout(() => totalStorage.fetch({ team: team.value }), 2000)
 })
 </script>

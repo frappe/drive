@@ -38,8 +38,8 @@ const store = createStore({
     notifCount: 0,
     pasteData: { entities: [], action: null },
     currentFolder: {
-      name: getJson("currentFolder", {}),
-      team: getJson("currentFolderTeam", {}),
+      name: getJson("currentFolder", ""),
+      team: getJson("currentFolderTeam", ""),
       entities: getJson("currentEntitites", []),
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),

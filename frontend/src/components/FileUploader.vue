@@ -9,6 +9,7 @@ import { ref, onMounted, onBeforeUnmount, inject, watch } from "vue"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import Dropzone from "dropzone"
+import { storageBar } from "@/resources/files"
 
 const store = useStore()
 const route = useRoute()
@@ -126,7 +127,6 @@ onMounted(() => {
     },
     addRemoveLinks: true,
     accept: function (file, done) {
-      if (route.name === "Home") file.personal = 1
       file.team = store.state.currentFolder.team || ""
       if (file.size == 0) {
         done("Empty files will not be uploaded.")
@@ -136,7 +136,6 @@ onMounted(() => {
     },
     sending: function (file, _, formData) {
       formData.append("team", file.team)
-      if (file.personal) formData.append("personal", 1)
       if (file.lastModified) formData.append("last_modified", file.lastModified)
       if (file.parent) formData.append("parent", file.parent)
       const path = file.newFullPath || file.webkitRelativePath || file.fullPath
@@ -216,6 +215,7 @@ onMounted(() => {
       uuid: file.upload.uuid,
       response: response.message,
     })
+    storageBar.fetch(storageBar.params)
   })
   dropzone.value.on("complete", function (file) {
     store.commit("updateUpload", {

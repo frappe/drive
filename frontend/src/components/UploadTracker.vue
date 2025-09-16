@@ -151,7 +151,7 @@ import LucideX from "~icons/lucide/x"
 import LucideRefreshCcw from "~icons/lucide/refresh-ccw"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 
 const collapsed = ref(false)
 const showErrorDialog = ref(false)
@@ -193,6 +193,16 @@ const { uploadsInProgress, uploadsCompleted, uploadsFailed } = mapGetters([
   "uploadsCompleted",
   "uploadsFailed",
 ])
+
+watch(
+  [uploadsInProgress, uploadsCompleted, uploadsFailed],
+  ([prog, compl, failed]) => {
+    if (compl.length) return
+    if (failed.length) currentTab.value = 3
+    else if (prog.length) currentTab.value = 2
+  },
+  { immediate: true }
+)
 
 const openFile = (upload) => {
   selectedUpload.value = upload

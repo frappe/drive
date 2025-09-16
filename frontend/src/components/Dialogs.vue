@@ -47,7 +47,7 @@
     v-model="dialog"
     :entities="entities"
     @success="removeFromList(entities)"
-    @complete="is_root && resource.fetch(resource.params)"
+    @complete="entity_open && resource.fetch(resource.params)"
   />
   <InfoPopup
     v-else-if="dialog === 'i'"
@@ -102,8 +102,10 @@ const resource = computed(() =>
     ? store.state.currentResource
     : listResource.value
 )
-const is_root = computed(
-  () => props.entities[0].name === resource.value.data?.name
+const entity_open = computed(
+  () =>
+    resource.value.data?.name &&
+    props.entities[0]?.name === resource.value.data?.name
 )
 
 const dialog = defineModel(String)
@@ -140,7 +142,8 @@ function addToList(data, file_type) {
 }
 
 function removeFromList(entities, move = true) {
-  if (is_root.value) {
+  console.log(entity_open.value)
+  if (entity_open.value) {
     if (move) {
       store.state.breadcrumbs.splice(1)
       store.state.breadcrumbs.push({ loading: true })
