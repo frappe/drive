@@ -70,7 +70,10 @@ const team = computed(() => route.params.team)
 watch(
   team,
   (val) =>
-    storageBar.fetch({ team: val || "", entity_name: route.params.entityName }),
+    storageBar.fetch({
+      team: val || "",
+      entity_name: route.params.entityName || "",
+    }),
   {
     immediate: true,
   }

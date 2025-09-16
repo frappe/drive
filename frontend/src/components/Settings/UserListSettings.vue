@@ -68,17 +68,7 @@
     class="flex gap-2 mb-2"
     v-if="Object.values(getTeams.data).length"
   >
-    <Combobox
-      placeholder="Select a team"
-      :options="
-        Object.values(getTeams.data).map((k) => ({
-          label: k.title,
-          value: k.name,
-          icon: icons[k.icon || 'building'],
-        }))
-      "
-      v-model="team"
-    />
+    <TeamSelector v-model="team" />
     <Dropdown
       v-if="team"
       :button="{
@@ -513,7 +503,8 @@ import LucidePencil from "~icons/lucide/pencil"
 import router from "@/router"
 import Alert from "@/components/Alert.vue"
 import UserTooltip from "@/components/UserTooltip.vue"
-import { dynamicList } from "../../utils/files"
+import { dynamicList } from "@/utils/files"
+import TeamSelector from "@/components/TeamSelector.vue"
 
 const route = useRoute()
 const tabIndex = ref(0)

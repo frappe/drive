@@ -5,11 +5,11 @@ from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
 from drive.utils import (
-	MIME_LIST_MAP,
-	default_team,
-	get_default_team,
-	get_file_type,
-	get_home_folder,
+    MIME_LIST_MAP,
+    default_team,
+    get_default_team,
+    get_file_type,
+    get_home_folder,
 )
 
 from .permissions import ENTITY_FIELDS, get_user_access
@@ -30,7 +30,7 @@ Binary = CustomFunction("BINARY", ["expression"])
 @frappe.whitelist(allow_guest=True)
 @default_team
 def files(
-    team=None,
+    team,
     entity_name=None,
     order_by="modified 1",
     is_active=1,
@@ -54,29 +54,36 @@ def files(
     favourites_only = int(favourites_only)
     ascending = int(ascending)
 
-    if not entity_name:
+    all_teams = False
+    if team == "all":
+        all_teams = True
+        team = None
+
+    if not entity_name and team:
         entity_name = get_home_folder(team)["name"]
 
-    entity = frappe.get_doc("Drive File", entity_name)
-    # Verify that entity exists and is part of the team
-    if not entity:
-        frappe.throw(
-            f"Not found ({entity_name}) ",
-            frappe.exceptions.PageDoesNotExistError,
-        )
-
-    if not team == entity.team:
-        team = entity.team
-
-    # Verify that folder is public or that they have access
     user = frappe.session.user if frappe.session.user != "Guest" else ""
-    user_access = get_user_access(entity, user)
+    if entity_name:
+        entity = frappe.get_doc("Drive File", entity_name)
+        # Verify that entity exists and is part of the team
+        if not entity:
+            frappe.throw(
+                f"Not found ({entity_name}) ",
+                frappe.exceptions.PageDoesNotExistError,
+            )
 
-    if not user_access["read"]:
-        frappe.throw(
-            f"You don't have access.",
-            frappe.exceptions.PermissionError,
-        )
+        if not team == entity.team:
+            team = entity.team
+
+        # Verify that folder is public or that they have access
+        user_access = get_user_access(entity, user)
+
+        if not user_access["read"]:
+            frappe.throw(
+                f"You don't have access.",
+                frappe.exceptions.PermissionError,
+            )
+
     query = (
         frappe.qb.from_(DriveFile)
         .where(DriveFile.is_active == is_active)
@@ -84,7 +91,7 @@ def files(
         .on((DrivePermission.entity == DriveFile.name) & (DrivePermission.user == user))
         # Give defaults as a team member
         .select(*ENTITY_FIELDS, "team")
-        .where(fn.Coalesce(DrivePermission.read, user_access["read"]).as_("read") == 1)
+        .where(fn.Coalesce(DrivePermission.read, 1).as_("read") == 1)
     )
 
     # Cursor pagination
@@ -95,9 +102,9 @@ def files(
 
     if only_parent and (not recents_only and not favourites_only):
         query = query.where(DriveFile.parent_entity == entity_name)
-    else:
+    elif not all_teams:
         query = query.where((DriveFile.team == team) & (DriveFile.parent_entity != ""))
-
+    print(all_teams)
     # Get favourites data (only that, if applicable)
     if favourites_only:
         query = query.right_join(DriveFavourite)
@@ -176,13 +183,14 @@ def files(
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
     res = query.run(as_dict=True)
-    default = 0
-    if get_user_access(entity_name, "Guest")["read"]:
-        default = -2
-    elif get_user_access(entity_name, "$TEAM")["read"]:
-        default = -1
 
-    home = get_default_team()
+    default = 0
+    if entity_name:
+        if get_user_access(entity_name, "Guest")["read"]:
+            default = -2
+        elif get_user_access(entity_name, "$TEAM")["read"]:
+            default = -1
+
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)

@@ -19,6 +19,7 @@
     <DriveToolBar
       v-model:sort-order="sortOrder"
       v-model:search="search"
+      v-model:team="team"
       :action-items="actionItems"
       :selections="selectedEntitities"
       :get-entities="getEntities || { data: [] }"
@@ -124,7 +125,17 @@ const store = useStore()
 const dialog = ref("")
 provide("dialog", dialog)
 
-const team = computed(() => route.params.team)
+const team = ref(
+  ["Shared", "Recents", "Favourites", "Trash"].includes(route.name)
+    ? "all"
+    : route.params.team
+)
+watch(
+  () => route.params.team,
+  (v) => {
+    if (v) team.value = v
+  }
+)
 const activeEntity = computed(() => store.state.activeEntity)
 
 const sortId = computed(
@@ -189,7 +200,7 @@ watchEffect(() => {
 })
 
 const refreshData = () => {
-  const params = team.value ? { team: team.value } : {}
+  const params = { team: team.value === "home" ? "" : team.value || "" }
   if (sortOrder.value)
     params.order_by =
       sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
@@ -197,8 +208,8 @@ const refreshData = () => {
 }
 
 watch(
-  verifyAccess,
-  (data) => {
+  [verifyAccess, team],
+  ([data]) => {
     if (!data) return
     refreshData()
   },
@@ -208,7 +219,6 @@ emitter.on("refresh", refreshData)
 
 if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team: team.value })
-  if (!allFolders.fetched) allFolders.fetch({ team: team.value })
 }
 if (!settings.fetched && store.getters.isLoggedIn) settings.fetch()
 

@@ -13,7 +13,6 @@
 import GenericPage from "@/components/GenericPage.vue"
 import { getRecents } from "@/resources/files"
 import LucideClock from "~icons/lucide/clock"
-// Broken - show all recents
 // Broken - list view
 
 function groupByTime(entities) {

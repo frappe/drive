@@ -21,7 +21,6 @@
             onClick: () => {
               store.commit('toggleShareView', 'by')
             },
-            disabled: !getEntities.data?.length,
           },
           {
             label: __('With you'),
@@ -29,7 +28,6 @@
             onClick: () => {
               store.commit('toggleShareView', 'with')
             },
-            disabled: !getEntities.data?.length,
           },
         ]"
       />
@@ -37,7 +35,7 @@
     <TextInput
       ref="search-input"
       v-model="search"
-      :disabled="!getEntities.data?.length"
+      :disabled
       :class="selections.length ? 'hidden' : 'block'"
       :placeholder="__('Search')"
       class="w-[30%]"
@@ -48,7 +46,7 @@
     </TextInput>
 
     <div class="flex gap-2 ml-auto my-auto">
-      <template v-if="selections && !selections.length">
+      <template v-if="!selections?.length">
         <div
           v-if="activeFilters.length"
           class="flex flex-wrap items-start justify-end gap-1 ml-3"
@@ -109,6 +107,19 @@
             </div>
           </div>
         </div>
+        <Button
+          v-if="getEntities.loading"
+          :loading="true"
+          label="Loading..."
+        />
+        <TeamSelector
+          v-model="team"
+          :disabled
+          v-if="
+            ['Shared', 'Recents', 'Favourites', 'Trash'].includes($route.name)
+          "
+          :none="true"
+        />
         <Dropdown
           :options="
             Object.keys(ICON_TYPES).map((k) => ({
@@ -121,7 +132,7 @@
             icon: LucideFilter,
             tooltip: 'Filter',
           }"
-          :disabled="!getEntities.data?.length"
+          :disabled
           placement="right"
         />
         <Dropdown
@@ -132,7 +143,7 @@
           <div class="flex items-center whitespace-nowrap">
             <Button
               class="text-sm h-7 border-r border-slate-200 rounded-r-none"
-              :disabled="!getEntities.data?.length"
+              :disabled
               @click.stop="toggleAscending"
             >
               <template #icon>
@@ -149,7 +160,7 @@
 
             <Button
               class="text-sm h-7 rounded-l-none flex-1"
-              :disabled="!getEntities.data?.length"
+              :disabled
             >
               <div class="flex items-center gap-2">
                 {{ __(sortOrder.label) }}
@@ -167,12 +178,12 @@
             {
               icon: 'grid',
               value: 'grid',
-              disabled: !getEntities.data?.length,
+              disabled,
             },
             {
               icon: 'list',
               value: 'list',
-              disabled: !getEntities.data?.length,
+              disabled,
             },
           ]"
         />
@@ -211,23 +222,24 @@
   </div>
 </template>
 <script setup>
-import { Button, Dropdown, TextInput, TabButtons, Switch } from "frappe-ui"
 import {
-  ref,
-  computed,
-  watch,
-  useTemplateRef,
-  h,
-  reactive,
-  defineComponent,
-} from "vue"
+  Button,
+  Dropdown,
+  TextInput,
+  TabButtons,
+  Switch,
+  LoadingIndicator,
+} from "frappe-ui"
+import { ref, computed, watch, useTemplateRef, h, defineComponent } from "vue"
 import { ICON_TYPES, MIME_LIST_MAP } from "@/utils/files"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideFilter from "~icons/lucide/filter"
+import TeamSelector from "@/components/TeamSelector.vue"
 
 const sortOrder = defineModel("sortOrder")
 const search = defineModel("search")
+const team = defineModel("team")
 const props = defineProps({
   selections: Array,
   actionItems: Array,
@@ -237,6 +249,7 @@ const store = useStore()
 
 const activeFilters = ref([])
 const activeTags = computed(() => store.state.activeTags)
+const disabled = computed(() => !props.getEntities.data?.length)
 
 const viewState = ref(store.state.view)
 watch(viewState, (val) => store.commit("toggleView", val))
