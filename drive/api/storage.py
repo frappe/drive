@@ -1,7 +1,7 @@
 import frappe
 from pypika import functions as fn
 
-from drive.utils import get_file_type, default_team
+from drive.utils import default_team, get_file_type
 
 MEGA_BYTE = 1024**2
 DriveFile = frappe.qb.DocType("Drive File")
