@@ -37,7 +37,9 @@
       class="hidden"
       @click="emitter.emit('uploadFile')"
     />
-    <FileUploader v-if="normalView" />
+    <FileUploader
+      v-if="normalView && ['Folder', 'Home', 'Team'].includes($route.name)"
+    />
     <FDialogs />
   </FrappeUIProvider>
 </template>

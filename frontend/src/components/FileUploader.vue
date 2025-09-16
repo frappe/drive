@@ -264,6 +264,6 @@ emitter.on("uploadFolder", () => {
 })
 
 onBeforeUnmount(() => {
-  // dropzone.value.destroy()
+  dropzone.value.destroy()
 })
 </script>

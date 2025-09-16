@@ -150,8 +150,8 @@ const teamOptions = computed(() =>
       }))
     : {}
 )
-const singleClick = ref(Boolean(settings.data.single_click))
-const detectLinks = ref(Boolean(settings.data.auto_detect_links))
+const singleClick = ref(Boolean(settings.data?.single_click))
+const detectLinks = ref(Boolean(settings.data?.auto_detect_links))
 const defaultTeam = ref(settings.data.default_team || { label: "-" })
 const options = {
   single_click: singleClick,

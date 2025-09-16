@@ -2,7 +2,8 @@
   <GenericPage
     :get-entities="getPersonal"
     :icon="LucideHome"
-    primary-message="No files yet."
+    primary-message="No files yet"
+    secondary-message="Upload to get started!"
     :verify="{
       data: {
         write: 1,

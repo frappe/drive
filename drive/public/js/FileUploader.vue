@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, nextTick } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import TreeNode from "./TreeNode.vue";
 import TabButtons from "./TabButtons.vue";
 

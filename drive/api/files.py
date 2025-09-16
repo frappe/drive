@@ -18,14 +18,14 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-    create_drive_file,
-    default_team,
-    extract_mentions,
-    get_file_type,
-    get_home_folder,
-    if_folder_exists,
-    strip_comment_spans,
-    update_file_size,
+	create_drive_file,
+	default_team,
+	extract_mentions,
+	get_file_type,
+	get_home_folder,
+	if_folder_exists,
+	strip_comment_spans,
+	update_file_size,
 )
 from drive.utils.files import FileManager
 

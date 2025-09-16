@@ -19,7 +19,7 @@ import { allUsers } from "@/resources/permissions"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import LucideBuilding2 from "~icons/lucide/building-2"
-import { computed } from "vue"
+import { computed, watch } from "vue"
 
 const store = useStore()
 const props = defineProps({
@@ -32,11 +32,18 @@ const write = computed(
     allUsers.data &&
     allUsers.data.find((k) => k.name === store.state.user.id)?.access_level > 0
 )
-const team = getTeams.data[useRoute().params.team]
-store.commit("setBreadcrumbs", [
-  {
-    label: team.title,
-    name: team.name,
-  },
-])
+const route = useRoute()
+const team = computed(() => getTeams.data[route.params?.team])
+watch(
+  team,
+  (t) =>
+    t &&
+    store.commit("setBreadcrumbs", [
+      {
+        label: t.title,
+        name: t.name,
+      },
+    ]),
+  { immediate: true }
+)
 </script>

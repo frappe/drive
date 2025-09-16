@@ -5,7 +5,7 @@
     </h1>
     <Button
       variant="solid"
-      icon="plus"
+      :icon="LucidePlus"
       class="ml-auto mr-4"
       @click="showAddTeam = true"
     >
@@ -66,9 +66,10 @@
   </Alert>
   <div
     class="flex gap-2 mb-2"
-    v-if="team"
+    v-if="Object.values(getTeams.data).length"
   >
     <Combobox
+      placeholder="Select a team"
       :options="
         Object.values(getTeams.data).map((k) => ({
           label: k.title,
@@ -79,6 +80,7 @@
       v-model="team"
     />
     <Dropdown
+      v-if="team"
       :button="{
         variant: 'ghost',
         icon: LucideMoreVertical,
@@ -104,6 +106,12 @@
         ])
       "
     />
+  </div>
+  <div
+    v-else
+    class="text-center text-p-sm py-4"
+  >
+    No teams yet. Create one to get started.
   </div>
   <Tabs
     v-if="team"
@@ -208,7 +216,8 @@
                   invite.email
                 }}</span>
                 <span class="text-xs text-ink-gray-5"
-                  >Invited by <UserTooltip :email="invite.owner" />
+                  >Invited by
+                  <UserTooltip :email="invite.owner" />
                 </span>
               </div>
               <div class="flex">
@@ -264,18 +273,11 @@
                 </div>
               </div>
             </div>
-          </div></div
-      ></template>
+          </div>
+        </div>
+      </template>
     </template>
   </Tabs>
-  <div>
-    <div
-      v-if="!team"
-      class="text-center text-p-sm py-4"
-    >
-      No teams yet. Create one to get started.
-    </div>
-  </div>
 
   <Dialog
     v-model="showInvite"
@@ -367,6 +369,7 @@
     <template #body-content>
       <div class="flex flex-col gap-2">
         <FormControl
+          v-focus
           required
           :label="__('Name')"
           type="input"
@@ -401,11 +404,13 @@
           createTeam.submit(
             { team_name: teamName, icon: selectedIcon },
             {
-              onSuccess: () => {
+              onSuccess: (id) => {
+                team = id
                 showAddTeam = false
                 teamName = ''
                 selectedIcon = ''
                 getTeams.fetch()
+                router.push({ name: 'Team', params: { team: id } })
               },
             }
           )
@@ -500,6 +505,7 @@ import { ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
 import LucideMail from "~icons/lucide/mail"
+import LucidePlus from "~icons/lucide/plus"
 import LucideUsers from "~icons/lucide/users"
 import LucideMoreVertical from "~icons/lucide/more-vertical"
 import LucideLogOut from "~icons/lucide/log-out"
@@ -512,14 +518,26 @@ import { dynamicList } from "../../utils/files"
 const route = useRoute()
 const tabIndex = ref(0)
 getTeams.fetch()
+const invites = createResource({
+  url: "drive.api.product.get_team_invites",
+})
+
+const isAdmin = createResource({
+  url: "drive.api.permissions.is_admin",
+})
+
 const team = ref(
   route.params.team || getTeams.data ? Object.keys(getTeams.data)[0] : null
 )
+
 const teamData = computed(() => getTeams.data?.[team.value] || {})
 watch(
   team,
   (team) => {
+    if (!team) return
     allUsers.fetch({ team })
+    invites.fetch({ team })
+    isAdmin.fetch({ team })
     tabIndex.value = 0
   },
   { immediate: true }
@@ -547,9 +565,16 @@ const editTeam = createResource({
 const leaveTeam = createResource({
   url: "drive.api.product.leave_team",
   onSuccess: () => {
-    getTeams.fetch()
-    team.value = getTeams.data ? Object.keys(getTeams.data)[0] : null
-    router.push({ name: "Team", params: { team: team.value } })
+    getTeams.fetch(null, {
+      onSuccess: () => {
+        team.value = Object.keys(getTeams.data).length
+          ? Object.keys(getTeams.data)[0]
+          : null
+        if (team.value)
+          router.push({ name: "Team", params: { team: team.value } })
+        else router.push({ name: "Home" })
+      },
+    })
     toast("You have left the team.")
   },
 })
@@ -617,12 +642,6 @@ function extractEmails() {
   emailInput.value = ""
 }
 
-const isAdmin = createResource({
-  url: "drive.api.permissions.is_admin",
-  params: { team: team.value },
-  auto: true,
-})
-
 const inviteUsers = createResource({
   url: "drive.api.product.invite_users",
   onSuccess: () => {
@@ -631,11 +650,6 @@ const inviteUsers = createResource({
   },
 })
 
-const invites = createResource({
-  url: "drive.api.product.get_team_invites",
-  auto: true,
-  params: { team: team.value },
-})
 getInvites.fetch()
 const invite = computed(() =>
   getInvites.data?.length ? getInvites.data[0] : null

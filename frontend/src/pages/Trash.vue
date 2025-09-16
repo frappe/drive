@@ -3,6 +3,7 @@
     :get-entities="getTrash"
     :icon="LucideTrash"
     primary-message="Trash is empty"
+    secondary-message="Trashed files will show up here - you can restore them."
   />
 </template>
 

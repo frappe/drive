@@ -2,7 +2,8 @@
   <GenericPage
     :get-entities="getShared"
     :icon="LucideUsers"
-    :primary-message="'No Shared Files'"
+    primary-message="No shared files"
+    secondary-message="You can share files easily on Drive - try it out!"
   />
 </template>
 

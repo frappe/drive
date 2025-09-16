@@ -121,6 +121,7 @@
             icon: LucideFilter,
             tooltip: 'Filter',
           }"
+          :disabled="!getEntities.data?.length"
           placement="right"
         />
         <Dropdown

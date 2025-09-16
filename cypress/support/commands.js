@@ -34,6 +34,14 @@ Cypress.Commands.add("dialog", (selector) => {
   return cy.get(selector ? `[role=dialog] ${selector}` : "[role=dialog]");
 });
 
+Cypress.Commands.add("list", () => {
+  return cy.get("#dropzone");
+});
+
+Cypress.Commands.add("body", () => {
+  return cy.get("body");
+});
+
 Cypress.Commands.add("paste", { prevSubject: true }, (subject, text) => {
   cy.wrap(subject).then(($element) => {
     const element = $element[0];

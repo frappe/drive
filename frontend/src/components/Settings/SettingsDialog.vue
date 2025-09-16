@@ -21,7 +21,7 @@
             >
               <button
                 v-if="tab.enabled?.value !== false"
-                class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1"
+                class="flex h-7 w-full items-center gap-2 rounded-sm px-2 py-1 focus-visible:outline-none"
                 :class="[
                   activeTab?.label == tab.label
                     ? 'bg-surface-gray-4'
