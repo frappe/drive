@@ -318,13 +318,11 @@ class DriveFile(Document):
             frappe.throw("Not permitted to share", frappe.PermissionError)
 
         # Clean out existing general records
-        if not user:
+        if not user or team:
             perm_names = frappe.db.get_list(
                 "Drive Permission",
-                {
-                    "user": ["in", [""]],
-                    "entity": self.name,
-                },
+                {"entity": self.name},
+                or_filters={"user": "", "team": 1},
                 pluck="name",
             )
             for perm_name in perm_names:

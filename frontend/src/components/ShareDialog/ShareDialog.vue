@@ -6,6 +6,7 @@
   >
     <template #body-main>
       <div class="p-4 sm:px-6">
+        <!-- Header -->
         <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             Sharing "
@@ -24,6 +25,7 @@
             </template>
           </Button>
         </div>
+        <!-- General section -->
         <div class="mb-4 border-b pb-4">
           <div class="mb-2 text-ink-gray-5 font-medium text-base">
             General Access
@@ -32,7 +34,7 @@
             <div class="flex flex-col gap-2">
               <Select
                 v-model="generalAccessLevel"
-                :options="generalOptions"
+                :options="levelOptions"
                 @update:model-value="
                   (val) => updateGeneralAccess(val, generalPerms)
                 "
@@ -52,6 +54,7 @@
               </Select>
               <TeamSelector
                 v-if="generalAccessLevel == 'team'"
+                :allow-blank="true"
                 v-model="chosenTeam"
               />
             </div>
@@ -214,79 +217,68 @@
 
         <div
           v-if="getUsersWithAccess.data"
-          class="mb-3"
+          class="flex flex-col gap-4 overflow-y-auto text-base max-h-80 py-4 mb-3"
         >
           <div
-            v-if="!getUsersWithAccess.data?.length"
-            class="text-sm w-full my-4"
+            v-for="(user, idx) in getUsersWithAccess.data"
+            :key="user.name"
+            class="flex items-center gap-x-3 pr-1"
           >
-            No shares yet.
-          </div>
-          <div
-            v-else
-            class="flex flex-col gap-4 overflow-y-auto text-base max-h-80 py-4"
-          >
-            <div
-              v-for="(user, idx) in getUsersWithAccess.data"
-              :key="user.name"
-              class="flex items-center gap-x-3 pr-1"
-            >
-              <Avatar
-                size="xl"
-                :label="user.user || user.email"
-                :image="user.user_image"
-              />
+            <Avatar
+              size="xl"
+              :label="user.user || user.email"
+              :image="user.user_image"
+            />
 
-              <div class="flex items-start flex-col gap-1">
-                <span class="font-medium text-base text-ink-gray-9">{{
-                  user.full_name || user.user || user.email
-                }}</span>
-                <span class="text-ink-gray-7 text-sm">{{
-                  user.full_name ? user.user || user.email : ""
-                }}</span>
-              </div>
-              <span
-                v-if="user.user == $store.state.user.id"
-                class="ml-auto mr-1 text-ink-gray-7"
-              >
-                <div
-                  v-if="user.user === entity.owner"
-                  class="flex gap-1"
-                >
-                  Owner (you)
-                </div>
-                <template v-else>You</template>
-              </span>
-              <AccessButton
-                v-else-if="user.user !== entity.owner"
-                class="text-ink-gray-7 relative flex-shrink-0 ml-auto"
-                :access-obj="user"
-                :access-levels="filteredAccess"
-                @update-access="
-                  (access) =>
-                    updateAccess.submit({
-                      entity_name: entity.name,
-                      user: user.user,
-                      ...access,
-                    })
-                "
-                @remove-access="
-                  getUsersWithAccess.data.splice(idx, 1),
-                    updateAccess.submit({
-                      method: 'unshare',
-                      entity_name: entity.name,
-                      user: user.user,
-                    })
-                "
-              />
-              <span
-                v-else
-                class="ml-auto flex items-center gap-1 text-ink-gray-5"
-              >
-                Owner
-                <LucideDiamond class="size-3" />
-              </span>
+            <div class="flex items-start flex-col gap-1">
+              <span class="font-medium text-base text-ink-gray-9">{{
+                user.full_name || user.user || user.email
+              }}</span>
+              <span class="text-ink-gray-7 text-sm">{{
+                user.full_name ? user.user || user.email : ""
+              }}</span>
             </div>
+            <span
+              v-if="user.user == $store.state.user.id"
+              class="ml-auto mr-1 text-ink-gray-7"
+            >
+              <div
+                v-if="user.user === entity.owner"
+                class="flex gap-1"
+              >
+                Owner (you)
+              </div>
+              <template v-else>You</template>
+            </span>
+            <AccessButton
+              v-else-if="user.user !== entity.owner"
+              class="text-ink-gray-7 relative flex-shrink-0 ml-auto"
+              :access-obj="user"
+              :access-levels="filteredAccess"
+              @update-access="
+                (access) =>
+                  updateAccess.submit({
+                    entity_name: entity.name,
+                    user: user.user,
+                    ...access,
+                  })
+              "
+              @remove-access="
+                getUsersWithAccess.data.splice(idx, 1),
+                  updateAccess.submit({
+                    method: 'unshare',
+                    entity_name: entity.name,
+                    user: user.user,
+                  })
+              "
+            />
+            <span
+              v-else
+              class="ml-auto flex items-center gap-1 text-ink-gray-5"
+            >
+              Owner
+              <LucideDiamond class="size-3" />
+            </span>
           </div>
         </div>
         <div
@@ -351,64 +343,21 @@ const dialogType = defineModel()
 const open = ref(true)
 
 getUsersWithAccess.fetch({ entity: props.entity.name })
-
-const updateGeneralAccess = (level, perms) => {
-  updateAccess.submit({
-    entity_name: props.entity.name,
-    user: "$GENERAL",
-    method: "unshare",
-  })
-  if (level === "team" && !chosenTeam.value) return
-  if (level !== "restricted") {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user: level === "public" ? "" : chosenTeam.value,
-      team: level === "team",
-      read: 1,
-      comment: 1,
-      share: 1,
-      write: perms === "editor",
-    })
-  }
-  emit("success")
-}
-
-// Invite users
 allUsers.fetch({ team: "all" })
-const chosenTeam = ref()
-const sharedUsers = ref([])
-watch(sharedUsers, (now, prev) => {
-  queryInput.value.el.value = ""
-  query.value = ""
-  if (now.length > prev.length) {
-    const addedUser = sharedUsers.value[sharedUsers.value.length - 1]
-    if (!allUsers.data.some((k) => k.name === addedUser.name))
-      allUsers.data.push(addedUser)
-  }
-})
-watch(chosenTeam, () =>
-  updateGeneralAccess(generalAccessLevel.value, generalPerms.value)
-)
-const shareAccess = ref("reader")
-const advancedTweak = false
-const baseOption = computed(() => ({ email: query.value, name: query.value }))
-const query = ref("")
-const queryInput = useTemplateRef("queryInput")
-const filteredUsers = computed(() => {
-  const regex = new RegExp(query.value, "i")
-  return allUsers.data
-    .filter(
-      (k) =>
-        (regex.test(k.email) || regex.test(k.full_name)) &&
-        store.state.user.id != k.name
-    )
-    .map((k) =>
-      getUsersWithAccess.data.find(({ user }) => user === k.name)
-        ? { ...k, disabled: true }
-        : k
-    )
-})
 
+const levelOptions = [
+  {
+    label: "Accessible to invited members",
+    value: "restricted",
+    icon: markRaw(LucideLock),
+  },
+  {
+    label: "Accessible to a team",
+    value: "team",
+    icon: markRaw(LucideBuilding2),
+  },
+  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
+]
 const accessOptions = computed(() =>
   dynamicList([
     { value: "reader", label: "Can view", icon: LucideEye },
@@ -426,45 +375,12 @@ const accessOptions = computed(() =>
     },
   ])
 )
-function addShares() {
-  // Used to enable future advanced config
-  const access =
-    shareAccess.value === "editor"
-      ? { read: 1, comment: 1, share: 1, write: 1 }
-      : { read: 1, comment: 1, share: 1, write: 0 }
-  for (let user of sharedUsers.value) {
-    let r = {
-      entity_name: props.entity.name,
-      user: user.name,
-      valid_until: invalidAfter.value,
-      ...access,
-    }
-    updateAccess.submit(r)
-    getUsersWithAccess.data.push({ ...user, ...access })
-  }
-  sharedUsers.value = []
-  emit("success")
-}
-const invalidAfter = ref()
 
 // General access
-const generalOptions = [
-  {
-    label: "Accessible to invited members",
-    value: "restricted",
-    icon: markRaw(LucideLock),
-  },
-  {
-    label: "Accessible to a team",
-    value: "team",
-    icon: markRaw(LucideBuilding2),
-  },
-  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
-]
-const generalAccessLevel = ref(
-  generalOptions[props.entity.in_home ? 0 : 1].value
-)
+const generalAccessLevel = ref(levelOptions[0].value)
 const generalPerms = ref("reader")
+const chosenTeam = ref()
+
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({
@@ -477,15 +393,96 @@ const getGeneralAccess = createResource({
         getGeneralAccess.fetch({ team: 1 })
       return
     }
-    const translate = { Guest: "public", $TEAM: "team" }
-    generalAccessLevel.value = generalOptions.find(
-      (k) => k.value === translate[getGeneralAccess.params.user]
-    ).value
-
+    generalAccessLevel.value = getGeneralAccess.params.team ? "team" : "public"
+    chosenTeam.value = data.team
     generalPerms.value = data.write ? "editor" : "reader"
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
+let selectingTeam = false
+const updateGeneralAccess = (level, perms) => {
+  updateAccess.submit({
+    entity_name: props.entity.name,
+    user: "$GENERAL",
+    method: "unshare",
+  })
+  if (level === "team" && !chosenTeam.value) {
+    selectingTeam = true
+    return
+  }
+  if (level !== "restricted") {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: level === "public" ? "" : chosenTeam.value,
+      team: level === "team",
+      read: 1,
+      comment: 1,
+      share: 1,
+      write: perms === "editor",
+    })
+    selectingTeam = false
+  }
+  emit("success")
+}
+
+watch(
+  chosenTeam,
+  (now, prev) =>
+    (prev || selectingTeam) &&
+    updateGeneralAccess(generalAccessLevel.value, generalPerms.value)
+)
+
+// Invite users
+const sharedUsers = ref([])
+watch(sharedUsers, (now, prev) => {
+  queryInput.value.el.value = ""
+  query.value = ""
+  if (now.length > prev.length) {
+    const addedUser = sharedUsers.value[sharedUsers.value.length - 1]
+    if (!allUsers.data.some((k) => k.name === addedUser.name))
+      allUsers.data.push(addedUser)
+  }
+})
+const shareAccess = ref("reader")
+const advancedTweak = false
+const baseOption = computed(() => ({ email: query.value, name: query.value }))
+const query = ref("")
+const queryInput = useTemplateRef("queryInput")
+const filteredUsers = computed(() => {
+  const regex = new RegExp(query.value, "i")
+
+  return allUsers.data
+    .filter(
+      (k) =>
+        (regex.test(k.email) || regex.test(k.full_name)) &&
+        store.state.user.id != k.name
+    )
+    .map((k) =>
+      getUsersWithAccess.data.find(({ user }) => user === k.name)
+        ? { ...k, disabled: true }
+        : k
+    )
+})
+function addShares() {
+  // Used to enable future advanced config
+  const access =
+    shareAccess.value === "editor"
+      ? { read: 1, comment: 1, share: 1, write: 1 }
+      : { read: 1, comment: 1, share: 1, write: 0 }
+  for (let user of sharedUsers.value) {
+    let r = {
+      entity_name: props.entity.name,
+      user: user.name,
+      ...access,
+    }
+    updateAccess.submit(r)
+    getUsersWithAccess.data.push({ ...user, ...access })
+  }
+  sharedUsers.value = []
+  emit("success")
+}
+
+// General access
 
 const ACCESS_LEVELS = ["read", "comment", "upload", "share", "write"]
 const filteredAccess = computed(() =>

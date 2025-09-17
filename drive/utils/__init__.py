@@ -166,7 +166,12 @@ def generate_upward_path(entity_name, user=None, team=0):
     if user is None:
         user = frappe.session.user
     user = frappe.db.escape(user if user != "Guest" else "")
-    team = frappe.db.escape(str(team))
+
+    filter_: str
+    if team:
+        filter_ = "p.team = 1"
+    else:
+        filter_ = f"p.user = {user}"
 
     result = frappe.db.sql(
         f"""WITH RECURSIVE
@@ -202,13 +207,14 @@ def generate_upward_path(entity_name, user=None, team=0):
             gp.team,
             p.read,
             p.upload,
+            p.user AS shared_team,
             p.write,
             p.comment,
             p.share
         FROM
             generated_path  as gp
         LEFT JOIN `tabDrive Permission` as p
-        ON gp.name = p.entity AND p.user = {user} 
+        ON gp.name = p.entity AND {filter_}
         ORDER BY gp.level DESC;
     """,
         as_dict=1,

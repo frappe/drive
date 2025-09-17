@@ -7,10 +7,10 @@ from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
 from drive.utils import (
-	generate_upward_path,
-	get_default_team,
-	get_file_type,
-	get_valid_breadcrumbs,
+    generate_upward_path,
+    get_default_team,
+    get_file_type,
+    get_valid_breadcrumbs,
 )
 from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
@@ -46,11 +46,8 @@ def filter_access(path):
 
 
 def get_team_access(entity):
-    team = frappe.db.get_value("Drive Permission", {"entity": entity.name, "team": 1}, "user")
-    if not team:
-        return NO_ACCESS
-
-    return filter_access(generate_upward_path(entity.name, team, 1))
+    path = generate_upward_path(entity.name, team=1)
+    return {**filter_access(path), "team": path[-1]["shared_team"]}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -97,6 +94,8 @@ def get_user_access(entity, user: str = None, team: bool = False):
     # Gather all accesses, and award highest
     public_access = filter_access(generate_upward_path(entity.name, "Guest"))
     team_access = get_team_access(entity)
+    if team_access["team"] not in teams:
+        team_access = NO_ACCESS
 
     for access_type in [user_access, team_access, public_access]:
         for type, v in access_type.items():
@@ -104,7 +103,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
                 access[type] = 1
 
     if not access["read"]:
-        raise PermissionError("You cannot check permissions unless you can read the file.")
+        frappe.throw("You cannot check permissions unless you can read the file.", PermissionError)
     return access
 
 
@@ -228,11 +227,11 @@ def get_shared_with_list(entity):
     :rtype: list[frappe._dict]
     """
     if not user_has_permission(entity, "share"):
-        raise frappe.PermissionError("You do not have permission to share this file.")
+        raise frappe.PermissionError("You do not have permission to check the shares.")
 
     permissions = frappe.db.get_all(
         "Drive Permission",
-        filters=[["entity", "=", entity], ["user", "!=", ""], ["user", "!=", "$TEAM"]],
+        filters=[["entity", "=", entity], ["user", "!=", ""], ["team", "!=", "1"]],
         order_by="user",
         fields=["user", "read", "write", "comment", "upload", "share"],
     )

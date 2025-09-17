@@ -10,11 +10,7 @@
     <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">Uh oh!</h1>
     <p
       class="text-lg text-ink-gray-5 mt-2"
-      v-html="
-        error.exc_type === 'PermissionError'
-          ? 'You don\'t have permission to access this.'
-          : error.messages?.join?.('\n') || error
-      "
+      v-html="error.messages?.join?.('\n') || error"
     />
     <div class="w-50 flex gap-8 my-8">
       <Button

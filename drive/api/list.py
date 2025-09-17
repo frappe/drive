@@ -39,7 +39,7 @@ def files(
     only_parent=1,
     search=None,
 ):
-    # Clean files
+    # Clean params
     field, ascending = order_by.replace("modified", "_modified").split(" ")
     is_active = int(is_active)
     only_parent = int(only_parent)

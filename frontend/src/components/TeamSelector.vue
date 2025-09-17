@@ -16,13 +16,13 @@ getTeams.fetch()
 const team = defineModel<string>()
 const props = defineProps({
   none: { default: false },
+  allowBlank: { default: false },
 })
 watch(
   getTeams.data,
   (teams) => {
-    if (!Object.values(teams || {}).length) return
+    if (!Object.values(teams || {}).length || props.allowBlank) return
     team.value = Object.values(teams)[0]?.name
-    console.log(team.value)
   },
   { immediate: true }
 )

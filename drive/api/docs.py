@@ -21,7 +21,7 @@ def create_comment(entity_name, name, content, is_reply, parent_name=None):
     parent = frappe.get_doc("Drive Comment", parent_name) if is_reply else doc
 
     if not user_has_permission(doc, "comment"):
-        raise PermissionError("You don't have comment access")
+        frappe.throw("You don't have comment access")
 
     comment = frappe.get_doc(
         {
@@ -40,7 +40,7 @@ def create_comment(entity_name, name, content, is_reply, parent_name=None):
 def edit_comment(name, content):
     comment = frappe.get_doc("Drive Comment", name)
     if comment.owner != frappe.session.user:
-        raise PermissionError("You can't edit comments you don't own.")
+        frappe.throw("You can't edit comments you don't own.")
     comment.content = content
     comment.save()
     return name
@@ -50,7 +50,7 @@ def edit_comment(name, content):
 def delete_comment(name, entire=True):
     comment = frappe.get_doc("Drive Comment", name)
     if comment.owner != frappe.session.user and comment.user != "Guest":
-        raise PermissionError("You can't edit comments you don't own.")
+        frappe.throw("You can't edit comments you don't own.")
     if entire:
         for r in comment.replies:
             r.delete()

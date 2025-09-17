@@ -105,7 +105,7 @@
     />
     <Dialogs
       v-model="dialog"
-      :entities="rootEntity ? [rootEntity] : entities"
+      :entities="entities.length ? entities : [rootEntity]"
     />
   </nav>
 </template>
