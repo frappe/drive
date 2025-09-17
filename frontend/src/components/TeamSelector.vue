@@ -8,13 +8,24 @@
 <script setup lang="ts">
 import { getTeams } from "@/resources/files"
 import icons from "@/utils/icons"
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { Combobox } from "frappe-ui"
 import { DropdownItem } from "frappe-ui/src/components/Dropdown/types"
-const team = defineModel<string>({ default: "all" })
+
+getTeams.fetch()
+const team = defineModel<string>()
 const props = defineProps({
   none: { default: false },
 })
+watch(
+  getTeams.data,
+  (teams) => {
+    if (!Object.values(teams || {}).length) return
+    team.value = Object.values(teams)[0]?.name
+    console.log(team.value)
+  },
+  { immediate: true }
+)
 const options = computed<DropdownItem[]>(() => {
   const res = Object.values(getTeams.data).map((k: any) => ({
     label: k.title,

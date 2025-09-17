@@ -157,7 +157,7 @@ def dribble_access(path):
     return {**default_access, **result}
 
 
-def generate_upward_path(entity_name, user=None):
+def generate_upward_path(entity_name, user=None, team=0):
     """
     Given an ID traverse upwards till the root node
     Stops when parent_drive_file IS NULL
@@ -166,6 +166,8 @@ def generate_upward_path(entity_name, user=None):
     if user is None:
         user = frappe.session.user
     user = frappe.db.escape(user if user != "Guest" else "")
+    team = frappe.db.escape(str(team))
+
     result = frappe.db.sql(
         f"""WITH RECURSIVE
             generated_path as (
@@ -206,7 +208,7 @@ def generate_upward_path(entity_name, user=None):
         FROM
             generated_path  as gp
         LEFT JOIN `tabDrive Permission` as p
-        ON gp.name = p.entity AND p.user = {user}
+        ON gp.name = p.entity AND p.user = {user} 
         ORDER BY gp.level DESC;
     """,
         as_dict=1,
@@ -216,13 +218,16 @@ def generate_upward_path(entity_name, user=None):
     return result
 
 
-def get_valid_breadcrumbs(user_access, paths):
+def get_valid_breadcrumbs(entity_name, user_access):
     """
     Determine user access and generate upward path (breadcrumbs).
     """
     # If team/admin of this entity, then entire path
+    paths = [generate_upward_path(entity_name)]
     if user_access.get("type") in ["admin", "user"]:
         return paths[0]
+    paths.append(generate_upward_path(entity_name, team=1))
+    paths.append(generate_upward_path(entity_name, user="Guest"))
 
     # Otherwise, slice where they lose read access.
     try:
@@ -233,6 +238,9 @@ def get_valid_breadcrumbs(user_access, paths):
         )
         return paths[0][-lose_access:]
     except:
+        frappe.log_error(
+            "Breadcrumbs errored out", (entity_name, user_access, frappe.session.user, paths)
+        )
         return paths[0] if len(paths) else []
 
 
@@ -359,7 +367,6 @@ def default_team(func):
         bound_args.apply_defaults()
         if "team" not in bound_args.arguments or not bound_args.arguments["team"]:
             kwargs["team"] = get_default_team()
-        print(bound_args.arguments, bound_args, kwargs)
         return func(*args, **kwargs)
 
     return wrapper

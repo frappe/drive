@@ -4,13 +4,7 @@ import frappe
 from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
-from drive.utils import (
-    MIME_LIST_MAP,
-    default_team,
-    get_default_team,
-    get_file_type,
-    get_home_folder,
-)
+from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
 
 from .permissions import ENTITY_FIELDS, get_user_access
 
@@ -104,7 +98,7 @@ def files(
         query = query.where(DriveFile.parent_entity == entity_name)
     elif not all_teams:
         query = query.where((DriveFile.team == team) & (DriveFile.parent_entity != ""))
-    print(all_teams)
+
     # Get favourites data (only that, if applicable)
     if favourites_only:
         query = query.right_join(DriveFavourite)
@@ -174,7 +168,7 @@ def files(
     )
     team_files_query = (
         frappe.qb.from_(DrivePermission)
-        .where(DrivePermission.user == "$TEAM")
+        .where(DrivePermission.team == 1)
         .select(DrivePermission.entity)
     )
     public_files = set(k[0] for k in public_files_query.run())
@@ -188,9 +182,10 @@ def files(
     if entity_name:
         if get_user_access(entity_name, "Guest")["read"]:
             default = -2
-        elif get_user_access(entity_name, "$TEAM")["read"]:
+        elif get_user_access(entity_name, team=1)["read"]:
             default = -1
 
+    # Performance hit is wild, manually checking perms each time without cache.
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)

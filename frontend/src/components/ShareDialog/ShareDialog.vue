@@ -34,7 +34,7 @@
                 v-model="generalAccessLevel"
                 :options="generalOptions"
                 @update:model-value="
-                  (val) => updateGeneralAccess(val, generalAccessLevel)
+                  (val) => updateGeneralAccess(val, generalPerms)
                 "
               >
                 <template #prefix>
@@ -50,14 +50,18 @@
                   />
                 </template>
               </Select>
+              <TeamSelector
+                v-if="generalAccessLevel == 'team'"
+                v-model="chosenTeam"
+              />
             </div>
             <Select
               class="w-32"
               v-if="generalAccessLevel !== 'restricted'"
-              v-model="generalAccessType"
+              v-model="generalPerms"
               :options="accessOptions"
               @update:model-value="
-                (val) => updateGeneralAccess(generalAccessType, val)
+                (val) => updateGeneralAccess(generalAccessLevel, val)
               "
             />
           </div>
@@ -323,6 +327,7 @@ import {
   ComboboxOption,
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
+import TeamSelector from "@/components/TeamSelector.vue"
 import { getLink, dynamicList } from "@/utils/files"
 import Select from "@/components/Select.vue"
 
@@ -347,7 +352,30 @@ const open = ref(true)
 
 getUsersWithAccess.fetch({ entity: props.entity.name })
 
+const updateGeneralAccess = (level, perms) => {
+  updateAccess.submit({
+    entity_name: props.entity.name,
+    user: "$GENERAL",
+    method: "unshare",
+  })
+  if (level === "team" && !chosenTeam.value) return
+  if (level !== "restricted") {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: level === "public" ? "" : chosenTeam.value,
+      team: level === "team",
+      read: 1,
+      comment: 1,
+      share: 1,
+      write: perms === "editor",
+    })
+  }
+  emit("success")
+}
+
 // Invite users
+allUsers.fetch({ team: "all" })
+const chosenTeam = ref()
 const sharedUsers = ref([])
 watch(sharedUsers, (now, prev) => {
   queryInput.value.el.value = ""
@@ -358,6 +386,9 @@ watch(sharedUsers, (now, prev) => {
       allUsers.data.push(addedUser)
   }
 })
+watch(chosenTeam, () =>
+  updateGeneralAccess(generalAccessLevel.value, generalPerms.value)
+)
 const shareAccess = ref("reader")
 const advancedTweak = false
 const baseOption = computed(() => ({ email: query.value, name: query.value }))
@@ -424,7 +455,7 @@ const generalOptions = [
     icon: markRaw(LucideLock),
   },
   {
-    label: "Accessible to team only",
+    label: "Accessible to a team",
     value: "team",
     icon: markRaw(LucideBuilding2),
   },
@@ -433,7 +464,7 @@ const generalOptions = [
 const generalAccessLevel = ref(
   generalOptions[props.entity.in_home ? 0 : 1].value
 )
-const generalAccessType = ref("reader")
+const generalPerms = ref("reader")
 const getGeneralAccess = createResource({
   url: "drive.api.permissions.get_user_access",
   makeParams: (params) => ({
@@ -443,7 +474,7 @@ const getGeneralAccess = createResource({
   onSuccess: (data) => {
     if (!data || !data.read) {
       if (getGeneralAccess.params.user === "Guest")
-        getGeneralAccess.fetch({ user: "$TEAM" })
+        getGeneralAccess.fetch({ team: 1 })
       return
     }
     const translate = { Guest: "public", $TEAM: "team" }
@@ -451,29 +482,10 @@ const getGeneralAccess = createResource({
       (k) => k.value === translate[getGeneralAccess.params.user]
     ).value
 
-    generalAccessType.value = data.write ? "editor" : "reader"
+    generalPerms.value = data.write ? "editor" : "reader"
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
-
-const updateGeneralAccess = (type, level) => {
-  updateAccess.submit({
-    entity_name: props.entity.name,
-    user: "general",
-    method: "unshare",
-  })
-  if (type !== "restricted") {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user: type === "public" ? "" : "$TEAM",
-      read: 1,
-      comment: 1,
-      share: 1,
-      write: level === "editor",
-    })
-  }
-  emit("success")
-}
 
 const ACCESS_LEVELS = ["read", "comment", "upload", "share", "write"]
 const filteredAccess = computed(() =>

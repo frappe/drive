@@ -311,33 +311,18 @@ class DriveFile(Document):
         share=None,
         upload=None,
         write=None,
-        valid_until="",
+        team=False,
     ):
-        """
-        Share this file or folder with the specified user.
-        If it has already been shared, update permissions.
-        Share defaults to one to let the non owner user unshare a file.
+        if frappe.session.user != self.owner and not user_has_permission(self, "share"):
+            # Complicated logic was removed here
+            frappe.throw("Not permitted to share", frappe.PermissionError)
 
-        :param user: User with whom this is to be shared
-        :param write: 1 if write permission is to be granted. Defaults to 0
-        :param share: 1 if share permission is to be granted. Defaults to 0
-        """
-        if frappe.session.user != self.owner:
-            if not user_has_permission(self, "share"):
-                for owner in get_ancestors_of(self.name):
-                    if frappe.session.user == frappe.get_value(
-                        "Drive File", {"name": owner}, ["owner"]
-                    ):
-                        continue
-                    else:
-                        frappe.throw("Not permitted to share", frappe.PermissionError)
-                        break
-
-        if not user or user == "$TEAM":
+        # Clean out existing general records
+        if not user:
             perm_names = frappe.db.get_list(
                 "Drive Permission",
                 {
-                    "user": ["in", ["", "$TEAM"]],
+                    "user": ["in", [""]],
                     "entity": self.name,
                 },
                 pluck="name",
@@ -350,10 +335,18 @@ class DriveFile(Document):
             {
                 "entity": self.name,
                 "user": user or "",
+                "team": team,
             },
         )
         if not permission:
             permission = frappe.new_doc("Drive Permission")
+            permission.update(
+                {
+                    "user": user,
+                    "team": team,
+                    "entity": self.name,
+                }
+            )
         else:
             permission = frappe.get_doc("Drive Permission", permission)
 
@@ -364,22 +357,13 @@ class DriveFile(Document):
             ["upload", upload],
             ["write", write],
         ]
-        permission.update(
-            {
-                "user": user,
-                "entity": self.name,
-                "valid_until": valid_until,
-            }
-            | {l[0]: l[1] for l in levels if l[1] is not None}
-        )
+        permission.update({l[0]: l[1] for l in levels if l[1] is not None})
 
         permission.save(ignore_permissions=True)
 
     @frappe.whitelist()
     def unshare(self, user=None):
         """Unshare this file or folder with the specified user
-        # BROKEN - poorly implemented, perm check
-
         :param user: User or group with whom this is to be shared
         :param user_type:
         """
@@ -387,6 +371,7 @@ class DriveFile(Document):
         for i in absolute_path:
             if i["owner"] == user:
                 frappe.throw("User owns parent folder", frappe.PermissionError)
+
         if user == "$GENERAL":
             perm_names = frappe.db.get_list(
                 "Drive Permission",

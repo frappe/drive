@@ -6,13 +6,13 @@
   "engine": "InnoDB",
   "field_order": [
     "entity",
+    "team",
     "user",
     "read",
     "comment",
     "share",
     "write",
-    "upload",
-    "valid_until"
+    "upload"
   ],
   "fields": [
     {
@@ -54,22 +54,23 @@
       "label": "Write"
     },
     {
-      "fieldname": "valid_until",
-      "fieldtype": "Datetime",
-      "label": "Valid Until"
-    },
-    {
       "default": "0",
       "fieldname": "upload",
       "fieldtype": "Check",
       "label": "Upload"
+    },
+    {
+      "default": "0",
+      "fieldname": "team",
+      "fieldtype": "Check",
+      "label": "Team"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-07-16 18:13:00.874325",
-  "modified_by": "Administrator",
+  "modified": "2025-09-16 17:50:51.591779",
+  "modified_by": "four@test.io",
   "module": "Drive",
   "name": "Drive Permission",
   "naming_rule": "Random",

@@ -47,7 +47,6 @@ def storage_breakdown(team, owned_only):
 @frappe.whitelist()
 @default_team
 def storage_bar_data(team, entity_name=None):
-    print(entity_name)
     if entity_name and frappe.has_permission("Drive File", entity_name, "read"):
         team = frappe.get_value("Drive File", entity_name, "team")
 

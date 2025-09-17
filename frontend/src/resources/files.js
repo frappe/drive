@@ -10,15 +10,6 @@ import { updateURLSlug } from "@/utils/files"
 export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
-  onError(error) {
-    if (error && error.exc_type === "PermissionError") {
-      store.commit("setError", {
-        primaryMessage: "Forbidden",
-        secondaryMessage: "Insufficient permissions for this resource",
-      })
-      router.replace({ name: "Error" })
-    }
-  },
   transform(data) {
     return prettyData(data)
   },
