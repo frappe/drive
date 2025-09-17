@@ -148,6 +148,7 @@ def dribble_access(path):
         "share": 0,
         "upload": 0,
         "write": 0,
+        "shared_team": None,
     }
     result = {}
     for k in path[::-1]:

@@ -17,11 +17,12 @@ import LucideUsers from "~icons/lucide/users"
 
 const store = useStore()
 const shareView = computed(() => store.state.shareView)
-
 watch(
   shareView,
   (val) => {
-    getShared.fetch({ by: val === "with" ? 0 : 1 })
+    const oldParams = getShared.params
+    getShared.params = { shared: val }
+    getShared.fetch({ ...oldParams, ...getShared.params })
   },
   { immediate: true }
 )

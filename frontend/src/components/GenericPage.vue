@@ -204,7 +204,7 @@ const refreshData = () => {
   if (sortOrder.value)
     params.order_by =
       sortOrder.value.field + (sortOrder.value.ascending ? " 1" : " 0")
-  props.getEntities.fetch(params)
+  props.getEntities.fetch({ ...props.getEntities.params, ...params })
 }
 
 watch(

@@ -401,11 +401,6 @@ const getGeneralAccess = createResource({
 getGeneralAccess.fetch({ user: "Guest" })
 let selectingTeam = false
 const updateGeneralAccess = (level, perms) => {
-  updateAccess.submit({
-    entity_name: props.entity.name,
-    user: "$GENERAL",
-    method: "unshare",
-  })
   if (level === "team" && !chosenTeam.value) {
     selectingTeam = true
     return
@@ -421,6 +416,12 @@ const updateGeneralAccess = (level, perms) => {
       write: perms === "editor",
     })
     selectingTeam = false
+  } else {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: "$GENERAL",
+      method: "unshare",
+    })
   }
   emit("success")
 }
@@ -467,8 +468,8 @@ function addShares() {
   // Used to enable future advanced config
   const access =
     shareAccess.value === "editor"
-      ? { read: 1, comment: 1, share: 1, write: 1 }
-      : { read: 1, comment: 1, share: 1, write: 0 }
+      ? { read: 1, comment: 1, share: 1, upload: 1, write: 1 }
+      : { read: 1, comment: 1, share: 1, upload: 0, write: 0 }
   for (let user of sharedUsers.value) {
     let r = {
       entity_name: props.entity.name,

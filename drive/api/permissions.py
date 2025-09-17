@@ -7,10 +7,10 @@ from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
 from drive.utils import (
-    generate_upward_path,
-    get_default_team,
-    get_file_type,
-    get_valid_breadcrumbs,
+	generate_upward_path,
+	get_default_team,
+	get_file_type,
+	get_valid_breadcrumbs,
 )
 from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
@@ -102,8 +102,6 @@ def get_user_access(entity, user: str = None, team: bool = False):
             if v:
                 access[type] = 1
 
-    if not access["read"]:
-        frappe.throw("You cannot check permissions unless you can read the file.", PermissionError)
     return access
 
 
@@ -271,7 +269,7 @@ def auto_delete_expired_perms():
         frappe.enqueue(batch_delete_perms, docs=expired_documents)
 
 
-def user_has_permission(doc, ptype, user=None):
+def user_has_permission(doc, ptype, user=None, team=0):
     if not user:
         user = frappe.session.user
     if user == "Administrator" or ptype == "create":
@@ -279,7 +277,7 @@ def user_has_permission(doc, ptype, user=None):
     if "ptype" not in ("read", "write", "comment", "share", "upload"):
         # Should ideally deflect to Framework
         ptype = "write"
-    access = get_user_access(doc, user)
+    access = get_user_access(doc, user, team)
     if ptype in access:
         return bool(access[ptype])
 

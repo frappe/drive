@@ -11,7 +11,7 @@ export const COMMON_OPTIONS = {
   method: "GET",
   debounce: 500,
   transform(data) {
-    return prettyData(data)
+    return prettyData(data.filter((k) => !k.title.startsWith(".")))
   },
 }
 
@@ -92,8 +92,9 @@ export const getSlides = createResource({
 
 export const getShared = createResource({
   ...COMMON_OPTIONS,
-  url: "drive.api.list.shared",
+  url: "drive.api.list.files",
   cache: "shared-folder-contents",
+  params: { shared: "by" },
   makeParams: (params) => {
     return { ...params }
   },

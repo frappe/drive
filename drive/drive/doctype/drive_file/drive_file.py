@@ -7,7 +7,7 @@ from frappe.utils import now
 
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
-from drive.api.permissions import user_has_permission
+from drive.api.permissions import get_user_access, user_has_permission
 from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size
 from drive.utils.files import FileManager
 
@@ -319,14 +319,7 @@ class DriveFile(Document):
 
         # Clean out existing general records
         if not user or team:
-            perm_names = frappe.db.get_list(
-                "Drive Permission",
-                {"entity": self.name},
-                or_filters={"user": "", "team": 1},
-                pluck="name",
-            )
-            for perm_name in perm_names:
-                frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+            self.unshare("$GENERAL")
 
         permission = frappe.db.get_value(
             "Drive Permission",
@@ -373,14 +366,37 @@ class DriveFile(Document):
         if user == "$GENERAL":
             perm_names = frappe.db.get_list(
                 "Drive Permission",
-                {
-                    "user": ["in", ["", "$TEAM"]],
-                    "entity": self.name,
-                },
+                {"entity": self.name},
+                or_filters={"user": "", "team": 1},
                 pluck="name",
             )
             for perm_name in perm_names:
                 frappe.delete_doc("Drive Permission", perm_name, ignore_permissions=True)
+
+            # If overriding perms of a parent folder, write out an explicit denial
+            public_access = get_user_access(self, "Guest")
+            team_access = get_user_access(self, team=1)
+            user = None
+            if public_access["read"]:
+                user = ""
+            elif team_access["read"]:
+                user = team_access["team"]
+
+            # Doesn't work as higher access "overrides" in get_user_access
+            if user is not None:
+                frappe.get_doc(
+                    {
+                        "doctype": "Drive Permission",
+                        "user": user,
+                        "entity": self.name,
+                        "read": 0,
+                        "comment": 0,
+                        "share": 0,
+                        "write": 0,
+                        "team": bool(user),
+                    }
+                ).insert()
+
         else:
             perm_name = frappe.db.get_value(
                 "Drive Permission",

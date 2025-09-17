@@ -4,6 +4,7 @@
     :key="row.name"
   >
     <ListRow
+      @v-on-outside-click="console.log"
       :row="row"
       class="group"
       :class="[

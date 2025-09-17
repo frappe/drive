@@ -22,7 +22,7 @@ watch(
   getTeams.data,
   (teams) => {
     if (!Object.values(teams || {}).length || props.allowBlank) return
-    team.value = Object.values(teams)[0]?.name
+    team.value = props.none ? "all" : Object.values(teams)[0]?.name
   },
   { immediate: true }
 )

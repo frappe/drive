@@ -51,11 +51,19 @@
           @click="entitiesDownload($route.params.team, [rootEntity])"
         />
         <Button
-          variant="solid"
+          variant="outline"
           @click="$router.push({ name: 'Login' })"
         >
           Sign In
         </Button>
+        <Button
+          v-if="!isLoggedIn"
+          variant="solid"
+          label="Try out Drive"
+          @click="
+            open('https://frappecloud.com/dashboard/signup?product=drive')
+          "
+        />
       </template>
       <Dropdown
         v-else-if="defaultActions"
@@ -95,14 +103,6 @@
         {{ button.label }}
       </Button>
     </div>
-    <Button
-      v-if="!isLoggedIn"
-      class="fixed bottom-4 right-4 text-sm z-1"
-      variant="outline"
-      :icon-left="h(FrappeDriveLogo, { class: 'w-4.5 h-4.5' })"
-      label="Try out Drive"
-      @click="open('https://frappe.io/drive')"
-    />
     <Dialogs
       v-model="dialog"
       :entities="entities.length ? entities : [rootEntity]"
