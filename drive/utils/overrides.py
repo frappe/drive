@@ -56,6 +56,4 @@ def filter_drive_recent(user):
 
 @common_filters
 def filter_drive_notif(user):
-    return (
-        f"(`tabDrive Notification`.to_user = {user} or `tabDrive Notification`.from_user = {user})"
-    )
+    return f"(`tabDrive Notification`.to_user = {user} or `tabDrive Notification`.from_user = {user})"

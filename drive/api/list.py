@@ -82,8 +82,7 @@ def files(
     query = frappe.qb.from_(DriveFile).where(DriveFile.is_active == is_active)
     if shared:
         cond = (DrivePermission.entity == DriveFile.name) & (
-            (DrivePermission.user if shared == "with" else DrivePermission.owner)
-            == frappe.session.user
+            (DrivePermission.user if shared == "with" else DrivePermission.owner) == frappe.session.user
         )
         # if shared == "with":
         #     teams = get_teams()
@@ -100,9 +99,7 @@ def files(
 
     # Cursor pagination
     if cursor:
-        query = query.where(
-            (Binary(DriveFile[field]) > cursor if ascending else field < cursor)
-        ).limit(limit)
+        query = query.where((Binary(DriveFile[field]) > cursor if ascending else field < cursor)).limit(limit)
 
     # Cleaner way?
     if only_parent and (not recents_only and not favourites_only and not shared):
@@ -115,9 +112,9 @@ def files(
         query = query.right_join(DriveFavourite)
     else:
         query = query.left_join(DriveFavourite)
-    query = query.on(
-        (DriveFavourite.entity == DriveFile.name) & (DriveFavourite.user == frappe.session.user)
-    ).select(DriveFavourite.name.as_("is_favourite"))
+    query = query.on((DriveFavourite.entity == DriveFile.name) & (DriveFavourite.user == frappe.session.user)).select(
+        DriveFavourite.name.as_("is_favourite")
+    )
 
     if recents_only:
         query = (
@@ -173,15 +170,9 @@ def files(
         .groupby(DriveFile.name)
     )
     public_files_query = (
-        frappe.qb.from_(DrivePermission)
-        .where(DrivePermission.user == "")
-        .select(DrivePermission.entity)
+        frappe.qb.from_(DrivePermission).where(DrivePermission.user == "").select(DrivePermission.entity)
     )
-    team_files_query = (
-        frappe.qb.from_(DrivePermission)
-        .where(DrivePermission.team == 1)
-        .select(DrivePermission.entity)
-    )
+    team_files_query = frappe.qb.from_(DrivePermission).where(DrivePermission.team == 1).select(DrivePermission.entity)
     public_files = set(k[0] for k in public_files_query.run())
     team_files = set(k[0] for k in team_files_query.run())
 

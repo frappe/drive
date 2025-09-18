@@ -36,8 +36,7 @@ def get_context():
             context.description = "Owned by " + doc.owner
 
             context.og_image = (
-                "/api/method/drive.api.thumbnail_generator.create_image_thumbnail?entity_name="
-                + doc.name
+                "/api/method/drive.api.thumbnail_generator.create_image_thumbnail?entity_name=" + doc.name
             )
     elif parts[0] in TITLES:
         context.title = TITLES[parts[0]]

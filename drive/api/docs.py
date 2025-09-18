@@ -68,10 +68,7 @@ def resolve_comment(name, value):
 def get_wiki_link(title, team):
     title = title.strip("/")
     possible_titles = [title, title + ".md", title + ".txt"]
-    names = (
-        frappe.get_value("Drive File", {"title": k, "team": team, "is_group": 0}, "name")
-        for k in possible_titles
-    )
+    names = (frappe.get_value("Drive File", {"title": k, "team": team, "is_group": 0}, "name") for k in possible_titles)
     try:
         name = next(k for k in names if k)
     except StopIteration:

@@ -18,14 +18,14 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	default_team,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    default_team,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -388,9 +388,7 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
         except frappe.exceptions.QueryDeadlockError:
             if yjs:
                 # Pass if there's a deadlock, as CRDT is supposed to take care of it.
-                frappe.log_error(
-                    f"There was a collision, not storing data -{entity_name}, {doc_name}"
-                )
+                frappe.log_error(f"There was a collision, not storing data -{entity_name}, {doc_name}")
             else:
                 frappe.throw("There was a conflict - consider turning on collaborative mode.")
     else:
@@ -654,9 +652,7 @@ def remove_or_restore(entity_names):
 @frappe.whitelist()
 def delete_entities(entity_names=None, clear_all=None):
     if clear_all:
-        entity_names = frappe.db.get_list(
-            "Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name"
-        )
+        entity_names = frappe.db.get_list("Drive File", {"is_active": 0, "owner": frappe.session.user}, pluck="name")
     elif isinstance(entity_names, str):
         entity_names = json.loads(entity_names)
     elif not isinstance(entity_names, list) or not entity_names:
@@ -809,9 +805,7 @@ def search(query, team):
 @frappe.whitelist()
 def get_translate():
     return {
-        l["old_name"]: l["name"]
-        for l in frappe.get_list("Drive File", fields=["old_name", "name"])
-        if l["old_name"]
+        l["old_name"]: l["name"] for l in frappe.get_list("Drive File", fields=["old_name", "name"]) if l["old_name"]
     }
 
 
@@ -840,9 +834,7 @@ def get_new_title(title, parent_name, folder=False, entity=None):
         filters=filters,
         pluck="title",
     )
-    if not sibling_entity_titles or (
-        len(sibling_entity_titles) == 1 and sibling_entity_titles[0] == entity
-    ):
+    if not sibling_entity_titles or (len(sibling_entity_titles) == 1 and sibling_entity_titles[0] == entity):
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
 

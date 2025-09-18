@@ -238,16 +238,10 @@ def get_valid_breadcrumbs(entity_name, user_access):
 
     # Otherwise, slice where they lose read access.
     try:
-        lose_access = max(
-            next((i for i, k in enumerate(path[::-1]) if not k["read"]), 0)
-            for path in paths
-            if path
-        )
+        lose_access = max(next((i for i, k in enumerate(path[::-1]) if not k["read"]), 0) for path in paths if path)
         return paths[0][-lose_access:]
     except:
-        frappe.log_error(
-            "Breadcrumbs errored out", (entity_name, user_access, frappe.session.user, paths)
-        )
+        frappe.log_error("Breadcrumbs errored out", (entity_name, user_access, frappe.session.user, paths))
         return paths[0] if len(paths) else []
 
 
@@ -283,9 +277,7 @@ def if_folder_exists(team, folder_name, parent):
         "owner": frappe.session.user,
         "parent_entity": parent,
     }
-    existing_folder = frappe.db.get_value(
-        "Drive File", values, ["name", "title", "is_group", "is_active"], as_dict=1
-    )
+    existing_folder = frappe.db.get_value("Drive File", values, ["name", "title", "is_group", "is_active"], as_dict=1)
 
     if existing_folder:
         return existing_folder.name
@@ -317,9 +309,7 @@ def create_drive_file(
             "mime_type": mime_type,
             "document": document,
             "is_group": is_group,
-            "_modified": (
-                datetime.fromtimestamp(last_modified) if last_modified else datetime.now()
-            ),
+            "_modified": (datetime.fromtimestamp(last_modified) if last_modified else datetime.now()),
         }
     )
     drive_file.flags.file_created = True

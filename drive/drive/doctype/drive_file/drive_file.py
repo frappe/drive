@@ -57,9 +57,7 @@ class DriveFile(Document):
 
     def get_children(self):
         """Return a generator that yields child Documents."""
-        child_names = frappe.get_list(
-            self.doctype, filters={"parent_entity": self.name}, pluck="name"
-        )
+        child_names = frappe.get_list(self.doctype, filters={"parent_entity": self.name}, pluck="name")
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)
 
@@ -132,9 +130,7 @@ class DriveFile(Document):
 
         self.save()
 
-        return frappe.get_value(
-            "Drive File", new_parent, ["title", "team", "name", "parent_entity"], as_dict=True
-        )
+        return frappe.get_value("Drive File", new_parent, ["title", "team", "name", "parent_entity"], as_dict=True)
 
     @frappe.whitelist()
     def copy(self, new_parent=None, parent_user_directory=None):
@@ -148,11 +144,7 @@ class DriveFile(Document):
         title = self.title
 
         if not parent_user_directory:
-            parent_owner = (
-                frappe.db.get_value("Drive File", new_parent, "owner")
-                if new_parent
-                else frappe.session.user
-            )
+            parent_owner = frappe.db.get_value("Drive File", new_parent, "owner") if new_parent else frappe.session.user
             # BROKEN - parent dir is team
             new_parent = new_parent or parent_user_directory.name
             parent_is_group = frappe.db.get_value("Drive File", new_parent, "is_group")
@@ -232,9 +224,7 @@ class DriveFile(Document):
             drive_entity.share(frappe.session.user, write=1, share=1)
 
         if drive_entity.mime_type:
-            if drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith(
-                "video"
-            ):
+            if drive_entity.mime_type.startswith("image") or drive_entity.mime_type.startswith("video"):
                 frappe.enqueue(
                     create_thumbnail,
                     queue="default",
@@ -292,9 +282,7 @@ class DriveFile(Document):
         :raises InvalidColor: If the color is not a hex value string
         :return: DriveEntity doc once it's updated
         """
-        return frappe.db.set_value(
-            "Drive File", self.name, "color", new_color, update_modified=False
-        )
+        return frappe.db.set_value("Drive File", self.name, "color", new_color, update_modified=False)
 
     def permanent_delete(self):
         write_access = user_has_permission(self, "write")

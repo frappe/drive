@@ -35,9 +35,7 @@ def execute():
         frappe.db.set_value("Drive File", f.name, "team", MAP[f.owner], update_modified=False)
         # For root elements, change parent folder
         if not frappe.db.get_value("Drive File", f.parent_entity, "parent_entity"):
-            new_parent = frappe.db.get_value(
-                "Drive File", {"team": MAP[f.owner], "parent_entity": None}, "name"
-            )
+            new_parent = frappe.db.get_value("Drive File", {"team": MAP[f.owner], "parent_entity": None}, "name")
             frappe.db.set_value("Drive File", f.name, "parent_entity", new_parent)
 
     frappe.db.commit()

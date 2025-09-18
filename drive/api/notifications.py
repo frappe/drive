@@ -6,11 +6,7 @@ from pypika import Order
 
 def get_link(entity):
     type_ = {True: "file", bool(entity.is_group): "folder", bool(entity.document): "document"}
-    return (
-        entity.path
-        if entity.is_link
-        else f"/drive/t/{entity.team}/{type_.get(True)}/{entity.name}/"
-    )
+    return entity.path if entity.is_link else f"/drive/t/{entity.team}/{type_.get(True)}/{entity.name}/"
 
 
 @frappe.whitelist()
@@ -56,9 +52,7 @@ def get_unread_count():
     """
     Return a count of records where user is current user and read is False
     """
-    return frappe.db.count(
-        "Drive Notification", filters={"to_user": frappe.session.user, "read": 0}
-    )
+    return frappe.db.count("Drive Notification", filters={"to_user": frappe.session.user, "read": 0})
 
 
 @frappe.whitelist()
@@ -70,9 +64,7 @@ def mark_as_read(name=None, all=False):
     :param all: Will mark all unread notifications as read
     """
     if all:
-        frappe.db.set_value(
-            "Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True
-        )
+        frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
     frappe.db.set_value("Drive Notification", name, "read", True)
     return

@@ -86,13 +86,9 @@ class AccountRequest(Document):
 
     def get_verification_url(self):
         if self.saas:
-            return get_url(
-                f"/api/method/press.api.saas.validate_account_request?key={self.request_key}"
-            )
+            return get_url(f"/api/method/press.api.saas.validate_account_request?key={self.request_key}")
         if self.product_trial:
-            return get_url(
-                f"/dashboard/saas/{self.product_trial}/oauth?key={self.request_key}&email={self.email}"
-            )
+            return get_url(f"/dashboard/saas/{self.product_trial}/oauth?key={self.request_key}&email={self.email}")
         return get_url(f"/dashboard/setup-account/{self.request_key}")
 
     @property

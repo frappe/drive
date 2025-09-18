@@ -18,9 +18,7 @@ def create_tag(title, color="gray"):
         }
     )
 
-    tag_exists = frappe.db.exists(
-        {"doctype": "Drive Tag", "owner": frappe.session.user, "title": title}
-    )
+    tag_exists = frappe.db.exists({"doctype": "Drive Tag", "owner": frappe.session.user, "title": title})
     if tag_exists:
         frappe.throw("Tag already exists")
     doc.save()

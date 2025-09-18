@@ -7,9 +7,7 @@ import pycrdt
 
 
 def execute():
-    files = frappe.get_all(
-        "Drive File", filters={"document": ("!=", "")}, fields=["name", "document"]
-    )
+    files = frappe.get_all("Drive File", filters={"document": ("!=", "")}, fields=["name", "document"])
     yjs_map = {k["name"]: frappe.get_doc("Drive Document", k["document"]).content for k in files}
 
     for name, yjs_data in yjs_map.items():
@@ -44,9 +42,7 @@ def execute():
                     content = reply.get("content")
                     owner = reply.get("ownerEmail")
                     created_at = datetime.fromtimestamp(reply.get("createdAt", 0) / 1000)
-                    reply_doc = frappe.get_doc(
-                        {"doctype": "Drive Comment", "content": content, "name": str(uuid4())}
-                    )
+                    reply_doc = frappe.get_doc({"doctype": "Drive Comment", "content": content, "name": str(uuid4())})
                     comment.append("replies", reply_doc)
                     reply_doc.insert(ignore_permissions=True)
                     MAP[reply_doc.name] = (owner, created_at)

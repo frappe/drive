@@ -284,11 +284,7 @@ class FileManager:
                 if exists:
                     continue
 
-                mime_type = (
-                    "folder"
-                    if is_group
-                    else mimemapper.get_mime_type(str(f_path), native_first=False)
-                )
+                mime_type = "folder" if is_group else mimemapper.get_mime_type(str(f_path), native_first=False)
                 files[Path(f_path)] = (f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
@@ -316,11 +312,7 @@ class FileManager:
         return files
 
     def get_thumbnail_path(self, team, name):
-        return (
-            Path(get_home_folder(team)["path"])
-            / self.settings.thumbnail_prefix
-            / (name + ".thumbnail")
-        )
+        return Path(get_home_folder(team)["path"]) / self.settings.thumbnail_prefix / (name + ".thumbnail")
 
     def get_old_thumbnail_path(self, team, name):
         return Path(get_home_folder(team)["path"]) / "thumbnails" / (name + ".thumbnail")

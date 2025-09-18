@@ -6,12 +6,7 @@ from frappe.utils import getdate
 from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
-from drive.utils import (
-    generate_upward_path,
-    get_default_team,
-    get_file_type,
-    get_valid_breadcrumbs,
-)
+from drive.utils import generate_upward_path, get_default_team, get_file_type, get_valid_breadcrumbs
 from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
 
@@ -156,9 +151,7 @@ def get_entity_with_permissions(entity_name):
     if user_access.get("read") == 0:
         frappe.throw("You don't have access to this file.", {"error": frappe.PermissionError})
 
-    owner_info = (
-        frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
-    )
+    owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity.name, user_access)}
     favourite = frappe.db.get_value(
         "Drive Favourite",
@@ -170,13 +163,7 @@ def get_entity_with_permissions(entity_name):
     )
     mark_as_viewed(entity)
     file_type = get_file_type(entity)
-    return_obj = (
-        entity
-        | user_access
-        | owner_info
-        | breadcrumbs
-        | {"is_favourite": favourite, "file_type": file_type}
-    )
+    return_obj = entity | user_access | owner_info | breadcrumbs | {"is_favourite": favourite, "file_type": file_type}
     if entity.mime_type == "text/markdown":
         entity.document_type == "markdown"
         manager = FileManager()
@@ -236,15 +223,11 @@ def get_shared_with_list(entity):
     owner = frappe.db.get_value("Drive File", entity, "owner")
     permissions.insert(
         0,
-        frappe.db.get_value(
-            "User", owner, ["user_image", "full_name", "name as user"], as_dict=True
-        ),
+        frappe.db.get_value("User", owner, ["user_image", "full_name", "name as user"], as_dict=True),
     )
 
     for p in permissions:
-        user_info = frappe.db.get_value(
-            "User", p.user, ["user_image", "full_name", "email"], as_dict=True
-        )
+        user_info = frappe.db.get_value("User", p.user, ["user_image", "full_name", "email"], as_dict=True)
         p.update(user_info)
     return permissions
 
@@ -282,6 +265,4 @@ def user_has_permission(doc, ptype, user=None, team=0):
 
 
 def user_has_permission_doc(doc, ptype, user=None):
-    return user_has_permission(
-        frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user
-    )
+    return user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)

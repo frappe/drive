@@ -50,9 +50,7 @@ class DriveTeam(Document):
             (user_directory_path / "embeds").mkdir(exist_ok=True)
 
     def on_trash(self):
-        user_settings = frappe.get_list(
-            "Drive Settings", {"default_team": self.name}, pluck=["name"]
-        )
+        user_settings = frappe.get_list("Drive Settings", {"default_team": self.name}, pluck=["name"])
         for s in user_settings:
             d = frappe.get_doc("Drive Settings", s)
             d.default_team = ""

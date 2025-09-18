@@ -9,20 +9,14 @@ from frappe.utils import now
 def mark_as_viewed(entity):
     if (
         frappe.session.user == "Guest"
-        or not frappe.has_permission(
-            doctype="Drive Entity Log", ptype="write", user=frappe.session.user
-        )
+        or not frappe.has_permission(doctype="Drive Entity Log", ptype="write", user=frappe.session.user)
         or entity.is_group
     ):
         return
 
-    entity_log = frappe.db.get_value(
-        "Drive Entity Log", {"entity_name": entity.name, "user": frappe.session.user}
-    )
+    entity_log = frappe.db.get_value("Drive Entity Log", {"entity_name": entity.name, "user": frappe.session.user})
     if entity_log:
-        frappe.db.set_value(
-            "Drive Entity Log", entity_log, "last_interaction", now(), update_modified=False
-        )
+        frappe.db.set_value("Drive Entity Log", entity_log, "last_interaction", now(), update_modified=False)
         return
     doc = frappe.new_doc("Drive Entity Log")
     doc.entity_name = entity.name
