@@ -3,9 +3,11 @@
     :grouper="groupByTime"
     :get-entities="getRecents"
     :show-sort="false"
-    :icon="LucideClock"
-    primary-message="No recent files"
-    secondary-message="Try opening something to see it here."
+    :empty="{
+      icon: LucideClock,
+      title: 'No recent files',
+      description: 'Try opening something to see it here.',
+    }"
   />
 </template>
 

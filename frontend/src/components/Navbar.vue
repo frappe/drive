@@ -83,10 +83,19 @@
         "
         :button="{
           variant: 'solid',
+          id: 'create-button',
           icon: LucidePlus,
         }"
         :options="newEntityOptions"
         placement="right"
+      />
+      <Button
+        v-else-if="$route.name === 'Documents'"
+        id="create-button"
+        label="Create"
+        variant="solid"
+        :icon-left="h(LucidePlus, { class: 'size-4' })"
+        @click="newExternal('Document')"
       />
       <Button
         v-if="button"
@@ -105,18 +114,12 @@
     </div>
     <Dialogs
       v-model="dialog"
-      :entities="entities.length ? entities : [rootEntity]"
+      :entities="entities.length ? entities : rootEntity ? [rootEntity] : []"
     />
   </nav>
 </template>
 <script setup>
-import {
-  Button,
-  Breadcrumbs,
-  LoadingIndicator,
-  Dropdown,
-  toast,
-} from "frappe-ui"
+import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
 import { ref, computed, inject, h } from "vue"
@@ -125,14 +128,11 @@ import {
   getRecents,
   getFavourites,
   getTrash,
-  createDocument,
-  createPresentation,
   toggleFav,
-  getDocuments,
 } from "@/resources/files"
 import { apps } from "@/resources/permissions"
 import { useRoute, useRouter } from "vue-router"
-import { getLink, prettyData, dynamicList } from "@/utils/files"
+import { getLink, newExternal, dynamicList } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideHome from "~icons/lucide/home"
@@ -289,37 +289,6 @@ const isPrivate = computed(() =>
 )
 
 // Functions
-const newExternal = async (type) => {
-  toast.promise(
-    (type === "Document" ? createDocument : createPresentation).submit({
-      title: "Untitled " + type,
-      team: route.params.team,
-      parent: store.state.currentFolder.name,
-    }),
-    {
-      successDuration: 1,
-      loading: `Creating ${type}...`,
-      success: (data) => {
-        prettyData([data])
-        data.file_type = type
-        store.state.listResource.data?.push?.(data)
-        getDocuments.data?.push(data)
-        if (type === "Document") {
-          window.open(
-            router.resolve({
-              name: "Document",
-              params: { team: route.params.team, entityName: data.name },
-            }).href
-          )
-        } else if (type === "Presentation") {
-          window.open("/slides/presentation/" + data.path)
-        }
-        return "Created"
-      },
-      error: "Failed to create document",
-    }
-  )
-}
 
 // Constants
 const possibleButtons = [

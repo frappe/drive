@@ -1,9 +1,11 @@
 <template>
   <GenericPage
     :get-entities="getShared"
-    :icon="LucideUsers"
-    primary-message="No shared files"
-    secondary-message="You can share files easily on Drive - try it out!"
+    :empty="{
+      icon: LucideUsers,
+      title: 'No shared files',
+      description: 'You can share files easily on Drive - try it out!',
+    }"
   />
 </template>
 

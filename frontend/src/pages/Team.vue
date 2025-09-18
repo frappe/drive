@@ -2,8 +2,10 @@
   <GenericPage
     :get-entities="getTeam"
     :icon="LucideBuilding2"
-    primary-message="Team is empty"
-    secondary-message="Add files by dropping them here."
+    :empty="{
+      title: 'This team is empty',
+      description: 'Add files by dropping them here.',
+    }"
     :verify="{
       data: {
         write,

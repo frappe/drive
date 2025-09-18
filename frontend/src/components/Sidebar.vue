@@ -246,21 +246,21 @@ const sidebarItems = computed(() => {
       items: dynamicList([
         {
           label: "Favourites",
-          to: `/t/${team.value}/favourites`,
+          to: `/favourites`,
           icon: LucideStar,
           isActive: first.name == "Favourites",
           accessKey: "f",
         },
         {
           label: "Documents",
-          to: `/t/${team.value}/documents`,
+          to: `/documents`,
           icon: LucideFileText,
           isActive: first.name == "Documents",
           accessKey: "d",
         },
         {
           label: "Slides",
-          to: `/t/${team.value}/slides`,
+          to: `/slides`,
           icon: LucideGalleryVerticalEnd,
           isActive: first.name == "Slides",
           cond: apps.data?.find?.((k) => k.name === "slides"),

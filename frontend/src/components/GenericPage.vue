@@ -35,8 +35,7 @@
     <NoFilesSection
       v-else-if="!props.getEntities.data?.length"
       :icon="icon"
-      :primary-message="__(primaryMessage)"
-      :secondary-message="__(secondaryMessage)"
+      v-bind="empty"
     />
     <ListView
       v-else-if="$store.state.view === 'list'"
@@ -115,8 +114,7 @@ const props = defineProps({
   showSort: { type: Boolean, default: true },
   verify: { Object, default: null },
   icon: [Function, Object],
-  primaryMessage: String,
-  secondaryMessage: { type: String, default: "" },
+  empty: Object,
   getEntities: Object,
 })
 const route = useRoute()

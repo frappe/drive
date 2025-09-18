@@ -3,9 +3,15 @@ import store from "@/store"
 import { formatSize } from "@/utils/format"
 import { nextTick } from "vue"
 import { useTimeAgo } from "@vueuse/core"
-import { mutate, getRecents } from "@/resources/files"
+import {
+  getRecents,
+  mutate,
+  createDocument,
+  createPresentation,
+  getDocuments,
+} from "@/resources/files"
 import { getTeams } from "@/resources/files"
-import { set, del } from "idb-keyval"
+import { set } from "idb-keyval"
 import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 import slugify from "slugify"
@@ -696,4 +702,37 @@ export function getRandomColor() {
     color += letters[Math.floor(Math.random() * 10)]
   }
   return color
+}
+
+export const newExternal = async (type) => {
+  const route = router.currentRoute.value
+  nToast.promise(
+    (type === "Document" ? createDocument : createPresentation).submit({
+      title: "Untitled " + type,
+      team: route.params.team,
+      parent: store.state.currentFolder.name,
+    }),
+    {
+      successDuration: 1,
+      loading: `Creating ${type}...`,
+      success: (data) => {
+        prettyData([data])
+        data.file_type = type
+        store.state.listResource.data?.push?.(data)
+        getDocuments.data?.push?.(data)
+        if (type === "Document") {
+          window.open(
+            router.resolve({
+              name: "Document",
+              params: { team: route.params.team, entityName: data.name },
+            }).href
+          )
+        } else if (type === "Presentation") {
+          window.open("/slides/presentation/" + data.path)
+        }
+        return "Created"
+      },
+      error: "Failed to create document",
+    }
+  )
 }
