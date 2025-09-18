@@ -32,11 +32,11 @@ class DriveTeam(Document):
 
         settings = frappe.get_single("Drive Disk Settings")
         root_folder = (
-            Path(settings.root_prefix_value)
+            Path(settings.root_folder)
             / {
-                settings.root_prefix_type == "team_id": self.name,
-                settings.root_prefix_type == "team_name": self.title,
-                settings.root_prefix_type == "none": "",
+                settings.team_prefix == "team_id": self.name,
+                settings.team_prefix == "team_name": self.title,
+                settings.team_prefix == "none": "",
             }[True]
         )
         d.path = str(root_folder)
@@ -50,7 +50,9 @@ class DriveTeam(Document):
             (user_directory_path / "embeds").mkdir(exist_ok=True)
 
     def on_trash(self):
-        user_settings = frappe.get_list("Drive Settings", {"default_team": self.name}, pluck=["name"])
+        user_settings = frappe.get_list(
+            "Drive Settings", {"default_team": self.name}, pluck=["name"]
+        )
         for s in user_settings:
             d = frappe.get_doc("Drive Settings", s)
             d.default_team = ""

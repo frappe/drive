@@ -20,6 +20,24 @@
     >
       <FormControl
         type="select"
+        label="Root Folder Type"
+        :options="[
+          { label: 'Team ID', value: 'team_id' },
+          { label: 'Team Name', value: 'team_name' },
+          { label: 'Other', value: 'other' },
+        ]"
+        v-model="generalSettings.team_prefix"
+        description="The root folder name for each team, defaults to team ID."
+      />
+      <FormControl
+        v-if="generalSettings.team_prefix === 'other'"
+        label="Root Folder Name"
+        placeholder="team"
+        v-model="generalSettings.root_folder"
+        description="Value to use for the root folder. Use / to not use a separate folder."
+      />
+      <FormControl
+        type="select"
         label="Backend Type"
         :options="[
           { label: 'Disk', value: 'disk' },
@@ -64,24 +82,6 @@
           v-model="s3Settings.signature_version"
           description="Optional. Some providers only support 's3'."
         />
-        <FormControl
-          type="select"
-          label="Root Folder Type"
-          :options="[
-            { label: 'Team ID', value: 'team_id' },
-            { label: 'Team Name', value: 'team_name' },
-            { label: 'Other', value: 'other' },
-          ]"
-          v-model="generalSettings.root_prefix_type"
-          description="The root folder name for each team, defaults to team ID."
-        />
-        <FormControl
-          v-if="generalSettings.root_prefix_type === 'other'"
-          label="Root Folder Name"
-          placeholder="team"
-          v-model="generalSettings.root_prefix_value"
-          description="Value to use for the root folder. Use / to not use a separate folder."
-        />
       </div>
       <Button
         label="Update"
@@ -113,8 +113,8 @@ const route = useRoute()
 const edited = ref(false)
 
 const generalSettings = reactive({
-  root_prefix_type: "team_id",
-  root_prefix_value: "",
+  team_prefix: "team_id",
+  root_folder: "",
   backend_type: "disk",
 })
 const s3Settings = reactive({

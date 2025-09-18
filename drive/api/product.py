@@ -31,7 +31,9 @@ def create_team(user, team_name=None, icon=None, personal=0):
     if exists:
         raise ValueError("There already exists a team with this title:", exists)
 
-    team = frappe.get_doc({"doctype": "Drive Team", "title": team_name, "icon": icon, "personal": personal}).insert()
+    team = frappe.get_doc(
+        {"doctype": "Drive Team", "title": team_name, "icon": icon, "personal": personal}
+    ).insert()
     team.save()
     return team.name
 
@@ -393,8 +395,8 @@ def disk_settings(**kwargs):
     if frappe.request.method == "GET":
         return settings
     field_map = {
-        "root_prefix_type": "team_id",
-        "root_prefix_value": None,
+        "team_prefix": "team_id",
+        "root_folder": None,
         "aws_key": None,
         "aws_secret": None,
         "bucket": None,

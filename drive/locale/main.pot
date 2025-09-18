@@ -739,13 +739,13 @@ msgstr ""
 msgid "Request Key"
 msgstr ""
 
-#. Label of the root_prefix_type (Select) field in DocType 'Drive Disk
+#. Label of the team_prefix (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Type"
 msgstr ""
 
-#. Label of the root_prefix_value (Data) field in DocType 'Drive Disk Settings'
+#. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Value"
 msgstr ""

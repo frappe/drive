@@ -240,41 +240,38 @@ class FileManager:
         Returns path, location (team or personal), file size, and modified
         Ignores hidden files
         """
-        root_folder = Path(get_home_folder(team)["path"])
+        root_folder = (
+            self.settings.root_folder if team == "all" else Path(get_home_folder(team)["path"])
+        )
         if self.s3_enabled:
-
             objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
 
-            basic_files = {}
+            basic_files = []
+
             # Get files...
             for obj in objects:
-                obj_path = Path(obj["Key"])
-                personal = False
-                basic_files[obj["Key"]] = obj
+                basic_files.append(obj)
 
                 # Used to "calculate" natural folders, folders created by Drive are already counted
                 # Don't count root folder
-                parent_path = obj_path.parent
-                if parent_path not in basic_files and parent_path != Path("."):
-                    parent_obj = {
-                        "Key": str(parent_path),
-                        "Size": 0,
-                        "LastModified": obj["LastModified"],
-                        "Folder": True,
-                    }
-                    basic_files[parent_obj["Key"]] = (
-                        parent_obj,
-                        personal if personal else "team",
-                    )
+                parent_path = Path(obj["Key"]).parent
+                parent_obj = {
+                    "Key": str(parent_path),
+                    "Size": 0,
+                    "LastModified": obj["LastModified"],
+                    "Folder": True,
+                }
+                if parent_obj not in basic_files and parent_path != Path("."):
+                    basic_files.append(parent_obj)
 
             files = {}
-            for f_path, f in basic_files.items():
+            for f in basic_files:
                 # Drive-created folders - registered S3 objects - have trailing slashes.
-                is_group = f.get("Folder") or f_path.endswith("/")
+                is_group = f.get("Folder") or f["Key"].endswith("/")
                 exists = frappe.get_value(
                     "Drive File",
                     {
-                        "path": f_path.rstrip("/"),
+                        "path": f["Key"].rstrip("/"),
                         "team": team,
                         "is_active": 1,
                         "is_group": int(is_group),
@@ -284,8 +281,12 @@ class FileManager:
                 if exists:
                     continue
 
-                mime_type = "folder" if is_group else mimemapper.get_mime_type(str(f_path), native_first=False)
-                files[Path(f_path)] = (f["Size"], f["LastModified"].timestamp(), mime_type)
+                mime_type = (
+                    "folder"
+                    if is_group
+                    else mimemapper.get_mime_type(str(f["Key"]), native_first=False)
+                )
+                files[Path(f["Key"])] = (f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
 
@@ -312,7 +313,11 @@ class FileManager:
         return files
 
     def get_thumbnail_path(self, team, name):
-        return Path(get_home_folder(team)["path"]) / self.settings.thumbnail_prefix / (name + ".thumbnail")
+        return (
+            Path(get_home_folder(team)["path"])
+            / self.settings.thumbnail_prefix
+            / (name + ".thumbnail")
+        )
 
     def get_old_thumbnail_path(self, team, name):
         return Path(get_home_folder(team)["path"]) / "thumbnails" / (name + ".thumbnail")

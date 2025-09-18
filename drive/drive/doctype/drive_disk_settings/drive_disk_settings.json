@@ -10,8 +10,8 @@
     "preview_size",
     "disk_section",
     "flat",
-    "root_prefix_value",
-    "root_prefix_type",
+    "root_folder",
+    "team_prefix",
     "thumbnail_prefix",
     "s3_section",
     "enabled",
@@ -79,18 +79,6 @@
       "label": "General"
     },
     {
-      "default": "team_id",
-      "fieldname": "root_prefix_type",
-      "fieldtype": "Select",
-      "label": "Root Prefix Type",
-      "options": "team_id\nteam_name\nnone"
-    },
-    {
-      "fieldname": "root_prefix_value",
-      "fieldtype": "Data",
-      "label": "Root Prefix Value"
-    },
-    {
       "default": ".thumbnails",
       "fieldname": "thumbnail_prefix",
       "fieldtype": "Data",
@@ -115,14 +103,26 @@
       "fieldname": "disk_section",
       "fieldtype": "Section Break",
       "label": "Disk"
+    },
+    {
+      "fieldname": "root_folder",
+      "fieldtype": "Data",
+      "label": "Drive Folder"
+    },
+    {
+      "default": "team_id",
+      "fieldname": "team_prefix",
+      "fieldtype": "Select",
+      "label": "Team Prefix",
+      "options": "team_id\nteam_name\nnone"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "issingle": 1,
   "links": [],
-  "modified": "2025-09-13 20:33:44.358813",
-  "modified_by": "Administrator",
+  "modified": "2025-09-18 14:25:11.917178",
+  "modified_by": "four@test.io",
   "module": "Drive",
   "name": "Drive Disk Settings",
   "owner": "Administrator",

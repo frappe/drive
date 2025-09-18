@@ -7,10 +7,13 @@ from drive.utils.files import FileManager
 
 
 @frappe.whitelist()
-def sync_preview(team):
+def sync_preview(team, json=True):
     manager = FileManager()
     files = manager.fetch_new_files(team)
-    return sorted(files.items(), key=lambda p: len(p[0].parts))
+    sorted_files = sorted(files.items(), key=lambda p: len(p[0].parts))
+    if json:
+        return map(lambda x: (str(x[0]), x[1]), sorted_files)
+    return sorted_files
 
 
 @frappe.whitelist()
@@ -62,7 +65,7 @@ def sync_from_disk(team):
             "name",
         )
         parent = get_or_create_parent(parent_path, team, frappe.session.user)
-        print("Added", str(file))
+
         files_added.append(
             create_drive_file(
                 team,

@@ -1,4 +1,9 @@
 <template>
+  <TeamSelector
+    :none="true"
+    v-model="chosenTeam"
+    class="mb-5"
+  />
   <div
     v-if="!preview.data"
     class="text-sm text-center py-5"
@@ -6,7 +11,7 @@
     Loading...
   </div>
   <div
-    v-else
+    v-else-if="chosenTeam"
     class="text-base text-ink-gray-8"
   >
     You're adding {{ preview.data.length }}
@@ -80,11 +85,13 @@
 <script setup>
 import { createResource, Tree } from "frappe-ui"
 import Alert from "@/components/Alert.vue"
-import { computed } from "vue"
+import { computed, ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
 import emitter from "@/emitter"
+import TeamSelector from "./TeamSelector.vue"
 
 const props = defineProps({ team: String })
+const chosenTeam = ref("all")
 function buildTree(items) {
   const root = {}
 
@@ -96,10 +103,11 @@ function buildTree(items) {
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i]
       if (!current[part]) {
+        console.log(part, meta)
         current[part] = {
           label: part,
           children:
-            i === parts.length - 1 && meta[3] !== "folder" ? undefined : {},
+            i === parts.length - 1 && meta[2] !== "folder" ? undefined : {},
         }
       }
       current = current[part].children
@@ -134,12 +142,9 @@ const tree = computed(() => preview.data && buildTree(preview.data))
 
 const preview = createResource({
   url: "drive.api.scripts.sync_preview",
-  params: {
-    team: props.team,
-  },
-  auto: true,
-  cache: "preview",
+  cache: ["preview", chosenTeam],
 })
+watch(chosenTeam, (team) => preview.submit({ team }), { immediate: true })
 
 const syncFromDisk = createResource({
   url: "drive.api.scripts.sync_from_disk",
