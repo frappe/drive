@@ -4,12 +4,12 @@ from io import BytesIO
 from pathlib import Path
 
 import boto3
-from botocore.exceptions import ClientError
 import cv2
 import frappe
 import magic
 import mimemapper
 from botocore.config import Config
+from botocore.exceptions import ClientError
 from PIL import Image, ImageOps
 
 from drive.locks.distributed_lock import DistributedLock

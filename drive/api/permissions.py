@@ -7,10 +7,10 @@ from markdown.extensions.wikilinks import WikiLinkExtension
 from pypika import Field
 
 from drive.utils import (
-	generate_upward_path,
-	get_default_team,
-	get_file_type,
-	get_valid_breadcrumbs,
+    generate_upward_path,
+    get_default_team,
+    get_file_type,
+    get_valid_breadcrumbs,
 )
 from drive.utils.files import FileManager
 from drive.utils.users import mark_as_viewed
@@ -57,7 +57,6 @@ def get_user_access(entity, user: str = None, team: bool = False):
     """
     if isinstance(entity, str):
         entity = frappe.get_cached_doc("Drive File", entity)
-
     access = NO_ACCESS.copy()
     # Return team perms immediately
     if not user:
