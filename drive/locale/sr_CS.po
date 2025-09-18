@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-15 19:46\n"
+"PO-Revision-Date: 2025-09-18 20:29\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -185,7 +185,7 @@ msgstr "Programer"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #. Label of the flat (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -241,7 +241,7 @@ msgstr "Podešavanja diska Drive-a"
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr ""
+msgstr "Verzija dokumenta u Drive-u"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -633,7 +633,7 @@ msgstr "Otvoreno"
 
 #: drive/drive/doctype/drive_team/drive_team.js:6
 msgid "Open in Drive"
-msgstr ""
+msgstr "Otvori u Drive-u"
 
 #: frontend/src/components/Sidebar.vue:126
 msgid "Others"
@@ -676,7 +676,7 @@ msgstr "Pregled"
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Preview size"
-msgstr ""
+msgstr "Veličina za pregled"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
@@ -743,13 +743,13 @@ msgstr "Odgovori"
 msgid "Request Key"
 msgstr "Zahtev za ključ"
 
-#. Label of the root_prefix_type (Select) field in DocType 'Drive Disk
+#. Label of the team_prefix (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Type"
 msgstr "Vrsta korenskog prefiksa"
 
-#. Label of the root_prefix_value (Data) field in DocType 'Drive Disk Settings'
+#. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Value"
 msgstr "Vrednost korenskog prefiksa"
@@ -767,7 +767,7 @@ msgstr "S3 Bucket"
 
 #: frontend/src/components/Settings/BackendSettings.vue:4
 msgid "S3 Integration"
-msgstr ""
+msgstr "S3 integracija"
 
 #: frontend/src/components/DriveToolBar.vue:42
 msgid "Search"
@@ -961,7 +961,7 @@ msgstr "Otpremi"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Used to configure maximum file sizes of in-browser previews (in megabytes)."
-msgstr ""
+msgstr "Koristi se za podešavanje maksimalne veličine fajlova za pregled u internet pretraživaču (u megabajtima)."
 
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
 #. Label of the user (Link) field in DocType 'Drive Favourite'
@@ -995,7 +995,7 @@ msgstr "Verzija"
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Versions"
-msgstr ""
+msgstr "Verzije"
 
 #: frontend/src/components/DriveToolBar.vue:27
 msgid "With you"
@@ -1014,12 +1014,12 @@ msgstr "Izmena"
 #. Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer"
-msgstr "Pisac"
+msgstr "Uređivač"
 
 #. Label of the writer_settings (JSON) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer Settings"
-msgstr ""
+msgstr "Podešavanje uređivača"
 
 #: frontend/src/components/Settings/StorageSettings.vue:21
 msgid "You"
