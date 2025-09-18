@@ -18,14 +18,14 @@ from werkzeug.wsgi import wrap_file
 from drive.api.notifications import notify_mentions
 from drive.api.storage import storage_bar_data
 from drive.utils import (
-	create_drive_file,
-	default_team,
-	extract_mentions,
-	get_file_type,
-	get_home_folder,
-	if_folder_exists,
-	strip_comment_spans,
-	update_file_size,
+    create_drive_file,
+    default_team,
+    extract_mentions,
+    get_file_type,
+    get_home_folder,
+    if_folder_exists,
+    strip_comment_spans,
+    update_file_size,
 )
 from drive.utils.files import FileManager
 
@@ -741,7 +741,8 @@ def clear_deleted_files():
 
 
 @frappe.whitelist()
-def move(entity_names, new_parent=None):
+@default_team
+def move(entity_names, new_parent=None, team=None):
     """
     Move file or folder to the new parent folder
 
@@ -757,12 +758,11 @@ def move(entity_names, new_parent=None):
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
-        res = doc.move(new_parent)
+        res = doc.move(new_parent, team)
 
-    if res["title"] == "Drive - " + res["team"]:
-        # BROKEN: redo moving.
-        res["title"] = res["team"]
-        res["special"] = True
+    if not res["parent_entity"]:
+        title, personal = frappe.db.get_value("Drive Team", res["team"], ["title", "personal"])
+        res["title"] = "Home" if personal else title
 
     return res
 
@@ -816,7 +816,7 @@ def get_translate():
 
 
 @frappe.whitelist()
-def get_new_title(title, parent_name, folder=False):
+def get_new_title(title, parent_name, folder=False, entity=None):
     """
     Returns new title for an entity if same title exists for another entity at the same level
 
@@ -840,7 +840,9 @@ def get_new_title(title, parent_name, folder=False):
         filters=filters,
         pluck="title",
     )
-    if not sibling_entity_titles:
+    if not sibling_entity_titles or (
+        len(sibling_entity_titles) == 1 and sibling_entity_titles[0] == entity
+    ):
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
 

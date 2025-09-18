@@ -63,7 +63,7 @@ class DriveFile(Document):
         for name in child_names:
             yield frappe.get_doc(self.doctype, name)
 
-    def __update(func):
+    def __update_modified(func):
         def decorator(self, *args, **kwargs):
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
@@ -71,8 +71,8 @@ class DriveFile(Document):
 
         return decorator
 
-    @__update
-    def move(self, new_parent=None):
+    @__update_modified
+    def move(self, new_parent=None, new_team=None):
         """
         Move file or folder to the new parent folder
         If not owned by current user, copies it.
@@ -82,7 +82,8 @@ class DriveFile(Document):
         :raises FileExistsError: If a file or folder with the same name already exists in the specified parent folder
         :return: DriveEntity doc once file is moved
         """
-        new_parent = new_parent or get_home_folder(self.team).name
+        new_team = new_team or self.team
+        new_parent = new_parent or get_home_folder(new_team).name
 
         if new_parent == self.parent_entity:
             return
@@ -93,7 +94,10 @@ class DriveFile(Document):
                 frappe.PermissionError,
             )
         if not frappe.db.get_value("Drive File", new_parent, "is_group"):
-            raise NotADirectoryError()
+            frappe.throw(
+                "Can only move into folders",
+                NotADirectoryError,
+            )
 
         for child in self.get_children():
             if child.name == self.name or child.name == new_parent:
@@ -108,14 +112,15 @@ class DriveFile(Document):
                     as_dict=True,
                 )
             else:
-                child.move(self.name)
+                child.move(self.name, new_team)
 
         if new_parent != self.parent_entity:
             update_file_size(self.parent_entity, -self.file_size)
             update_file_size(new_parent, +self.file_size)
             self.parent_entity = new_parent
 
-        self.title = get_new_title(self.title, new_parent, self.is_group)
+        self.title = get_new_title(self.title, new_parent, self.is_group, self.name)
+        self.team = new_team
 
         not_in_disk = self.document or self.mime_type == "frappe/slides" or self.is_link
 
@@ -127,7 +132,9 @@ class DriveFile(Document):
 
         self.save()
 
-        return frappe.get_value("Drive File", new_parent, ["title", "team", "name"], as_dict=True)
+        return frappe.get_value(
+            "Drive File", new_parent, ["title", "team", "name", "parent_entity"], as_dict=True
+        )
 
     @frappe.whitelist()
     def copy(self, new_parent=None, parent_user_directory=None):
@@ -159,7 +166,7 @@ class DriveFile(Document):
             if self.name == new_parent or self.name in get_ancestors_of("Drive File", new_parent):
                 frappe.throw("You cannot copy a folder into itself")
 
-            title = get_new_title(title, new_parent)
+            title = get_new_title(title, new_parent, self.name)
 
         if self.is_group:
             drive_entity = frappe.get_doc(
@@ -240,7 +247,7 @@ class DriveFile(Document):
                 )
 
     @frappe.whitelist()
-    @__update
+    @__update_modified
     def rename(self, new_title):
         """
         Rename file or folder
@@ -252,7 +259,7 @@ class DriveFile(Document):
         if new_title == self.title:
             return self
 
-        validated_name = get_new_title(new_title, self.parent_entity, self.is_group)
+        validated_name = get_new_title(new_title, self.parent_entity, self.is_group, self.name)
         if new_title != validated_name and new_title != "Untitled Document":
             return frappe.throw(
                 f"{'Folder' if self.is_group else 'File'} '{new_title}' already exists\n Try '{validated_name}' ",

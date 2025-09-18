@@ -2,6 +2,7 @@
   <Combobox
     placeholder="Select a team"
     :options
+    :open-on-click="true"
     v-model="team"
   />
 </template>

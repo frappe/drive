@@ -6,7 +6,7 @@ from pypika import functions as fn
 
 from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
 
-from .permissions import ENTITY_FIELDS, get_user_access, get_teams
+from .permissions import ENTITY_FIELDS, get_teams, get_user_access
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
@@ -97,7 +97,7 @@ def files(
     query = query.select(*ENTITY_FIELDS, "team", DrivePermission.user.as_("shared_team")).where(
         fn.Coalesce(DrivePermission.read, 1).as_("read") == 1
     )
-    print(query.run(as_dict=True)[:3])
+
     # Cursor pagination
     if cursor:
         query = query.where(
@@ -205,6 +205,7 @@ def files(
                 filtered_list.append(r)
             added.add(r["name"])
         res = filtered_list
+
     # Performance hit is wild, manually checking perms each time without cache.
     for r in res:
         r["children"] = children_count.get(r["name"], 0)

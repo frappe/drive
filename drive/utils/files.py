@@ -4,6 +4,7 @@ from io import BytesIO
 from pathlib import Path
 
 import boto3
+from botocore.exceptions import ClientError
 import cv2
 import frappe
 import magic
@@ -360,7 +361,8 @@ class FileManager:
                 full_trash_path = self.site_folder / trash_path
                 full_trash_path.parent.mkdir(exist_ok=True)
                 (self.site_folder / entity.path).rename(full_trash_path)
-        except (FileNotFoundError, self.conn.exceptions.NoSuchKey):
+        except (FileNotFoundError, ClientError):
+            frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
 
     @__not_if_flat
