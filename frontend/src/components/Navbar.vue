@@ -84,18 +84,21 @@
         :button="{
           variant: 'solid',
           id: 'create-button',
-          icon: LucidePlus,
+          label: 'Create',
+          iconLeft: h(LucidePlus, { class: 'size-4' }),
         }"
         :options="newEntityOptions"
         placement="right"
       />
       <Button
-        v-else-if="$route.name === 'Documents'"
+        v-else-if="$route.name === 'Documents' || $route.name === 'Slides'"
         id="create-button"
         label="Create"
         variant="solid"
         :icon-left="h(LucidePlus, { class: 'size-4' })"
-        @click="newExternal('Document')"
+        @click="
+          newExternal($route.name === 'Documents' ? 'Document' : 'Presentation')
+        "
       />
       <Button
         v-if="button"
@@ -318,21 +321,6 @@ const button = computed(() =>
 
 const newEntityOptions = [
   {
-    group: "Upload",
-    items: [
-      {
-        label: "Upload File",
-        icon: LucideFileUp,
-        onClick: () => emitter.emit("uploadFile"),
-      },
-      {
-        label: "Upload Folder",
-        icon: LucideFolderUp,
-        onClick: () => emitter.emit("uploadFolder"),
-      },
-    ],
-  },
-  {
     group: "Create",
     items: dynamicList([
       {
@@ -357,6 +345,21 @@ const newEntityOptions = [
         onClick: () => (dialog.value = "l"),
       },
     ]),
+  },
+  {
+    group: "Upload",
+    items: [
+      {
+        label: "Upload File",
+        icon: LucideFileUp,
+        onClick: () => emitter.emit("uploadFile"),
+      },
+      {
+        label: "Upload Folder",
+        icon: LucideFolderUp,
+        onClick: () => emitter.emit("uploadFolder"),
+      },
+    ],
   },
 ]
 </script>

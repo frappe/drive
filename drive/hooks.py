@@ -124,13 +124,12 @@ has_permission = {
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "Presentation": {
+        "on_update": "drive.api.integration.presentation",
+        "on_trash": "drive.api.integration.presentation",
+    }
+}
 
 
 # fixtures = [{"dt": "Role", "filters": [["role_name", "like", "Drive %"]]}]

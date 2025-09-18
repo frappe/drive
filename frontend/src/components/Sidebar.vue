@@ -260,7 +260,7 @@ const sidebarItems = computed(() => {
         },
         {
           label: "Slides",
-          to: `/slides`,
+          to: `/presentations`,
           icon: LucideGalleryVerticalEnd,
           isActive: first.name == "Slides",
           cond: apps.data?.find?.((k) => k.name === "slides"),
