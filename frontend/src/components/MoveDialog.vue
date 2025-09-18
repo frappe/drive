@@ -89,7 +89,7 @@
                         selected === node.value
                           ? 'bg-surface-gray-3'
                           : 'hover:bg-surface-gray-2',
-                        $store.state.currentFolder.name === node.value
+                        entities[0].parent_entity === node.value
                           ? 'cursor-not-allowed hover:bg-surface-white'
                           : 'group',
                       ]"
@@ -119,7 +119,7 @@
                         >{{ node.label }}
                         <span
                           class="text-ink-gray-5"
-                          v-if="$store.state.currentFolder.name === node.value"
+                          v-if="entities[0].parent_entity === node.value"
                           >(current)</span
                         ></span
                       >
@@ -211,7 +211,10 @@
             variant="solid"
             class="ml-auto"
             size="sm"
-            :disabled="selected === '' && breadcrumbs[0].title == $route.name"
+            :disabled="
+              entities[0].parent_entity !== selected &&
+              chosenTeam === entities[0].team
+            "
             :loading="move.loading"
             @click="moveFile"
           >
@@ -429,7 +432,7 @@ const createFolder = createResource({
 
 // Selection logic
 function openEntity(node) {
-  if (store.state.currentFolder.name === node.value) return
+  if (props.entities[0].parent_entity === node.value) return
   if (!node.value) {
     createdNode.value = node
     createFolder.fetch({

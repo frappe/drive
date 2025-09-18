@@ -1,12 +1,12 @@
 import frappe
-from frappe.utils.caching import redis_cache
 
 from drive.api.product import is_admin
-from drive.utils import create_drive_file, update_file_size
+from drive.utils import create_drive_file, default_team, get_home_folder, update_file_size
 from drive.utils.files import FileManager
 
 
 @frappe.whitelist()
+@default_team
 def sync_preview(team, json=True):
     manager = FileManager()
     files = manager.fetch_new_files(team)
@@ -17,6 +17,7 @@ def sync_preview(team, json=True):
 
 
 @frappe.whitelist()
+@default_team
 def sync_from_disk(team):
     """
     One-way sync from disk to Drive. Ignores hidden files.
@@ -27,10 +28,13 @@ def sync_from_disk(team):
             frappe.PermissionError,
         )
 
-    sorted_files = sync_preview(team)
+    sorted_files = sync_preview(team, json=False)
     files_added = []
+    home_folder = get_home_folder(team)["name"]
 
-    def get_or_create_parent(parent_path, team, owner):
+    def get_or_create_parent(parent_path, owner):
+        if not parent_path:
+            return home_folder
         # Check if the parent folder exists
         parent = frappe.get_value(
             "Drive File",
@@ -42,7 +46,7 @@ def sync_from_disk(team):
 
         # If not, recursively create its own parent first
         grandparent_path = "/".join(parent_path.strip("/").split("/")[:-1])
-        grandparent = get_or_create_parent(grandparent_path, team, owner)
+        grandparent = get_or_create_parent(grandparent_path, owner)
 
         # Now create this parent folder
         new_parent = create_drive_file(
@@ -58,13 +62,13 @@ def sync_from_disk(team):
         return new_parent.name
 
     for file, (file_size, last_modified, mime_type) in sorted_files:
-        parent_path = file.parent
+        parent_path = str(file.parent).strip("./")
         parent = frappe.get_value(
             "Drive File",
             {"path": parent_path + "/" if parent_path else "", "team": team},
             "name",
         )
-        parent = get_or_create_parent(parent_path, team, frappe.session.user)
+        parent = get_or_create_parent(parent_path, frappe.session.user)
 
         files_added.append(
             create_drive_file(
@@ -76,7 +80,7 @@ def sync_from_disk(team):
                 last_modified=last_modified,
                 file_size=file_size,
                 is_group=mime_type == "folder",
-                owner=owner,
+                owner=frappe.session.user,
             )
         )
         update_file_size(parent, file_size)

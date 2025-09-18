@@ -19,23 +19,23 @@
       class="flex flex-col gap-4 pb-5 pr-5"
     >
       <FormControl
+        label="Root Folder Name"
+        placeholder="/"
+        v-model="generalSettings.root_folder"
+        description="Where to store Drive files, defaults to the root folder."
+      />
+      <FormControl
         type="select"
-        label="Root Folder Type"
+        label="Team Prefix"
         :options="[
           { label: 'Team ID', value: 'team_id' },
           { label: 'Team Name', value: 'team_name' },
-          { label: 'Other', value: 'other' },
+          { label: 'None', value: 'none' },
         ]"
         v-model="generalSettings.team_prefix"
-        description="The root folder name for each team, defaults to team ID."
+        description="The folder name for each team, defaults to the team name"
       />
-      <FormControl
-        v-if="generalSettings.team_prefix === 'other'"
-        label="Root Folder Name"
-        placeholder="team"
-        v-model="generalSettings.root_folder"
-        description="Value to use for the root folder. Use / to not use a separate folder."
-      />
+
       <FormControl
         type="select"
         label="Backend Type"
@@ -44,6 +44,7 @@
           { label: 'S3', value: 's3' },
         ]"
         v-model="generalSettings.backend_type"
+        description="Whether to store on disk or on an S3 bucket."
       />
       <div
         v-if="generalSettings.backend_type === 's3'"
@@ -96,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, h } from "vue"
+import { ref, reactive, watch, markRaw } from "vue"
 import {
   FormControl,
   Button,
@@ -140,7 +141,7 @@ watch(
 function confirmSync() {
   createDialog({
     title: "Sync files from S3",
-    component: h(SyncBreakdown, { team: route.params.team }),
+    component: markRaw(SyncBreakdown),
   })
 }
 

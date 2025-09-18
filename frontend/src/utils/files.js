@@ -487,8 +487,8 @@ export async function updateURLSlug(title) {
   const slug = slugger(title)
   if (route.params.slug !== slug) {
     // Hacky, but we only want to update the URL - triggering a reload breaks a lot
-    const new_path =
-      window.location.pathname.split("/").slice(0, 6).join("/") + "/" + slug
+    const base = window.location.pathname.split("/").slice(0, 6).join("/")
+    const new_path = base + (base.endsWith("/") ? "" : "/") + slug
     history.replaceState({}, null, new_path)
   }
 }

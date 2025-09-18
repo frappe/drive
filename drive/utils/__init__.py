@@ -362,8 +362,34 @@ def default_team(func):
         sig = inspect.signature(func)
         bound_args = sig.bind_partial(*args, **kwargs)
         bound_args.apply_defaults()
-        if "team" not in bound_args.arguments or not bound_args.arguments["team"]:
+        if (
+            "team" not in bound_args.arguments
+            or not bound_args.arguments["team"]
+            or bound_args.arguments["team"] == "home"
+        ):
             kwargs["team"] = get_default_team()
         return func(*args, **kwargs)
 
     return wrapper
+
+
+# Copied over to avoid circular import
+def get_teams(user=None, details=None, exclude_personal=True):
+    """
+    Returns all the teams that the current user is part of.
+    """
+    if not user:
+        user = frappe.session.user
+
+    teams = frappe.get_all(
+        "Drive Team Member",
+        pluck="parent",
+        filters=[["parenttype", "=", "Drive Team"], ["user", "=", user]],
+    )
+    if details:
+        teams_info = {team: frappe.get_doc("Drive Team", team) for team in teams}
+        if exclude_personal:
+            return {t: team for t, team in teams_info.items() if not team.personal}
+        return teams_info
+    print(teams)
+    return teams

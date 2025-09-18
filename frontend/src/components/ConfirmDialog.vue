@@ -135,7 +135,11 @@ const dialogData = computed(() => {
   return MAP[dialogType.value]
 })
 
+const loading = computed(
+  () => (dialogData.value.resource || updateResource).loading
+)
 const dialogOptions = computed(() => {
+  console.log(loading.value)
   return {
     title: dialogData.value.title,
     size: "sm",
@@ -148,8 +152,9 @@ const dialogOptions = computed(() => {
             emit("success")
           } else updateResource.submit()
         },
-        loading: (dialogData.value.resource || updateResource).loading,
         ...dialogData.value.button,
+        disabled: loading.value,
+        // loading: loading.value,
       },
     ],
   }

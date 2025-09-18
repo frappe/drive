@@ -31,9 +31,7 @@ def create_team(user, team_name=None, icon=None, personal=0):
     if exists:
         raise ValueError("There already exists a team with this title:", exists)
 
-    team = frappe.get_doc(
-        {"doctype": "Drive Team", "title": team_name, "icon": icon, "personal": personal}
-    ).insert()
+    team = frappe.get_doc({"doctype": "Drive Team", "title": team_name, "icon": icon, "personal": personal}).insert()
     team.save()
     return team.name
 

@@ -304,6 +304,7 @@ def create_folder(team, title, parent=None):
             {
                 "title": title,
                 "parent_path": Path(parent_doc.path or ""),
+                "is_group": 1,
                 "parent_entity": parent_doc.name,
             }
         ),
@@ -617,7 +618,6 @@ def remove_or_restore(entity_names):
         entity_names = json.loads(entity_names)
     if not isinstance(entity_names, list):
         frappe.throw(f"Expected list but got {type(entity_names)}", ValueError)
-
     manager = FileManager()
 
     def depth_zero_toggle_is_active(doc):
@@ -632,6 +632,7 @@ def remove_or_restore(entity_names):
             flag = 1
 
         doc.is_active = flag
+        doc._modified = datetime.now()
         folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
         frappe.db.set_value(
             "Drive File",

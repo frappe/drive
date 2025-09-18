@@ -12,18 +12,24 @@ import icons from "@/utils/icons"
 import { computed, watch } from "vue"
 import { Combobox } from "frappe-ui"
 import { DropdownItem } from "frappe-ui/src/components/Dropdown/types"
+import { dynamicList } from "@/utils/files"
 
 getTeams.fetch()
 const team = defineModel<string>()
 const props = defineProps({
-  none: { default: false },
+  none: { default: false, type: Boolean || String },
   allowBlank: { default: false },
 })
 watch(
   getTeams.data,
   (teams) => {
-    if (!Object.values(teams || {}).length || props.allowBlank) return
-    team.value = props.none ? "all" : Object.values(teams)[0]?.name
+    if (!Object.values(teams || {}).length || props.allowBlank || team.value)
+      return
+    if (props.none) {
+      team.value = props.none === true ? "all" : "home"
+    } else {
+      team.value = Object.values(teams)[0]?.name
+    }
   },
   { immediate: true }
 )
@@ -33,12 +39,10 @@ const options = computed<DropdownItem[]>(() => {
     value: k.name,
     icon: icons[k.icon || "building"],
   }))
-  if (!props.none) return res
-  else
-    return [
-      { label: "Everywhere", value: "all" },
-      { label: "Home", value: "home" },
-      ...res,
-    ]
+  return dynamicList([
+    { cond: props.none === true, label: "Everywhere", value: "all" },
+    { cond: props.none === "home", label: "Home", value: "home" },
+    ...res,
+  ])
 })
 </script>

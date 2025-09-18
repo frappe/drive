@@ -176,18 +176,17 @@ class FileManager:
             return parent / entity.title
 
     @__not_if_flat
-    def create_folder(self, drive_entity, root):
+    def create_folder(self, entity, root):
         """
         Function to create a folder in the S3 bucket or on disk.
         Only creates if flat structure is disabled.
         """
-        path = self.get_disk_path(drive_entity, root)
+        path = self.get_disk_path(entity, root)
         if self.s3_enabled:
             self.conn.put_object(Bucket=self.bucket, Key=str(path) + "/", Body="")
         else:
             (self.site_folder / path).mkdir()
-
-        return path
+        return str(path) + ("/" if entity.is_group else "")
 
     def get_file(self, path):
         """
@@ -234,46 +233,47 @@ class FileManager:
             finally:
                 f.close()
 
-    def fetch_new_files(self, team: str) -> dict[Path, tuple[str]]:
+    def fetch_new_files(self, team) -> dict[Path, tuple[str]]:
         """
         Traverse the site folder and return a list of all yet-uncreated files with information
         Returns path, location (team or personal), file size, and modified
         Ignores hidden files
         """
-        root_folder = (
-            self.settings.root_folder if team == "all" else Path(get_home_folder(team)["path"])
-        )
+        root_folder = self.settings.root_folder
         if self.s3_enabled:
             objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
-
-            basic_files = []
+            basic_files = {}
 
             # Get files...
             for obj in objects:
-                basic_files.append(obj)
+                obj_path = Path(obj["Key"])
+
+                if not obj_path.is_relative_to(root_folder) or any(str(p).startswith(".") for p in obj_path.parts):
+                    continue
+                basic_files[obj_path] = obj
 
                 # Used to "calculate" natural folders, folders created by Drive are already counted
                 # Don't count root folder
-                parent_path = Path(obj["Key"]).parent
-                parent_obj = {
-                    "Key": str(parent_path),
-                    "Size": 0,
-                    "LastModified": obj["LastModified"],
-                    "Folder": True,
-                }
-                if parent_obj not in basic_files and parent_path != Path("."):
-                    basic_files.append(parent_obj)
+                parent_path = obj_path.parent
+                if obj_path not in basic_files and parent_path != Path("."):
+                    basic_files[parent_path] = {
+                        "Key": str(parent_path),
+                        "Size": 0,
+                        "LastModified": obj["LastModified"],
+                        "Folder": True,
+                    }
 
             files = {}
-            for f in basic_files:
+
+            for f in basic_files.values():
                 # Drive-created folders - registered S3 objects - have trailing slashes.
                 is_group = f.get("Folder") or f["Key"].endswith("/")
                 exists = frappe.get_value(
                     "Drive File",
                     {
-                        "path": f["Key"].rstrip("/"),
-                        "team": team,
+                        "path": f["Key"].rstrip("/") + ("/" if is_group else ""),
                         "is_active": 1,
+                        "team": team,
                         "is_group": int(is_group),
                     },
                     "name",
@@ -281,11 +281,7 @@ class FileManager:
                 if exists:
                     continue
 
-                mime_type = (
-                    "folder"
-                    if is_group
-                    else mimemapper.get_mime_type(str(f["Key"]), native_first=False)
-                )
+                mime_type = "folder" if is_group else mimemapper.get_mime_type(str(f["Key"]), native_first=False)
                 files[Path(f["Key"])] = (f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
             root_folder = self.site_folder / root_folder
@@ -313,11 +309,7 @@ class FileManager:
         return files
 
     def get_thumbnail_path(self, team, name):
-        return (
-            Path(get_home_folder(team)["path"])
-            / self.settings.thumbnail_prefix
-            / (name + ".thumbnail")
-        )
+        return Path(get_home_folder(team)["path"]) / self.settings.thumbnail_prefix / (name + ".thumbnail")
 
     def get_old_thumbnail_path(self, team, name):
         return Path(get_home_folder(team)["path"]) / "thumbnails" / (name + ".thumbnail")

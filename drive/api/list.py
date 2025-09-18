@@ -56,6 +56,7 @@ def files(
 
     if not entity_name and team:
         entity_name = get_home_folder(team)["name"]
+    print(entity_name)
 
     user = frappe.session.user if frappe.session.user != "Guest" else ""
     if entity_name:
@@ -186,7 +187,7 @@ def files(
             default = -2
         elif get_user_access(entity_name, team=1)["read"]:
             default = -1
-
+    print(res)
     # Deduplicate
     if shared:
         added = set()
