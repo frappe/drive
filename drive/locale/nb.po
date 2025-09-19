@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-16 20:17\n"
+"PO-Revision-Date: 2025-09-19 20:31\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -342,7 +342,7 @@ msgstr "Aktivert"
 #. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Endpoint URL"
-msgstr ""
+msgstr "Endepunkt-URL"
 
 #. Label of the entity (Link) field in DocType 'Drive Document Version'
 #. Label of the entity (Link) field in DocType 'Drive Entity Activity Log'
@@ -740,13 +740,13 @@ msgstr ""
 msgid "Request Key"
 msgstr ""
 
-#. Label of the root_prefix_type (Select) field in DocType 'Drive Disk
+#. Label of the team_prefix (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Type"
 msgstr ""
 
-#. Label of the root_prefix_value (Data) field in DocType 'Drive Disk Settings'
+#. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Value"
 msgstr ""
@@ -768,7 +768,7 @@ msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:42
 msgid "Search"
-msgstr ""
+msgstr "Søk"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
@@ -869,7 +869,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr ""
+msgstr "Systemansvarlig"
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
