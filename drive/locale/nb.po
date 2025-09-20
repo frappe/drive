@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-19 20:31\n"
+"PO-Revision-Date: 2025-09-20 20:28\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -185,7 +185,7 @@ msgstr "Utvikler"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #. Label of the flat (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -226,94 +226,94 @@ msgstr "Last ned"
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
 msgid "Drive"
-msgstr ""
+msgstr "Drive"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Drive Comment"
-msgstr ""
+msgstr "Drive-kommentar"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Disk Settings"
-msgstr ""
+msgstr "Drive-diskinnstillinger"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr ""
+msgstr "Drive-dokumentversjon"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Drive Document"
-msgstr ""
+msgstr "Drive-dokument"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Drive Document Version"
-msgstr ""
+msgstr "Drive-dokumentversjon"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Drive Entity Activity Log"
-msgstr ""
+msgstr "Aktivitetslogg for Drive-entitet"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Drive Entity Log"
-msgstr ""
+msgstr "Logg for Drive-entitet"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Drive Entity Tag"
-msgstr ""
+msgstr "Stikkord for Drive-entitet"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 msgid "Drive Favourite"
-msgstr ""
+msgstr "Drive-favoritt"
 
 #. Label of the entity (Link) field in DocType 'Drive Favourite'
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Drive File"
-msgstr ""
+msgstr "Drive-fil"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Drive Notification"
-msgstr ""
+msgstr "Drive-varsling"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Drive Permission"
-msgstr ""
+msgstr "Drive-tillatelse"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Drive Settings"
-msgstr ""
+msgstr "Drive-innstillinger"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_tag/drive_tag.json
 msgid "Drive Tag"
-msgstr ""
+msgstr "Drive-stikkord"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Drive Team"
-msgstr ""
+msgstr "Drive-team"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Drive Team Member"
-msgstr ""
+msgstr "Drive-teammedlem"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
-msgstr ""
+msgstr "Drive-brukerinvitasjon"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
@@ -321,7 +321,7 @@ msgstr "Rediger profil"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:20
 msgid "Edit profile"
-msgstr ""
+msgstr "Rediger profil"
 
 #. Label of the email (Data) field in DocType 'Account Request'
 #. Label of the email (Data) field in DocType 'Drive User Invitation'
@@ -367,7 +367,7 @@ msgstr "Enhet Type"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Example format: https://s3.ap-south-1.amazonaws.com"
-msgstr ""
+msgstr "Eksempel på format: https://s3.ap-south-1.amazonaws.com"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -453,49 +453,49 @@ msgstr "Invitere"
 #. Label of the is_active (Int) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Active"
-msgstr ""
+msgstr "Er aktiv"
 
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Group"
-msgstr ""
+msgstr "Er gruppe"
 
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Link"
-msgstr ""
+msgstr "Er lenke"
 
 #. Label of the is_private (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Private"
-msgstr ""
+msgstr "Er privat"
 
 #. Label of the resolved (Check) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Is Resolved"
-msgstr ""
+msgstr "Er løst"
 
 #. Label of the jwt_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "JWT Key"
-msgstr ""
+msgstr "JWT-nøkkel"
 
 #: frontend/src/components/ListView.vue:200
 msgid "Last Accessed"
-msgstr ""
+msgstr "Sist åpnet"
 
 #. Label of the last_interaction (Datetime) field in DocType 'Drive Entity Log'
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Last Interaction"
-msgstr ""
+msgstr "Siste samhandling"
 
 #: frontend/src/components/ListView.vue:192
 msgid "Last Modified"
-msgstr ""
+msgstr "Sist endret"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:88
 msgid "Last Name"
-msgstr ""
+msgstr "Etternavn"
 
 #. Description of the 'Do not mimic folder/file structure' (Check) field in
 #. DocType 'Drive Disk Settings'
@@ -504,7 +504,10 @@ msgid "Legacy option.\n"
 "<br>\n"
 "<br>\n"
 "By default, Drive stores files the way you see it. If this option is checked, the files are store flatly, with randomized names.\n"
-msgstr ""
+msgstr "Eldre alternativ.\n"
+"<br>\n"
+"<br>\n"
+"Som standard lagrer Drive filer slik du ser dem. Hvis dette alternativet er merket av, lagres filene flatt, med tilfeldige navn.\n"
 
 #: drive/public/js/TreeNode.vue:52
 msgid "Load more"
@@ -521,37 +524,37 @@ msgstr "Logg ut"
 #. Label of the login_count (Int) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Login Count"
-msgstr ""
+msgstr "Antall pålogginger"
 
 #. Label of the mime_type (Data) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "MIME Type"
-msgstr ""
+msgstr "MIME-type"
 
 #: frontend/src/components/InfoPopup.vue:103
 #: frontend/src/components/Sidebar.vue:95
 msgid "Manage"
-msgstr ""
+msgstr "Administrer"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Manage Disk Settings"
-msgstr ""
+msgstr "Administrer Drive-diskinnstillinger"
 
 #. Label of the manual (Check) field in DocType 'Drive Doc Version'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Manual"
-msgstr ""
+msgstr "Manuell"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Omtale"
 
 #. Label of the mentions (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Mentions"
-msgstr ""
+msgstr "Omtaler"
 
 #. Label of the message (Data) field in DocType 'Drive Entity Activity Log'
 #. Label of the message (Text) field in DocType 'Drive Notification'
@@ -563,32 +566,32 @@ msgstr "Melding"
 #. Label of the meta_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Meta Value"
-msgstr ""
+msgstr "Metaverdi"
 
 #. Label of the _modified (Datetime) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 #: frontend/src/components/DriveToolBar.vue:289
 #: frontend/src/components/InfoPopup.vue:41
 msgid "Modified"
-msgstr ""
+msgstr "Modifisert"
 
 #: frontend/src/components/GenericPage.vue:289
 #: frontend/src/components/Navbar.vue:230
 msgid "Move"
-msgstr ""
+msgstr "Flytt"
 
 #: frontend/src/components/DriveToolBar.vue:281
 #: frontend/src/components/ListView.vue:130
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 msgid "New"
-msgstr ""
+msgstr "Ny"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
-msgstr ""
+msgstr "Nytt stikkord"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
@@ -597,55 +600,55 @@ msgstr "Ny verdi"
 
 #: drive/public/js/ff_integration.bundle.js:30
 msgid "No teams available"
-msgstr ""
+msgstr "Ingen team tilgjengelig"
 
 #. Label of the oauth_signup (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OAuth Signup"
-msgstr ""
+msgstr "OAuth-registrering"
 
 #. Label of the otp (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OTP"
-msgstr ""
+msgstr "OTP"
 
 #. Label of the otp_generated_at (Datetime) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "OTP Generated at"
-msgstr ""
+msgstr "OTP generert på"
 
 #. Label of the old_name (Data) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Old Name"
-msgstr ""
+msgstr "Gammelt navn"
 
 #. Label of the old_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Old Value"
-msgstr ""
+msgstr "Gammel verdi"
 
 #: frontend/src/components/GenericPage.vue:260
 msgid "Open"
-msgstr ""
+msgstr "Åpne"
 
 #: drive/drive/doctype/drive_team/drive_team.js:6
 msgid "Open in Drive"
-msgstr ""
+msgstr "Åpne i Drive"
 
 #: frontend/src/components/Sidebar.vue:126
 msgid "Others"
-msgstr ""
+msgstr "Andre"
 
 #: frontend/src/components/DriveToolBar.vue:285
 #: frontend/src/components/InfoPopup.vue:19
 #: frontend/src/components/ListView.vue:150
 msgid "Owner"
-msgstr ""
+msgstr "Eier"
 
 #. Label of the parent_entity (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Parent Entity"
-msgstr ""
+msgstr "Overordnet enhet"
 
 #. Label of the path (Text) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -655,44 +658,44 @@ msgstr "Sti"
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Pending"
-msgstr ""
+msgstr "Avventer"
 
 #. Label of the personal_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Personal Prefix"
-msgstr ""
+msgstr "Personlig prefiks"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:95
 msgid "Preferences"
-msgstr ""
+msgstr "Innstillinger"
 
 #: frontend/src/components/GenericPage.vue:254
 msgid "Preview"
-msgstr ""
+msgstr "Forhåndsvisning"
 
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Preview size"
-msgstr ""
+msgstr "Størrelse på forhåndsvisning"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Proposed"
-msgstr ""
+msgstr "Foreslått"
 
 #. Label of the quota (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Quota"
-msgstr ""
+msgstr "Kvote"
 
 #. Label of the raw_content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Raw Content"
-msgstr ""
+msgstr "Råinnhold"
 
 #. Label of the read (Check) field in DocType 'Drive Notification'
 #. Label of the read (Check) field in DocType 'Drive Permission'
@@ -703,68 +706,68 @@ msgstr "Lest"
 
 #: frontend/src/components/InfoPopup.vue:82
 msgid "Reading time"
-msgstr ""
+msgstr "Lesetid"
 
 #. Label of the referral_source (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referral Source"
-msgstr ""
+msgstr "Henvisningskilde"
 
 #. Label of the referrer_data (Section Break) field in DocType 'Account
 #. Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referrer Data"
-msgstr ""
+msgstr "Henviserdata"
 
 #. Label of the referrer_id (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Referrer ID"
-msgstr ""
+msgstr "Henviser-ID"
 
 #: frontend/src/components/GenericPage.vue:336
 msgid "Remove from Recents"
-msgstr ""
+msgstr "Fjern fra nylige"
 
 #: frontend/src/components/GenericPage.vue:297
 #: frontend/src/components/Navbar.vue:236
 msgid "Rename"
-msgstr ""
+msgstr "Endre navn"
 
 #. Label of the replies (Table) field in DocType 'Drive Comment'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Replies"
-msgstr ""
+msgstr "Svar"
 
 #. Label of the request_key (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Request Key"
-msgstr ""
+msgstr "Forespørselsnøkkel"
 
 #. Label of the team_prefix (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Type"
-msgstr ""
+msgstr "Rotprefikstype"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Value"
-msgstr ""
+msgstr "Rotprefiksverdi"
 
 #. Label of the s3_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "S3"
-msgstr ""
+msgstr "S3"
 
 #. Label of the bucket (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "S3 Bucket"
-msgstr ""
+msgstr "S3 bucket"
 
 #: frontend/src/components/Settings/BackendSettings.vue:4
 msgid "S3 Integration"
-msgstr ""
+msgstr "S3-integrasjon"
 
 #: frontend/src/components/DriveToolBar.vue:42
 msgid "Search"
@@ -772,14 +775,14 @@ msgstr "Søk"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
-msgstr ""
+msgstr "Angi farge"
 
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:15
 #: frontend/src/components/Sidebar.vue:131
 msgid "Settings"
-msgstr ""
+msgstr "Innstillinger"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
@@ -793,49 +796,49 @@ msgstr "Del"
 #: frontend/src/components/InfoPopup.vue:129
 #: frontend/src/components/ListView.vue:170 frontend/src/utils/files.js:223
 msgid "Shared"
-msgstr ""
+msgstr "Delt"
 
 #: frontend/src/components/GenericPage.vue:303
 #: frontend/src/components/Navbar.vue:242
 msgid "Show Info"
-msgstr ""
+msgstr "Vis info"
 
 #. Label of the signature_version (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Signature Version"
-msgstr ""
+msgstr "Signaturversjon"
 
 #. Label of the signed_up (Check) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Signed Up"
-msgstr ""
+msgstr "Påmeldt"
 
 #. Label of the single_click (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Single Click"
-msgstr ""
+msgstr "Enkelt klikk"
 
 #: frontend/src/components/DriveToolBar.vue:293
 #: frontend/src/components/InfoPopup.vue:33
 #: frontend/src/components/ListView.vue:208
 msgid "Size"
-msgstr ""
+msgstr "Størrelse"
 
 #: frontend/src/components/DriveToolBar.vue:309
 msgid "Smart"
-msgstr ""
+msgstr "Smart"
 
 #. Label of the snapshot (Long Text) field in DocType 'Drive Doc Version'
 #. Label of the snapshot (Long Text) field in DocType 'Drive Document Version'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Data"
-msgstr ""
+msgstr "Øyeblikksbilde-data"
 
 #. Label of the snapshot_size (Int) field in DocType 'Drive Document Version'
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Snapshot Size"
-msgstr ""
+msgstr "Størrelse på øyeblikksbilde"
 
 #: frontend/src/components/InfoPopup.vue:63
 msgid "Stats"
@@ -844,18 +847,18 @@ msgstr "Statistikk"
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/StorageSettings.vue:3
 #: frontend/src/components/StorageBar.vue:8
 msgid "Storage"
-msgstr ""
+msgstr "Lagring"
 
 #: frontend/src/components/Sidebar.vue:115
 msgid "Support"
-msgstr ""
+msgstr "Brukerstøtte"
 
 #. Name of a role
 #: drive/drive/doctype/account_request/account_request.json
@@ -874,14 +877,14 @@ msgstr "Systemansvarlig"
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Tag"
-msgstr ""
+msgstr "Stikkord"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 #: frontend/src/components/InfoPopup.vue:53
 #: frontend/src/components/Settings/TagSettings.vue:4
 msgid "Tags"
-msgstr "Merkelapper"
+msgstr "Stikkord"
 
 #. Label of the team (Link) field in DocType 'Drive File'
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
@@ -891,27 +894,27 @@ msgstr "Merkelapper"
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 #: frontend/src/components/Settings/StorageSettings.vue:24
 msgid "Team"
-msgstr ""
+msgstr "Team"
 
 #. Label of the team_domain (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Team Domain"
-msgstr ""
+msgstr "Teamdomene"
 
 #. Label of the team_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Team Prefix"
-msgstr ""
+msgstr "Teamets prefiks"
 
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Teams"
-msgstr ""
+msgstr "Team"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Thumbnail prefix"
-msgstr ""
+msgstr "Miniatyrbildeprefiks"
 
 #. Label of the title (Data) field in DocType 'Drive Doc Version'
 #. Label of the title (Data) field in DocType 'Drive Document Version'
@@ -925,29 +928,29 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr ""
+msgstr "Tittel"
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "To User"
-msgstr ""
+msgstr "Til bruker"
 
 #. Label of the type (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: frontend/src/components/DriveToolBar.vue:297
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
 msgid "URL Args"
-msgstr ""
+msgstr "URL-parametere"
 
 #: frontend/src/components/GenericPage.vue:323
 #: frontend/src/components/Navbar.vue:259
 msgid "Unfavourite"
-msgstr ""
+msgstr "Fjern fra favoritter"
 
 #. Label of the upload (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
@@ -958,7 +961,7 @@ msgstr "Last opp"
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Used to configure maximum file sizes of in-browser previews (in megabytes)."
-msgstr ""
+msgstr "Brukes til å konfigurere maksimale filstørrelser for forhåndsvisninger i nettleseren (i megabyte)."
 
 #. Label of the user (Link) field in DocType 'Drive Entity Log'
 #. Label of the user (Link) field in DocType 'Drive Favourite'
@@ -971,7 +974,7 @@ msgstr ""
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "User"
-msgstr ""
+msgstr "Bruker"
 
 #. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -982,137 +985,137 @@ msgstr "Brukere"
 #. Label of the valid_until (Datetime) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Valid Until"
-msgstr ""
+msgstr "Gyldig til"
 
 #. Label of the version (Int) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Version"
-msgstr ""
+msgstr "Versjon"
 
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Versions"
-msgstr ""
+msgstr "Versjoner"
 
 #: frontend/src/components/DriveToolBar.vue:27
 msgid "With you"
-msgstr ""
+msgstr "Med deg"
 
 #: frontend/src/components/InfoPopup.vue:66
 msgid "Words"
-msgstr ""
+msgstr "Ord"
 
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Write"
-msgstr ""
+msgstr "Skrive"
 
 #. Label of the writer_section (Section Break) field in DocType 'Drive
 #. Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer"
-msgstr ""
+msgstr "Skrivetilgang"
 
 #. Label of the writer_settings (JSON) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Writer Settings"
-msgstr ""
+msgstr "Innstillinger for skrivetilgang"
 
 #: frontend/src/components/Settings/StorageSettings.vue:21
 msgid "You"
-msgstr ""
+msgstr "Du"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "comment"
-msgstr ""
+msgstr "kommentar"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr ""
+msgstr "opprett"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "delete"
-msgstr ""
+msgstr "slett"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "edit"
-msgstr ""
+msgstr "rediger"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "item"
-msgstr ""
+msgstr "element"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "items"
-msgstr ""
+msgstr "elementer"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "move"
-msgstr ""
+msgstr "flytt"
 
 #. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "other"
-msgstr ""
+msgstr "annet"
 
 #: frontend/src/components/InfoPopup.vue:138
 #: frontend/src/components/ListView.vue:179
 msgid "people"
-msgstr ""
+msgstr "mennesker"
 
 #: frontend/src/components/InfoPopup.vue:138
 #: frontend/src/components/ListView.vue:179
 msgid "person"
-msgstr ""
+msgstr "person"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "rename"
-msgstr ""
+msgstr "endre navn"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
-msgstr ""
+msgstr "valgte"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_add"
-msgstr ""
+msgstr "share_add"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_edit"
-msgstr ""
+msgstr "share_edit"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "share_remove"
-msgstr ""
+msgstr "share_remove"
 
 #. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "team_id"
-msgstr ""
+msgstr "team_id"
 
 #. Option for the 'Root Prefix Type' (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "team_name"
-msgstr ""
+msgstr "team_name"
 
