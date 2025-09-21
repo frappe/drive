@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-15 19:46\n"
+"PO-Revision-Date: 2025-09-21 20:28\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -740,13 +740,13 @@ msgstr "Respuestas"
 msgid "Request Key"
 msgstr ""
 
-#. Label of the root_prefix_type (Select) field in DocType 'Drive Disk
+#. Label of the team_prefix (Select) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Type"
 msgstr ""
 
-#. Label of the root_prefix_value (Data) field in DocType 'Drive Disk Settings'
+#. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Root Prefix Value"
 msgstr ""
