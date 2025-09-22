@@ -37,7 +37,7 @@ const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(
 const src = ref(thumbnailLink || backupLink);
 const imgLoaded = ref(false);
 </script>
-<style>
+<style scoped>
 img {
   border-radius: 0.25rem;
   object-fit: cover;

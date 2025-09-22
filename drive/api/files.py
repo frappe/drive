@@ -238,7 +238,7 @@ def create_document_entity(title, team, parent=None):
         )
     drive_doc = frappe.new_doc("Drive Document")
     drive_doc.title = title
-    drive_doc.version = 2
+    drive_doc.settings = '{"collab": true}'
     drive_doc.save()
 
     entity = create_drive_file(

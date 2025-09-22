@@ -8,7 +8,17 @@ def execute():
     print(
         "This migration to a beta release might CORRUPT your data. Do NOT run this before taking a complete backup. You have two minutes left to cancel this deployment. "
     )
-    # time.sleep(120)
+    time.sleep(120)
+
+    frappe.reload_doc("Drive", "doctype", "Drive Permission")
+    # Change team shares
+    for share in frappe.get_list("Drive Permission", filters={"user": "$TEAM"}, fields=["name", "entity"]):
+        team = frappe.db.get_value("Drive File", share["entity"], "team")
+        frappe.db.set_value("Drive Permission", share["name"], "user", team)
+        frappe.db.set_value("Drive Permission", share["name"], "personal", 1)
+
+    if frappe.get_value("Drive Permission", {"user": "$TEAM"}, "name"):
+        raise ValueError("Not all perms migrated!")
 
     # Insert personal team for every user if not exists
     MAP = {}

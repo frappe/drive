@@ -1,11 +1,8 @@
 <template>
-  <div
-    class="hidden md:flex"
-    :class="{ relative: !show }"
-  >
+  <div class="hidden md:flex right-3 absolute pt-3">
     <div
       v-show="show"
-      class="pt-7 px-3 table-of-contents"
+      class="p-2 table-of-contents bg-white opacity-90 rounded-sm"
     >
       <div
         v-for="anchor in anchors"
@@ -24,14 +21,14 @@
           @click.prevent="onAnchorClick(anchor.id)"
           :data-item-index="anchor.itemIndex"
         >
-          <span class="max-w-40 w-40 truncate">{{ anchor.textContent }}</span>
+          <span class="max-w-40 truncate">{{ anchor.textContent }}</span>
         </a>
       </div>
     </div>
     <Button
       variant="ghost"
       :tooltip="show ? 'Hide' : 'Table of Contents'"
-      class="!w-5.5 !h-5.5 mr-1.5 mt-1.5 absolute right-0"
+      class="!w-5.5 !h-5.5 mr-1.5 mt-1.5"
       @click="show = !show"
     >
       <template #icon>

@@ -263,7 +263,7 @@ import {
 } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import { createResource, LoadingIndicator, Switch, useDoc } from "frappe-ui"
+import { createResource, LoadingIndicator, useDoc } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"

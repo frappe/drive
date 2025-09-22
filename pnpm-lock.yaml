@@ -11,11 +11,11 @@ importers:
   .:
     devDependencies:
       cypress:
-        specifier: ^15.2.0
-        version: 15.2.0
+        specifier: ^14.5.2
+        version: 14.5.4
       cypress-file-upload:
         specifier: ^5.0.8
-        version: 5.0.8(cypress@15.2.0)
+        version: 5.0.8(cypress@14.5.4)
 
   frappe-ui:
     dependencies:
@@ -258,8 +258,8 @@ importers:
         specifier: ^6.0.0-beta.2
         version: 6.0.0-beta.2
       frappe-ui:
-        specifier: 0.1.198
-        version: 0.1.198(@babel/parser@7.28.3)(@nuxt/kit@3.19.0(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
+        specifier: workspace:*
+        version: link:../frappe-ui
       html2pdf.js:
         specifier: ^0.10.3
         version: 0.10.3
@@ -4766,12 +4766,12 @@ packages:
     peerDependencies:
       cypress: ">3.0.0"
 
-  cypress@15.2.0:
+  cypress@14.5.4:
     resolution:
       {
-        integrity: sha512-J4ehSzOSb58SkXyldCe9y/oZ8ep8Bl6+q9kDUjnkqNqc2ZKzDq5KSbhIc2lHFAFR5Jtj10oNqr9JRAZbr8DA8A==,
+        integrity: sha512-0Dhm4qc9VatOcI1GiFGVt8osgpPdqJLHzRwcAB5MSD/CAAts3oybvPUPawHyvJZUd8osADqZe/xzMsZ8sDTjXw==,
       }
-    engines: { node: ^20.0.0 || ^22.0.0 || >=24.0.0 }
+    engines: { node: ^18.0.0 || ^20.0.0 || >=22.0.0 }
     hasBin: true
 
   dashdash@1.14.1:
@@ -5750,15 +5750,6 @@ packages:
         integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==,
       }
 
-  frappe-ui@0.1.198:
-    resolution:
-      {
-        integrity: sha512-e4CPRNp8PDJgyBYrmM2CZdPvEfQza2rLXzDvg5QJlnY94FzVMtTmi+gt17wMKsRGPR/xBoWwtyF5rMxoYMDI6Q==,
-      }
-    peerDependencies:
-      vue: ">=3.5.0"
-      vue-router: ^4.1.6
-
   fresh@2.0.0:
     resolution:
       {
@@ -5867,6 +5858,12 @@ packages:
         integrity: sha512-VaUJspBffn/LMCJVoMvSAdmscJyS1auj5Zulnn5UoYcY531UWmdwhRWkcGKnGU93m5HSXP9LP2usOryrBtQowA==,
       }
     engines: { node: ">=16" }
+
+  getos@3.2.1:
+    resolution:
+      {
+        integrity: sha512-U56CfOK17OKgTVqozZjUKNdkfEv6jk5WISBJ8SHoagjE6L69zOwl3Z+O8myjY9MEW3i2HPWQBt/LTbCgcC973Q==,
+      }
 
   getpass@0.1.7:
     resolution:
@@ -9429,15 +9426,6 @@ packages:
         integrity: sha512-ulAk51I9UVUyJgxlv9M6lFot2WP3e7t8Kz9+IS6D4rVba1tR9kON+Ey69f+1R4Q8cd45Lod6a4IcJIxnzGc/zA==,
       }
     engines: { node: ">=18" }
-
-  systeminformation@5.27.7:
-    resolution:
-      {
-        integrity: sha512-saaqOoVEEFaux4v0K8Q7caiauRwjXC4XbD2eH60dxHXbpKxQ8kH9Rf7Jh+nryKpOUSEFxtCdBlSUx0/lO6rwRg==,
-      }
-    engines: { node: ">=8.0.0" }
-    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
-    hasBin: true
 
   tailwindcss@3.4.17:
     resolution:
@@ -13460,11 +13448,11 @@ snapshots:
 
   csstype@3.1.3: {}
 
-  cypress-file-upload@5.0.8(cypress@15.2.0):
+  cypress-file-upload@5.0.8(cypress@14.5.4):
     dependencies:
-      cypress: 15.2.0
+      cypress: 14.5.4
 
-  cypress@15.2.0:
+  cypress@14.5.4:
     dependencies:
       "@cypress/request": 3.0.9
       "@cypress/xvfb": 1.2.4(supports-color@8.1.1)
@@ -13491,6 +13479,7 @@ snapshots:
       extract-zip: 2.0.1(supports-color@8.1.1)
       figures: 3.2.0
       fs-extra: 9.1.0
+      getos: 3.2.1
       hasha: 5.2.2
       is-installed-globally: 0.4.0
       lazy-ass: 1.6.0
@@ -13505,7 +13494,6 @@ snapshots:
       request-progress: 3.0.0
       semver: 7.7.2
       supports-color: 8.1.1
-      systeminformation: 5.27.7
       tmp: 0.2.5
       tree-kill: 1.2.2
       untildify: 4.0.0
@@ -14111,75 +14099,6 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.198(@babel/parser@7.28.3)(@nuxt/kit@3.19.0(magicast@0.3.5))(@vue/compiler-sfc@3.5.21)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2)):
-    dependencies:
-      "@floating-ui/vue": 1.1.9(vue@3.5.21(typescript@5.9.2))
-      "@headlessui/vue": 1.7.23(vue@3.5.21(typescript@5.9.2))
-      "@popperjs/core": 2.11.8
-      "@tailwindcss/forms": 0.5.10(tailwindcss@3.4.17)
-      "@tailwindcss/line-clamp": 0.4.4(tailwindcss@3.4.17)
-      "@tailwindcss/typography": 0.5.16(tailwindcss@3.4.17)
-      "@tiptap/core": 2.26.1(@tiptap/pm@2.26.1)
-      "@tiptap/extension-code-block": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
-      "@tiptap/extension-code-block-lowlight": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-code-block@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(highlight.js@11.11.1)(lowlight@3.3.0)
-      "@tiptap/extension-color": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/extension-text-style@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1)))
-      "@tiptap/extension-heading": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-highlight": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-image": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-link": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
-      "@tiptap/extension-mention": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(@tiptap/suggestion@2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1))
-      "@tiptap/extension-placeholder": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
-      "@tiptap/extension-table": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
-      "@tiptap/extension-table-cell": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-table-header": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-table-row": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-task-item": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
-      "@tiptap/extension-task-list": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-text-align": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-text-style": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/extension-typography": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))
-      "@tiptap/pm": 2.26.1
-      "@tiptap/starter-kit": 2.26.1
-      "@tiptap/suggestion": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)
-      "@tiptap/vue-3": 2.26.1(@tiptap/core@2.26.1(@tiptap/pm@2.26.1))(@tiptap/pm@2.26.1)(vue@3.5.21(typescript@5.9.2))
-      "@vueuse/core": 10.11.1(vue@3.5.21(typescript@5.9.2))
-      dayjs: 1.11.18
-      dompurify: 3.2.6
-      echarts: 5.6.0
-      feather-icons: 4.29.2
-      grid-layout-plus: 1.1.0(vue@3.5.21(typescript@5.9.2))
-      highlight.js: 11.11.1
-      idb-keyval: 6.2.2
-      lowlight: 3.3.0
-      lucide-static: 0.535.0
-      marked: 15.0.12
-      ora: 5.4.1
-      prettier: 3.6.2
-      radix-vue: 1.9.17(vue@3.5.21(typescript@5.9.2))
-      reka-ui: 2.5.0(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2))
-      socket.io-client: 4.8.1
-      tippy.js: 6.3.7
-      typescript: 5.9.2
-      unplugin-auto-import: 19.3.0(@nuxt/kit@3.19.0(magicast@0.3.5))(@vueuse/core@10.11.1(vue@3.5.21(typescript@5.9.2)))
-      unplugin-icons: 22.2.0(@vue/compiler-sfc@3.5.21)
-      unplugin-vue-components: 28.8.0(@babel/parser@7.28.3)(@nuxt/kit@3.19.0(magicast@0.3.5))(vue@3.5.21(typescript@5.9.2))
-      vue: 3.5.21(typescript@5.9.2)
-      vue-router: 4.5.1(vue@3.5.21(typescript@5.9.2))
-    transitivePeerDependencies:
-      - "@babel/parser"
-      - "@nuxt/kit"
-      - "@svgr/core"
-      - "@svgx/core"
-      - "@vue/compiler-sfc"
-      - "@vue/composition-api"
-      - bufferutil
-      - supports-color
-      - svelte
-      - tailwindcss
-      - utf-8-validate
-      - vue-template-compiler
-      - vue-template-es2015-compiler
-
   fresh@2.0.0: {}
 
   fs-extra@10.1.0:
@@ -14237,6 +14156,10 @@ snapshots:
       pump: 3.0.3
 
   get-stream@8.0.1: {}
+
+  getos@3.2.1:
+    dependencies:
+      async: 3.2.6
 
   getpass@0.1.7:
     dependencies:
@@ -16644,8 +16567,6 @@ snapshots:
   symbol-tree@3.2.4: {}
 
   system-architecture@0.1.0: {}
-
-  systeminformation@5.27.7: {}
 
   tailwindcss@3.4.17:
     dependencies:

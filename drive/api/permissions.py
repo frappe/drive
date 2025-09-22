@@ -59,7 +59,7 @@ def get_user_access(entity, user: str = None, team: bool = False):
             return get_team_access(entity)
         else:
             user = frappe.session.user
-    if user not in [frappe.session.user, "Guest"] and not is_admin(entity.team):
+    if not team and user not in [frappe.session.user, "Guest"] and not is_admin(entity.team):
         frappe.throw("You cannot check permissions of other users", PermissionError)
 
     # Owners and team members of a file have access
@@ -256,13 +256,16 @@ def user_has_permission(doc, ptype, user=None, team=0):
         user = frappe.session.user
     if user == "Administrator" or ptype == "create":
         return True
-    if "ptype" not in ("read", "write", "comment", "share", "upload"):
+    if ptype not in ("read", "write", "comment", "share", "upload"):
         # Should ideally deflect to Framework
         ptype = "write"
+
     access = get_user_access(doc, user, team)
     if ptype in access:
         return bool(access[ptype])
 
 
 def user_has_permission_doc(doc, ptype, user=None):
-    return user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)
+    perm = user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)
+    print(perm)
+    return perm

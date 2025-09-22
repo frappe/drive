@@ -4,6 +4,7 @@
       :options="FONT_FAMILIES"
       v-model="selected"
       placeholder="Font Family"
+      :open-on-click="true"
       class="min-w-[10rem]"
       :style="selected && { fontFamily: `var(--font-${selected})` }"
     />

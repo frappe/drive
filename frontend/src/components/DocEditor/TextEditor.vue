@@ -49,10 +49,10 @@
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
-            'prose-sm min-h-[4rem] !min-w-0 mx-auto',
+            'prose-sm min-h-[4rem] mx-auto px-10 ',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
-            settings?.custom_css,
+            settings?.wide ? 'min-w-[100ch] max-w-[100ch]' : 'md:min-w-[65ch]',
             current ? 'pb-24' : '',
           ]"
           :content="!collab ? rawContent : undefined"
@@ -83,9 +83,10 @@
                 db.transaction(['content'], 'readwrite')
                   .objectStore('content')
                   .put({ val, saved: new Date() }, props.entity.name)
+              if (!editable) return
               edited = true
               autosave()
-              autoversion()
+              autoversion?.()
             }
           "
           :mentions="users"
@@ -101,18 +102,17 @@
             />
           </template>
           <template #editor="{ editor }">
-            <div class="flex h-full">
-              <EditorContent
-                :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
-                :editor="editor"
-                class="h-full overflow-y-auto flex-1"
-              />
-              <ToC
-                v-if="anchors.length > 1"
-                :editor
-                :anchors
-              />
-            </div>
+            <EditorContent
+              :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
+              :editor="editor"
+              class="flex h-full overflow-y-auto"
+            />
+            <ToC
+              v-if="anchors.length > 1"
+              :editor
+              :anchors
+              :class="{ 'top-10': editable }"
+            />
           </template>
         </FTextEditor>
       </div>
@@ -218,7 +218,6 @@ const writerSettings = useDoc({
 })
 const settings = computed(() => {
   if (!props.isFrappeDoc) return {}
-  console.log()
   for (let [k, v] of Object.entries(props.settings)) {
     if (v === "global") delete props.settings[k]
   }
@@ -244,6 +243,7 @@ watch(settings, (val, prev) => {
         prevSnapshot.sv.get(prevVersion.clientID) + 1
       )
     }
+    console.log(settings.value.versioning)
     if (!Y.equalSnapshots(prevSnapshot, snap)) {
       emit("newVersion", Y.encodeSnapshot(snap), +settings.value.versioning)
     }
@@ -425,13 +425,6 @@ if (collab.value) {
         color: getRandomColor(),
       },
     })
-  )
-  console.log(
-    Boolean(
-      !collab ||
-        editorExtensions.find((k) => k.name === "collaborationCursor") ||
-        !isFrappeDoc
-    )
   )
 }
 

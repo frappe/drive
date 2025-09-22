@@ -5,14 +5,14 @@
   >
     <template #body-title>
       <h3
-        class="text-2xl font-semibold leading-6 text-ink-gray-9 cursor-pointer"
+        class="text-2xl font-semibold leading-6 text-ink-gray-9 cursor-pointer pr-2"
         @click="emitter.emit('rename')"
       >
         {{ entity.title }}
       </h3>
     </template>
     <template #body-content>
-      <ul class="space-y-3 text-sm mb-4 text-ink-gray-9">
+      <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
         <span class="text-base font-semibold">Information</span>
         <li>
           <span class="inline-block w-24 text-ink-gray-5"
@@ -58,7 +58,7 @@
 
       <ul
         v-if="editor?.storage?.characterCount"
-        class="space-y-3 text-sm mb-4 text-ink-gray-9"
+        class="space-y-3 text-sm mb-4 text-ink-gray-8"
       >
         <span class="text-base font-semibold">{{ __("Stats") }}</span>
         <li>
@@ -148,7 +148,7 @@
       </ul>
       <ul
         v-if="developer"
-        class="space-y-3 text-sm text-ink-gray-9 mb-4 mt-2"
+        class="space-y-3 text-sm text-ink-gray-8 mb-4 mt-4"
       >
         <div>
           <span class="text-base font-semibold">{{ __("Developer") }}</span>

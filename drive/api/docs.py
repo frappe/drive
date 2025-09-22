@@ -80,7 +80,7 @@ def get_wiki_link(title, team):
 
 
 @frappe.whitelist()
-def create_version(doc, snapshot, duration, manual=0, title=""):
+def create_version(doc, snapshot, duration=None, manual=0, title=""):
     if not manual:
         versions = frappe.get_list(
             "Drive Doc Version",
