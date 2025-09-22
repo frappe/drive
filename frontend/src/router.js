@@ -98,6 +98,15 @@ const routes = [
     beforeEnter: [setRootBreadCrumb],
   },
   {
+    path: "/t/:team/:letter/:entityName/:slug?",
+    component: Dummy,
+    beforeEnter: async (to) => {
+      return {
+        path: `/g/${to.params.entityName}`,
+      }
+    },
+  },
+  {
     path: "/g/:entityName/",
     component: Dummy,
     beforeEnter: async (to) => {

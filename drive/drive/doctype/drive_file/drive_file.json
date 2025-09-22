@@ -22,7 +22,8 @@
     "is_private",
     "old_name",
     "comments",
-    "_modified"
+    "_modified",
+    "allow_download"
   ],
   "fields": [
     {
@@ -117,10 +118,16 @@
       "fieldname": "_modified",
       "fieldtype": "Datetime",
       "label": "Modified"
+    },
+    {
+      "default": "1",
+      "fieldname": "allow_download",
+      "fieldtype": "Check",
+      "label": "Allow Download"
     }
   ],
   "links": [],
-  "modified": "2025-08-14 17:05:51.570605",
+  "modified": "2025-09-22 13:41:35.517139",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive File",

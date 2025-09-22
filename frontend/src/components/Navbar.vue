@@ -46,6 +46,7 @@
       />
       <template v-if="!isLoggedIn">
         <Button
+          v-if="rootEntity && rootEntity.allow_download"
           label="Download"
           variant="outline"
           @click="entitiesDownload($route.params.team, [rootEntity])"
@@ -212,6 +213,7 @@ const defaultActions = computed(() => {
         {
           label: __("Download"),
           icon: LucideDownload,
+          isEnabled: () => rootEntity.value.allow_download,
           onClick: () =>
             entitiesDownload(route.params.team, [rootEntity.value]),
         },

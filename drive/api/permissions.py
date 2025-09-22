@@ -24,6 +24,8 @@ ENTITY_FIELDS = [
     "document",
     "owner",
     "parent_entity",
+    "team",
+    "allow_download",
 ]
 
 
@@ -140,7 +142,7 @@ def get_entity_with_permissions(entity_name):
     entity = frappe.db.get_value(
         "Drive File",
         {"is_active": 1, "name": entity_name},
-        ENTITY_FIELDS + ["team"],
+        ENTITY_FIELDS,
         as_dict=1,
     )
     if not entity:
@@ -267,5 +269,11 @@ def user_has_permission(doc, ptype, user=None, team=0):
 
 def user_has_permission_doc(doc, ptype, user=None):
     perm = user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)
-    print(perm)
     return perm
+
+
+@frappe.whitelist()
+def toggle_allow_download(entity, val):
+    if not user_has_permission(entity, "share"):
+        frappe.throw("You don't have permission for this action.", frappe.PermissionError)
+    frappe.db.set_value("Drive File", entity, "allow_download", val)

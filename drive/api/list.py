@@ -94,7 +94,7 @@ def files(
             (DrivePermission.entity == DriveFile.name) & (DrivePermission.user == user)
         )
 
-    query = query.select(*ENTITY_FIELDS, "team", DrivePermission.user.as_("shared_team")).where(
+    query = query.select(*ENTITY_FIELDS, DrivePermission.user.as_("shared_team")).where(
         fn.Coalesce(DrivePermission.read, 1).as_("read") == 1
     )
 
