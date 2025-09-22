@@ -15,7 +15,7 @@ def execute():
     for share in frappe.get_list("Drive Permission", filters={"user": "$TEAM"}, fields=["name", "entity"]):
         team = frappe.db.get_value("Drive File", share["entity"], "team")
         frappe.db.set_value("Drive Permission", share["name"], "user", team)
-        frappe.db.set_value("Drive Permission", share["name"], "personal", 1)
+        frappe.db.set_value("Drive Permission", share["name"], "team", 1)
 
     if frappe.get_value("Drive Permission", {"user": "$TEAM"}, "name"):
         raise ValueError("Not all perms migrated!")

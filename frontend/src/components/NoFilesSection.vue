@@ -18,7 +18,7 @@
       {{ __(description) }}
     </p>
     <Button
-      v-if="createButton"
+      v-if="createButton && $route.name !== 'Folder'"
       class="mt-4"
       label="Get started"
       variant="solid"
