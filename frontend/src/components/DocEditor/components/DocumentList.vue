@@ -4,7 +4,7 @@
       class="w-60 rounded-lg bg-surface-white p-1 text-base shadow-lg max-h-64 overflow-y-auto"
     >
       <div
-        v-if="!items.length"
+        v-if="!items.length && !loading"
         class="text-center text-ink-gray-6 text-sm py-2"
       >
         No documents found

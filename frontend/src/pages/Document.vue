@@ -77,7 +77,6 @@
                   switch: true,
                   switchValue: docSettings.doc.settings.collab,
                   onClick: async (val) => {
-                    // saveDocument()
                     await docSettings.setValue.submit({
                       settings: JSON.stringify({
                         ...docSettings.doc.settings,
@@ -85,7 +84,6 @@
                       }),
                     })
                     $router.go()
-                    // docSettings.doc.settings.collab = val
                     collabTurned = val
                   },
                 },
@@ -329,7 +327,7 @@ const isFrappeDoc = computed(
   () => entity.value && entity.value.mime_type === "frappe_doc"
 )
 const saveDocument = (comment = false) => {
-  if (!edited.value) return
+  if (!edited.value || current.value) return
   if (entity.value.write || (comment && entity.value.comment)) {
     if (isFrappeDoc.value) {
       const params = {

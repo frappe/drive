@@ -94,13 +94,6 @@
   <h1 class="font-semibold mt-12 mb-4 text-ink-gray-8">
     {{ __("Preferences") }}
   </h1>
-  <FormControl
-    type="select"
-    v-model="defaultTeam"
-    :options="teamOptions"
-    label="Default Team"
-    class="mb-3"
-  />
 
   <Switch
     v-model="singleClick"

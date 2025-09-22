@@ -26,7 +26,7 @@
           />
           <Button
             variant="solid"
-            @click="emitter.emit('restore-snapshot')"
+            @click="emitter.emit('restore-snapshot', current)"
             label="Restore"
           />
         </div>
@@ -157,6 +157,7 @@ import FontFamily from "./extensions/font-family"
 import FloatingQuoteButton from "./extensions/comment"
 import { CharacterCount } from "./extensions/character-count"
 import { CollaborationCursor } from "./extensions/collaboration-cursor"
+import { FontSize } from "./extensions/font-size"
 import EmbedExtension from "./extensions/embed-extension"
 import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import { toUint8Array } from "js-base64"
@@ -243,7 +244,6 @@ watch(settings, (val, prev) => {
         prevSnapshot.sv.get(prevVersion.clientID) + 1
       )
     }
-    console.log(settings.value.versioning)
     if (!Y.equalSnapshots(prevSnapshot, snap)) {
       emit("newVersion", Y.encodeSnapshot(snap), +settings.value.versioning)
     }
@@ -352,6 +352,7 @@ const ExtendedCommentExtension = CommentExtension.extend({
 
 const inIframe = inject("inIframe")
 const editorExtensions = [
+  FontSize,
   CharacterCount,
   TableOfContents.configure({
     onUpdate: (val) => (anchors.value = val),
@@ -585,13 +586,13 @@ if (props.entity.write) {
 }
 
 function evalImplicitTitle() {
+  console.log(editor.value.options.element)
   if (!props.entity.title.startsWith("Untitled Document")) return
   const implicitTitle = editor.value.state.doc.firstChild.textContent
     .replaceAll("#", "")
     .replaceAll("@", "")
     .trim()
   if (implicitTitle.length === 0) return
-
   if (implicitTitle.length) {
     rename.submit({
       entity_name: props.entity.name,

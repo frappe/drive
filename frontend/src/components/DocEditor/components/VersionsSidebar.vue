@@ -124,16 +124,30 @@ const clearSnapshot = () => {
   showVersions.value = false
 }
 
-emitter.on("restore-snapshot", () => {
-  const view = props.editor.view
-  view.dispatch(
-    view.state.tr.setMeta(ySyncPluginKey, {
-      snapshot: null,
-      prevSnapshot: null,
-    })
-  )
-  showVersions.value = false
-  emit("saveDocument")
+emitter.on("restore-snapshot", (details) => {
+  createDialog({
+    title: "Are you sure?",
+    message: details.manual
+      ? `You are restoring to a previous version: ${details.title}.`
+      : `You are restoring the document to how it was at ${details.title}.`,
+    actions: [
+      {
+        label: "Confirm",
+        variant: "solid",
+        onClick: () => {
+          const view = props.editor.view
+          view.dispatch(
+            view.state.tr.setMeta(ySyncPluginKey, {
+              snapshot: null,
+              prevSnapshot: null,
+            })
+          )
+          showVersions.value = false
+          emit("saveDocument")
+        },
+      },
+    ],
+  })
 })
 emitter.on("clear-snapshot", clearSnapshot)
 </script>

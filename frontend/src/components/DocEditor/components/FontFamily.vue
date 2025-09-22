@@ -1,5 +1,12 @@
 <template>
-  <div>
+  <div class="flex gap-2">
+    <Combobox
+      :options="FONT_SIZES"
+      v-model="size"
+      placeholder="15px"
+      :open-on-click="true"
+      class="max-w-[5rem]"
+    />
     <Combobox
       :options="FONT_FAMILIES"
       v-model="selected"
@@ -19,17 +26,52 @@ const props = defineProps({
   editor: Object,
 })
 
-const selected = ref(
-  FONT_FAMILIES.find((opt) => opt.isActive(props.editor))?.value
-)
+const STATIC_FONTS = [
+  { value: "6px" },
+  { value: "10px" },
+  { value: "12px" },
+  { value: "14px" },
+  { value: "15px" },
+  { value: "16px" },
+  { value: "17px" },
+  { value: "18px" },
+  { value: "19px" },
+  { value: "20px" },
+  { value: "24px" },
+  { value: "30px" },
+  { value: "48px" },
+  { value: "60px" },
+  { value: "92px" },
+]
+
+const FONT_SIZES = [
+  {
+    type: "custom",
+    label: "Clear",
+    onClick: props.editor.commands.unsetFontSize,
+  },
+  ...STATIC_FONTS.map((k) => ({ value: k.value, label: k.value })),
+  // Add custom
+]
+
+const selected = ref(null)
+const size = ref(null)
+
 watchEffect(() => {
   selected.value = FONT_FAMILIES.find((opt) =>
     opt.isActive(props.editor)
   )?.value
+  size.value = STATIC_FONTS.find((opt) =>
+    props.editor.isActive("textStyle", {
+      fontSize: opt.value,
+    })
+  )?.value
 })
 
-// When user selects a new font
 watch(selected, (val) => {
   if (val) FONT_FAMILIES.find((k) => k.value === val).action(props.editor)
+})
+watch(size, (val) => {
+  props.editor.commands.setFontSize(val)
 })
 </script>

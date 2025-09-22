@@ -12,7 +12,7 @@
           'is-active': anchor.isActive && !anchor.isScrolledOver,
           'text-ink-gray-5': anchor.isScrolledOver,
         }"
-        :style="{ '--level': anchor.level }"
+        :style="{ '--level': anchor.level - maxLevel }"
       >
         <a
           :href="'#' + anchor.id"
@@ -44,7 +44,7 @@
 import { TextSelection } from "@tiptap/pm/state"
 import LucideMinus from "~icons/lucide/minus"
 import LucidePlus from "~icons/lucide/plus"
-import { ref, watch } from "vue"
+import { ref, watch, computed } from "vue"
 
 const props = defineProps({
   editor: Object,
@@ -55,6 +55,10 @@ const props = defineProps({
 })
 const show = ref(JSON.parse(localStorage.getItem("showToc") || false))
 watch(show, (v) => localStorage.setItem("showToc", v))
+
+const maxLevel = computed(
+  () => Math.min(...props.anchors.map((k) => k.level)) - 1
+)
 const onAnchorClick = (id) => {
   if (!props.editor) return
   const view = props.editor.view
