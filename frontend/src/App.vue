@@ -7,7 +7,7 @@
       <Sidebar v-if="normalView" />
       <div
         id="dropzone"
-        class="flex flex-col flex-1 overflow-hidden bg-surface-white"
+        class="flex flex-col flex-1 overflow-hidden bg-surface-white relative"
       >
         <router-view
           :key="$route.fullPath"
@@ -66,9 +66,7 @@ const showSearchPopup = ref(false)
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
 const normalView = computed(
   () =>
-    !inIframe.value &&
-    isLoggedIn.value &&
-    !["Teams", "Setup"].includes(route.name)
+    !inIframe && isLoggedIn.value && !["Teams", "Setup"].includes(route.name)
 )
 emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data

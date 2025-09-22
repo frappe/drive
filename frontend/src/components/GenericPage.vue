@@ -55,7 +55,7 @@
     />
   </div>
   <p
-    class="hidden absolute text-center top-1/2 left-[calc(50vw-4rem)] w-32 z-10 font-bold"
+    class="hidden absolute text-center top-1/2 left-[calc(50%-4rem)] w-32 z-10 font-bold"
   >
     Drop to upload
   </p>
@@ -401,13 +401,13 @@ if (settings.data?.auto_detect_links) {
 }
 </script>
 <style>
-.dz-drag-hover #drop-area {
+.file-drag #drop-area {
   opacity: 0.5;
   padding-left: 0;
   padding-right: 0;
 }
 
-.dz-drag-hover #drop-area + p {
+.file-drag #drop-area + p {
   display: block;
 }
 </style>

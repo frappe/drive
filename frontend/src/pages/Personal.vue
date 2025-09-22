@@ -1,9 +1,11 @@
 <template>
   <GenericPage
     :get-entities="getPersonal"
-    :icon="LucideHome"
-    primary-message="No files yet"
-    secondary-message="Upload to get started!"
+    :empty="{
+      icon: LucideHome,
+      title: 'No files yet',
+      description: 'Upload to get started!',
+    }"
     :verify="{
       data: {
         write: 1,

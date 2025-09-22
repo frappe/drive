@@ -20,11 +20,16 @@
         @click="selectItem(index)"
         @mouseover="selectedIndex = index"
       >
-        <div class="truncate">{{ item.title }}</div>
+        <div class="truncate max-w-56">{{ item.title }}</div>
         <div class="text-xs text-ink-gray-6">
           Edited {{ item.relativeModified }}
         </div>
       </button>
+      <span
+        class="text-xs text-ink-gray-5 p-1"
+        v-if="loading"
+        >Loading...</span
+      >
     </div>
   </div>
 </template>
@@ -40,6 +45,7 @@ export default {
       type: Object,
       required: true,
     },
+    loading: Boolean,
   },
   data() {
     return {

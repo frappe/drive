@@ -16,7 +16,7 @@ const EmbedExtension = Node.create({
         (entity) =>
         ({ editor }) => {
           editor.commands.setIframe({
-            src: `/drive/t/${entity.team}/document/${entity.name}/`,
+            src: `/drive/w/${entity.name}/`,
             interactive: true,
           })
 
@@ -41,27 +41,22 @@ const EmbedExtension = Node.create({
             const start = Math.max(0, from - 1)
             const existingText =
               state.doc.textBetween(start, from, "", "") + text
-
+            const charBefore = state.doc.textBetween(
+              start - 1,
+              from - 1,
+              "",
+              ""
+            )
             if (existingText === "[[") {
-              triggerPosition = start
-              openEmbedSuggestion(view, from, editor)
+              if (charBefore === "[") closePopup()
+              else {
+                triggerPosition = start
+                openEmbedSuggestion(view, from, editor)
+              }
             }
             if (popup && component && text != "[") {
               search.value =
                 state.doc.textBetween(triggerPosition + 2, to, "", "") + text
-              //       search = query
-              //           console.log(text)
-              // search = search + text
-
-              // const { team, entityName } = router.currentRoute.value.params
-              // getDocuments.fetch({ team, only_parent: 0, search })
-
-              // component.updateProps({
-              //   items: getDocuments.data
-              //     .sort((a, b) => (a.modified > b.modified ? -1 : 1))
-              //     .filter((k) => k.name !== entityName && k.name.includes(search))
-              // })
-
               return false
             }
           },
@@ -100,7 +95,6 @@ const items = computed(() =>
     .filter((k) => k.name !== router.currentRoute.value.params.entityName)
 )
 export async function openEmbedSuggestion(view, from, editor) {
-  const { team, entityName } = router.currentRoute.value.params
   component = new VueRenderer(DocumentList, {
     editor,
     props: {
@@ -142,20 +136,28 @@ function closePopup() {
   popup = null
 }
 
-watch(search, async (val) => {
-  getDocuments.fetch(
-    {
-      team: router.currentRoute.value.params.team,
-      only_parent: 0,
-      search: search.value,
-    },
-    {
-      onSuccess: () => {
-        component &&
-          component.updateProps({
-            items: items.value,
-          })
+watch(
+  search,
+  async (val) => {
+    component &&
+      component.updateProps({
+        loading: true,
+      })
+    getDocuments.fetch(
+      {
+        only_parent: 0,
+        search: search.value,
       },
-    }
-  )
-})
+      {
+        onSuccess: () => {
+          component &&
+            component.updateProps({
+              items: items.value,
+              loading: false,
+            })
+        },
+      }
+    )
+  },
+  { immediate: true }
+)

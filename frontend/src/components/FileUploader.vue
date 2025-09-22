@@ -187,6 +187,20 @@ onMounted(() => {
     emitter.emit("fetchFolderContents")
   })
 
+  dropzone.value.on("dragenter", function (e) {
+    console.log()
+    if (e.dataTransfer.types.includes("Files"))
+      this.element.classList.add("file-drag")
+  })
+  dropzone.value.on("dragenter", function (e) {
+    if (e.dataTransfer.types.includes("Files"))
+      this.element.classList.add("file-drag")
+  })
+  for (let event of ["dragend", "drop", "dragleave"]) {
+    dropzone.value.on(event, function () {
+      this.element.classList.remove("file-drag")
+    })
+  }
   dropzone.value.on("uploadprogress", function (file, progress) {
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
