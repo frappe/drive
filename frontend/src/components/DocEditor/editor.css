@@ -18,6 +18,7 @@ body {
 .prose-sm {
   caret-color: theme("colors.blue.600");
   padding: 1rem 2.5rem;
+  padding-bottom: 200px;
 }
 
 span[data-comment-id].display {

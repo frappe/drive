@@ -102,11 +102,13 @@
             />
           </template>
           <template #editor="{ editor }">
-            <EditorContent
-              :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
-              :editor="editor"
-              class="flex h-full overflow-y-auto"
-            />
+            <div class="flex h-full overflow-y-auto justify-center">
+              <EditorContent
+                :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
+                :editor="editor"
+                class="pb-64"
+              />
+            </div>
             <ToC
               v-if="anchors.length > 1"
               :editor
@@ -586,7 +588,6 @@ if (props.entity.write) {
 }
 
 function evalImplicitTitle() {
-  console.log(editor.value.options.element)
   if (!props.entity.title.startsWith("Untitled Document")) return
   const implicitTitle = editor.value.state.doc.firstChild.textContent
     .replaceAll("#", "")

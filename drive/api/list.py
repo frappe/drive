@@ -35,7 +35,6 @@ def files(
     shared=None,
     tag_list=[],
     file_kinds=[],
-    personal=-1,
     folders=0,
     only_parent=1,
     search=None,
@@ -45,7 +44,6 @@ def files(
     is_active = int(is_active)
     only_parent = int(only_parent)
     folders = int(folders)
-    personal = int(personal)
     favourites_only = int(favourites_only)
     ascending = int(ascending)
 
@@ -56,7 +54,6 @@ def files(
 
     if not entity_name and team:
         entity_name = get_home_folder(team)["name"]
-    print(entity_name)
 
     user = frappe.session.user if frappe.session.user != "Guest" else ""
     if entity_name:
@@ -108,6 +105,7 @@ def files(
     elif not all_teams:
         query = query.where((DriveFile.team == team) & (DriveFile.parent_entity != ""))
 
+    print([r["name"] for r in query.run(as_dict=True)])
     # Get favourites data (only that, if applicable)
     if favourites_only:
         query = query.right_join(DriveFavourite)
@@ -130,31 +128,33 @@ def files(
             .orderby(DriveFile[field], order=Order.asc if ascending else Order.desc)
         )
 
-    if not is_active:
-        query = query.where(DriveFile.owner == frappe.session.user)
-    if search:
-        # escape wildcards or lower() depending on DB
-        query = query.where(DriveFile.title.like(f"%{search}%"))
+    # if not is_active:
+    #     query = query.where(DriveFile.owner == frappe.session.user)
+    # if search:
+    #     # escape wildcards or lower() depending on DB
+    #     query = query.where(DriveFile.title.like(f"%{search}%"))
 
-    query = query.select(Recents.last_interaction.as_("accessed"))
-    if tag_list:
-        tag_list = json.loads(tag_list)
-        query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
-        tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
-        query = query.where(Criterion.any(tag_list_criterion))
+    # query = query.select(Recents.last_interaction.as_("accessed"))
+    # if tag_list:
+    #     tag_list = json.loads(tag_list)
+    #     query = query.left_join(DriveEntityTag).on(DriveEntityTag.parent == DriveFile.name)
+    #     tag_list_criterion = [DriveEntityTag.tag == tags for tags in tag_list]
+    #     query = query.where(Criterion.any(tag_list_criterion))
 
-    file_kinds = json.loads(file_kinds) if not isinstance(file_kinds, list) else file_kinds
-    if file_kinds:
-        mime_types = []
-        for kind in file_kinds:
-            mime_types.extend(MIME_LIST_MAP.get(kind, []))
-        criterion = [DriveFile.mime_type == mime_type for mime_type in mime_types]
-        if "Folder" in file_kinds:
-            criterion.append(DriveFile.is_group == 1)
-        query = query.where(Criterion.any(criterion))
+    # file_kinds = json.loads(file_kinds) if not isinstance(file_kinds, list) else file_kinds
+    # if file_kinds:
+    #     mime_types = []
+    #     for kind in file_kinds:
+    #         mime_types.extend(MIME_LIST_MAP.get(kind, []))
+    #     criterion = [DriveFile.mime_type == mime_type for mime_type in mime_types]
+    #     if "Folder" in file_kinds:
+    #         criterion.append(DriveFile.is_group == 1)
+    #     query = query.where(Criterion.any(criterion))
 
-    if folders:
-        query = query.where(DriveFile.is_group == 1)
+    # if folders:
+    #     query = query.where(DriveFile.is_group == 1)
+    res = query.run(as_dict=True)
+    print([r["name"] for r in query.run(as_dict=True)])
 
     child_count_query = (
         frappe.qb.from_(DriveFile)
@@ -179,7 +179,6 @@ def files(
 
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
-    res = query.run(as_dict=True)
 
     default = 0
     if entity_name:
@@ -187,7 +186,6 @@ def files(
             default = -2
         elif get_user_access(entity_name, team=1)["read"]:
             default = -1
-    print(res)
     # Deduplicate
     if shared:
         added = set()

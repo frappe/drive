@@ -143,9 +143,7 @@ const selectedColumns = [
         return h(LucideBuilding2, { class: "size-4" })
       else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
     },
-    width: "50%",
   },
-
   {
     label: __("Owner"),
     key: "",
