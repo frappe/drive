@@ -10,8 +10,8 @@ import html2text
 import jwt
 import magic
 import mimemapper
-from pypika import Order
 from pycrdt import Doc
+from pypika import Order
 from werkzeug.utils import secure_filename, send_file
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
