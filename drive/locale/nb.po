@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-20 20:28\n"
+"PO-Revision-Date: 2025-09-22 20:27\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -196,7 +196,7 @@ msgstr "Ikke etterlign mappe/fil struktur"
 #. Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "DocType Name"
-msgstr "DocType Navn"
+msgstr "DocType-navn"
 
 #. Label of the document (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -212,7 +212,7 @@ msgstr "Dokument Felt"
 #. Label of the notif_doctype (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Document Type"
-msgstr "Dokument Type"
+msgstr "Dokumenttype (DocType)"
 
 #: frontend/src/components/Sidebar.vue:110
 msgid "Documentation"
