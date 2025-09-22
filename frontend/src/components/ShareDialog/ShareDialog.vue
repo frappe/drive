@@ -55,7 +55,6 @@
                 </Select>
                 <TeamSelector
                   v-if="generalAccessLevel == 'team'"
-                  :allow-blank="true"
                   v-model="chosenTeam"
                 />
               </div>
@@ -372,6 +371,7 @@ import LucideArrowLeft from "~icons/lucide/arrow-left"
 import LucideGlobe2 from "~icons/lucide/globe-2"
 
 import store from "@/store"
+import { getTeams } from "../../resources/files"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])

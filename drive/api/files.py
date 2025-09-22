@@ -11,6 +11,7 @@ import jwt
 import magic
 import mimemapper
 from pypika import Order
+from pycrdt import Doc
 from werkzeug.utils import secure_filename, send_file
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
@@ -151,11 +152,11 @@ def get_thumbnail(entity_name):
         return
 
     thumbnail_data = None
-    if frappe.cache().exists(entity_name):
-        try:
-            thumbnail_data = frappe.cache().get_value(entity_name)
-        except:
-            frappe.cache().delete_value(entity_name)
+    # if frappe.cache().exists(entity_name):
+    #     try:
+    #         thumbnail_data = frappe.cache().get_value(entity_name)
+    #     except:
+    #         frappe.cache().delete_value(entity_name)
     if not thumbnail_data:
         manager = FileManager()
         try:
@@ -164,9 +165,11 @@ def get_thumbnail(entity_name):
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
             elif drive_file.mime_type == "frappe_doc":
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
+                # k = Doc()
+                # k.apply_update(html)
+                # print(k)
                 thumbnail_data = html[:1000] if html else ""
             elif drive_file.mime_type == "frappe/slides":
-                thumbnail_data = "none"
                 # Use this until the thumbnail method is whitelisted
                 thumbnails = frappe.call(
                     "slides.slides.doctype.presentation.presentation.get_slide_thumbnails",
@@ -370,7 +373,7 @@ def create_link(team, title, link, parent=None):
 @frappe.whitelist(allow_guest=True)
 def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
     # BROKEN
-    # In Collab mode file size is off + mentions don't work.
+    # In Collab mode file size is off
     can_write = user_has_permission(entity_name, "write")
     if comment and not can_write:
         old_content = frappe.db.get_value("Drive Document", doc_name, "raw_content")

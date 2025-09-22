@@ -2,8 +2,9 @@
   <GenericPage
     :verify="currentFolder"
     :get-entities="getFolderContents"
-    :icon="LucideFolderClosed"
-    :primary-message="'Folder is Empty'"
+    :empty="{
+      icon: LucideFolderClosed,
+    }"
   />
 </template>
 

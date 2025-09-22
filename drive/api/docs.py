@@ -82,7 +82,7 @@ def get_wiki_link(title, team):
 @frappe.whitelist()
 def create_version(doc, snapshot, duration=None, manual=0, title=""):
     if not manual:
-        versions = frappe.get_list(
+        versions = frappe.get_all(
             "Drive Doc Version",
             filters={"parent": doc, "manual": 0},
             fields=["*"],

@@ -73,7 +73,7 @@ const onAnchorClick = (id) => {
     history.pushState(null, null, `#${id}`)
   }
 
-  const editorEl = props.editor.options.element
+  const editorEl = props.editor.options.element.parentElement
   editorEl.scrollTo({
     top: element.offsetTop - 10,
     behavior: "smooth",

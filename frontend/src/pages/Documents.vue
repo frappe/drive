@@ -7,7 +7,6 @@
       title: `Nothing here`,
       description: `You haven't created documents yet.`,
     }"
-    primary-message=""
   />
 </template>
 <script setup>
