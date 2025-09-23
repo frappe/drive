@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid grid-cols-5 bg-surface-modal border-t border-outline-gray-2 standalone:pb-4 h-[109px]"
+    class="grid grid-cols-5 bg-surface-modal border-t border-outline-gray-2 standalone:pb-4"
     :style="{
       gridTemplateColumns: `repeat(${sidebarItems.length}, minmax(0, 1fr))`,
     }"
@@ -45,7 +45,7 @@ export default {
       return [
         {
           label: "Home",
-          route: "/t/" + this.team,
+          route: "/",
           icon: LucideHome,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Home"
@@ -53,15 +53,15 @@ export default {
         },
         {
           label: "Team",
-          route: "/t/" + this.team + "/team",
+          route: "/teams",
           icon: LucideBuilding2,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Team"
+            return this.$route.name === "Teams"
           },
         },
         {
           label: "Recents",
-          route: "/t/" + this.team + "/recents",
+          route: "/recents",
           icon: LucideClock,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Recents"
@@ -78,7 +78,7 @@ export default {
         },
         {
           label: "Favourites",
-          route: "/t/" + this.team + "/favourites",
+          route: "/favourites",
           icon: LucideStar,
           highlight: () => {
             return this.$store.state.breadcrumbs[0].name === "Favourites"

@@ -97,7 +97,7 @@
           <template #top>
             <TextEditorFixedMenu
               v-if="editable && !settings.minimal && !current"
-              class="w-full overflow-x-auto border-b border-outline-gray-modals justify-center py-1.5 shrink-0"
+              class="max-w-[100vw] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
               :buttons="bubbleMenuButtons"
             />
           </template>

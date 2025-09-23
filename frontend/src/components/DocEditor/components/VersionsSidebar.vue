@@ -59,7 +59,7 @@
 
         <Button
           v-for="(version, i) in group"
-          :variant="version.name === current?.name ? 'solid' : 'ghost'"
+          :variant="version.name === current?.name ? 'outline' : 'ghost'"
           class="text-start text-sm py-4"
           @click="renderSnapshot(version)"
           :label="
@@ -77,7 +77,7 @@ import { toUint8Array } from "js-base64"
 import LucideX from "~icons/lucide/x"
 import LucidePlus from "~icons/lucide/plus"
 import { formatDate } from "@/utils/format"
-import { computed, ref, h } from "vue"
+import { computed, ref, h, watch } from "vue"
 import emitter from "@/emitter"
 import { Tabs } from "frappe-ui"
 import { createDialog } from "@/utils/dialogs"
@@ -116,13 +116,15 @@ const renderSnapshot = (version, prevSnapshot) => {
   )
 }
 
-const clearSnapshot = () => {
+const clearSnapshot = (hide = true) => {
+  current.value = null
   const binding = ySyncPluginKey.getState(props.editor.view.state)?.binding
   if (binding != null) {
     binding.unrenderSnapshot()
   }
-  showVersions.value = false
+  if (hide) showVersions.value = false
 }
+watch(tab, () => clearSnapshot(false))
 
 emitter.on("restore-snapshot", (details) => {
   createDialog({

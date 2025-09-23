@@ -5,7 +5,7 @@
       v-model="size"
       :placeholder="settings.font_size + 'px'"
       :open-on-click="true"
-      class="max-w-[5rem]"
+      class="w-[5rem]"
     />
     <Combobox
       :options="FONT_FAMILIES"
