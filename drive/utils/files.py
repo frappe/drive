@@ -38,6 +38,11 @@ class FileManager:
         self.flat = settings.flat
         self.bucket = settings.bucket
         self.site_folder = Path(frappe.get_site_path("private/files"))
+
+        TEAMS = frappe.get_all("Drive Team", fields=["name", "s3_bucket", "prefix"])
+        self.bucket_map = {k["name"]: k["s3_bucket"] for k in TEAMS}
+        self.prefix_map = {k["name"]: k["prefix"] for k in TEAMS}
+
         if self.s3_enabled:
             self.conn = boto3.client(
                 "s3",
@@ -59,6 +64,15 @@ class FileManager:
 
         return wrapper
 
+    def get_bucket(self, team):
+        return self.bucket_map.get(team) or self.bucket
+
+    def get_prefix(self, team):
+        prefix = self.prefix_map.get(team)
+        if prefix is None:
+            return self.settings.root_folder
+        return prefix
+
     def can_create_thumbnail(self, file):
         # Don't create thumbnails for text files
         return (
@@ -72,7 +86,7 @@ class FileManager:
         Moves the file from the current path to another path
         """
         if self.s3_enabled:
-            self.conn.upload_file(current_path, self.bucket, drive_file.path)
+            self.conn.upload_file(current_path, self.get_bucket(drive_file.team), drive_file.path)
             if drive_file and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
                     self.upload_thumbnail,
@@ -140,13 +154,15 @@ class FileManager:
                     )
 
                 disk_path = Path(disk_path)
-                final_path = disk_path.with_suffix(".thumbnail")
                 if self.s3_enabled:
                     # Removes original file
                     os.remove(file_path)
-                    self.conn.upload_file(disk_path, self.bucket, final_path)
+                    self.conn.upload_file(
+                        disk_path, self.get_bucket(file.team), str(save_path.with_suffix(".thumbnail"))
+                    )
                     disk_path.unlink()
                 else:
+                    final_path = disk_path.with_suffix(".thumbnail")
                     disk_path.rename(final_path)
 
             except BaseException as e:
@@ -182,13 +198,14 @@ class FileManager:
         Only creates if flat structure is disabled.
         """
         path = self.get_disk_path(entity, root)
+        print(self.conn.list_objects_v2(Bucket=self.get_bucket(entity.team)))
         if self.s3_enabled:
-            self.conn.put_object(Bucket=self.bucket, Key=str(path) + "/", Body="")
+            self.conn.put_object(Bucket=self.get_bucket(entity.team), Key=str(path) + "/", Body="")
         else:
             (self.site_folder / path).mkdir()
         return str(path) + ("/" if entity.is_group else "")
 
-    def get_file(self, path):
+    def get_file(self, entity):
         """
         Function to read file from a s3 file.
 
@@ -196,11 +213,12 @@ class FileManager:
         """
         if self.s3_enabled:
             try:
-                buf = self.conn.get_object(Bucket=self.bucket, Key=path)["Body"]
+                # TBD
+                buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path)["Body"]
             except:
                 raise FileNotFoundError("Cannot find this file in the S3 bucket.")
         else:
-            with open(self.site_folder / path, "rb") as fh:
+            with open(self.site_folder / entity.path, "rb") as fh:
                 buf = BytesIO(fh.read())
 
         return buf
@@ -239,9 +257,9 @@ class FileManager:
         Returns path, location (team or personal), file size, and modified
         Ignores hidden files
         """
-        root_folder = self.settings.root_folder
+        root_folder = self.get_prefix(team)
         if self.s3_enabled:
-            objects = self.conn.list_objects_v2(Bucket=self.bucket).get("Contents", [])
+            objects = self.conn.list_objects_v2(Bucket=self.get_bucket(team)).get("Contents", [])
             basic_files = {}
 
             # Get files...
@@ -284,7 +302,7 @@ class FileManager:
                 mime_type = "folder" if is_group else mimemapper.get_mime_type(str(f["Key"]), native_first=False)
                 files[Path(f["Key"])] = (f["Size"], f["LastModified"].timestamp(), mime_type)
         else:
-            root_folder = self.site_folder / root_folder
+            root_folder = self.site_folder / self.get_prefix(team)
 
             # ... and stitch them together with information
             files = {}
@@ -311,15 +329,8 @@ class FileManager:
     def get_thumbnail_path(self, team, name):
         return Path(get_home_folder(team)["path"]) / self.settings.thumbnail_prefix / (name + ".thumbnail")
 
-    def get_old_thumbnail_path(self, team, name):
-        return Path(get_home_folder(team)["path"]) / "thumbnails" / (name + ".thumbnail")
-
     def get_thumbnail(self, team, name):
-        # Used for pre v-0.3 compatibility
-        try:
-            return self.get_file(str(self.get_thumbnail_path(team, name)))
-        except:
-            return self.get_file(str(self.get_old_thumbnail_path(team, name)))
+        return self.get_file(frappe._dict({"team": team, "path": str(self.get_thumbnail_path(team, name))}))
 
     def __get_trash_path(self, entity: DriveFile):
         root = get_home_folder(entity.team)
@@ -340,12 +351,13 @@ class FileManager:
         trash_path = self.__get_trash_path(entity)
         try:
             if self.s3_enabled:
+                bucket = self.get_bucket(entity.team)
                 self.conn.copy_object(
-                    Bucket=self.bucket,
-                    CopySource={"Bucket": self.bucket, "Key": entity.path},
+                    Bucket=bucket,
+                    CopySource={"Bucket": bucket, "Key": entity.path},
                     Key=str(trash_path),
                 )
-                self.conn.delete_object(Bucket=self.bucket, Key=entity.path)
+                self.conn.delete_object(Bucket=bucket, Key=entity.path)
             else:
                 full_trash_path = self.site_folder / trash_path
                 full_trash_path.parent.mkdir(exist_ok=True)
@@ -369,24 +381,28 @@ class FileManager:
         """
         try:
             if self.s3_enabled:
+                bucket = self.get_bucket(entity.team)
                 self.conn.copy_object(
-                    Bucket=self.bucket,
-                    CopySource={"Bucket": self.bucket, "Key": old_path},
+                    Bucket=bucket,
+                    CopySource={"Bucket": bucket, "Key": old_path},
                     Key=new_path,
                 )
-                self.conn.delete_object(Bucket=self.bucket, Key=old_path)
+                self.conn.delete_object(Bucket=bucket, Key=old_path)
             else:
                 (self.site_folder / old_path).rename(self.site_folder / new_path)
         except BaseException as e:
             frappe.throw("This file doesn't exist on disk.")
         return new_path
 
-    def delete_file(self, team, name, path):
+    def delete_file(self, entity):
+        thumbnail_path = self.get_thumbnail_path(entity.team, entity.name)
         if self.s3_enabled:
-            self.conn.delete_object(Bucket=self.bucket, Key=path)
+            bucket = self.get_bucket(entity.team)
+            self.conn.delete_object(Bucket=bucket, Key=entity.path)
+            self.conn.delete_object(Bucket=bucket, Key=str(thumbnail_path))
         else:
             try:
-                (self.site_folder / path).unlink()
-                self.get_thumbnail_path(team, name).unlink()
+                (self.site_folder / entity.path).unlink()
+                thumbnail_path.unlink()
             except FileNotFoundError:
                 pass

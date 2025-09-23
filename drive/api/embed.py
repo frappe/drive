@@ -67,6 +67,7 @@ def get_file_content(embed_name, parent_entity_name):
             )
         # Flaw? Doesn't stream for range header
         manager = FileManager()
+        # TBD - redo
         embed_data = BytesIO(manager.get_file(embed_path).read())
         frappe.cache().set_value(cache_key, (embed_data))
 

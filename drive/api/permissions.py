@@ -169,7 +169,7 @@ def get_entity_with_permissions(entity_name):
     if entity.mime_type == "text/markdown":
         entity.document_type == "markdown"
         manager = FileManager()
-        wrapper = io.TextIOWrapper(manager.get_file(entity.path))
+        wrapper = io.TextIOWrapper(manager.get_file(entity))
         url_builder = (
             lambda label, base, end: f"/api/method/drive.api.docs.get_wiki_link?team={entity.team}&title={label}"
         )
@@ -268,6 +268,8 @@ def user_has_permission(doc, ptype, user=None, team=0):
 
 
 def user_has_permission_doc(doc, ptype, user=None):
+    if ptype == "create":
+        return True
     perm = user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)
     return perm
 

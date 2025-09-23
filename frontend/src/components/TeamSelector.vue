@@ -2,6 +2,7 @@
   <Combobox
     placeholder="Select a team"
     :options
+    :disabled
     :open-on-click="true"
     v-model="team"
   />
@@ -19,6 +20,7 @@ const team = defineModel<string>()
 const props = defineProps({
   none: { default: false, type: Boolean || String },
   allowBlank: { default: false },
+  disabled: { default: false },
 })
 watch(
   getTeams.data,

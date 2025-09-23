@@ -49,7 +49,7 @@ class DriveFile(Document):
             frappe.delete_doc("Drive Document", self.document)
 
         if self.path:
-            self.manager.delete_file(self.team, self.name, self.path)
+            self.manager.delete_file(self)
 
     def on_rollback(self):
         if self.flags.file_created:

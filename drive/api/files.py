@@ -162,7 +162,7 @@ def get_thumbnail(entity_name):
         manager = FileManager()
         try:
             if drive_file.mime_type.startswith("text"):
-                with manager.get_file(drive_file.path) as f:
+                with manager.get_file(drive_file) as f:
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
             elif drive_file.mime_type == "frappe_doc":
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
@@ -493,7 +493,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
     else:
         manager = FileManager()
         return send_file(
-            manager.get_file(drive_file.path),
+            manager.get_file(drive_file),
             mimetype=drive_file.mime_type,
             as_attachment=trigger_download,
             conditional=True,

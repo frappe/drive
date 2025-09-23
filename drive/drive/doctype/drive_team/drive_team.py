@@ -31,16 +31,21 @@ class DriveTeam(Document):
         self.save()
 
         settings = frappe.get_single("Drive Disk Settings")
-        root_folder = (
-            Path(settings.root_folder)
-            / {
-                settings.team_prefix == "team_id": self.name + "/",
-                settings.team_prefix == "team_name": self.title + "/",
-                settings.team_prefix == "none": "",
-            }[True]
-        )
+        root_folder: str
+        if self.s3_bucket:
+            root_folder = self.prefix or ""
+        else:
+            root_folder = (
+                Path(settings.root_folder)
+                / {
+                    settings.team_prefix == "team_id": self.name + "/",
+                    settings.team_prefix == "team_name": self.title + "/",
+                    settings.team_prefix == "none": "",
+                }[True]
+            )
         d.path = str(root_folder)
         d.save()
+
         # Create even with S3 as we need local folders before uploading to S3
         user_directory_path = Path(frappe.get_site_path("private/files")) / root_folder
         user_directory_path.mkdir(exist_ok=True, parents=True)  # allows prefixes to be nested

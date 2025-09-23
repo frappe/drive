@@ -1,5 +1,6 @@
 <template>
   <TeamSelector
+    :disabled="Boolean(props.team)"
     none="home"
     v-model="chosenTeam"
     class="mb-5"
@@ -102,8 +103,11 @@ import { toast } from "@/utils/toasts"
 import emitter from "@/emitter"
 import TeamSelector from "./TeamSelector.vue"
 
+const props = defineProps({
+  team: { type: String, required: false },
+})
 const route = useRoute()
-const chosenTeam = ref(route.params.team || "home")
+const chosenTeam = ref(props.team || route.params.team || "home")
 function buildTree(items) {
   const root = {}
 

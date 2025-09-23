@@ -89,6 +89,16 @@
             onClick: () => (showEditTeam = true),
           },
           {
+            label: 'Sync',
+            icon: LucideRefreshCcw,
+            cond: teamData.s3_bucket,
+            onClick: () =>
+              createDialog({
+                title: 'Sync files from S3',
+                component: h(SyncBreakdown, { team }),
+              }),
+          },
+          {
             label: 'Leave',
             icon: LucideLogOut,
             onClick: () => leaveTeam.submit({ team }),
@@ -357,57 +367,68 @@
     :options="{ title: __('New Team'), size: 'sm' }"
   >
     <template #body-content>
-      <div class="flex flex-col gap-2">
-        <FormControl
-          v-focus
-          required
-          :label="__('Name')"
-          type="input"
-          v-model="teamName"
-        />
+      <div class="flex flex-col gap-4">
         <div>
           <FormLabel
-            :label="__('Icon')"
-            class="mb-1"
+            label="Team Name:"
+            required
           />
-          <Combobox
-            :options="
-              Object.keys(icons).map((k) => ({
-                label: k
-                  .split('-')
-                  .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
-                  .join(' '),
-                value: k,
-                icon: icons[k],
-              }))
-            "
-            v-model="selectedIcon"
-          />
+          <div class="flex gap-1 mt-1.5">
+            <EmojiPicker
+              v-model="selectedIcon"
+              :emojis="
+                Object.keys(icons).map((k) => ({
+                  value: k,
+                  label: k
+                    .split('-')
+                    .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
+                    .join(' '),
+                  icon: icons[k],
+                }))
+              "
+            />
+            <FormControl
+              class="grow"
+              v-focus
+              required
+              type="text"
+              v-model="teamName"
+            />
+          </div>
         </div>
+        <FormControl
+          v-model="s3Bucket"
+          type="text"
+          label="S3 Bucket"
+          description="Optional - allows you to use a different bucket for this team."
+        />
       </div>
     </template>
     <template #actions>
-      <Button
-        :disabled="!teamName.trim().length"
-        variant="solid"
-        @click="
-          createTeam.submit(
-            { team_name: teamName, icon: selectedIcon },
-            {
-              onSuccess: (id) => {
-                team = id
-                showAddTeam = false
-                teamName = ''
-                selectedIcon = ''
-                getTeams.fetch()
-                router.push({ name: 'Team', params: { team: id } })
-              },
-            }
-          )
-        "
-      >
-        {{ __("Add") }}
-      </Button>
+      <div class="flex justify-end">
+        <Button
+          :disabled="!teamName.trim().length"
+          variant="solid"
+          @click="
+            createTeam.submit(
+              { team_name: teamName, icon: selectedIcon, s3_bucket: s3Bucket },
+              {
+                onSuccess: (id) => {
+                  team = id
+                  showAddTeam = false
+                  teamName = ''
+                  selectedIcon = ''
+                  s3Bucket = ''
+                  getTeams.fetch()
+                  router.push({ name: 'Team', params: { team: id } })
+                },
+              }
+            )
+          "
+        >
+          {{ __("Add") }}
+        </Button>
+      </div>
     </template>
   </Dialog>
   <Dialog
@@ -490,6 +511,8 @@ import {
   Combobox,
   FormLabel,
 } from "frappe-ui"
+import SyncBreakdown from "@/components/SyncBreakdown.vue"
+import { createDialog } from "@/utils/dialogs"
 import { allUsers } from "@/resources/permissions"
 import { ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
@@ -502,9 +525,11 @@ import LucideLogOut from "~icons/lucide/log-out"
 import LucidePencil from "~icons/lucide/pencil"
 import router from "@/router"
 import Alert from "@/components/Alert.vue"
+import EmojiPicker from "@/components/EmojiPicker.vue"
 import UserTooltip from "@/components/UserTooltip.vue"
 import { dynamicList } from "@/utils/files"
 import TeamSelector from "@/components/TeamSelector.vue"
+import { LucideRefreshCcw } from "lucide-vue-next"
 
 const route = useRoute()
 const tabIndex = ref(0)
@@ -543,11 +568,13 @@ const showRemove = ref(false)
 const showAddTeam = ref(false)
 const showEditTeam = ref(false)
 const teamName = ref("")
-const selectedIcon = ref("")
+const selectedIcon = ref("building")
+const s3Bucket = ref("")
 watch(showEditTeam, (val) => {
   if (val) {
     teamName.value = teamData.value.title
     selectedIcon.value = teamData.value.icon
+    s3Bucket.value = teamData.value.s3_bucket
   }
 })
 const editTeam = createResource({
