@@ -210,47 +210,37 @@ const props = defineProps({
   currentVersion: { required: false, type: Object },
 })
 const comments = ref([])
-const writerSettings = useDoc({
-  doctype: "Drive Settings",
-  name: store.state.user.id,
-  immediate: store.state.user.id !== "Guest",
-  transform: (doc) => {
-    doc.settings = JSON.parse(doc.writer_settings)
-    return doc
-  },
-})
-const settings = computed(() => {
-  if (!props.isFrappeDoc) return {}
-  for (let [k, v] of Object.entries(props.settings)) {
-    if (v === "global") delete props.settings[k]
+
+watch(
+  () => props.settings,
+  (val, prev) => {
+    if (val.versioning === prev?.versioning && autoversion) return
+    const duration = Math.max(0.9, +val.versioning - 1) * 1000
+    autoversion = debounce(() => {
+      if (!collab.value) return
+      const snap = Y.snapshot(doc)
+      const prevVersion =
+        props.entity.versions[props.entity.versions.length - 1]
+      const prevSnapshot = prevVersion
+        ? Y.decodeSnapshot(toUint8Array(prevVersion.snapshot))
+        : Y.emptySnapshot
+      if (prevVersion != null) {
+        // account for the action of adding a version to ydoc
+        prevSnapshot.sv.set(
+          prevVersion.clientID,
+          prevSnapshot.sv.get(prevVersion.clientID) + 1
+        )
+      }
+      if (!Y.equalSnapshots(prevSnapshot, snap)) {
+        emit(
+          "newVersion",
+          Y.encodeSnapshot(snap),
+          +props.settings.value.versioning
+        )
+      }
+    }, duration)
   }
-  return {
-    ...(writerSettings.doc ? writerSettings.doc?.settings : {}),
-    ...props.settings,
-  }
-})
-watch(settings, (val, prev) => {
-  if (val.versioning === prev?.versioning && autoversion) return
-  const duration = Math.max(0.9, +val.versioning - 1) * 1000
-  autoversion = debounce(() => {
-    if (!collab.value) return
-    const snap = Y.snapshot(doc)
-    const prevVersion = props.entity.versions[props.entity.versions.length - 1]
-    const prevSnapshot = prevVersion
-      ? Y.decodeSnapshot(toUint8Array(prevVersion.snapshot))
-      : Y.emptySnapshot
-    if (prevVersion != null) {
-      // account for the action of adding a version to ydoc
-      prevSnapshot.sv.set(
-        prevVersion.clientID,
-        prevSnapshot.sv.get(prevVersion.clientID) + 1
-      )
-    }
-    if (!Y.equalSnapshots(prevSnapshot, snap)) {
-      emit("newVersion", Y.encodeSnapshot(snap), +settings.value.versioning)
-    }
-  }, duration)
-})
+)
 
 const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
 const activeComment = ref(null)
@@ -438,77 +428,79 @@ const CommentAction = {
   isActive: () => false,
 }
 
-const bubbleMenuButtons = dynamicList([
-  "Paragraph",
-  [
-    {
-      text: "H1",
-      icon: H1,
-      action: (editor) =>
-        editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      isActive: (editor) => editor.isActive("heading", { level: 1 }),
-    },
-    {
-      text: "H2",
-      icon: H2,
-      action: (editor) =>
-        editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      isActive: (editor) => editor.isActive("heading", { level: 2 }),
-    },
-    {
-      text: "H3",
-      icon: H3,
-      action: (editor) =>
-        editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      isActive: (editor) => editor.isActive("heading", { level: 3 }),
-    },
-  ],
-  "Separator",
-  "Bold",
-  "Italic",
-  "Link",
-  "Strikethrough",
-  "Separator",
-  ["Bullet List", "Numbered List", "Task List"],
-  "Separator",
-  ["Align Left", "Align Center", "Align Right"],
-  ...(props.isFrappeDoc
-    ? [
-        "Separator",
-        {
-          label: "Inter",
-          class: "font-inter",
-          component: h(
-            defineAsyncComponent(() => import("./components/FontFamily.vue")),
-            { editor }
-          ),
-        },
-        "FontColor",
-        "Separator",
-        CommentAction,
-        "Image",
-        "Video",
-        "Iframe",
-      ]
-    : []),
-  "Blockquote",
-  "Code",
-  [
-    "InsertTable",
-    "AddColumnBefore",
-    "AddColumnAfter",
-    "DeleteColumn",
-    "AddRowBefore",
-    "AddRowAfter",
-    "DeleteRow",
-    "MergeCells",
-    "SplitCell",
-    "ToggleHeaderColumn",
-    "ToggleHeaderRow",
-    "ToggleHeaderCell",
-    "DeleteTable",
-  ],
-])
+const bubbleMenuButtons = computed(() =>
+  dynamicList([
+    "Paragraph",
+    [
+      {
+        text: "H1",
+        icon: H1,
+        action: (editor) =>
+          editor.chain().focus().toggleHeading({ level: 1 }).run(),
+        isActive: (editor) => editor.isActive("heading", { level: 1 }),
+      },
+      {
+        text: "H2",
+        icon: H2,
+        action: (editor) =>
+          editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        isActive: (editor) => editor.isActive("heading", { level: 2 }),
+      },
+      {
+        text: "H3",
+        icon: H3,
+        action: (editor) =>
+          editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        isActive: (editor) => editor.isActive("heading", { level: 3 }),
+      },
+    ],
+    "Separator",
+    "Bold",
+    "Italic",
+    "Link",
+    "Strikethrough",
+    "Separator",
+    ["Bullet List", "Numbered List", "Task List"],
+    "Separator",
+    ["Align Left", "Align Center", "Align Right"],
+    ...(props.isFrappeDoc
+      ? [
+          "Separator",
+          {
+            label: "Inter",
+            class: "font-inter",
+            component: h(
+              defineAsyncComponent(() => import("./components/FontFamily.vue")),
+              { editor, settings: props.settings }
+            ),
+          },
+          "FontColor",
+          "Separator",
+          CommentAction,
+          "Image",
+          "Video",
+          "Iframe",
+        ]
+      : []),
+    "Blockquote",
+    "Code",
+    [
+      "InsertTable",
+      "AddColumnBefore",
+      "AddColumnAfter",
+      "DeleteColumn",
+      "AddRowBefore",
+      "AddRowAfter",
+      "DeleteRow",
+      "MergeCells",
+      "SplitCell",
+      "ToggleHeaderColumn",
+      "ToggleHeaderRow",
+      "ToggleHeaderCell",
+      "DeleteTable",
+    ],
+  ])
+)
 
 emitter.on("printFile", () => {
   if (editor.value) printDoc(editor.value.getHTML())

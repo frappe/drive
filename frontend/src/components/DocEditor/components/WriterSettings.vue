@@ -23,6 +23,7 @@
                     type="number"
                     min="1"
                     label="Versioning Frequency"
+                    placeholder="Default"
                     :options="[]"
                     v-model="settings.versioning"
                     :validate="
@@ -99,17 +100,17 @@
 
 <script setup>
 import { computed, ref, reactive, watchEffect } from "vue"
-import { FormControl, useDoc, Dialog, Tabs } from "frappe-ui"
+import { FormControl, Dialog, Tabs } from "frappe-ui"
 import { useStore } from "vuex"
 import { FONT_FAMILIES, dynamicList } from "@/utils/files"
 import Form from "@/components/Form.vue"
 
-const store = useStore()
 const open = ref(true)
 const model = defineModel()
 
 const props = defineProps({
   docSettings: { required: true, type: Object },
+  globalSettings: { required: true, type: Object },
   editable: Boolean,
 })
 const tabs = dynamicList([
@@ -135,7 +136,7 @@ const fontSizeOptions = computed(() =>
       value: "global",
       cond: tabIndex.value === 1,
     },
-    { label: "13px", value: 14 },
+    { label: "13px", value: 13 },
     { label: "14px", value: 14 },
     { label: "15px", value: 15 },
     { label: "16px", value: 16 },
@@ -163,19 +164,8 @@ const lineHeightOptions = computed(() =>
   ])
 )
 
-const globalSettings = useDoc({
-  doctype: "Drive Settings",
-  name: store.state.user.id,
-  immediate: true,
-  transform: (doc) => {
-    doc.writer_settings = JSON.parse(doc.writer_settings) || {}
-    console.log(doc.writer_settings)
-    // doc.writer_settings.versioning = JSON.parse(doc.writer_settings.versioning)
-    return doc
-  },
-})
 const resource = computed(() =>
-  tabIndex.value === 1 ? props.docSettings : globalSettings
+  tabIndex.value === 1 ? props.docSettings : props.globalSettings
 )
 const key = computed(() =>
   tabIndex.value === 1 ? "settings" : "writer_settings"
@@ -190,5 +180,6 @@ watchEffect(() => {
   for (let k of KEYS) {
     settings[k] = base[k] || "global"
   }
+  if (tabIndex.value === 1) settings.collab = base.collab
 })
 </script>

@@ -725,12 +725,10 @@ export const newExternal = async (type) => {
         store.state.listResource.data?.push?.(data)
         getDocuments.data?.push?.(data)
         if (type === "Document") {
-          window.open(
-            router.resolve({
-              name: "Document",
-              params: { team: route.params.team, entityName: data.name },
-            }).href
-          )
+          router.push({
+            name: "Document",
+            params: { entityName: data.name },
+          })
         } else if (type === "Presentation") {
           window.open("/slides/presentation/" + data.path)
         }

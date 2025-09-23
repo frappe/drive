@@ -3,14 +3,16 @@
     <Combobox
       :options="FONT_SIZES"
       v-model="size"
-      placeholder="15px"
+      :placeholder="settings.font_size + 'px'"
       :open-on-click="true"
       class="max-w-[5rem]"
     />
     <Combobox
       :options="FONT_FAMILIES"
       v-model="selected"
-      placeholder="Font Family"
+      :placeholder="
+        FONT_FAMILIES.find((k) => k.value === settings.font_family)?.label
+      "
       :open-on-click="true"
       class="min-w-[10rem]"
       :style="selected && { fontFamily: `var(--font-${selected})` }"
@@ -24,6 +26,7 @@ import { FONT_FAMILIES } from "@/utils/files"
 
 const props = defineProps({
   editor: Object,
+  settings: Object,
 })
 
 const STATIC_FONTS = [

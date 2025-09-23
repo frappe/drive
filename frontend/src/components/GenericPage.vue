@@ -132,6 +132,7 @@ watch(
   () => route.params.team,
   (v) => {
     if (v) team.value = v
+    allUsers.fetch({ team: v })
   }
 )
 const activeEntity = computed(() => store.state.activeEntity)

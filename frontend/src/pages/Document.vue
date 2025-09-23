@@ -221,7 +221,7 @@
       :editable="inIframe ? false : editable"
       :collab-turned
       :is-frappe-doc
-      :settings="docSettings?.doc?.settings"
+      :settings
       :users="allUsers.data || []"
       :show-resolved
       @save-document="saveDocument"
@@ -241,6 +241,7 @@
       v-if="showSettings"
       v-model="showSettings"
       :doc-settings
+      :global-settings
       :editable
     />
   </div>
@@ -322,10 +323,11 @@ watch(showVersions, (v) => {
   if (!v) current.value = null
 })
 
-let docSettings
+let docSettings, globalSettings
 const isFrappeDoc = computed(
   () => entity.value && entity.value.mime_type === "frappe_doc"
 )
+
 const saveDocument = (comment = false) => {
   if (!edited.value || current.value) return
   if (entity.value.write || (comment && entity.value.comment)) {
@@ -363,7 +365,7 @@ const onSuccess = (data) => {
   if (data.content) yjsContent.value = toUint8Array(data.content)
   lastFetched.value = Date.now()
   setBreadCrumbs(data)
-  if (data.mime_type === "frappe_doc")
+  if (data.mime_type === "frappe_doc") {
     docSettings = useDoc({
       doctype: "Drive Document",
       name: data.document,
@@ -374,7 +376,27 @@ const onSuccess = (data) => {
         return doc
       },
     })
+    globalSettings = useDoc({
+      doctype: "Drive Settings",
+      name: store.state.user.id,
+      immediate: true,
+      transform: (doc) => {
+        doc.writer_settings = JSON.parse(doc.writer_settings) || {}
+        return doc
+      },
+    })
+  }
 }
+const settings = computed(() => {
+  if (!isFrappeDoc.value) return {}
+  for (let [k, v] of Object.entries(docSettings.doc?.settings || {})) {
+    if (v === "global") delete docSettings.doc?.settings[k]
+  }
+  return {
+    ...(globalSettings.doc?.writer_settings || {}),
+    ...docSettings.doc?.settings,
+  }
+})
 
 const document = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
