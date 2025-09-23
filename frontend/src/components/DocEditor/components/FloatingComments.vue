@@ -14,7 +14,7 @@
             if (
               activeComment === comment.name &&
               !e.target.getAttribute('data-comment-id') &&
-              e.target.nodeName !== 'BUTTON' &&
+              e.target.nodeName === 'DIV' &&
               !comment.new &&
               !e.target.classList?.contains?.('replies-count')
             )
@@ -117,7 +117,7 @@
               <Avatar
                 size="xl"
                 class="bg-surface-white"
-                :label="reply.owner"
+                :label="$user(reply.owner)?.full_name || reply.owner"
                 :image="$user(reply.owner)?.user_image"
               />
             </div>
@@ -242,7 +242,9 @@
             <Avatar
               size="xl"
               class="self-center"
-              :label="$user($store.state.user.id)?.full_name"
+              :label="
+                $user($store.state.user.id)?.full_name || $store.state.user.id
+              "
               :image="$user($store.state.user.id)?.user_image"
             />
 

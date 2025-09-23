@@ -46,11 +46,13 @@ export const openEntity = (entity, new_tab = false) => {
     return window.open(getLink(entity, false), "_blank")
   }
 
-  store.state.breadcrumbs.push({
-    label: entity.title,
-    name: entity.name,
-    route: null,
-  })
+  if (!entity.breadcrumbs?.length)
+    store.state.breadcrumbs.push({
+      label: entity.title,
+      name: entity.name,
+      route: null,
+    })
+  else setBreadCrumbs(entity)
 
   // hm?
   if (entity.name === "") {
@@ -707,34 +709,26 @@ export function getRandomColor() {
   }
   return color
 }
-
 export const newExternal = async (type) => {
   const route = router.currentRoute.value
-  nToast.promise(
-    (type === "Document" ? createDocument : createPresentation).submit({
-      title: "Untitled " + type,
-      team: route.params.team,
-      parent: store.state.currentFolder.name,
-    }),
-    {
-      successDuration: 1,
-      loading: `Creating ${type}...`,
-      success: (data) => {
-        prettyData([data])
-        data.file_type = type
-        store.state.listResource.data?.push?.(data)
-        getDocuments.data?.push?.(data)
-        if (type === "Document") {
-          router.push({
-            name: "Document",
-            params: { entityName: data.name },
-          })
-        } else if (type === "Presentation") {
-          window.open("/slides/presentation/" + data.path)
-        }
-        return "Created"
-      },
-      error: "Failed to create document",
-    }
-  )
+  const data = await (type === "Document"
+    ? createDocument
+    : createPresentation
+  ).submit({
+    title: "Untitled " + type,
+    team: route.params.team,
+    parent: store.state.currentFolder.name,
+  })
+  prettyData([data])
+  data.file_type = type
+  store.state.listResource.data?.push?.(data)
+  getDocuments.data?.push?.(data)
+  if (type === "Document") {
+    router.push({
+      name: "Document",
+      params: { entityName: data.name },
+    })
+  } else if (type === "Presentation") {
+    window.open("/slides/presentation/" + data.path)
+  }
 }

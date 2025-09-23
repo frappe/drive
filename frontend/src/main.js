@@ -23,6 +23,7 @@ setConfig("resourceFetcher", frappeRequest)
 app.config.unwrapInjectedRef = true
 app.config.globalProperties.emitter = emitter
 app.config.globalProperties.$user = (user) => {
+  if (!allUsers.fetched) allUsers.fetch({ team: "all" })
   return allUsers.data?.find?.((k) => k.name === user)
 }
 

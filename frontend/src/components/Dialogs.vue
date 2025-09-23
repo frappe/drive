@@ -142,15 +142,19 @@ function addToList(data, file_type) {
 }
 
 function removeFromList(entities, move = true) {
-  console.log(entity_open.value)
   if (entity_open.value) {
     if (move) {
       store.state.breadcrumbs.splice(1)
       store.state.breadcrumbs.push({ loading: true })
     } else {
       resetDialog()
+      listResource.value.setData(
+        listResource.value.data.filter(
+          ({ name }) => name !== resource.value.data.name
+        )
+      )
       openEntity({
-        ...resource.value.data,
+        is_group: 1,
         name: resource.value.data.parent_entity,
         breadcrumbs: resource.value.data.breadcrumbs.slice(0, -1),
       })

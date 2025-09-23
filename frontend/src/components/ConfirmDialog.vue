@@ -139,7 +139,6 @@ const loading = computed(
   () => (dialogData.value.resource || updateResource).loading
 )
 const dialogOptions = computed(() => {
-  console.log(loading.value)
   return {
     title: dialogData.value.title,
     size: "sm",

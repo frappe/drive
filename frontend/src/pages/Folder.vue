@@ -25,7 +25,6 @@ import LucideFolderClosed from "~icons/lucide/folder-closed"
 
 const store = useStore()
 const realtime = inject("realtime")
-const emitter = inject("emitter")
 
 const props = defineProps({
   entityName: String,

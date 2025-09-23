@@ -48,7 +48,7 @@ def upload_embed(doc):
 @frappe.whitelist(allow_guest=True)
 @default_team
 def upload_file(
-    team=None,
+    team,
     total_file_size=0,
     last_modified=None,
     fullpath=None,
@@ -68,6 +68,8 @@ def upload_file(
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
+    # Get again for non-root folders
+    team = frappe.db.get_value("Drive File", parent, "team")
     if not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
     embed = int(embed)
@@ -206,6 +208,7 @@ def get_thumbnail(entity_name):
 def create_presentation(title, team, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
+    team = frappe.db.get_value("Drive File", parent, "team")
     if not user_has_permission(parent, "upload"):
         frappe.throw(
             "Cannot access folder due to insufficient permissions",
@@ -234,6 +237,8 @@ def create_presentation(title, team, parent=None):
 def create_document_entity(title, team, parent=None):
     home_directory = get_home_folder(team)
     parent = parent or home_directory.name
+    team = frappe.db.get_value("Drive File", parent, "team")
+
     if not user_has_permission(parent, "upload"):
         frappe.throw(
             "Cannot access folder due to insufficient permissions",
@@ -277,6 +282,7 @@ def create_folder(team, title, parent=None):
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder.name
+    team = frappe.db.get_value("Drive File", parent, "team")
 
     parent_doc = frappe.get_doc("Drive File", parent)
     if not user_has_permission(parent_doc, "upload"):

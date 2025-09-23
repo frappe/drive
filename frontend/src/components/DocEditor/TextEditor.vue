@@ -93,6 +93,7 @@
           placeholder="Start writing here..."
           :bubble-menu="settings.minimal && bubbleMenuButtons"
           :extensions="editorExtensions"
+          :autofocus="true"
         >
           <template #top>
             <TextEditorFixedMenu
