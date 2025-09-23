@@ -37,11 +37,10 @@ from .permissions import user_has_permission
 def upload_embed(doc):
     doc = frappe.get_doc("Drive File", doc)
     file = frappe.request.files["file"]
-    file.filename = "Embed - " + doc
-
-    embed = upload_file(doc.team, parent=doc, embed=1)
+    file.filename = "Embed - " + doc.name
+    embed = upload_file(doc.team, parent=doc.name, embed=1)
     return {
-        "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={doc}"
+        "file_url": f"/api/method/drive.api.embed.get_file_content?embed_name={embed.name}&parent_entity_name={doc.name}"
     }
 
 
