@@ -18,6 +18,7 @@
   >
     <DriveToolBar
       v-model="sortOrder"
+      v-model:search="search"
       :action-items="actionItems"
       :selections="selectedEntitities"
       :get-entities="getEntities || { data: [] }"
@@ -112,6 +113,7 @@ const route = useRoute()
 const store = useStore()
 
 const dialog = ref("")
+const search = ref("")
 provide("dialog", dialog)
 
 const team = route.params.team || localStorage.getItem("recentTeam")
@@ -136,7 +138,6 @@ watch(sortId, (id) => {
 watch(
   sortOrder,
   (order) => {
-    console.log(order, rows.value)
     rows.value = sortEntities([...rows.value], order)
     props.getEntities.setData(rows.value)
     if (sortId.value) {
@@ -145,6 +146,10 @@ watch(
   },
   { deep: true }
 )
+watch(search, (val) => {
+  const search = new RegExp(val, "i")
+  rows.value = props.getEntities.data.filter((k) => search.test(k.title))
+})
 
 watch(
   () => props.getEntities.data,
