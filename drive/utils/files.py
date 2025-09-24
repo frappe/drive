@@ -198,7 +198,6 @@ class FileManager:
         Only creates if flat structure is disabled.
         """
         path = self.get_disk_path(entity, root)
-        print(self.conn.list_objects_v2(Bucket=self.get_bucket(entity.team)))
         if self.s3_enabled:
             self.conn.put_object(Bucket=self.get_bucket(entity.team), Key=str(path) + "/", Body="")
         else:

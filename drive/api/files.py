@@ -376,6 +376,12 @@ def create_link(team, title, link, parent=None):
 
 
 @frappe.whitelist(allow_guest=True)
+def edit_file_content(entity_name, content):
+    path = frappe.db.get_value("Drive File", entity_name, "path")
+    FileManager().write_file(path, content)
+
+
+@frappe.whitelist(allow_guest=True)
 def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
     # BROKEN
     # In Collab mode file size is off

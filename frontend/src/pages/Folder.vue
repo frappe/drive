@@ -24,7 +24,6 @@ import router from "@/router"
 import LucideFolderClosed from "~icons/lucide/folder-closed"
 
 const store = useStore()
-const realtime = inject("realtime")
 
 const props = defineProps({
   entityName: String,
@@ -42,23 +41,6 @@ const getFolderContents = createResource({
   cache: ["folder", props.entityName],
 })
 setCache(getFolderContents, ["folder", props.entityName])
-
-// BROKEN
-onMounted(() => {
-  realtime.doc_subscribe("Drive File", props.entityName)
-  realtime.doc_open("Drive File", props.entityName)
-  realtime.on("doc_viewers", (data) => {
-    store.state.connectedUsers = data.users
-    userInfo.submit({ users: JSON.stringify(data.users) })
-  })
-})
-
-onBeforeUnmount(() => {
-  realtime.off("doc_viewers")
-  store.state.connectedUsers = []
-  realtime.doc_close("Drive File", currentFolder.data?.name)
-  realtime.doc_unsubscribe("Drive File", currentFolder.data?.name)
-})
 
 const onSuccess = (entity) => {
   if (router.currentRoute.value.params.entityName !== entity.name) return

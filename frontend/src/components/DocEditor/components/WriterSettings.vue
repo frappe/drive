@@ -28,7 +28,7 @@
                     v-model="settings.versioning"
                     :validate="
                       (k) =>
-                        k > 1
+                        k >= 1
                           ? true
                           : 'Please give a positive whole number for versioning frequency.'
                     "

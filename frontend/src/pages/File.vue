@@ -77,8 +77,6 @@ import ErrorPage from "@/components/ErrorPage.vue"
 
 const router = useRouter()
 const store = useStore()
-const emitter = inject("emitter")
-const realtime = inject("realtime")
 const props = defineProps({
   entityName: String,
   slug: String,
@@ -147,37 +145,6 @@ function scrollEntity(negative = false) {
 
 onMounted(() => {
   fetchFile(props.entityName)
-  realtime.doc_subscribe("Drive File", props.entityName)
-  realtime.doc_open("Drive File", props.entityName)
-  realtime.on("doc_viewers", (data) => {
-    store.state.connectedUsers = data.users
-    userInfo.submit({ users: JSON.stringify(data.users) })
-  })
-})
-
-onBeforeUnmount(() => {
-  realtime.off("doc_viewers")
-  store.state.connectedUsers = []
-  realtime.doc_close("Drive File", file.data?.name)
-  realtime.doc_unsubscribe("Drive File", file.data?.name)
-})
-
-let userInfo = createResource({
-  url: "frappe.desk.form.load.get_user_info_for_viewers",
-  // compatibility with document awareness
-  onSuccess(data) {
-    data = Object.values(data)
-    data.forEach((item) => {
-      if (item.fullname) {
-        item.avatar = item.image
-        item.name = item.fullname
-        delete item.image
-        delete item.fullname
-      }
-    })
-    store.state.connectedUsers = data
-  },
-  auto: false,
 })
 </script>
 

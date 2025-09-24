@@ -228,7 +228,7 @@
                   "
                 >
                   <Badge
-                    :theme="invite.status === 'Pending' ? 'blue' : 'orange'"
+                    :theme="invite.status === 'Pending' ? 'gray' : 'orange'"
                     variant="subtle"
                     class="my-auto mr-2"
                     size="sm"

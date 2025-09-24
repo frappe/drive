@@ -1,7 +1,7 @@
 import { io } from "socket.io-client"
 import { socketio_port } from "../../../../sites/common_site_config.json"
 
-export function initSocket(options = {}) {
+export function initSocket() {
   let host = window.location.hostname
   let siteName = import.meta.env.DEV ? host : window.site_name
   let port = window.location.port ? `:${socketio_port}` : ""
@@ -15,9 +15,9 @@ export function initSocket(options = {}) {
     transports: ["websocket", "polling"],
   })
 
-  // socket.on("connect_error", (data) => {
-  //   console.log(data)
-  // })
+  socket.on("connect_error", (data) => {
+    console.log(data)
+  })
   return socket
 }
 

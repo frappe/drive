@@ -59,7 +59,6 @@
                 />
               </div>
               <Select
-                class="w-32"
                 v-if="generalAccessLevel !== 'restricted'"
                 v-model="generalPerms"
                 :options="accessOptions"
@@ -409,16 +408,16 @@ const accessOptions = computed(() =>
   dynamicList([
     { value: "reader", label: "Can view", icon: LucideEye },
     {
-      value: "editor",
-      label: "Can edit",
-      cond: props.entity.write,
-      icon: LucidePencil,
-    },
-    {
       value: "upload",
       label: "Can upload",
       cond: props.entity.is_group && props.entity.upload,
       icon: LucideUpload,
+    },
+    {
+      value: "editor",
+      label: "Can edit",
+      cond: props.entity.write,
+      icon: LucidePencil,
     },
   ])
 )
@@ -442,7 +441,11 @@ const getGeneralAccess = createResource({
     }
     generalAccessLevel.value = getGeneralAccess.params.team ? "team" : "public"
     chosenTeam.value = data.team
-    generalPerms.value = data.write ? "editor" : "reader"
+    generalPerms.value = data.write
+      ? "editor"
+      : data.upload
+      ? "upload"
+      : "reader"
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })
@@ -461,6 +464,7 @@ const updateGeneralAccess = (level, perms) => {
       comment: 1,
       share: 1,
       write: perms === "editor",
+      upload: perms === "editor" || perms === "upload",
     })
     selectingTeam = false
   } else {

@@ -14,7 +14,7 @@ import router from "./router"
 import App from "./App.vue"
 import emitter from "@/emitter"
 import "./index.css"
-import { initSocket, RealTimeHandler } from "./socket"
+import { initSocket } from "./socket"
 import focusDirective from "./utils/focus"
 import { allUsers } from "@/resources/permissions"
 
@@ -34,10 +34,9 @@ app.use(store)
 
 app.use(FrappeUI, { socketio: false })
 const socket = initSocket()
-const realtime = new RealTimeHandler(socket)
 
-app.provide("realtime", realtime)
-app.config.globalProperties.$realtime = realtime
+app.provide("socket", socket)
+app.config.globalProperties.$socket = socket
 
 app.directive("on-outside-click", onOutsideClickDirective)
 app.directive("focus", focusDirective)
