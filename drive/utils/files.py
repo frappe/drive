@@ -211,15 +211,14 @@ class FileManager:
 
         Temporary: if not found in S3, look at disk.
         """
-        if self.s3_enabled:
-            try:
-                print(self.get_bucket(entity.team), entity.path)
+        try:
+            if self.s3_enabled:
                 buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path)["Body"]
-            except:
-                raise FileNotFoundError("Cannot find this file in the S3 bucket.")
-        else:
-            with open(self.site_folder / entity.path, "rb") as fh:
-                buf = BytesIO(fh.read())
+            else:
+                with open(self.site_folder / entity.path, "rb") as fh:
+                    buf = BytesIO(fh.read())
+        except:
+            frappe.throw("Could not find this file", frappe.NotFound)
 
         return buf
 
@@ -257,8 +256,8 @@ class FileManager:
         Returns path, location (team or personal), file size, and modified
         Ignores hidden files
         """
-        root_folder = self.get_prefix(team)
         if self.s3_enabled:
+            root_folder = Path(self.get_prefix(team))
             objects = self.conn.list_objects_v2(Bucket=self.get_bucket(team)).get("Contents", [])
             basic_files = {}
 
@@ -266,8 +265,13 @@ class FileManager:
             for obj in objects:
                 obj_path = Path(obj["Key"])
 
-                if not obj_path.is_relative_to(root_folder) or any(str(p).startswith(".") for p in obj_path.parts):
+                if (
+                    not obj_path.is_relative_to(root_folder)
+                    or obj_path == root_folder
+                    or any(str(p).startswith(".") for p in obj_path.parts)
+                ):
                     continue
+                obj_path = obj_path.relative_to(root_folder)
                 basic_files[obj_path] = obj
 
                 # Used to "calculate" natural folders, folders created by Drive are already counted
@@ -283,7 +287,7 @@ class FileManager:
 
             files = {}
 
-            for f in basic_files.values():
+            for path, f in basic_files.items():
                 # Drive-created folders - registered S3 objects - have trailing slashes.
                 is_group = f.get("Folder") or f["Key"].endswith("/")
                 exists = frappe.get_value(
@@ -299,8 +303,9 @@ class FileManager:
                 if exists:
                     continue
 
-                mime_type = "folder" if is_group else mimemapper.get_mime_type(str(f["Key"]), native_first=False)
-                files[Path(f["Key"])] = (f["Size"], f["LastModified"].timestamp(), mime_type)
+                mime_type = "folder" if is_group else mimemapper.get_mime_type(f["Key"], native_first=False)
+                # Team path is key, DB path is f["Key"]
+                files[path] = (f["Size"], f["LastModified"].timestamp(), mime_type, f["Key"])
         else:
             root_folder = self.site_folder / self.get_prefix(team)
 
@@ -323,7 +328,9 @@ class FileManager:
                 if mime_type is None:
                     mime_type = magic.from_buffer(open(f, "rb").read(2048), mime=True)
 
-                files[path] = (f.stat().st_size, f.stat().st_mtime, mime_type)
+                # Twice `path` for compatability with S3 format
+                files[path] = (f.stat().st_size, f.stat().st_mtime, mime_type, str(path))
+
         return files
 
     def get_thumbnail_path(self, team, name):
@@ -341,7 +348,7 @@ class FileManager:
         if not entity.path or entity.mime_type.startswith("frappe"):
             return
         new_path = self.get_disk_path(entity)
-        return self.move(entity.path, new_path)
+        return self.move(entity, new_path)
 
     @__not_if_flat
     def move_to_trash(self, entity: DriveFile):
@@ -371,11 +378,10 @@ class FileManager:
         """
         Restore a file from the trash.
         """
-        current_path = self.__get_trash_path(entity)
-        self.move(str(current_path), entity.path)
+        self.move(frappe.dict(path=self.__get_trash_path(entity), team=entity.team), entity.path)
 
     @__not_if_flat
-    def move(self, old_path: str | Path, new_path: str):
+    def move(self, entity, new_path: str | Path):
         """
         Move a file on disk
         """
@@ -384,12 +390,12 @@ class FileManager:
                 bucket = self.get_bucket(entity.team)
                 self.conn.copy_object(
                     Bucket=bucket,
-                    CopySource={"Bucket": bucket, "Key": old_path},
-                    Key=new_path,
+                    CopySource={"Bucket": bucket, "Key": entity.path},
+                    Key=str(new_path),
                 )
-                self.conn.delete_object(Bucket=bucket, Key=old_path)
+                self.conn.delete_object(Bucket=bucket, Key=entity.path)
             else:
-                (self.site_folder / old_path).rename(self.site_folder / new_path)
+                (self.site_folder / entity.path).rename(self.site_folder / new_path)
         except BaseException as e:
             frappe.throw("This file doesn't exist on disk.")
         return new_path

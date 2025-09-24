@@ -5,12 +5,11 @@
     </h1>
     <Button
       variant="solid"
-      :icon="LucidePlus"
+      :icon-left="h(LucidePlus, { class: 'size-4' })"
+      :label="__('New')"
       class="ml-auto mr-4"
       @click="showAddTeam = true"
-    >
-      {{ __("New team") }}
-    </Button>
+    />
   </div>
   <Alert
     v-if="invite"
@@ -373,7 +372,7 @@
             label="Team Name:"
             required
           />
-          <div class="flex gap-1 mt-1.5">
+          <div class="flex gap-1.5 mt-1.5">
             <EmojiPicker
               v-model="selectedIcon"
               :emojis="
@@ -393,15 +392,31 @@
               required
               type="text"
               v-model="teamName"
+              @update:modelValue="createTeam.error = null"
             />
           </div>
         </div>
-        <FormControl
-          v-model="s3Bucket"
-          type="text"
-          label="S3 Bucket"
-          description="Optional - allows you to use a different bucket for this team."
-        />
+        <template v-if="getDiskSettings.data.enabled">
+          <FormControl
+            v-model="s3Bucket"
+            type="text"
+            label="S3 Bucket"
+            description="Optional - allows you to use a different bucket for this team."
+          />
+          <FormControl
+            :disabled="!s3Bucket"
+            v-model="prefix"
+            type="text"
+            label="Folder"
+            description="Optional - allows you to use a specific folder inside the bucket."
+          />
+        </template>
+      </div>
+      <div
+        v-if="createTeam.error"
+        class="text-sm text-ink-red-3 my-3"
+      >
+        {{ createTeam.error.messages[0] }}
       </div>
     </template>
     <template #actions>
@@ -411,14 +426,20 @@
           variant="solid"
           @click="
             createTeam.submit(
-              { team_name: teamName, icon: selectedIcon, s3_bucket: s3Bucket },
+              {
+                team_name: teamName,
+                icon: selectedIcon,
+                s3_bucket: s3Bucket,
+                prefix,
+              },
               {
                 onSuccess: (id) => {
                   team = id
                   showAddTeam = false
                   teamName = ''
-                  selectedIcon = ''
+                  selectedIcon = 'building'
                   s3Bucket = ''
+                  prefix = ''
                   getTeams.fetch()
                   router.push({ name: 'Team', params: { team: id } })
                 },
@@ -433,7 +454,7 @@
   </Dialog>
   <Dialog
     v-model="showEditTeam"
-    :options="{ title: __('Edit ' + teamData.title), size: 'sm' }"
+    :options="{ title: __('Settings - ' + teamData.title), size: 'sm' }"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
@@ -466,10 +487,16 @@
           </div>
         </div>
         <FormControl
+          :disabled="true"
           v-model="s3Bucket"
           type="text"
           label="S3 Bucket"
-          description="Changing your bucket might cause data loss - be careful!"
+        />
+        <FormControl
+          :disabled="true"
+          v-model="prefix"
+          type="text"
+          label="Folder"
         />
       </div>
     </template>
@@ -484,7 +511,6 @@
               team,
               team_name: teamName,
               icon: selectedIcon,
-              s3_bucket: s3Bucket,
             },
             {
               onSuccess: () => {
@@ -522,12 +548,11 @@ import {
   Tooltip,
   createResource,
   FormControl,
-  Combobox,
   FormLabel,
 } from "frappe-ui"
 import SyncBreakdown from "@/components/SyncBreakdown.vue"
 import { createDialog } from "@/utils/dialogs"
-import { allUsers } from "@/resources/permissions"
+import { allUsers, getDiskSettings } from "@/resources/permissions"
 import { ref, watch } from "vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
@@ -548,6 +573,7 @@ import { LucideRefreshCcw } from "lucide-vue-next"
 const route = useRoute()
 const tabIndex = ref(0)
 getTeams.fetch()
+getDiskSettings.fetch()
 const invites = createResource({
   url: "drive.api.product.get_team_invites",
 })
@@ -584,11 +610,13 @@ const showEditTeam = ref(false)
 const teamName = ref("")
 const selectedIcon = ref("building")
 const s3Bucket = ref("")
+const prefix = ref("")
 watch(showEditTeam, (val) => {
   if (val) {
     teamName.value = teamData.value.title
     selectedIcon.value = teamData.value.icon
     s3Bucket.value = teamData.value.s3_bucket
+    prefix.value = teamData.value.prefix
   }
 })
 const editTeam = createResource({

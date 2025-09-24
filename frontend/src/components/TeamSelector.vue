@@ -43,7 +43,7 @@ const options = computed<DropdownItem[]>(() => {
   }))
   return dynamicList([
     { cond: props.none === true, label: "Everywhere", value: "all" },
-    { cond: props.none === "home", label: "Home", value: "home" },
+    { cond: props.none, label: "Home", value: "home" },
     ...res,
   ])
 })

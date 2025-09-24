@@ -10,7 +10,9 @@ from drive.utils.files import FileManager
 def sync_preview(team, json=True):
     manager = FileManager()
     files = manager.fetch_new_files(team)
+    root_folder = manager.get_prefix(team)
     sorted_files = sorted(files.items(), key=lambda p: len(p[0].parts))
+    # For just checking, strip the root folder
     if json:
         return map(lambda x: (str(x[0]), x[1]), sorted_files)
     return sorted_files
@@ -61,7 +63,7 @@ def sync_from_disk(team):
         )
         return new_parent.name
 
-    for file, (file_size, last_modified, mime_type) in sorted_files:
+    for file, (file_size, last_modified, mime_type, actual_path) in sorted_files:
         parent_path = str(file.parent).strip("./")
         parent = frappe.get_value(
             "Drive File",
@@ -76,7 +78,7 @@ def sync_from_disk(team):
                 file.name,
                 parent,
                 mime_type,
-                lambda _: str(file) if mime_type != "folder" else str(file).strip("/") + "/",
+                lambda _: actual_path if mime_type != "folder" else actual_path.strip("/") + "/",
                 last_modified=last_modified,
                 file_size=file_size,
                 is_group=mime_type == "folder",

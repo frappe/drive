@@ -48,8 +48,9 @@ class DriveFile(Document):
         if self.document:
             frappe.delete_doc("Drive Document", self.document)
 
-        if self.path:
-            self.manager.delete_file(self)
+        # Don't delete files on disk
+        # if self.path:
+        #     self.manager.delete_file(self)
 
     def on_rollback(self):
         if self.flags.file_created:

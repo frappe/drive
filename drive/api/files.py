@@ -842,9 +842,9 @@ def get_new_title(title, parent_name, folder=False, entity=None):
     sibling_entity_titles = frappe.db.get_list(
         "Drive File",
         filters=filters,
-        pluck="title",
+        fields=["title", "name"],
     )
-    if not sibling_entity_titles or (len(sibling_entity_titles) == 1 and sibling_entity_titles[0] == entity):
+    if not sibling_entity_titles or (len(sibling_entity_titles) == 1 and sibling_entity_titles[0].name == entity):
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
 

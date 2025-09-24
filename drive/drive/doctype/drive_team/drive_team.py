@@ -39,7 +39,7 @@ class DriveTeam(Document):
                 Path(settings.root_folder)
                 / {
                     settings.team_prefix == "team_id": self.name + "/",
-                    settings.team_prefix == "team_name": self.title + "/",
+                    settings.team_prefix == "team_name": f"{self.title} ({frappe.session.user})/",
                     settings.team_prefix == "none": "",
                 }[True]
             )

@@ -11,8 +11,8 @@
   </div>
   <div class="overflow-y-auto ps-1">
     <LoadingIndicator
-      v-if="getSettings.loading || getSettings.error"
       class="size-5 mx-auto my-10"
+      v-if="getDiskSettings.loading"
     />
     <div
       v-else
@@ -33,7 +33,7 @@
           { label: 'None', value: 'none' },
         ]"
         v-model="generalSettings.team_prefix"
-        description="The folder name for each team, defaults to the team name"
+        description="The folder name for each team, defaults to the team name."
       />
 
       <FormControl
@@ -104,12 +104,10 @@ import {
   createResource,
   LoadingIndicator,
 } from "frappe-ui"
-import { useRoute } from "vue-router"
 import { toast } from "@/utils/toasts"
 import { createDialog } from "@/utils/dialogs"
+import { getDiskSettings } from "@/resources/permissions"
 import SyncBreakdown from "@/components/SyncBreakdown.vue"
-
-const route = useRoute()
 
 const edited = ref(false)
 
@@ -145,9 +143,7 @@ function confirmSync() {
   })
 }
 
-const getSettings = createResource({
-  url: "drive.api.product.disk_settings",
-  method: "GET",
+getDiskSettings.fetch(null, {
   onSuccess: (data) => {
     delete data.aws_secret
     for (let [key, value] of Object.entries(data)) {
@@ -157,7 +153,6 @@ const getSettings = createResource({
     generalSettings.backend_type = data.enabled ? "s3" : "disk"
   },
 })
-getSettings.fetch()
 
 const updateSettings = createResource({
   url: "drive.api.product.disk_settings",

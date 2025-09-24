@@ -82,7 +82,11 @@
           class="w-full mt-8"
           variant="solid"
           :disabled="!preview.data?.length"
-          @click="syncFromDisk.submit({ team: chosenTeam })"
+          @click="
+            syncFromDisk.submit({ team: chosenTeam }),
+              clearDialogs(),
+              emitter.emit('showSettings', -1)
+          "
         />
       </div>
     </template>
@@ -102,6 +106,7 @@ import { useRoute } from "vue-router"
 import { toast } from "@/utils/toasts"
 import emitter from "@/emitter"
 import TeamSelector from "./TeamSelector.vue"
+import { clearDialogs } from "@/utils/dialogs"
 
 const props = defineProps({
   team: { type: String, required: false },

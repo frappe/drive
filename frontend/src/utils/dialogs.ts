@@ -34,3 +34,7 @@ export function createDialog(options: UserDialogOptions) {
 export function useDialogs() {
   return dialogs
 }
+
+export function clearDialogs() {
+  dialogs.value = []
+}

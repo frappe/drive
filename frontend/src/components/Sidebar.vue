@@ -85,8 +85,12 @@ const showSettings = ref(false)
 const showShortcuts = ref(false)
 const suggestedTab = ref(0)
 emitter.on("showSettings", (val = 0) => {
-  showSettings.value = true
-  suggestedTab.value = val
+  console.log(val)
+  if (val === -1) showSettings.value = false
+  else {
+    showSettings.value = true
+    suggestedTab.value = val
+  }
 })
 emitter.on("toggleShortcuts", () => {
   showShortcuts.value = !showShortcuts.value

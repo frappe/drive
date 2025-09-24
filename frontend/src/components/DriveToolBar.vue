@@ -114,7 +114,6 @@
         />
         <TeamSelector
           v-model="team"
-          :disabled
           v-if="
             ['Shared', 'Recents', 'Favourites', 'Trash'].includes($route.name)
           "

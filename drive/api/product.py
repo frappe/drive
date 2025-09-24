@@ -22,31 +22,36 @@ def get_domain_teams(domain):
 
 
 @frappe.whitelist()
-def create_team(user, team_name=None, icon=None, s3_bucket=None, personal=0):
+def create_team(user, team_name=None, icon=None, s3_bucket=None, prefix=None, personal=0):
     """
     Used for creating teams (including the personal "team")
     """
     team_name = team_name if team_name else frappe.session.user
     exists = frappe.db.exists("Drive Team", {"title": team_name, "owner": user})
     if exists:
-        raise ValueError("There already exists a team with this title:", exists)
+        frappe.throw("There is already a team with this title.", ValueError)
 
     team = frappe.get_doc(
-        {"doctype": "Drive Team", "title": team_name, "icon": icon, "s3_bucket": s3_bucket, "personal": personal}
+        {
+            "doctype": "Drive Team",
+            "title": team_name,
+            "icon": icon,
+            "s3_bucket": s3_bucket,
+            "prefix": prefix,
+            "personal": personal,
+        }
     ).insert()
     team.save()
     return team.name
 
 
 @frappe.whitelist()
-def edit_team(team, icon=None, team_name=None, s3_bucket=None):
+def edit_team(team, icon=None, team_name=None):
     team = frappe.get_doc("Drive Team", team)
     if team_name:
         team.title = team_name
     if icon is not None:
         team.icon = icon
-    if s3_bucket is not None:
-        team.s3_bucket = s3_bucket
     team.save()
     return team.name
 
@@ -392,10 +397,11 @@ def disk_settings(**kwargs):
     settings = frappe.get_single("Drive Disk Settings")
     if not check_is_admin()["is_admin"]:
         # Return only safe values
-        return {"preview_size": settings.preview_size}
+        return {"preview_size": settings.preview_size, "enabled": settings.enabled}
 
     if frappe.request.method == "GET":
         return settings
+
     field_map = {
         "team_prefix": "team_id",
         "root_folder": None,

@@ -107,7 +107,9 @@ export const createTeam = createResource({
     ...params,
     user: store.state.user.id,
   }),
-  onError() {
-    toast({ title: "Failed to create team. Please try again.", type: "error" })
-  },
+})
+
+export const getDiskSettings = createResource({
+  url: "drive.api.product.disk_settings",
+  method: "GET",
 })
