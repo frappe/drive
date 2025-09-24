@@ -375,10 +375,19 @@ def create_link(team, title, link, parent=None):
     return drive_file
 
 
-@frappe.whitelist(allow_guest=True)
-def edit_file_content(entity_name, content):
-    path = frappe.db.get_value("Drive File", entity_name, "path")
-    FileManager().write_file(path, content)
+# @frappe.whitelist(allow_guest=True)
+def edit_file_content(entity_name):
+    entity = frappe.get_doc("Drive File", entity_name)
+    file = frappe.request.files["file"]
+    home_folder = get_home_folder(entity.team)
+    temp_path = get_upload_path(home_folder["path"], f"editing_{secure_filename(entity.title)}")
+    with temp_path.open("ab") as f:
+        f.write(file.stream.read())
+    manager = FileManager()
+    manager.delete_file(entity)
+    manager.upload_file(temp_path, entity)
+    entity._modified = datetime.now()
+    entity.save(ignore_permissions=True)
 
 
 @frappe.whitelist(allow_guest=True)
