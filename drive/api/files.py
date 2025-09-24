@@ -473,6 +473,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
         {"name": entity_name, "is_active": 1},
         [
             "is_group",
+            "team",
             "is_link",
             "path",
             "title",

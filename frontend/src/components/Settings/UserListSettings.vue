@@ -436,32 +436,41 @@
     :options="{ title: __('Edit ' + teamData.title), size: 'sm' }"
   >
     <template #body-content>
-      <div class="flex flex-col gap-2">
-        <FormControl
-          required
-          :label="__('Name')"
-          type="input"
-          v-model="teamName"
-        />
+      <div class="flex flex-col gap-4">
         <div>
           <FormLabel
-            :label="__('Icon')"
-            class="mb-1"
+            label="Team Name:"
+            required
           />
-          <Combobox
-            :options="
-              Object.keys(icons).map((k) => ({
-                label: k
-                  .split('-')
-                  .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
-                  .join(' '),
-                value: k,
-                icon: icons[k],
-              }))
-            "
-            v-model="selectedIcon"
-          />
+          <div class="flex gap-1 mt-1.5">
+            <EmojiPicker
+              v-model="selectedIcon"
+              :emojis="
+                Object.keys(icons).map((k) => ({
+                  value: k,
+                  label: k
+                    .split('-')
+                    .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
+                    .join(' '),
+                  icon: icons[k],
+                }))
+              "
+            />
+            <FormControl
+              class="grow"
+              v-focus
+              required
+              type="text"
+              v-model="teamName"
+            />
+          </div>
         </div>
+        <FormControl
+          v-model="s3Bucket"
+          type="text"
+          label="S3 Bucket"
+          description="Changing your bucket might cause data loss - be careful!"
+        />
       </div>
     </template>
     <template #actions>
@@ -471,7 +480,12 @@
         class="w-full"
         @click="
           editTeam.submit(
-            { team, team_name: teamName, icon: selectedIcon },
+            {
+              team,
+              team_name: teamName,
+              icon: selectedIcon,
+              s3_bucket: s3Bucket,
+            },
             {
               onSuccess: () => {
                 showEditTeam = false

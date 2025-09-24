@@ -39,12 +39,14 @@ def create_team(user, team_name=None, icon=None, s3_bucket=None, personal=0):
 
 
 @frappe.whitelist()
-def edit_team(team, icon, team_name):
+def edit_team(team, icon=None, team_name=None, s3_bucket=None):
     team = frappe.get_doc("Drive Team", team)
     if team_name:
         team.title = team_name
     if icon is not None:
         team.icon = icon
+    if s3_bucket is not None:
+        team.s3_bucket = s3_bucket
     team.save()
     return team.name
 

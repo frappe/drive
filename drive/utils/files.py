@@ -213,7 +213,7 @@ class FileManager:
         """
         if self.s3_enabled:
             try:
-                # TBD
+                print(self.get_bucket(entity.team), entity.path)
                 buf = self.conn.get_object(Bucket=self.get_bucket(entity.team), Key=entity.path)["Body"]
             except:
                 raise FileNotFoundError("Cannot find this file in the S3 bucket.")
