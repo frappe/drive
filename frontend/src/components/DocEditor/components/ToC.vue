@@ -33,8 +33,8 @@
     >
       <template #icon>
         <component
-          :is="show ? LucideMinus : LucidePlus"
-          class="size-3.5"
+          :is="show ? LucideMinus : LucideTableOfContents"
+          class="size-4"
       /></template>
     </Button>
   </div>
@@ -44,7 +44,9 @@
 import { TextSelection } from "@tiptap/pm/state"
 import LucideMinus from "~icons/lucide/minus"
 import LucidePlus from "~icons/lucide/plus"
+import LucideTableOfContents from "~icons/lucide/table-of-contents"
 import { ref, watch, computed } from "vue"
+import { LucideList } from "lucide-vue-next"
 
 const props = defineProps({
   editor: Object,
@@ -92,12 +94,10 @@ const onAnchorClick = (id) => {
 
 a {
   color: var(--black);
-  display: flex;
-  gap: 0.25rem;
   text-decoration: none;
 
   &::before {
-    content: attr(data-item-index) ".";
+    content: "";
   }
 }
 

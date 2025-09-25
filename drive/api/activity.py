@@ -24,8 +24,7 @@ def create_new_activity_log(
     try:
         doc.save(ignore_permissions=True)
     except:
-        doc.message = doc.message[:140]
-        doc.save()
+        pass
 
 
 @frappe.whitelist()

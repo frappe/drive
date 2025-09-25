@@ -267,6 +267,8 @@ class DriveFile(Document):
             field_old_value=self.title,
             field_new_value=new_title,
         )
+        if len(new_title) > 140:
+            frappe.throw("Your title can't be more than 140 characters.")
         self.title = new_title
         path = self.manager.rename(self)
         if path:

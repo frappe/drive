@@ -11,9 +11,17 @@
         <div
           class="flex w-52 shrink-0 flex-col bg-surface-menu-bar py-3 p-4 border-r"
         >
-          <h1 class="text-xl font-semibold leading-6 text-ink-gray-9 pr-2">
-            {{ __("Settings") }}
-          </h1>
+          <div class="flex justify-between items-center">
+            <h1 class="text-xl font-semibold leading-6 text-ink-gray-9 pr-2">
+              {{ __("Settings") }}
+            </h1>
+            <Button
+              class="ml-auto text-sm"
+              variant="ghost"
+              label="Exit"
+              @click="$emit('update:modelValue', false)"
+            />
+          </div>
           <div class="mt-3 space-y-1">
             <template
               v-for="tab in tabs"
@@ -40,18 +48,12 @@
             </template>
           </div>
         </div>
-        <div class="flex flex-1 flex-col p-8">
+        <div class="flex flex-1 flex-col px-6 py-4">
           <component
             :is="activeTab.component"
             v-if="activeTab"
           />
         </div>
-        <Button
-          class="m-3 absolute right-0"
-          variant="ghost"
-          :icon="LucideX"
-          @click="$emit('update:modelValue', false)"
-        />
       </div>
     </template>
   </Dialog>
@@ -64,7 +66,7 @@ import ProfileSettings from "@/components/Settings/ProfileSettings.vue"
 import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
-import LucideFileText from "~icons/lucide/file-text"
+import LucideChartBar from "~icons/lucide/chart-bar"
 import LucideCloudUpload from "~icons/lucide/cloud-upload"
 import LucideTag from "~icons/lucide/tag"
 import LucideX from "~icons/lucide/x"
@@ -85,8 +87,8 @@ let tabs = [
     component: markRaw(UserListSettings),
   },
   {
-    label: "Storage",
-    icon: LucideCloudCog,
+    label: "Statistics",
+    icon: LucideChartBar,
     component: markRaw(StorageSettings),
   },
   {
@@ -96,8 +98,8 @@ let tabs = [
   },
   {
     enabled: computed(() => isAdmin.data?.is_admin || false),
-    label: "S3 Integration",
-    icon: LucideCloudUpload,
+    label: "Storage",
+    icon: LucideCloudCog,
     component: markRaw(BackendSettings),
   },
 ]

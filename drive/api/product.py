@@ -336,7 +336,6 @@ def get_all_users(team):
     team_users = {}
     for team in teams:
         team_users |= {k.user: k.access_level for k in frappe.get_doc("Drive Team", team).users}
-
     users = frappe.get_all(
         doctype="User",
         filters=[

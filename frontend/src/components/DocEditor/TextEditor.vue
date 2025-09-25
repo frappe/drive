@@ -52,7 +52,9 @@
             'prose-sm min-h-[4rem] mx-auto px-10',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
-            settings?.wide ? 'min-w-[100ch] max-w-[100ch]' : 'max-w-[48rem]',
+            settings?.wide
+              ? 'min-w-[100ch] max-w-[100ch]'
+              : 'min-w-[48rem] max-w-[48rem]',
             current ? 'pb-24' : '',
           ]"
           :content="!collab ? rawContent : undefined"
@@ -140,7 +142,6 @@ import {
   TextEditorFixedMenu,
   debounce,
   useFileUpload,
-  useDoc,
 } from "frappe-ui"
 import { v4 as uuidv4 } from "uuid"
 import {
@@ -349,7 +350,7 @@ const editorExtensions = [
   TableOfContents.configure({
     onUpdate: (val) => (anchors.value = val),
     getIndex: getHierarchicalIndexes,
-    scrollParent: () => editor.value?.view?.dom?.parentElement,
+    scrollParent: () => editor.value?.view?.dom?.parentElement?.parentElement,
   }),
   FontFamily.configure({
     types: ["textStyle"],

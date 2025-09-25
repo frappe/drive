@@ -34,7 +34,7 @@
       </div>
 
       <Button
-        v-if="column.key === 'options'"
+        v-if="column.key === 'options' && contextMenu"
         class="!bg-inherit"
         @click="(e) => contextMenu(e, row)"
       >

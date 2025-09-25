@@ -2,10 +2,9 @@
   <div
     class="flex flex-col items-center h-screen p-6 text-center mt-[10%] w-full"
   >
-    <div
-      class="bg-surface-red-2 text-ink-red-4 p-4 rounded-full flex items-center justify-center w-16 h-16"
-    >
-      <LucideFileQuestionMark />
+    <div class="rounded-full flex items-center justify-center">
+      <LucideFileUser v-if="error.exc_type === 'PermissionError'" />
+      <LucideFileQuestionMark v-else />
     </div>
     <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">Uh oh!</h1>
     <p
@@ -48,6 +47,7 @@ import { Button } from "frappe-ui"
 import store from "@/store"
 import router from "@/router"
 import { watchEffect } from "vue"
+import { LucideFileUser } from "lucide-vue-next"
 
 const props = defineProps({ error: Object })
 

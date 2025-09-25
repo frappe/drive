@@ -305,12 +305,6 @@ const possibleButtons = [
     entities: getRecents,
   },
   {
-    route: "Favourites",
-    label: __("Clear"),
-    icon: LucideStar,
-    entities: getFavourites,
-  },
-  {
     route: "Trash",
     label: __("Empty"),
     icon: LucideTrash,

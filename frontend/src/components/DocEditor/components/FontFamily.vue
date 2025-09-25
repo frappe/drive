@@ -24,7 +24,7 @@ import { FONT_FAMILIES } from "@/utils/files"
 
 const props = defineProps({
   editor: Object,
-  font_size: Number,
+  font_size: String,
   font_family: String,
 })
 

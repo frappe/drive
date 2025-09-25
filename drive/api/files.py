@@ -425,7 +425,7 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
         FileManager().write_file(path, md_content)
 
     file = frappe.get_doc("Drive File", entity_name)
-    file._modified = datetime.now()
+    file._modified = frappe.utils.now()
     if content:
         file.file_size = len(content.encode("utf-8"))
     if yjs:

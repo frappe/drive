@@ -17,13 +17,6 @@
     <p class="text-sm text-ink-gray-5">
       {{ __(description) }}
     </p>
-    <Button
-      v-if="createButton && $route.name !== 'Folder'"
-      class="mt-4"
-      label="Get started"
-      variant="solid"
-      @click="() => createButton.click()"
-    />
   </div>
 </template>
 <script setup>
@@ -45,5 +38,4 @@ defineProps({
     default: "",
   },
 })
-const createButton = document.querySelector("#create-button")
 </script>

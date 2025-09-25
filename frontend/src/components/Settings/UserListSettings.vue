@@ -7,7 +7,7 @@
       variant="solid"
       :icon-left="h(LucidePlus, { class: 'size-4' })"
       :label="__('New')"
-      class="ml-auto mr-4"
+      class="ml-auto"
       @click="showAddTeam = true"
     />
   </div>
@@ -77,20 +77,15 @@
       :options="
         dynamicList([
           {
-            label: 'Invite',
-            icon: LucideMail,
-            onClick: () => (showInvite = true),
-            cond: isAdmin.data,
-          },
-          {
             label: 'Edit',
             icon: LucidePencil,
             onClick: () => (showEditTeam = true),
+            cond: isAdmin.data,
           },
           {
             label: 'Sync',
             icon: LucideRefreshCcw,
-            cond: teamData.s3_bucket,
+            cond: isAdmin.data && teamData.s3_bucket,
             onClick: () =>
               createDialog({
                 title: 'Sync files from S3',
@@ -104,6 +99,12 @@
           },
         ])
       "
+    />
+    <Button
+      label="Invite"
+      :icon-left="h(LucideMail, { class: 'size-4' })"
+      @click="showInvite = true"
+      class="ml-auto"
     />
   </div>
   <div
@@ -119,77 +120,78 @@
   >
     <template #tab-panel="{ tab }">
       <template v-if="tab.label === 'Members'">
-        <div class="flex flex-col items-stretch justify-start overflow-y-auto">
+        <div
+          class="flex flex-col overflow-y-auto divide-y divide-outline-gray-modals"
+        >
           <div
-            v-for="(user, index) in allUsers?.data"
+            v-for="user in allUsers?.data.concat(
+              allUsers?.data,
+              allUsers?.data
+            )"
             :key="user.user_name"
+            class="flex items-center justify-start pr-4 gap-x-3 py-2"
           >
-            <div
-              v-if="index > 0"
-              class="w-[95%] mx-auto h-px border-t border-outline-gray-modals"
+            <Avatar
+              :image="user.user_image"
+              :label="user.full_name"
+              size="lg"
             />
-            <div class="flex items-center justify-start py-2 pl-2 pr-4 gap-x-3">
-              <Avatar
-                :image="user.user_image"
-                :label="user.full_name"
-                size="lg"
-              />
-              <div class="flex flex-col">
-                <span class="text-base text-ink-gray-8">{{
-                  user.full_name
-                }}</span>
-                <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
-              </div>
-              <div
-                v-if="isAdmin.data && user.name != $store.state.user.id"
-                class="ml-auto"
-              >
-                <Dropdown
-                  v-slot="{ open }"
-                  :options="accessOptions"
-                  placement="right"
-                >
-                  <Button
-                    variant="ghost"
-                    @click="selectedUser = user"
-                  >
-                    {{
-                      __(
-                        user.access_level == 2
-                          ? "Manager"
-                          : user.access_level == 1
-                          ? "User"
-                          : "Guest"
-                      )
-                    }}
-                    <template #suffix>
-                      <LucideChevronDown
-                        class="size-4 text-ink-gray-6"
-                        :class="{
-                          '[transform:rotateX(180deg)]': open,
-                        }"
-                      />
-                    </template>
-                  </Button>
-                </Dropdown>
-              </div>
-              <span
-                v-else
-                class="ml-auto text-base text-ink-gray-6"
-                >{{
-                  __(
-                    user.access_level == 2
-                      ? "Manager"
-                      : user.access_level == 1
-                      ? "User"
-                      : "Guest"
-                  )
-                }}
-                <template v-if="user.name === $store.state.user.id"
-                  >(you)</template
-                >
-              </span>
+            <div class="flex flex-col">
+              <span class="text-base text-ink-gray-8">{{
+                user.full_name
+              }}</span>
+              <span class="text-xs text-ink-gray-6">{{ user.email }}</span>
             </div>
+            <div
+              v-if="isAdmin.data && user.name != $store.state.user.id"
+              class="ml-auto"
+            >
+              <Dropdown
+                v-slot="{ open }"
+                :options="accessOptions"
+                placement="right"
+              >
+                <Button
+                  variant="ghost"
+                  @click="selectedUser = user"
+                >
+                  {{
+                    __(
+                      user.access_level == 2
+                        ? "Manager"
+                        : user.access_level == 1
+                        ? "User"
+                        : "Guest"
+                    )
+                  }}
+                  <template #suffix>
+                    <LucideChevronDown
+                      class="size-4 text-ink-gray-6"
+                      :class="{
+                        '[transform:rotateX(180deg)]': open,
+                      }"
+                    />
+                  </template>
+                </Button>
+              </Dropdown>
+            </div>
+            <span
+              v-else
+              class="ml-auto text-base text-ink-gray-6"
+            >
+              {{
+                __(
+                  user.access_level == 2
+                    ? "Manager"
+                    : user.access_level == 1
+                    ? "User"
+                    : "Guest"
+                )
+              }}
+              <template v-if="user.name === $store.state.user.id"
+                >(you)</template
+              >
+            </span>
           </div>
         </div>
       </template>

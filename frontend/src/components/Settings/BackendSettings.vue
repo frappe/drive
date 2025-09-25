@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center mb-4 ps-1">
     <h1 class="font-semibold text-ink-gray-9">
-      {{ __("S3 Integration") }}
+      {{ __("Storage") }}
     </h1>
     <Button
       label="Sync"

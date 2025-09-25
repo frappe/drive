@@ -259,7 +259,7 @@ export const rename = createResource({
   },
   onError(error) {
     toast({
-      title: error.messages[0],
+      title: error.messages[error.messages.length - 1],
       position: "bottom-right",
       type: "error",
       timeout: 2,
