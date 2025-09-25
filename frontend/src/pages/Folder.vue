@@ -56,9 +56,6 @@ let currentFolder = createResource({
     return prettyData([entity])[0]
   },
   onSuccess,
-  onError() {
-    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
-  },
 })
 store.commit("setCurrentResource", currentFolder)
 watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })

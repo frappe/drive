@@ -42,13 +42,14 @@ export default {
       return this.$route.params.team || localStorage.getItem("recentTeam")
     },
     sidebarItems() {
+      const first = this.$store.state.breadcrumbs[0] || {}
       return [
         {
           label: "Home",
           route: "/",
           icon: LucideHome,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Home"
+            return first.name === "Home"
           },
         },
         {
@@ -64,7 +65,7 @@ export default {
           route: "/recents",
           icon: LucideClock,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Recents"
+            return first.name === "Recents"
           },
         },
 
@@ -73,7 +74,7 @@ export default {
           route: "/shared",
           icon: LucideUsers,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Shared"
+            return first.name === "Shared"
           },
         },
         {
@@ -81,7 +82,7 @@ export default {
           route: "/favourites",
           icon: LucideStar,
           highlight: () => {
-            return this.$store.state.breadcrumbs[0].name === "Favourites"
+            return first.name === "Favourites"
           },
         },
       ]

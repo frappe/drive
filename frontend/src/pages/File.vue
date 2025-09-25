@@ -132,9 +132,6 @@ let file = createResource({
     return prettyData([entity])[0]
   },
   onSuccess,
-  onError() {
-    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
-  },
 })
 store.commit("setCurrentResource", file)
 

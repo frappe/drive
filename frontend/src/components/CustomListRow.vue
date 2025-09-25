@@ -4,7 +4,6 @@
     :key="row.name"
   >
     <ListRow
-      @v-on-outside-click="console.log"
       :row="row"
       class="group"
       :class="[
@@ -14,8 +13,8 @@
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
       ]"
       :draggable="true"
-      @contextmenu="(e) => contextMenu(e, row)"
-      @[action]="open(row)"
+      @contextmenu="(e) => !selections.length && contextMenu(e, row)"
+      @[action]="!selections.length && open(row)"
       @dragstart="draggedItem = row.name"
       @dragend="draggedItem = null"
       @dragover="row.is_group && $event.preventDefault()"

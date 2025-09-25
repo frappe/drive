@@ -49,10 +49,10 @@
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
-            'prose-sm min-h-[4rem] mx-auto px-10 ',
+            'prose-sm min-h-[4rem] mx-auto px-10',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
-            settings?.wide ? 'min-w-[100ch] max-w-[100ch]' : 'md:min-w-[65ch]',
+            settings?.wide ? 'min-w-[100ch] max-w-[100ch]' : 'max-w-[48rem]',
             current ? 'pb-24' : '',
           ]"
           :content="!collab ? rawContent : undefined"
@@ -107,7 +107,6 @@
               <EditorContent
                 :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
                 :editor="editor"
-                class="pb-64"
               />
             </div>
             <ToC
@@ -468,11 +467,14 @@ const bubbleMenuButtons = computed(() =>
       ? [
           "Separator",
           {
-            label: "Inter",
-            class: "font-inter",
+            label: "FontOptions",
             component: h(
               defineAsyncComponent(() => import("./components/FontFamily.vue")),
-              { editor, settings: props.settings }
+              {
+                editor,
+                font_size: props.settings.font_size,
+                font_family: props.settings.font_family,
+              }
             ),
           },
           "FontColor",
@@ -528,7 +530,7 @@ onBeforeUnmount(() => {
   }
 })
 
-onKeyDown("Enter", evalImplicitTitle)
+onKeyDown("Enter", () => evalImplicitTitle())
 onKeyDown("s", (e) => {
   if (!e.metaKey || !e.shiftKey) {
     return
@@ -580,12 +582,21 @@ if (props.entity.write) {
   }
 }
 
-function evalImplicitTitle() {
-  if (!props.entity.title.startsWith("Untitled Document")) return
+function evalImplicitTitle(bypass = false) {
+  const { $anchor } = editor.value.view.state.selection
+  // Check if we're in the very first textblock
+  if (!($anchor.index(0) === 1 && $anchor.depth === 1)) return
   const implicitTitle = editor.value.state.doc.firstChild.textContent
     .replaceAll("#", "")
     .replaceAll("@", "")
     .trim()
+  if (!props.entity.title.startsWith("Untitled Document") && !bypass) {
+    return toast({
+      title: `Update title?`,
+      buttons: [{ label: "Rename", onClick: () => evalImplicitTitle(true) }],
+    })
+  }
+
   if (implicitTitle.length === 0) return
   if (implicitTitle.length) {
     rename.submit({

@@ -151,7 +151,7 @@ def get_entity_with_permissions(entity_name):
     entity["in_home"] = entity.team == get_default_team()
     user_access = get_user_access(entity)
     if user_access.get("read") == 0:
-        frappe.throw("You don't have access to this file.", {"error": frappe.PermissionError})
+        frappe.throw("You don't have access to this file.", frappe.PermissionError)
 
     owner_info = frappe.db.get_value("User", entity.owner, ["user_image", "full_name"], as_dict=True) or {}
     breadcrumbs = {"breadcrumbs": get_valid_breadcrumbs(entity.name, user_access)}

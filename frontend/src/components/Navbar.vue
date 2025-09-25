@@ -1,5 +1,6 @@
 <template>
   <nav
+    v-if="store.state.breadcrumbs?.length"
     ondragstart="return false;"
     ondrop="return false;"
     id="navbar"
@@ -290,7 +291,7 @@ const defaultActions = computed(() => {
   })
 })
 const isPrivate = computed(() =>
-  store.state.breadcrumbs[0].name === "Home" ? 1 : 0
+  store.state.breadcrumbs[0]?.name === "Home" ? 1 : 0
 )
 
 // Functions

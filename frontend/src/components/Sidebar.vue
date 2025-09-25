@@ -180,7 +180,7 @@ function logout() {
 }
 
 const sidebarItems = computed(() => {
-  const first = store.state.breadcrumbs[0]
+  const first = store.state.breadcrumbs[0] || {}
   return dynamicList([
     {
       items: [

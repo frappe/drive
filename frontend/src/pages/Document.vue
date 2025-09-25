@@ -441,7 +441,8 @@ window.addEventListener("online", () => {
 
 onBeforeUnmount(() => {
   if (edited.value) saveDocument()
-  window.document.querySelector("#sidebar").style.removeProperty("display")
+  const sidebar = window.document.querySelector("#sidebar")
+  if (sidebar) sidebar.style.removeProperty("display")
 })
 
 let originalBreadcrumbs

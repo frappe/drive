@@ -2,6 +2,7 @@
 
 body {
   --font-inter: "InterVar", inherit;
+  --font-fantasy: fantasy, inherit;
   --font-lora: "Lora", serif;
   --font-roboto: "Roboto", inherit;
   --font-merriweather: "Merriweather", serif;
@@ -18,7 +19,6 @@ body {
 .prose-sm {
   caret-color: theme("colors.blue.600");
   padding: 1rem 2.5rem;
-  padding-bottom: 200px;
 }
 
 span[data-comment-id].display {
