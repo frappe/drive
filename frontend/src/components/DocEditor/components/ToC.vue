@@ -2,7 +2,7 @@
   <div class="hidden md:flex right-3 absolute pt-3">
     <div
       v-show="show"
-      class="p-2 table-of-contents bg-white opacity-90 rounded-sm"
+      class="p-3 table-of-contents bg-white shadow-sm rounded-sm"
     >
       <div
         v-for="anchor in anchors"
@@ -16,7 +16,7 @@
       >
         <a
           :href="'#' + anchor.id"
-          class="px-2"
+          class="text-sm px-0.5"
           :title="anchor.textContent"
           @click.prevent="onAnchorClick(anchor.id)"
           :data-item-index="anchor.itemIndex"
@@ -28,7 +28,7 @@
     <Button
       variant="ghost"
       :tooltip="show ? 'Hide' : 'Table of Contents'"
-      class="!w-5.5 !h-5.5 mr-1.5 mt-1.5"
+      class="!w-5.5 !h-5.5 mr-1.5 ml-1"
       @click="show = !show"
     >
       <template #icon>

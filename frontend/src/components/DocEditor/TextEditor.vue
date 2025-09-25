@@ -193,6 +193,9 @@ const editor = computed(() => {
   let editor = textEditor.value?.editor
   return editor
 })
+const scrollParent = computed(
+  () => editor.value?.view?.dom?.parentElement?.parentElement
+)
 defineExpose({ editor })
 
 const rawContent = defineModel("rawContent")
@@ -350,7 +353,7 @@ const editorExtensions = [
   TableOfContents.configure({
     onUpdate: (val) => (anchors.value = val),
     getIndex: getHierarchicalIndexes,
-    scrollParent: () => editor.value?.view?.dom?.parentElement?.parentElement,
+    scrollParent: () => scrollParent.value,
   }),
   FontFamily.configure({
     types: ["textStyle"],
@@ -586,7 +589,15 @@ if (props.entity.write) {
 function evalImplicitTitle(bypass = false) {
   const { $anchor } = editor.value.view.state.selection
   // Check if we're in the very first textblock
-  if (!($anchor.index(0) === 1 && $anchor.depth === 1)) return
+  if (!($anchor.index(0) === 1 && $anchor.depth === 1)) {
+    if (
+      $anchor.depth === 1 &&
+      editor.value.state.doc.childCount - 1 === $anchor.index(0)
+    ) {
+      scrollParent.value.scroll(0, scrollParent.value.scrollHeight)
+    }
+    return
+  }
   const implicitTitle = editor.value.state.doc.firstChild.textContent
     .replaceAll("#", "")
     .replaceAll("@", "")
