@@ -30,7 +30,7 @@ from drive.utils import (
 )
 from drive.utils.files import FileManager
 
-from .permissions import user_has_permission
+from .permissions import user_has_permission, get_teams
 
 
 @frappe.whitelist()
@@ -375,9 +375,12 @@ def create_link(team, title, link, parent=None):
     return drive_file
 
 
-# @frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def edit_file_content(entity_name):
     entity = frappe.get_doc("Drive File", entity_name)
+    if not user_has_permission(entity, "write"):
+        frappe.throw("You cannot edit this file", frappe.PermissionError)
+
     file = frappe.request.files["file"]
     home_folder = get_home_folder(entity.team)
     temp_path = get_upload_path(home_folder["path"], f"editing_{secure_filename(entity.title)}")
@@ -859,7 +862,12 @@ def get_new_title(title, parent_name, folder=False, entity=None):
         filters=filters,
         fields=["title", "name"],
     )
-    if not sibling_entity_titles or (len(sibling_entity_titles) == 1 and sibling_entity_titles[0].name == entity):
+    print(entity, sibling_entity_titles)
+    if (
+        not sibling_entity_titles
+        or (sibling_entity_titles[0].name == entity)
+        or not any(k["title"] == title for k in sibling_entity_titles)
+    ):
         return title
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
 
@@ -879,3 +887,10 @@ def get_entity_type(entity_name):
     else:
         entity["type"] = "file"
     return entity
+
+
+@frappe.whitelist()
+def get_root_folder(team):
+    if team not in get_teams():
+        frappe.throw("You can't check the home folder of a team you don't belong to.", frappe.PermissionError)
+    return get_home_folder(team)

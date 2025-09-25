@@ -15,3 +15,5 @@ node_modules/
 experiments/*
 drive/public/dist
 *.sql
+*log.json
+.env

@@ -124,10 +124,7 @@
           class="flex flex-col overflow-y-auto divide-y divide-outline-gray-modals"
         >
           <div
-            v-for="user in allUsers?.data.concat(
-              allUsers?.data,
-              allUsers?.data
-            )"
+            v-for="user in allUsers?.data"
             :key="user.user_name"
             class="flex items-center justify-start pr-4 gap-x-3 py-2"
           >

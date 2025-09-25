@@ -85,7 +85,7 @@ class DriveFile(Document):
         new_parent = new_parent or get_home_folder(new_team).name
 
         if new_parent == self.parent_entity:
-            return
+            frappe.throw("You can't move to the current folder.")
 
         if new_parent == self.name:
             frappe.throw(
@@ -126,7 +126,7 @@ class DriveFile(Document):
         # Condition is so that old file names aren't corrupted
         if not self.manager.flat and not not_in_disk:
             new_path = self.manager.get_disk_path(self)
-            self.manager.move(self.path, str(new_path))
+            self.manager.move(self, str(new_path))
             self.path = new_path
 
         self.save()

@@ -6,7 +6,7 @@ from pypika import functions as fn
 
 from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
 
-from .permissions import ENTITY_FIELDS, get_teams, get_user_access
+from .permissions import ENTITY_FIELDS, get_user_access
 
 DriveUser = frappe.qb.DocType("User")
 UserGroupMember = frappe.qb.DocType("User Group Member")
