@@ -19,18 +19,6 @@ import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
 
-// MIME icons
-import Folder from "@/components/MimeIcons/Folder.vue"
-import Archive from "@/components/MimeIcons/Archive.vue"
-import Document from "@/components/MimeIcons/Document.vue"
-import Spreadsheet from "@/components/MimeIcons/Spreadsheet.vue"
-import Presentation from "@/components/MimeIcons/Presentation.vue"
-import Audio from "@/components/MimeIcons/Audio.vue"
-import Image from "@/components/MimeIcons/Image.vue"
-import Video from "@/components/MimeIcons/Video.vue"
-import PDF from "@/components/MimeIcons/PDF.vue"
-import Unknown from "@/components/MimeIcons/Unknown.vue"
-
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
     if (!getRecents.data?.some?.((k) => k.name === entity.name))
@@ -342,19 +330,6 @@ export const MIME_LIST_MAP = {
     "application/gzip",
     "application/x-bzip2",
   ],
-}
-
-export const ICON_TYPES = {
-  Folder: Folder,
-  Image: Image,
-  Audio: Audio,
-  Video: Video,
-  PDF: PDF,
-  Document: Document,
-  Spreadsheet: Spreadsheet,
-  Archive: Archive,
-  Presentation: Presentation,
-  Unknown: Unknown,
 }
 
 // Synced cache - ensure all setters are reflected in the app

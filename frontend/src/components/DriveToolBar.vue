@@ -52,58 +52,19 @@
           class="flex flex-wrap items-start justify-end gap-1 ml-3"
         >
           <div
-            v-for="(item, index) in activeFilters"
+            v-for="({ icon, name }, index) in activeFilters"
             :key="index"
           >
             <div
-              class="flex items-center border rounded pl-2 py-1 h-7 text-base"
+              class="flex items-center border rounded pl-2 py-1 h-7 text-base select-none"
             >
-              <component :is="ICON_TYPES[item]" />
-              <span class="text-sm ml-2">{{ item }}</span>
+              <img :src="icon" />
+              <span class="text-sm ml-2">{{ name }}</span>
               <Button
                 variant="minimal"
+                :icon="h(LucideX, { class: 'size-3' })"
                 @click="activeFilters.splice(index, 1)"
-              >
-                <template #icon>
-                  <LucideX class="size-3" />
-                </template>
-              </Button>
-            </div>
-          </div>
-          <div
-            v-for="(item, index) in activeTags"
-            :key="index"
-          >
-            <div
-              class="flex items-center border rounded pl-2 py-1 h-7 text-base"
-            >
-              <svg
-                v-if="item.color"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  r="4.5"
-                  cx="8"
-                  cy="8"
-                  :fill="item.color"
-                  :stroke="item.color"
-                  stroke-width="3"
-                />
-              </svg>
-              <span class="text-sm ml-2">{{ item.title }}</span>
-
-              <Button
-                variant="minimal"
-                @click="store.state.activeTags.splice(index, 1)"
-              >
-                <template #icon>
-                  <LucideX class="size-3" />
-                </template>
-              </Button>
+              />
             </div>
           </div>
         </div>
@@ -121,10 +82,11 @@
         />
         <Dropdown
           :options="
-            Object.keys(ICON_TYPES).map((k) => ({
-              label: __(k),
-              icon: ICON_TYPES[k],
-              onClick: () => activeFilters.push(k),
+            availableFilterTypes.map(({ name, icon }) => ({
+              label: __(name),
+              icon: h('img', { src: icon }),
+              onClick: () => activeFilters.push({ name, icon }),
+              disabled: activeFilters.includes({ name, icon }),
             }))
           "
           :button="{
@@ -221,20 +183,16 @@
   </div>
 </template>
 <script setup>
-import {
-  Button,
-  Dropdown,
-  TextInput,
-  TabButtons,
-  Switch,
-  LoadingIndicator,
-} from "frappe-ui"
+import { Button, Dropdown, TextInput, TabButtons, Switch } from "frappe-ui"
 import { ref, computed, watch, useTemplateRef, h, defineComponent } from "vue"
-import { ICON_TYPES, MIME_LIST_MAP } from "@/utils/files"
+import { MIME_LIST_MAP } from "@/utils/files"
+import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"
 import LucideFilter from "~icons/lucide/filter"
 import TeamSelector from "@/components/TeamSelector.vue"
+
+import LucideX from "~icons/lucide/x"
 
 const sortOrder = defineModel("sortOrder")
 const search = defineModel("search")
@@ -246,8 +204,7 @@ const props = defineProps({
 })
 const store = useStore()
 
-const activeFilters = ref([])
-const activeTags = computed(() => store.state.activeTags)
+const activeFilters = defineModel("filters")
 const disabled = computed(() => !props.getEntities.data?.length)
 
 const viewState = ref(store.state.view)
@@ -255,20 +212,13 @@ watch(viewState, (val) => store.commit("toggleView", val))
 const shareView = ref(store.state.shareView)
 const searchInput = useTemplateRef("search-input")
 
-watch(activeFilters.value, (val) => {
-  if (!val.length) {
-    rows.value = props.getEntities.data
-    return
-  }
-  const mime_types = []
-  const isFolder = val.find((k) => k === "Folder")
-  for (let k of val) {
-    mime_types.push(...MIME_LIST_MAP[k])
-  }
-  rows.value = props.getEntities.data.filter(
-    ({ mime_type, is_group }) =>
-      mime_types.includes(mime_type) || (isFolder && is_group)
-  )
+const availableFilterTypes = computed(() => {
+  if (!props.getEntities.data) return []
+  const types = new Set(props.getEntities.data.map((r) => r.file_type))
+  if (props.getEntities.data.find((k) => k.is_group)) types.add("Folder")
+  return Array.from(types)
+    .sort((a, b) => (a > b ? 1 : -1))
+    .map((t) => ({ name: t, icon: getIconUrl(t) }))
 })
 
 onKeyDown("Escape", () => {

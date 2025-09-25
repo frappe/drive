@@ -488,18 +488,20 @@
             />
           </div>
         </div>
-        <FormControl
-          :disabled="true"
-          v-model="s3Bucket"
-          type="text"
-          label="S3 Bucket"
-        />
-        <FormControl
-          :disabled="true"
-          v-model="prefix"
-          type="text"
-          label="Folder"
-        />
+        <template v-if="getDiskSettings.data.enabled">
+          <FormControl
+            :disabled="true"
+            v-model="s3Bucket"
+            type="text"
+            label="S3 Bucket"
+          />
+          <FormControl
+            :disabled="true"
+            v-model="prefix"
+            type="text"
+            label="Folder"
+          />
+        </template>
       </div>
     </template>
     <template #actions>

@@ -19,6 +19,7 @@
     <DriveToolBar
       v-model:sort-order="sortOrder"
       v-model:search="search"
+      v-model:filters="filters"
       v-model:team="team"
       :action-items="actionItems"
       :selections="selectedEntitities"
@@ -149,6 +150,8 @@ const sortOrder = ref(
   }
 )
 const search = ref("")
+const filters = ref([])
+
 const rows = ref(props.getEntities.data)
 watch(sortId, (id) => {
   if (store.state.sortOrder[id]) sortOrder.value = store.state.sortOrder[id]
@@ -170,6 +173,24 @@ watch(search, (val) => {
   const search = new RegExp(val, "i")
   rows.value = props.getEntities.data.filter((k) => search.test(k.title))
 })
+
+watch(
+  () => filters.value,
+  (val) => {
+    if (!val.length) {
+      rows.value = props.getEntities.data
+      return
+    }
+    const file_types = val.map((k) => k.name)
+    const isFolder = file_types.find((k) => k === "Folder")
+    rows.value = props.getEntities.data.filter(
+      ({ file_type, is_group }) =>
+        file_types.includes(file_type) || (isFolder && is_group)
+    )
+  },
+  { deep: true }
+)
+
 watch(
   () => props.getEntities.data,
   (val) => {
