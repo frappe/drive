@@ -30,7 +30,7 @@ from drive.utils import (
 )
 from drive.utils.files import FileManager
 
-from .permissions import user_has_permission, get_teams
+from .permissions import get_teams, user_has_permission
 
 
 @frappe.whitelist()
