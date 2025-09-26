@@ -137,12 +137,6 @@ const selectedColumns = [
     prefix: ({ row }) => {
       return getThumbnailUrl(row)
     },
-    suffix: ({ row }) => {
-      if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
-      else if (row.share_count === -1)
-        return h(LucideBuilding2, { class: "size-4" })
-      else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
-    },
   },
   {
     label: __("Owner"),
