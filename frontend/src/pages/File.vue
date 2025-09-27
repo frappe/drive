@@ -148,7 +148,7 @@ function scrollEntity(negative = false) {
 }
 
 function closePreview() {
-  router.back()
+  router.push("/")
 }
 
 onMounted(() => {
