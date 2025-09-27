@@ -132,7 +132,19 @@ const routes = [
     path: "/t/:team/",
     name: "Team",
     component: () => import("@/pages/Team.vue"),
-    beforeEnter: [setRootBreadCrumb],
+    beforeEnter: [
+      setRootBreadCrumb,
+      async (to) => {
+        const teams = createResource({
+          url: "/api/method/drive.api.permissions.get_teams",
+          method: "GET",
+        })
+        await teams.fetch()
+        if (!teams.data.includes(to.params.team)) {
+          return "/"
+        }
+      }
+    ],
     props: true,
   },
   {
@@ -140,7 +152,29 @@ const routes = [
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { allowGuest: true, filePage: true },
-    beforeEnter: [manageBreadcrumbs],
+    beforeEnter: [
+      manageBreadcrumbs,
+      async (to) => {
+        const entity = createResource({
+          url: "/api/method/drive.api.files.get_entity_type",
+          method: "GET",
+          params: {
+            entity_name: to.params.entityName,
+          },
+        })
+        await entity.fetch()
+        if (entity.data.type !== "file") {
+          const correctRoute = {
+            folder: `/d/${to.params.entityName}`,
+            document: `/w/${to.params.entityName}`,
+          }[entity.data.type]
+          if (correctRoute) {
+            return correctRoute
+          }
+          return "/"
+        }
+      }
+    ],
     props: true,
   },
   {
@@ -148,7 +182,29 @@ const routes = [
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { allowGuest: true },
-    beforeEnter: [manageBreadcrumbs],
+    beforeEnter: [
+      manageBreadcrumbs,
+      async (to) => {
+        const entity = createResource({
+          url: "/api/method/drive.api.files.get_entity_type",
+          method: "GET",
+          params: {
+            entity_name: to.params.entityName,
+          },
+        })
+        await entity.fetch()
+        if (entity.data.type !== "folder") {
+          const correctRoute = {
+            file: `/f/${to.params.entityName}`,
+            document: `/w/${to.params.entityName}`,
+          }[entity.data.type]
+          if (correctRoute) {
+            return correctRoute
+          }
+          return "/"
+        }
+      }
+    ],
     props: true,
   },
   {
@@ -156,8 +212,30 @@ const routes = [
     name: "Document",
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
+    beforeEnter: [
+      manageBreadcrumbs,
+      async (to) => {
+        const entity = createResource({
+          url: "/api/method/drive.api.files.get_entity_type",
+          method: "GET",
+          params: {
+            entity_name: to.params.entityName,
+          },
+        })
+        await entity.fetch()
+        if (entity.data.type !== "document") {
+          const correctRoute = {
+            file: `/f/${to.params.entityName}`,
+            folder: `/d/${to.params.entityName}`,
+          }[entity.data.type]
+          if (correctRoute) {
+            return correctRoute
+          }
+          return "/"
+        }
+      }
+    ],
     props: true,
-    beforeEnter: [manageBreadcrumbs],
   },
 ]
 
