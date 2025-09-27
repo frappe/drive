@@ -391,5 +391,4 @@ def get_teams(user=None, details=None, exclude_personal=True):
         if exclude_personal:
             return {t: team for t, team in teams_info.items() if not team.personal}
         return teams_info
-    print(teams)
     return teams

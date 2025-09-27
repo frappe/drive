@@ -3,17 +3,17 @@ from pathlib import Path
 from watchdog.observers import Observer
 from dotenv import dotenv_values
 
-from utils import sync_folder, PersistentMap, get
+from utils import sync_folder, PersistentMap, get, listen_to_updates
 from watcher import Watcher
 
+CONFIG = dotenv_values()
 
 HOME_TEAM = get("utils.get_default_team")
 HOME_ENTITY = get("api.files.get_root_folder", team=HOME_TEAM)
-
 STORAGE = PersistentMap(Path("./sync_log.json"))
-PATH = dotenv_values()["PATH"]
-sync_folder(HOME_ENTITY["name"], HOME_ENTITY["path"], STORAGE)
-
+PATH = CONFIG["PATH"]
+if not len(STORAGE):
+    sync_folder(HOME_ENTITY["name"], HOME_ENTITY["path"], STORAGE)
 
 try:
     event_handler = Watcher(STORAGE, PATH, HOME_TEAM)
@@ -21,6 +21,7 @@ try:
     observer.schedule(event_handler, PATH, recursive=True)
     observer.start()
     print("Listening for file changes:")
+    listen_to_updates(STORAGE)
 
     import time
 

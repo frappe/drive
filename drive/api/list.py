@@ -199,8 +199,6 @@ def files(
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)
-        if r["name"] == "1hhf7h7bh2":
-            print(r, children_count.get(r["name"], 0))
 
         if r["name"] in public_files:
             r["share_count"] = -2

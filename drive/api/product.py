@@ -427,3 +427,23 @@ def after_request(request):
         )
         if "X-Frame-Options" in frappe.local.response_headers:
             del frappe.local.response_headers["X-Frame-Options"]
+
+
+@frappe.whitelist()
+def get_updates(client):
+    client = frappe.get_doc("Drive Desktop Client", client)
+    if client.user != frappe.session.user:
+        frappe.throw("You cannot access this desktop client", frappe.PermissionError)
+
+    updates = [u.as_dict() for u in client.updates]
+    for u in updates:
+        if u["type"] in ["rename", "move"]:
+            u["details"] = frappe.db.get_value("Drive File", u["entity"], "path")
+    return updates
+    # return {"team": client.team, "updates": client.updates}
+
+
+@frappe.whitelist()
+def pop_update(name):
+    # Security: check before deletion
+    frappe.get_doc("Drive File Update", name).delete()
