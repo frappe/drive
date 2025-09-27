@@ -44,6 +44,7 @@
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
       :user-data="userData"
+      :root-entity="verify?.data"
       @dropped="onDrop"
     />
     <GridView

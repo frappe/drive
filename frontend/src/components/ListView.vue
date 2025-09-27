@@ -104,6 +104,7 @@ const props = defineProps({
   folderContents: Object,
   actionItems: Array,
   userData: Object,
+  rootEntity: Object,
 })
 const emit = defineEmits(["dropped"])
 
@@ -138,6 +139,7 @@ const selectedColumns = [
       return getThumbnailUrl(row)
     },
     suffix: ({ row }) => {
+      if (row.share_count === props.rootEntity?.share_count) return
       if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
       else if (row.share_count === -1)
         return h(LucideBuilding2, { class: "size-4" })

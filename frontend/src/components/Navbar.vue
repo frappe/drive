@@ -38,7 +38,20 @@
       <div
         id="navbar-content"
         class="flex items-center"
-      />
+      >
+        <LucideGlobe2
+          v-if="rootEntity?.share_count === -2"
+          class="size-4"
+        />
+        <LucideBuilding2
+          v-else-if="rootEntity?.share_count === -1"
+          class="size-4"
+        />
+        <LucideUsers
+          v-else-if="rootEntity?.share_count > 0"
+          class="size-4"
+        />
+      </div>
       <LucideStar
         v-if="rootEntity?.is_favourite"
         width="16"
