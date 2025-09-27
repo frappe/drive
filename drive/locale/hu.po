@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-12 16:09+0000\n"
-"PO-Revision-Date: 2025-09-21 20:28\n"
+"PO-Revision-Date: 2025-09-27 21:21\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -26,17 +26,17 @@ msgstr ""
 #. Header text in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "<span style=\"font-size: 16px;\">Manage Drive</span>"
-msgstr ""
+msgstr "<span style=\"font-size: 16px;\">Drive Kezelése</span>"
 
 #. Label of the aws_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Key"
-msgstr ""
+msgstr "AWS Kulcs"
 
 #. Label of the aws_secret (Password) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "AWS Secret"
-msgstr ""
+msgstr "AWS Titok"
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -46,17 +46,17 @@ msgstr ""
 #. Label of the accepted_on (Datetime) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Accepted On"
-msgstr ""
+msgstr "Elfogadva ekkor"
 
 #. Label of the access_level (Int) field in DocType 'Drive Team Member'
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Access Level"
-msgstr ""
+msgstr "Hozzáférési Szint"
 
 #. Name of a DocType
 #: drive/drive/doctype/account_request/account_request.json
 msgid "Account Request"
-msgstr ""
+msgstr "Fiók Kérelem"
 
 #. Label of the action_type (Select) field in DocType 'Drive Entity Activity
 #. Log'
@@ -66,7 +66,7 @@ msgstr "Művelet Típusa"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:77
 msgid "Add Image"
-msgstr ""
+msgstr "Kép Hozzáadása"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
@@ -95,11 +95,11 @@ msgstr "Alkalmazások"
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Auto Detect Links"
-msgstr ""
+msgstr "Linekek Automatikus Felismerése"
 
 #: frontend/src/components/DriveToolBar.vue:19
 msgid "By"
-msgstr ""
+msgstr "Által"
 
 #. Description of the 'Meta Value' (Data) field in DocType 'Drive Entity
 #. Activity Log'
@@ -109,7 +109,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:74
 msgid "Characters"
-msgstr ""
+msgstr "Karakterek"
 
 #: frontend/src/components/Navbar.vue:332
 #: frontend/src/components/Navbar.vue:338
