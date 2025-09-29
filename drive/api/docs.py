@@ -123,3 +123,9 @@ def create_version(doc, snapshot, duration=None, manual=0, title=""):
         )
         doc.save()
     return doc.versions
+
+@frappe.whitelist()
+def export_media(entity_name):
+    return frappe.get_list(
+        "Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"]
+    )

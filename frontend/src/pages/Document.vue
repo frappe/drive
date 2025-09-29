@@ -138,6 +138,22 @@
                   label: 'Settings',
                   icon: LucideSettings,
                 },
+                {
+                  onClick: () => {
+                    createResource({
+                      url: 'drive.api.docs.export_media',
+                      params: {
+                        entity_name: entity.name,
+                      },
+                      auto: true,
+                      onSuccess(data) {
+                        entitiesDownload(null, data)
+                      },
+                    })
+                  },
+                  label: 'Export Media',
+                  icon: LucideImageDown,
+                },
               ]),
             },
             {
@@ -198,7 +214,7 @@
   />
   <div
     v-else
-    class="flex w-full h-full overflow-auto"
+    class="flex w-full h-full overflow-hidden"
   >
     <VersionsSidebar
       v-if="showVersions"
@@ -268,6 +284,7 @@ import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
 import { toast } from "../utils/toasts"
+import { entitiesDownload } from "@/utils/download"
 
 import MessagesSquare from "~icons/lucide/messages-square"
 import LucideRulerDimensionLine from "~icons/lucide/ruler-dimension-line"
@@ -275,6 +292,7 @@ import LucideUserPen from "~icons/lucide/user-pen"
 import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import LucideSettings from "~icons/lucide/settings"
+import LucideImageDown from "~icons/lucide/image-down"
 import LucideHistory from "~icons/lucide/history"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"

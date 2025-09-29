@@ -41,6 +41,10 @@ def create_team(user, team_name=None, icon=None, s3_bucket=None, prefix=None, pe
             "personal": personal,
         }
     ).insert()
+    # Insert Drive settings if not already there
+    if not frappe.db.exists("Drive Settings", {"user": frappe.session.user}):
+        frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user}).insert()
+
     team.save()
     return team.name
 
