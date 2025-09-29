@@ -1,6 +1,8 @@
 import JSZip from "jszip"
 import { toast } from "./toasts"
 import { printDoc } from "./files"
+import emitter from "@/emitter"
+import router from "@/router"
 import html2pdf from "html2pdf.js"
 import editorStyle from "@/components/DocEditor/editor.css?inline"
 import globalStyle from "@/index.css?inline"
@@ -32,6 +34,10 @@ async function getPdfFromDoc(entity_name) {
 export function entitiesDownload(team, entities) {
   if (entities.length === 1) {
     if (entities[0].mime_type === "frappe_doc") {
+      if (router.currentRoute.value.name) {
+        return emitter.emit("printFile")
+      }
+      // BROKEN
       return fetch(
         `/api/method/drive.api.files.get_file_content?entity_name=${entities[0].name}`
       ).then(async (data) => {

@@ -41,6 +41,10 @@ def create_team(user, team_name=None, icon=None, s3_bucket=None, prefix=None, pe
             "personal": personal,
         }
     ).insert()
+    # Insert Drive settings if not already there
+    if not frappe.db.exists("Drive Settings", {"user": frappe.session.user}):
+        frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user}).insert()
+
     team.save()
     return team.name
 
@@ -427,3 +431,23 @@ def after_request(request):
         )
         if "X-Frame-Options" in frappe.local.response_headers:
             del frappe.local.response_headers["X-Frame-Options"]
+
+
+@frappe.whitelist()
+def get_updates(client):
+    client = frappe.get_doc("Drive Desktop Client", client)
+    if client.user != frappe.session.user:
+        frappe.throw("You cannot access this desktop client", frappe.PermissionError)
+
+    updates = [u.as_dict() for u in client.updates]
+    for u in updates:
+        if u["type"] in ["rename", "move"]:
+            u["details"] = frappe.db.get_value("Drive File", u["entity"], "path")
+    return updates
+    # return {"team": client.team, "updates": client.updates}
+
+
+@frappe.whitelist()
+def pop_update(name):
+    # Security: check before deletion
+    frappe.get_doc("Drive File Update", name).delete()

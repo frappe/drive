@@ -55,20 +55,23 @@ def get_file_content(embed_name, parent_entity_name):
 
         if not drive_entity.document:
             raise ValueError
-        embed_path = frappe.get_value("Drive File", embed_name, "path")
+        embed = frappe.get_cached_doc("Drive File", embed_name)
         # Remove at some point
-        if not embed_path:
-            embed_path = str(
-                Path(
-                    get_home_folder(drive_entity.team)["path"],
-                    "embeds",
-                    embed_name,
-                )
+        if not embed.path:
+            embed = frappe._dict(
+                path=str(
+                    Path(
+                        get_home_folder(drive_entity.team)["path"],
+                        "embeds",
+                        embed_name,
+                    )
+                ),
+                team=embed.team,
             )
         # Flaw? Doesn't stream for range header
         manager = FileManager()
         # TBD - redo
-        embed_data = BytesIO(manager.get_file(embed_path).read())
+        embed_data = BytesIO(manager.get_file(embed).read())
         frappe.cache().set_value(cache_key, (embed_data))
 
     response = Response(

@@ -66,6 +66,23 @@ class DriveFile(Document):
         def decorator(self, *args, **kwargs):
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
+            try:
+                clients = frappe.get_list("Drive Desktop Client", {"team": self.team}, pluck="name")
+                for n in clients:
+                    client = frappe.get_doc("Drive Desktop Client", n)
+                    update = frappe.get_doc(
+                        {
+                            "doctype": "Drive File Update",
+                            "type": func.__name__,
+                            "entity": self.name,
+                        }
+                    )
+                    client.append("updates", update)
+                    client.save()
+                    print(client.updates)
+            except BaseException as e:
+                print(e)
+                frappe.log_error("There was an error updating the desktop client:", e)
             return res
 
         return decorator

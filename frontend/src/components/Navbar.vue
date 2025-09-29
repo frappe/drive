@@ -129,12 +129,7 @@ import { useStore } from "vuex"
 import emitter from "@/emitter"
 import { ref, computed, inject, h } from "vue"
 import { entitiesDownload } from "@/utils/download"
-import {
-  getRecents,
-  getFavourites,
-  getTrash,
-  toggleFav,
-} from "@/resources/files"
+import { getRecents, getTrash, toggleFav } from "@/resources/files"
 import { apps } from "@/resources/permissions"
 import { useRoute, useRouter } from "vue-router"
 import { getLink, newExternal, dynamicList } from "@/utils/files"

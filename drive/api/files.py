@@ -67,11 +67,11 @@ def upload_file(
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
+    embed = int(embed)
     # Get again for non-root folders
     team = frappe.db.get_value("Drive File", parent, "team")
-    if not user_has_permission(parent, "upload"):
+    if not embed and not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
-    embed = int(embed)
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
@@ -366,7 +366,7 @@ def create_link(team, title, link, parent=None):
             "path": link,
             "is_link": 1,
             "mime_type": "link/unknown",
-            "_modified": datetime.now(),
+            "_modified": frappe.utils.now_datetime(),
             "parent_entity": parent,
         }
     )
@@ -389,7 +389,7 @@ def edit_file_content(entity_name):
     manager = FileManager()
     manager.delete_file(entity)
     manager.upload_file(temp_path, entity)
-    entity._modified = datetime.now()
+    entity._modified = frappe.utils.now_datetime()
     entity.save(ignore_permissions=True)
 
 
@@ -412,7 +412,7 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
                 frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
             if yjs:
                 frappe.db.set_value("Drive Document", doc_name, "content", yjs)
-        except frappe.exceptions.QueryDeadlockError:
+        except (frappe.exceptions.QueryDeadlockError, frappe.exceptions.TimestampMismatchError):
             if yjs:
                 # Pass if there's a deadlock, as CRDT is supposed to take care of it.
                 frappe.log_error(f"There was a collision, not storing data -{entity_name}, {doc_name}")
@@ -455,7 +455,7 @@ def create_auth_token(entity_name):
     settings = frappe.get_single("Drive Disk Settings")
     key = settings.get_password("jwt_key", raise_exception=False)
     return jwt.encode(
-        {"name": entity_name, "expiry": (datetime.now() + timedelta(minutes=1)).timestamp()},
+        {"name": entity_name, "expiry": (frappe.utils.now_datetime() + timedelta(minutes=1)).timestamp()},
         key=key,
     )
 
@@ -480,7 +480,7 @@ def get_file_content(entity_name, trigger_download=0, jwt_token=None):
     if jwt_token:
         settings = frappe.get_single("Drive Disk Settings")
         auth = jwt.decode(jwt_token, key=settings.get_password("jwt_key"), algorithms=["HS256"])
-        if datetime.now().timestamp() > auth["expiry"] or auth["name"] != entity_name:
+        if frappe.utils.now_datetime().timestamp() > auth["expiry"] or auth["name"] != entity_name:
             raise frappe.PermissionError("You do not have permission to view this file")
     elif not user_has_permission(entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
@@ -659,7 +659,7 @@ def remove_or_restore(entity_names):
             flag = 1
 
         doc.is_active = flag
-        doc._modified = datetime.now()
+        doc._modified = frappe.utils.now_datetime()
         folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
         frappe.db.set_value(
             "Drive File",
@@ -792,13 +792,13 @@ def move(entity_names, new_parent=None, team=None):
 
 
 @frappe.whitelist()
-def search(query, team):
+def search(query):
     """
     Basic search implementation
     """
     text = frappe.db.escape(" ".join(k + "*" for k in query.split()))
-    user = frappe.db.escape(frappe.session.user)
-    team = frappe.db.escape(team)
+    teams = get_teams()
+    print(teams)
     try:
         result = frappe.db.sql(
             f"""
@@ -814,7 +814,7 @@ def search(query, team):
                 `tabUser`.full_name
         FROM `tabDrive File`
         LEFT JOIN `tabUser` ON `tabDrive File`.`owner` = `tabUser`.`name`
-        WHERE `tabDrive File`.team = {team}
+        WHERE `tabDrive File`.team IN {tuple(teams)}
             AND `tabDrive File`.`is_active` = 1
             AND `tabDrive File`.`parent_entity` <> ''
             AND MATCH(title) AGAINST ({text} IN BOOLEAN MODE)
@@ -822,6 +822,7 @@ def search(query, team):
         """,
             as_dict=1,
         )
+        print(result)
         for r in result:
             r["file_type"] = get_file_type(r)
         return result

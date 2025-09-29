@@ -1,6 +1,6 @@
 <template>
-  <div class="flex w-full h-100 overflow-y-hidden">
-    <div class="flex-1 md:w-auto md:p-0">
+  <div class="flex w-full">
+    <div class="flex-1">
       <div
         v-if="current"
         class="bg-surface-gray-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
@@ -49,7 +49,7 @@
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
-            'prose-sm min-h-[4rem] mx-auto px-10',
+            'prose-sm min-h-full mx-auto px-10 overflow-x-scroll',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
             settings?.wide
@@ -220,6 +220,7 @@ watch(
   (val, prev) => {
     if (val.versioning === prev?.versioning && autoversion) return
     const duration = Math.max(0.9, +val.versioning - 1) * 1000
+    console.log(duration)
     autoversion = debounce(() => {
       if (!collab.value) return
       const snap = Y.snapshot(doc)
@@ -236,11 +237,7 @@ watch(
         )
       }
       if (!Y.equalSnapshots(prevSnapshot, snap)) {
-        emit(
-          "newVersion",
-          Y.encodeSnapshot(snap),
-          +props.settings.value.versioning
-        )
+        emit("newVersion", Y.encodeSnapshot(snap), +props.settings.versioning)
       }
     }, duration)
   }
@@ -390,7 +387,7 @@ window.addEventListener("unhandledrejection", (event) => {
 })
 
 if (collab.value) {
-  doc = new Y.Doc({ gc: false })
+  doc = new Y.Doc({ gc: true })
   localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
@@ -508,8 +505,15 @@ const bubbleMenuButtons = computed(() =>
     ],
   ])
 )
+onKeyDown("p", (e) => {
+  if (e.metaKey) {
+    e.preventDefault()
+    if (editor.value) printDoc(editor.value.getHTML())
+  }
+})
 
 emitter.on("printFile", () => {
+  console.log(editor.value.getHTML())
   if (editor.value) printDoc(editor.value.getHTML())
 })
 
@@ -603,10 +607,12 @@ function evalImplicitTitle(bypass = false) {
     .replaceAll("@", "")
     .trim()
   if (!props.entity.title.startsWith("Untitled Document") && !bypass) {
-    return toast({
-      title: `Update title?`,
-      buttons: [{ label: "Rename", onClick: () => evalImplicitTitle(true) }],
-    })
+    if (implicitTitle !== props.entity.title)
+      toast({
+        title: `Update title?`,
+        buttons: [{ label: "Rename", onClick: () => evalImplicitTitle(true) }],
+      })
+    return
   }
 
   if (implicitTitle.length === 0) return

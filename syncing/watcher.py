@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 from dotenv import dotenv_values
 import requests
-from utils import url_prefix
+from utils import url_prefix, is_local_change
 
 CONFIG = dotenv_values()
 
@@ -73,6 +73,10 @@ class Watcher(FileSystemEventHandler):
 
     @debounce(1)
     def on_moved(self, event) -> None:
+        if is_local_change(Path(event.src_path)):
+            print("Skipping `rename` as it was a local change.")
+            return
+
         drive_path = Path(event.src_path).relative_to(self.root_path)
         entity = self.storage[str(drive_path)]
         dest_path = Path(event.dest_path).relative_to(self.root_path)

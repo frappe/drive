@@ -19,8 +19,5 @@
   "devDependencies": {
     "cypress": "^14.5.2",
     "cypress-file-upload": "^5.0.8"
-  },
-  "dependencies": {
-    "@tato30/vue-pdf": "^1.11.4"
   }
 }
