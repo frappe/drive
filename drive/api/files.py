@@ -412,7 +412,7 @@ def save_doc(entity_name, doc_name=None, content=None, yjs=None, comment=False):
                 frappe.db.set_value("Drive Document", doc_name, "raw_content", content)
             if yjs:
                 frappe.db.set_value("Drive Document", doc_name, "content", yjs)
-        except frappe.exceptions.QueryDeadlockError:
+        except (frappe.exceptions.QueryDeadlockError, frappe.exceptions.TimestampMismatchError):
             if yjs:
                 # Pass if there's a deadlock, as CRDT is supposed to take care of it.
                 frappe.log_error(f"There was a collision, not storing data -{entity_name}, {doc_name}")
