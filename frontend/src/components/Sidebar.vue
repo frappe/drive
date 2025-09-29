@@ -192,7 +192,7 @@ const sidebarItems = computed(() => {
         {
           label: __("Inbox"),
           icon: LucideInbox,
-          to: "/t/" + team.value + "/inbox",
+          to: "/inbox",
           isActive: first.name === "Inbox",
           accessKey: "i",
         },
