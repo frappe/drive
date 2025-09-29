@@ -1,5 +1,5 @@
 <template>
-  <div class="hidden md:flex right-3 absolute pt-3">
+  <div class="hidden md:flex right-3 absolute pt-3 h-96">
     <div
       v-show="show"
       class="p-3 table-of-contents bg-white shadow-sm rounded-sm"

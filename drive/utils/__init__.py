@@ -282,7 +282,7 @@ def if_folder_exists(team, folder_name, parent):
     if existing_folder:
         return existing_folder.name
     else:
-        d = frappe.get_doc({"doctype": "Drive File", **values, "_modified": datetime.now()})
+        d = frappe.get_doc({"doctype": "Drive File", **values, "_modified": frappe.utils.now_datetime()})
         d.insert()
         return d.name
 

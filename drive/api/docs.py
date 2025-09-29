@@ -92,13 +92,13 @@ def create_version(doc, snapshot, duration=None, manual=0, title=""):
         if versions:
             title = frappe.get_doc("Drive Doc Version", versions[0].name).title
             prev_time = datetime.strptime(title, "%Y-%m-%d %H:%M")
-            now_time = datetime.now()
+            now_time = frappe.utils.now_datetime()
             diff = now_time - prev_time
             if diff < timedelta(minutes=duration):
                 return False
             title = datetime.strftime(now_time, "%Y-%m-%d %H:%M")
         else:
-            title = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+            title = datetime.strftime(frappe.utils.now_datetime(), "%Y-%m-%d %H:%M")
 
     doc = frappe.get_doc("Drive Document", doc)
     doc.append(
@@ -124,8 +124,7 @@ def create_version(doc, snapshot, duration=None, manual=0, title=""):
         doc.save()
     return doc.versions
 
+
 @frappe.whitelist()
 def export_media(entity_name):
-    return frappe.get_list(
-        "Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"]
-    )
+    return frappe.get_list("Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"])

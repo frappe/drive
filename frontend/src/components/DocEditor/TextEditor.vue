@@ -49,7 +49,7 @@
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
-            'prose-sm min-h-[4rem] mx-auto px-10 overflow-x-scroll',
+            'prose-sm min-h-full mx-auto px-10 overflow-x-scroll',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
             settings?.wide
@@ -220,6 +220,7 @@ watch(
   (val, prev) => {
     if (val.versioning === prev?.versioning && autoversion) return
     const duration = Math.max(0.9, +val.versioning - 1) * 1000
+    console.log(duration)
     autoversion = debounce(() => {
       if (!collab.value) return
       const snap = Y.snapshot(doc)
@@ -504,8 +505,13 @@ const bubbleMenuButtons = computed(() =>
     ],
   ])
 )
+onKeyDown("p", (e) => {
+  if (e.metaKey) e.preventDefault()
+  if (editor.value) printDoc(editor.value.getHTML())
+})
 
 emitter.on("printFile", () => {
+  console.log(editor.value.getHTML())
   if (editor.value) printDoc(editor.value.getHTML())
 })
 
