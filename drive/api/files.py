@@ -67,11 +67,11 @@ def upload_file(
     """
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
+    embed = int(embed)
     # Get again for non-root folders
     team = frappe.db.get_value("Drive File", parent, "team")
-    if not user_has_permission(parent, "upload"):
+    if not embed and not user_has_permission(parent, "upload"):
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
-    embed = int(embed)
 
     if fullpath:
         dirname = os.path.dirname(fullpath).split("/")
