@@ -506,8 +506,10 @@ const bubbleMenuButtons = computed(() =>
   ])
 )
 onKeyDown("p", (e) => {
-  if (e.metaKey) e.preventDefault()
-  if (editor.value) printDoc(editor.value.getHTML())
+  if (e.metaKey) {
+    e.preventDefault()
+    if (editor.value) printDoc(editor.value.getHTML())
+  }
 })
 
 emitter.on("printFile", () => {
