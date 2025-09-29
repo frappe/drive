@@ -268,9 +268,10 @@ def user_has_permission(doc, ptype, user=None, team=0):
 
 
 def user_has_permission_doc(doc, ptype, user=None):
-    if ptype == "create":
+    entity = frappe.get_value("Drive File", {"document": doc.name}, "name")
+    if ptype == "create" or not entity:
         return True
-    perm = user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)
+    perm = user_has_permission(entity, ptype, user)
     return perm
 
 

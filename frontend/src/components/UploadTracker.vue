@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-start fixed bottom-0 right-0 w-full m-5 sm:w-96 z-1 rounded-2xl overflow-hidden shadow-2xl dark:border 500 bg-surface-white p-4"
+    class="flex flex-col items-start fixed bottom-0 right-0 m-5 w-96 z-1 rounded-2xl overflow-hidden shadow-2xl dark:border 500 bg-surface-white p-4"
   >
     <div
       class="flex items-center justify-between w-full pr-1.5 text-ink-gray-8"

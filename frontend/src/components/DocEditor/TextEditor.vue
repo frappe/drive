@@ -387,7 +387,7 @@ window.addEventListener("unhandledrejection", (event) => {
 })
 
 if (collab.value) {
-  doc = new Y.Doc({ gc: false })
+  doc = new Y.Doc({ gc: true })
   localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
