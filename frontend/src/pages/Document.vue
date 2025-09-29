@@ -154,6 +154,11 @@
                   label: 'Export Media',
                   icon: LucideImageDown,
                 },
+                {
+                  onClick: clearCache,
+                  label: 'Clear Cache',
+                  icon: LucideListRestart,
+                },
               ]),
             },
             {
@@ -293,6 +298,7 @@ import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import LucideSettings from "~icons/lucide/settings"
 import LucideImageDown from "~icons/lucide/image-down"
+import LucideListRestart from "~icons/lucide/list-restart"
 import LucideHistory from "~icons/lucide/history"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
 import LucideWifi from "~icons/lucide/wifi"
@@ -472,6 +478,23 @@ const toggleMinimal = (val) => {
   } else if (originalBreadcrumbs) {
     store.commit("setBreadcrumbs", originalBreadcrumbs)
     window.document.querySelector("#sidebar").style.removeProperty("display")
+  }
+}
+
+const clearCache = () => {
+  console.log("Trying to delete", "fdoc-" + entity.value.name)
+  const DBDeleteRequest = window.indexedDB.deleteDatabase(
+    "fdoc-" + entity.value.name
+  )
+
+  DBDeleteRequest.onerror = (event) => {
+    console.error("Error deleting database.")
+  }
+
+  DBDeleteRequest.onsuccess = (event) => {
+    console.log("Database deleted successfully")
+
+    console.log(event.result)
   }
 }
 </script>
