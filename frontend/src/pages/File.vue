@@ -148,7 +148,7 @@ function scrollEntity(negative = false) {
 }
 
 function closePreview() {
-  router.push("/")
+  router.push(`/d/${file.data.parent_entity}`)
 }
 
 onMounted(() => {
