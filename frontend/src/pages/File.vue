@@ -13,8 +13,14 @@
         v-else
         id="renderContainer"
         :draggable="false"
-        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center"
+        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center relative"
       >
+        <Button
+          class="text-black absolute top-4 left-4 z-20"
+          :variant="'ghost'"
+          icon="arrow-left"
+          @click="closePreview"
+        />
         <LoadingIndicator
           v-if="file.loading"
           class="w-10 h-full text-neutral-100"
@@ -23,6 +29,7 @@
           v-else-if="file.data"
           :preview-entity="file.data"
         />
+        
       </div>
       <div
         class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 rounded shadow-xl l bg-surface-white"
@@ -138,6 +145,10 @@ store.commit("setCurrentResource", file)
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
   if (currentEntity.value) fetchFile(currentEntity.value.name)
+}
+
+function closePreview() {
+  router.push(`/d/${file.data.parent_entity}`)
 }
 
 onMounted(() => {
