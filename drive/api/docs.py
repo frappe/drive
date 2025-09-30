@@ -6,6 +6,7 @@ from frappe.rate_limiter import rate_limit
 from drive.utils import strip_comment_spans
 
 from .permissions import user_has_permission
+import mimemapper
 
 
 @frappe.whitelist(allow_guest=True)
@@ -125,6 +126,17 @@ def create_version(doc, snapshot, duration=None, manual=0, title=""):
     return doc.versions
 
 
+# To be moved to mimemapper
+QUICK_MAP = {
+    "video/quicktime": "mov",
+    "image/gif": "gif",
+}
+
+
 @frappe.whitelist()
-def export_media(entity_name):
-    return frappe.get_list("Drive File", filters={"parent_entity": entity_name}, fields=["name", "title"])
+def get_extension(entity_name):
+    mime_type = frappe.get_value("Drive File", entity_name, "mime_type")
+    try:
+        return mimemapper.get_extension(mime_type)
+    except:
+        return QUICK_MAP.get(mime_type, "")

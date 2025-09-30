@@ -488,6 +488,7 @@ const clearCache = () => {
 }
 
 const exportMedia = async () => {
+  toast("Preparing...")
   const urls = editor.value.editor.commands.getEmbedUrls()
   const getExtension = createResource({
     url: "drive.api.docs.get_extension",
