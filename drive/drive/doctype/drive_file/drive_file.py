@@ -8,7 +8,7 @@ from frappe.utils import now
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import get_user_access, user_has_permission
-from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size
+from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size, update_clients
 from drive.utils.files import FileManager
 
 
@@ -66,23 +66,7 @@ class DriveFile(Document):
         def decorator(self, *args, **kwargs):
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
-            try:
-                clients = frappe.get_list("Drive Desktop Client", {"team": self.team}, pluck="name")
-                for n in clients:
-                    client = frappe.get_doc("Drive Desktop Client", n)
-                    update = frappe.get_doc(
-                        {
-                            "doctype": "Drive File Update",
-                            "type": func.__name__,
-                            "entity": self.name,
-                        }
-                    )
-                    client.append("updates", update)
-                    client.save()
-                    print(client.updates)
-            except BaseException as e:
-                print(e)
-                frappe.log_error("There was an error updating the desktop client:", e)
+            update_clients(self.name, self.team, func.__name__)
             return res
 
         return decorator
@@ -290,8 +274,16 @@ class DriveFile(Document):
         path = self.manager.rename(self)
         if path:
             self.path = path
+
         self.save()
         return self
+
+    # def recursive_path_move(self, old, new):
+    #     if new:
+    #         self.path = new
+    #     for child in self.get_children():
+    #         child.recursive_path_move(child.path, Path(child.path).relative_to(old))
+    #     self.save()
 
     @frappe.whitelist()
     def change_color(self, new_color):

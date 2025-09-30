@@ -10,7 +10,7 @@ CONFIG = dotenv_values()
 import threading
 
 
-def debounce(wait_time):
+def debounce(wait_time=1):
     """
     Decorator that will debounce a function so that it is called after wait_time seconds
     If it is called multiple times, will wait for the last call to be debounced and run only this one.
@@ -22,11 +22,12 @@ def debounce(wait_time):
                 debounced._timer = None
                 return function(*args, **kwargs)
 
-            # if we already have a call to the function currently waiting to be executed, reset the timer
+            if is_local_change(Path(args[1].src_path)):
+                print(f"Skipping `{function.__name__}` as it was a server update.")
+                return
             if debounced._timer is not None:
                 debounced._timer.cancel()
 
-            # after wait_time, call the function provided to the decorator with its arguments
             debounced._timer = threading.Timer(wait_time, call_function)
             debounced._timer.start()
 
@@ -73,10 +74,6 @@ class Watcher(FileSystemEventHandler):
 
     @debounce(1)
     def on_moved(self, event) -> None:
-        if is_local_change(Path(event.src_path)):
-            print("Skipping `rename` as it was a local change.")
-            return
-
         drive_path = Path(event.src_path).relative_to(self.root_path)
         entity = self.storage[str(drive_path)]
         dest_path = Path(event.dest_path).relative_to(self.root_path)

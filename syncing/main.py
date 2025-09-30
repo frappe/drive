@@ -10,9 +10,7 @@ from pystray import Icon, Menu, MenuItem
 from PIL import Image
 from dotenv import dotenv_values
 
-from utils import sync_folder, PersistentMap, get, listen_to_updates
 from watchdog.observers import Observer
-from watcher import Watcher
 
 ICON_PATH = Path("icon.png")
 DOTENV = Path(".env")
@@ -79,6 +77,13 @@ def run_config_window():
     root.mainloop()
 
 
+if CONFIG:
+    from utils import sync_folder, PersistentMap, get, listen_to_updates
+    from watcher import Watcher
+else:
+    run_config_window()
+
+
 def open_settings_process():
     """
     Launch a separate process that runs the same executable/script with
@@ -111,7 +116,6 @@ def sync_worker():
             print("Authenticate first!")
             status = "Setup Drive"
         else:
-
             if not len(STORAGE):
                 sync_folder(HOME_ENTITY["name"], HOME_ENTITY["path"], STORAGE)
             event_handler = Watcher(STORAGE, PATH, HOME_TEAM)
@@ -119,9 +123,9 @@ def sync_worker():
             observer.schedule(event_handler, PATH, recursive=True)
             observer.start()
             print("Listening for file changes:")
+            listen_to_updates(STORAGE, HOME_ENTITY["path"])
             while running:
                 status = "Syncing"
-                listen_to_updates(STORAGE)
     except BaseException as e:
         print(e)
         # log error, set status appropriately

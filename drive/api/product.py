@@ -443,6 +443,12 @@ def get_updates(client):
     for u in updates:
         if u["type"] in ["rename", "move"]:
             u["details"] = frappe.db.get_value("Drive File", u["entity"], "path")
+        if u["type"] == "upload":
+            is_group = frappe.db.get_value("Drive File", u["entity"], "is_group")
+            if is_group:
+                u["details"] = "folder"
+            else:
+                u["details"] = ("file", *frappe.db.get_value("Drive File", u["entity"], ["parent_entity", "title"]))
     return updates
     # return {"team": client.team, "updates": client.updates}
 
