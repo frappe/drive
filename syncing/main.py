@@ -23,6 +23,7 @@ def load_config():
 
 
 CONFIG = load_config()
+status = "Idle"
 
 
 def write_env():
@@ -30,58 +31,153 @@ def write_env():
 
 
 def run_config_window():
-    # This function will run in its own process and contains its own Tk mainloop.
     import tkinter as tk
-    from tkinter import filedialog
+    from tkinter import ttk, filedialog
 
     conf = load_config()
+    host = conf.get("HOST", "")
     api_key = conf.get("API_KEY", "")
     api_secret = conf.get("API_SECRET", "")
+    client_id = conf.get("CLIENT_ID", "")
     folder = conf.get("PATH", "")
 
     root = tk.Tk()
     root.title("Sync Settings")
-    root.geometry("480x220")
+    root.geometry("500x400")  # Increased height to accommodate descriptions
 
-    tk.Label(root, text="API Key:").pack(anchor="w", padx=10, pady=(8, 0))
-    api_key_entry = tk.Entry(root, width=60)
+    # --- bring window to front ---
+    root.lift()
+    root.attributes("-topmost", True)
+    root.after_idle(root.attributes, "-topmost", False)
+    root.focus_force()
+
+    # use ttk styles
+    style = ttk.Style(root)
+    style.configure("TLabel", font=("Segoe UI", 11))
+    style.configure("TEntry", font=("Segoe UI", 11))
+    style.configure("TButton", font=("Segoe UI", 11))
+    style.configure("Description.TLabel", font=("Segoe UI", 9), foreground="gray")
+
+    # main frame with padding
+    frame = ttk.Frame(root, padding=15)
+    frame.pack(fill="both", expand=True)
+
+    # Site row (now at row 0)
+    ttk.Label(frame, text="Site:").grid(row=0, column=0, sticky="w", pady=(5, 0))
+    host_entry = ttk.Entry(frame)
+    host_entry.insert(0, host)
+    host_entry.grid(row=0, column=1, columnspan=2, sticky="ew", pady=(5, 0))
+    ttk.Label(frame, text="Your site URL (e.g., https://example.com)", style="Description.TLabel").grid(
+        row=1, column=1, columnspan=2, sticky="w", pady=(0, 5)
+    )
+
+    # API Key (now at row 2)
+    ttk.Label(frame, text="API Key:").grid(row=2, column=0, sticky="w", pady=(5, 0))
+    api_key_entry = ttk.Entry(frame)
     api_key_entry.insert(0, api_key)
-    api_key_entry.pack(padx=10)
+    api_key_entry.grid(row=2, column=1, columnspan=2, sticky="ew", pady=(5, 0))
+    ttk.Label(frame, text="Public API key for authentication. Get from Desk.", style="Description.TLabel").grid(
+        row=3, column=1, columnspan=2, sticky="w", pady=(0, 5)
+    )
 
-    tk.Label(root, text="API Secret:").pack(anchor="w", padx=10, pady=(8, 0))
-    api_secret_entry = tk.Entry(root, width=60, show="*")
+    # API Secret (now at row 4)
+    ttk.Label(frame, text="API Secret:").grid(row=4, column=0, sticky="w", pady=(5, 0))
+    api_secret_entry = ttk.Entry(frame, show="*")
     api_secret_entry.insert(0, api_secret)
-    api_secret_entry.pack(padx=10)
+    api_secret_entry.grid(row=4, column=1, columnspan=2, sticky="ew", pady=(5, 0))
+    ttk.Label(frame, text="Private API secret (kept secure). Get from Desk.", style="Description.TLabel").grid(
+        row=5, column=1, columnspan=2, sticky="w", pady=(0, 5)
+    )
 
-    tk.Label(root, text="Folder to sync:").pack(anchor="w", padx=10, pady=(8, 0))
+    # Client ID (now at row 6)
+    ttk.Label(frame, text="Client ID:").grid(row=6, column=0, sticky="w", pady=(5, 0))
+    client_id_entry = ttk.Entry(frame)
+    client_id_entry.insert(0, client_id)
+    client_id_entry.grid(row=6, column=1, columnspan=2, sticky="ew", pady=(5, 0))
+    ttk.Label(frame, text="Get your client ID from your site administrator.", style="Description.TLabel").grid(
+        row=7, column=1, columnspan=2, sticky="w", pady=(0, 5)
+    )
+
+    # Folder row (now at row 8)
+    ttk.Label(frame, text="Drive Folder:").grid(row=8, column=0, sticky="w", pady=(5, 0))
     folder_var = tk.StringVar(value=folder)
-    folder_entry = tk.Entry(root, textvariable=folder_var, width=50)
-    folder_entry.pack(side="left", padx=(10, 0), pady=4)
+    folder_entry = ttk.Entry(frame, textvariable=folder_var)
+    folder_entry.grid(row=8, column=1, sticky="ew", pady=(5, 0))
 
     def choose_folder():
         new = filedialog.askdirectory()
         if new:
             folder_var.set(new)
 
-    tk.Button(root, text="Browse", command=choose_folder).pack(side="left", padx=8)
+    browse_btn = ttk.Button(frame, text="Browse", command=choose_folder)
+    browse_btn.grid(row=8, column=2, padx=5, pady=(5, 0))
+
+    ttk.Label(frame, text="Local folder to sync your Drive with.", style="Description.TLabel").grid(
+        row=9, column=1, columnspan=2, sticky="w", pady=(0, 5)
+    )
+
+    style.configure("Save.TButton", padding=10)
 
     def save_and_close():
+        CONFIG["HOST"] = host_entry.get()
         CONFIG["API_KEY"] = api_key_entry.get()
         CONFIG["API_SECRET"] = api_secret_entry.get()
+        CONFIG["CLIENT_ID"] = client_id_entry.get()
         CONFIG["PATH"] = folder_var.get()
         write_env()
         root.destroy()
 
-    tk.Button(root, text="Save", command=save_and_close).pack(pady=12)
+    # Save button (now at row 10)
+    save_btn = ttk.Button(frame, text="Save", command=save_and_close, style="Save.TButton")
+    save_btn.grid(row=10, column=0, columnspan=3, pady=(20, 10), sticky="ew")
+
+    # make columns stretch properly
+    frame.columnconfigure(1, weight=1)
 
     root.mainloop()
 
 
-if CONFIG:
-    from utils import sync_folder, PersistentMap, get, listen_to_updates
-    from watcher import Watcher
-else:
-    run_config_window()
+def main_tray():
+    # load icon image (ensure the path exists or use a default)
+    if ICON_PATH.exists():
+        img = Image.open(str(ICON_PATH))
+    else:
+        # create a fallback tiny image
+        img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+
+    menu = Menu(
+        MenuItem(get_status_text, None, enabled=False),
+        Menu.SEPARATOR,
+        MenuItem("Settings", on_open_settings),
+        MenuItem("Quit", on_quit),
+    )
+
+    icon = Icon("SyncApp", img, menu=menu)
+
+    # start sync worker in background thread
+    if len(CONFIG):
+        t = threading.Thread(target=sync_worker, daemon=True)
+        t.start()
+    else:
+        open_settings_process()
+
+    icon.run()  # this blocks until icon.stop() is called
+
+
+def get_status_text(text):
+    return f"Status: {status}" if CONFIG else "Not yet synced - setup Drive"
+
+
+def on_quit(icon, item):
+    global running
+    running = False
+    icon.stop()
+    if observer:
+        observer.stop()
+
+
+def on_open_settings(icon, item):
+    open_settings_process()
 
 
 def open_settings_process():
@@ -100,11 +196,7 @@ def open_settings_process():
 
 
 running = True
-status = "Idle"
 observer = None
-
-STORAGE = PersistentMap(Path("./sync_log.json"))
-PATH = CONFIG.get("PATH")
 
 
 def sync_worker():
@@ -136,48 +228,14 @@ def sync_worker():
             observer.stop()
 
 
-def get_status_text(text):
-    return f"Status: {status}"
-
-
-def on_quit(icon, item):
-    global running
-    running = False
-    icon.stop()
-    if observer:
-        observer.stop()
-
-
-def on_open_settings(icon, item):
-    open_settings_process()
-
-
-def main_tray():
-    # load icon image (ensure the path exists or use a default)
-    if ICON_PATH.exists():
-        img = Image.open(str(ICON_PATH))
-    else:
-        # create a fallback tiny image
-        img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-
-    menu = Menu(
-        MenuItem(get_status_text, None, enabled=False),
-        Menu.SEPARATOR,
-        MenuItem("Settings", on_open_settings),
-        MenuItem("Quit", on_quit),
-    )
-
-    icon = Icon("SyncApp", img, menu=menu)
-
-    # start sync worker in background thread
-    t = threading.Thread(target=sync_worker, daemon=True)
-    t.start()
-
-    icon.run()  # this blocks until icon.stop() is called
-
-
 # --- entry point ------------------------------------------------------------
 if __name__ == "__main__":
+    if CONFIG:
+        from utils import sync_folder, PersistentMap, get, listen_to_updates
+        from watcher import Watcher
+
+        STORAGE = PersistentMap(Path("./sync_log.json"))
+        PATH = CONFIG.get("PATH")
     if "--config-window" in sys.argv:
         run_config_window()
         sys.exit(0)
