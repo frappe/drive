@@ -139,18 +139,7 @@
                   icon: LucideSettings,
                 },
                 {
-                  onClick: () => {
-                    createResource({
-                      url: 'drive.api.docs.export_media',
-                      params: {
-                        entity_name: entity.name,
-                      },
-                      auto: true,
-                      onSuccess(data) {
-                        entitiesDownload(null, data)
-                      },
-                    })
-                  },
+                  onClick: exportMedia,
                   label: 'Export Media',
                   icon: LucideImageDown,
                 },
@@ -496,5 +485,18 @@ const clearCache = () => {
 
     console.log(event.result)
   }
+}
+
+const exportMedia = async () => {
+  const urls = editor.value.editor.commands.getEmbedUrls()
+  const getExtension = createResource({
+    url: "drive.api.docs.get_extension",
+  })
+  for (let i in urls) {
+    const ext = await getExtension.fetch({ entity_name: urls[i].name })
+    if (ext) urls[i].title += "." + ext
+  }
+  console.log(urls)
+  entitiesDownload(null, urls)
 }
 </script>

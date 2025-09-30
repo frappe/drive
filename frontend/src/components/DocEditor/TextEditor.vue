@@ -168,6 +168,7 @@ import {
   default as TableOfContents,
   getHierarchicalIndexes,
 } from "@tiptap/extension-table-of-contents"
+import { Extension } from "@tiptap/core"
 
 import FloatingComments from "./components/FloatingComments.vue"
 import { printDoc, getRandomColor, dynamicList } from "@/utils/files"
@@ -220,7 +221,6 @@ watch(
   (val, prev) => {
     if (val.versioning === prev?.versioning && autoversion) return
     const duration = Math.max(0.9, +val.versioning - 1) * 1000
-    console.log(duration)
     autoversion = debounce(() => {
       if (!collab.value) return
       const snap = Y.snapshot(doc)
@@ -344,6 +344,16 @@ const ExtendedCommentExtension = CommentExtension.extend({
 })
 
 const inIframe = inject("inIframe")
+function extractEntityName(url) {
+  try {
+    const query = url.split("?")[1]
+    if (!query) return null
+    const params = new URLSearchParams(query)
+    return params.get("embed_name")
+  } catch {
+    return null
+  }
+}
 const editorExtensions = [
   FontSize,
   CharacterCount,
@@ -374,6 +384,45 @@ const editorExtensions = [
           block: "start",
           inline: "nearest",
         })
+      }
+    },
+  }),
+  Extension.create({
+    name: "embedCollector",
+
+    addCommands() {
+      return {
+        getEmbedUrls:
+          () =>
+          ({ state }) => {
+            const results = []
+            let currentHeading = null
+            let currentHeadingCount = 0
+
+            state.doc.descendants((node) => {
+              // If it's a heading, remember its text
+              if (node.type.name === "heading") {
+                currentHeadingCount = 0
+                currentHeading = node.textContent.trim()
+              }
+
+              // If it's an image, pair it with the last heading
+              if (
+                (node.type.name === "image" || node.type.name === "video") &&
+                node.attrs.src
+              ) {
+                results.push({
+                  title:
+                    currentHeading +
+                    (currentHeadingCount ? ` (${currentHeadingCount})` : ""),
+                  name: extractEntityName(node.attrs.src),
+                })
+                currentHeadingCount++
+              }
+            })
+
+            return results
+          },
       }
     },
   }),
@@ -513,7 +562,6 @@ onKeyDown("p", (e) => {
 })
 
 emitter.on("printFile", () => {
-  console.log(editor.value.getHTML())
   if (editor.value) printDoc(editor.value.getHTML())
 })
 
