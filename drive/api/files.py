@@ -10,7 +10,6 @@ import html2text
 import jwt
 import magic
 import mimemapper
-from pycrdt import Doc
 from pypika import Order
 from werkzeug.utils import secure_filename, send_file
 from werkzeug.wrappers import Response
@@ -24,7 +23,7 @@ from drive.utils import (
     extract_mentions,
     get_file_type,
     get_home_folder,
-    if_folder_exists,
+    update_clients,
     strip_comment_spans,
     update_file_size,
 )
@@ -74,9 +73,7 @@ def upload_file(
         frappe.throw("Ask the folder owner for upload access.", frappe.PermissionError)
 
     if fullpath:
-        dirname = os.path.dirname(fullpath).split("/")
-        for i in dirname:
-            parent = if_folder_exists(team, i, parent)
+        parent = ensure_path(team, fullpath, parent)
 
     # Support non-chunked uploads too
     if frappe.form_dict.chunk_index:
@@ -123,6 +120,7 @@ def upload_file(
 
     # Upload and update parent folder size
     manager.upload_file(temp_path, drive_file)
+    update_clients(drive_file.name, drive_file.team, "upload")
     update_file_size(parent, file_size)
 
     return drive_file
@@ -329,6 +327,39 @@ def create_folder(team, title, parent=None):
     )
 
     return drive_file
+
+
+def ensure_path(team, fullpath, parent=None):
+    """
+    Walk through a folder path and ensure every part exists.
+
+    :param team: Team ID
+    :param fullpath: Path string, e.g. "foo/bar/baz"
+    :param parent: Optional starting folder (defaults to home folder)
+    :return: The name of the deepest folder
+    """
+    parts = Path(fullpath).parts
+    current_parent = parent
+
+    for folder in parts:
+        exists = frappe.db.get_value(
+            "Drive File",
+            {
+                "title": folder,
+                "is_group": 1,
+                "is_active": 1,
+                "team": team,
+                "parent_entity": current_parent,
+            },
+            "name",
+        )
+        if not exists:
+            # use the higher-level folder creation
+            doc = create_folder(team, folder, parent=current_parent)
+            current_parent = doc.name
+        else:
+            return exists
+    return current_parent
 
 
 @frappe.whitelist()
@@ -660,6 +691,8 @@ def remove_or_restore(entity_names):
 
         doc.is_active = flag
         doc._modified = frappe.utils.now_datetime()
+        print("Updating!")
+        update_clients(doc.name, doc.team, "upload" if flag else "delete")
         folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
         frappe.db.set_value(
             "Drive File",

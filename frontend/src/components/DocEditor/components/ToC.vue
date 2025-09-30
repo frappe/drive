@@ -7,7 +7,7 @@
       <div
         v-for="anchor in anchors"
         :key="anchor.id"
-        class="hover:bg-surface-gray-2"
+        class="hover:bg-surface-gray-2 cursor-pointer"
         :class="{
           'is-active': anchor.isActive && !anchor.isScrolledOver,
           'text-ink-gray-5': anchor.isScrolledOver,

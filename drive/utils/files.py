@@ -2,6 +2,7 @@ import os
 from contextlib import contextmanager
 from io import BytesIO
 from pathlib import Path
+import shutil
 
 import boto3
 import cv2
@@ -98,6 +99,7 @@ class FileManager:
             else:
                 os.remove(current_path)
         else:
+            # could break for folders?
             os.rename(current_path, self.site_folder / drive_file.path)
             if drive_file and self.can_create_thumbnail(drive_file):
                 frappe.enqueue(
@@ -184,6 +186,7 @@ class FileManager:
             return Path(root["path"]) / (Path("embeds") / entity.name if embed else entity.name)
         else:
             # perf: stupidly complicated because we use this both with a real entity and a dict
+            # broken: for docs, have to first create that folder
             parent = (
                 Path(frappe.get_value("Drive File", entity.parent_entity, "path") or "")
                 if not hasattr(entity, "parent_path")
@@ -367,7 +370,11 @@ class FileManager:
             else:
                 full_trash_path = self.site_folder / trash_path
                 full_trash_path.parent.mkdir(exist_ok=True)
-                (self.site_folder / entity.path).rename(full_trash_path)
+                cur_path = self.site_folder / entity.path
+                if cur_path.is_dir():
+                    shutil.move(cur_path, full_trash_path)
+                else:
+                    cur_path.rename(full_trash_path)
         except (FileNotFoundError, ClientError):
             frappe.log_error(f"Moved {entity.name} to trash without it being on disk")
             pass
@@ -377,7 +384,8 @@ class FileManager:
         """
         Restore a file from the trash.
         """
-        self.move(frappe.dict(path=self.__get_trash_path(entity), team=entity.team), entity.path)
+        print(frappe._dict(path=self.__get_trash_path(entity), team=entity.team), entity.path)
+        self.move(frappe._dict(path=self.__get_trash_path(entity), team=entity.team), entity.path)
 
     @__not_if_flat
     def move(self, entity, new_path: str | Path):
@@ -394,7 +402,12 @@ class FileManager:
                 )
                 self.conn.delete_object(Bucket=bucket, Key=entity.path)
             else:
-                (self.site_folder / entity.path).rename(self.site_folder / new_path)
+                cur_path = self.site_folder / entity.path
+                dest_path = self.site_folder / new_path
+                if cur_path.is_dir():
+                    shutil.move(cur_path, dest_path)
+                else:
+                    cur_path.rename(dest_path)
         except BaseException as e:
             frappe.throw("This file doesn't exist on disk.")
         return new_path

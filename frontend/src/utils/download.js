@@ -66,7 +66,7 @@ export function entitiesDownload(team, entities) {
       const content = await getPdfFromDoc(entities[0].name)
       parentFolder.file(entity.title + ".pdf", content)
     } else {
-      const fileContent = await get_file_content(entity.name)
+      const fileContent = await get_file_content(entity)
       parentFolder.file(entity.title, fileContent)
     }
   }
@@ -127,7 +127,7 @@ function temp(team, entity_name, parentZip) {
               parentZip.file(entity.title + ".pdf", content)
             )
           } else {
-            return get_file_content(entity.name).then((fileContent) => {
+            return get_file_content(entity).then((fileContent) => {
               parentZip.file(entity.title, fileContent)
             })
           }
@@ -147,10 +147,11 @@ function temp(team, entity_name, parentZip) {
   })
 }
 
-function get_file_content(entity_name) {
+function get_file_content(entity) {
   const fileUrl =
+    entity.src ||
     "/api/method/" +
-    `drive.api.files.get_file_content?entity_name=${entity_name}`
+      `drive.api.files.get_file_content?entity_name=${entity.name}`
 
   return fetch(fileUrl).then((response) => {
     if (response.ok) {
