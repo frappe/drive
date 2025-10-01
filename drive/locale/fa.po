@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-19 16:11+0000\n"
-"PO-Revision-Date: 2025-09-30 22:37\n"
+"PO-Revision-Date: 2025-10-01 22:57\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -702,7 +702,7 @@ msgstr "پیش نمایش"
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Preview size"
-msgstr ""
+msgstr "اندازه پیش‌نمایش"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
@@ -1007,7 +1007,7 @@ msgstr "نسخه"
 #. Label of the versions (Table) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Versions"
-msgstr ""
+msgstr "نسخه‌ها"
 
 #: frontend/src/components/DriveToolBar.vue:26
 msgid "With you"
