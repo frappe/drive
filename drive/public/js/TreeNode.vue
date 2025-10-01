@@ -150,8 +150,6 @@ function onMouseleave() {
 .tree-link .file-doc-link:hover {
   opacity: 0.8;
 }
-</style>
-<style>
 .check-icon {
   stroke: white;
   background: black;
