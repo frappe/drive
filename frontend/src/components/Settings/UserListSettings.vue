@@ -109,7 +109,7 @@
   </div>
   <div
     v-else
-    class="text-center text-p-sm py-4"
+    class="text-ink-gray-8 text-center text-p-sm py-4"
   >
     No teams yet. Create one to get started.
   </div>
@@ -195,7 +195,7 @@
       <template v-else>
         <div
           v-if="!invites?.data || !invites.data.length"
-          class="text-center text-p-sm py-4"
+          class="text-ink-gray-8 text-center text-p-sm py-4"
         >
           No invites found.
         </div>
