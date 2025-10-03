@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-09-19 16:11+0000\n"
-"PO-Revision-Date: 2025-09-30 22:36\n"
+"PO-Revision-Date: 2025-10-01 22:57\n"
 "Last-Translator: developers@frappe.io\n"
-"Language-Team: Portuguese\n"
+"Language-Team: Tamil\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,10 +13,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: frappe\n"
 "X-Crowdin-Project-ID: 639578\n"
-"X-Crowdin-Language: pt-PT\n"
+"X-Crowdin-Language: ta\n"
 "X-Crowdin-File: /[frappe.drive] develop/drive/locale/main.pot\n"
 "X-Crowdin-File-ID: 110\n"
-"Language: pt_PT\n"
+"Language: ta_IN\n"
 
 #. Description of the 'Access Level' (Int) field in DocType 'Drive Team Member'
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
@@ -62,19 +62,19 @@ msgstr ""
 #. Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Action Type"
-msgstr "Tipo de Ação"
+msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:409
 msgid "Add"
-msgstr "Adicionar"
+msgstr "சேர்"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:77
 msgid "Add Image"
-msgstr ""
+msgstr "படத்தைச் சேர்க்கவும்"
 
 #: frontend/src/components/InfoPopup.vue:47
 msgid "Added"
-msgstr ""
+msgstr "சேர்க்கப்பட்டது"
 
 #. Name of a role
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -90,7 +90,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "All"
-msgstr "Todos"
+msgstr ""
 
 #: frontend/src/components/Sidebar.vue:102
 msgid "Apps"
@@ -113,12 +113,12 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:74
 msgid "Characters"
-msgstr ""
+msgstr "எழுத்துக்கள்"
 
 #: frontend/src/components/Navbar.vue:300
 #: frontend/src/components/Navbar.vue:306
 msgid "Clear"
-msgstr "Claro"
+msgstr "அகற்றுக"
 
 #. Label of the color (Data) field in DocType 'Drive File'
 #. Label of the color (Data) field in DocType 'Drive Tag'
@@ -126,7 +126,7 @@ msgstr "Claro"
 #: drive/drive/doctype/drive_tag/drive_tag.json
 #: frontend/src/components/TagColorInput.vue:8
 msgid "Color"
-msgstr "Cor"
+msgstr "நிறம்"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the comment (Check) field in DocType 'Drive Permission'
@@ -141,24 +141,24 @@ msgstr ""
 #: drive/drive/doctype/drive_document/drive_document.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Comments"
-msgstr "Comentários"
+msgstr ""
 
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr ""
 
 #. Label of the content (Text Editor) field in DocType 'Drive Comment'
 #. Label of the content (Long Text) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_comment/drive_comment.json
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Content"
-msgstr "Conteúdo"
+msgstr ""
 
 #: frontend/src/components/GenericPage.vue:290
 #: frontend/src/components/Navbar.vue:219
 msgid "Copy Link"
-msgstr "Copiar Link"
+msgstr ""
 
 #. Label of the core_section (Section Break) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -179,7 +179,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:357
 #: frontend/src/components/Navbar.vue:277
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "நீக்கு"
 
 #: frontend/src/components/InfoPopup.vue:154
 msgid "Developer"
@@ -225,7 +225,7 @@ msgstr ""
 #: frontend/src/components/GenericPage.vue:282
 #: frontend/src/components/Navbar.vue:213
 msgid "Download"
-msgstr ""
+msgstr "பதிவிறக்கவும்"
 
 #. Name of a Workspace
 #: drive/config/desktop.py:11 drive/drive/workspace/drive/drive.json
@@ -326,7 +326,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:465
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 msgid "Edit Profile"
@@ -345,12 +345,12 @@ msgstr ""
 
 #: frontend/src/components/Navbar.vue:312
 msgid "Empty"
-msgstr "Vazio"
+msgstr ""
 
 #. Label of the enabled (Check) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Enabled"
-msgstr "Ativado"
+msgstr ""
 
 #. Label of the endpoint_url (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -385,7 +385,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Expired"
-msgstr "Expirado"
+msgstr ""
 
 #: frontend/src/components/GenericPage.vue:318
 #: frontend/src/components/Navbar.vue:248
@@ -403,19 +403,19 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "First Name"
-msgstr ""
+msgstr "முதற் பெயர்"
 
 #. Label of the from_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "From User"
-msgstr "De usuário"
+msgstr ""
 
 #. Label of the general_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 #: frontend/src/components/InfoPopup.vue:116
 msgid "General"
-msgstr "Geral"
+msgstr ""
 
 #. Label of the geo_location (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -447,7 +447,7 @@ msgstr ""
 #: frontend/src/components/Settings/UserListSettings.vue:370
 #: frontend/src/components/Settings/UserListSettings.vue:427
 msgid "Icon"
-msgstr "Ícone"
+msgstr ""
 
 #. Description of the 'Storage' (Int) field in DocType 'Drive Team'
 #. Description of the 'Quota' (Int) field in DocType 'Drive Team'
@@ -472,7 +472,7 @@ msgstr ""
 #. Label of the is_group (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Is Group"
-msgstr "É grupo"
+msgstr ""
 
 #. Label of the is_link (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -509,7 +509,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:88
 msgid "Last Name"
-msgstr ""
+msgstr "கடைசி பெயர்"
 
 #. Description of the 'Do not mimic folder/file structure' (Check) field in
 #. DocType 'Drive Disk Settings'
@@ -560,7 +560,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Mention"
-msgstr "Menção"
+msgstr ""
 
 #. Label of the mentions (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
@@ -596,11 +596,11 @@ msgstr ""
 #: frontend/src/components/Settings/UserListSettings.vue:364
 #: frontend/src/components/Settings/UserListSettings.vue:421
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 msgid "New"
-msgstr "Novo"
+msgstr "புதிய"
 
 #: frontend/src/components/Settings/NewTagDialog.vue:4
 msgid "New Tag"
@@ -608,16 +608,16 @@ msgstr ""
 
 #: frontend/src/components/Settings/UserListSettings.vue:357
 msgid "New Team"
-msgstr ""
+msgstr "புதிய அணி"
 
 #. Label of the new_value (Data) field in DocType 'Drive Entity Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "New Value"
-msgstr ""
+msgstr "புதிய மதிப்பு"
 
 #: frontend/src/components/Settings/UserListSettings.vue:12
 msgid "New team"
-msgstr ""
+msgstr "புதிய அணி"
 
 #: drive/public/js/ff_integration.bundle.js:30
 msgid "No teams available"
@@ -659,13 +659,13 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:142
 msgid "Others"
-msgstr "Outros"
+msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:299
 #: frontend/src/components/InfoPopup.vue:19
 #: frontend/src/components/ListView.vue:150
 msgid "Owner"
-msgstr "Dono"
+msgstr ""
 
 #. Label of the parent_entity (Link) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
@@ -680,7 +680,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Pending"
-msgstr "Pendente"
+msgstr ""
 
 #: drive/drive/doctype/drive_file/drive_file.js:6
 msgid "Permissions"
@@ -706,7 +706,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:3
 msgid "Profile"
-msgstr "Perfil"
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
@@ -728,7 +728,7 @@ msgstr ""
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Read"
-msgstr "Ler"
+msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:82
 msgid "Reading time"
@@ -786,7 +786,7 @@ msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:40
 msgid "Search"
-msgstr ""
+msgstr "தேடல்"
 
 #: frontend/src/components/TagColorInput.vue:36
 msgid "Set Color"
@@ -797,7 +797,7 @@ msgstr ""
 #: frontend/src/components/Settings/SettingsDialog.vue:15
 #: frontend/src/components/Sidebar.vue:147
 msgid "Settings"
-msgstr "Configurações"
+msgstr "அமைப்புகள்"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
@@ -862,7 +862,7 @@ msgstr ""
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr "Estado"
+msgstr "நிலவரம்"
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -887,7 +887,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr "Gestor de Sistema"
+msgstr ""
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
@@ -946,7 +946,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr "Título"
+msgstr ""
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -958,7 +958,7 @@ msgstr ""
 #: frontend/src/components/DriveToolBar.vue:311
 #: frontend/src/components/InfoPopup.vue:27
 msgid "Type"
-msgstr "Tipo"
+msgstr "வகை"
 
 #. Label of the url_args (Code) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -1015,7 +1015,7 @@ msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:66
 msgid "Words"
-msgstr ""
+msgstr "வார்த்தைகள்"
 
 #. Label of the write (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_permission/drive_permission.json
@@ -1041,44 +1041,44 @@ msgstr ""
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "comment"
-msgstr "comentário"
+msgstr ""
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "create"
-msgstr "criar"
+msgstr ""
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "delete"
-msgstr "eliminar"
+msgstr ""
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "edit"
-msgstr "editar"
+msgstr ""
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "item"
-msgstr "item"
+msgstr "பொருள்"
 
 #: frontend/src/components/DriveToolBar.vue:8
 msgid "items"
-msgstr "itens"
+msgstr "பொருட்கள்"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "move"
-msgstr "mover"
+msgstr ""
 
 #. Option for the 'Team Prefix' (Select) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "none"
-msgstr "nenhum"
+msgstr ""
 
 #: frontend/src/components/InfoPopup.vue:138
 #: frontend/src/components/ListView.vue:179
@@ -1088,17 +1088,17 @@ msgstr ""
 #: frontend/src/components/InfoPopup.vue:138
 #: frontend/src/components/ListView.vue:179
 msgid "person"
-msgstr "pessoa"
+msgstr "நபர்"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "rename"
-msgstr "alterar Nome"
+msgstr "மறுபெயரிடு"
 
 #: frontend/src/components/DriveToolBar.vue:9
 msgid "selected"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்டது"
 
 #. Option for the 'Action Type' (Select) field in DocType 'Drive Entity
 #. Activity Log'
