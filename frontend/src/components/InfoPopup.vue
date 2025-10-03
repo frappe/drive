@@ -92,7 +92,7 @@
         </li>
       </ul>
       <div class="flex justify-between items-center">
-        <span class="text-base font-semibold">Access</span>
+        <span class="text-base font-semibold text-ink-gray-8">Access</span>
         <Button
           v-if="entity.share"
           :variant="'subtle'"
@@ -120,7 +120,7 @@
               size="sm"
               :access-type="getGeneralAccess.data.type"
               :show-text="true"
-              class="-mr-[3px] outline outline-white"
+              class="-mr-[3px]"
             />
           </div>
         </li>
@@ -130,7 +130,7 @@
           >
           <span
             v-if="userAccess.data?.length"
-            class="col-span-1"
+            class="col-span-1 text-ink-gray-8"
           >
             {{
               userAccess.data.length +

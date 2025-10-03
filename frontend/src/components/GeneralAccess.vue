@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-1">
+  <div class="flex gap-1 text-ink-gray-8">
     <div
       class="rounded-full relative flex items-center justify-center p-0.5"
       :class="[colorClasses, props.size === 'sm' ? 'size-4.5' : 'size-6']"

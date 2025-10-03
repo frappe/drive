@@ -202,7 +202,7 @@
             </div>
             <Select
               v-model="shareAccess"
-              class="flex items-start w-32"
+              class="flex items-start w-36"
               :options="
                 advancedTweak
                   ? filteredAccess.map((k) => ({
