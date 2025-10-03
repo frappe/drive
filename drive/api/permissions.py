@@ -181,6 +181,14 @@ def get_entity_with_permissions(entity_name):
                 extensions=["extra", WikiLinkExtension(build_url=url_builder)],
             )
 
+    default = 0
+    if entity_name:
+        if get_user_access(entity_name, "Guest")["read"]:
+            default = -2
+        elif get_user_access(entity_name, team=1)["read"]:
+            default = -1
+    return_obj["share_count"] = default
+
     if entity.document:
         k = frappe.get_doc("Drive Document", entity.document)
         entity_doc_content = k.as_dict()
