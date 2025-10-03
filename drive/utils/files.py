@@ -369,6 +369,9 @@ class FileManager:
                 self.conn.delete_object(Bucket=bucket, Key=entity.path)
             else:
                 full_trash_path = self.site_folder / trash_path
+                if full_trash_path.exists() and full_trash_path.is_dir():
+                    shutil.rmtree(full_trash_path)
+
                 full_trash_path.parent.mkdir(exist_ok=True)
                 cur_path = self.site_folder / entity.path
                 if cur_path.is_dir():
@@ -384,7 +387,6 @@ class FileManager:
         """
         Restore a file from the trash.
         """
-        print(frappe._dict(path=self.__get_trash_path(entity), team=entity.team), entity.path)
         self.move(frappe._dict(path=self.__get_trash_path(entity), team=entity.team), entity.path)
 
     @__not_if_flat

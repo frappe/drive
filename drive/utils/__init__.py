@@ -408,7 +408,6 @@ def update_clients(entity_name, team, type):
             )
             client.append("updates", update)
             client.save()
-            print(client.updates)
     except BaseException as e:
         print(e)
         frappe.log_error("There was an error updating the desktop client:", e)

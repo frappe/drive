@@ -272,18 +272,17 @@ class DriveFile(Document):
             frappe.throw("Your title can't be more than 140 characters.")
         self.title = new_title
         path = self.manager.rename(self)
-        if path:
-            self.path = path
+        self.recursive_path_move(self.path, path)
 
         self.save()
         return self
 
-    # def recursive_path_move(self, old, new):
-    #     if new:
-    #         self.path = new
-    #     for child in self.get_children():
-    #         child.recursive_path_move(child.path, Path(child.path).relative_to(old))
-    #     self.save()
+    def recursive_path_move(self, old, new):
+        if new:
+            self.path = new
+        for child in self.get_children():
+            child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
+        self.save()
 
     @frappe.whitelist()
     def change_color(self, new_color):

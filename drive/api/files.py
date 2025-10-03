@@ -164,9 +164,6 @@ def get_thumbnail(entity_name):
                     thumbnail_data = f.read()[:1000].decode("utf-8").replace("\n", "<br/>")
             elif drive_file.mime_type == "frappe_doc":
                 html = frappe.get_value("Drive Document", drive_file.document, "raw_content")
-                # k = Doc()
-                # k.apply_update(html)
-                # print(k)
                 thumbnail_data = html[:1000] if html else ""
             elif drive_file.mime_type == "frappe/slides":
                 # Use this until the thumbnail method is whitelisted
@@ -341,7 +338,7 @@ def ensure_path(team, fullpath, parent=None):
     parts = Path(fullpath).parts
     current_parent = parent
 
-    for folder in parts:
+    for folder in parts[:-1]:
         exists = frappe.db.get_value(
             "Drive File",
             {
@@ -691,7 +688,6 @@ def remove_or_restore(entity_names):
 
         doc.is_active = flag
         doc._modified = frappe.utils.now_datetime()
-        print("Updating!")
         update_clients(doc.name, doc.team, "upload" if flag else "delete")
         folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
         frappe.db.set_value(
@@ -831,7 +827,6 @@ def search(query):
     """
     text = frappe.db.escape(" ".join(k + "*" for k in query.split()))
     teams = get_teams()
-    print(teams)
     try:
         result = frappe.db.sql(
             f"""
@@ -855,7 +850,6 @@ def search(query):
         """,
             as_dict=1,
         )
-        print(result)
         for r in result:
             r["file_type"] = get_file_type(r)
         return result
@@ -896,7 +890,6 @@ def get_new_title(title, parent_name, folder=False, entity=None):
         filters=filters,
         fields=["title", "name"],
     )
-    print(entity, sibling_entity_titles)
     if (
         not sibling_entity_titles
         or (sibling_entity_titles[0].name == entity)
