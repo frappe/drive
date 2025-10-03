@@ -48,12 +48,15 @@
           >
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
-        <!-- <li>
+        <li class="flex items-center">
           <span class="inline-block w-24 text-ink-gray-5"
             >{{ __("Tags") }}:</span
           >
-          <span class="col-span-1">{{ entity }}</span>
-        </li> -->
+          <TagInput
+            class="flex-grow"
+            :entity
+          />
+        </li>
       </ul>
 
       <ul
@@ -189,6 +192,7 @@
 <script setup>
 import { formatDate } from "@/utils/format"
 import { Dialog, Button, LoadingIndicator, createResource } from "frappe-ui"
+import TagInput from "@/components/TagInput.vue"
 import { ref, inject } from "vue"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
