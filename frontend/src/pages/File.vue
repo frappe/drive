@@ -16,7 +16,7 @@
         class="w-full p-10 flex-grow w-full flex justify-center align-center items-center relative"
       >
         <Button
-          class="text-black absolute top-4 left-4 z-20"
+          class="text-ink-gray-8 absolute top-4 left-4 z-10"
           :variant="'ghost'"
           icon="arrow-left"
           @click="closePreview"
@@ -148,7 +148,10 @@ function scrollEntity(negative = false) {
 }
 
 function closePreview() {
-  router.push(`/d/${file.data.parent_entity}`)
+  router.push({ 
+  name: 'Folder',
+  params: { entityName: file.data.parent_entity }
+  })
 }
 
 onMounted(() => {
