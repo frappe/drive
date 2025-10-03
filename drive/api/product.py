@@ -457,3 +457,8 @@ def get_updates(client):
 def pop_update(name):
     # Security: check before deletion
     frappe.get_doc("Drive File Update", name).delete()
+
+
+@frappe.whitelist(allow_guest=True)
+def signup_disabled():
+    return frappe.get_website_settings("disable_signup")

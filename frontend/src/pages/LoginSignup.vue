@@ -7,7 +7,7 @@
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
           <div
-            class="mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="mx-auto w-full bg-surface-white px-4 p-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 py-6 sm:shadow-2xl"
           >
             <div class="mb-7.5 text-center">
               <p class="mb-2 text-2xl font-semibold leading-6 text-ink-gray-9">
@@ -178,9 +178,12 @@
               </template>
             </form>
 
-            <!-- <div class="mt-6 text-center">
+            <div
+              v-if="!signupDisabled.data"
+              class="mt-6 text-center"
+            >
               <router-link
-                class="text-center text-base font-medium text-ink-gray-9 hover:text-ink-gray-7"
+                class="text-center text-sm text-ink-gray-8 hover:text-ink-gray-9"
                 :to="{
                   name: isLogin ? 'Signup' : 'Login',
                   query: { ...$route.query, forgot: undefined },
@@ -192,7 +195,7 @@
                     : "Already have an account? Log in."
                 }}
               </router-link>
-            </div> -->
+            </div>
           </div>
         </div>
       </div>
@@ -234,6 +237,11 @@ const getReferrerIfAny = () => {
   const searchParams = new URLSearchParams(params)
   return searchParams.get("referrer")
 }
+const signupDisabled = createResource({
+  url: "drive.api.product.signup_disabled",
+  cache: "signupDisabled",
+  auto: true,
+})
 
 const signup = createResource({
   url: "drive.api.product.signup",
@@ -282,7 +290,11 @@ const sendOTP = createResource({
   },
   onError(err) {
     if (JSON.stringify(err).includes("not found"))
-      toast("Please sign up first!")
+      toast(
+        signupDisabled.data
+          ? "You do not have an account on this site."
+          : "Please sign up first!"
+      )
     else toast("Failed to send verification code")
   },
 })
