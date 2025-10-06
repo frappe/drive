@@ -49,12 +49,12 @@
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
-            'prose-sm min-h-full mx-auto px-10 overflow-x-scroll',
+            'prose-sm min-h-full mx-auto px-10 overflow-x-auto pt-4 md:pt-0',
             `text-[${settings?.font_size || 15}px]`,
             `leading-[${settings?.line_height || 1.5}]`,
             settings?.wide
-              ? 'min-w-[100ch] max-w-[100ch]'
-              : 'min-w-[48rem] max-w-[48rem]',
+              ? 'md:min-w-[100ch] md:max-w-[100ch]'
+              : 'md:min-w-[48rem] md:max-w-[48rem]',
             current ? 'pb-24' : '',
           ]"
           :content="!collab ? rawContent : undefined"
@@ -100,7 +100,7 @@
           <template #top>
             <TextEditorFixedMenu
               v-if="editable && !settings.minimal && !current"
-              class="w-full sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
+              class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
               :buttons="bubbleMenuButtons"
             />
           </template>
@@ -185,7 +185,7 @@ import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 
 import LucideMessageCircle from "~icons/lucide/message-circle"
-import { formatDate } from "../../utils/format"
+import { formatDate } from "@/utils/format"
 
 const textEditor = ref("textEditor")
 const current = defineModel("current")
