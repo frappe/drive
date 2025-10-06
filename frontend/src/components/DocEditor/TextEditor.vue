@@ -1,5 +1,8 @@
 <template>
-  <div class="flex w-full overflow-y-auto">
+  <div
+    class="flex w-full overflow-y-auto"
+    id="editorScrollContainer"
+  >
     <div class="flex-1">
       <div
         v-if="current"
@@ -32,7 +35,7 @@
         </div>
       </div>
       <div
-        class="mx-auto cursor-text w-full flex justify-center h-full"
+        class="mx-auto cursor-text w-full flex justify-center h-full isolate"
         :class="current ? 'pb-15' : ''"
         @click="
           $event.target.tagName === 'DIV' &&
@@ -102,6 +105,7 @@
               v-if="editable && !settings.minimal && !current"
               class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
               :buttons="menuButtons"
+              :editor="editor"
             />
           </template>
           <template #editor="{ editor }">
@@ -214,8 +218,8 @@ const editor = computed(() => {
   const editor = textEditor.value?.editor
   return editor
 })
-const scrollParent = computed(
-  () => editor.value?.view?.dom?.parentElement?.parentElement
+const scrollParent = computed(() =>
+  document.querySelector("#editorScrollContainer")
 )
 defineExpose({ editor })
 

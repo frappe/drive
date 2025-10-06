@@ -411,7 +411,8 @@ def create_link(team, title, link, parent=None):
 
 
 @frappe.whitelist()
-def edit_file_content(entity_name):
+def edit_file_content(entity_name, client=None):
+    # TBD: notify other clients of the update
     entity = frappe.get_doc("Drive File", entity_name)
     if not user_has_permission(entity, "write"):
         frappe.throw("You cannot edit this file", frappe.PermissionError)

@@ -7,10 +7,11 @@
       <div
         v-for="anchor in anchors"
         :key="anchor.id"
-        class="hover:bg-surface-gray-2 cursor-pointer max-w-40 truncate text-ink-gray-8"
+        class="hover:bg-surface-gray-2 cursor-pointer max-w-52 truncate"
         :class="{
           'is-active': anchor.isActive && !anchor.isScrolledOver,
           'text-ink-gray-5': anchor.isScrolledOver,
+          'text-ink-gray-8': !anchor.isScrolledOver,
         }"
         :style="{ '--level': anchor.level - maxLevel }"
       >
@@ -74,7 +75,7 @@ const onAnchorClick = (id) => {
     history.pushState(null, null, `#${id}`)
   }
 
-  const editorEl = props.editor.options.element.parentElement
+  const editorEl = document.querySelector("#editorScrollContainer")
   editorEl.scrollTo({
     top: element.offsetTop - 10,
     behavior: "smooth",

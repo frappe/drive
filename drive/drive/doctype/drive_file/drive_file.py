@@ -64,9 +64,10 @@ class DriveFile(Document):
 
     def __update_modified(func):
         def decorator(self, *args, **kwargs):
+            client = kwargs.pop("client", None)
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
-            update_clients(self.name, self.team, func.__name__)
+            update_clients(self.name, self.team, func.__name__, client)
             return res
 
         return decorator
