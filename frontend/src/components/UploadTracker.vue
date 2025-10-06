@@ -132,7 +132,6 @@ const collapsed = ref(false)
 const showErrorDialog = ref(false)
 const hoverIndex = ref(null)
 const selectedUpload = ref(null)
-const emptyMessage = ref("No uploads in progress")
 
 const store = useStore()
 const router = useRouter()

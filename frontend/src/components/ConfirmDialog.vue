@@ -85,7 +85,7 @@ const dialogData = computed(() => {
         theme: "red",
         variant: "subtle",
       },
-      onSuccess: (e) => {
+      onSuccess: () => {
         getTrash.setData(
           sortEntities([
             ...getTrash.data,

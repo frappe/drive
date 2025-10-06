@@ -139,23 +139,22 @@ function closePopup() {
 watch(
   search,
   async (val) => {
-    component &&
-      component.updateProps({
+      if(component)component.updateProps({
         loading: true,
       })
     getDocuments.fetch(
       {
         only_parent: 0,
-        search: search.value,
+        search: val,
       },
       {
-        onSuccess: () => {
+        onSuccess: () => 
           component &&
             component.updateProps({
               items: items.value,
               loading: false,
             })
-        },
+        ,
       }
     )
   },

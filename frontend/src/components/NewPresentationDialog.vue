@@ -43,14 +43,12 @@
 import { ref } from "vue"
 import { Dialog } from "frappe-ui"
 import { createPresentation } from "@/resources/files"
-import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 
 const props = defineProps({
   parent: String,
 })
 const route = useRoute()
-const store = useStore()
 const emit = defineEmits(["success"])
 
 const dialogType = defineModel()

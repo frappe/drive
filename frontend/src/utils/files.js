@@ -55,9 +55,12 @@ export const openEntity = (entity, new_tab = false) => {
     })
   } else if (entity.is_link) {
     const origin = new URL(entity.path).origin
-    confirm(
-      `This will open an external link to ${origin} - are you sure you want to open?`
-    ) && window.open(entity.path, "_blank")
+    if (
+      confirm(
+        `This will open an external link to ${origin} - are you sure you want to open?`
+      )
+    )
+      window.open(entity.path, "_blank")
   } else if (entity.mime_type === "frappe/slides") {
     window.open("/slides/presentation/" + entity.path, "_blank")
   } else if (
@@ -89,8 +92,6 @@ function trimCommonPrefix(a, b) {
 function extractNum(name) {
   const match = name.match(/^(.*?)(\d+)(\D*)$/)
   if (!match) return 0
-
-  const [_, prefix, numStr] = match
   return parseInt(match[2], 10)
 }
 const months = {
@@ -229,9 +230,7 @@ export const setBreadCrumbs = (entity) => {
       label: folder.title,
       name: folder.name,
       onClick: final
-        ? () => {
-            entity.write && emitter.emit("rename")
-          }
+        ? () => entity.write && emitter.emit("rename")
         : popBreadcrumbs(folder),
       route: final
         ? null
@@ -412,7 +411,7 @@ export function printDoc(html) {
             if (!frameWindow.document.execCommand("print", false)) {
               frameWindow.print()
             }
-          } catch (e) {
+          } catch {
             frameWindow.print()
           }
           frameWindow.close()
@@ -475,7 +474,6 @@ export async function updateURLSlug(title) {
 }
 
 export function getLink(entity, copy = true, withDomain = true) {
-  const team = router.currentRoute.value.params.team
   let link
   if (entity.is_link) link = entity.path
   else if (entity.mime_type === "frappe/slides") {

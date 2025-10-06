@@ -108,7 +108,7 @@ const groupedVersions = computed(() => {
   }
 })
 const tab = ref(1)
-const renderSnapshot = (version, prevSnapshot) => {
+const renderSnapshot = (version) => {
   current.value = version
   props.editor.view.dispatch(
     props.editor.view.state.tr.setMeta(ySyncPluginKey, {

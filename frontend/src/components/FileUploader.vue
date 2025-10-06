@@ -13,7 +13,7 @@ import { storageBar } from "@/resources/files"
 
 const store = useStore()
 const route = useRoute()
-const emit = defineEmits(["success"])
+defineEmits(["success"])
 
 const dropzone = ref()
 const computedFullPath = ref("")
@@ -104,7 +104,7 @@ onMounted(() => {
       dropzone.value = existing
       return
     }
-  } catch (e) {}
+  } catch {}
 
   dropzone.value = new Dropzone("div#dropzone", {
     paramName: "file",

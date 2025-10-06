@@ -15,7 +15,7 @@
         class="h-[16px] w-[16px] rounded-sm"
         :src="backupLink"
         :draggable="false"
-      >
+      />
       <img
         v-show="imgLoaded"
         class="h-[16px] w-[16px] object-cover rounded-sm"
@@ -23,7 +23,7 @@
         :draggable="false"
         @error="src = backupLink"
         @load="imgLoaded = true"
-      >
+      />
     </template>
     <template #default="{ label }">
       <div
@@ -73,10 +73,10 @@ const props = defineProps({
   contextMenu: Function,
 })
 
-let src, imgLoaded, thumbnailLink, backupLink, is_image
+let src, imgLoaded, thumbnailLink, backupLink
 
 if (props.column.prefix && props.column.key === "title") {
-  ;[thumbnailLink, backupLink, is_image] = props.column.prefix({
+  ;[thumbnailLink, backupLink, _] = props.column.prefix({
     row: props.row,
   })
 

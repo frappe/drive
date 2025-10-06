@@ -60,21 +60,4 @@ const currentFolder = createResource({
 })
 store.commit("setCurrentResource", currentFolder)
 watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })
-
-const userInfo = createResource({
-  url: "frappe.desk.form.load.get_user_info_for_viewers",
-  onSuccess(data) {
-    data = Object.values(data)
-    data.forEach((item) => {
-      // compatibility with document awareness
-      if (item.fullname) {
-        item.avatar = item.image
-        item.name = item.fullname
-        delete item.image
-        delete item.fullname
-      }
-    })
-    store.state.connectedUsers = data
-  },
-})
 </script>

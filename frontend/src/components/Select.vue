@@ -28,20 +28,6 @@ type SimpleOption =
 type GroupedOption = { group: string; options: SimpleOption[] }
 type GenericOption = SimpleOption | GroupedOption
 
-function getDisplayValue(
-  options: Array<GenericOption>,
-  selectedValue: string | null | undefined
-): string {
-  if (!selectedValue) return ""
-  const flatOptions = options.flatMap((opt) =>
-    isGroup(opt) ? opt.options : opt
-  )
-  const selectedOption = flatOptions.find(
-    (opt) => getValue(opt) === selectedValue
-  )
-  return selectedOption ? getLabel(selectedOption) : selectedValue || ""
-}
-
 function isGroup(option: GenericOption): option is GroupedOption {
   return typeof option === "object" && "group" in option
 }

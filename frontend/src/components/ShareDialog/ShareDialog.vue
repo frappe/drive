@@ -69,9 +69,7 @@
             </div>
           </div>
           <!-- Members section -->
-          <div class="text-ink-gray-5 font-medium text-base mb-2">
-            Members
-          </div>
+          <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
           <div class="flex gap-3">
             <div class="flex-grow">
               <Combobox
@@ -118,33 +116,63 @@
                     <div class="w-[25%] mt-auto" />
                   </div>
                 </div>
-                <transition
-                  enter-active-class="transition duration-100 ease-out"
-                  enter-from-class="transform scale-95 opacity-0"
-                  enter-to-class="transform scale-100 opacity-100"
-                  leave-active-class="transition duration-75 ease-out"
-                  leave-from-class="transform scale-100 opacity-100"
-                  leave-to-class="transform scale-95 opacity-0"
+
+                <div
+                  class="absolute z-[4] rounded-lg bg-surface-modal text-base shadow-2xl"
                 >
-                  <div
-                    class="absolute z-[4] rounded-lg bg-surface-modal text-base shadow-2xl"
+                  <ComboboxOptions
+                    v-if="open && query.length"
+                    class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5"
                   >
-                    <ComboboxOptions
-                      v-if="open && query.length"
-                      class="max-h-[15rem] overflow-y-auto px-1.5 py-1.5"
+                    <ComboboxOption
+                      v-if="!filteredUsers.length"
+                      v-slot="{ selected, active }"
+                      as="template"
+                      :value="baseOption"
                     >
-                      <ComboboxOption
-                        v-if="!filteredUsers.length"
-                        v-slot="{ selected, active }"
-                        as="template"
-                        :value="baseOption"
+                      <li
+                        class="flex items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
+                        :class="{
+                          'bg-surface-gray-3': active,
+                        }"
                       >
-                        <li
-                          class="flex items-center justify-between rounded px-2.5 py-1.5 text-base text-ink-gray-7"
+                        <span
+                          class="block truncate"
                           :class="{
-                            'bg-surface-gray-3': active,
+                            'font-medium': selected,
+                            'font-normal': !selected,
                           }"
                         >
+                          {{ query }}
+                        </span>
+                      </li>
+                    </ComboboxOption>
+                    <template
+                      v-for="person in filteredUsers"
+                      :key="person.email"
+                    >
+                      <ComboboxOption
+                        v-slot="{ selected, active }"
+                        as="template"
+                        :value="person"
+                        :disabled="person.disabled"
+                      >
+                        <li
+                          class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7"
+                          :class="{
+                            'bg-surface-gray-3': active,
+                            'cursor-pointer': !person.disabled,
+                            'opacity-50 cursor-not-allowed': person.disabled,
+                          }"
+                        >
+                          <LucideCheck
+                            v-if="selected"
+                            class="size-4 text-ink-gray-7"
+                          />
+                          <div
+                            v-else
+                            class="size-4"
+                          />
                           <span
                             class="block truncate"
                             :class="{
@@ -152,52 +180,16 @@
                               'font-normal': !selected,
                             }"
                           >
-                            {{ query }}
+                            {{ person.email }}
+                            <span v-if="person.full_name"
+                              >({{ person.full_name }})</span
+                            >
                           </span>
                         </li>
                       </ComboboxOption>
-                      <template
-                        v-for="person in filteredUsers"
-                        :key="person.email"
-                      >
-                        <ComboboxOption
-                          v-slot="{ selected, active }"
-                          as="template"
-                          :value="person"
-                          :disabled="person.disabled"
-                        >
-                          <li
-                            class="flex flex-1 gap-2 overflow-hidden items-center rounded px-2.5 py-1.5 text-base text-ink-gray-7"
-                            :class="{
-                              'bg-surface-gray-3': active,
-                              'cursor-pointer': !person.disabled,
-                              'opacity-50 cursor-not-allowed': person.disabled,
-                            }"
-                          >
-                            <LucideCheck
-                              v-if="selected"
-                              class="size-4 text-ink-gray-7"
-                            />
-                            <div
-                              v-else
-                              class="size-4"
-                            />
-                            <span
-                              class="block truncate"
-                              :class="{
-                                'font-medium': selected,
-                                'font-normal': !selected,
-                              }"
-                            >
-                              {{ person.email }}
-                              <span v-if="person.full_name">({{ person.full_name }})</span>
-                            </span>
-                          </li>
-                        </ComboboxOption>
-                      </template>
-                    </ComboboxOptions>
-                  </div>
-                </transition>
+                    </template>
+                  </ComboboxOptions>
+                </div>
               </Combobox>
             </div>
             <Select
@@ -206,9 +198,9 @@
               :options="
                 advancedTweak
                   ? filteredAccess.map((k) => ({
-                    value: k,
-                    label: k[0].toUpperCase() + k.slice(1),
-                  }))
+                      value: k,
+                      label: k[0].toUpperCase() + k.slice(1),
+                    }))
                   : accessOptions
               "
             />
@@ -264,11 +256,11 @@
                 "
                 @remove-access="
                   getUsersWithAccess.data.splice(idx, 1),
-                  updateAccess.submit({
-                    method: 'unshare',
-                    entity_name: entity.name,
-                    user: user.user,
-                  })
+                    updateAccess.submit({
+                      method: 'unshare',
+                      entity_name: entity.name,
+                      user: user.user,
+                    })
                 "
               />
               <span

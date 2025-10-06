@@ -8,6 +8,8 @@ function getNumberFromPx(px: string | number | null | undefined): number {
   return Number(px.replace("px", ""))
 }
 
+type HashString = string;
+
 function addPxToNumber(number: number, round: boolean = true): string {
   number = round ? Math.round(number) : number
   return `${number}px`
@@ -49,7 +51,7 @@ function HSVToHex(h: number, s: number, v: number): HashString {
   const p = v * (1 - s)
   const q = v * (1 - f * s)
   const t = v * (1 - (1 - f) * s)
-
+/* eslint-disable */
   switch (i % 6) {
     case 0:
       ;(r = v), (g = t), (b = p)
@@ -70,6 +72,7 @@ function HSVToHex(h: number, s: number, v: number): HashString {
       ;(r = v), (g = p), (b = q)
       break
   }
+/* eslint-enable */
   r = Math.round(r * 255)
   g = Math.round(g * 255)
   b = Math.round(b * 255)
@@ -178,15 +181,6 @@ function kebabToCamelCase(str: string) {
   })
 }
 
-function isJSONString(str: string) {
-  try {
-    JSON.parse(str)
-  } catch (e) {
-    return false
-  }
-  return true
-}
-
 function isTargetEditable(e: Event) {
   const target = e.target as HTMLElement
   const isEditable = target.isContentEditable
@@ -212,7 +206,6 @@ export {
   getRandomColor,
   getTextContent,
   isHTMLString,
-  isJSONString,
   isTargetEditable,
   kebabToCamelCase,
   stripExtension,

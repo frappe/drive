@@ -36,7 +36,7 @@ watch(
   { immediate: true }
 )
 const options = computed<DropdownItem[]>(() => {
-  const res = Object.values(getTeams.data).map((k: any) => ({
+  const res = Object.values(getTeams.data).map((k) => ({
     label: k.title,
     value: k.name,
     icon: icons[k.icon || "building"],

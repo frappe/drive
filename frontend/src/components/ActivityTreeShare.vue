@@ -29,9 +29,10 @@
           activity.meta_value === "1"
             ? "View"
             : activity.meta_value === "2"
-              ? "Edit"
-              : "Share"
-        }}</span>
+            ? "Edit"
+            : "Share"
+        }}</span
+      >
     </span>
   </div>
   <div
@@ -59,8 +60,8 @@
         activity.meta_value === "1"
           ? "View"
           : activity.meta_value === "2"
-            ? "Edit"
-            : "Full Access"
+          ? "Edit"
+          : "Full Access"
       }}</span>
     </span>
   </div>
@@ -70,7 +71,7 @@
 import { Avatar } from "frappe-ui"
 import GeneralAccess from "./GeneralAccess.vue"
 
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     default: "File",

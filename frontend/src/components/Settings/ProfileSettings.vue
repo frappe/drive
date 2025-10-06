@@ -53,7 +53,8 @@
             <a
               :href="newImageUrl"
               class="truncate max-w-56 underline"
-            >{{ newImageUrl }}</a>
+              >{{ newImageUrl }}</a
+            >
 
             <Button @click="newImageUrl = null">
               <template #icon>
@@ -120,7 +121,6 @@ import LucideX from "~icons/lucide/x"
 
 import { useStore } from "vuex"
 import { ref, computed, watch } from "vue"
-import { getTeams } from "@/resources/files"
 import { settings, setSettings } from "@/resources/permissions"
 
 const store = useStore()
@@ -133,14 +133,6 @@ const newFullName = computed(() => newFirstName.value + " " + newLastName.value)
 
 const editProfileDialog = ref(false)
 
-const teamOptions = computed(() =>
-  getTeams.data
-    ? Object.keys(getTeams.data).map((k) => ({
-        value: k,
-        label: getTeams.data[k].title,
-      }))
-    : {}
-)
 const singleClick = ref(Boolean(settings.data?.single_click))
 const detectLinks = ref(Boolean(settings.data?.auto_detect_links))
 const defaultTeam = ref(settings.data.default_team || { label: "-" })

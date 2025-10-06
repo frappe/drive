@@ -42,8 +42,8 @@
         <FTextEditor
           v-if="
             !collab ||
-              editorExtensions.find((k) => k.name === 'collaborationCursor') ||
-              !isFrappeDoc
+            editorExtensions.find((k) => k.name === 'collaborationCursor') ||
+            !isFrappeDoc
           "
           :key="editorExtensions.length"
           ref="textEditor"
@@ -440,7 +440,7 @@ window.addEventListener("unhandledrejection", (event) => {
 
 if (collab.value) {
   doc = new Y.Doc({ gc: true })
-  localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc)
+  localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc) // eslint-disable-line
   if (yjsContent.value) Y.applyUpdate(doc, yjsContent.value)
 
   prov = new WebrtcProvider("fdoc-" + props.entity.name, doc, {

@@ -144,7 +144,7 @@ import { ref, computed, inject, h } from "vue"
 import { entitiesDownload } from "@/utils/download"
 import { getRecents, getTrash, toggleFav } from "@/resources/files"
 import { apps } from "@/resources/permissions"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { getLink, newExternal, dynamicList } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
@@ -177,7 +177,6 @@ const COMPONENT_MAP = {
 }
 const store = useStore()
 const route = useRoute()
-const router = useRouter()
 const open = (url) => {
   window.open(url, "_blank")
 }

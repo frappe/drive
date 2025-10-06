@@ -55,7 +55,7 @@ import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
 import { ref, computed, watch, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
@@ -64,7 +64,6 @@ import LucideMoon from "~icons/lucide/moon"
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const router = useRouter()
-const route = useRoute()
 notifCount.fetch()
 getTeams.fetch()
 apps.fetch()
@@ -72,14 +71,11 @@ apps.fetch()
 const teamExists = createResource({
   url: "drive.utils.get_default_team",
   auto: true,
-  onSuccess: (d) => {
-    !d && router.replace({ name: "Setup" })
-  },
+  onSuccess: (d) => !d && router.replace({ name: "Setup" }),
 })
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
 watch(isCollapsed, (v) => store.commit("setSidebarCollapsed", v))
-const team = computed(() => route.params.team)
 
 const showSettings = ref(false)
 const showShortcuts = ref(false)

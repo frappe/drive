@@ -412,7 +412,7 @@ async function newLink() {
           },
         ],
       })
-  } catch (_) {}
+  } catch {}
 }
 
 // JS doesn't allow direct reading of clipboard

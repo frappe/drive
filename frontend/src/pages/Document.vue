@@ -272,7 +272,6 @@ import {
   h,
   computed,
 } from "vue"
-import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import { createResource, LoadingIndicator, useDoc } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
@@ -311,8 +310,6 @@ const props = defineProps({
 })
 
 const store = useStore()
-const route = useRoute()
-const emitter = inject("emitter")
 const showResolved = ref(false)
 const collabTurned = ref(null)
 const editor = useTemplateRef("editor")
@@ -478,7 +475,7 @@ const clearCache = () => {
     "fdoc-" + entity.value.name
   )
 
-  DBDeleteRequest.onerror = (event) => {
+  DBDeleteRequest.onerror = () => {
     console.error("Error deleting database.")
   }
 

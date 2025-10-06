@@ -206,11 +206,10 @@ import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
 import { ref, onMounted, computed } from "vue"
 import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { settings } from "@/resources/permissions"
 
 const route = useRoute()
-const router = useRouter()
 const params = new URLSearchParams(new URL(window.location.href).search)
 const email = ref(params.get("e") || "")
 const first_name = ref("")

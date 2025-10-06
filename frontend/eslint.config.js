@@ -22,6 +22,9 @@ export default defineConfigWithVueTs([
       "vue/multi-word-component-names": "off",
       "vue/no-reserved-component-names": "off",
       "vue/block-lang": "off",
+      "vue/no-side-effects-in-computed-properties": "off",
+      "vue/no-mutating-props": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
     languageOptions: {
       sourceType: "module",
