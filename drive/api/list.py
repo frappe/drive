@@ -5,6 +5,7 @@ from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
 from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
+from drive.utils.api import get_default_access
 
 from .permissions import ENTITY_FIELDS, get_user_access
 
@@ -178,12 +179,7 @@ def files(
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
 
-    default = 0
-    if entity_name:
-        if get_user_access(entity_name, "Guest")["read"]:
-            default = -2
-        elif get_user_access(entity_name, team=1)["read"]:
-            default = -1
+    default = get_default_access(entity_name)
 
     # Deduplicate
     if shared:

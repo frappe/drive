@@ -27,6 +27,7 @@ from drive.utils import (
     strip_comment_spans,
     update_file_size,
 )
+from drive.utils.api import get_default_access
 from drive.utils.files import FileManager
 
 from .permissions import get_teams, user_has_permission
@@ -122,6 +123,12 @@ def upload_file(
     manager.upload_file(temp_path, drive_file)
     update_clients(drive_file.name, drive_file.team, "upload")
     update_file_size(parent, file_size)
+    if not embed:
+        f = drive_file.as_dict()
+        f["file_type"] = get_file_type(f)
+        f["share_count"] = get_default_access(f)
+
+        frappe.publish_realtime("update-list", {"file": f})
 
     return drive_file
 
@@ -151,11 +158,11 @@ def get_thumbnail(entity_name):
         return
 
     thumbnail_data = None
-    # if frappe.cache().exists(entity_name):
-    #     try:
-    #         thumbnail_data = frappe.cache().get_value(entity_name)
-    #     except:
-    #         frappe.cache().delete_value(entity_name)
+    if frappe.cache().exists(entity_name):
+        try:
+            thumbnail_data = frappe.cache().get_value(entity_name)
+        except:
+            frappe.cache().delete_value(entity_name)
     if not thumbnail_data:
         manager = FileManager()
         try:

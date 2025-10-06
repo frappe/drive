@@ -85,7 +85,7 @@ import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import { ref, computed, watch, watchEffect, provide } from "vue"
+import { ref, computed, watch, watchEffect, provide, inject } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
@@ -108,7 +108,7 @@ import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
 import emitter from "../emitter"
-import { sortEntities } from "../utils/files"
+import { prettyData, sortEntities } from "../utils/files"
 import { allFolders } from "../resources/files"
 
 const props = defineProps({
@@ -236,7 +236,7 @@ watch(
   },
   { immediate: true, deep: false }
 )
-emitter.on("refresh", refreshData)
+// emitter.on("refresh", refreshData)
 
 if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team: team.value })
@@ -423,6 +423,14 @@ if (settings.data?.auto_detect_links) {
   window.addEventListener("focus", newLink)
   window.addEventListener("copy", newLink)
 }
+
+const socket = inject('socket')
+socket.on('update-list', ({file}) => {
+  if(file.parent_entity === props.getEntities.params.entity_name && !props.getEntities.data.find(k => k.name === file.name)) {
+    props.getEntities.data.push(...prettyData([file]))
+    props.getEntities.setData(props.getEntities.data)
+  }
+})
 </script>
 <style>
 .file-drag #drop-area {
