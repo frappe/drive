@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full">
+  <div class="flex w-full overflow-y-auto">
     <div class="flex-1">
       <div
         v-if="current"
@@ -100,28 +100,27 @@
           <template #top>
             <TextEditorFixedMenu
               v-if="editable && !settings.minimal && !current"
-              class="max-w-[100vw] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
+              class="w-full sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
               :buttons="bubbleMenuButtons"
             />
           </template>
           <template #editor="{ editor }">
-            <div class="flex h-full overflow-y-auto justify-center">
+            <div class="flex h-full justify-center">
               <EditorContent
                 :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
                 :editor="editor"
               />
             </div>
-            <ToC
-              v-if="anchors.length > 1"
-              :editor
-              :anchors
-              :class="{ 'top-10': editable }"
-            />
           </template>
         </FTextEditor>
       </div>
     </div>
-
+    <ToC
+      v-show="anchors.length > 1"
+      :editor
+      :anchors
+      :class="editable ? 'top-24' : 'top-15'"
+    />
     <FloatingComments
       v-if="comments.length"
       :entity="entity"
@@ -379,11 +378,15 @@ const editorExtensions = [
       if (id && (!isResolved || showResolved)) {
         activeComment.value = id
         showComments.value = true
-        document.querySelector(`span[data-comment-id="${id}"]`).scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-          inline: "nearest",
-        })
+        const commentEl = document.querySelector(
+          `span[data-comment-id="${id}"]`
+        )
+        if (!commentEl.offsetParent)
+          commentEl.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          })
       }
     },
   }),

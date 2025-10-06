@@ -29,7 +29,7 @@
         "
         :id="'comment-' + comment.name"
         @click="activeComment = comment.name"
-        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 bg-surface-white left-1/2 -translate-x-1/2 opacity-0 transition-[top] duration-100 ease-in-out"
+        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-24 bg-surface-white left-1/2 -translate-x-1/2 opacity-0 transition-[top] duration-100 ease-in-out"
         :class="[
           activeComment === comment.name && 'shadow-xl ',
           comment.top && 'opacity-100',
