@@ -70,7 +70,7 @@
           "
           :mentions="users"
           placeholder="Start writing here..."
-          :bubble-menu="settings.minimal && bubbleMenuButtons"
+          :bubble-menu="settings.minimal && menuButtons"
           :extensions="editorExtensions"
           :autofocus="true"
           @transaction="
@@ -101,7 +101,7 @@
             <TextEditorFixedMenu
               v-if="editable && !settings.minimal && !current"
               class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
-              :buttons="bubbleMenuButtons"
+              :buttons="menuButtons"
             />
           </template>
           <template #editor="{ editor }">
@@ -135,7 +135,6 @@
 </template>
 
 <script setup>
-import { toast } from "@/utils/toasts.js"
 import {
   TextEditor as FTextEditor,
   TextEditorFixedMenu,
@@ -153,54 +152,44 @@ import {
   watch,
   inject,
 } from "vue"
-import store from "@/store"
 import { EditorContent } from "@tiptap/vue-3"
-import FontFamily from "./extensions/font-family"
-import FloatingQuoteButton from "./extensions/comment"
-import { CharacterCount } from "./extensions/character-count"
-import { CollaborationCursor } from "./extensions/collaboration-cursor"
-import { FontSize } from "./extensions/font-size"
-import EmbedExtension from "./extensions/embed-extension"
-import CommentExtension from "@sereneinserenade/tiptap-comment-extension"
 import { toUint8Array } from "js-base64"
-import {
-  default as TableOfContents,
-  getHierarchicalIndexes,
-} from "@tiptap/extension-table-of-contents"
-import { Extension } from "@tiptap/core"
-
-import FloatingComments from "./components/FloatingComments.vue"
-import { printDoc, getRandomColor, dynamicList } from "@/utils/files"
-import { rename } from "@/resources/files"
-import { onKeyDown } from "@vueuse/core"
-import emitter from "@/emitter"
-import Collaboration from "@tiptap/extension-collaboration"
 import * as Y from "yjs"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { ySyncPluginKey } from "y-prosemirror"
 import { WebrtcProvider } from "y-webrtc"
+import Collaboration from "@tiptap/extension-collaboration"
+import { onKeyDown } from "@vueuse/core"
+import {
+  default as TableOfContents,
+  getHierarchicalIndexes,
+} from "@tiptap/extension-table-of-contents"
 
 import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
-
 import LucideMessageCircle from "~icons/lucide/message-circle"
-import { formatDate } from "@/utils/format"
 
-const textEditor = ref("textEditor")
-const current = defineModel("current")
-const editor = computed(() => {
-  const editor = textEditor.value?.editor
-  return editor
-})
-const scrollParent = computed(
-  () => editor.value?.view?.dom?.parentElement?.parentElement
-)
-defineExpose({ editor })
+import store from "@/store"
+import emitter from "@/emitter"
+import { rename } from "@/resources/files"
+import { printDoc, getRandomColor, dynamicList } from "@/utils/files"
+import { formatDate } from "@/utils/format"
+import { toast } from "@/utils/toasts"
+import FontFamily from "./extensions/font-family"
+import FloatingQuoteButton from "./extensions/comment"
+import MediaDownload from "./extensions/media-download"
+import ExtendedCommentExtension from "./extensions/extended-comment"
+import { CharacterCount } from "./extensions/character-count"
+import { CollaborationCursor } from "./extensions/collaboration-cursor"
+import { FontSize } from "./extensions/font-size"
+import EmbedExtension from "./extensions/embed-extension"
+import FloatingComments from "./components/FloatingComments.vue"
 
 const rawContent = defineModel("rawContent")
 const yjsContent = defineModel("yjsContent")
 const showComments = defineModel("showComments")
+const current = defineModel("current")
 const edited = defineModel("edited")
 
 const props = defineProps({
@@ -213,7 +202,25 @@ const props = defineProps({
   users: Object,
   currentVersion: { required: false, type: Object },
 })
+const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
+const inIframe = inject("inIframe")
+
 const comments = ref([])
+const anchors = ref([])
+const activeComment = ref(null)
+
+const textEditor = ref("textEditor")
+const editor = computed(() => {
+  const editor = textEditor.value?.editor
+  return editor
+})
+const scrollParent = computed(
+  () => editor.value?.view?.dom?.parentElement?.parentElement
+)
+defineExpose({ editor })
+
+const autosave = debounce(() => emit("saveDocument"), 2000)
+let autoversion
 
 watch(
   () => props.settings,
@@ -242,16 +249,6 @@ watch(
   }
 )
 
-const emit = defineEmits(["newVersion", "saveComment", "saveDocument"])
-const activeComment = ref(null)
-const anchors = ref([])
-const autosave = debounce(() => emit("saveDocument"), 2000)
-emitter.on("create-version", (title) => {
-  const snap = Y.snapshot(doc)
-  emit("newVersion", Y.encodeSnapshot(snap), 0, title)
-})
-let autoversion
-
 watch(
   () => props.currentVersion,
   (val) => {
@@ -267,92 +264,6 @@ watch(
   }
 )
 
-const createNewComment = (editor) => {
-  showComments.value = true
-  const id = uuidv4()
-  editor.chain().focus().setComment(id).run()
-  const orderedComments = getOrderedComments(editor.state.doc)
-  const newComment = {
-    name: id,
-    owner: store.state.user.id,
-    creation: new Date(),
-    content: "",
-    edit: true,
-    new: true,
-    loading: true,
-    replies: [],
-  }
-  comments.value = [...comments.value, newComment].toSorted((a, b) => {
-    const pos1 = orderedComments.findIndex((k) => k.id === a.name)
-    const pos2 = orderedComments.findIndex((k) => k.id === b.name)
-    return pos1 - pos2
-  })
-  activeComment.value = id
-}
-
-const ExtendedCommentExtension = CommentExtension.extend({
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-
-      resolved: {
-        default: false,
-        parseHTML: (el) => el.hasAttribute("data-resolved"),
-        renderHTML: (attrs) =>
-          attrs.resolved ? { "data-resolved": "true" } : {},
-      },
-    }
-  },
-  addCommands() {
-    return {
-      ...this.parent?.(),
-
-      resolveComment:
-        (commentId, resolved = true) =>
-        ({ state, tr, dispatch }) => {
-          const { doc } = state
-          const markType = state.schema.marks[this.name]
-
-          doc.descendants((node, pos) => {
-            if (!node.isText) return true
-            node.marks.forEach((mark) => {
-              if (
-                mark.type === markType &&
-                mark.attrs.commentId === commentId
-              ) {
-                const updatedMark = markType.create({
-                  ...mark.attrs,
-                  resolved,
-                })
-
-                tr.removeMark(pos, pos + node.nodeSize, markType)
-                tr.addMark(pos, pos + node.nodeSize, updatedMark)
-              }
-            })
-          })
-
-          if (tr.docChanged && dispatch) {
-            dispatch(tr)
-            return true
-          }
-
-          return false
-        },
-    }
-  },
-})
-
-const inIframe = inject("inIframe")
-function extractEntityName(url) {
-  try {
-    const query = url.split("?")[1]
-    if (!query) return null
-    const params = new URLSearchParams(query)
-    return params.get("embed_name")
-  } catch {
-    return null
-  }
-}
 const editorExtensions = [
   FontSize,
   CharacterCount,
@@ -390,54 +301,11 @@ const editorExtensions = [
       }
     },
   }),
-  Extension.create({
-    name: "embedCollector",
-
-    addCommands() {
-      return {
-        getEmbedUrls:
-          () =>
-          ({ state }) => {
-            const results = []
-            let currentHeading = null
-            let currentHeadingCount = 0
-
-            state.doc.descendants((node) => {
-              // If it's a heading, remember its text
-              if (node.type.name === "heading") {
-                currentHeadingCount = 0
-                currentHeading = node.textContent.trim()
-              }
-
-              // If it's an image, pair it with the last heading
-              if (
-                (node.type.name === "image" || node.type.name === "video") &&
-                node.attrs.src
-              ) {
-                results.push({
-                  title:
-                    currentHeading +
-                    (currentHeadingCount ? ` (${currentHeadingCount})` : ""),
-                  name: extractEntityName(node.attrs.src),
-                })
-                currentHeadingCount++
-              }
-            })
-
-            return results
-          },
-      }
-    },
-  }),
+  MediaDownload,
 ]
 
 let prov, doc, localstorage
 const collab = computed(() => props.settings?.collab)
-window.addEventListener("unhandledrejection", (event) => {
-  if (`${event.reason.stack}`.startsWith("RangeError") && props.collabTurned)
-    window.location.reload()
-})
-
 if (collab.value) {
   doc = new Y.Doc({ gc: true })
   localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc) // eslint-disable-line
@@ -474,14 +342,7 @@ if (collab.value) {
   )
 }
 
-const CommentAction = {
-  label: "Comment",
-  icon: LucideMessageCircle,
-  action: createNewComment,
-  isActive: () => false,
-}
-
-const bubbleMenuButtons = computed(() =>
+const menuButtons = computed(() =>
   dynamicList([
     "Paragraph",
     [
@@ -532,7 +393,12 @@ const bubbleMenuButtons = computed(() =>
           },
           "FontColor",
           "Separator",
-          CommentAction,
+          {
+            label: "Comment",
+            icon: LucideMessageCircle,
+            action: createNewComment,
+            isActive: () => false,
+          },
           "Image",
           "Video",
           "Iframe",
@@ -557,6 +423,106 @@ const bubbleMenuButtons = computed(() =>
     ],
   ])
 )
+
+// Local saving
+const db = ref()
+watch(db, (db) => {
+  if (!props.entity.write || collab.value) return
+  db
+    .transaction(["content"])
+    .objectStore("content")
+    .get(props.entity.name).onsuccess = (val) => {
+    // Hack until we get versioning.
+    if (
+      val.target.result?.val?.length > 20 &&
+      val.target.result.saved > new Date(props.entity.modified)
+    )
+      rawContent.value = val.target.result.val
+  }
+})
+if (props.entity.write) {
+  const request = window.indexedDB.open("Writer", 1)
+  request.onsuccess = (event) => {
+    db.value = event.target.result
+  }
+  request.onupgradeneeded = () => {
+    if (!request.result.objectStoreNames.contains("content"))
+      request.result.createObjectStore("content")
+  }
+}
+
+// Util functions
+const evalImplicitTitle = (bypass = false) => {
+  const { $anchor } = editor.value.view.state.selection
+  // Check if we're in the very first textblock
+  if (!($anchor.index(0) === 1 && $anchor.depth === 1)) {
+    if (
+      $anchor.depth === 1 &&
+      editor.value.state.doc.childCount - 1 === $anchor.index(0)
+    ) {
+      scrollParent.value.scroll(0, scrollParent.value.scrollHeight)
+    }
+    return
+  }
+  const implicitTitle = editor.value.state.doc.firstChild.textContent
+    .replaceAll("#", "")
+    .replaceAll("@", "")
+    .trim()
+  if (!props.entity.title.startsWith("Untitled Document") && !bypass) {
+    if (implicitTitle !== props.entity.title)
+      toast({
+        title: `Update title?`,
+        buttons: [{ label: "Rename", onClick: () => evalImplicitTitle(true) }],
+      })
+    return
+  }
+
+  if (implicitTitle.length === 0) return
+  if (implicitTitle.length) {
+    rename.submit({
+      entity_name: props.entity.name,
+      new_title: implicitTitle,
+    })
+  }
+}
+
+const getOrderedComments = (doc) => {
+  const comments = []
+  doc.descendants((node, pos) => {
+    node.marks.forEach((mark) => {
+      if (mark.type.name === "comment" && mark.attrs.commentId) {
+        comments.push({ id: mark.attrs.commentId, pos })
+      }
+    })
+  })
+
+  return comments.sort((a, b) => a.pos - b.pos)
+}
+
+const createNewComment = (editor) => {
+  showComments.value = true
+  const id = uuidv4()
+  editor.chain().focus().setComment(id).run()
+  const orderedComments = getOrderedComments(editor.state.doc)
+  const newComment = {
+    name: id,
+    owner: store.state.user.id,
+    creation: new Date(),
+    content: "",
+    edit: true,
+    new: true,
+    loading: true,
+    replies: [],
+  }
+  comments.value = [...comments.value, newComment].toSorted((a, b) => {
+    const pos1 = orderedComments.findIndex((k) => k.id === a.name)
+    const pos2 = orderedComments.findIndex((k) => k.id === b.name)
+    return pos1 - pos2
+  })
+  activeComment.value = id
+}
+
+// Events
 onKeyDown("p", (e) => {
   if (e.metaKey) {
     e.preventDefault()
@@ -566,6 +532,10 @@ onKeyDown("p", (e) => {
 
 emitter.on("printFile", () => {
   if (editor.value) printDoc(editor.value.getHTML())
+})
+emitter.on("create-version", (title) => {
+  const snap = Y.snapshot(doc)
+  emit("newVersion", Y.encodeSnapshot(snap), 0, title)
 })
 
 onMounted(() => {
@@ -600,80 +570,6 @@ onKeyDown("s", (e) => {
     title: "Saving document",
   })
 })
-
-function getOrderedComments(doc) {
-  const comments = []
-  doc.descendants((node, pos) => {
-    node.marks.forEach((mark) => {
-      if (mark.type.name === "comment" && mark.attrs.commentId) {
-        comments.push({ id: mark.attrs.commentId, pos })
-      }
-    })
-  })
-
-  return comments.sort((a, b) => a.pos - b.pos)
-}
-
-// Local saving
-const db = ref()
-watch(db, (db) => {
-  if (!props.entity.write || collab.value) return
-  db
-    .transaction(["content"])
-    .objectStore("content")
-    .get(props.entity.name).onsuccess = (val) => {
-    // Hack until we get versioning.
-    if (
-      val.target.result?.val?.length > 20 &&
-      val.target.result.saved > new Date(props.entity.modified)
-    )
-      rawContent.value = val.target.result.val
-  }
-})
-if (props.entity.write) {
-  const request = window.indexedDB.open("Writer", 1)
-  request.onsuccess = (event) => {
-    db.value = event.target.result
-  }
-  request.onupgradeneeded = () => {
-    if (!request.result.objectStoreNames.contains("content"))
-      request.result.createObjectStore("content")
-  }
-}
-
-function evalImplicitTitle(bypass = false) {
-  const { $anchor } = editor.value.view.state.selection
-  // Check if we're in the very first textblock
-  if (!($anchor.index(0) === 1 && $anchor.depth === 1)) {
-    if (
-      $anchor.depth === 1 &&
-      editor.value.state.doc.childCount - 1 === $anchor.index(0)
-    ) {
-      scrollParent.value.scroll(0, scrollParent.value.scrollHeight)
-    }
-    return
-  }
-  const implicitTitle = editor.value.state.doc.firstChild.textContent
-    .replaceAll("#", "")
-    .replaceAll("@", "")
-    .trim()
-  if (!props.entity.title.startsWith("Untitled Document") && !bypass) {
-    if (implicitTitle !== props.entity.title)
-      toast({
-        title: `Update title?`,
-        buttons: [{ label: "Rename", onClick: () => evalImplicitTitle(true) }],
-      })
-    return
-  }
-
-  if (implicitTitle.length === 0) return
-  if (implicitTitle.length) {
-    rename.submit({
-      entity_name: props.entity.name,
-      new_title: implicitTitle,
-    })
-  }
-}
 </script>
 <style>
 @import url("./editor.css");

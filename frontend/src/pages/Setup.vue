@@ -107,7 +107,7 @@
 <script setup>
 import { createResource, FormControl } from "frappe-ui"
 import { ref, computed } from "vue"
-import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { useStore } from "vuex"
 import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
 import { createTeam } from "@/resources/permissions"

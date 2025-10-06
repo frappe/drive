@@ -107,7 +107,7 @@ import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
-import { prettyData, sortEntities } from "../utils/files"
+import { prettyData, sortEntities } from "@/utils/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },

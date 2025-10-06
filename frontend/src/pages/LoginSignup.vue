@@ -204,7 +204,7 @@
 <script setup>
 import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
 import { ref, onMounted, computed } from "vue"
-import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
 import { useRoute } from "vue-router"
 import { settings } from "@/resources/permissions"

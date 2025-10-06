@@ -12,7 +12,6 @@ export function initSocket() {
     : ""
   let protocol = port ? "http" : "https"
   let url = `${protocol}://${host}${port}/${siteName}`
-  console.log(url)
   let socket = io(url, {
     withCredentials: true,
     reconnectionAttempts: 5,

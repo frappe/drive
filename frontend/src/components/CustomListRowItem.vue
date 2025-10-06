@@ -73,7 +73,7 @@ const props = defineProps({
   contextMenu: Function,
 })
 
-let src, imgLoaded, thumbnailLink, backupLink
+let src, imgLoaded, thumbnailLink, backupLink, _
 
 if (props.column.prefix && props.column.key === "title") {
   ;[thumbnailLink, backupLink, _] = props.column.prefix({

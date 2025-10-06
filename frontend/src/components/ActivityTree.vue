@@ -81,7 +81,7 @@ import { useStore } from "vuex"
 import { Avatar, createResource } from "frappe-ui"
 import { computed, ref, watch } from "vue"
 import ArrowRight from "~icons/lucide/arrow-right"
-import { formatDate } from "../utils/format"
+import { formatDate } from "@/utils/format"
 import ActivityTreeItem from "./ActivityTreeItem.vue"
 import ActivityTreeShare from "./ActivityTreeShare.vue"
 

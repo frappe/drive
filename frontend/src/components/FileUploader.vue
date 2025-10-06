@@ -188,7 +188,6 @@ onMounted(() => {
   })
 
   dropzone.value.on("dragenter", function (e) {
-    console.log()
     if (e.dataTransfer.types.includes("Files"))
       this.element.classList.add("file-drag")
   })
@@ -254,7 +253,6 @@ emitter.on("cancelUpload", (uuid) => {
 })
 emitter.on("retryUpload", (uuid) => {
   const file = dropzone.value.files.find((f) => f.upload.uuid === uuid)
-  console.log(dropzone.value.files, uuid)
   if (file) {
     file.status = Dropzone.ADDED
     dropzone.value.enqueueFile(file)
