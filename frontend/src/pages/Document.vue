@@ -3,7 +3,9 @@
     v-if="inIframe && entity"
     class="p-1.5 border-b text-base text-ink-gray-7 flex justify-between items-center relative"
   >
-    <div class="font-semibold">{{ entity.title }}</div>
+    <div class="font-semibold">
+      {{ entity.title }}
+    </div>
     <div class="flex gap-3 items-center text-ink-gray-5 text-xs">
       Edited {{ entity.relativeModified }}
     </div>
@@ -33,6 +35,7 @@
     <Button
       v-if="docSettings?.doc?.settings?.lock"
       :icon="LucideLock"
+      variant="outline"
       @click="
         () => {
           docSettings.doc.settings.lock = null
@@ -40,11 +43,11 @@
           toast('Unlocked document temporarily.')
         }
       "
-      variant="outline"
     />
     <Button
       v-if="docSettings?.doc?.settings?.lock === null"
       :icon="LucideLockOpen"
+      variant="outline"
       @click="
         () => {
           docSettings.doc.settings.lock = true
@@ -52,7 +55,6 @@
           toast('Locked document.')
         }
       "
-      variant="outline"
     />
   </Teleport>
   <Navbar
@@ -61,139 +63,139 @@
     :actions="
       isFrappeDoc
         ? [
-            'extend',
-            {
-              group: true,
-              hideLabel: true,
-              items: dynamicList([
-                {
-                  onClick: (e) => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                  },
-                  label: 'Collaborate',
-                  icon: LucideUserPen,
-                  cond: editor?.editor && editor.editor.getText().length == 0,
-                  switch: true,
-                  switchValue: docSettings.doc.settings.collab,
-                  onClick: async (val) => {
-                    await docSettings.setValue.submit({
-                      settings: JSON.stringify({
-                        ...docSettings.doc.settings,
-                        collab: val,
-                      }),
-                    })
-                    $router.go()
-                    collabTurned = val
-                  },
+          'extend',
+          {
+            group: true,
+            hideLabel: true,
+            items: dynamicList([
+              {
+                onClick: (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
                 },
-                {
-                  label: 'View',
-                  icon: LucideView,
-                  cond: entity.write,
-                  submenu: [
-                    {
-                      label: 'Lock',
-                      switch: true,
-                      switchValue: docSettings.doc.settings.lock,
-                      icon: LucideLock,
-                      onClick: (val) => {
-                        docSettings.doc.settings.lock = val
-                        docSettings.setValue.submit({
-                          settings: JSON.stringify(docSettings.doc.settings),
-                        })
-                      },
+                label: 'Collaborate',
+                icon: LucideUserPen,
+                cond: editor?.editor && editor.editor.getText().length == 0,
+                switch: true,
+                switchValue: docSettings.doc.settings.collab,
+                onClick: async (val) => {
+                  await docSettings.setValue.submit({
+                    settings: JSON.stringify({
+                      ...docSettings.doc.settings,
+                      collab: val,
+                    }),
+                  })
+                  $router.go()
+                  collabTurned = val
+                },
+              },
+              {
+                label: 'View',
+                icon: LucideView,
+                cond: entity.write,
+                submenu: [
+                  {
+                    label: 'Lock',
+                    switch: true,
+                    switchValue: docSettings.doc.settings.lock,
+                    icon: LucideLock,
+                    onClick: (val) => {
+                      docSettings.doc.settings.lock = val
+                      docSettings.setValue.submit({
+                        settings: JSON.stringify(docSettings.doc.settings),
+                      })
                     },
-                    {
-                      label: 'Wide',
-                      icon: LucideRulerDimensionLine,
-                      switch: true,
-                      switchValue: docSettings.doc.settings.wide,
-                      onClick: (val) => {
-                        docSettings.doc.settings.wide = val
-                        docSettings.setValue.submit({
-                          settings: JSON.stringify(docSettings.doc.settings),
-                        })
-                      },
-                    },
-                    {
-                      onClick: (val) => {
-                        document.breadcrumbs = []
-                        docSettings.doc.settings.minimal = val
-                        docSettings.setValue.submit({
-                          settings: JSON.stringify(docSettings.doc.settings),
-                        })
-                      },
-                      switch: true,
-                      switchValue: docSettings.doc.settings.minimal,
-                      label: 'Minimal',
-                      icon: LucideEraser,
-                    },
-                  ],
-                },
-                {
-                  onClick: () => {
-                    showSettings = true
                   },
-                  label: 'Settings',
-                  icon: LucideSettings,
-                },
-                {
-                  onClick: exportMedia,
-                  label: 'Export Media',
-                  icon: LucideImageDown,
-                },
-                {
-                  onClick: clearCache,
-                  label: 'Clear Cache',
-                  icon: LucideListRestart,
-                },
-              ]),
-            },
-            {
-              group: true,
-              hideLabel: true,
-              items: dynamicList([
-                {
-                  icon: LucideHistory,
-                  label: 'Versions',
-                  cond: docSettings?.doc?.settings.collab,
-                  onClick: () => (showVersions = true),
-                },
-                {
-                  icon: MessagesSquare,
-                  label: 'Show Comments',
-                  onClick: () => (showComments = true),
-                  isEnabled: () => !showComments,
-                  cond: entity?.comments?.length,
-                },
-                {
-                  icon: MessagesSquare,
-                  label: 'Hide Comments',
-                  onClick: () => (showComments = false),
-                  isEnabled: () => showComments,
-                  cond: entity?.comments?.length,
-                },
-                {
-                  icon: MessageSquareDot,
-                  label: 'Show Resolved',
-                  onClick: () => {
-                    showResolved = true
-                    showComments = true
+                  {
+                    label: 'Wide',
+                    icon: LucideRulerDimensionLine,
+                    switch: true,
+                    switchValue: docSettings.doc.settings.wide,
+                    onClick: (val) => {
+                      docSettings.doc.settings.wide = val
+                      docSettings.setValue.submit({
+                        settings: JSON.stringify(docSettings.doc.settings),
+                      })
+                    },
                   },
-                  isEnabled: () => !showResolved,
-                  cond: entity?.comments?.filter((k) => k.resolved)?.length,
+                  {
+                    onClick: (val) => {
+                      document.breadcrumbs = []
+                      docSettings.doc.settings.minimal = val
+                      docSettings.setValue.submit({
+                        settings: JSON.stringify(docSettings.doc.settings),
+                      })
+                    },
+                    switch: true,
+                    switchValue: docSettings.doc.settings.minimal,
+                    label: 'Minimal',
+                    icon: LucideEraser,
+                  },
+                ],
+              },
+              {
+                onClick: () => {
+                  showSettings = true
                 },
-                {
-                  icon: MessageSquareDot,
-                  label: 'Hide Resolved',
-                  onClick: () => (showResolved = false),
-                  isEnabled: () => showResolved,
-                  cond: entity?.comments?.filter((k) => k.resolved)?.length,
+                label: 'Settings',
+                icon: LucideSettings,
+              },
+              {
+                onClick: exportMedia,
+                label: 'Export Media',
+                icon: LucideImageDown,
+              },
+              {
+                onClick: clearCache,
+                label: 'Clear Cache',
+                icon: LucideListRestart,
+              },
+            ]),
+          },
+          {
+            group: true,
+            hideLabel: true,
+            items: dynamicList([
+              {
+                icon: LucideHistory,
+                label: 'Versions',
+                cond: docSettings?.doc?.settings.collab,
+                onClick: () => (showVersions = true),
+              },
+              {
+                icon: MessagesSquare,
+                label: 'Show Comments',
+                onClick: () => (showComments = true),
+                isEnabled: () => !showComments,
+                cond: entity?.comments?.length,
+              },
+              {
+                icon: MessagesSquare,
+                label: 'Hide Comments',
+                onClick: () => (showComments = false),
+                isEnabled: () => showComments,
+                cond: entity?.comments?.length,
+              },
+              {
+                icon: MessageSquareDot,
+                label: 'Show Resolved',
+                onClick: () => {
+                  showResolved = true
+                  showComments = true
                 },
-              ]),
-            },
-          ]
+                isEnabled: () => !showResolved,
+                cond: entity?.comments?.filter((k) => k.resolved)?.length,
+              },
+              {
+                icon: MessageSquareDot,
+                label: 'Hide Resolved',
+                onClick: () => (showResolved = false),
+                isEnabled: () => showResolved,
+                cond: entity?.comments?.filter((k) => k.resolved)?.length,
+              },
+            ]),
+          },
+        ]
         : null
     "
   />
@@ -402,7 +404,7 @@ const onSuccess = (data) => {
 }
 const settings = computed(() => {
   if (!isFrappeDoc.value) return {}
-  for (let [k, v] of Object.entries(docSettings.doc?.settings || {})) {
+  for (const [k, v] of Object.entries(docSettings.doc?.settings || {})) {
     if (v === "global") delete docSettings.doc?.settings[k]
   }
   return {
@@ -493,7 +495,7 @@ const exportMedia = async () => {
   const getExtension = createResource({
     url: "drive.api.docs.get_extension",
   })
-  for (let i in urls) {
+  for (const i in urls) {
     const ext = await getExtension.fetch({ entity_name: urls[i].name })
     if (ext) urls[i].title += "." + ext
   }

@@ -17,8 +17,8 @@
     </Button>
   </div>
   <component
-    v-else
     :is="previewComponent"
+    v-else
     :preview-entity="previewEntity"
   />
 </template>

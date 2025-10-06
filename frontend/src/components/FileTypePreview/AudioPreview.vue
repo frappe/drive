@@ -17,7 +17,7 @@
     <source
       :src="src"
       :type="type"
-    />
+    >
   </audio>
 </template>
 

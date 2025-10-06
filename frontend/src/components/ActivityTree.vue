@@ -159,7 +159,7 @@ function groupAndTransform(activities) {
   const timeThreshold = 15 * 60 * 1000
   // Transform and reduce loop
   for (let index = 0; index < activities.length; index++) {
-    let activity = activities[index]
+    const activity = activities[index]
     if (index > 0) {
       const prevActivity = activities[index - 1]
       const currentTime = new Date(activity.creation).getTime()

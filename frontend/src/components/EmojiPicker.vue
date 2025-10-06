@@ -64,6 +64,7 @@
               >
                 <Button
                   v-for="_emoji in emojis"
+                  :key="_emoji.value"
                   variant="ghost"
                   class="hover:bg-surface-gray-2 h-8 w-8 rounded-md p-1 text-2xl"
                   :title="_emoji.value"

@@ -121,7 +121,7 @@
   </Popover>
 </template>
 <script setup lang="ts">
-import { HSVToHex, HexToHSV, RGBToHex, getRGB } from "@/utils/helpers"
+import { HSVToHex, HexToHSV, getRGB } from "@/utils/helpers"
 import { clamp, useEyeDropper } from "@vueuse/core"
 import { Popover } from "frappe-ui"
 
@@ -134,7 +134,7 @@ const colorSelector = ref(null) as unknown as Ref<HTMLDivElement>
 
 const colorSelectorPosition = ref({ x: 0, y: 0 })
 const hueSelectorPosition = ref({ x: 0, y: 0 })
-let currentColor = "#FFF" as HashString
+let currentColor = "#FFF"
 
 const { isSupported, sRGBHex, open } = useEyeDropper()
 
@@ -169,8 +169,8 @@ if (!isSupported.value) {
 const setColorSelectorPosition = (color: HashString) => {
   const { width, height } = colorMap.value.getBoundingClientRect()
   const { s, v } = HexToHSV(color)
-  let x = clamp(s * width, 0, width)
-  let y = clamp((1 - v) * height, 0, height)
+  const x = clamp(s * width, 0, width)
+  const y = clamp((1 - v) * height, 0, height)
   colorSelectorPosition.value = { x, y }
 }
 

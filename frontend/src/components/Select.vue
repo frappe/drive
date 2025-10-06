@@ -85,7 +85,6 @@ const RenderIcon: FunctionalComponent<{ icon?: string | Component }> = (
 }
 
 import LucideChevronDown from "~icons/lucide/chevron-down"
-import LucideChevronUp from "~icons/lucide/chevron-up"
 
 type SelectOption =
   | string

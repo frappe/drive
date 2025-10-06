@@ -36,7 +36,9 @@
               class="flex flex-col py-5 gap-3"
             >
               <LoadingIndicator class="size-5 self-center" />
-              <div class="text-sm text-center">Just a minute...</div>
+              <div class="text-sm text-center">
+                Just a minute...
+              </div>
             </div>
             <div
               v-else-if="domainTeams.data.length"
@@ -48,8 +50,7 @@
               </p>
               <p v-if="domainTeams.data.length">
                 Do you want to create a personal account, or request to join the
-                team (<strong>{{ domainTeams.data[0].title }}</strong
-                >) associated with your domain?
+                team (<strong>{{ domainTeams.data[0].title }}</strong>) associated with your domain?
               </p>
               <p v-else>
                 Do you want to create a personal account, or create a team with
@@ -78,7 +79,7 @@
                     requestInvite.submit({
                       team: domainTeams.data[0].name,
                     }),
-                      $router.replace({ path: '/drive/teams' })
+                    $router.replace({ path: '/drive/teams' })
                   "
                 >
                   Join {{ domainTeams.data[0].title }}

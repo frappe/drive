@@ -53,8 +53,7 @@
             <a
               :href="newImageUrl"
               class="truncate max-w-56 underline"
-              >{{ newImageUrl }}</a
-            >
+            >{{ newImageUrl }}</a>
 
             <Button @click="newImageUrl = null">
               <template #icon>
@@ -114,7 +113,6 @@ import {
   Dialog,
   FileUploader,
   Switch,
-  FormControl,
   createDocumentResource,
 } from "frappe-ui"
 import LucideLink from "~icons/lucide/link"
@@ -151,7 +149,7 @@ const options = {
   auto_detect_links: detectLinks,
   default_team: defaultTeam,
 }
-for (let k in options) {
+for (const k in options) {
   watch(options[k], (v) => {
     setSettings.submit({
       updates: { [k]: v.value || v },
@@ -180,7 +178,7 @@ const updateProfile = () => {
 }
 
 const validateFile = (file) => {
-  let extension = file.name.split(".").pop().toLowerCase()
+  const extension = file.name.split(".").pop().toLowerCase()
   if (!["jpg", "jpeg", "png"].includes(extension)) {
     alert("Not a valid Image file")
     return false

@@ -64,8 +64,6 @@ import {
   computed,
   onMounted,
   defineProps,
-  onBeforeUnmount,
-  inject,
 } from "vue"
 import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
@@ -130,7 +128,7 @@ const onSuccess = async (entity) => {
   updateURLSlug(entity.title)
 }
 
-let file = createResource({
+const file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
   transform(entity) {

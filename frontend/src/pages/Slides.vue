@@ -1,6 +1,6 @@
 <template>
   <GenericPage
-    :getEntities="getSlides"
+    :get-entities="getSlides"
     :empty="{
       icon: LucideGalleryVerticalEnd,
       title: 'No presentations yet.',

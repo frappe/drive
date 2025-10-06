@@ -1,8 +1,8 @@
 <template>
   <TeamSelector
+    v-model="chosenTeam"
     :disabled="Boolean(props.team)"
     none="home"
-    v-model="chosenTeam"
     class="mb-5"
   />
   <div
@@ -23,6 +23,7 @@
       <div class="h-64 overflow-auto">
         <Tree
           v-for="item in tree"
+          :key="item.label"
           :node="item"
           :node-key="item.label"
         >

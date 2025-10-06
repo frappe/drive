@@ -1,9 +1,6 @@
 <template>
   <button
-    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
-    :class="
-      isActive ? ' bg-surface-selected shadow-sm' : 'hover:bg-surface-gray-2'
-    "
+    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 active:bg-surface-selected hover:bg-surface-gray-2"
     @click="handleClick"
   >
     <div
@@ -43,7 +40,6 @@
 
 <script setup>
 import { Tooltip } from "frappe-ui"
-import { computed } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 
@@ -72,6 +68,4 @@ const props = defineProps({
 function handleClick() {
   router.push({ path: props.to })
 }
-
-let isActive = computed(() => {})
 </script>

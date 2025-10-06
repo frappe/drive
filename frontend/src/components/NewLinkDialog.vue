@@ -1,7 +1,6 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="{
       title: 'New Link',
       size: 'xs',
@@ -14,12 +13,13 @@
         },
       ],
     }"
+    @close="dialogType = ''"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
-          v-focus
           v-model="title"
+          v-focus
           label="Link name"
           type="text"
           @keydown="createLink.error = null"
@@ -44,8 +44,7 @@
 
 <script setup>
 import { ref } from "vue"
-import store from "@/store"
-import { Dialog, TextInput, createResource } from "frappe-ui"
+import { Dialog, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
 
 const route = useRoute()

@@ -9,7 +9,7 @@ const focusDirective: FocusDirective = {
     if (binding.value === false) {
       return
     }
-    let firstFocusableElement = getFirstFocusableElement(el)
+    const firstFocusableElement = getFirstFocusableElement(el)
     if (firstFocusableElement) {
       await nextTick()
       firstFocusableElement.focus()

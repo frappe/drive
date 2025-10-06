@@ -6,8 +6,7 @@
   <pre
     v-else
     class="overflow-y-auto h-[80vh] font-[InterVar] font-normal text-p-base text-ink-gray-8 sm:w-full border p-3 rounded overflow-x-auto"
-    >{{ blob }}</pre
-  >
+  >{{ blob }}</pre>
 </template>
 
 <script setup>
@@ -39,7 +38,7 @@ async function fetchContent() {
     }
   )
   if (res.ok) {
-    let resBlob = await res.blob()
+    const resBlob = await res.blob()
     blob.value = await resBlob.text()
     loading.value = false
   }

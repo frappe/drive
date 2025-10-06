@@ -1,8 +1,8 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="{ size: 'lg' }"
+    @close="dialogType = ''"
   >
     <template #body-main>
       <div class="p-4 sm:px-6">
@@ -69,7 +69,9 @@
             </div>
           </div>
           <!-- Members section -->
-          <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
+          <div class="text-ink-gray-5 font-medium text-base mb-2">
+            Members
+          </div>
           <div class="flex gap-3">
             <div class="flex-grow">
               <Combobox
@@ -188,9 +190,7 @@
                               }"
                             >
                               {{ person.email }}
-                              <span v-if="person.full_name"
-                                >({{ person.full_name }})</span
-                              >
+                              <span v-if="person.full_name">({{ person.full_name }})</span>
                             </span>
                           </li>
                         </ComboboxOption>
@@ -206,9 +206,9 @@
               :options="
                 advancedTweak
                   ? filteredAccess.map((k) => ({
-                      value: k,
-                      label: k[0].toUpperCase() + k.slice(1),
-                    }))
+                    value: k,
+                    label: k[0].toUpperCase() + k.slice(1),
+                  }))
                   : accessOptions
               "
             />
@@ -264,11 +264,11 @@
                 "
                 @remove-access="
                   getUsersWithAccess.data.splice(idx, 1),
-                    updateAccess.submit({
-                      method: 'unshare',
-                      entity_name: entity.name,
-                      user: user.user,
-                    })
+                  updateAccess.submit({
+                    method: 'unshare',
+                    entity_name: entity.name,
+                    user: user.user,
+                  })
                 "
               />
               <span
@@ -292,8 +292,8 @@
                 class="text-sm"
                 variant="ghost"
                 label="Advanced"
-                @click="advanced = true"
                 :icon-left="h(LucideSettings, { class: 'size-4' })"
+                @click="advanced = true"
               />
             </div>
             <div class="flex gap-2">
@@ -327,8 +327,8 @@
           </div>
 
           <Switch
-            label="Allow download"
             v-model="allowDownload"
+            label="Allow download"
           />
         </div>
       </div>
@@ -370,7 +370,6 @@ import LucideArrowLeft from "~icons/lucide/arrow-left"
 import LucideGlobe2 from "~icons/lucide/globe-2"
 
 import store from "@/store"
-import { getTeams } from "../../resources/files"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])
@@ -521,8 +520,8 @@ function addShares() {
     shareAccess.value === "editor"
       ? { read: 1, comment: 1, share: 1, upload: 1, write: 1 }
       : { read: 1, comment: 1, share: 1, upload: 0, write: 0 }
-  for (let user of sharedUsers.value) {
-    let r = {
+  for (const user of sharedUsers.value) {
+    const r = {
       entity_name: props.entity.name,
       user: user.name,
       ...access,

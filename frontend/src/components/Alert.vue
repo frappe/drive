@@ -29,7 +29,7 @@
 import { computed } from "vue"
 import LucideInfo from "~icons/lucide/info"
 
-export interface AlertProps {
+interface AlertProps {
   title?: string
   type?: "warning"
   icon?: any

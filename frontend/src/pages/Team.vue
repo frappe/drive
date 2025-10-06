@@ -35,9 +35,9 @@ const write = computed(
     allUsers.data.find((k) => k.name === store.state.user.id)?.access_level > 0
 )
 const route = useRoute()
-const team = computed(() => getTeams.data?.[route.params?.team])
+const teamData = computed(() => getTeams.data?.[route.params?.team])
 watch(
-  team,
+  teamData,
   (t) =>
     t &&
     store.commit("setBreadcrumbs", [

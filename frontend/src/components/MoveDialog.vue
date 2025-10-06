@@ -1,8 +1,8 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="{ size: 'lg' }"
+    @close="dialogType = ''"
   >
     <template #body-main>
       <div class="p-4 sm:px-6">
@@ -38,8 +38,8 @@
             <div class="py-1 h-64 overflow-auto flex flex-col">
               <TeamSelector
                 v-if="tabIndex === 1"
-                class="py-2 px-1"
                 v-model="chosenTeam"
+                class="py-2 px-1"
               />
               <Tree
                 v-for="k in tree.children"
@@ -115,14 +115,11 @@
                           @keydown.enter="openEntity(node)"
                         />
                       </div>
-                      <span v-else
-                        >{{ node.label }}
+                      <span v-else>{{ node.label }}
                         <span
-                          class="text-ink-gray-5"
                           v-if="entities[0].parent_entity === node.value"
-                          >(current)</span
-                        ></span
-                      >
+                          class="text-ink-gray-5"
+                        >(current)</span></span>
                       <Button
                         class="shrink hidden group-hover:block ml-auto"
                         :class="{
@@ -166,7 +163,9 @@
         </Tabs>
         <div class="flex items-center justify-between pt-4">
           <div class="flex items-center my-auto justify-start">
-            <p class="text-sm pr-0.5">Moving to:</p>
+            <p class="text-sm pr-0.5">
+              Moving to:
+            </p>
             <Dropdown
               v-if="dropDownBreadcrumbs.length"
               class="h-7"
@@ -183,9 +182,9 @@
               {{ "/" }}
             </span>
             <div
-              class="flex items-center"
               v-for="(crumb, index) in slicedBreadcrumbs"
               :key="index"
+              class="flex items-center"
             >
               <span
                 v-if="breadcrumbs.length > 1 && index > 0"
@@ -213,7 +212,7 @@
             size="sm"
             :disabled="
               entities[0].parent_entity !== selected &&
-              chosenTeam === entities[0].team
+                chosenTeam === entities[0].team
             "
             :loading="move.loading"
             @click="moveFile"
@@ -342,7 +341,7 @@ const selectedPerms = createResource({
   }),
   onSuccess: (data) => {
     const team = getTeams.data[data.team]
-    let first = [
+    const first = [
       {
         name: "",
         title: team ? team.title : "Home",
@@ -391,7 +390,7 @@ const slicedBreadcrumbs = computed(() => {
 })
 
 const dropDownBreadcrumbs = computed(() => {
-  let allExceptLastTwo = breadcrumbs.value.slice(0, -3)
+  const allExceptLastTwo = breadcrumbs.value.slice(0, -3)
   return allExceptLastTwo.map((item) => {
     return {
       ...item,

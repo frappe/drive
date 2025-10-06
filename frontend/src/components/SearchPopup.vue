@@ -14,15 +14,13 @@
           type="text"
           class="appearance-none forced-colors:hidden w-full border-none bg-transparent py-3 pl-11.5 pr-4.5 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
           placeholder="Find"
-        />
+        >
       </div>
       <div
         v-if="searchResults.data?.length"
         class="flex flex-col p-2.5 overflow-y-auto overflow-x-auto max-h-[50vh]"
       >
-        <span class="mb-2 pl-1 text-sm text-ink-gray-5"
-          >Results for <strong>{{ search }}:</strong></span
-        >
+        <span class="mb-2 pl-1 text-sm text-ink-gray-5">Results for <strong>{{ search }}:</strong></span>
         <div
           v-for="entity in searchResults.data"
           :key="entity.name"
@@ -33,7 +31,7 @@
             <img
               class="size-4"
               :src="getIconUrl(entity.is_group ? 'Folder' : entity.file_type)"
-            />
+            >
             <span class="truncate">{{ entity.title }}</span>
           </div>
           <div
@@ -72,7 +70,7 @@
             class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               $router.push({ name: 'Home' }),
-                emitter.emit('showSearchPopup', false)
+              emitter.emit('showSearchPopup', false)
             "
           >
             <LucideHome class="mr-2 size-4 text-ink-gray-7" />
@@ -82,7 +80,7 @@
             class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               $router.push({ name: 'Recents' }),
-                emitter.emit('showSearchPopup', false)
+              emitter.emit('showSearchPopup', false)
             "
           >
             <LucideClock class="mr-2 size-4 text-ink-gray-7" />
@@ -92,7 +90,7 @@
             class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               $router.push({ name: 'Favourites' }),
-                emitter.emit('showSearchPopup', false)
+              emitter.emit('showSearchPopup', false)
             "
           >
             <LucideStar class="mr-2 size-4 text-ink-gray-7" />
@@ -116,7 +114,7 @@
             class="flex w-full min-w-0 items-center rounded px-2 py-2 text-base font-medium text-ink-gray-7 hover:bg-surface-gray-2"
             @click="
               emitter.emit('uploadFolder'),
-                emitter.emit('showSearchPopup', false)
+              emitter.emit('showSearchPopup', false)
             "
           >
             <LucideFolderPlus

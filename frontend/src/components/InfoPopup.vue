@@ -159,7 +159,6 @@
             variant="subtle"
             size="sm"
             class="scale-[90%] float-right"
-            @click=""
           >
             <a
               :href="'/app/drive-file/' + entity.name"

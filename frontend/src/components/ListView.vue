@@ -51,7 +51,7 @@
           </ListGroupRows>
         </div>
         <div
-          v-else="formattedRows.length"
+          v-else
           class="pb-8"
         >
           <CustomListRow

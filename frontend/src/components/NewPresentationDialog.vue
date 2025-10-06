@@ -1,7 +1,6 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="{
       title: 'New Presentation',
       size: 'xs',
@@ -15,11 +14,12 @@
         },
       ],
     }"
+    @close="dialogType = ''"
   >
     <template #body-content>
       <FormControl
-        v-focus
         v-model="presentationName"
+        v-focus
         label="Name:"
         @keyup.enter="submit"
         @keydown="createPresentation.error = null"

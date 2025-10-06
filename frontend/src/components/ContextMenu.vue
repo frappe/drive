@@ -20,7 +20,7 @@
       "
     >
       <div v-if="item.divider">
-        <hr class="my-1 bg-surface-gray-4" />
+        <hr class="my-1 bg-surface-gray-4">
       </div>
       <button
         v-else

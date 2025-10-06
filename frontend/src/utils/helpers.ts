@@ -44,11 +44,11 @@ function HSVToHex(h: number, s: number, v: number): HashString {
     g = 0,
     b = 0
 
-  let i = Math.floor(h * 6)
-  let f = h * 6 - i
-  let p = v * (1 - s)
-  let q = v * (1 - f * s)
-  let t = v * (1 - (1 - f) * s)
+  const i = Math.floor(h * 6)
+  const f = h * 6 - i
+  const p = v * (1 - s)
+  const q = v * (1 - f * s)
+  const t = v * (1 - (1 - f) * s)
 
   switch (i % 6) {
     case 0:
@@ -145,7 +145,7 @@ function stripExtension(string: string) {
 function findNearestSiblingIndex(e: MouseEvent) {
   let nearestElementIndex = 0
   let minDistance = Number.MAX_VALUE
-  let parent = e.target as HTMLElement
+  const parent = e.target as HTMLElement
 
   const elements = Array.from(parent.children)
   elements.forEach(function (element, index) {
@@ -193,7 +193,7 @@ function isTargetEditable(e: Event) {
   const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA"
   return isEditable || isInput
 }
-function getDataForKey(datum: Object, key: string) {
+function getDataForKey(datum: object, key: string) {
   const data = Object.assign({}, datum)
   return key.split(".").reduce((d, key) => (d ? d[key] : null), data) as string
 }

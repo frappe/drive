@@ -13,8 +13,7 @@
             :tag="tag"
             :entity="entity"
             @success="$resources.entityTags.fetch()"
-          >
-          </Tag>
+          />
           <span
             v-if="!$resources.entityTags.data?.length"
             class="text-gray-700 text-base"
@@ -24,8 +23,9 @@
           <Button
             class="ml-auto !h-6 text-xs"
             @click="togglePopover()"
-            >{{ __("Add") }}</Button
           >
+            {{ __("Add") }}
+          </Button>
         </div>
       </slot>
     </template>
@@ -96,8 +96,7 @@
           <span
             v-else
             class="rounded-md py-4 px-1 text-sm text-gray-600"
-            >No tags found</span
-          >
+          >No tags found</span>
         </div>
         <div class="flex items-center justify-end border-t p-1">
           <Button

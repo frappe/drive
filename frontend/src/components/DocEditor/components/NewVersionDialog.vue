@@ -1,7 +1,7 @@
 <template>
   <FormControl
-    v-focus
     v-model="versionName"
+    v-focus
     label="Name:"
   >
     <template #prefix>
@@ -13,8 +13,8 @@
     label="Create"
     variant="solid"
     class="w-full mt-4"
-    @click="emitter.emit('create-version', versionName), clearDialogs()"
     :disabled="!versionName"
+    @click="emitter.emit('create-version', versionName), clearDialogs()"
   />
 </template>
 <script setup>

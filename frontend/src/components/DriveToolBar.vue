@@ -58,7 +58,7 @@
             <div
               class="flex items-center border rounded pl-2 py-1 h-7 text-base select-none"
             >
-              <img :src="icon" />
+              <img :src="icon">
               <span class="text-sm ml-2">{{ name }}</span>
               <Button
                 variant="minimal"
@@ -74,10 +74,10 @@
           label="Loading..."
         />
         <TeamSelector
-          v-model="team"
           v-if="
             ['Shared', 'Recents', 'Favourites', 'Trash'].includes($route.name)
           "
+          v-model="team"
           :none="true"
         />
         <Dropdown
@@ -185,7 +185,6 @@
 <script setup>
 import { Button, Dropdown, TextInput, TabButtons, Switch } from "frappe-ui"
 import { ref, computed, watch, useTemplateRef, h, defineComponent } from "vue"
-import { MIME_LIST_MAP } from "@/utils/files"
 import { getIconUrl } from "@/utils/getIconUrl"
 import { useStore } from "vuex"
 import { onKeyDown } from "@vueuse/core"

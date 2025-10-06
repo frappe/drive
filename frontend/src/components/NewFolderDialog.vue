@@ -1,7 +1,6 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="{
       title: 'Create a Folder',
       size: 'xs',
@@ -15,11 +14,12 @@
         },
       ],
     }"
+    @close="dialogType = ''"
   >
     <template #body-content>
       <FormControl
-        v-focus
         v-model="folderName"
+        v-focus
         label="Name:"
         @keyup.enter="submit"
         @keydown="createFolder.error = null"
@@ -40,7 +40,6 @@
 
 <script setup>
 import { ref } from "vue"
-import store from "@/store"
 import { Dialog, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
 

@@ -5,8 +5,8 @@
   >
     <template #body-content>
       <div
-        class="w-full grid grid-cols-2 gap-10 py-1"
         v-focus
+        class="w-full grid grid-cols-2 gap-10 py-1"
       >
         <div
           v-for="group in shortcutGroups"

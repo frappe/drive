@@ -15,7 +15,7 @@
         class="h-[16px] w-[16px] rounded-sm"
         :src="backupLink"
         :draggable="false"
-      />
+      >
       <img
         v-show="imgLoaded"
         class="h-[16px] w-[16px] object-cover rounded-sm"
@@ -23,7 +23,7 @@
         :draggable="false"
         @error="src = backupLink"
         @load="imgLoaded = true"
-      />
+      >
     </template>
     <template #default="{ label }">
       <div
@@ -47,8 +47,8 @@
     >
       <div class="flex flex-row grow justify-end gap-2 w-[20px]">
         <component
-          v-if="column.suffix"
           :is="column.suffix({ row })"
+          v-if="column.suffix"
         />
         <LucideStar
           v-if="row.is_favourite && $route.name !== 'Favourites'"
@@ -62,7 +62,7 @@
   </ListRowItem>
 </template>
 <script setup>
-import { ListRowItem, Tooltip } from "frappe-ui"
+import { ListRowItem } from "frappe-ui"
 import { ref } from "vue"
 
 const props = defineProps({

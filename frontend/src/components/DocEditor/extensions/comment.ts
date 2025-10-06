@@ -15,7 +15,7 @@ class FloatingQuoteButtonView {
     this.editor = editor
     this.button = document.createElement("button")
     this.button.textContent = "Comment"
-    let classes = [
+    const classes = [
       "h-7 text-ink-white bg-surface-gray-7 hover:bg-surface-gray-6 active:bg-surface-gray-5",
       "text-ink-gray-8 bg-surface-gray-2 hover:bg-surface-gray-3 active:bg-surface-gray-4",
       "focus-visible:ring focus-visible:ring-outline-gray-3",

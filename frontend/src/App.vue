@@ -50,7 +50,7 @@ import FDialogs from "./components/FDialogs.vue"
 import BottomBar from "./components/BottomBar.vue"
 import FileUploader from "@/components/FileUploader.vue"
 import { useStore } from "vuex"
-import { ref, computed, provide , inject} from "vue"
+import { ref, computed, provide } from "vue"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
 import { FrappeUIProvider } from "frappe-ui"
@@ -79,7 +79,7 @@ const EMITTERS = {
   p: () => emitter.emit("share"),
   e: () => emitter.emit("rename"),
 }
-for (let k in EMITTERS) {
+for (const k in EMITTERS) {
   const btn = document.createElement("button")
   btn.style.display = "none"
   btn.accessKey = k

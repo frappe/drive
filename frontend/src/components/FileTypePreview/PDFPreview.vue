@@ -31,7 +31,7 @@
     :src
     type="application/pdf"
     class="w-full h-full max-h-[80vh] max-w-[80vw] self-center"
-  />
+  >
 </template>
 
 <script setup>

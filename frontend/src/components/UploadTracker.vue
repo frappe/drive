@@ -69,9 +69,9 @@
               </p>
             </div>
             <Button
+              v-if="upload.completed"
               variant="ghost"
               :icon="upload.error ? LucideInfo : LucideFolderOpenDot"
-              v-if="upload.completed"
             />
             <ProgressRing
               v-if="!upload.completed && !upload.error"

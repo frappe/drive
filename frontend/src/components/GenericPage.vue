@@ -12,8 +12,8 @@
 
   <div
     v-else
-    ref="container"
     id="drop-area"
+    ref="container"
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
@@ -107,14 +107,12 @@ import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
-import emitter from "../emitter"
 import { prettyData, sortEntities } from "../utils/files"
-import { allFolders } from "../resources/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
   showSort: { type: Boolean, default: true },
-  verify: { Object, default: null },
+  verify: { type: Object, default: null },
   icon: [Function, Object],
   empty: Object,
   getEntities: Object,
@@ -424,9 +422,12 @@ if (settings.data?.auto_detect_links) {
   window.addEventListener("copy", newLink)
 }
 
-const socket = inject('socket')
-socket.on('update-list', ({file}) => {
-  if(file.parent_entity === props.getEntities.params.entity_name && !props.getEntities.data.find(k => k.name === file.name)) {
+const socket = inject("socket")
+socket.on("update-list", ({ file }) => {
+  if (
+    file.parent_entity === props.getEntities.params.entity_name &&
+    !props.getEntities.data.find((k) => k.name === file.name)
+  ) {
     props.getEntities.data.push(...prettyData([file]))
     props.getEntities.setData(props.getEntities.data)
   }

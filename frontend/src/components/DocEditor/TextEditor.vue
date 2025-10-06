@@ -21,31 +21,31 @@
           <Button
             variant="ghost"
             label="Exit"
-            @click="emitter.emit('clear-snapshot')"
             class="hover:!bg-surface-gray-2 hover:underline"
+            @click="emitter.emit('clear-snapshot')"
           />
           <Button
             variant="solid"
-            @click="emitter.emit('restore-snapshot', current)"
             label="Restore"
+            @click="emitter.emit('restore-snapshot', current)"
           />
         </div>
       </div>
       <div
+        class="mx-auto cursor-text w-full flex justify-center h-full"
+        :class="current ? 'pb-15' : ''"
         @click="
           $event.target.tagName === 'DIV' &&
             textEditor.editor?.chain?.().focus?.().run?.()
         "
-        class="mx-auto cursor-text w-full flex justify-center h-full"
-        :class="current ? 'pb-15' : ''"
       >
         <FTextEditor
-          :key="editorExtensions.length"
           v-if="
             !collab ||
-            editorExtensions.find((k) => k.name === 'collaborationCursor') ||
-            !isFrappeDoc
+              editorExtensions.find((k) => k.name === 'collaborationCursor') ||
+              !isFrappeDoc
           "
+          :key="editorExtensions.length"
           ref="textEditor"
           class="min-w-full h-full flex flex-col"
           :editor-class="[
@@ -68,6 +68,11 @@
               })
             }
           "
+          :mentions="users"
+          placeholder="Start writing here..."
+          :bubble-menu="settings.minimal && bubbleMenuButtons"
+          :extensions="editorExtensions"
+          :autofocus="true"
           @transaction="
             () => {
               if (collabTurned && doc) {
@@ -91,11 +96,6 @@
               autoversion?.()
             }
           "
-          :mentions="users"
-          placeholder="Start writing here..."
-          :bubble-menu="settings.minimal && bubbleMenuButtons"
-          :extensions="editorExtensions"
-          :autofocus="true"
         >
           <template #top>
             <TextEditorFixedMenu
@@ -123,13 +123,13 @@
     />
     <FloatingComments
       v-if="comments.length"
+      v-model:show-comments="showComments"
+      v-model:active-comment="activeComment"
+      v-model:comments="comments"
       :entity="entity"
       :editor
       @save="$emit('saveComment')"
       @autosave="autosave"
-      v-model:show-comments="showComments"
-      v-model:active-comment="activeComment"
-      v-model:comments="comments"
     />
   </div>
 </template>
@@ -190,7 +190,7 @@ import { formatDate } from "@/utils/format"
 const textEditor = ref("textEditor")
 const current = defineModel("current")
 const editor = computed(() => {
-  let editor = textEditor.value?.editor
+  const editor = textEditor.value?.editor
   return editor
 })
 const scrollParent = computed(
@@ -374,7 +374,7 @@ const editorExtensions = [
     }),
   ExtendedCommentExtension.configure({
     onCommentActivated: (id) => {
-      let isResolved = comments.value.find((k) => id === k.name)?.resolved
+      const isResolved = comments.value.find((k) => id === k.name)?.resolved
       if (id && (!isResolved || showResolved)) {
         activeComment.value = id
         showComments.value = true

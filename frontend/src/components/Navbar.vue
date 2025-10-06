@@ -1,9 +1,9 @@
 <template>
   <nav
     v-if="store.state.breadcrumbs?.length"
+    id="navbar"
     ondragstart="return false;"
     ondrop="return false;"
-    id="navbar"
     class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
   >
     <div class="flex justify-center items-center">
@@ -166,7 +166,6 @@ import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
 import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
-import FrappeDriveLogo from "./FrappeDriveLogo.vue"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -189,7 +188,7 @@ const props = defineProps({
   // Used to pass into dialogs
   entities: {
     type: Array,
-    default: [],
+    default: () => [],
   },
 })
 

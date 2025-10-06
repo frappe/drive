@@ -10,26 +10,27 @@
         No documents found
       </div>
       <button
+        v-for="(item, index) in items"
+        :key="index"
         class="flex flex-col items-start gap-0.5"
         :class="[
           index === selectedIndex ? 'bg-surface-gray-2' : '',
           'w-full whitespace-nowrap rounded px-2 py-2 text-sm text-ink-gray-8',
         ]"
-        v-for="(item, index) in items"
-        :key="index"
         @click="selectItem(index)"
         @mouseover="selectedIndex = index"
       >
-        <div class="truncate max-w-56">{{ item.title }}</div>
+        <div class="truncate max-w-56">
+          {{ item.title }}
+        </div>
         <div class="text-xs text-ink-gray-6">
           Edited {{ item.relativeModified }}
         </div>
       </button>
       <span
-        class="text-xs text-ink-gray-5 p-1"
         v-if="loading"
-        >Loading...</span
-      >
+        class="text-xs text-ink-gray-5 p-1"
+      >Loading...</span>
     </div>
   </div>
 </template>

@@ -18,8 +18,8 @@
           :href="'#' + anchor.id"
           class="text-sm px-0.5"
           :title="anchor.textContent"
-          @click.prevent="onAnchorClick(anchor.id)"
           :data-item-index="anchor.itemIndex"
+          @click.prevent="onAnchorClick(anchor.id)"
         >
           {{ anchor.textContent }}
         </a>
@@ -35,7 +35,8 @@
         <component
           :is="show ? LucideMinus : LucideTableOfContents"
           class="size-4"
-      /></template>
+        />
+      </template>
     </Button>
   </div>
 </template>
@@ -43,16 +44,14 @@
 <script setup>
 import { TextSelection } from "@tiptap/pm/state"
 import LucideMinus from "~icons/lucide/minus"
-import LucidePlus from "~icons/lucide/plus"
 import LucideTableOfContents from "~icons/lucide/table-of-contents"
 import { ref, watch, computed } from "vue"
-import { LucideList } from "lucide-vue-next"
 
 const props = defineProps({
   editor: Object,
   anchors: {
     type: Array,
-    default: [],
+    default: () => [],
   },
 })
 const show = ref(JSON.parse(localStorage.getItem("showToc") || false))

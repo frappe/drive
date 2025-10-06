@@ -19,7 +19,7 @@
     <source
       :src="src"
       :type="type"
-    />
+    >
   </video>
 </template>
 

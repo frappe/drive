@@ -29,8 +29,7 @@
     <span
       v-else
       class="rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
-      >No users found</span
-    >
+    >No users found</span>
     <div class="flex items-center justify-end border-t py-1 mt-1">
       <Button
         class="px-2 py-1.5 hover:bg-surface-gray-2 rounded cursor-pointer"
@@ -128,7 +127,7 @@ async function fetchData() {
   userList.fetch({ team: useRoute().params.team })
 }
 
-let userList = createResource({
+const userList = createResource({
   url: "drive.api.product.get_all_users",
   method: "GET",
   auto: false,
