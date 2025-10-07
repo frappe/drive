@@ -1,5 +1,16 @@
 @import url("../../assets/fonts/fonts.css");
-
+:root{
+  --prose-color-red: var(--red-600);
+  --prose-color-blue: var(--blue-600);
+  --prose-color-green: var(--green-600);
+  --prose-color-yellow: var(--yellow-600);
+  --prose-color-orange: var(--orange-600);
+  --prose-color-purple: var(--purple-600);
+  --prose-color-pink: var(--pink-600);
+  --prose-color-gray: var(--gray-600);
+  --prose-color-teal: var(--teal-600);
+  --prose-color-cyan: var(--cyan-600);
+}
 body {
   --font-inter: "InterVar", inherit;
   --font-fantasy: fantasy, inherit;
