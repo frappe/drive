@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from io import BytesIO
 from pathlib import Path
 
@@ -27,7 +27,7 @@ from drive.utils import (
     strip_comment_spans,
     update_file_size,
 )
-from drive.utils.api import get_default_access
+from drive.utils.api import prettify_file
 from drive.utils.files import FileManager
 
 from .permissions import get_teams, user_has_permission
@@ -124,11 +124,7 @@ def upload_file(
     update_clients(drive_file.name, drive_file.team, "upload")
     update_file_size(parent, file_size)
     if not embed:
-        f = drive_file.as_dict()
-        f["file_type"] = get_file_type(f)
-        f["share_count"] = get_default_access(f)
-
-        frappe.publish_realtime("update-list", {"file": f})
+        frappe.publish_realtime("list-add", {"file": prettify_file(drive_file.as_dict())})
 
     return drive_file
 
@@ -424,6 +420,7 @@ def edit_file_content(entity_name, client=None):
     manager.delete_file(entity)
     manager.upload_file(temp_path, entity)
     entity._modified = frappe.utils.now_datetime()
+    frappe.publish_realtime("list-update", {"file": prettify_file(entity.as_dict())})
     entity.save(ignore_permissions=True)
 
 
@@ -668,7 +665,7 @@ def set_favourite(entities=None, clear_all=False):
 
 
 @frappe.whitelist()
-def remove_or_restore(entity_names):
+def remove_or_restore(entity_names, client=None):
     """
     To move entities to or restore entities from the trash
 
@@ -694,7 +691,7 @@ def remove_or_restore(entity_names):
 
         doc.is_active = flag
         doc._modified = frappe.utils.now_datetime()
-        update_clients(doc.name, doc.team, "upload" if flag else "delete")
+        update_clients(doc.name, doc.team, "upload" if flag else "delete", client)
         folder_size = frappe.db.get_value("Drive File", doc.parent_entity, "file_size")
         frappe.db.set_value(
             "Drive File",
@@ -801,7 +798,7 @@ def clear_deleted_files():
 
 @frappe.whitelist()
 @default_team
-def move(entity_names, new_parent=None, team=None):
+def move(entity_names, new_parent=None, team=None, client=None):
     """
     Move file or folder to the new parent folder
 
@@ -817,7 +814,7 @@ def move(entity_names, new_parent=None, team=None):
 
     for entity in entity_names:
         doc = frappe.get_doc("Drive File", entity)
-        res = doc.move(new_parent, team)
+        res = doc.move(new_parent, team, client=client)
 
     if not res["parent_entity"]:
         title, personal = frappe.db.get_value("Drive Team", res["team"], ["title", "personal"])

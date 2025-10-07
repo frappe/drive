@@ -1,4 +1,9 @@
 <template>
+  <TextEditorFixedMenu
+    v-if="editable && !settings.minimal && !current"
+    class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
+    :buttons="menuButtons"
+  />
   <div
     class="flex w-full overflow-y-auto"
     id="editorScrollContainer"
@@ -100,14 +105,6 @@
             }
           "
         >
-          <template #top>
-            <TextEditorFixedMenu
-              v-if="editable && !settings.minimal && !current"
-              class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
-              :buttons="menuButtons"
-              :editor="editor"
-            />
-          </template>
           <template #editor="{ editor }">
             <div class="flex h-full justify-center">
               <EditorContent
@@ -155,6 +152,7 @@ import {
   h,
   watch,
   inject,
+  provide,
 } from "vue"
 import { EditorContent } from "@tiptap/vue-3"
 import { toUint8Array } from "js-base64"
@@ -218,6 +216,10 @@ const editor = computed(() => {
   const editor = textEditor.value?.editor
   return editor
 })
+provide(
+  "editor",
+  computed(() => textEditor.value?.editor)
+)
 const scrollParent = computed(() =>
   document.querySelector("#editorScrollContainer")
 )

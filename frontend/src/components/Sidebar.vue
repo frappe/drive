@@ -180,7 +180,7 @@ const sidebarItems = computed(() => {
     {
       items: [
         {
-          label: __("Find"),
+          label: __("Search"),
           icon: LucideSearch,
           onClick: () => emitter.emit("showSearchPopup", true),
         },
