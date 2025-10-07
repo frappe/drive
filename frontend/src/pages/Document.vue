@@ -62,6 +62,7 @@
     :root-resource="document"
     :actions="isFrappeDoc ? navBarActions : null"
   />
+   
   <ErrorPage
     v-if="document.error"
     :error="document.error"

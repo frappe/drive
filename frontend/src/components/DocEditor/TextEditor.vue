@@ -1,46 +1,46 @@
 <template>
-  <TextEditorFixedMenu
-    v-if="editable && !settings.minimal && !current"
-    class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
-    :buttons="menuButtons"
-  />
-  <div
-    class="flex w-full overflow-y-auto"
-    id="editorScrollContainer"
-  >
-    <div class="flex-1">
-      <div
-        v-if="current"
-        class="bg-surface-gray-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
-      >
-        <div class="flex flex-col gap-1">
-          <div v-if="current.manual">
-            <span class="font-medium">{{ current.title }}</span>
-          </div>
-          <div v-else>
-            This is a automatic snapshot of this document from
-            {{ formatDate(current.title) }}.
-          </div>
-          <div class="text-xs text-ink-gray-5">
-            Editing is disabled until you exit this preview.
-          </div>
+  <div class="flex flex-col w-full">
+    <TextEditorFixedMenu
+      v-if="editor && editable && !settings.minimal && !current"
+      class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
+      :buttons="menuButtons"
+    />
+    <div
+      v-if="current"
+      class="bg-surface-gray-2 text-ink-gray-8 p-3 text-base flex justify-between items-center"
+    >
+      <div class="flex flex-col gap-1">
+        <div v-if="current.manual">
+          <span class="font-medium">{{ current.title }}</span>
         </div>
-        <div class="flex gap-2">
-          <Button
-            variant="ghost"
-            label="Exit"
-            class="hover:!bg-surface-gray-2 hover:underline"
-            @click="emitter.emit('clear-snapshot')"
-          />
-          <Button
-            variant="solid"
-            label="Restore"
-            @click="emitter.emit('restore-snapshot', current)"
-          />
+        <div v-else>
+          This is a automatic snapshot of this document from
+          {{ formatDate(current.title) }}.
+        </div>
+        <div class="text-xs text-ink-gray-5">
+          Editing is disabled until you exit this preview.
         </div>
       </div>
+      <div class="flex gap-2">
+        <Button
+          variant="ghost"
+          label="Exit"
+          class="hover:!bg-surface-gray-2 hover:underline"
+          @click="emitter.emit('clear-snapshot')"
+        />
+        <Button
+          variant="solid"
+          label="Restore"
+          @click="emitter.emit('restore-snapshot', current)"
+        />
+      </div>
+    </div>
+    <div
+      class="flex w-full overflow-y-auto"
+      id="editorScrollContainer"
+    >
       <div
-        class="mx-auto cursor-text w-full flex justify-center h-full isolate"
+        class="mx-auto cursor-text w-full flex justify-center h-full"
         :class="current ? 'pb-15' : ''"
         @click="
           $event.target.tagName === 'DIV' &&
@@ -106,32 +106,32 @@
           "
         >
           <template #editor="{ editor }">
-            <div class="flex h-full justify-center">
-              <EditorContent
-                :style="{ fontFamily: `var(--font-${settings?.font_family})` }"
-                :editor="editor"
-              />
-            </div>
+            <EditorContent
+              :style="{
+                fontFamily: `var(--font-${settings?.font_family})`,
+              }"
+              :editor="editor"
+            />
           </template>
         </FTextEditor>
       </div>
+      <ToC
+        v-show="anchors.length > 1"
+        :editor
+        :anchors
+        :class="editable ? 'top-24' : 'top-15'"
+      />
+      <FloatingComments
+        v-if="comments.length"
+        v-model:show-comments="showComments"
+        v-model:active-comment="activeComment"
+        v-model:comments="comments"
+        :entity="entity"
+        :editor
+        @save="$emit('saveComment')"
+        @autosave="autosave"
+      />
     </div>
-    <ToC
-      v-show="anchors.length > 1"
-      :editor
-      :anchors
-      :class="editable ? 'top-24' : 'top-15'"
-    />
-    <FloatingComments
-      v-if="comments.length"
-      v-model:show-comments="showComments"
-      v-model:active-comment="activeComment"
-      v-model:comments="comments"
-      :entity="entity"
-      :editor
-      @save="$emit('saveComment')"
-      @autosave="autosave"
-    />
   </div>
 </template>
 
@@ -216,10 +216,7 @@ const editor = computed(() => {
   const editor = textEditor.value?.editor
   return editor
 })
-provide(
-  "editor",
-  computed(() => textEditor.value?.editor)
-)
+provide("editor", editor)
 const scrollParent = computed(() =>
   document.querySelector("#editorScrollContainer")
 )
