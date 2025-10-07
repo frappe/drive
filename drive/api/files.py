@@ -153,7 +153,6 @@ def get_thumbnail(entity_name):
     )
     if not drive_file or drive_file.is_group or drive_file.is_link:
         return
-
     if user_has_permission(drive_file, "read") is False:
         return
 
@@ -185,8 +184,7 @@ def get_thumbnail(entity_name):
                 thumbnail = manager.get_thumbnail(drive_file.team, entity_name)
                 thumbnail_data = BytesIO(thumbnail.read())
                 thumbnail.close()
-        except FileNotFoundError as e:
-            print(e)
+        except:
             return ""
 
     if thumbnail_data:

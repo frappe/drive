@@ -80,9 +80,12 @@ def files(
 
     query = frappe.qb.from_(DriveFile).where(DriveFile.is_active == is_active)
     if shared:
-        cond = (DrivePermission.entity == DriveFile.name) & (
-            (DrivePermission.user if shared == "with" else DrivePermission.owner) == frappe.session.user
-        )
+        if shared == "by" or shared == "with":
+            cond = (DrivePermission.entity == DriveFile.name) & (
+                (DrivePermission.user if shared == "with" else DrivePermission.owner) == frappe.session.user
+            )
+        elif shared == "public":
+            cond = (DrivePermission.entity == DriveFile.name) & (DrivePermission.user == "")
         # if shared == "with":
         #     teams = get_teams()
         #     cond |= (DrivePermission.team == 1) & (DrivePermission.user.isin(teams))

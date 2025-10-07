@@ -33,10 +33,10 @@ app.use(router)
 app.use(store)
 
 app.use(FrappeUI, { socketio: false })
-const socket = initSocket()
-
-app.provide("socket", socket)
-app.config.globalProperties.$socket = socket
+initSocket().then((socket) => {
+  app.provide("socket", socket)
+  app.config.globalProperties.$socket = socket
+})
 
 app.directive("on-outside-click", onOutsideClickDirective)
 app.directive("focus", focusDirective)
