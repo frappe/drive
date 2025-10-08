@@ -154,6 +154,7 @@ import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import LucideSettings from "~icons/lucide/settings"
 import LucideImageDown from "~icons/lucide/image-down"
+import LucideDownload from "~icons/lucide/download"
 import LucideListRestart from "~icons/lucide/list-restart"
 import LucideHistory from "~icons/lucide/history"
 import MessageSquareDot from "~icons/lucide/message-square-dot"
@@ -165,6 +166,7 @@ import LucideFileWarning from "~icons/lucide/file-warning"
 import { dynamicList } from "@/utils/files"
 import { useTemplateRef } from "vue"
 import UsersBar from "@/components/UsersBar.vue"
+import { apps } from "../resources/permissions"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -388,9 +390,21 @@ const navBarActions = computed(
             icon: LucideSettings,
           },
           {
-            onClick: exportMedia,
-            label: "Export Media",
-            icon: LucideImageDown,
+            label: "Export",
+            icon: LucideDownload,
+            submenu: dynamicList([
+              {
+                onClick: exportMedia,
+                label: "Export Media",
+                icon: LucideImageDown,
+              },
+              {
+                onClick: exportBlog,
+                label: "Export Blog",
+                icon: LucideImageDown,
+                cond: apps.data.find(k => k.name === 'blog'),
+              },
+            ]),
           },
           {
             onClick: clearCache,
@@ -479,7 +493,26 @@ const exportMedia = async () => {
   }
   entitiesDownload(null, urls)
 }
-
+const exportBlog = async () => {
+  toast("Starting export...")
+  createResource({
+    url: "drive.api.docs.create_blog",
+    auto: true,
+    params: {
+      entity_name: props.entityName,
+      html: editorValue.value.getHTML(),
+    },
+    onSuccess: (d) => {
+      window.open("/app/blog-post/" + d)
+    },
+    onError: (error) => {
+      toast({
+        title: error.messages[0] || "Could not export your document.",
+        type: "error",
+      })
+    },
+  })
+}
 // Events
 window.addEventListener("offline", () => {
   toast({

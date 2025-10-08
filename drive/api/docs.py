@@ -140,3 +140,34 @@ def get_extension(entity_name):
         return mimemapper.get_extension(mime_type)
     except:
         return QUICK_MAP.get(mime_type, "")
+
+
+@frappe.whitelist()
+def create_blog(entity_name, html, attachments=None):
+    """
+    If the blog app is installed, creates a blog
+    """
+    file = frappe.get_doc("Drive File", entity_name)
+    blogger = frappe.db.exists("Blogger", {"user": frappe.session.user})
+    if not blogger:
+        frappe.throw("Please create a Blogger for your user first.")
+
+    if not frappe.db.exists("Blog Category", {"name": "writer_export"}):
+        category = frappe.get_doc({"doctype": "Blog Category", "title": "Writer Export"})
+        category.insert()
+        print("insrted", category, category.name)
+    else:
+        category = frappe.get_doc("Blog Category", "writer_export")
+
+    blog = frappe.get_doc(
+        {
+            "doctype": "Blog Post",
+            "title": file.title,
+            "content_type": "HTML",
+            "blog_category": category.name,
+            "blogger": blogger,
+            "content_html": html,
+        }
+    )
+    blog.insert()
+    return blog.name
