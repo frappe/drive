@@ -1,5 +1,6 @@
 @import url("../../assets/fonts/fonts.css");
-@import url("../../../../../frappe-ui/src/components/TextEditor/extensions/color/color-styles.css");
+@import "frappe-ui/src/components/TextEditor/extensions/color/color-styles.css";
+
 
 body {
   --font-inter: "InterVar", inherit;
