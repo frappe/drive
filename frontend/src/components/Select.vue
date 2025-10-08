@@ -149,7 +149,7 @@ const labelFunction = (val: Value, selected = false) => {
 
       <SelectPortal class="w-full">
         <SelectContent
-          :hideWhenDetached="true"
+          :hide-when-detached="true"
           :align="'start'"
           position="popper"
           class="z-10 min-w-[--reka-select-trigger-width] mt-1 bg-surface-modal overflow-hidden rounded-lg shadow-2xl"
@@ -182,12 +182,12 @@ const labelFunction = (val: Value, selected = false) => {
                   :disabled="isDisabled(option)"
                   class="text-base leading-none text-ink-gray-7 rounded flex items-center h-7 px-2.5 py-1.5 relative select-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-surface-gray-3"
                 >
-                  <SelectItemText
-                    ><span class="flex items-center gap-2 pr-6 flex-1">
+                  <SelectItemText>
+                    <span class="flex items-center gap-2 pr-6 flex-1">
                       <RenderIcon :icon="getIcon(option)" />
                       {{ labelFunction(option) }}
-                    </span></SelectItemText
-                  >
+                    </span>
+                  </SelectItemText>
                   <SelectItemIndicator
                     class="inline-flex ml-auto items-center justify-center"
                   >

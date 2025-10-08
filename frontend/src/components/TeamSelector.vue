@@ -1,10 +1,10 @@
 <template>
   <Combobox
+    v-model="team"
     placeholder="Select a team"
     :options
     :disabled
     :open-on-click="true"
-    v-model="team"
   />
 </template>
 <script setup lang="ts">

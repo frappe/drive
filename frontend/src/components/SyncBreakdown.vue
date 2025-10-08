@@ -64,8 +64,7 @@
                 <span
                   v-if="hasChildren"
                   class="text-ink-gray-5"
-                  >({{ node.totalChildren }})</span
-                >
+                >({{ node.totalChildren }})</span>
               </div>
             </div>
           </template>
@@ -85,8 +84,8 @@
           :disabled="!preview.data?.length"
           @click="
             syncFromDisk.submit({ team: chosenTeam }),
-              clearDialogs(),
-              emitter.emit('showSettings', -1)
+            clearDialogs(),
+            emitter.emit('showSettings', -1)
           "
         />
       </div>

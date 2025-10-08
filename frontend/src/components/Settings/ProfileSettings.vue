@@ -53,8 +53,7 @@
             <a
               :href="newImageUrl"
               class="truncate max-w-56 underline"
-              >{{ newImageUrl }}</a
-            >
+            >{{ newImageUrl }}</a>
 
             <Button @click="newImageUrl = null">
               <template #icon>

@@ -15,43 +15,31 @@
       <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
         <span class="text-base font-semibold">Information</span>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Owner") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Owner") }}:</span>
           <span class="col-span-1">
             <a :href="`mailto:${entity.owner}`">{{ entity.owner }}</a>
           </span>
         </li>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Type") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Type") }}:</span>
           <span class="col-span-1">{{ entity.file_type }}</span>
         </li>
         <li v-if="entity.file_size">
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Size") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Size") }}:</span>
           <span class="col-span-1">
             {{ entity.file_size_pretty }}{{ ` (${entity.file_size})` }}
           </span>
         </li>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Modified") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Modified") }}:</span>
           <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
         </li>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Added") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Added") }}:</span>
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
         <li class="flex items-center">
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Tags") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Tags") }}:</span>
           <TagInput
             class="flex-grow"
             :entity
@@ -65,25 +53,19 @@
       >
         <span class="text-base font-semibold">{{ __("Stats") }}</span>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Words") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Words") }}:</span>
           <span class="col-span-1">{{
             editor.storage.characterCount.words()
           }}</span>
         </li>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Characters") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Characters") }}:</span>
           <span class="col-span-1">{{
             editor.storage.characterCount.characters()
           }}</span>
         </li>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Reading time") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Reading time") }}:</span>
           <span class="col-span-1">
             {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
             {{
@@ -115,9 +97,7 @@
         class="space-y-3 text-sm py-2"
       >
         <li class="flex">
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("General") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("General") }}:</span>
           <div class="col-span-1 flex gap-2">
             <GeneralAccess
               size="sm"
@@ -128,17 +108,15 @@
           </div>
         </li>
         <li>
-          <span class="inline-block w-24 text-ink-gray-5"
-            >{{ __("Shared") }}:</span
-          >
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Shared") }}:</span>
           <span
             v-if="userAccess.data?.length"
             class="col-span-1 text-ink-gray-8"
           >
             {{
               userAccess.data.length +
-              " " +
-              (userAccess.data.length === 1 ? __("person") : __("people"))
+                " " +
+                (userAccess.data.length === 1 ? __("person") : __("people"))
             }}
             {{
               userAccess.data.length < 3
@@ -163,8 +141,7 @@
             <a
               :href="'/app/drive-file/' + entity.name"
               target="_blank"
-              >Open in Desk</a
-            >
+            >Open in Desk</a>
           </Button>
         </div>
         <li>

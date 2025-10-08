@@ -35,12 +35,11 @@
       class="h-full"
       :src="getIconUrl(entity.file_type)"
       :draggable="false"
-    />
+    >
     <span
       class="text-sm line-clamp-1 text-ink-gray-6"
       :class="strikeThrough ? 'line-through ' : ' '"
-      >{{ title ? title : entity.title }}</span
-    >
+    >{{ title ? title : entity.title }}</span>
   </div>
 </template>
 <script setup>

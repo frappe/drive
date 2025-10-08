@@ -36,8 +36,8 @@
       </div>
     </div>
     <div
-      class="flex w-full overflow-y-auto"
       id="editorScrollContainer"
+      class="flex w-full overflow-y-auto"
     >
       <div
         class="mx-auto cursor-text w-full flex justify-center h-full"
@@ -50,8 +50,8 @@
         <FTextEditor
           v-if="
             !collab ||
-            editorExtensions.find((k) => k.name === 'collaborationCursor') ||
-            !isFrappeDoc
+              editorExtensions.find((k) => k.name === 'collaborationCursor') ||
+              !isFrappeDoc
           "
           :key="editorExtensions.length"
           ref="textEditor"

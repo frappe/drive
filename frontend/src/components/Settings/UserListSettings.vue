@@ -460,7 +460,6 @@
           />
           <div class="flex gap-1 mt-1.5">
             <EmojiPicker
-              v-model="selectedIcon"
               :emojis="
                 Object.keys(icons).map((k) => ({
                   value: k,

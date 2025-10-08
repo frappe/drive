@@ -94,6 +94,7 @@ import { toast } from "@/utils/toasts"
 import { move } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
+import emitter from "@/emitter"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -234,7 +235,7 @@ watch(
   },
   { immediate: true, deep: false }
 )
-// emitter.on("refresh", refreshData)
+emitter.on("refresh", refreshData)
 
 if (team.value && !allUsers.fetched && store.getters.isLoggedIn) {
   allUsers.fetch({ team: team.value })

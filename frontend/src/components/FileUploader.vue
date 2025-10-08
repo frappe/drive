@@ -223,7 +223,6 @@ onMounted(() => {
   })
   // REDO COMPONENT
   dropzone.value.on("success", function (file, response) {
-    emitter.emit("refresh")
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       response: response.message,

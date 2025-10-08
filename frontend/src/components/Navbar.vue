@@ -93,8 +93,8 @@
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
-          isLoggedIn &&
-          props.rootResource?.data?.write !== false
+            isLoggedIn &&
+            props.rootResource?.data?.write !== false
         "
         :button="{
           variant: 'solid',

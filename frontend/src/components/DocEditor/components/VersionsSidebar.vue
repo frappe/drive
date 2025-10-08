@@ -28,18 +28,18 @@
         variant="outline"
         @click="
           clearSnapshot(),
-            createDialog({
-              title: 'Create Version',
-              size: 'sm',
-              component: h(NewVersionDialog),
-              props: { editor },
-            })
+          createDialog({
+            title: 'Create Version',
+            size: 'sm',
+            component: h(NewVersionDialog),
+            props: { editor },
+          })
         "
       />
       <div
         v-if="
           !Object.entries(groupedVersions).length ||
-          !Object.entries(groupedVersions)[0][1].length
+            !Object.entries(groupedVersions)[0][1].length
         "
         class="text-ink-gray-5 text-sm text-center mt-1"
       >
@@ -47,8 +47,8 @@
       </div>
       <div
         v-for="[title, group] in Object.entries(groupedVersions)"
-        :key="title"
         v-else
+        :key="title"
         class="flex flex-col gap-0.5 justify-start bg-surface-white"
       >
         <div

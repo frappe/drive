@@ -11,14 +11,14 @@
       <div class="flex items-center justify-between flex-1">
         <slot>
           <h3
-            class="text-lg font-medium text-ink-gray-9"
             v-if="title"
+            class="text-lg font-medium text-ink-gray-9"
           >
             {{ title }}
           </h3>
         </slot>
         <div class="flex gap-2">
-          <slot name="actions"></slot>
+          <slot name="actions" />
         </div>
       </div>
     </div>
