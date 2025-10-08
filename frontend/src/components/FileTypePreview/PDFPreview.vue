@@ -12,12 +12,14 @@
         :text-layer="true"
       />
     </div>
-    <div class="flex gap-2 justify-center items-center">
+    <div
+      v-if="pages"
+      class="flex gap-2 justify-center items-center"
+    >
       <Button
         label="Prev"
         @click="page = page > 1 ? page - 1 : page"
       />
-
       <span class="text-sm">{{ page }} / {{ pages }}</span>
       <Button
         label="Next"
@@ -31,7 +33,7 @@
     :src
     type="application/pdf"
     class="w-full h-full max-h-[80vh] max-w-[80vw] self-center"
-  >
+  />
 </template>
 
 <script setup>
@@ -52,7 +54,7 @@ const src = computed(
 
 let page, pages, pdf
 if (isMobile.value) {
-  page = ref(3)
+  page = ref(1)
   ;({ pages, pdf } = usePDF(src.value))
 }
 </script>

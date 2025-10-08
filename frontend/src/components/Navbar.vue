@@ -4,16 +4,12 @@
     id="navbar"
     ondragstart="return false;"
     ondrop="return false;"
-    class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
+    class="bg-surface-white border-b px-5 py-2.5 h-12 flex justify-between"
   >
-    <div class="flex justify-center items-center">
-      <div
-        id="navbar-prefix"
-        class="mr-2"
-      />
+    <slot name="breadcrumbs">
       <Breadcrumbs
         :items="store.state.breadcrumbs"
-        class="select-none truncate"
+        class="select-none truncate max-w-[80%]"
       >
         <template #prefix="{ item, index }">
           <LoadingIndicator
@@ -32,26 +28,29 @@
           </div>
         </template>
       </Breadcrumbs>
-    </div>
+    </slot>
 
     <div class="flex gap-2">
       <div
         id="navbar-content"
         class="flex items-center"
       >
-        <LucideGlobe2
-          v-if="rootEntity?.share_count === -2"
-          class="size-4"
-        />
-        <LucideBuilding2
-          v-else-if="rootEntity?.share_count === -1"
-          class="size-4"
-        />
-        <LucideUsers
-          v-else-if="rootEntity?.share_count > 0"
-          class="size-4"
-        />
+        <div class="icon mr-2">
+          <LucideGlobe2
+            v-if="rootEntity?.share_count === -2"
+            class="size-4"
+          />
+          <LucideBuilding2
+            v-else-if="rootEntity?.share_count === -1"
+            class="size-4"
+          />
+          <LucideUsers
+            v-else-if="rootEntity?.share_count > 0"
+            class="size-4"
+          />
+        </div>
       </div>
+
       <LucideStar
         v-if="rootEntity?.is_favourite"
         width="16"
@@ -93,8 +92,8 @@
       <Dropdown
         v-if="
           ['Folder', 'Home', 'Team'].includes($route.name) &&
-            isLoggedIn &&
-            props.rootResource?.data?.write !== false
+          isLoggedIn &&
+          props.rootResource?.data?.write !== false
         "
         :button="{
           variant: 'solid',
@@ -366,8 +365,3 @@ const newEntityOptions = [
   },
 ]
 </script>
-<style>
-#navbar-prefix:empty {
-  margin: 0;
-}
-</style>

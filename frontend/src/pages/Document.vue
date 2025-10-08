@@ -11,18 +11,6 @@
     </div>
   </div>
   <Teleport
-    v-if="docSettings?.doc?.settings?.minimal && entity.write"
-    to="#navbar-prefix"
-    defer
-  >
-    <router-link
-      :to="originalBreadcrumbs?.[0]?.route"
-      class="cursor-pointer"
-    >
-      <LucideArrowLeft class="size-3.5" />
-    </router-link>
-  </Teleport>
-  <Teleport
     v-if="docSettings?.doc?.settings && entity.write"
     to="#navbar-content"
     defer
@@ -61,8 +49,22 @@
     v-if="!inIframe && (docSettings?.doc || !isFrappeDoc)"
     :root-resource="document"
     :actions="isFrappeDoc ? navBarActions : null"
-  />
-   
+  >
+    <template
+      #breadcrumbs
+      v-if="docSettings?.doc?.settings?.minimal && entity.write"
+    >
+      <Button variant="ghost">
+        <router-link
+          :to="$store.state.breadcrumbs?.[0]?.route"
+          class="cursor-pointer"
+        >
+          <LucideArrowLeft class="size-3.5" />
+        </router-link>
+      </Button>
+    </template>
+  </Navbar>
+
   <ErrorPage
     v-if="document.error"
     :error="document.error"
@@ -366,7 +368,6 @@ const navBarActions = computed(
               },
               {
                 onClick: (val) => {
-                  document.breadcrumbs = []
                   docSettings.doc.settings.minimal = val
                   docSettings.setValue.submit({
                     settings: JSON.stringify(docSettings.doc.settings),
@@ -444,14 +445,10 @@ const navBarActions = computed(
     ]
 )
 
-let originalBreadcrumbs
 const toggleMinimal = (val) => {
   if (val) {
-    originalBreadcrumbs = [...store.state.breadcrumbs]
-    store.commit("setBreadcrumbs", store.state.breadcrumbs.slice(-1))
     window.document.querySelector("#sidebar").style.display = "none"
-  } else if (originalBreadcrumbs) {
-    store.commit("setBreadcrumbs", originalBreadcrumbs)
+  } else {
     window.document.querySelector("#sidebar").style.removeProperty("display")
   }
 }
