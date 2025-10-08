@@ -19,3 +19,4 @@ drive/public/dist
 .env
 dist/
 build/
+drive/pnpm-workspace.yaml

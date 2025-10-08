@@ -1,16 +1,6 @@
 @import url("../../assets/fonts/fonts.css");
-:root{
-  --prose-color-red: var(--red-600);
-  --prose-color-blue: var(--blue-600);
-  --prose-color-green: var(--green-600);
-  --prose-color-yellow: var(--yellow-600);
-  --prose-color-orange: var(--orange-600);
-  --prose-color-purple: var(--purple-600);
-  --prose-color-pink: var(--pink-600);
-  --prose-color-gray: var(--gray-600);
-  --prose-color-teal: var(--teal-600);
-  --prose-color-cyan: var(--cyan-600);
-}
+@import url("../../../../../frappe-ui/src/components/TextEditor/extensions/color/color-styles.css");
+
 body {
   --font-inter: "InterVar", inherit;
   --font-fantasy: fantasy, inherit;
@@ -53,9 +43,15 @@ span[data-comment-id]:not([data-resolved="true"]):hover,
 span[data-comment-id]:not([data-resolved="true"]).active {
   background: rgba(250, 204, 21, 0.4);
 }
+/* :root {
+  --prose-color-orange: #f97316;
+  --prose-color-blue:   #2563eb; 
+} */
+
+/* .ProseMirror span[style*="color: var("] { color: inherit; }  */
 
 @media print {
-  .Prosemirror {
+  .ProseMirror {
     p:empty::after {
       content: "\00A0";
     }
@@ -74,6 +70,7 @@ span[data-comment-id]:not([data-resolved="true"]).active {
     box-shadow: none;
     border-radius: 0px;
   }
+  
   img[dataalign="left"] {
     display: block;
     margin-right: auto;

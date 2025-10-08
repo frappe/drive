@@ -377,7 +377,7 @@ export function printDoc(html) {
                 <style>${editorStyle}</style>
               </head>
               <body>
-                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
                   ${html}
                 </div>
               </body>
