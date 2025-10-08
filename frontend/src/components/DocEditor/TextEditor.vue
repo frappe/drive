@@ -2,7 +2,7 @@
   <div class="flex flex-col w-full">
     <TextEditorFixedMenu
       v-if="editor && editable && !settings.minimal && !current"
-      class="w-full max-w-[100vw] sticky top-0 z-[1] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
+      class="w-full max-w-[100vw] overflow-x-auto border-b border-outline-gray-modals justify-start md:justify-center py-1.5 shrink-0"
       :buttons="menuButtons"
     />
     <div
@@ -50,8 +50,8 @@
         <FTextEditor
           v-if="
             !collab ||
-              editorExtensions.find((k) => k.name === 'collaborationCursor') ||
-              !isFrappeDoc
+            editorExtensions.find((k) => k.name === 'collaborationCursor') ||
+            !isFrappeDoc
           "
           :key="editorExtensions.length"
           ref="textEditor"
