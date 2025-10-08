@@ -31,15 +31,26 @@
                 class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"
               />
             </div>
-            <div class="flex flex-col text-md gap-2">
+            <div
+              v-else-if="!domainTeams.data"
+              class="flex flex-col py-5 gap-3"
+            >
+              <LoadingIndicator class="size-5 self-center" />
+              <div class="text-sm text-center">
+                Just a minute...
+              </div>
+            </div>
+            <div
+              v-else-if="domainTeams.data.length"
+              class="flex flex-col text-md gap-2"
+            >
               <p>
                 We noticed that you are on a
                 <strong>corporate domain</strong>.
               </p>
               <p v-if="domainTeams.data.length">
                 Do you want to create a personal account, or request to join the
-                team (<strong>{{ domainTeams.data[0].title }}</strong
-                >) associated with your domain?
+                team (<strong>{{ domainTeams.data[0].title }}</strong>) associated with your domain?
               </p>
               <p v-else>
                 Do you want to create a personal account, or create a team with
@@ -57,7 +68,7 @@
                 <Button
                   variant="subtle"
                   class="w-100"
-                  @click="createPersonalTeam.submit()"
+                  @click="createTeam.submit()"
                 >
                   Create Personal
                 </Button>
@@ -68,7 +79,7 @@
                     requestInvite.submit({
                       team: domainTeams.data[0].name,
                     }),
-                      $router.replace({ path: '/drive/teams' })
+                    $router.replace({ path: '/drive/teams' })
                   "
                 >
                   Join {{ domainTeams.data[0].title }}
@@ -78,7 +89,7 @@
                   variant="solid"
                   @click="
                     typeof team_name === 'string'
-                      ? createPersonalTeam.submit({ team_name, email })
+                      ? createTeam.submit({ team_name, email })
                       : (team_name = '')
                   "
                 >
@@ -96,12 +107,11 @@
 <script setup>
 import { createResource, FormControl } from "frappe-ui"
 import { ref, computed } from "vue"
-import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
-import { toast } from "@/utils/toasts"
-import { useRoute } from "vue-router"
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { useStore } from "vuex"
+import LoadingIndicator from "frappe-ui/src/components/LoadingIndicator.vue"
+import { createTeam } from "@/resources/permissions"
 
-const route = useRoute()
 const store = useStore()
 const team_name = ref(null)
 const email = computed(() => store.state.user.id)
@@ -112,25 +122,24 @@ const domainTeams = createResource({
   params: {
     domain: email.value.split("@").slice(-1)[0],
   },
+  onSuccess(data) {
+    if (data === false)
+      createTeam.submit(
+        { personal: 1 },
+        {
+          onSuccess,
+        }
+      )
+  },
 })
 
-const createPersonalTeam = createResource({
-  url: "drive.api.product.create_personal_team",
-  makeParams: () => ({
-    team_name: team_name.value,
-    email: email.value,
-  }),
-  onSuccess: (data) => {
-    if (data) {
-      window.location.replace("/drive/t/" + data)
-    } else {
-      window.location.reload()
-    }
-  },
-  onError() {
-    toast("Failed to create team. Please try again.")
-  },
-})
+const onSuccess = (data) => {
+  if (data) {
+    window.location.replace("/drive")
+  } else {
+    window.location.reload()
+  }
+}
 
 const requestInvite = createResource({
   url: "drive.api.product.request_invite",

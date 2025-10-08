@@ -20,14 +20,18 @@
           onClick: () => (shareAccess = 'editor'),
           icon: shareAccess === 'editor' && 'check',
         },
-        { divider: true },
         {
-          label: 'Remove',
-          onClick: () => emit('removeAccess'),
-          color: 'text-ink-red-3',
+          group: true,
+          hideLabel: true,
+          items: [
+            {
+              label: 'Remove',
+              onClick: () => emit('removeAccess'),
+              theme: 'red',
+            },
+          ],
         },
       ]"
-      :hide-search="true"
     />
   </div>
 </template>

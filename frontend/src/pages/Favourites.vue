@@ -1,14 +1,16 @@
 <template>
   <GenericPage
     :get-entities="getFavourites"
-    :icon="LucideStar"
-    primary-message="No favourites yet"
-    secondary-message="Click on the star icon to favourite an item."
+    :empty="{
+      icon: LucideStar,
+      title: 'No favourites yet',
+      description: 'You can save your favourites here.',
+    }"
   />
 </template>
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getFavourites } from "@/resources/files"
-import { LucideStar } from "lucide-vue-next"
+import LucideStar from "~icons/lucide/star"
 </script>

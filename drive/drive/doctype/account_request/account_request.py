@@ -30,8 +30,13 @@ class AccountRequest(Document):
 
     def after_insert(self):
         if not self.invite:
-            self.set_otp()
-            self.send_otp()
+            # TBD - check site configuration
+            raise ValueError("Public signups aren't supported yet.")
+            # self.set_otp()
+            # try:
+            #     self.send_otp()
+            # except:
+            #     pass
         # Telemetry: Only capture if it's not a saas signup or invited by parent team. Also don't capture if user already have a team
         # if not (
         #     frappe.db.exists("Team", {"user": self.email})
@@ -81,13 +86,9 @@ class AccountRequest(Document):
 
     def get_verification_url(self):
         if self.saas:
-            return get_url(
-                f"/api/method/press.api.saas.validate_account_request?key={self.request_key}"
-            )
+            return get_url(f"/api/method/press.api.saas.validate_account_request?key={self.request_key}")
         if self.product_trial:
-            return get_url(
-                f"/dashboard/saas/{self.product_trial}/oauth?key={self.request_key}&email={self.email}"
-            )
+            return get_url(f"/dashboard/saas/{self.product_trial}/oauth?key={self.request_key}&email={self.email}")
         return get_url(f"/dashboard/setup-account/{self.request_key}")
 
     @property

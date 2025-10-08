@@ -1,87 +1,76 @@
 <template>
   <Dialog
     v-model="open"
-    :options="{ title: 'Rename', size: 'xs' }"
+    :options="{
+      title: 'Rename',
+      size: 'xs',
+      actions: [
+        {
+          label: 'Confirm',
+          variant: 'solid',
+          disabled: !newTitle || newTitle === entity.title,
+          onClick: submit,
+        },
+      ],
+    }"
+    @close="dialogType = ''"
   >
     <template #body-content>
-      <div class="flex items-center justify-center">
-        <Input
-          v-model="newName"
+      <div class="flex gap-3">
+        <FormControl
+          v-model="newTitle"
           v-focus
-          class="w-full"
+          class="grow"
           type="text"
           @keyup.enter="submit"
         />
-        <span
-          v-if="entity.file_ext"
-          :variant="'subtle'"
-          theme="gray"
-          size="sm"
-          class="form-input font-medium ml-2 text-ink-gray-7 border-gray-100"
+        <div
+          v-if="file_ext"
+          disabled
+          class="w-12 text-ink-gray-7 bg-surface-gray-2 rounded text-center self-center py-1.5 text-sm"
         >
-          {{ entity.file_ext.toUpperCase().slice(1) }}
-        </span>
-      </div>
-      <div class="flex mt-8">
-        <Button
-          variant="solid"
-          class="w-full"
-          @click="submit"
-        >
-          Rename
-        </Button>
+          {{ file_ext }}
+        </div>
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
-import { Dialog, Input } from "frappe-ui"
-import { useRoute } from "vue-router"
-import { useStore } from "vuex"
+import { ref } from "vue"
+import { Dialog } from "frappe-ui"
 import { rename } from "@/resources/files"
 
 const props = defineProps({ entity: Object, modelValue: String })
 const emit = defineEmits(["update:modelValue", "success"])
-const store = useStore()
+const dialogType = defineModel()
+const open = ref(true)
 
-const newName = ref("")
-const ext = ref("")
+const newTitle = ref("")
+const file_ext = ref("")
 
 if (props.entity.is_group || props.entity.document) {
-  newName.value = props.entity.title
-  if (useRoute().meta.documentPage) {
-    store.state.activeEntity.title = newName.value
-  }
+  newTitle.value = props.entity.title
 } else {
   const parts = props.entity.title.split(".")
   if (parts.length > 1) {
-    newName.value = parts.slice(0, -1).join(".").trim()
-    ext.value = parts[parts.length - 1]
+    newTitle.value = parts.slice(0, -1).join(".")
+    file_ext.value = parts[parts.length - 1]
   } else {
-    newName.value = parts[0]
+    newTitle.value = parts[0]
   }
 }
 
-const open = computed({
-  get: () => {
-    return props.modelValue === "rn"
-  },
-  set: (value) => {
-    emit("update:modelValue", value || "")
-    if (!value) newName.value = ""
-  },
-})
-
 const submit = () => {
+  const formattedTitle =
+    newTitle.value + (file_ext.value ? "." + file_ext.value : "")
   rename.submit({
     entity_name: props.entity.name,
-    new_title: newName.value + (ext.value ? "." + ext.value : ""),
+    new_title: formattedTitle,
   })
   emit("success", {
     name: props.entity.name,
-    title: newName.value + (ext.value ? "." + ext.value : ""),
+    title: formattedTitle,
   })
 }
 </script>

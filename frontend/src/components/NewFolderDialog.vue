@@ -2,59 +2,57 @@
   <Dialog
     v-model="open"
     :options="{
-      title: 'Create new folder',
+      title: 'Create a Folder',
       size: 'xs',
       actions: [
         {
           label: 'Create',
           variant: 'solid',
           disabled: folderName.length === 0,
-          loading: submit.loading,
+          loading: createFolder.loading,
           onClick: submit,
         },
       ],
     }"
+    @close="dialogType = ''"
   >
     <template #body-content>
-      <p class="text-ink-gray-5 text-sm mb-2">Folder name:</p>
-      <TextInput
-        ref="my-input"
+      <FormControl
         v-model="folderName"
+        v-focus
+        label="Name:"
         @keyup.enter="submit"
         @keydown="createFolder.error = null"
       >
         <template #prefix>
           <LucideFolderClosed class="size-4" />
         </template>
-      </TextInput>
+      </FormControl>
       <div
         v-if="createFolder.error"
         class="pt-4 text-base font-sm text-ink-red-3"
       >
-        This folder already exists.
+        {{ createFolder.error.messages[0] }}
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, computed, useTemplateRef, watch } from "vue"
-import store from "@/store"
-import { Dialog, TextInput, createResource } from "frappe-ui"
+import { ref } from "vue"
+import { Dialog, createResource } from "frappe-ui"
 import { useRoute } from "vue-router"
-import { allFolders } from "../resources/files"
 
 const route = useRoute()
 const props = defineProps({
-  modelValue: String,
   parent: String,
 })
-const emit = defineEmits(["update:modelValue", "success", "mutate"])
+const emit = defineEmits(["success"])
+
+const dialogType = defineModel()
+const open = ref(true)
+
 const folderName = ref("")
-const text = useTemplateRef("my-input")
-watch(text, (val) => {
-  val.el.focus()
-})
 
 const createFolder = createResource({
   url: "drive.api.files.create_folder",
@@ -63,7 +61,6 @@ const createFolder = createResource({
       title,
       team: route.params.team,
       parent: props.parent,
-      personal: store.state.breadcrumbs[0].name == "Home" ? 1 : 0,
     }
   },
   validate(params) {
@@ -72,23 +69,9 @@ const createFolder = createResource({
     }
   },
   onSuccess(data) {
-    folderName.value = ""
-    allFolders.fetch()
+    open.value = false
     emit("success", data)
   },
 })
-
-const open = computed({
-  get: () => {
-    return props.modelValue === "f"
-  },
-  set: (value) => {
-    if (!value) {
-      emit("update:modelValue", "")
-      folderName.value = ""
-    }
-  },
-})
-
 const submit = () => createFolder.submit(folderName.value.trim())
 </script>

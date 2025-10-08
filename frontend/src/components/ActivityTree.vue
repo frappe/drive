@@ -80,8 +80,8 @@
 import { useStore } from "vuex"
 import { Avatar, createResource } from "frappe-ui"
 import { computed, ref, watch } from "vue"
-import { ArrowRight } from "lucide-vue-next"
-import { formatDate } from "../utils/format"
+import ArrowRight from "~icons/lucide/arrow-right"
+import { formatDate } from "@/utils/format"
 import ActivityTreeItem from "./ActivityTreeItem.vue"
 import ActivityTreeShare from "./ActivityTreeShare.vue"
 
@@ -96,6 +96,7 @@ const activityLog = createResource({
   onSuccess: groupAndTransform,
 })
 const groupedActivityLog = ref()
+
 watch(
   entity,
   () => {
@@ -158,7 +159,7 @@ function groupAndTransform(activities) {
   const timeThreshold = 15 * 60 * 1000
   // Transform and reduce loop
   for (let index = 0; index < activities.length; index++) {
-    let activity = activities[index]
+    const activity = activities[index]
     if (index > 0) {
       const prevActivity = activities[index - 1]
       const currentTime = new Date(activity.creation).getTime()

@@ -8,14 +8,17 @@ requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
-    "Pillow>=10.0.0",
     "opencv-python-headless>=4.10.0.84",
     "python-magic==0.4.27",
     "mimemapper==0.4.1",
     "unoconv>=0.9.0",
     "PyJWT>=2.8.0",
     "thumbnail>=1.5.0",
-    "boto3==1.37.31",
+    "boto3~=1.34.143",
+    "pycrdt==0.12.26",
+    "Markdown==3.8.2",
+    "beautifulsoup4~=4.13.4",
+    "html2text==2025.4.15"
 ]
 
 [build-system]
@@ -23,16 +26,14 @@ requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.black]
-line-length = 99
+line-length = 120
 
 [tool.isort]
-line_length = 99
+line_length = 120
 multi_line_output = 3
 include_trailing_comma = true
-force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
-indent = "\t"
 
 # press reads this on install
 [deploy.dependencies.apt]

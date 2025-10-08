@@ -1,8 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-../../env/bin/black drive/
+python3 -m black drive/ || ../../env/bin/black drive/ ||  echo "Black formatting failed, please install Black"
+python3 -m isort drive/ || ../../env/bin/isort drive/  ||  echo "isort formatting failed, please install isort"
 
 cd frontend/
-
 npm run precommit

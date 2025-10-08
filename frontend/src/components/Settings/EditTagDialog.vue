@@ -14,7 +14,7 @@
           ref="inputElem"
           v-model="tagTitle"
           type="text"
-          clas="w-full"
+          class="w-full"
           :placeholder="props.tag.title"
           label="Title"
           @keyup.enter="submitTag"
@@ -40,10 +40,8 @@
 import { Button, Input, Dialog, createResource, ErrorMessage } from "frappe-ui"
 import TagColorInput from "@/components/TagColorInput.vue"
 import { ref, computed } from "vue"
-import { useFocus } from "@vueuse/core"
 
 const inputElem = ref()
-const { focused } = useFocus(inputElem, { initialValue: true })
 
 const props = defineProps({
   tag: {

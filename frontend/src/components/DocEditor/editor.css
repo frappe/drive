@@ -1,62 +1,46 @@
+@import url("../../assets/fonts/fonts.css");
+
+body {
+  --font-inter: "InterVar", inherit;
+  --font-fantasy: fantasy, inherit;
+  --font-lora: "Lora", serif;
+  --font-roboto: "Roboto", inherit;
+  --font-merriweather: "Merriweather", serif;
+  --font-geist: "Geist", serif;
+  --font-ibm-plex: "IBM Plex Sans", sans-serif;
+  --font-eb-garamond: "EB Garamond", serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+  --font-comfortaa: "Comfortaa", cursive;
+  --font-caveat: "Caveat", cursive;
+  --font-nunito: "Nunito", sans-serif;
+  --font-comic-sans: "Comic Sans MS", sans-serif;
+}
+
 .prose-sm {
-  min-width: 100%;
-  font-size: 15px;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
-  color: #383838;
-  outline: none;
   caret-color: theme("colors.blue.600");
-  word-break: break-word;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+  padding: 1rem 2.5rem;
+}
+
+span[data-comment-id].display {
+  border-bottom: 2px dashed var(--surface-blue-3);
   user-select: text;
-  padding: 2.5em 0em;
-  background: white;
+  cursor: pointer;
+  scroll-margin: 4rem;
+}
+span[data-comment-id].display:hover,
+span[data-comment-id].display.active {
+  background: var(--surface-blue-2);
+}
+span[data-comment-id]:not([data-resolved="true"]) {
+  border-bottom: 2px dashed var(--outline-amber-2);
+  user-select: text;
+  cursor: pointer;
+  scroll-margin: 4rem;
 }
 
-.prose-sm .tableWrapper {
-  overflow-x: visible;
-}
-
-.prose-sm table {
-  width: 100%;
-  margin: 2em 0px;
-  table-layout: fixed;
-  font-size: 0.85em;
-  line-height: 1.5;
-  min-width: 200px;
-  resize: both;
-  border-collapse: collapse;
-  border-color: inherit;
-}
-
-.prose-sm tr {
-  border-bottom-width: 1px;
-  border-bottom-color: #e5e7eb;
-}
-
-.prose-sm th {
-  position: relative;
-  font-weight: inherit;
-  background-color: #f3f3f3;
-  padding: 0.5rem;
-  border-width: 1px;
-  border-color: #e2e2e2;
-}
-
-.prose-sm td {
-  position: relative;
-  padding: 0.5rem;
-  border-width: 1px;
-  border-color: #e2e2e2;
-}
-
-@media only screen and (max-width: 640px) {
-  .prose-sm {
-    display: block;
-    max-width: 100%;
-    min-width: 100%;
-  }
+span[data-comment-id]:not([data-resolved="true"]):hover,
+span[data-comment-id]:not([data-resolved="true"]).active {
+  background: rgba(250, 204, 21, 0.4);
 }
 
 @media print {
@@ -127,4 +111,26 @@
     float: right;
     margin-left: 1rem;
   }
+}
+
+.collaboration-cursor__caret {
+  border-left: 0px solid currentColor;
+  border-right: 2px solid currentColor;
+  margin-left: 0px;
+  margin-right: -2px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  border-radius: 60px;
+  border: 2px solid #0000001a;
+  color: #ffffffdf;
+  position: absolute;
+  top: -1.5em;
+  left: 0.25em;
+  user-select: none;
+  white-space: nowrap;
 }

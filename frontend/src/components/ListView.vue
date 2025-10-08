@@ -1,7 +1,7 @@
 <template>
   <FrappeListView
     ref="container"
-    class="relative p-3 pb-[60px] select-none"
+    class="relative select-none p-5 md:pb-15"
     row-key="name"
     :columns="selectedColumns"
     :rows="formattedRows"
@@ -19,7 +19,7 @@
     @update:selections="handleSelections"
     @update:active-row="setActive"
   >
-    <ListHeader class="mb-[1px] rounded-sm" />
+    <ListHeader class="mb-[1px]" />
     <div
       v-if="!folderContents"
       class="w-full text-center flex items-center justify-center py-10"
@@ -27,10 +27,7 @@
       <LoadingIndicator class="w-8" />
     </div>
     <template v-else>
-      <div
-        id="drop-area"
-        class="h-full overflow-y-auto"
-      >
+      <div class="h-full overflow-y-auto">
         <ListEmptyState v-if="!formattedRows.length" />
         <div
           v-for="group in formattedRows"
@@ -48,21 +45,23 @@
             <CustomListRow
               :rows="group.rows"
               :context-menu="contextMenu"
+              :selections
               @dropped="emit('dropped')"
             />
           </ListGroupRows>
         </div>
-        <div v-else="formattedRows.length">
+        <div
+          v-else
+          class="pb-8"
+        >
           <CustomListRow
             :rows="formattedRows"
             :context-menu="contextMenu"
+            :selections
             @dropped="(...p) => $emit('dropped', ...p)"
           />
         </div>
       </div>
-      <p class="hidden absolute text-center w-full top-[50%] z-10 font-bold">
-        Drop to upload
-      </p>
     </template>
   </FrappeListView>
   <ContextMenu
@@ -95,7 +94,9 @@ import { formatDate } from "@/utils/format"
 
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
-import { LucideBuilding2, LucideUsers, LucideGlobe2 } from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideUsers from "~icons/lucide/users"
+import LucideGlobe2 from "~icons/lucide/globe-2"
 
 const store = useStore()
 const route = useRoute()
@@ -103,6 +104,7 @@ const props = defineProps({
   folderContents: Object,
   actionItems: Array,
   userData: Object,
+  rootEntity: Object,
 })
 const emit = defineEmits(["dropped"])
 
@@ -134,11 +136,16 @@ const selectedColumns = [
         : title.slice(0, title.lastIndexOf(".")),
     getTooltip: (e) => (e.is_group || e.document ? "" : e.title),
     prefix: ({ row }) => {
-      return getThumbnailUrl(row.name, row.file_type)
+      return getThumbnailUrl(row)
     },
-    width: "50%",
+    suffix: ({ row }) => {
+      if (row.share_count === props.rootEntity?.share_count) return
+      if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
+      else if (row.share_count === -1)
+        return h(LucideBuilding2, { class: "size-4" })
+      else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
+    },
   },
-
   {
     label: __("Owner"),
     key: "",
@@ -156,28 +163,6 @@ const selectedColumns = [
           row.owner,
         size: "sm",
       })
-    },
-    width: "10%",
-  },
-  {
-    label: __("Shared"),
-    key: "",
-    getLabel: ({ row }) => {
-      if (row.share_count === -2) return "Public"
-      else if (row.share_count === -1) return "Team"
-      else if (row.share_count > 0)
-        return (
-          row.share_count +
-          " " +
-          (row.share_count === 1 ? __("person") : __("people"))
-        )
-      return "-"
-    },
-    prefix: ({ row }) => {
-      if (row.share_count === -2) return h(LucideGlobe2, { class: "size-4" })
-      else if (row.share_count === -1)
-        return h(LucideBuilding2, { class: "size-4" })
-      else if (row.share_count > 0) return h(LucideUsers, { class: "size-4" })
     },
     width: "10%",
   },
@@ -205,7 +190,7 @@ const selectedColumns = [
         ? row.children
           ? row.children + " item" + (row.children === 1 ? "" : "s")
           : "empty"
-        : row.file_size_pretty,
+        : row.file_size_pretty || "-",
     width: "8%",
   },
   { label: "", key: "options", align: "right", width: "5%" },
@@ -237,7 +222,7 @@ const dropdownActionItems = (row) => {
 const contextMenu = (event, row) => {
   if (selections.value.size > 0) return
   // Ctrl + click triggers context menu on Mac
-  if (event.ctrlKey) openEntity(route.params.team, row, true)
+  if (event.ctrlKey) openEntity(row, true)
   rowEvent.value = event
   selectedRow.value = row
   event.stopPropagation()
@@ -294,14 +279,3 @@ onKeyDown("Escape", (e) => {
   e.preventDefault()
 })
 </script>
-<style>
-.dz-drag-hover #drop-area {
-  opacity: 0.5;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.dz-drag-hover #drop-area + p {
-  display: block;
-}
-</style>

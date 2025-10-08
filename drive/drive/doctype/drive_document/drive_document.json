@@ -10,10 +10,12 @@
   "field_order": [
     "content",
     "settings",
-    "comments",
+    "comments2",
     "raw_content",
     "mentions",
-    "version"
+    "version",
+    "comments",
+    "versions"
   ],
   "fields": [
     {
@@ -23,15 +25,10 @@
       "label": "Content"
     },
     {
-      "default": "{\n   \"docWidth\": false,\n   \"docSize\": true,\n   \"docFont\": \"font-fd-sans\",\n   \"docHeader\": false\n}",
-      "fieldname": "settings",
-      "fieldtype": "JSON",
-      "label": "Settings"
-    },
-    {
       "fieldname": "comments",
-      "fieldtype": "JSON",
-      "label": "Comments"
+      "fieldtype": "Table",
+      "label": "Comments",
+      "options": "Drive Comment"
     },
     {
       "fieldname": "raw_content",
@@ -47,10 +44,28 @@
       "fieldname": "version",
       "fieldtype": "Int",
       "label": "Version"
+    },
+    {
+      "fieldname": "comments2",
+      "fieldtype": "JSON",
+      "label": "Comments"
+    },
+    {
+      "fieldname": "versions",
+      "fieldtype": "Table",
+      "label": "Versions",
+      "options": "Drive Doc Version"
+    },
+    {
+      "default": "{}",
+      "fieldname": "settings",
+      "fieldtype": "JSON",
+      "label": "Settings"
     }
   ],
+  "grid_page_length": 50,
   "links": [],
-  "modified": "2025-03-10 13:14:26.531471",
+  "modified": "2025-09-10 14:12:21.559181",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Document",
@@ -70,11 +85,16 @@
       "write": 1
     },
     {
+      "email": 1,
+      "export": 1,
+      "print": 1,
       "read": 1,
+      "report": 1,
       "role": "Guest",
-      "write": 1
+      "share": 1
     }
   ],
+  "row_format": "Dynamic",
   "sort_field": "modified",
   "sort_order": "DESC",
   "states": []

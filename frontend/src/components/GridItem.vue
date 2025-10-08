@@ -9,7 +9,7 @@
         :class="'h-10 w-auto'"
         :src="backupLink"
         :draggable="false"
-      />
+      >
       <img
         v-show="imgLoaded"
         :class="
@@ -19,9 +19,8 @@
         "
         :src="src"
         :draggable="false"
-        @error="src = backupLink"
         @load="imgLoaded = true"
-      />
+      >
     </template>
     <!-- Direct padding doesn't work -->
     <div
@@ -45,14 +44,14 @@
         <img
           v-if="
             file.file_type !== 'Unknown' &&
-            !file.is_group &&
-            ((imgLoaded && src !== backupLink) || !is_image)
+              !file.is_group &&
+              ((imgLoaded && src !== backupLink) || !is_image)
           "
           loading="lazy"
           class="h-4 w-auto"
           :src="getIconUrl(file.file_type) || '/drive'"
           :draggable="false"
-        />
+        >
         <p class="truncate">
           {{ file.is_group ? childrenSentence + "∙" : "" }}
           {{ file.file_type !== "Unknown" ? file.file_type + "∙" : "" }}
@@ -71,10 +70,7 @@ import { createResource } from "frappe-ui"
 import { ref, computed } from "vue"
 const props = defineProps({ file: Object })
 
-const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(
-  props.file.name,
-  props.file.file_type
-)
+const [thumbnailLink, backupLink, is_image] = getThumbnailUrl(props.file)
 const src = ref(thumbnailLink || backupLink)
 const imgLoaded = ref(false)
 

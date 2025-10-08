@@ -1,13 +1,13 @@
 <template>
   <LoadingIndicator
-    v-show="loading"
-    class="w-10 h-full text-neutral-100 mx-auto"
+    v-if="loading"
+    class="w-10"
   />
   <audio
-    v-show="!loading"
+    v-else
     :key="src"
     ref="mediaRef"
-    class="w-1/4 max-h-full"
+    class="w-1/4 h-full"
     autoplay
     preload="none"
     controls="true"
@@ -17,7 +17,7 @@
     <source
       :src="src"
       :type="type"
-    />
+    >
   </audio>
 </template>
 
@@ -53,15 +53,6 @@ watch(
     type.value = newValue.mime_type
   }
 )
-
-/* watch(() => mediaRef.value, (newValue, oldValue) => {
-  console.log(newValue)
-  if (newValue) {
-    if (newValue.readyState === 1) {
-      loading.value = false;
-    }
-  }
-}); */
 
 onMounted(() => {
   loading.value = false

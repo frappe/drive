@@ -1,18 +1,12 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full z-10 text-neutral-100 mx-auto"
+    class="w-10"
   />
-  <div
+  <pre
     v-else
-    id="container"
-    class="flex items-center justify-center w-full h-full overflow-auto"
-  >
-    <pre
-      class="bg-surface-menu-bar sm:w-full md:w-2/3 text-ink-gray-8 text-sm border select-text p-3 font-mono overflow-x-auto overflow-y-auto"
-      >{{ blob }}</pre
-    >
-  </div>
+    class="overflow-y-auto h-[80vh] font-[InterVar] font-normal text-p-base text-ink-gray-8 sm:w-full border p-3 rounded overflow-x-auto"
+  >{{ blob }}</pre>
 </template>
 
 <script setup>
@@ -22,10 +16,7 @@ import { LoadingIndicator } from "frappe-ui"
 import { onMounted, ref, watch } from "vue"
 
 const props = defineProps({
-  previewEntity: {
-    type: Object,
-    default: "",
-  },
+  previewEntity: Object,
 })
 
 const loading = ref(true)
@@ -47,7 +38,7 @@ async function fetchContent() {
     }
   )
   if (res.ok) {
-    let resBlob = await res.blob()
+    const resBlob = await res.blob()
     blob.value = await resBlob.text()
     loading.value = false
   }

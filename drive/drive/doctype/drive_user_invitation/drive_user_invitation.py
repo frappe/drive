@@ -3,20 +3,13 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.model.document import Document
-from frappe.utils import (
-    add_days,
-    get_datetime,
-    now,
-    validate_email_address,
-)
+from frappe.utils import add_days, get_datetime, now, validate_email_address
 
 EXPIRY_DAYS = 1
 
 
 class DriveUserInvitation(Document):
     def has_expired(self):
-        return False
         return get_datetime(self.creation) < get_datetime(add_days(now(), -EXPIRY_DAYS))
 
     def before_insert(self):
@@ -24,11 +17,12 @@ class DriveUserInvitation(Document):
 
     def after_insert(self):
         if self.status == "Pending":
-            self.invite_via_email()
+            try:
+                self.invite_via_email()
+            except:
+                pass
         elif self.status == "Proposed":
-            admins = frappe.get_all(
-                "Drive Team Member", filters={"parent": self.team, "is_admin": 1}, pluck="user"
-            )
+            admins = frappe.get_all("Drive Team Member", filters={"parent": self.team, "access_level": 2}, pluck="user")
             for admin in admins:
                 frappe.get_doc(
                     {
@@ -46,9 +40,7 @@ class DriveUserInvitation(Document):
             subject=f"Frappe Drive - Invitation",
             template="drive_invitation",
             args={
-                "invite_link": frappe.utils.get_url(
-                    f"/api/method/drive.api.product.accept_invite?key={self.name}"
-                ),
+                "invite_link": frappe.utils.get_url(f"/api/method/drive.api.product.accept_invite?key={self.name}"),
                 "user": frappe.session.user,
                 "team_name": frappe.db.get_value("Drive Team", self.team, "title"),
             },
@@ -84,11 +76,13 @@ class DriveUserInvitation(Document):
                     "login_count": 1,
                 }
             ).insert(ignore_permissions=True)
-
             frappe.db.commit()
-            url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
-            frappe.local.response["location"] = url
-            return
+            user_exists = frappe.db.exists("User", self.email)
+
+            if not user_exists:
+                url = f"/drive/signup?e={self.email}&t={frappe.db.get_value('Drive Team', self.team, 'title')}&r={req.name}"
+                frappe.local.response["location"] = url
+                return
 
         # Otherwise, add the user to the team
         team = frappe.get_doc("Drive Team", self.team)

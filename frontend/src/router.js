@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router"
 import store from "./store"
 import { manageBreadcrumbs } from "./utils/files"
-import { createResource, call } from "frappe-ui"
-
+import { createResource } from "frappe-ui"
+import Dummy from "@/pages/Dummy.vue"
 function clearStore() {
   store.commit("setActiveEntity", null)
 }
@@ -18,103 +18,6 @@ async function setRootBreadCrumb(to) {
 }
 
 const routes = [
-  {
-    path: "/",
-    component: () => null,
-    beforeEnter: async () => {
-      if (!store.getters.isLoggedIn) return "/login"
-      
-      // Check if user is Website User
-      try {
-        const userType = await call("/api/method/drive.api.product.get_user_type")
-        if (userType === "Website User") {
-          // Website Users should stay on home page, not go to Drive
-          window.location.href = "/"
-          return false
-        }
-      } catch (error) {
-        console.error("Error checking user type:", error)
-      }
-      
-      const settings = createResource({
-        url: "/api/method/drive.api.product.get_settings",
-        method: "GET",
-        cache: "settings",
-      })
-      if (!settings.data) await settings.fetch()
-      return settings.data.default_team
-        ? "/t/" + settings.data.default_team
-        : "/teams"
-    },
-  },
-  {
-    path: "/t/:team/notifications",
-    name: "Inbox",
-    // Load a skeleton template directly?
-    component: () => import("@/pages/Notifications.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/:team/",
-    redirect: (to) => ({
-      name: "Home",
-      team: to.params.team,
-    }),
-  },
-  {
-    path: "/t/:team/",
-    name: "Home",
-    component: () => import("@/pages/Personal.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/team",
-    name: "Team",
-    component: () => import("@/pages/Team.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/recents",
-    name: "Recents",
-    component: () => import("@/pages/Recents.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/favourites",
-    name: "Favourites",
-    component: () => import("@/pages/Favourites.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/trash",
-    name: "Trash",
-    component: () => import("@/pages/Trash.vue"),
-    beforeEnter: [setRootBreadCrumb],
-  },
-  {
-    path: "/t/:team/file/:entityName",
-    name: "File",
-    component: () => import("@/pages/File.vue"),
-    meta: { allowGuest: true, filePage: true },
-    beforeEnter: [manageBreadcrumbs],
-    props: true,
-  },
-  {
-    path: "/t/:team/folder/:entityName",
-    name: "Folder",
-    component: () => import("@/pages/Folder.vue"),
-    meta: { allowGuest: true },
-    beforeEnter: [manageBreadcrumbs],
-    props: true,
-  },
-  {
-    path: "/t/:team/document/:entityName",
-    name: "Document",
-    meta: { documentPage: true, allowGuest: true },
-    component: () => import("@/pages/Document.vue"),
-    props: true,
-    beforeEnter: [manageBreadcrumbs],
-  },
   {
     path: "/signup",
     name: "Signup",
@@ -134,14 +37,28 @@ const routes = [
     meta: { allowGuest: true },
   },
   {
-    path: "/teams",
-    name: "Teams",
-    component: () => import("@/pages/Teams.vue"),
-  },
-  {
     path: "/setup",
     name: "Setup",
     component: () => import("@/pages/Setup.vue"),
+  },
+  {
+    path: "/",
+    name: "Home",
+    component: () => import("@/pages/Personal.vue"),
+    beforeEnter: [setRootBreadCrumb],
+    props: true,
+  },
+  {
+    path: "/inbox",
+    name: "Inbox",
+    // Load a skeleton template directly?
+    component: () => import("@/pages/Notifications.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/teams",
+    name: "Teams",
+    component: () => import("@/pages/Teams.vue"),
   },
   {
     path: "/shared",
@@ -149,6 +66,98 @@ const routes = [
     component: () => import("@/pages/Shared.vue"),
     beforeEnter: [setRootBreadCrumb],
     meta: { allowGuest: true },
+  },
+  {
+    path: "/recents",
+    name: "Recents",
+    component: () => import("@/pages/Recents.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/favourites",
+    name: "Favourites",
+    component: () => import("@/pages/Favourites.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/documents",
+    name: "Documents",
+    component: () => import("@/pages/Documents.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/presentations",
+    name: "Slides",
+    component: () => import("@/pages/Slides.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/trash",
+    name: "Trash",
+    component: () => import("@/pages/Trash.vue"),
+    beforeEnter: [setRootBreadCrumb],
+  },
+  {
+    path: "/t/:team/:letter/:entityName/:slug?",
+    component: Dummy,
+    beforeEnter: async (to) => {
+      return {
+        path: `/g/${to.params.entityName}`,
+      }
+    },
+  },
+  {
+    path: "/g/:entityName/",
+    component: Dummy,
+    beforeEnter: async (to) => {
+      const entity = createResource({
+        url: "/api/method/drive.api.files.get_entity_type",
+        method: "GET",
+        params: {
+          entity_name: to.params.entityName,
+        },
+      })
+      await entity.fetch()
+      const letter = {
+        folder: "d",
+        document: "w",
+        file: "f",
+      }[entity.data.type]
+      return {
+        path: `/${letter}/${entity.data.name}`,
+      }
+    },
+  },
+  {
+    path: "/t/:team/",
+    name: "Team",
+    component: () => import("@/pages/Team.vue"),
+    beforeEnter: [setRootBreadCrumb],
+    props: true,
+  },
+  {
+    path: "/f/:entityName/:slug?",
+    name: "File",
+    component: () => import("@/pages/File.vue"),
+    meta: { allowGuest: true, filePage: true },
+    beforeEnter: [manageBreadcrumbs],
+    props: true,
+  },
+  {
+    path: "/d/:entityName/:slug?",
+    name: "Folder",
+    component: () => import("@/pages/Folder.vue"),
+    meta: { allowGuest: true },
+    beforeEnter: [manageBreadcrumbs],
+    props: true,
+  },
+  {
+    path: "/w/:entityName/:slug?",
+    name: "Document",
+    meta: { documentPage: true, allowGuest: true },
+    component: () => import("@/pages/Document.vue"),
+    props: true,
+    beforeEnter: [manageBreadcrumbs],
   },
 ]
 

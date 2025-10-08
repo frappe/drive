@@ -1,167 +1,220 @@
 <template>
-  <TransitionGroup
-    v-for="(entity, i) in entities"
-    :key="entity.name"
-    name="fade-in"
+  <Dialog
+    v-model="open"
+    @close="dialogType = ''"
   >
-    <UseDraggable
-      v-if="entity.visible !== false"
-      class="fixed"
-      :initial-value="{ x: width - (i + 1) * 330, y: height - 500 }"
-    >
-      <div
-        class="w-[300px] bg-surface-white/90 border border-outline-gray-2 rounded-xl shadow-xl p-4 backdrop-blur-md z-30"
+    <template #body-title>
+      <h3
+        class="text-2xl font-semibold leading-6 text-ink-gray-9 cursor-pointer pr-2"
+        @click="emitter.emit('rename')"
       >
-        <div class="cursor-move flex justify-between items-center mb-4">
-          <div class="flex gap-2">
-            <h2 class="text-lg font-semibold text-ink-gray-8">
-              {{ entity.title }}
-            </h2>
-          </div>
-          <Button
-            variant="ghost"
-            @click="entity.visible = false"
-          >
-            <template #icon>
-              <LucideX class="size-4" />
-            </template>
-          </Button>
-        </div>
-        <ul class="space-y-3 text-sm pb-2 text-ink-gray-5">
-          <li>
-            <span class="inline-block w-24 text-ink-gray-5"
-              >{{ __("Owner") }}:
-            </span>
-            <span class="col-span-1"
-              ><a href="mailto:{{ entity.owner }}">{{ entity.owner }}</a>
-            </span>
-          </li>
+        {{ entity.title }}
+      </h3>
+    </template>
+    <template #body-content>
+      <ul class="space-y-3 text-sm mb-4 text-ink-gray-8">
+        <span class="text-base font-semibold">Information</span>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Owner") }}:</span>
+          <span class="col-span-1">
+            <a :href="`mailto:${entity.owner}`">{{ entity.owner }}</a>
+          </span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Type") }}:</span>
+          <span class="col-span-1">{{ entity.file_type }}</span>
+        </li>
+        <li v-if="entity.file_size">
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Size") }}:</span>
+          <span class="col-span-1">
+            {{ entity.file_size_pretty }}{{ ` (${entity.file_size})` }}
+          </span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Modified") }}:</span>
+          <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Added") }}:</span>
+          <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
+        </li>
+        <li class="flex items-center">
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Tags") }}:</span>
+          <TagInput
+            class="flex-grow"
+            :entity
+          />
+        </li>
+      </ul>
 
-          <li>
-            <span class="inline-block w-24">{{ __("Type") }}:</span>
-            <span class="col-span-1">{{ entity.file_type }}</span>
-          </li>
-          <li v-if="entity.file_size">
-            <span class="inline-block w-24">{{ __("Size") }}:</span>
-            <span class="col-span-1">
-              {{ entity.file_size_pretty }}{{ ` (${entity.file_size})` }}</span
-            >
-          </li>
-          <li>
-            <span class="inline-block w-24">{{ __("Modified") }}:</span>
-            <span class="col-span-1">{{ formatDate(entity.modified) }}</span>
-          </li>
-          <li>
-            <span class="inline-block w-24">{{ __("Added") }}:</span>
-            <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
-          </li>
-          <!-- <li>
-            <span class="inline-block w-24">Path:</span>
-            <span class="col-span-1">{{ entity.path }}</span>
-          </li> -->
-        </ul>
-        <div class="flex justify-between">
-          <span class="text-base font-semibold mt-2">Access </span>
-          <Button
-            v-if="entity.share"
-            :variant="'subtle'"
-            size="sm"
-            class="rounded flex justify-center items-center scale-[90%]"
-            @click="emitter.emit('showShareDialog')"
-          >
-            {{ __("Manage") }}
-          </Button>
-        </div>
-
-        <div
-          v-if="!access[i]"
-          class="text-sm text-center italic"
+      <ul
+        v-if="editor?.storage?.characterCount"
+        class="space-y-3 text-sm mb-4 text-ink-gray-8"
+      >
+        <span class="text-base font-semibold">{{ __("Stats") }}</span>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Words") }}:</span>
+          <span class="col-span-1">{{
+            editor.storage.characterCount.words()
+          }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Characters") }}:</span>
+          <span class="col-span-1">{{
+            editor.storage.characterCount.characters()
+          }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Reading time") }}:</span>
+          <span class="col-span-1">
+            {{ Math.ceil(editor.storage.characterCount.words() / 200) }}
+            {{
+              Math.ceil(editor.storage.characterCount.words() / 200) > 1
+                ? "minutes"
+                : "minute"
+            }}
+          </span>
+        </li>
+      </ul>
+      <div class="flex justify-between items-center">
+        <span class="text-base font-semibold text-ink-gray-8">Access</span>
+        <Button
+          v-if="entity.share"
+          :variant="'subtle'"
+          size="sm"
+          class="rounded flex justify-center items-center scale-[90%]"
+          @click="emitter.emit('share')"
         >
-          Loading...
-        </div>
-        <ul
-          v-else
-          class="space-y-3 text-sm py-2"
-        >
-          <li class="flex">
-            <span class="inline-block w-24 text-ink-gray-5"
-              >{{ __("General") }}:</span
-            >
-            <div class="col-span-1 flex gap-2">
-              <GeneralAccess
-                size="sm"
-                class="-mr-[3px] outline outline-white"
-                :access-type="
-                  generalAccess?.data?.read === 1 ? 'public' : 'restricted'
-                "
-              />
-              <span
-                >{{
-                  generalAccess?.data?.read === "public"
-                    ? "Public"
-                    : "Restricted"
-                }}
-              </span>
-            </div>
-          </li>
-          <li>
-            <span class="inline-block w-24 text-ink-gray-5"
-              >{{ __("Shared") }}:</span
-            >
-            <span class="col-span-1">
-              {{}}
-              {{
-                access[i].users.message.length
-                  ? access[i].users.message.length + ' ' +
-                    (access[i].users.message.length === 1
-                      ? __("person")
-                      : __("people"))
-                  : "-"
-              }}
-              {{
-                access[i].users.message.length > 0 &&
-                access[i].users.message.length < 3
-                  ? "(" +
-                    access[i].users.message.map((k) => k.user).join(", ") +
-                    ")"
-                  : ""
-              }}
-            </span>
-          </li>
-        </ul>
+          {{ __("Manage") }}
+        </Button>
       </div>
-    </UseDraggable>
-  </TransitionGroup>
+      <LoadingIndicator
+        v-if="!getGeneralAccess.data?.type"
+        class="size-4 mx-auto my-1"
+      />
+      <ul
+        v-else
+        class="space-y-3 text-sm py-2"
+      >
+        <li class="flex">
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("General") }}:</span>
+          <div class="col-span-1 flex gap-2">
+            <GeneralAccess
+              size="sm"
+              :access-type="getGeneralAccess.data.type"
+              :show-text="true"
+              class="-mr-[3px]"
+            />
+          </div>
+        </li>
+        <li>
+          <span class="inline-block w-24 text-ink-gray-5">{{ __("Shared") }}:</span>
+          <span
+            v-if="userAccess.data?.length"
+            class="col-span-1 text-ink-gray-8"
+          >
+            {{
+              userAccess.data.length +
+                " " +
+                (userAccess.data.length === 1 ? __("person") : __("people"))
+            }}
+            {{
+              userAccess.data.length < 3
+                ? "(" + userAccess.data.map((k) => k.user).join(", ") + ")"
+                : ""
+            }}
+          </span>
+          <span v-else>-</span>
+        </li>
+      </ul>
+      <ul
+        v-if="developer"
+        class="space-y-3 text-sm text-ink-gray-8 mb-4 mt-4"
+      >
+        <div>
+          <span class="text-base font-semibold">{{ __("Developer") }}</span>
+          <Button
+            variant="subtle"
+            size="sm"
+            class="scale-[90%] float-right"
+          >
+            <a
+              :href="'/app/drive-file/' + entity.name"
+              target="_blank"
+            >Open in Desk</a>
+          </Button>
+        </div>
+        <li>
+          <span class="inline-block w-24">ID:</span>
+          <span class="col-span-1">{{ entity.name }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">Disk path:</span>
+          <span class="col-span-1">{{ entity.path }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">Team:</span>
+          <span class="col-span-1">{{ entity.team }}</span>
+        </li>
+        <li>
+          <span class="inline-block w-24">MIME type:</span>
+          <span class="col-span-1">{{ entity.mime_type }}</span>
+        </li>
+      </ul>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
 import { formatDate } from "@/utils/format"
+import { Dialog, Button, LoadingIndicator, createResource } from "frappe-ui"
+import TagInput from "@/components/TagInput.vue"
+import { ref, inject } from "vue"
+import { onKeyDown } from "@vueuse/core"
+import emitter from "@/emitter"
 
-import { UseDraggable } from "@vueuse/components"
-import { Button } from "frappe-ui"
-import { computedAsync } from "@vueuse/core"
+const dialogType = defineModel()
+const open = ref(true)
 
+const editor = inject("editor")
 const props = defineProps({
-  entities: Array,
+  entity: Object,
 })
 
-const height = document.body.clientHeight
-const width = document.body.clientWidth
-const access = computedAsync(async () => {
-  const res = []
-  for (let p of props.entities) {
-    const users = await fetch(
-      "/api/method/drive.api.permissions.get_shared_with_list?entity=" + p.name
-    )
-    const general = await fetch(
-      "/api/method/drive.api.permissions.get_user_access?user=Guest&entity=" +
-        p.name
-    )
-    res.push({
-      users: await users.json(),
-      general: await general.json(),
-    })
-  }
-  return res
-}, [])
+// Refactor to share with ShareDialog
+const getGeneralAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  makeParams: (params) => ({
+    ...params,
+    entity: props.entity.name,
+  }),
+  transform: (data) => {
+    if (!data || !data.read) {
+      if (getGeneralAccess.params.user === "Guest")
+        getGeneralAccess.fetch({ user: "$TEAM" })
+      else
+        return {
+          type: "restricted",
+        }
+    } else {
+      const translate = {
+        Guest: "public",
+        $TEAM: "team",
+      }
+      return { ...data, type: translate[getGeneralAccess.params.user] }
+    }
+  },
+})
+getGeneralAccess.fetch({ user: "Guest" })
+
+const userAccess = createResource({
+  url: "drive.api.permissions.get_shared_with_list",
+  params: { entity: props.entity.name },
+  auto: true,
+})
+
+const developer = ref(false)
+onKeyDown("D", () => {
+  developer.value = !developer.value
+})
 </script>

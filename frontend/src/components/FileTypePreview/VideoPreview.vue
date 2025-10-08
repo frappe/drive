@@ -1,13 +1,13 @@
 <template>
   <LoadingIndicator
     v-show="loading"
-    class="w-10 h-full text-neutral-100 mx-auto"
+    class="w-10"
   />
   <video
     v-show="!loading"
     :key="src"
     ref="mediaRef"
-    class="w-auto max-h-full"
+    class="max-h-[70vh] max-w-full rounded-lg"
     autoplay
     muted
     preload="none"
@@ -19,7 +19,7 @@
     <source
       :src="src"
       :type="type"
-    />
+    >
   </video>
 </template>
 
@@ -35,14 +35,11 @@ import { LoadingIndicator } from "frappe-ui"
 import { ref, onBeforeUnmount, watch } from "vue"
 
 const props = defineProps({
-  previewEntity: {
-    type: String,
-    default: "",
-  },
+  previewEntity: Object,
 })
 const loading = ref(true)
 const src = ref(
-  `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
+  `/api/method/drive.api.files.stream_file_content?entity_name=${props.previewEntity.name}`
 )
 const type = ref(
   props.previewEntity.mime_type === "video/quicktime"
@@ -62,7 +59,7 @@ watch(
   () => props.previewEntity,
   (newValue) => {
     loading.value = true
-    src.value = `/api/method/drive.api.files.get_file_content?entity_name=${newValue.name}`
+    src.value = `/api/method/drive.api.files.stream_file_content?entity_name=${newValue.name}`
     type.value = newValue.mime_type
   }
 )

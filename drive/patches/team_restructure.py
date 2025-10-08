@@ -1,7 +1,8 @@
-import frappe
-from pathlib import Path
 import shutil
 import time
+from pathlib import Path
+
+import frappe
 
 
 def execute():
@@ -37,25 +38,17 @@ def execute():
                 homes.append(k["name"])
                 continue
             k["old_name"] = k.pop("name")
-            doc = frappe.get_doc(
-                {"doctype": "Drive File", **k, "team": team.name, "is_private": 1}
-            )
+            doc = frappe.get_doc({"doctype": "Drive File", **k, "team": team.name, "is_private": 1})
             if k["path"]:
                 path_els = k["path"].split("/")
                 if "files" in path_els:
-                    doc.path = (
-                        home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
-                    )
+                    doc.path = home_folder + "/" + "/".join(path_els[path_els.index("files") + 2 :])
                 else:
-                    doc.path = (
-                        home_folder + "/" + "/".join(path_els[path_els.index("private") + 2 :])
-                    )
+                    doc.path = home_folder + "/" + "/".join(path_els[path_els.index("private") + 2 :])
                 p = Path(k["path"])
                 old_path = frappe.get_site_path("/".join(str(p).split("/")[1:]))
                 try:
-                    shutil.copy(
-                        old_path, str(Path(frappe.get_site_path("private/files")) / doc.path)
-                    )
+                    shutil.copy(old_path, str(Path(frappe.get_site_path("private/files")) / doc.path))
                 except:
                     print(
                         "Moving failed for",
@@ -77,9 +70,7 @@ def execute():
         frappe.db.set_value("Drive File", name, "owner", k["owner"], update_modified=False)
         frappe.db.set_value("Drive File", name, "creation", k["creation"], update_modified=False)
         frappe.db.set_value("Drive File", name, "modified", k["modified"], update_modified=False)
-        frappe.db.set_value(
-            "Drive File", name, "modified_by", k["modified_by"], update_modified=False
-        )
+        frappe.db.set_value("Drive File", name, "modified_by", k["modified_by"], update_modified=False)
         if k["parent_drive_entity"] in homes:
             frappe.db.set_value(
                 "Drive File",

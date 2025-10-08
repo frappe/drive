@@ -18,6 +18,7 @@ const getJson = (key, initial) => {
     return initial
   }
 }
+
 const store = createStore({
   state: {
     user: {
@@ -27,77 +28,55 @@ const store = createStore({
       imageURL: user_image,
     },
     uploads: [],
-    connectedUsers: [],
-    sortOrder: getJson("sortOrder", {
-      label: "Modified",
-      field: "modified",
-      ascending: false,
-    }),
+    sortOrder: getJson("sortOrder", {}),
     view: getJson("view", "list"),
     shareView: getJson("shareView", "with"),
     activeTags: [],
     activeEntity: null,
+    currentResource: [],
+    listResource: [],
     notifCount: 0,
     pasteData: { entities: [], action: null },
-    showInfo: false,
     currentFolder: {
-      name: getJson("currentFolder", {}),
-      team: getJson("currentFolderTeam", {}),
+      name: getJson("currentFolder", ""),
+      team: getJson("currentFolderTeam", ""),
       entities: getJson("currentEntitites", []),
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
-    // Writer ones
-    hasWriteAccess: false,
-    allComments: "",
-    activeCommentsInstance: "",
-    IsSidebarExpanded: JSON.parse(
-      localStorage.getItem("IsSidebarExpanded") || true
-    ),
-    passiveRename: false,
-    editorNewTab: localStorage.getItem("editorNewTab")
-      ? JSON.parse(localStorage.getItem("editorNewTab"))
-      : false,
+    sidebarCollapsed: getJson("sidebarCollapsed", false),
   },
   getters: {
     isLoggedIn: (state) => {
       return state.user.id && state.user.id !== "Guest"
     },
-    uploadsInProgress: (state) => {
-      return state.uploads.filter((upload) => !upload.completed)
-    },
-    uploadsFailed: (state) => {
-      return state.uploads.filter((upload) => upload.error)
-    },
-    uploadsCompleted: (state) => {
-      return state.uploads.filter((upload) => upload.completed && !upload.error)
-    },
+    uploadsInProgress: (state) =>
+      state.uploads.filter((u) => !u.completed && !u.completed),
+    uploadsCompleted: (state) =>
+      state.uploads.filter((u) => u.completed && !u.error),
+    uploadsFailed: (state) => state.uploads.filter((u) => u.error),
   },
   mutations: {
-    setElementExists(state, val) {
-      state.elementExists = val
-    },
-    toggleEditorNewTab(state) {
-      state.editorNewTab = !state.editorNewTab
-      localStorage.setItem("editorNewTab", JSON.stringify(state.editorNewTab))
-    },
-    setUploads(state, uploads) {
-      state.uploads = uploads
-    },
-    setConnectedUsers(state, connectedUsers) {
-      state.connectedUsers = connectedUsers
-    },
-    pushToUploads(state, upload) {
-      state.uploads.push(upload)
+    addUpload(state, payload) {
+      state.uploads.push(payload)
     },
     updateUpload(state, payload) {
-      let index = state.uploads.findIndex(
-        (upload) => upload.uuid == payload.uuid
-      )
-      Object.assign(state.uploads[index], payload)
+      const idx = state.uploads.findIndex((u) => u.uuid === payload.uuid)
+      if (idx > -1) {
+        state.uploads[idx] = { ...state.uploads[idx], ...payload }
+      }
     },
-    setSortOrder(state, payload) {
-      localStorage.setItem("sortOrder", JSON.stringify(payload))
-      state.sortOrder = payload
+    clearUploads(state) {
+      state.uploads = []
+    },
+    removeUpload(state, uuid) {
+      state.uploads = state.uploads.filter((u) => u.uuid !== uuid)
+    },
+    setSortOrder(state, [entity, value]) {
+      if (!state.sortOrder) {
+        state.sortOrder = {}
+      }
+      state.sortOrder[entity] = value
+      localStorage.setItem("sortOrder", JSON.stringify(state.sortOrder))
     },
     toggleView(state, payload) {
       localStorage.setItem("view", JSON.stringify(payload))
@@ -109,6 +88,12 @@ const store = createStore({
     },
     setActiveEntity(state, payload) {
       state.activeEntity = payload
+    },
+    setCurrentResource(state, payload) {
+      state.currentResource = payload
+    },
+    setListResource(state, payload) {
+      state.listResource = payload
     },
     setCurrentFolder(state, payload) {
       // Don't clear cache for performance's sake (state is cleared on every reroute)
@@ -133,51 +118,22 @@ const store = createStore({
     setPasteData(state, payload) {
       state.pasteData = payload
     },
-    setShowInfo(state, payload) {
-      localStorage.setItem("showInfo", payload)
-      state.showInfo = payload
-    },
-    setAllComments(state, payload) {
-      /* localStorage.setItem("allDocComments",payload); */
-      state.allComments = payload
-    },
-    setActiveCommentsInstance(state, payload) {
-      state.activeCommentsInstance = payload
-    },
-    setHasWriteAccess(state, payload) {
-      state.hasWriteAccess = payload
-    },
     setBreadcrumbs(state, payload) {
       localStorage.setItem("breadcrumbs", JSON.stringify(payload))
       state.breadcrumbs = payload
     },
-    setIsSidebarExpanded(state, payload) {
-      localStorage.setItem("IsSidebarExpanded", JSON.stringify(payload))
-      state.IsSidebarExpanded = payload
+    setSidebarCollapsed(state, payload) {
+      localStorage.setItem("sidebarCollapsed", JSON.stringify(payload))
+      state.sidebarCollapsed = payload
     },
   },
   actions: {
-    checkElementPresence({ commit }) {
-      const exists = document.getElementById("headlessui-portal-root") !== null
-      commit("setElementExists", exists)
-    },
     async logout() {
       await call("logout")
       clear()
       window.location.reload()
     },
-    clearUploads({ commit }) {
-      commit("setUploads", [])
-    },
   },
 })
-
-const observer = new MutationObserver(() => {
-  store.dispatch("checkElementPresence")
-})
-observer.observe(document.body, { childList: true, subtree: true })
-export function stopObserving() {
-  observer.disconnect()
-}
 
 export default store

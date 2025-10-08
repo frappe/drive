@@ -1,37 +1,32 @@
+import os
+
 import frappe
+import requests
 from frappe.rate_limiter import rate_limit
 from frappe.utils import now
-import requests
-import os
 
 
 def mark_as_viewed(entity):
-    if frappe.session.user == "Guest":
-        return
-    if not frappe.has_permission(
-        doctype="Drive Entity Log", ptype="write", user=frappe.session.user
+    if (
+        frappe.session.user == "Guest"
+        or not frappe.has_permission(doctype="Drive Entity Log", ptype="write", user=frappe.session.user)
+        or entity.is_group
     ):
         return
-    if entity.is_group:
-        return
-    entity_name = entity.name
-    entity_log = frappe.db.get_value(
-        "Drive Entity Log", {"entity_name": entity_name, "user": frappe.session.user}
-    )
+
+    entity_log = frappe.db.get_value("Drive Entity Log", {"entity_name": entity.name, "user": frappe.session.user})
     if entity_log:
-        frappe.db.set_value(
-            "Drive Entity Log", entity_log, "last_interaction", now(), update_modified=False
-        )
+        frappe.db.set_value("Drive Entity Log", entity_log, "last_interaction", now(), update_modified=False)
         return
     doc = frappe.new_doc("Drive Entity Log")
-    doc.entity_name = entity_name
+    doc.entity_name = entity.name
     doc.user = frappe.session.user
     doc.last_interaction = now()
     doc.insert()
     return doc
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 @rate_limit(key="reference_name", limit=10, seconds=60 * 60)
 def add_comment(reference_name: str, content: str, comment_email: str, comment_by: str):
     """Allow logged user with permission to read document to add a comment"""

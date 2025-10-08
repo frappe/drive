@@ -1,77 +1,61 @@
 <template>
-  <div class="h-full overflow-y-auto mt-3.5 px-4 w-full bg-surface-white">
-    <div class="w-full h-7 mb-6 flex items-start justify-between">
-      <div
-        class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
-      >
-        <Button
-          class="max-h-6"
-          :class="
-            onlyUnread
-              ? 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-              : ''
-          "
-          @click="onlyUnread = true"
-        >
-          Unread
-        </Button>
-        <Button
-          class="max-h-6"
-          :class="
-            onlyUnread
-              ? ''
-              : 'bg-surface-white shadow-sm hover:bg-surface-white active:bg-surface-white'
-          "
-          @click="onlyUnread = false"
-        >
-          All
-        </Button>
-      </div>
-      <div>
-        <Button
-          :loading="notifications.loading"
-          icon="refresh-ccw"
-          class="mr-2"
-          @click="notifications.reload()"
-        />
-        <Button
-          icon-left="check-circle"
-          @click="
-            markAsRead.submit({ all: true }), (store.state.notifCount = 0)
-          "
-        >
-          Mark all as Read
-        </Button>
-      </div>
-    </div>
-
-    <ListView
-      v-if="!notifications.loading && notifications.data.length"
-      :columns="columns"
-      :options="options"
-      :rows="notifications.data"
-      row-key="name"
-    />
+  <div
+    class="bg-surface-white border-b w-full px-5 py-2.5 h-12 flex items-center justify-between"
+  >
     <div
-      v-else
-      class="flex flex-col items-center justify-center m-auto h-full"
-      style="transform: translate(0, -42px)"
+      class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
     >
-      <LucideInbox class="w-14 h-auto text-ink-gray-4 pb-4" />
-      <span class="text-base text-ink-gray-5 font-medium"
-        >No Notifications</span
-      >
+      <TabButtons
+        v-model="onlyUnread"
+        :buttons="[
+          {
+            label: 'Unread',
+            value: true,
+          },
+          { label: 'All', value: false },
+        ]"
+      />
     </div>
+    <div>
+      <Button
+        :loading="notifications.loading"
+        icon="refresh-ccw"
+        class="mr-2"
+        @click="notifications.reload()"
+      />
+      <Button
+        icon-left="check-circle"
+        @click="markAsRead.submit({ all: true }), (store.state.notifCount = 0)"
+      >
+        Mark all as Read
+      </Button>
+    </div>
+  </div>
+  <ListView
+    v-if="notifications.data?.length"
+    class="px-5 pt-5"
+    :columns="columns"
+    :options="options"
+    :rows="notifications.data"
+    row-key="name"
+  />
+  <div
+    v-else
+    class="flex flex-col items-center justify-center m-auto min-h-full overflow-auto"
+    style="transform: translate(0, -42px)"
+  >
+    <LucideInbox class="w-14 h-auto text-ink-gray-4 pb-4" />
+    <span class="text-base text-ink-gray-5 font-medium">No Notifications</span>
   </div>
 </template>
 <script setup>
 import { ref, h, watch } from "vue"
 import { formatTimeAgo } from "@vueuse/core"
-import { createResource, Avatar, ListView } from "frappe-ui"
+import { createResource, Avatar, ListView, TabButtons } from "frappe-ui"
 import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
 import emitter from "@/emitter"
-import { LucideInbox } from "lucide-vue-next"
+import LucideInbox from "~icons/lucide/inbox"
 
 const store = useStore()
 const onlyUnread = ref(true)

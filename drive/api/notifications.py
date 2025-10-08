@@ -1,13 +1,10 @@
 import frappe
-import json
 from pypika import Order
 
 
 def get_link(entity):
     type_ = {True: "file", bool(entity.is_group): "folder", bool(entity.document): "document"}
-    return (
-        entity.path if entity.is_link else f"/drive/{entity.team}/{type_.get(True)}/{entity.name}/"
-    )
+    return entity.path if entity.is_link else f"/drive/t/{entity.team}/{type_.get(True)}/{entity.name}/"
 
 
 @frappe.whitelist()
@@ -53,9 +50,7 @@ def get_unread_count():
     """
     Return a count of records where user is current user and read is False
     """
-    return frappe.db.count(
-        "Drive Notification", filters={"to_user": frappe.session.user, "read": 0}
-    )
+    return frappe.db.count("Drive Notification", filters={"to_user": frappe.session.user, "read": 0})
 
 
 @frappe.whitelist()
@@ -67,29 +62,27 @@ def mark_as_read(name=None, all=False):
     :param all: Will mark all unread notifications as read
     """
     if all:
-        frappe.db.set_value(
-            "Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True
-        )
+        frappe.db.set_value("Drive Notification", {"to_user": frappe.session.user, "read": False}, "read", True)
         return
     frappe.db.set_value("Drive Notification", name, "read", True)
     return
 
 
-def notify_mentions(entity_name, document_name):
+def notify_mentions(entity_name, mentions):
     """
     Create a mention notification for each user mentioned
     :param entity_name: ID of entity
     :param document_name: ID of document containing mentions
     """
     entity = frappe.get_doc("Drive File", entity_name)
-    document = frappe.get_doc("Drive Document", document_name)
-    if not document.mentions:
-        return
-    mentions = json.loads(document.mentions)
     for mention in mentions:
-        author_full_name = frappe.db.get_value("User", {"name": mention["author"]}, ["full_name"])
-        message = f' {author_full_name} mentioned you in document "{entity.title}"'
-        create_notification(mention["author"], mention["id"], "Mention", entity, message)
+        create_notification(
+            frappe.session.user,
+            mention,
+            "Mention",
+            entity,
+            f"You were mentioned in a document: {entity.title}",
+        )
 
 
 def notify_share(entity_name, docperm_name):
@@ -123,21 +116,22 @@ def create_notification(from_user, to_user, type, entity, message=None):
     user_access = get_user_access(entity.name, to_user)
     if user_access.get("read") == 0:
         return
+
     entity_type = "Document" if entity.document else "Folder" if entity.is_group else "File"
-    notif = frappe.get_doc(
-        {
-            "doctype": "Drive Notification",
-            "from_user": from_user,
-            "to_user": to_user,
-            "type": type,
-            "entity_type": entity_type,
-            "notif_doctype": "Drive File",
-            "notif_doctype_name": entity.name,
-            "message": message,
-        }
-    )
+    details = {
+        "from_user": from_user,
+        "to_user": to_user,
+        "type": type,
+        "entity_type": entity_type,
+        "notif_doctype": "Drive File",
+        "notif_doctype_name": entity.name,
+        "message": message,
+    }
+    notif = frappe.db.exists("Drive Notification", details)
+    if notif:
+        return
     try:
-        notif.insert()
+        frappe.get_doc({"doctype": "Drive Notification", **details}).insert()
     except frappe.exceptions.ValidationError as e:
         print(f"Error inserting document: {e}")
 

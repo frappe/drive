@@ -7,14 +7,14 @@
       :row="row"
       class="group"
       :class="[
-        row.name === selectedName
-          ? 'bg-surface-gray-3 hover:!bg-surface-gray-3'
-          : '',
+        row.name === selectedName || selections.has(row.name)
+          ? 'bg-surface-gray-2 hover:!bg-surface-gray-3'
+          : 'bg-surface-white',
         draggedItem === row.name ? 'opacity-60 hover:shadow-none' : '',
       ]"
       :draggable="true"
-      @contextmenu="(e) => contextMenu(e, row)"
-      @[action]="open(row)"
+      @contextmenu="(e) => !selections.size && contextMenu(e, row)"
+      @[action]="!selections.size && open(row)"
       @dragstart="draggedItem = row.name"
       @dragend="draggedItem = null"
       @dragover="row.is_group && $event.preventDefault()"
@@ -26,7 +26,7 @@
           :row="row"
           :item="item"
           :idx="idx"
-          :context-menu="contextMenu"
+          :context-menu="!selections.size && contextMenu"
         />
       </template>
     </ListRow>
@@ -44,19 +44,19 @@ import { computed, ref } from "vue"
 defineProps({
   rows: Array,
   contextMenu: Function,
+  selections: Set,
 })
-const emit = defineEmits(["dropped"])
+defineEmits(["dropped"])
 
 const draggedItem = ref()
 
 const route = useRoute()
 const store = useStore()
 const action = computed(() =>
-  (settings.data.message || settings.data).single_click ? "click" : "dblclick"
+  settings.data?.single_click ? "click" : "dblclick"
 )
 
 // Used as right-click doesn't trigger active in frappe-ui
 const selectedName = computed(() => store.state.activeEntity?.name)
-const open = (row) =>
-  route.name !== "Trash" && openEntity(route.params.team, row)
+const open = (row) => route.name !== "Trash" && openEntity(row)
 </script>

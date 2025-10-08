@@ -1,10 +1,12 @@
 <template>
   <Dialog
-    v-model="openDialog"
+    v-model="open"
     :options="{ size: 'lg' }"
+    @close="dialogType = ''"
   >
     <template #body-main>
       <div class="p-4 sm:px-6">
+        <!-- Header -->
         <div class="flex w-full justify-between gap-x-2 mb-4">
           <div class="font-semibold text-2xl flex text-nowrap overflow-hidden">
             Sharing "
@@ -23,19 +25,19 @@
             </template>
           </Button>
         </div>
-        <div class="mb-4 border-b pb-4">
-          <div class="mb-2 text-ink-gray-5 font-medium text-base">
-            General Access
-          </div>
-          <div class="flex justify-between mt-3">
-            <div class="flex flex-col gap-2">
-              <div class="w-fit">
-                <Autocomplete
+        <div v-if="!advanced">
+          <!-- General section -->
+          <div class="mb-4 border-b pb-4">
+            <div class="mb-2 text-ink-gray-5 font-medium text-base">
+              General Access
+            </div>
+            <div class="flex justify-between mt-3">
+              <div class="flex flex-col gap-2">
+                <Select
                   v-model="generalAccessLevel"
-                  :options="generalOptions"
-                  :hide-search="true"
+                  :options="levelOptions"
                   @update:model-value="
-                    (val) => updateGeneralAccess(val, generalAccessLevel)
+                    (val) => updateGeneralAccess(val, generalPerms)
                   "
                 >
                   <template #prefix>
@@ -50,72 +52,73 @@
                       class="size-4 text-ink-gray-6"
                     />
                   </template>
-                </Autocomplete>
+                </Select>
+                <TeamSelector
+                  v-if="generalAccessLevel == 'team'"
+                  v-model="chosenTeam"
+                />
               </div>
-            </div>
-            <div class="my-auto">
-              <Autocomplete
-                v-if="generalAccessLevel.value !== 'restricted'"
-                v-model="generalAccessType"
-                class="my-auto"
+              <Select
+                v-if="generalAccessLevel !== 'restricted'"
+                v-model="generalPerms"
                 :options="accessOptions"
-                :hide-search="true"
                 @update:model-value="
-                  (val) => updateGeneralAccess(generalAccessType, val)
+                  (val) => updateGeneralAccess(generalAccessLevel, val)
                 "
               />
             </div>
           </div>
-        </div>
-        <!-- Members section -->
-        <div class="text-ink-gray-5 font-medium text-base mb-2">Members</div>
-        <div class="flex gap-3">
-          <div class="flex-grow">
-            <Combobox
-              v-slot="{ open }"
-              v-model="sharedUsers"
-              multiple
-            >
-              <div
-                class="flex flex-col items-start justify-start rounded-md bg-surface-gray-2"
+          <!-- Members section -->
+          <div class="text-ink-gray-5 font-medium text-base mb-2">
+            Members
+          </div>
+          <div class="flex gap-3">
+            <div class="flex-grow">
+              <Combobox
+                v-slot="{ open }"
+                v-model="sharedUsers"
+                multiple
               >
-                <div class="flex flex-wrap justify-between py-0.5 px-2 w-full">
-                  <div class="w-[75%] flex flex-wrap">
-                    <Button
-                      v-for="(user, idx) in sharedUsers"
-                      :key="user.name"
-                      :label="user.email"
-                      variant="outline"
-                      class="shadow-sm m-0.5 h-[24px]"
-                    >
-                      <template #suffix>
-                        <LucideX
-                          class="h-4"
-                          stroke-width="1.5"
-                          @click.stop="() => sharedUsers.splice(idx, 1)"
-                        />
-                      </template>
-                    </Button>
-                    <ComboboxInput
-                      ref="queryInput"
-                      v-focus
-                      placeholder="Add people..."
-                      class="text-base p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
-                      autocomplete="off"
-                      @change="query = $event.target.value"
-                    />
+                <div
+                  class="flex flex-col items-start justify-center rounded-md bg-surface-gray-2"
+                >
+                  <div class="flex flex-wrap justify-between p-1 w-full">
+                    <div class="w-[75%] flex flex-wrap">
+                      <Button
+                        v-for="(user, idx) in sharedUsers"
+                        :key="user.name"
+                        :label="user.email"
+                        variant="outline"
+                        class="shadow-sm m-0.5 p-1"
+                      >
+                        <template #prefix>
+                          <Avatar
+                            size="sm"
+                            :image="user.image"
+                            :label="user.email"
+                          />
+                        </template>
+                        <template #suffix>
+                          <LucideX
+                            class="h-4"
+                            stroke-width="1.5"
+                            @click.stop="() => sharedUsers.splice(idx, 1)"
+                          />
+                        </template>
+                      </Button>
+                      <ComboboxInput
+                        ref="queryInput"
+                        v-focus
+                        placeholder="Add people..."
+                        class="text-base px-1.5 p-1 flex-shrink min-w-24 grow basis-0 border-none bg-transparent 1 text-ink-gray-8 placeholder-ink-gray-4 focus:ring-0"
+                        autocomplete="off"
+                        @change="query = $event.target.value"
+                      />
+                    </div>
+                    <div class="w-[25%] mt-auto" />
                   </div>
-                  <div class="w-[25%] mt-auto" />
                 </div>
-              </div>
-              <transition
-                enter-active-class="transition duration-100 ease-out"
-                enter-from-class="transform scale-95 opacity-0"
-                enter-to-class="transform scale-100 opacity-100"
-                leave-active-class="transition duration-75 ease-out"
-                leave-from-class="transform scale-100 opacity-100"
-                leave-to-class="transform scale-95 opacity-0"
-              >
+
                 <div
                   class="absolute z-[4] rounded-lg bg-surface-modal text-base shadow-2xl"
                 >
@@ -180,47 +183,32 @@
                             }"
                           >
                             {{ person.email }}
-                            <span v-if="person.full_name"
-                              >({{ person.full_name }})</span
-                            >
+                            <span v-if="person.full_name">({{ person.full_name }})</span>
                           </span>
                         </li>
                       </ComboboxOption>
                     </template>
                   </ComboboxOptions>
                 </div>
-              </transition>
-            </Combobox>
-          </div>
-          <Autocomplete
-            v-model="shareAccess"
-            class=""
-            placeholder="Access"
-            :hide-search="true"
-            :options="
-              advancedTweak
-                ? filteredAccess.map((k) => ({
+              </Combobox>
+            </div>
+            <Select
+              v-model="shareAccess"
+              class="flex items-start w-36"
+              :options="
+                advancedTweak
+                  ? filteredAccess.map((k) => ({
                     value: k,
                     label: k[0].toUpperCase() + k.slice(1),
                   }))
-                : accessOptions
-            "
-          />
-        </div>
-
-        <div
-          v-if="getUsersWithAccess.data"
-          class="mb-3"
-        >
-          <div
-            v-if="!getUsersWithAccess.data?.length"
-            class="text-sm w-full my-4"
-          >
-            No shares yet.
+                  : accessOptions
+              "
+            />
           </div>
+
           <div
-            v-else
-            class="flex flex-col gap-4 overflow-y-scroll text-base max-h-80 py-4"
+            v-if="getUsersWithAccess.data"
+            class="flex flex-col gap-4 overflow-y-auto text-base max-h-80 py-4 mb-3"
           >
             <div
               v-for="(user, idx) in getUsersWithAccess.data"
@@ -249,7 +237,7 @@
                   v-if="user.user === entity.owner"
                   class="flex gap-1"
                 >
-                  Owner (you)<LucideDiamond class="size-3 my-auto" />
+                  Owner (you)
                 </div>
                 <template v-else>You</template>
               </span>
@@ -268,11 +256,11 @@
                 "
                 @remove-access="
                   getUsersWithAccess.data.splice(idx, 1),
-                    updateAccess.submit({
-                      method: 'unshare',
-                      entity_name: entity.name,
-                      user: user.user,
-                    })
+                  updateAccess.submit({
+                    method: 'unshare',
+                    entity_name: entity.name,
+                    user: user.user,
+                  })
                 "
               />
               <span
@@ -284,29 +272,55 @@
               </span>
             </div>
           </div>
-        </div>
-        <div
-          v-else
-          class="flex min-h-[19.2vh] w-full"
-        >
-          <LoadingIndicator class="w-7 h-auto text-ink-gray-7 mx-auto" />
-        </div>
-        <div class="w-full flex items-center justify-end gap-2">
-          <Button
-            class="text-base"
-            variant="outline"
-            @click="getLink(entity)"
+          <div
+            v-else
+            class="flex min-h-[19.2vh] w-full"
           >
-            <template #prefix>
-              <LucideLink2 />
-            </template>
-            Copy Link
-          </Button>
-          <Button
-            v-if="sharedUsers.length"
-            label="Invite"
-            variant="solid"
-            @click="addShares"
+            <LoadingIndicator class="w-7 h-auto text-ink-gray-7 mx-auto" />
+          </div>
+          <div class="w-full flex items-center justify-between">
+            <div>
+              <Button
+                class="text-sm"
+                variant="ghost"
+                label="Advanced"
+                :icon-left="h(LucideSettings, { class: 'size-4' })"
+                @click="advanced = true"
+              />
+            </div>
+            <div class="flex gap-2">
+              <Button
+                class="text-base"
+                variant="outline"
+                @click="getLink(entity)"
+              >
+                <template #prefix>
+                  <LucideLink2 class="w-4 text-ink-gray-6" />
+                </template>
+                Copy Link
+              </Button>
+              <Button
+                v-if="sharedUsers.length"
+                label="Invite"
+                variant="solid"
+                @click="addShares"
+              />
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div
+            class="flex text-sm gap-1 items-center mb-3 cursor-pointer"
+            label="Back"
+            @click="advanced = false"
+          >
+            <LucideArrowLeft class="size-4" />
+            Back
+          </div>
+
+          <Switch
+            v-model="allowDownload"
+            label="Allow download"
           />
         </div>
       </div>
@@ -314,13 +328,13 @@
   </Dialog>
 </template>
 <script setup>
-import { ref, computed, watch, useTemplateRef, markRaw } from "vue"
+import { ref, computed, watch, useTemplateRef, markRaw, h } from "vue"
 import {
   Avatar,
   Dialog,
-  Autocomplete,
   LoadingIndicator,
   createResource,
+  Switch,
 } from "frappe-ui"
 import {
   Combobox,
@@ -329,7 +343,9 @@ import {
   ComboboxOption,
 } from "@headlessui/vue"
 import AccessButton from "@/components/ShareDialog/AccessButton.vue"
-import { getLink } from "@/utils/getLink"
+import TeamSelector from "@/components/TeamSelector.vue"
+import { getLink, dynamicList } from "@/utils/files"
+import Select from "@/components/Select.vue"
 
 import {
   getUsersWithAccess,
@@ -337,18 +353,127 @@ import {
   allUsers,
 } from "@/resources/permissions"
 
-import {
-  LucideBuilding2,
-  LucideCheck,
-  LucideDiamond,
-  LucideLock,
-  LucideGlobe2,
-} from "lucide-vue-next"
+import LucideBuilding2 from "~icons/lucide/building-2"
+import LucideCheck from "~icons/lucide/check"
+import LucideDiamond from "~icons/lucide/diamond"
+import LucideLock from "~icons/lucide/lock"
+import LucideSettings from "~icons/lucide/settings"
+import LucideArrowLeft from "~icons/lucide/arrow-left"
+import LucideGlobe2 from "~icons/lucide/globe-2"
+
 import store from "@/store"
 
 const props = defineProps({ modelValue: String, entity: Object })
 const emit = defineEmits(["update:modelValue", "success"])
+const dialogType = defineModel()
+const open = ref(true)
+
+// Advanced section
+const advanced = ref(false)
+const allowDownload = ref(props.entity.allow_download)
+watch(allowDownload, (v) => {
+  props.entity.allow_download = v
+  createResource({
+    url: "drive.api.permissions.toggle_allow_download",
+    params: { entity: props.entity.name, val: v },
+    auto: true,
+  })
+})
 getUsersWithAccess.fetch({ entity: props.entity.name })
+allUsers.fetch({ team: "all" })
+
+const levelOptions = [
+  {
+    label: "Accessible to invited members",
+    value: "restricted",
+    icon: markRaw(LucideLock),
+  },
+  {
+    label: "Accessible to a team",
+    value: "team",
+    icon: markRaw(LucideBuilding2),
+  },
+  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
+]
+const accessOptions = computed(() =>
+  dynamicList([
+    { value: "reader", label: "Can view", icon: LucideEye },
+    {
+      value: "upload",
+      label: "Can upload",
+      cond: props.entity.is_group && props.entity.upload,
+      icon: LucideUpload,
+    },
+    {
+      value: "editor",
+      label: "Can edit",
+      cond: props.entity.write,
+      icon: LucidePencil,
+    },
+  ])
+)
+
+// General access
+const generalAccessLevel = ref(levelOptions[0].value)
+const generalPerms = ref("reader")
+const chosenTeam = ref()
+
+const getGeneralAccess = createResource({
+  url: "drive.api.permissions.get_user_access",
+  makeParams: (params) => ({
+    ...params,
+    entity: props.entity.name,
+  }),
+  onSuccess: (data) => {
+    if (!data || !data.read) {
+      if (getGeneralAccess.params.user === "Guest")
+        getGeneralAccess.fetch({ team: 1 })
+      return
+    }
+    generalAccessLevel.value = getGeneralAccess.params.team ? "team" : "public"
+    chosenTeam.value = data.team
+    generalPerms.value = data.write
+      ? "editor"
+      : data.upload
+      ? "upload"
+      : "reader"
+  },
+})
+getGeneralAccess.fetch({ user: "Guest" })
+let selectingTeam = false
+const updateGeneralAccess = (level, perms) => {
+  if (level === "team" && !chosenTeam.value) {
+    selectingTeam = true
+    return
+  }
+  if (level !== "restricted") {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: level === "public" ? "" : chosenTeam.value,
+      team: level === "team",
+      read: 1,
+      comment: 1,
+      share: 1,
+      write: perms === "editor",
+      upload: perms === "editor" || perms === "upload",
+    })
+    selectingTeam = false
+  } else {
+    updateAccess.submit({
+      entity_name: props.entity.name,
+      user: "$GENERAL",
+      method: "unshare",
+    })
+  }
+  emit("success")
+}
+
+watch(
+  chosenTeam,
+  (now, prev) =>
+    (prev || selectingTeam) &&
+    updateGeneralAccess(generalAccessLevel.value, generalPerms.value)
+)
 
 // Invite users
 const sharedUsers = ref([])
@@ -361,13 +486,14 @@ watch(sharedUsers, (now, prev) => {
       allUsers.data.push(addedUser)
   }
 })
-const shareAccess = ref({ value: "reader" })
+const shareAccess = ref("reader")
 const advancedTweak = false
 const baseOption = computed(() => ({ email: query.value, name: query.value }))
 const query = ref("")
 const queryInput = useTemplateRef("queryInput")
 const filteredUsers = computed(() => {
   const regex = new RegExp(query.value, "i")
+
   return allUsers.data
     .filter(
       (k) =>
@@ -380,26 +506,16 @@ const filteredUsers = computed(() => {
         : k
     )
 })
-
-const accessOptions = computed(() => {
-  return props.entity.write
-    ? [
-        { value: "reader", label: "Can view" },
-        { value: "editor", label: "Can edit" },
-      ]
-    : [{ value: "reader", label: "Can view" }]
-})
 function addShares() {
   // Used to enable future advanced config
   const access =
-    shareAccess.value.value === "editor"
-      ? { read: 1, comment: 1, share: 1, write: 1 }
-      : { read: 1, comment: 1, share: 1, write: 0 }
-  for (let user of sharedUsers.value) {
-    let r = {
+    shareAccess.value === "editor"
+      ? { read: 1, comment: 1, share: 1, upload: 1, write: 1 }
+      : { read: 1, comment: 1, share: 1, upload: 0, write: 0 }
+  for (const user of sharedUsers.value) {
+    const r = {
       entity_name: props.entity.name,
       user: user.name,
-      valid_until: invalidAfter.value,
       ...access,
     }
     updateAccess.submit(r)
@@ -408,74 +524,10 @@ function addShares() {
   sharedUsers.value = []
   emit("success")
 }
-const invalidAfter = ref()
 
 // General access
-const generalOptions = [
-  {
-    label: "Accessible to invited members",
-    value: "restricted",
-    icon: markRaw(LucideLock),
-  },
-  {
-    label: "Accessible to team only",
-    value: "team",
-    icon: markRaw(LucideBuilding2),
-  },
-  { label: "Accessible to all", value: "public", icon: markRaw(LucideGlobe2) },
-]
-const generalAccessLevel = ref(generalOptions[0])
-const generalAccessType = ref({ value: "reader" })
-const getGeneralAccess = createResource({
-  url: "drive.api.permissions.get_user_access",
-  makeParams: (params) => ({ ...params, entity: props.entity.name }),
-  onSuccess: (data) => {
-    if (!data || !data.read) {
-      if (getGeneralAccess.params.user === "")
-        getGeneralAccess.fetch({ user: "$TEAM" })
-      return
-    }
-    const translate = { "": "public", $TEAM: "team" }
-    generalAccessLevel.value = generalOptions.find(
-      (k) => k.value === translate[getGeneralAccess.params.user]
-    )
 
-    generalAccessType.value = { value: data.write ? "editor" : "reader" }
-  },
-})
-getGeneralAccess.fetch({ user: "" })
-
-const updateGeneralAccess = (type, level) => {
-  for (let user of ["$TEAM", ""]) {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user,
-      method: "unshare",
-    })
-  }
-  if (type.value !== "restricted") {
-    updateAccess.submit({
-      entity_name: props.entity.name,
-      user: type.value === "public" ? "" : "$TEAM",
-      read: 1,
-      comment: 1,
-      share: 1,
-      write: level.value === "editor",
-    })
-  }
-  emit("success")
-}
-
-const openDialog = computed({
-  get: () => {
-    return props.modelValue === "s"
-  },
-  set: (value) => {
-    emit("update:modelValue", value || "")
-  },
-})
-
-const ACCESS_LEVELS = ["read", "comment", "share", "write"]
+const ACCESS_LEVELS = ["read", "comment", "upload", "share", "write"]
 const filteredAccess = computed(() =>
   ACCESS_LEVELS.filter((l) => props.entity[l])
 )

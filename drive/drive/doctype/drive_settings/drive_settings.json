@@ -5,7 +5,13 @@
   "creation": "2025-04-24 17:38:30.853130",
   "doctype": "DocType",
   "engine": "InnoDB",
-  "field_order": ["user", "default_team", "single_click", "auto_detect_links"],
+  "field_order": [
+    "user",
+    "single_click",
+    "auto_detect_links",
+    "writer_section",
+    "writer_settings"
+  ],
   "fields": [
     {
       "fieldname": "user",
@@ -15,13 +21,7 @@
       "unique": 1
     },
     {
-      "fieldname": "default_team",
-      "fieldtype": "Link",
-      "label": "Default Team",
-      "options": "Drive Team"
-    },
-    {
-      "default": "0",
+      "default": "1",
       "fieldname": "single_click",
       "fieldtype": "Check",
       "label": "Single Click"
@@ -31,12 +31,23 @@
       "fieldname": "auto_detect_links",
       "fieldtype": "Check",
       "label": "Auto Detect Links"
+    },
+    {
+      "fieldname": "writer_section",
+      "fieldtype": "Section Break",
+      "label": "Writer"
+    },
+    {
+      "default": "{\"font_family\":\"inter\",\"font_size\":\"15\",\"line_height\":\"1.5\", \"versioning\": 5}",
+      "fieldname": "writer_settings",
+      "fieldtype": "JSON",
+      "label": "Writer Settings"
     }
   ],
   "grid_page_length": 50,
   "index_web_pages_for_search": 1,
   "links": [],
-  "modified": "2025-05-29 11:38:36.385483",
+  "modified": "2025-09-22 16:15:08.406507",
   "modified_by": "Administrator",
   "module": "Drive",
   "name": "Drive Settings",

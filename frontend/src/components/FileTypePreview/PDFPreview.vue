@@ -1,27 +1,60 @@
 <template>
-  <LoadingIndicator
-    v-if="loading"
-    class="w-10 h-full text-neutral-100 mx-auto absolute"
-  />
+  <div
+    v-if="isMobile"
+    class="flex flex-col w-96 h-full justify-between grow"
+  >
+    <div class="grow flex items-center">
+      <VuePDF
+        class="border rounded-sm overflow-y-auto overflow-x-hidden max-h-[80vh]"
+        :pdf
+        :page
+        fit-parent
+        :text-layer="true"
+      />
+    </div>
+    <div
+      v-if="pages"
+      class="flex gap-2 justify-center items-center"
+    >
+      <Button
+        label="Prev"
+        @click="page = page > 1 ? page - 1 : page"
+      />
+      <span class="text-sm">{{ page }} / {{ pages }}</span>
+      <Button
+        label="Next"
+        @click="page = page < pages ? page + 1 : page"
+      />
+    </div>
+  </div>
   <embed
+    v-else
     ref="embed"
-    :src="`/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`"
+    :src
     type="application/pdf"
-    class="w-4/5 h-full py-5"
-    :class="{ 'opacity-0': loading }"
+    class="w-full h-full max-h-[80vh] max-w-[80vw] self-center"
   />
 </template>
 
 <script setup>
-import { LoadingIndicator } from "frappe-ui"
-import { onMounted, ref } from "vue"
+import { computed, ref } from "vue"
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core"
+import { VuePDF, usePDF } from "@tato30/vue-pdf"
+import "@tato30/vue-pdf/style.css"
 
-const loading = ref(true)
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobile = breakpoints.smaller("sm")
 const props = defineProps({
   previewEntity: Object,
 })
+const src = computed(
+  () =>
+    `/api/method/drive.api.files.get_file_content?entity_name=${props.previewEntity.name}`
+)
 
-onMounted(() => {
-  setTimeout(() => (loading.value = false), 1000)
-})
+let page, pages, pdf
+if (isMobile.value) {
+  page = ref(1)
+  ;({ pages, pdf } = usePDF(src.value))
+}
 </script>

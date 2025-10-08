@@ -3,16 +3,19 @@
     :grouper="groupByTime"
     :get-entities="getRecents"
     :show-sort="false"
-    :icon="LucideClock"
-    primary-message="No recent files"
-    secondary-message="Try opening something!"
+    :empty="{
+      icon: LucideClock,
+      title: 'No recent files',
+      description: 'Try opening something to see it here.',
+    }"
   />
 </template>
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
 import { getRecents } from "@/resources/files"
-import { LucideClock } from "lucide-vue-next"
+import LucideClock from "~icons/lucide/clock"
+// Broken - list view
 
 function groupByTime(entities) {
   const today = new Date()

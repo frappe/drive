@@ -1,57 +1,58 @@
 <template>
-  <div class="flex w-full">
-    <div class="flex-1 overflow-scroll">
+  <div class="flex w-full h-full">
+    <div class="w-full h-full flex flex-col">
       <Navbar
         v-if="!file?.error"
         :root-resource="file"
       />
-      <FolderContentsError
+      <ErrorPage
         v-if="file.error"
         :error="file.error"
       />
-
       <div
-        class="h-full w-full overflow-hidden flex flex-col items-center justify-start"
+        v-else
+        id="renderContainer"
+        :draggable="false"
+        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center relative"
       >
-        <div
-          id="renderContainer"
-          :draggable="false"
-          class="flex items-center justify-center h-full w-full min-h-[85vh] max-h-[85vh] mt-3"
+        <Button
+          class="text-ink-gray-8 absolute top-4 left-4 z-10"
+          :variant="'ghost'"
+          icon="arrow-left"
+          @click="closePreview"
+        />
+        <LoadingIndicator
+          v-if="file.loading"
+          class="w-10 h-full text-neutral-100"
+        />
+        <FileRender
+          v-else-if="file.data"
+          :preview-entity="file.data"
+        />
+      </div>
+      <div
+        class="hidden sm:flex absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit items-center justify-center p-1 gap-1 rounded shadow-xl l bg-surface-white"
+      >
+        <Button
+          :disabled="!prevEntity?.name"
+          :variant="'ghost'"
+          icon="arrow-left"
+          @click="scrollEntity(true)"
+        />
+        <Button
+          :variant="'ghost'"
+          @click="enterFullScreen"
         >
-          <LoadingIndicator
-            v-if="file.loading"
-            class="w-10 h-full text-neutral-100 mx-auto"
-          />
-          <FileRender
-            v-else-if="file.data"
-            :preview-entity="file.data"
-          />
-        </div>
-        <div
-          class="hidden sm:flex absolute bottom-[-1%] left-[50%] center-transform items-center justify-center p-1 gap-1 h-10 rounded-lg shadow-xl bg-surface-white"
-        >
-          <Button
-            :disabled="!prevEntity?.name"
-            :variant="'ghost'"
-            icon="arrow-left"
-            @click="scrollEntity(true)"
-          />
-          <Button
-            :variant="'ghost'"
-            @click="enterFullScreen"
-          >
-            <Scan class="w-4" />
-          </Button>
-          <Button
-            :disabled="!nextEntity?.name"
-            :variant="'ghost'"
-            icon="arrow-right"
-            @click="scrollEntity()"
-          />
-        </div>
+          <LucideScan class="size-4" />
+        </Button>
+        <Button
+          :disabled="!nextEntity?.name"
+          :variant="'ghost'"
+          icon="arrow-right"
+          @click="scrollEntity()"
+        />
       </div>
     </div>
-    <InfoSidebar />
   </div>
 </template>
 
@@ -63,26 +64,26 @@ import {
   computed,
   onMounted,
   defineProps,
-  onBeforeUnmount,
-  inject,
 } from "vue"
 import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
 import { useRouter } from "vue-router"
-import { Scan } from "lucide-vue-next"
+import LucideScan from "~icons/lucide/scan"
 import { onKeyStroke } from "@vueuse/core"
-import { prettyData, setBreadCrumbs, enterFullScreen } from "@/utils/files"
-import FolderContentsError from "@/components/FolderContentsError.vue"
-import InfoSidebar from "@/components/InfoSidebar.vue"
+import {
+  prettyData,
+  setBreadCrumbs,
+  enterFullScreen,
+  updateURLSlug,
+} from "@/utils/files"
+import ErrorPage from "@/components/ErrorPage.vue"
 
 const router = useRouter()
 const store = useStore()
-const emitter = inject("emitter")
-const realtime = inject("realtime")
 const props = defineProps({
   entityName: String,
-  team: String,
+  slug: String,
 })
 
 const currentEntity = ref(props.entityName)
@@ -102,32 +103,32 @@ const prevEntity = computed(() => filteredEntities.value[index.value - 1])
 const nextEntity = computed(() => filteredEntities.value[index.value + 1])
 
 function fetchFile(currentEntity) {
-  file.fetch({ entity_name: currentEntity }).then(() => {
-    router.replace({
-      name: "File",
-      params: { entityName: currentEntity },
-    })
+  file.fetch({ entity_name: currentEntity })
+  router.push({
+    params: {
+      entityName: currentEntity,
+    },
   })
 }
 
 onKeyStroke("ArrowLeft", (e) => {
-  if (e.metaKey) return
+  if (!e.shiftKey) return
   e.preventDefault()
   scrollEntity(true)
 })
 onKeyStroke("ArrowRight", (e) => {
-  if (e.metaKey) return
+  if (!e.shiftKey) return
   e.preventDefault()
   scrollEntity()
 })
 
-const onSuccess = (entity) => {
+const onSuccess = async (entity) => {
   document.title = entity.title
-  setBreadCrumbs(entity.breadcrumbs, entity.is_private, () =>
-    emitter.emit("rename")
-  )
+  setBreadCrumbs(entity)
+  updateURLSlug(entity.title)
 }
-let file = createResource({
+
+const file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName },
   transform(entity) {
@@ -135,49 +136,23 @@ let file = createResource({
     return prettyData([entity])[0]
   },
   onSuccess,
-  onError() {
-    if (!store.getters.isLoggedIn) router.push({ name: "Login" })
-  },
 })
+store.commit("setCurrentResource", file)
 
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
   if (currentEntity.value) fetchFile(currentEntity.value.name)
 }
 
+function closePreview() {
+  router.push({
+    name: "Folder",
+    params: { entityName: file.data.parent_entity },
+  })
+}
+
 onMounted(() => {
   fetchFile(props.entityName)
-  realtime.doc_subscribe("Drive File", props.entityName)
-  realtime.doc_open("Drive File", props.entityName)
-  realtime.on("doc_viewers", (data) => {
-    store.state.connectedUsers = data.users
-    userInfo.submit({ users: JSON.stringify(data.users) })
-  })
-})
-
-onBeforeUnmount(() => {
-  realtime.off("doc_viewers")
-  store.state.connectedUsers = []
-  realtime.doc_close("Drive File", file.data?.name)
-  realtime.doc_unsubscribe("Drive File", file.data?.name)
-})
-
-let userInfo = createResource({
-  url: "frappe.desk.form.load.get_user_info_for_viewers",
-  // compatibility with document awareness
-  onSuccess(data) {
-    data = Object.values(data)
-    data.forEach((item) => {
-      if (item.fullname) {
-        item.avatar = item.image
-        item.name = item.fullname
-        delete item.image
-        delete item.fullname
-      }
-    })
-    store.state.connectedUsers = data
-  },
-  auto: false,
 })
 </script>
 

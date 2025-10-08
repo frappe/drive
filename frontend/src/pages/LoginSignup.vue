@@ -7,7 +7,7 @@
             <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
           </div>
           <div
-            class="mx-auto w-full bg-surface-white px-4 py-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 sm:py-6 sm:shadow-2xl"
+            class="mx-auto w-full bg-surface-white px-4 p-8 sm:mt-6 sm:w-112 sm:rounded-2xl sm:px-6 py-6 sm:shadow-2xl"
           >
             <div class="mb-7.5 text-center">
               <p class="mb-2 text-2xl font-semibold leading-6 text-ink-gray-9">
@@ -15,8 +15,8 @@
                   isLogin
                     ? "Login to Drive"
                     : params.get("t")
-                    ? "Join " + params.get("t")
-                    : "Create a new account"
+                      ? "Join " + params.get("t")
+                      : "Create a new account"
                 }}
               </p>
               <p
@@ -76,7 +76,6 @@
                     </Link>
                   </label>
                 </div>
-                <!-- Buttons -->
                 <div class="mt-8 flex flex-col items-center gap-3">
                   <Button
                     :loading="signup.loading"
@@ -149,7 +148,10 @@
                 >
                   {{ isLogin ? "Login" : "Join" }}
                 </Button>
-                <div class="mt-6 border-t text-center">
+                <div
+                  v-if="oAuthProviders.data?.length"
+                  class="mt-6 border-t text-center"
+                >
                   <div class="-translate-y-1/2 transform">
                     <span
                       class="relative bg-surface-white px-2 text-sm font-medium leading-8 text-ink-gray-8"
@@ -167,18 +169,19 @@
                 >
                   <div class="flex items-center">
                     <div v-html="provider.icon" />
-                    <span class="ml-2"
-                      >{{ isLogin ? "Continue" : "Join" }} with
-                      {{ provider.provider_name }}</span
-                    >
+                    <span class="ml-2">{{ isLogin ? "Continue" : "Join" }} with
+                      {{ provider.provider_name }}</span>
                   </div>
                 </Button>
               </template>
             </form>
 
-            <div class="mt-6 text-center">
+            <div
+              v-if="!signupDisabled.data"
+              class="mt-6 text-center"
+            >
               <router-link
-                class="text-center text-base font-medium text-ink-gray-9 hover:text-ink-gray-7"
+                class="text-center text-sm text-ink-gray-8 hover:text-ink-gray-9"
                 :to="{
                   name: isLogin ? 'Signup' : 'Login',
                   query: { ...$route.query, forgot: undefined },
@@ -201,13 +204,12 @@
 <script setup>
 import { createResource, ErrorMessage, FormControl, Link } from "frappe-ui"
 import { ref, onMounted, computed } from "vue"
-import FrappeDriveLogo from "../components/FrappeDriveLogo.vue"
+import FrappeDriveLogo from "@/components/FrappeDriveLogo.vue"
 import { toast } from "@/utils/toasts"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { settings } from "@/resources/permissions"
 
 const route = useRoute()
-const router = useRouter()
 const params = new URLSearchParams(new URL(window.location.href).search)
 const email = ref(params.get("e") || "")
 const first_name = ref("")
@@ -232,6 +234,11 @@ const getReferrerIfAny = () => {
   const searchParams = new URLSearchParams(params)
   return searchParams.get("referrer")
 }
+const signupDisabled = createResource({
+  url: "drive.api.product.signup_disabled",
+  cache: "signupDisabled",
+  auto: true,
+})
 
 const signup = createResource({
   url: "drive.api.product.signup",
@@ -280,7 +287,11 @@ const sendOTP = createResource({
   },
   onError(err) {
     if (JSON.stringify(err).includes("not found"))
-      toast("Please sign up first!")
+      toast(
+        signupDisabled.data
+          ? "You do not have an account on this site."
+          : "Please sign up first!"
+      )
     else toast("Failed to send verification code")
   },
 })

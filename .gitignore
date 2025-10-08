@@ -4,7 +4,7 @@
 *.swp
 tags
 drive/docs/current
-drive/public/frontend
+drive/public/
 node_modules
 frontend/node_modules
 drive/public/node_modules
@@ -12,5 +12,10 @@ drive/www/drive.html
 .yarn-integrity
 **/__pycache__
 node_modules/
-experiments
+experiments/*
+drive/public/dist
 *.sql
+*log.json
+.env
+dist/
+build/

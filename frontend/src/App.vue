@@ -1,24 +1,13 @@
 <template>
-  <div
-    class="w-screen h-screen antialiased"
-    dark
-  >
-    <div
-      class="bg-surface-black text-ink-white text-sm text-center py-2 sm:hidden"
-    >
-      Drive works best on desktop.
-    </div>
+  <FrappeUIProvider>
     <div
       v-if="isLoggedIn || $route.meta.allowGuest"
-      class="flex"
+      class="flex flex-col sm:flex-row h-full"
     >
-      <Sidebar
-        v-if="isLoggedIn && !['Teams', 'Setup'].includes($route.name)"
-        class="hidden sm:block"
-      />
+      <Sidebar v-if="normalView" />
       <div
         id="dropzone"
-        class="flex flex-col h-screen flex-grow overflow-hidden bg-surface-white"
+        class="flex flex-col flex-1 overflow-hidden bg-surface-white relative"
       >
         <router-view
           :key="$route.fullPath"
@@ -27,10 +16,9 @@
           <component :is="Component" />
         </router-view>
       </div>
-
       <BottomBar
-        v-if="isLoggedIn"
-        class="fixed bottom-0 w-full sm:hidden"
+        v-if="!inIframe && isLoggedIn"
+        class="w-full sm:hidden"
       />
     </div>
     <router-view
@@ -40,70 +28,63 @@
     >
       <component :is="Component" />
     </router-view>
-  </div>
-  <SearchPopup
-    v-if="isLoggedIn && showSearchPopup"
-    v-model="showSearchPopup"
-  />
-  <Transition
-    enter-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    enter-from-class="translate-y-1 opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
-    leave-active-class="transition duration-[150ms] ease-[cubic-bezier(.21,1.02,.73,1)]"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="translate-y-1 opacity-0"
-  >
-    <UploadTracker v-if="showUploadTracker" />
-  </Transition>
-  <Toasts />
+    <SearchPopup
+      v-if="isLoggedIn && showSearchPopup"
+      v-model="showSearchPopup"
+    />
+    <button
+      accesskey="u"
+      class="hidden"
+      @click="emitter.emit('uploadFile')"
+    />
+    <FileUploader
+      v-if="normalView && ['Folder', 'Home', 'Team'].includes($route.name)"
+    />
+    <FDialogs />
+  </FrappeUIProvider>
 </template>
 <script setup>
 import Sidebar from "@/components/Sidebar.vue"
-import UploadTracker from "@/components/UploadTracker.vue"
-import { Toasts } from "@/utils/toasts.js"
 import SearchPopup from "./components/SearchPopup.vue"
+import FDialogs from "./components/FDialogs.vue"
 import BottomBar from "./components/BottomBar.vue"
+import FileUploader from "@/components/FileUploader.vue"
 import { useStore } from "vuex"
-import { ref, computed } from "vue"
-import { useRouter } from "vue-router"
+import { ref, computed, provide } from "vue"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
+import { FrappeUIProvider } from "frappe-ui"
+import { useRoute } from "vue-router"
+import "access-key-label-polyfill"
 
 const store = useStore()
-const router = useRouter()
+const route = useRoute()
+const inIframe = window.self !== window.top
+provide("inIframe", inIframe)
 
 const showSearchPopup = ref(false)
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
-const showUploadTracker = computed(
-  () => isLoggedIn.value && store.state.uploads.length > 0
+const normalView = computed(
+  () =>
+    !inIframe && isLoggedIn.value && !["Teams", "Setup"].includes(route.name)
 )
 emitter.on("showSearchPopup", (data) => {
   showSearchPopup.value = data
 })
 
-// Add keyboard shortcuts
-const KEY_BINDS = {
-  k: () => (showSearchPopup.value = true),
-  h: () => router.push({ name: "Home" }),
-  i: () => router.push({ name: "Inbox" }),
-  t: () => router.push({ name: "Team" }),
-  f: () => router.push({ name: "Favourites" }),
-  r: () => router.push({ name: "Recents" }),
-  s: () => router.push({ name: "Shared" }),
+const EMITTERS = {
   u: () => emitter.emit("uploadFile"),
-  U: () => emitter.emit("uploadFolder"),
-  u: () => emitter.emit("uploadFile"),
-  N: () => emitter.emit("newFolder"),
-  m: () => store.state.activeEntity && emitter.emit("move"),
-  Enter: () => store.state.activeEntity && emitter.emit("rename"),
+  n: () => emitter.emit("newFolder"),
+  m: () => emitter.emit("move"),
+  p: () => emitter.emit("share"),
+  e: () => emitter.emit("rename"),
 }
-for (let k in KEY_BINDS) {
-  onKeyDown(k, (e) => {
-    if (e.ctrlKey) {
-      KEY_BINDS[k](e)
-      e.preventDefault()
-    }
-  })
+for (const k in EMITTERS) {
+  const btn = document.createElement("button")
+  btn.style.display = "none"
+  btn.accessKey = k
+  btn.onclick = EMITTERS[k]
+  document.body.appendChild(btn)
 }
 
 onKeyDown((e) => {
@@ -114,6 +95,7 @@ onKeyDown((e) => {
   )
     return
   if (e.key == "?") emitter.emit("toggleShortcuts")
+
   if (e.metaKey) {
     if (e.key == ",") {
       emitter.emit("showSettings")
@@ -121,14 +103,12 @@ onKeyDown((e) => {
     }
     if (e.shiftKey) {
       if (e.key == "ArrowRight") {
-        store.commit("setIsSidebarExpanded", true)
-        e.preventDefault()
+        store.commit("setSidebarCollapsed", false)
       } else if (e.key == "ArrowLeft") {
-        store.commit("setIsSidebarExpanded", false)
+        store.commit("setSidebarCollapsed", true)
         e.preventDefault()
       }
     }
-    // Support Cmd + K also
     if (e.key == "k") {
       showSearchPopup.value = true
       e.preventDefault()

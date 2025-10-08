@@ -3,19 +3,19 @@
     transition="default"
     placement="left"
     class="!block w-full"
-    popoverClass="!min-w-fit !mr-[30px]"
+    popover-class="!min-w-fit !mr-[30px]"
   >
     <template #target="{ togglePopover, isOpen }">
       <slot
         name="target"
-        :togglePopover="
+        :toggle-popover="
           () => {
             togglePopover()
             setSelectorPosition(modelColor)
           }
         "
-        :isOpen="isOpen"
-      ></slot>
+        :is-open="isOpen"
+      />
     </template>
     <template #body>
       <div
@@ -31,29 +31,27 @@
 							hsl(${hue}, 100%, 50%)
 						`,
           }"
-          @mousedown.stop="handleSelectorMove"
           class="relative m-auto h-24 w-44 rounded-md"
+          @mousedown.stop="handleSelectorMove"
           @click.prevent="setColor"
         >
           <div
             ref="colorSelector"
-            @mousedown.stop="handleSelectorMove"
             class="absolute rounded-full border border-black border-opacity-20 before:absolute before:h-full before:w-full before:rounded-full before:border-2 before:border-white before:bg-[currentColor] after:absolute after:left-[2px] after:top-[2px] after:h-[calc(100%-4px)] after:w-[calc(100%-4px)] after:rounded-full after:border after:border-black after:border-opacity-20 after:bg-transparent"
             :style="{
-							height: '12px',
-							width: '12px',
-							left: `calc(${colorSelectorPosition.x}px - 6px)`,
-							top: `calc(${colorSelectorPosition.y}px - 6px)`,
-							color: modelColor,
-							background: 'transparent',
-						} as StyleValue"
-          ></div>
+              height: '12px',
+              width: '12px',
+              left: `calc(${colorSelectorPosition.x}px - 6px)`,
+              top: `calc(${colorSelectorPosition.y}px - 6px)`,
+              color: modelColor,
+              background: 'transparent',
+            } as StyleValue"
+            @mousedown.stop="handleSelectorMove"
+          />
         </div>
         <div
           ref="hueMap"
           class="relative m-auto mt-2 h-3 w-44 rounded-md"
-          @click="setHue"
-          @mousedown="handleHueSelectorMove"
           :style="{
             background: `
 							linear-gradient(90deg, hsl(0, 100%, 50%),
@@ -62,10 +60,11 @@
 							hsl(300, 100%, 50%), hsl(360, 100%, 50%))
 						`,
           }"
+          @click="setHue"
+          @mousedown="handleHueSelectorMove"
         >
           <div
             ref="hueSelector"
-            @mousedown="handleHueSelectorMove"
             class="absolute rounded-full border border-[rgba(0,0,0,.2)] before:absolute before:h-full before:w-full before:rounded-full before:border-2 before:border-white before:bg-[currentColor] after:absolute after:left-[2px] after:top-[2px] after:h-[calc(100%-4px)] after:w-[calc(100%-4px)] after:rounded-full after:border after:border-[rgba(0,0,0,.2)] after:bg-transparent"
             :style="{
               height: '12px',
@@ -74,7 +73,8 @@
               color: `hsl(${hue}, 100%, 50%)`,
               background: 'transparent',
             }"
-          ></div>
+            @mousedown="handleHueSelectorMove"
+          />
         </div>
         <div ref="colorPalette">
           <div class="mt-3 flex flex-wrap gap-1.5">
@@ -82,24 +82,24 @@
               v-for="color in colors"
               :key="color"
               class="size-3.5 cursor-pointer rounded-full shadow-sm"
+              :style="{
+                background: color,
+              }"
               @click="
                 () => {
                   setSelectorPosition(color)
                   updateColor()
                 }
               "
-              :style="{
-                background: color,
-              }"
-            ></div>
+            />
             <svg
               v-if="isSupported"
               class="text-ink-gray-7 dark:text-zinc-300"
-              @click="() => open()"
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
               viewBox="0 0 24 24"
+              @click="() => open()"
             >
               <g
                 fill="none"
@@ -121,7 +121,7 @@
   </Popover>
 </template>
 <script setup lang="ts">
-import { HSVToHex, HexToHSV, RGBToHex, getRGB } from "@/utils/helpers"
+import { HSVToHex, HexToHSV, getRGB } from "@/utils/helpers"
 import { clamp, useEyeDropper } from "@vueuse/core"
 import { Popover } from "frappe-ui"
 
@@ -134,7 +134,7 @@ const colorSelector = ref(null) as unknown as Ref<HTMLDivElement>
 
 const colorSelectorPosition = ref({ x: 0, y: 0 })
 const hueSelectorPosition = ref({ x: 0, y: 0 })
-let currentColor = "#FFF" as HashString
+let currentColor = "#FFF"
 
 const { isSupported, sRGBHex, open } = useEyeDropper()
 
@@ -169,8 +169,8 @@ if (!isSupported.value) {
 const setColorSelectorPosition = (color: HashString) => {
   const { width, height } = colorMap.value.getBoundingClientRect()
   const { s, v } = HexToHSV(color)
-  let x = clamp(s * width, 0, width)
-  let y = clamp((1 - v) * height, 0, height)
+  const x = clamp(s * width, 0, width)
+  const y = clamp((1 - v) * height, 0, height)
   colorSelectorPosition.value = { x, y }
 }
 

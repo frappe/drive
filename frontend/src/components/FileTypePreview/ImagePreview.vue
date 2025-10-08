@@ -1,16 +1,15 @@
 <template>
   <LoadingIndicator
     v-if="loading"
-    class="w-10 h-full text-neutral-100 mx-auto"
+    class="w-10"
   />
-  <template v-else>
-    <img
-      draggable="false"
-      class="w-4/5 max-h-full"
-      :src="previewURL"
-      id-=""
-    />
-  </template>
+  <img
+    v-else
+    v-show="!loading"
+    draggable="false"
+    class="self-center justify-center max-h-[70vh] max-w-full rounded-lg"
+    :src="previewURL"
+  >
 </template>
 
 <script setup>
@@ -19,10 +18,7 @@ import { onBeforeUnmount, onMounted, ref, watch, inject } from "vue"
 import { useObjectUrl } from "@vueuse/core"
 
 const props = defineProps({
-  previewEntity: {
-    type: Object,
-    default: null,
-  },
+  previewEntity: Object,
 })
 
 const loading = ref(true)

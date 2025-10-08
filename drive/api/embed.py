@@ -1,9 +1,13 @@
+from io import BytesIO
+from pathlib import Path
+
 import frappe
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
-from pathlib import Path
-from drive.utils.files import FileManager, get_home_folder
-from io import BytesIO
+
+from drive.api.permissions import user_has_permission
+from drive.utils import get_home_folder
+from drive.utils.files import FileManager
 
 
 @frappe.whitelist(allow_guest=True)
@@ -27,13 +31,9 @@ def get_file_content(embed_name, parent_entity_name):
     if old_parent_name:
         parent_entity_name = old_parent_name[0]["name"]
 
-    if not frappe.has_permission(
-        doctype="Drive File",
-        doc=parent_entity_name,
-        ptype="read",
-        user=frappe.session.user,
-    ):
+    if not user_has_permission(parent_entity_name, "read"):
         raise frappe.PermissionError("You do not have permission to view this file")
+
     cache_key = "embed-" + embed_name
     embed_data = None
     if frappe.cache().exists(cache_key):
@@ -45,28 +45,33 @@ def get_file_content(embed_name, parent_entity_name):
             ["document", "title", "mime_type", "file_size", "owner", "path", "team"],
             as_dict=1,
         )
+
         if not drive_entity:
             drive_entity = frappe.get_list(
                 "Drive File",
-                {"old_name": parent_entity_name},
+                filters={"old_name": parent_entity_name},
                 fields=["document", "title", "mime_type", "file_size", "owner", "path", "team"],
             )[0]
 
         if not drive_entity.document:
             raise ValueError
-        embed_path = frappe.get_value("Drive File", embed_name, "path")
+        embed = frappe.get_cached_doc("Drive File", embed_name)
         # Remove at some point
-        if not embed_path:
-            embed_path = str(
-                Path(
-                    get_home_folder(drive_entity.team)["path"],
-                    "embeds",
-                    embed_name,
-                )
+        if not embed.path:
+            embed = frappe._dict(
+                path=str(
+                    Path(
+                        get_home_folder(drive_entity.team)["path"],
+                        "embeds",
+                        embed_name,
+                    )
+                ),
+                team=embed.team,
             )
         # Flaw? Doesn't stream for range header
         manager = FileManager()
-        embed_data = BytesIO(manager.get_file(embed_path).read())
+        # TBD - redo
+        embed_data = BytesIO(manager.get_file(embed).read())
         frappe.cache().set_value(cache_key, (embed_data))
 
     response = Response(

@@ -53,12 +53,11 @@
             <a
               :href="newImageUrl"
               class="truncate max-w-56 underline"
-              >{{ newImageUrl }}</a
-            >
+            >{{ newImageUrl }}</a>
 
             <Button @click="newImageUrl = null">
               <template #icon>
-                <X class="stroke-1 h-4" />
+                <LucideX class="stroke-1 h-4" />
               </template>
             </Button>
           </div>
@@ -68,7 +67,6 @@
             :validate-file="validateFile"
             @success="
               (file) => {
-                console.log(file)
                 newImageUrl = file.file_url
               }
             "
@@ -95,13 +93,7 @@
   <h1 class="font-semibold mt-12 mb-4 text-ink-gray-8">
     {{ __("Preferences") }}
   </h1>
-  <Autocomplete
-    v-model="defaultTeam"
-    placeholder="Not set"
-    :options="teamOptions"
-    label="Default Team"
-    class="mb-3"
-  />
+
   <Switch
     v-model="singleClick"
     label="Single click to open files and folders"
@@ -121,13 +113,13 @@ import {
   Dialog,
   FileUploader,
   Switch,
-  Autocomplete,
   createDocumentResource,
 } from "frappe-ui"
-import { LucideLink, X } from "lucide-vue-next"
+import LucideLink from "~icons/lucide/link"
+import LucideX from "~icons/lucide/x"
+
 import { useStore } from "vuex"
 import { ref, computed, watch } from "vue"
-import { getTeams } from "@/resources/files"
 import { settings, setSettings } from "@/resources/permissions"
 
 const store = useStore()
@@ -140,24 +132,18 @@ const newFullName = computed(() => newFirstName.value + " " + newLastName.value)
 
 const editProfileDialog = ref(false)
 
-const teamOptions = computed(() =>
-  Object.keys(getTeams.data).map((k) => ({
-    value: k,
-    label: getTeams.data[k].title,
-  }))
-)
-const singleClick = ref(Boolean(settings.data.single_click))
-const detectLinks = ref(Boolean(settings.data.auto_detect_links))
+const singleClick = ref(Boolean(settings.data?.single_click))
+const detectLinks = ref(Boolean(settings.data?.auto_detect_links))
 const defaultTeam = ref(settings.data.default_team || { label: "-" })
 const options = {
   single_click: singleClick,
   auto_detect_links: detectLinks,
   default_team: defaultTeam,
 }
-for (let k in options) {
+for (const k in options) {
   watch(options[k], (v) => {
     setSettings.submit({
-      updates: { [k]: v },
+      updates: { [k]: v.value || v },
     })
   })
 }
@@ -183,7 +169,7 @@ const updateProfile = () => {
 }
 
 const validateFile = (file) => {
-  let extension = file.name.split(".").pop().toLowerCase()
+  const extension = file.name.split(".").pop().toLowerCase()
   if (!["jpg", "jpeg", "png"].includes(extension)) {
     alert("Not a valid Image file")
     return false

@@ -8,6 +8,8 @@ function getNumberFromPx(px: string | number | null | undefined): number {
   return Number(px.replace("px", ""))
 }
 
+type HashString = string;
+
 function addPxToNumber(number: number, round: boolean = true): string {
   number = round ? Math.round(number) : number
   return `${number}px`
@@ -44,12 +46,12 @@ function HSVToHex(h: number, s: number, v: number): HashString {
     g = 0,
     b = 0
 
-  let i = Math.floor(h * 6)
-  let f = h * 6 - i
-  let p = v * (1 - s)
-  let q = v * (1 - f * s)
-  let t = v * (1 - (1 - f) * s)
-
+  const i = Math.floor(h * 6)
+  const f = h * 6 - i
+  const p = v * (1 - s)
+  const q = v * (1 - f * s)
+  const t = v * (1 - (1 - f) * s)
+/* eslint-disable */
   switch (i % 6) {
     case 0:
       ;(r = v), (g = t), (b = p)
@@ -70,6 +72,7 @@ function HSVToHex(h: number, s: number, v: number): HashString {
       ;(r = v), (g = p), (b = q)
       break
   }
+/* eslint-enable */
   r = Math.round(r * 255)
   g = Math.round(g * 255)
   b = Math.round(b * 255)
@@ -145,7 +148,7 @@ function stripExtension(string: string) {
 function findNearestSiblingIndex(e: MouseEvent) {
   let nearestElementIndex = 0
   let minDistance = Number.MAX_VALUE
-  let parent = e.target as HTMLElement
+  const parent = e.target as HTMLElement
 
   const elements = Array.from(parent.children)
   elements.forEach(function (element, index) {
@@ -178,22 +181,13 @@ function kebabToCamelCase(str: string) {
   })
 }
 
-function isJSONString(str: string) {
-  try {
-    JSON.parse(str)
-  } catch (e) {
-    return false
-  }
-  return true
-}
-
 function isTargetEditable(e: Event) {
   const target = e.target as HTMLElement
   const isEditable = target.isContentEditable
   const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA"
   return isEditable || isInput
 }
-function getDataForKey(datum: Object, key: string) {
+function getDataForKey(datum: object, key: string) {
   const data = Object.assign({}, datum)
   return key.split(".").reduce((d, key) => (d ? d[key] : null), data) as string
 }
@@ -212,7 +206,6 @@ export {
   getRandomColor,
   getTextContent,
   isHTMLString,
-  isJSONString,
   isTargetEditable,
   kebabToCamelCase,
   stripExtension,

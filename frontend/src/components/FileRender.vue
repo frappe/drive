@@ -1,27 +1,26 @@
 <template>
   <div
     v-if="error"
-    class="max-w-[450px] px-16 py-8 z-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center"
+    class="max-w-[450px] h-fit self-center p-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
   >
-    <LucideAlertCircle class="h-12 mb-4 fill-blue-500 stroke-white" />
-    <span class="mb-4">Cannot open file</span>
+    <LucideAlertCircle class="size-10" />
+    <span>Cannot open file</span>
     <span class="text-base text-center text-ink-gray-7">
       {{ error }}
     </span>
     <Button
-      class="mt-4 w-full"
+      class="w-full"
       variant="solid"
       @click="download"
     >
       Download
     </Button>
   </div>
-  <template v-else>
-    <component
-      :is="previewComponent"
-      :preview-entity="previewEntity"
-    />
-  </template>
+  <component
+    :is="previewComponent"
+    v-else
+    :preview-entity="previewEntity"
+  />
 </template>
 <script setup>
 import MSOfficePreview from "@/components/FileTypePreview/MSOfficePreview.vue"
@@ -31,7 +30,9 @@ import VideoPreview from "./FileTypePreview/VideoPreview.vue"
 import TextPreview from "./FileTypePreview/TextPreview.vue"
 import AudioPreview from "@/components/FileTypePreview/AudioPreview.vue"
 import { computed } from "vue"
-import { LucideAlertCircle } from "lucide-vue-next"
+import LucideAlertCircle from "~icons/lucide/alert-circle"
+import { diskSettings } from "@/resources/permissions"
+import store from "@/store"
 
 const props = defineProps({
   previewEntity: {
@@ -45,10 +46,12 @@ const props = defineProps({
   },
 })
 
+if (!diskSettings.data && store.getters.isLoggedIn) diskSettings.fetch()
 const error = computed(() => {
+  const limit = diskSettings.data?.preview_size || 100
   if (!Object.keys(RENDERS).includes(props.previewEntity.file_type))
     return "Previews are not supported for this file type. Would you like to download it instead?"
-  else if (props.previewEntity.file_size > 10 * 1024 * 1024)
+  else if (props.previewEntity.file_size > limit * 1024 * 1024)
     return "This is too large to preview - would you like to download instead?"
   return false
 })
@@ -67,7 +70,14 @@ const RENDERS = {
   Presentation: MSOfficePreview,
   Text: TextPreview,
   Code: TextPreview,
-  Markdown: TextPreview,
 }
-const previewComponent = computed(() => RENDERS[props.previewEntity.file_type])
+
+const EXCEPTIONS = {
+  "text/csv": "Text",
+}
+
+const getType = (k) => {
+  return EXCEPTIONS[k.mime_type] || k.file_type
+}
+const previewComponent = computed(() => RENDERS[getType(props.previewEntity)])
 </script>

@@ -33,7 +33,7 @@ declare module "@tiptap/core" {
  * This extension allows you to set a font family for text.
  * @see https://www.tiptap.dev/api/extensions/font-family
  */
-export const FontFamily = Extension.create<FontFamilyOptions>({
+const FontFamily = Extension.create<FontFamilyOptions>({
   name: "fontFamily",
 
   addOptions() {
@@ -84,3 +84,5 @@ export const FontFamily = Extension.create<FontFamilyOptions>({
     }
   },
 })
+
+export default FontFamily

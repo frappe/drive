@@ -1,7 +1,6 @@
 <template>
   <button
-    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
-    :class="isActive ? 'bg-surface-white shadow-sm' : 'hover:bg-surface-gray-2'"
+    class="flex h-7 w-full cursor-pointer items-center rounded text-ink-gray-7 active:bg-surface-selected hover:bg-surface-gray-2"
     @click="handleClick"
   >
     <div
@@ -9,7 +8,7 @@
     >
       <div class="flex items-center">
         <Tooltip
-          :text="label"
+          :text="__(label)"
           placement="right"
           arrow-class="fill-gray-900"
           :disabled="!isCollapsed"
@@ -31,7 +30,7 @@
               : 'ml-2 w-auto opacity-100',
           ]"
         >
-          {{ label }}
+          {{ __(label) }}
         </span>
       </div>
       <slot name="right" />
@@ -41,16 +40,13 @@
 
 <script setup>
 import { Tooltip } from "frappe-ui"
-import { computed } from "vue"
-import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
-const store = useStore()
 
 const props = defineProps({
   icon: {
-    type: [String, Object],
+    type: [Function, Object],
     default: null,
   },
   label: {
@@ -70,9 +66,4 @@ const props = defineProps({
 function handleClick() {
   router.push({ path: props.to })
 }
-
-let isActive = computed(() => {
-  const first = store.state.breadcrumbs[0]
-  return first.label === props.label || first.name === props.label
-})
 </script>
