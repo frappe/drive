@@ -17,6 +17,28 @@ async function setRootBreadCrumb(to) {
   }
 }
 
+async function validateEntityType(to, expectedType) {
+  const entity = createResource({
+    url: "/api/method/drive.api.files.get_entity_type",
+    method: "GET",
+    params: {
+      entity_name: to.params.entityName,
+    },
+  })
+  await entity.fetch()
+  if (entity.data.type !== expectedType) {
+    const correctRoute = {
+      folder: `/d/${to.params.entityName}`,
+      document: `/w/${to.params.entityName}`,
+      file: `/f/${to.params.entityName}`,
+    }[entity.data.type]
+    if (correctRoute) {
+      return correctRoute
+    }
+    return "/"
+  }
+}
+
 const routes = [
   {
     path: "/signup",
@@ -132,7 +154,19 @@ const routes = [
     path: "/t/:team/",
     name: "Team",
     component: () => import("@/pages/Team.vue"),
-    beforeEnter: [setRootBreadCrumb],
+    beforeEnter: [
+      setRootBreadCrumb,
+      async (to) => {
+        const teams = createResource({
+          url: "/api/method/drive.api.permissions.get_teams",
+          method: "GET",
+        })
+        await teams.fetch()
+        if (!teams.data.includes(to.params.team)) {
+          return "/"
+        }
+      }
+    ],
     props: true,
   },
   {
@@ -140,7 +174,10 @@ const routes = [
     name: "File",
     component: () => import("@/pages/File.vue"),
     meta: { allowGuest: true, filePage: true },
-    beforeEnter: [manageBreadcrumbs],
+    beforeEnter: [
+      manageBreadcrumbs,
+      async (to) => validateEntityType(to, "file")
+    ],
     props: true,
   },
   {
@@ -148,7 +185,10 @@ const routes = [
     name: "Folder",
     component: () => import("@/pages/Folder.vue"),
     meta: { allowGuest: true },
-    beforeEnter: [manageBreadcrumbs],
+    beforeEnter: [
+      manageBreadcrumbs,
+      async (to) => validateEntityType(to, "folder")
+    ],
     props: true,
   },
   {
@@ -156,8 +196,11 @@ const routes = [
     name: "Document",
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
+    beforeEnter: [
+      manageBreadcrumbs,
+      async (to) => validateEntityType(to, "document")
+    ],
     props: true,
-    beforeEnter: [manageBreadcrumbs],
   },
 ]
 
