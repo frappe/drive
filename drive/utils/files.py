@@ -94,7 +94,7 @@ class FileManager:
                     now=True,
                     at_front=True,
                     file=drive_file,
-                    file_path=current_path,
+                    file_path=str(current_path),
                 )
             else:
                 os.remove(current_path)
@@ -117,8 +117,8 @@ class FileManager:
         save_path = self.get_thumbnail_path(file.team, file.name).with_suffix(".png")
         disk_path = str(self.site_folder / save_path)
 
-        with DistributedLock(file.path, exclusive=False):
-            try:
+        try:
+            with DistributedLock(file.path, exclusive=False):
                 # Keep image/video thumbnail as `thumbnail` results in very dark thumbnails (albeit better)
                 if file.mime_type.startswith("image"):
                     with Image.open(file_path).convert("RGB") as image:
@@ -166,14 +166,13 @@ class FileManager:
                 else:
                     final_path = disk_path.with_suffix(".thumbnail")
                     disk_path.rename(final_path)
-
-            except BaseException as e:
-                frappe.log_error("Thumbnail failed", e)
-                if self.s3_enabled:
-                    try:
-                        os.remove(file_path)
-                    except FileNotFoundError:
-                        pass
+        except BaseException as e:
+            frappe.log_error("Thumbnail failed", e)
+            if self.s3_enabled:
+                try:
+                    os.remove(file_path)
+                except FileNotFoundError:
+                    pass
 
     def get_disk_path(self, entity: DriveFile, root: dict = None, embed=False):
         """
