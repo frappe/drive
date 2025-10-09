@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-03 16:11+0000\n"
-"PO-Revision-Date: 2025-10-06 23:30\n"
+"PO-Revision-Date: 2025-10-08 23:28\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -96,7 +96,7 @@ msgstr "همه"
 #. Label of the allow_download (Check) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Allow Download"
-msgstr ""
+msgstr "اجازه دانلود"
 
 #: frontend/src/components/Sidebar.vue:106
 msgid "Apps"
@@ -151,7 +151,7 @@ msgstr "دیدگاه‌ها"
 #: frontend/src/components/Settings/NewTagDialog.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:30
 msgid "Confirm"
-msgstr "تایید"
+msgstr "تأیید"
 
 #. Label of the content (Text Editor) field in DocType 'Drive Comment'
 #. Label of the content (Long Text) field in DocType 'Drive Document'
@@ -240,7 +240,7 @@ msgstr ""
 #. Name of a DocType
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Drive Desktop Client"
-msgstr ""
+msgstr "کلاینت دسکتاپ درایو"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -292,7 +292,7 @@ msgstr ""
 #. Name of a DocType
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "Drive File Update"
-msgstr ""
+msgstr "به‌روزرسانی فایل درایو"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -656,7 +656,7 @@ msgstr ""
 #. Description of the 'S3 Bucket' (Data) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Only applies if S3 is turned on."
-msgstr ""
+msgstr "فقط در صورتی اعمال می‌شود که S3 روشن باشد."
 
 #: frontend/src/components/GenericPage.vue:291
 msgid "Open"
@@ -731,7 +731,7 @@ msgstr ""
 #. Description of the 'Updates' (Table) field in DocType 'Drive Desktop Client'
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Queue for all the un-applied changes in the desktop."
-msgstr ""
+msgstr "صفی برای تمام تغییرات اعمال نشده در دسکتاپ."
 
 #. Label of the quota (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -953,7 +953,7 @@ msgstr ""
 
 #: frontend/src/components/TagInput.vue:22
 msgid "This file has no tags"
-msgstr ""
+msgstr "این فایل هیچ برچسبی ندارد"
 
 #. Label of the thumbnail_prefix (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
