@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-03 16:11+0000\n"
-"PO-Revision-Date: 2025-10-06 23:30\n"
+"PO-Revision-Date: 2025-10-10 00:22\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "0 för Gäst, 1 för Användare, 2 för Ansvarig"
 #. Header text in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "<span style=\"font-size: 16px;\">Manage Drive</span>"
-msgstr "<span style=\"font-size: 16px;\">Hantera Drive</span>"
+msgstr "<span style=\"font-size: 16px;\">Hantera</span>"
 
 #. Label of the aws_key (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -235,104 +235,104 @@ msgstr "Drive"
 #. Name of a DocType
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Drive Comment"
-msgstr "Drive Kommentar"
+msgstr "Kommentar"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Drive Desktop Client"
-msgstr "Drive Klient"
+msgstr "Skrivbord Klient"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Disk Settings"
-msgstr "Drive Disk Inställningar"
+msgstr "Disk Inställningar"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr "Drive Dokument Version"
+msgstr "Dokument Version"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Drive Document"
-msgstr "Drive Dokument"
+msgstr "Dokument"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Drive Document Version"
-msgstr "Drive Dokument Version"
+msgstr "Dokument Version"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Drive Entity Activity Log"
-msgstr "Drive Enhet Aktivitetslogg"
+msgstr "Aktivitetslogg"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Drive Entity Log"
-msgstr "Drive Enhet Logg"
+msgstr "Logg"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Drive Entity Tag"
-msgstr "Drive Enhet Tagg"
+msgstr "Tagg"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 msgid "Drive Favourite"
-msgstr "Drive Favorit"
+msgstr "Favorit"
 
 #. Label of the entity (Link) field in DocType 'Drive Favourite'
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Drive File"
-msgstr "Drive Fil"
+msgstr "Fil"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "Drive File Update"
-msgstr "Drive Filuppdatering"
+msgstr "Fil Uppdatering"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Folder"
-msgstr "Drive Mapp"
+msgstr "Mapp"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Drive Notification"
-msgstr "Drive Avisering"
+msgstr "Avisering"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Drive Permission"
-msgstr "Drive Behörighet"
+msgstr "Behörighet"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Drive Settings"
-msgstr "Drive Inställningar"
+msgstr "Inställningar"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_tag/drive_tag.json
 msgid "Drive Tag"
-msgstr "Drive Tagg"
+msgstr "Tagg"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Drive Team"
-msgstr "Drive Team"
+msgstr "Team"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Drive Team Member"
-msgstr "Drive Team Medlem"
+msgstr "Team Medlem"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
-msgstr "Drive Användarinbjudan"
+msgstr "Användarinbjudan"
 
 #: frontend/src/components/Settings/UserListSettings.vue:527
 msgid "Edit"

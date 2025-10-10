@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-03 16:11+0000\n"
-"PO-Revision-Date: 2025-10-06 23:30\n"
+"PO-Revision-Date: 2025-10-10 00:22\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -235,12 +235,12 @@ msgstr "Drive"
 #. Name of a DocType
 #: drive/drive/doctype/drive_comment/drive_comment.json
 msgid "Drive Comment"
-msgstr "Drive Komentar"
+msgstr "Komentar"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_desktop_client/drive_desktop_client.json
 msgid "Drive Desktop Client"
-msgstr "Drive Desktop Klijent"
+msgstr "Desktop Klijent"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
@@ -250,89 +250,89 @@ msgstr "Postavke Drive Diska"
 #. Name of a DocType
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
 msgid "Drive Doc Version"
-msgstr "Drive Verzija Dokumenta"
+msgstr "Verzija Dokumenta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document/drive_document.json
 msgid "Drive Document"
-msgstr "Drive Dokument"
+msgstr "Dokument"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_document_version/drive_document_version.json
 msgid "Drive Document Version"
-msgstr "Drive Verzija Dokumenta"
+msgstr "Verzija Dokumenta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_activity_log/drive_entity_activity_log.json
 msgid "Drive Entity Activity Log"
-msgstr "Drive Zapisnik Aktivnosti Entiteta"
+msgstr "Zapisnik Aktivnosti Entiteta"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_log/drive_entity_log.json
 msgid "Drive Entity Log"
-msgstr "Drive Entitet Zapisnik"
+msgstr "Entitet Zapisnik"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
 msgid "Drive Entity Tag"
-msgstr "Drive Entitet Oznaka"
+msgstr "Entitet Oznaka"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 msgid "Drive Favourite"
-msgstr "Drive Favorit"
+msgstr "Favorit"
 
 #. Label of the entity (Link) field in DocType 'Drive Favourite'
 #. Name of a DocType
 #: drive/drive/doctype/drive_favourite/drive_favourite.json
 #: drive/drive/doctype/drive_file/drive_file.json
 msgid "Drive File"
-msgstr "Drive Datoteka"
+msgstr "Datoteka"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 msgid "Drive File Update"
-msgstr "Ažuriranje Datoteke Diska"
+msgstr "Ažuriranje Datoteke"
 
 #. Label of the root_folder (Data) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
 msgid "Drive Folder"
-msgstr "Drive Datoteka"
+msgstr "Mapa"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_notification/drive_notification.json
 msgid "Drive Notification"
-msgstr "Drive Obavještenje"
+msgstr "Obavještenje"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_permission/drive_permission.json
 msgid "Drive Permission"
-msgstr "Drive Dozvola"
+msgstr "Dozvola"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_settings/drive_settings.json
 msgid "Drive Settings"
-msgstr "Drive Postavke"
+msgstr "Postavke"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_tag/drive_tag.json
 msgid "Drive Tag"
-msgstr "Drive Oznaka"
+msgstr "Oznaka"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team/drive_team.json
 msgid "Drive Team"
-msgstr "Drive Tim"
+msgstr "Tim"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "Drive Team Member"
-msgstr "Član Drive Tima"
+msgstr "Član Tima"
 
 #. Name of a DocType
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Drive User Invitation"
-msgstr "Drive Pozivnica Korisnika"
+msgstr "Pozivnica Korisnika"
 
 #: frontend/src/components/Settings/UserListSettings.vue:527
 msgid "Edit"
