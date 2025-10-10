@@ -1,0 +1,119 @@
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .ProseMirror {
+    p:empty::after {
+      content: "\00A0";
+    }
+  }
+
+  .ProseMirror table {
+    table-layout: fixed;
+    width: 100%;
+    page-break-inside: avoid;
+    text-align: inherit;
+  }
+  
+  .ProseMirror table p { margin: 0; }
+  .ProseMirror td,
+  .ProseMirror th {
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: var(--outline-gray-2);
+    background: transparent;
+    text-align: inherit;
+    padding: 0.5rem !important;
+  }
+
+  .ProseMirror th {
+    background-color: var(--surface-gray-2);
+    font-weight: 600;
+  }
+  
+  .ProseMirror ul {
+    list-style-type: disc;
+  }
+
+  .ProseMirror ol {
+    list-style-type: decimal;
+  }
+  
+  .ProseMirror li::marker {
+    color: var(--ink-gray-3);
+  }
+
+  .ProseMirror span[data-comment-id] {
+    border: none;
+    background: transparent;
+    cursor: text;
+    text-decoration: none;
+  }
+
+  .prose-sm {
+    caret-color: theme("colors.blue.600");
+    padding: 1rem 2.5rem;
+  }
+
+  #page-break-div {
+    border: none !important;
+    margin: none !important;
+  }
+
+  img {
+    box-shadow: none;
+    border-radius: 0px;
+  }
+
+  img[dataalign="left"] {
+    display: block;
+    margin-right: auto;
+  }
+
+  img[dataalign="center"] {
+    display: block;
+    margin: 0 auto;
+  }
+
+  img[dataalign="right"] {
+    display: block;
+    margin-left: auto;
+  }
+
+  img[datafloat="left"] {
+    float: left;
+    margin-right: 1rem;
+  }
+
+  img[datafloat="right"] {
+    float: right;
+    margin-left: 1rem;
+  }
+
+  video[dataalign="left"] {
+    display: block;
+    margin-right: auto;
+  }
+
+  video[dataalign="center"] {
+    display: block;
+    margin: 0 auto;
+  }
+
+  video[dataalign="right"] {
+    display: block;
+    margin-left: auto;
+  }
+
+  video[datafloat="left"] {
+    float: left;
+    margin-right: 1rem;
+  }
+
+  video[datafloat="right"] {
+    float: right;
+    margin-left: 1rem;
+  }
+}

@@ -161,7 +161,7 @@ onKeyDown("Escape", (e) => {
 })
 </script>
 <style scoped>
-@import url("./DocEditor/editor.css");
+@import url("./DocEditor/styles/editor.css");
 
 .grid-container {
   display: grid;
