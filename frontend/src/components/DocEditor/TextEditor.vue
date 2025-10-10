@@ -575,7 +575,7 @@ onKeyDown("s", (e) => {
 })
 </script>
 <style>
-@import url("./editor.css");
+@import url("./styles/editor.css");
 iframe {
   border: 1px solid var(--surface-gray-4) !important;
 }

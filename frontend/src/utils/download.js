@@ -4,7 +4,7 @@ import { printDoc } from "./files"
 import emitter from "@/emitter"
 import router from "@/router"
 import html2pdf from "html2pdf.js"
-import editorStyle from "@/components/DocEditor/editor.css?inline"
+import editorStyle from "@/components/DocEditor/styles/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 
 async function getPdfFromDoc(entity_name) {
