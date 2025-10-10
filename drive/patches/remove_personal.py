@@ -8,14 +8,16 @@ def execute():
     print(
         "This migration to a beta release might CORRUPT your data. Do NOT run this before taking a complete backup. You have two minutes left to cancel this deployment. "
     )
-    # time.sleep(120)
+    time.sleep(120) 
 
     frappe.reload_doc("Drive", "doctype", "Drive Disk Settings")
     doc = frappe.get_single("Drive Disk Settings")
     doc.team_prefix = "team_name"
+    doc.preview_size = 100
     doc.save()
 
     frappe.reload_doc("Drive", "doctype", "Drive Permission")
+
     # Change team shares
     for share in frappe.get_list("Drive Permission", filters={"user": "$TEAM"}, fields=["name", "entity"]):
         team = frappe.db.get_value("Drive File", share["entity"], "team")
