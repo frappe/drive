@@ -1,4 +1,6 @@
 @import url("../../assets/fonts/fonts.css");
+@import "frappe-ui/src/components/TextEditor/extensions/color/color-styles.css";
+@import "frappe-ui/src/components/TextEditor/extensions/highlight/highlight-styles.css";
 
 body {
   --font-inter: "InterVar", inherit;
@@ -44,25 +46,78 @@ span[data-comment-id]:not([data-resolved="true"]).active {
 }
 
 @media print {
-  .Prosemirror {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .ProseMirror {
     p:empty::after {
       content: "\00A0";
     }
+  }
+  .ProseMirror span[data-comment-id] {
+    border: none;
+    background: transparent;
+    cursor: text;
+    text-decoration: none;
+  }
+
+  .ProseMirror table {
+    table-layout: fixed;
+    width: 100%;
+    page-break-inside: avoid;
+    text-align: inherit;
+  }
+  
+  .ProseMirror table p { margin: 0; }
+  .ProseMirror td,
+  .ProseMirror th {
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: var(--outline-gray-2);
+    background: transparent;
+    text-align: inherit;
+    padding: 0.5rem !important;
+  }
+
+  .ProseMirror th {
+    background-color: var(--surface-gray-2);
+    font-weight: 600;
+  }
+  
+  .ProseMirror ul {
+    list-style-type: disc;
+  }
+
+  .ProseMirror ol {
+    list-style-type: decimal;
+  }
+  
+  .ProseMirror li::marker {
+    color: var(--ink-gray-3);
+  }
+
+  .prose-sm {
+    caret-color: theme("colors.blue.600");
+    padding: 1rem 2.5rem;
   }
 
   #page-break-div {
     border: none !important;
     margin: none !important;
   }
+
   span[data-annotation-id] {
     background-color: transparent !important;
     border-bottom: none !important;
     padding: none !important;
   }
+
   img {
     box-shadow: none;
     border-radius: 0px;
   }
+
   img[dataalign="left"] {
     display: block;
     margin-right: auto;
@@ -87,6 +142,7 @@ span[data-comment-id]:not([data-resolved="true"]).active {
     float: right;
     margin-left: 1rem;
   }
+
   video[dataalign="left"] {
     display: block;
     margin-right: auto;
