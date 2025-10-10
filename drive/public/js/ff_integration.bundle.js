@@ -149,9 +149,20 @@ DRIVE_UPLOADER = {
     }, 300);
   },
 };
-
 (async () => {
   await frappe.require("file_uploader.bundle.js");
   if (frappe.ui.FileUploader?.UploadOptions)
     frappe.ui.FileUploader.UploadOptions.push(DRIVE_UPLOADER);
 })();
+
+frappe.ui.form.on("Wiki Space", {
+  refresh(frm) {
+    frm.add_custom_button("Sync from Drive", async () => {
+      // frappe.prompt("Enter folder ID", async ({ folder }) => {
+      await frappe.call("drive.api.wiki_integration.sync_space", {
+        folder: "usdaupsrql",
+        wiki_space: frm.doc.name,
+      });
+    });
+  },
+});

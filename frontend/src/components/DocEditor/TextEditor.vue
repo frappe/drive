@@ -581,6 +581,7 @@ onKeyDown("s", (e) => {
 })
 
 const syncToWiki = async (wiki_space, group, entity_names) => {
+  const pages = []
   for (let k of entity_names) {
     const data = await createResource({
       url: "drive.api.wiki_integration.get_yjs_content",
@@ -593,17 +594,23 @@ const syncToWiki = async (wiki_space, group, entity_names) => {
       content: obj,
       extensions: textEditor.value.DEFAULT_EXTENSIONS,
     })
-    await createResource({
+    let new_ = await createResource({
       url: "drive.api.wiki_integration.sync_to_wiki_page",
       params: { entity_name: k, html: editor.getHTML(), wiki_space, group },
     }).fetch()
+    if (new_) pages.push(new_)
   }
+  if (pages.length)
+    createResource({
+      url: "drive.api.wiki_integration.add_pages_to_space",
+      params: { wiki_space, group, pages },
+      auto: true,
+    })
 }
 
 window.run = () => syncToWiki(["uu9pbukv8s", "5fpvulc7so"])
 const socket = inject("socket")
 socket.on("sync_to_wiki", (data) => {
-  console.log("syncing", data.space)
   for (let [title, pages] of Object.entries(data.groups)) {
     syncToWiki(data.space, title, pages)
   }

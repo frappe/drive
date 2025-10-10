@@ -15,6 +15,8 @@ def get_yjs_content(entity_name):
 
 from markdownify import markdownify as md
 
+import time
+
 
 @frappe.whitelist()
 def sync_to_wiki_page(wiki_space, group, entity_name, html):
@@ -22,24 +24,34 @@ def sync_to_wiki_page(wiki_space, group, entity_name, html):
     content = md(html)
     route = group.lower().replace(" ", "-") + "/" + title.lower().replace(" ", "-")
     existing_page = frappe.db.exists("Wiki Page", {"route": route})
+
     if existing_page:
         frappe.get_doc("Wiki Page", existing_page).update({"content": content}).save()
-    else:
-        page = frappe.get_doc(
-            {
-                "doctype": "Wiki Page",
-                "title": title,
-                "route": route,
-                "wiki_space": wiki_space,
-                "content": content,
-            }
-        )
-        page.insert(ignore_permissions=True)
-        space = frappe.get_doc("Wiki Space", wiki_space)
-        space.append("wiki_sidebars", {"parent_label": group, "wiki_page": page.name})
-        space.save()
+        return
+        # frappe.delete_doc("Wiki Page", existing_page)
+        # time.sleep(0.5)
 
-    return content
+    page = frappe.get_doc(
+        {
+            "doctype": "Wiki Page",
+            "title": title,
+            "route": route,
+            "wiki_space": wiki_space,
+            "content": content,
+            "published": 1,
+        }
+    )
+    page.insert()
+
+    return page.name
+
+
+@frappe.whitelist()
+def add_pages_to_space(wiki_space, group, pages):
+    space = frappe.get_doc("Wiki Space", wiki_space)
+    for page in pages:
+        space.append("wiki_sidebars", {"parent_label": group, "wiki_page": page})
+    space.save()
 
 
 @frappe.whitelist()
