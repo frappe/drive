@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-03 16:11+0000\n"
-"PO-Revision-Date: 2025-10-06 23:30\n"
+"PO-Revision-Date: 2025-10-12 00:58\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: frontend/src/components/Sidebar.vue:106
 msgid "Apps"
-msgstr ""
+msgstr "Aplikacje"
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -447,7 +447,7 @@ msgstr ""
 
 #: frontend/src/utils/files.js:214
 msgid "Home"
-msgstr ""
+msgstr "Strona główna"
 
 #. Label of the ip_address (Data) field in DocType 'Account Request'
 #: drive/drive/doctype/account_request/account_request.json
@@ -604,7 +604,7 @@ msgstr ""
 #: frontend/src/components/DriveToolBar.vue:244
 #: frontend/src/components/ListView.vue:131
 msgid "Name"
-msgstr ""
+msgstr "Nazwa"
 
 #: frontend/src/components/Settings/TagSettings.vue:12
 #: frontend/src/components/Settings/UserListSettings.vue:9
@@ -816,7 +816,7 @@ msgstr ""
 #: frontend/src/components/Settings/SettingsDialog.vue:16
 #: frontend/src/components/Sidebar.vue:151
 msgid "Settings"
-msgstr ""
+msgstr "Ustawienia"
 
 #. Option for the 'Type' (Select) field in DocType 'Drive Notification'
 #. Label of the share (Check) field in DocType 'Drive Permission'
@@ -880,7 +880,7 @@ msgstr "Statystyki"
 #. Label of the status (Select) field in DocType 'Drive User Invitation'
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. Label of the storage (Int) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
@@ -907,7 +907,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
 msgid "System Manager"
-msgstr ""
+msgstr "Menedżer systemu"
 
 #. Label of the tag (Link) field in DocType 'Drive Entity Tag'
 #: drive/drive/doctype/drive_entity_tag/drive_entity_tag.json
@@ -972,7 +972,7 @@ msgstr ""
 #: drive/drive/doctype/drive_team/drive_team.json
 #: frontend/src/components/Settings/NewTagDialog.vue:19
 msgid "Title"
-msgstr ""
+msgstr "Tytuł"
 
 #. Label of the to_user (Link) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_notification/drive_notification.json
@@ -1027,7 +1027,7 @@ msgstr ""
 #: drive/drive/doctype/drive_settings/drive_settings.json
 #: drive/drive/doctype/drive_team_member/drive_team_member.json
 msgid "User"
-msgstr ""
+msgstr "Użytkownik"
 
 #. Label of the users (Table) field in DocType 'Drive Team'
 #: drive/drive/doctype/drive_team/drive_team.json
