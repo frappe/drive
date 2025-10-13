@@ -872,23 +872,6 @@ def get_new_title(title, parent_name, folder=False, entity=None):
     return f"{entity_title} ({len(sibling_entity_titles)}){entity_ext}"
 
 
-@frappe.whitelist(allow_guest=True)
-def get_entity_type(entity_name):
-    entity = frappe.db.get_value(
-        "Drive File",
-        {"is_active": 1, "name": entity_name},
-        ["team", "name", "mime_type", "is_group", "document"],
-        as_dict=1,
-    )
-    if entity.document or entity.mime_type == "text/markdown":
-        entity["type"] = "document"
-    elif entity.is_group:
-        entity["type"] = "folder"
-    else:
-        entity["type"] = "file"
-    return entity
-
-
 @frappe.whitelist()
 def get_root_folder(team):
     if team not in get_teams():

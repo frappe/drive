@@ -403,6 +403,14 @@ const document = createResource({
   auto: true,
   params: {
     entity_name: props.entityName,
+    expected_type: "document",
+  },
+  transform(entity) {
+    if (entity.redirect) {
+      router.push(entity.route)
+      return null
+    }
+    return entity
   },
   onSuccess,
 })

@@ -135,9 +135,13 @@ def get_teams(user=None, details=None, exclude_personal=True):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_entity_with_permissions(entity_name):
+def get_entity_with_permissions(entity_name, expected_type=None):
     """
     Return file data with permissions
+    
+    :param entity_name: Name of the entity to fetch
+    :param expected_type: Expected entity type ('file', 'folder', or 'document'). 
+                         If provided and doesn't match, returns redirect info
     """
     entity = frappe.db.get_value(
         "Drive File",
@@ -147,6 +151,32 @@ def get_entity_with_permissions(entity_name):
     )
     if not entity:
         frappe.throw("We couldn't find what you're looking for.", {"error": frappe.NotFound})
+
+    # Determine actual entity type
+    if entity.document or entity.mime_type == "text/markdown":
+        actual_type = "document"
+    elif entity.is_group:
+        actual_type = "folder"
+    else:
+        actual_type = "file"
+    
+    # Check if type matches expected type and return redirect if mismatch
+    if expected_type and expected_type != actual_type:
+        route_map = {
+            "folder": f"/d/{entity_name}",
+            "document": f"/w/{entity_name}",
+            "file": f"/f/{entity_name}",
+        }
+        correct_route = route_map.get(actual_type)
+        if correct_route:
+            return {
+                "redirect": True,
+                "route": correct_route,
+                "entity_type": actual_type,
+                "expected_type": expected_type
+            }
+        # If no valid route found, throw error
+        frappe.throw("Invalid entity type.", frappe.ValidationError)
 
     entity["in_home"] = entity.team == get_default_team()
     user_access = get_user_access(entity)
