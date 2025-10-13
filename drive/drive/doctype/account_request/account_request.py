@@ -28,33 +28,6 @@ class AccountRequest(Document):
     def validate(self):
         self.email = self.email.strip()
 
-    def after_insert(self):
-        if not self.invite:
-            # TBD - check site configuration
-            raise ValueError("Public signups aren't supported yet.")
-            # self.set_otp()
-            # try:
-            #     self.send_otp()
-            # except:
-            #     pass
-        # Telemetry: Only capture if it's not a saas signup or invited by parent team. Also don't capture if user already have a team
-        # if not (
-        #     frappe.db.exists("Team", {"user": self.email})
-        #     or self.is_saas_signup()
-        #     or self.invited_by_parent_team
-        # ):
-        #     # Telemetry: Account Request Created
-        #     capture("account_request_created", "fc_signup", self.email)
-
-        # if self.is_saas_signup() and self.is_using_new_saas_flow():
-        #     # Telemetry: Account Request Created
-        #     capture("account_request_created", "fc_saas", self.email)
-
-        # if self.is_saas_signup() and not self.is_using_new_saas_flow():
-        #     # If user used oauth, we don't need to verification email but to track the event in stat, send this dummy event
-        #     capture("verification_email_sent", "fc_signup", self.email)
-        #     capture("clicked_verify_link", "fc_signup", self.email)
-
     def set_otp(self):
         self.otp = generate_otp()
         self.otp_generated_at = frappe.utils.now_datetime()

@@ -15,8 +15,8 @@
                   isLogin
                     ? "Login to Drive"
                     : params.get("t")
-                      ? "Join " + params.get("t")
-                      : "Create a new account"
+                    ? "Join " + params.get("t")
+                    : "Create a new account"
                 }}
               </p>
               <p
@@ -169,8 +169,10 @@
                 >
                   <div class="flex items-center">
                     <div v-html="provider.icon" />
-                    <span class="ml-2">{{ isLogin ? "Continue" : "Join" }} with
-                      {{ provider.provider_name }}</span>
+                    <span class="ml-2"
+                      >{{ isLogin ? "Continue" : "Join" }} with
+                      {{ provider.provider_name }}</span
+                    >
                   </div>
                 </Button>
               </template>
@@ -254,13 +256,15 @@ const signup = createResource({
     }
   },
   onSuccess(data) {
+    console.log(data.location)
     window.location.href = data.location
   },
   onError(err) {
+    console.log(err.messages)
     if (err.exc_type === "DuplicateEntryError") {
-      toast("Account already exists - please login.")
+      toast({ title: "Account already exists - please login.", type: "error" })
     } else {
-      toast("Failed to create account")
+      toast({ title: "Failed to create account", type: "error" })
     }
   },
 })
@@ -286,13 +290,7 @@ const sendOTP = createResource({
     toast("Verification code sent to your email")
   },
   onError(err) {
-    if (JSON.stringify(err).includes("not found"))
-      toast(
-        signupDisabled.data
-          ? "You do not have an account on this site."
-          : "Please sign up first!"
-      )
-    else toast("Failed to send verification code")
+    toast({ title: err.messages[0], type: "error" })
   },
 })
 
