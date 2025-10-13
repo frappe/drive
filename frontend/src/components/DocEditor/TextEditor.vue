@@ -76,7 +76,7 @@
               })
             }
           "
-          :mentions="users"
+          :mentions="{ mentions: users, selectable: false }"
           placeholder="Start writing here..."
           :bubble-menu="settings.minimal && menuButtons"
           :extensions="editorExtensions"
