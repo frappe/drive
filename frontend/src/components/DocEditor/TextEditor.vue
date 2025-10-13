@@ -37,7 +37,7 @@
     </div>
     <div
       id="editorScrollContainer"
-      class="flex w-full overflow-y-auto"
+      class="flex-1 flex w-full overflow-y-auto"
     >
       <div
         class="mx-auto cursor-text w-full flex justify-center h-full"
