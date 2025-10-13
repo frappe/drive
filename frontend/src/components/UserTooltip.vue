@@ -1,10 +1,10 @@
 <template>
   {{}}
-  <Tooltip :text="email"
-    ><span>{{
+  <Tooltip :text="email">
+    <span>{{
       allUsers.data.find((k) => k.name === email).full_name
-    }}</span></Tooltip
-  >
+    }}</span>
+  </Tooltip>
 </template>
 <script setup>
 import { allUsers } from "@/resources/permissions"

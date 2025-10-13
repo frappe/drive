@@ -13,8 +13,14 @@
         v-else
         id="renderContainer"
         :draggable="false"
-        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center"
+        class="w-full p-10 flex-grow w-full flex justify-center align-center items-center relative"
       >
+        <Button
+          class="text-ink-gray-8 absolute top-4 left-4"
+          :variant="'ghost'"
+          icon="arrow-left"
+          @click="closePreview"
+        />
         <LoadingIndicator
           v-if="file.loading"
           class="w-10 h-full text-neutral-100"
@@ -53,14 +59,7 @@
 <script setup>
 import { useStore } from "vuex"
 import Navbar from "@/components/Navbar.vue"
-import {
-  ref,
-  computed,
-  onMounted,
-  defineProps,
-  onBeforeUnmount,
-  inject,
-} from "vue"
+import { ref, computed, onMounted, defineProps } from "vue"
 import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"
@@ -124,7 +123,7 @@ const onSuccess = async (entity) => {
   updateURLSlug(entity.title)
 }
 
-let file = createResource({
+const file = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   params: { entity_name: props.entityName, expected_type: "file" },
   transform(entity) {
@@ -142,6 +141,13 @@ store.commit("setCurrentResource", file)
 function scrollEntity(negative = false) {
   currentEntity.value = negative ? prevEntity.value : nextEntity.value
   if (currentEntity.value) fetchFile(currentEntity.value.name)
+}
+
+function closePreview() {
+  router.push({
+    name: "Folder",
+    params: { entityName: file.data.parent_entity },
+  })
 }
 
 onMounted(() => {

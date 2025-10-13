@@ -3,7 +3,7 @@ import { h } from "vue"
 
 const toast = (obj) => {
   if (typeof obj === "string") return fToast.success(obj)
-  const { title, text, buttons, icon, duration, type } = obj
+  const { title, buttons, icon, duration, type } = obj
   ;(type === "error" ? fToast.error : fToast.success)(title, {
     action: buttons?.[0],
     icon: icon && h(icon, { class: "text-ink-white" }),

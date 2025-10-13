@@ -6,7 +6,9 @@
       <LucideFileUser v-if="error.exc_type === 'PermissionError'" />
       <LucideFileQuestionMark v-else />
     </div>
-    <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">Uh oh!</h1>
+    <h1 class="text-3xl font-bold text-ink-gray-8 mt-4">
+      Uh oh!
+    </h1>
     <p
       class="text-lg text-ink-gray-5 mt-4"
       v-html="error.messages?.join?.('\n') || error"
@@ -28,7 +30,9 @@
         size="md"
         @click="$router.replace({ name: 'Home' })"
       >
-        <div class="flex gap-2"><LucideHome class="size-4" />Go Home</div>
+        <div class="flex gap-2">
+          <LucideHome class="size-4" />Go Home
+        </div>
       </Button>
       <Button
         v-else
@@ -36,7 +40,9 @@
         size="md"
         @click="$router.replace('/drive/login')"
       >
-        <div class="flex gap-2"><LucideUser class="size-4" />Login</div>
+        <div class="flex gap-2">
+          <LucideUser class="size-4" />Login
+        </div>
       </Button>
     </div>
   </div>

@@ -5,6 +5,7 @@ from pypika import Criterion, CustomFunction, Order
 from pypika import functions as fn
 
 from drive.utils import MIME_LIST_MAP, default_team, get_file_type, get_home_folder
+from drive.utils.api import get_default_access
 
 from .permissions import ENTITY_FIELDS, get_user_access
 
@@ -79,9 +80,12 @@ def files(
 
     query = frappe.qb.from_(DriveFile).where(DriveFile.is_active == is_active)
     if shared:
-        cond = (DrivePermission.entity == DriveFile.name) & (
-            (DrivePermission.user if shared == "with" else DrivePermission.owner) == frappe.session.user
-        )
+        if shared == "by" or shared == "with":
+            cond = (DrivePermission.entity == DriveFile.name) & (
+                (DrivePermission.user if shared == "with" else DrivePermission.owner) == frappe.session.user
+            )
+        elif shared == "public":
+            cond = (DrivePermission.entity == DriveFile.name) & (DrivePermission.user == "")
         # if shared == "with":
         #     teams = get_teams()
         #     cond |= (DrivePermission.team == 1) & (DrivePermission.user.isin(teams))
@@ -178,12 +182,7 @@ def files(
     children_count = dict(child_count_query.run())
     share_count = dict(share_query.run())
 
-    default = 0
-    if entity_name:
-        if get_user_access(entity_name, "Guest")["read"]:
-            default = -2
-        elif get_user_access(entity_name, team=1)["read"]:
-            default = -1
+    default = get_default_access(entity_name)
 
     # Deduplicate
     if shared:
@@ -199,8 +198,6 @@ def files(
     for r in res:
         r["children"] = children_count.get(r["name"], 0)
         r["file_type"] = get_file_type(r)
-        if r["name"] == "1hhf7h7bh2":
-            print(r, children_count.get(r["name"], 0))
 
         if r["name"] in public_files:
             r["share_count"] = -2

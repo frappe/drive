@@ -17,3 +17,5 @@ drive/public/dist
 *.sql
 *log.json
 .env
+dist/
+build/

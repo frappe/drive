@@ -4,13 +4,11 @@
   </h1>
 
   <div class="flex items-center justify-between w-full mb-2">
-    <span class="text-base font-medium text-ink-gray-8"
-      >{{ showFileStorage ? "You have" : "Your team has" }} used
+    <span class="text-base font-medium text-ink-gray-8">{{ showFileStorage ? "You have" : "Your team has" }} used
       {{ formatSize(usedSpace) ? formatSize(usedSpace) + " out" : "none" }} of
       {{ showFileStorage ? "your" : "" }} {{ base2BlockSize(spaceLimit) }} ({{
         formatPercent((usedSpace / spaceLimit) * 100)
-      }})</span
-    >
+      }})</span>
     <div
       class="bg-surface-gray-2 rounded-[10px] space-x-0.5 h-7 flex items-center px-0.5 py-1"
     >
@@ -62,7 +60,7 @@
         <div
           class="text-center rounded bg-surface-gray-7 px-2 py-1 text-xs text-ink-white shadow-xl"
         >
-          {{ i.kind }} <br />{{ i.h_size }} ({{ i.percentageFormat }})
+          {{ i.kind }} <br>{{ i.h_size }} ({{ i.percentageFormat }})
         </div>
       </template>
       <div
@@ -100,7 +98,7 @@
       @mouseenter="hoveredRow = i.name"
       @mouseleave="hoveredRow = null"
     >
-      <img :src="getIconUrl(i.file_type)" />
+      <img :src="getIconUrl(i.file_type)">
       <span class="text-ink-gray-8 text-sm truncate">{{ i.title }}</span>
 
       <div class="text-ink-gray-8 text-sm ml-auto flex gap-2 h-10 leading-10">
@@ -142,11 +140,11 @@ const storageBreakdown = createResource({
   url: "drive.api.storage.storage_breakdown",
   makeParams: (p) => p,
   onSuccess(data) {
-    let res = {}
+    const res = {}
     usedSpace.value = 0
     spaceLimit.value = data.limit
     data.total.forEach((item) => {
-      let kind =
+      const kind =
         Object.entries(MIME_LIST_MAP).find(([type, list]) =>
           list.includes(item.mime_type) ? type : false
         )?.[0] || "Unknown"

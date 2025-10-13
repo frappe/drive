@@ -77,7 +77,7 @@ const props = defineProps({
   actionItems: Array,
   userData: Object,
 })
-const emit = defineEmits(["dropped"])
+defineEmits(["dropped"])
 const route = useRoute()
 const store = useStore()
 const selections = defineModel(new Set())

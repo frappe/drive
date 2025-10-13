@@ -12,8 +12,8 @@
 
   <div
     v-else
-    ref="container"
     id="drop-area"
+    ref="container"
     class="flex flex-col overflow-auto min-h-full bg-surface-white"
   >
     <DriveToolBar
@@ -44,6 +44,7 @@
       :folder-contents="rows && grouper(rows)"
       :action-items="actionItems"
       :user-data="userData"
+      :root-entity="verify?.data"
       @dropped="onDrop"
     />
     <GridView
@@ -84,7 +85,7 @@ import { getLink, pasteObj } from "@/utils/files"
 import { toggleFav, clearRecent } from "@/resources/files"
 import { allUsers } from "@/resources/permissions"
 import { entitiesDownload } from "@/utils/download"
-import { ref, computed, watch, watchEffect, provide } from "vue"
+import { ref, computed, watch, watchEffect, provide, inject } from "vue"
 import { useRoute } from "vue-router"
 import { useEventListener } from "@vueuse/core"
 import { useStore } from "vuex"
@@ -93,6 +94,7 @@ import { toast } from "@/utils/toasts"
 import { move } from "@/resources/files"
 import { LoadingIndicator } from "frappe-ui"
 import { settings } from "@/resources/permissions"
+import emitter from "@/emitter"
 
 import LucideClock from "~icons/lucide/clock"
 import LucideDownload from "~icons/lucide/download"
@@ -106,14 +108,12 @@ import LucideShare2 from "~icons/lucide/share-2"
 import LucideSquarePen from "~icons/lucide/square-pen"
 import LucideStar from "~icons/lucide/star"
 import LucideTrash from "~icons/lucide/trash"
-import emitter from "../emitter"
-import { sortEntities } from "../utils/files"
-import { allFolders } from "../resources/files"
+import { prettyData, sortEntities } from "@/utils/files"
 
 const props = defineProps({
   grouper: { type: Function, default: (d) => d },
   showSort: { type: Boolean, default: true },
-  verify: { Object, default: null },
+  verify: { type: Object, default: null },
   icon: [Function, Object],
   empty: Object,
   getEntities: Object,
@@ -132,10 +132,11 @@ const team = ref(
 watch(
   () => route.params.team,
   (v) => {
-    if (v) team.value = v
-    allUsers.fetch({ team: v })
-  }
+    team.value = v || ""
+  },
+  { immediate: true }
 )
+watch(team, (v) => allUsers.fetch({ team: v }), { immediate: true })
 const activeEntity = computed(() => store.state.activeEntity)
 
 const sortId = computed(
@@ -413,7 +414,7 @@ async function newLink() {
           },
         ],
       })
-  } catch (_) {}
+  } catch {}
 }
 
 // JS doesn't allow direct reading of clipboard
@@ -422,6 +423,34 @@ if (settings.data?.auto_detect_links) {
   window.addEventListener("focus", newLink)
   window.addEventListener("copy", newLink)
 }
+
+const socket = inject("socket")
+socket.on("list-add", ({ file }) => {
+  if (
+    file.parent_entity === props.getEntities.params.entity_name &&
+    !props.getEntities.data.find((k) => k.name === file.name)
+  ) {
+    props.getEntities.data.push(...prettyData([file]))
+    props.getEntities.setData(props.getEntities.data)
+  }
+})
+socket.on("list-update", ({ file }) => {
+  if (file.parent_entity !== props.getEntities.params.entity_name) return
+  const index = props.getEntities.data.findIndex((k) => k.name == file.name)
+  if (index !== -1)
+    props.getEntities.data.splice(index, 1, ...prettyData([file]))
+  props.getEntities.setData(props.getEntities.data)
+})
+socket.on("list-remove", ({ parent, entity_name }) => {
+  if (parent !== props.getEntities.params.entity_name) return
+  const index = props.getEntities.data.findIndex((k) => k.name == entity_name)
+  if (index !== -1) props.getEntities.data.splice(index, 1)
+  props.getEntities.setData(props.getEntities.data)
+})
+socket.on("client-rename", ({ entity_name, title }) => {
+  const file = props.getEntities.data.find((k) => k.name === entity_name)
+  file.title = title
+})
 </script>
 <style>
 .file-drag #drop-area {

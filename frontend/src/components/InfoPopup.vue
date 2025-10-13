@@ -48,12 +48,15 @@
           >
           <span class="col-span-1">{{ formatDate(entity.creation) }}</span>
         </li>
-        <!-- <li>
+        <li class="flex items-center">
           <span class="inline-block w-24 text-ink-gray-5"
             >{{ __("Tags") }}:</span
           >
-          <span class="col-span-1">{{ entity }}</span>
-        </li> -->
+          <TagInput
+            class="flex-grow"
+            :entity
+          />
+        </li>
       </ul>
 
       <ul
@@ -92,7 +95,7 @@
         </li>
       </ul>
       <div class="flex justify-between items-center">
-        <span class="text-base font-semibold">Access</span>
+        <span class="text-base font-semibold text-ink-gray-8">Access</span>
         <Button
           v-if="entity.share"
           :variant="'subtle'"
@@ -120,7 +123,7 @@
               size="sm"
               :access-type="getGeneralAccess.data.type"
               :show-text="true"
-              class="-mr-[3px] outline outline-white"
+              class="-mr-[3px]"
             />
           </div>
         </li>
@@ -130,7 +133,7 @@
           >
           <span
             v-if="userAccess.data?.length"
-            class="col-span-1"
+            class="col-span-1 text-ink-gray-8"
           >
             {{
               userAccess.data.length +
@@ -156,7 +159,6 @@
             variant="subtle"
             size="sm"
             class="scale-[90%] float-right"
-            @click=""
           >
             <a
               :href="'/app/drive-file/' + entity.name"
@@ -189,6 +191,7 @@
 <script setup>
 import { formatDate } from "@/utils/format"
 import { Dialog, Button, LoadingIndicator, createResource } from "frappe-ui"
+import TagInput from "@/components/TagInput.vue"
 import { ref, inject } from "vue"
 import { onKeyDown } from "@vueuse/core"
 import emitter from "@/emitter"
@@ -211,18 +214,13 @@ const getGeneralAccess = createResource({
   transform: (data) => {
     if (!data || !data.read) {
       if (getGeneralAccess.params.user === "Guest")
-        getGeneralAccess.fetch({ user: "$TEAM" })
+        getGeneralAccess.fetch({ team: 1 })
       else
         return {
           type: "restricted",
         }
-    } else {
-      const translate = {
-        Guest: "public",
-        $TEAM: "team",
-      }
-      return { ...data, type: translate[getGeneralAccess.params.user] }
     }
+    return { ...data, type: getGeneralAccess.params.team ? "team" : "public" }
   },
 })
 getGeneralAccess.fetch({ user: "Guest" })

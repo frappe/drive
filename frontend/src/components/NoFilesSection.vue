@@ -35,7 +35,7 @@ defineProps({
   },
   button: {
     type: Object,
-    default: "",
+    required: false,
   },
 })
 </script>

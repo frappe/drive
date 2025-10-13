@@ -6,8 +6,7 @@
     frameborder="0"
   >
     This is an embedded Microsoft Office document, powered by Office
-    Online>.</iframe
-  >
+    Online>.</iframe>
   <div
     v-else
     class="max-w-[450px] h-fit self-center p-10 bg-surface-white rounded-md text-neutral-100 text-xl text-center font-medium shadow-xl flex flex-col justify-center items-center gap-4"
@@ -21,8 +20,7 @@
       <a
         href="/app/drive-disk-settings"
         class="underline"
-        >Settings</a
-      >.
+      >Settings</a>.
     </div>
     <template v-else>
       <LucideAlertCircle class="size-10" />

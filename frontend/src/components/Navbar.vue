@@ -1,19 +1,15 @@
 <template>
   <nav
     v-if="store.state.breadcrumbs?.length"
+    id="navbar"
     ondragstart="return false;"
     ondrop="return false;"
-    id="navbar"
-    class="bg-surface-white border-b px-5 py-2.5 h-12 flex items-center justify-between"
+    class="bg-surface-white border-b px-5 py-2.5 h-12 flex justify-between"
   >
-    <div class="flex justify-center items-center">
-      <div
-        id="navbar-prefix"
-        class="mr-2"
-      />
+    <slot name="breadcrumbs">
       <Breadcrumbs
         :items="store.state.breadcrumbs"
-        class="select-none truncate"
+        class="select-none truncate max-w-[80%]"
       >
         <template #prefix="{ item, index }">
           <LoadingIndicator
@@ -32,13 +28,29 @@
           </div>
         </template>
       </Breadcrumbs>
-    </div>
+    </slot>
 
     <div class="flex gap-2">
       <div
         id="navbar-content"
         class="flex items-center"
-      />
+      >
+        <div class="icon mr-2">
+          <LucideGlobe2
+            v-if="rootEntity?.share_count === -2"
+            class="size-4"
+          />
+          <LucideBuilding2
+            v-else-if="rootEntity?.share_count === -1"
+            class="size-4"
+          />
+          <LucideUsers
+            v-else-if="rootEntity?.share_count > 0"
+            class="size-4"
+          />
+        </div>
+      </div>
+
       <LucideStar
         v-if="rootEntity?.is_favourite"
         width="16"
@@ -129,14 +141,9 @@ import { useStore } from "vuex"
 import emitter from "@/emitter"
 import { ref, computed, inject, h } from "vue"
 import { entitiesDownload } from "@/utils/download"
-import {
-  getRecents,
-  getFavourites,
-  getTrash,
-  toggleFav,
-} from "@/resources/files"
+import { getRecents, getTrash, toggleFav } from "@/resources/files"
 import { apps } from "@/resources/permissions"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { getLink, newExternal, dynamicList } from "@/utils/files"
 
 import LucideClock from "~icons/lucide/clock"
@@ -158,7 +165,6 @@ import LucideFolderUp from "~icons/lucide/folder-up"
 import LucideFilePlus2 from "~icons/lucide/file-plus-2"
 import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import LucideFolderPlus from "~icons/lucide/folder-plus"
-import FrappeDriveLogo from "./FrappeDriveLogo.vue"
 
 const COMPONENT_MAP = {
   Home: LucideHome,
@@ -170,7 +176,6 @@ const COMPONENT_MAP = {
 }
 const store = useStore()
 const route = useRoute()
-const router = useRouter()
 const open = (url) => {
   window.open(url, "_blank")
 }
@@ -181,7 +186,7 @@ const props = defineProps({
   // Used to pass into dialogs
   entities: {
     type: Array,
-    default: [],
+    default: () => [],
   },
 })
 
@@ -360,8 +365,3 @@ const newEntityOptions = [
   },
 ]
 </script>
-<style>
-#navbar-prefix:empty {
-  margin: 0;
-}
-</style>

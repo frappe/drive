@@ -79,7 +79,7 @@ const EMITTERS = {
   p: () => emitter.emit("share"),
   e: () => emitter.emit("rename"),
 }
-for (let k in EMITTERS) {
+for (const k in EMITTERS) {
   const btn = document.createElement("button")
   btn.style.display = "none"
   btn.accessKey = k

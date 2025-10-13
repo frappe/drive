@@ -109,7 +109,7 @@ export default {
       document.body.classList.add("select-none")
       document.body.classList.add("cursor-col-resize")
       let sidebarWidth = e.clientX
-      let range = [60, 180]
+      const range = [60, 180]
       if (sidebarWidth > range[0] && sidebarWidth < range[1]) {
         sidebarWidth = 60
         this.$store.commit("setSidebarCollapsed", false)

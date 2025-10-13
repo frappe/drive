@@ -7,8 +7,7 @@
       <a
         href="#"
         @click="$store.dispatch('logout')"
-        >Log out</a
-      >
+      >Log out</a>
     </div>
     <div class="flex flex-col items-center">
       <FrappeDriveLogo class="inline-block h-12 w-12 rounded-md" />
@@ -18,7 +17,9 @@
       Welcome, {{ $store.state.user.fullName.split(" ")[0] }}
     </h2>
     <div>
-      <p class="font-semibold text-sm text-ink-gray-8 mb-1 ms-1">Teams</p>
+      <p class="font-semibold text-sm text-ink-gray-8 mb-1 ms-1">
+        Teams
+      </p>
       <ul class="flex flex-col">
         <template
           v-for="team in Object.values(getTeams?.data)"
@@ -34,9 +35,7 @@
               >
                 <div class="flex flex-col">
                   {{ team.title }}
-                  <span class="text-xs text-ink-gray-6"
-                    >{{ team.users.length }} members</span
-                  >
+                  <span class="text-xs text-ink-gray-6">{{ team.users.length }} members</span>
                 </div>
 
                 <LucideFolderOpenDot
@@ -49,7 +48,9 @@
       </ul>
     </div>
     <div v-if="getInvites?.data?.length">
-      <p class="font-semibold text-sm mb-3">Invites</p>
+      <p class="font-semibold text-sm mb-3">
+        Invites
+      </p>
       <li
         v-for="(invite, index) in getInvites?.data"
         :key="invite.name"
@@ -57,10 +58,8 @@
       >
         <div class="flex flex-col">
           <span class="text-md">{{ invite.team_name }}</span>
-          <span class="text-sm"
-            >{{ invite.status === "Proposed" ? "Requested" : "Sent" }} at
-            {{ formatDate(invite.creation) }}</span
-          >
+          <span class="text-sm">{{ invite.status === "Proposed" ? "Requested" : "Sent" }} at
+            {{ formatDate(invite.creation) }}</span>
         </div>
         <div class="flex gap-2">
           <Tooltip text="You requested an invite from this team.">
@@ -77,7 +76,7 @@
             class="my-auto"
             @click="
               rejectInvite.submit({ key: invite.name }),
-                getInvites.data.splice(index, 1)
+              getInvites.data.splice(index, 1)
             "
           >
             <LucideX
@@ -117,9 +116,8 @@
 import { getTeams } from "@/resources/files"
 import { Badge, Tooltip } from "frappe-ui"
 import { getInvites, rejectInvite, acceptInvite } from "@/resources/permissions"
-import { useStore } from "vuex"
 import { formatDate } from "@/utils/format"
-import { computed, watch } from "vue"
+import { watch } from "vue"
 import LucideFolderOpenDot from "~icons/lucide/folder-open-dot"
 import { useRouter } from "vue-router"
 

@@ -11,7 +11,7 @@
 
 <script setup>
 import GenericPage from "@/components/GenericPage.vue"
-import { inject, onMounted, onBeforeUnmount, watch, computed } from "vue"
+import { watch, computed } from "vue"
 import { useStore } from "vuex"
 import { createResource } from "frappe-ui"
 import { COMMON_OPTIONS } from "@/resources/files"
@@ -51,7 +51,7 @@ const onSuccess = (entity) => {
 }
 
 const e = computed(() => props.entityName)
-let currentFolder = createResource({
+const currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   transform(entity) {
     if (entity.redirect) {
@@ -63,22 +63,5 @@ let currentFolder = createResource({
   onSuccess,
 })
 store.commit("setCurrentResource", currentFolder)
-watch(e, (v) => currentFolder.fetch({ entity_name: v, expected_type: "folder" }), { immediate: true })
-
-let userInfo = createResource({
-  url: "frappe.desk.form.load.get_user_info_for_viewers",
-  onSuccess(data) {
-    data = Object.values(data)
-    data.forEach((item) => {
-      // compatibility with document awareness
-      if (item.fullname) {
-        item.avatar = item.image
-        item.name = item.fullname
-        delete item.image
-        delete item.fullname
-      }
-    })
-    store.state.connectedUsers = data
-  },
-})
+watch(e, (v) => currentFolder.fetch({ entity_name: v }), { immediate: true })
 </script>

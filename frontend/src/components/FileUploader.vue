@@ -13,7 +13,7 @@ import { storageBar } from "@/resources/files"
 
 const store = useStore()
 const route = useRoute()
-const emit = defineEmits(["success"])
+defineEmits(["success"])
 
 const dropzone = ref()
 const computedFullPath = ref("")
@@ -66,13 +66,13 @@ function rootFolderFullPathNewName(k, file_parent) {
 }
 
 function rootFolderFullPath(full_path) {
-  let s = full_path
-  let k = s.substring(0, s.indexOf("/"))
+  const s = full_path
+  const k = s.substring(0, s.indexOf("/"))
   return k
 }
 
 function newFullPathName(k, s, x) {
-  let f = x.replace(k, s)
+  const f = x.replace(k, s)
   return f
 }
 
@@ -84,11 +84,11 @@ function NonMergeMode(file) {
   } else {
     a = file.fullPath
   }
-  let k = rootFolderFullPath(a)
-  let t = doesRootFolderFullPathExist(k, file.parent)
+  const k = rootFolderFullPath(a)
+  const t = doesRootFolderFullPathExist(k, file.parent)
   if (t) {
     s = rootFolderFullPathNewName(k, file.parent)
-    let z = newFullPathName(k, s, a)
+    const z = newFullPathName(k, s, a)
     file.newFullPath = z
   } else {
     file.newFullPath = a
@@ -104,7 +104,7 @@ onMounted(() => {
       dropzone.value = existing
       return
     }
-  } catch (e) {}
+  } catch {}
 
   dropzone.value = new Dropzone("div#dropzone", {
     paramName: "file",
@@ -175,7 +175,7 @@ onMounted(() => {
       } else {
         a = file.fullPath
       }
-      let k = rootFolderFullPath(a)
+      const k = rootFolderFullPath(a)
       file.newFullPath = newFullPathName(k, computedFullPath.value, a)
     }
   })
@@ -188,7 +188,6 @@ onMounted(() => {
   })
 
   dropzone.value.on("dragenter", function (e) {
-    console.log()
     if (e.dataTransfer.types.includes("Files"))
       this.element.classList.add("file-drag")
   })
@@ -196,7 +195,7 @@ onMounted(() => {
     if (e.dataTransfer.types.includes("Files"))
       this.element.classList.add("file-drag")
   })
-  for (let event of ["dragend", "drop", "dragleave"]) {
+  for (const event of ["dragend", "drop", "dragleave"]) {
     dropzone.value.on(event, function () {
       this.element.classList.remove("file-drag")
     })
@@ -212,7 +211,7 @@ onMounted(() => {
     let message
     if (file.status === "canceled") message = "You cancelled this upload."
     else if (typeof response === "object") {
-      let messages = JSON.parse(response._server_messages || "[]")
+      const messages = JSON.parse(response._server_messages || "[]")
       if (messages.length) message = JSON.parse(messages[0]).message
     }
     message = message || "Please contact support."
@@ -224,7 +223,6 @@ onMounted(() => {
   })
   // REDO COMPONENT
   dropzone.value.on("success", function (file, response) {
-    emitter.emit("refresh")
     store.commit("updateUpload", {
       uuid: file.upload.uuid,
       response: response.message,
@@ -245,8 +243,8 @@ emitter.on("uploadFile", () => {
   }
 })
 emitter.on("cancelUpload", (uuid) => {
-  var files = dropzone.value.files
-  for (var i = 0; i < files.length; i++) {
+  const files = dropzone.value.files
+  for (let i = 0; i < files.length; i++) {
     if (files[i].upload.uuid === uuid) {
       dropzone.value.removeFile(files[i])
     }
@@ -254,7 +252,6 @@ emitter.on("cancelUpload", (uuid) => {
 })
 emitter.on("retryUpload", (uuid) => {
   const file = dropzone.value.files.find((f) => f.upload.uuid === uuid)
-  console.log(dropzone.value.files, uuid)
   if (file) {
     file.status = Dropzone.ADDED
     dropzone.value.enqueueFile(file)

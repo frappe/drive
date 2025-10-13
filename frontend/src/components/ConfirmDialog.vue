@@ -1,14 +1,14 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="dialogOptions"
+    @close="dialogType = ''"
   >
     <template #body-content>
       <div class="flex items-center justify-start">
         <div class="text-base text-ink-gray-6">
-          <template v-if="props.entities.length"
-            >{{
+          <template v-if="props.entities.length">
+            {{
               props.entities.length > 1
                 ? "These items "
                 : `"${props.entities[0].title}" `
@@ -85,7 +85,7 @@ const dialogData = computed(() => {
         theme: "red",
         variant: "subtle",
       },
-      onSuccess: (e) => {
+      onSuccess: () => {
         getTrash.setData(
           sortEntities([
             ...getTrash.data,

@@ -41,6 +41,10 @@ def create_team(user, team_name=None, icon=None, s3_bucket=None, prefix=None, pe
             "personal": personal,
         }
     ).insert()
+    # Insert Drive settings if not already there
+    if not frappe.db.exists("Drive Settings", {"user": frappe.session.user}):
+        frappe.get_doc({"doctype": "Drive Settings", "user": frappe.session.user}).insert()
+
     team.save()
     return team.name
 
@@ -101,9 +105,12 @@ def get_team_invites(team):
 
 @frappe.whitelist(allow_guest=True)
 def signup(account_request, first_name, last_name=None, team=None):
+    if frappe.get_website_settings("disable_signup"):
+        frappe.throw("Sign up is disabled", frappe.PermissionError)
+
     account_request = frappe.get_doc("Account Request", account_request)
     if not account_request.login_count:
-        frappe.throw("Email not verified")
+        frappe.throw("Please verify the email first.")
 
     user = frappe.get_doc(
         {
@@ -135,27 +142,17 @@ def signup(account_request, first_name, last_name=None, team=None):
         team.append("users", {"user": account_request.email})
         team.save(ignore_permissions=True)
         team = invite.team
-
     account_request.save(ignore_permissions=True)
+
     frappe.local.login_manager.login_as(user.email)
     doc = frappe.get_doc(
         {
             "doctype": "Drive Settings",
             "user": account_request.email,
-            "single_click": 1,
         }
     )
     doc.insert()
-    # Check invites for this user
-    # if not team:
-    #     # Create team for this user
-    #     domain = user.email.split("@")[-1]
-    #     if domain in CORPORATE_DOMAINS:
-    #         team = create_team(user.email)
-    #     else:
-    #         return get_domain_teams(domain)
-
-    return {"location": "/drive/t/" + team}
+    return {"location": f"/drive/t/{team}" if team else "/drive/"}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -199,6 +196,10 @@ def oauth_providers():
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60)
 def send_otp(email, login):
+    disable_signups = signup_disabled()
+    if not login and disable_signups:
+        frappe.throw("Sign ups are disabled on this site.", frappe.PermissionError)
+
     is_login = frappe.db.exists(
         "Account Request",
         {
@@ -207,14 +208,24 @@ def send_otp(email, login):
         },
     )
     if not is_login:
+        signed_up = 0
         if login:
-            frappe.throw("Email account not found!")
+            if not frappe.db.exists("User", email):
+                frappe.throw("This email account is not found. " if disable_signups else "Please sign up first.")
+            signed_up = 1
+
         account_request = frappe.get_doc(
             {
                 "doctype": "Account Request",
                 "email": email,
+                "signed_up": signed_up,
             }
         ).insert(ignore_permissions=True)
+        account_request.set_otp()
+        try:
+            account_request.send_otp()
+        except:
+            frappe.throw("Please setup an email account in Desk.")
         return account_request.name
     else:
         req = frappe.get_doc("Account Request", is_login, ignore_permissions=True)
@@ -222,7 +233,7 @@ def send_otp(email, login):
         try:
             req.send_otp()
         except:
-            frappe.throw("Please setup an email account")
+            frappe.throw("Please setup an email account in Desk.")
         return is_login
 
 
@@ -427,3 +438,34 @@ def after_request(request):
         )
         if "X-Frame-Options" in frappe.local.response_headers:
             del frappe.local.response_headers["X-Frame-Options"]
+
+
+@frappe.whitelist()
+def get_updates(client):
+    client = frappe.get_doc("Drive Desktop Client", client)
+    if client.user != frappe.session.user:
+        frappe.throw("You cannot access this desktop client", frappe.PermissionError)
+
+    updates = [u.as_dict() for u in client.updates]
+    for u in updates:
+        if u["type"] in ["rename", "move"]:
+            u["details"] = frappe.db.get_value("Drive File", u["entity"], "path")
+        if u["type"] == "upload":
+            is_group = frappe.db.get_value("Drive File", u["entity"], "is_group")
+            if is_group:
+                u["details"] = "folder"
+            else:
+                u["details"] = ("file", *frappe.db.get_value("Drive File", u["entity"], ["parent_entity", "title"]))
+    return updates
+    # return {"team": client.team, "updates": client.updates}
+
+
+@frappe.whitelist()
+def pop_update(name):
+    # Security: check before deletion
+    frappe.get_doc("Drive File Update", name).delete()
+
+
+@frappe.whitelist(allow_guest=True)
+def signup_disabled():
+    return frappe.get_website_settings("disable_signup")

@@ -9,7 +9,7 @@
     draggable="false"
     class="self-center justify-center max-h-[70vh] max-w-full rounded-lg"
     :src="previewURL"
-  />
+  >
 </template>
 
 <script setup>

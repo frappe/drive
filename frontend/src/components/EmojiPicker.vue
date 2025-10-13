@@ -3,17 +3,11 @@
     <template #target="{ togglePopover, isOpen }">
       <slot v-bind="{ isOpen, togglePopover }">
         <Button
-          v-if="emojiValue"
           variant="subtle"
           :title="emoji.value"
           :icon="emoji.icon"
           @click="togglePopover"
         />
-        <span
-          v-else
-          @click="togglePopover"
-          >Select</span
-        >
       </slot>
     </template>
     <template #body="{ togglePopover }">
@@ -64,6 +58,7 @@
               >
                 <Button
                   v-for="_emoji in emojis"
+                  :key="_emoji.value"
                   variant="ghost"
                   class="hover:bg-surface-gray-2 h-8 w-8 rounded-md p-1 text-2xl"
                   :title="_emoji.value"
@@ -88,7 +83,7 @@ const emojiValue = defineModel()
 
 const props = defineProps({ emojis: Array })
 const emoji = computed(() =>
-  props.emojis.find((k) => k.value === emojiValue.value)
+  props.emojis.find((k) => k.value === (emojiValue.value || "building"))
 )
 
 const emojiGroups = computed(() => {

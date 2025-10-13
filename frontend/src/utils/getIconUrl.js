@@ -20,15 +20,3 @@ export function getThumbnailUrl({ name, file_type, thumbnail, external }) {
     is_image,
   ]
 }
-
-async function get_thumbnail_content(entity_name) {
-  const fileUrl = ``
-
-  const content = await fetch(fileUrl)
-  const blob = await content.blob()
-  if (content.ok && blob.size) {
-    return blob
-  } else {
-    throw new Error(`Request failed with status ${content.status}`)
-  }
-}

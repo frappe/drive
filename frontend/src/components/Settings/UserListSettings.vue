@@ -23,7 +23,7 @@
         class="my-auto"
         @click="
           rejectInvite.submit({ key: invite.name }),
-            getInvites.data.splice(index, 1)
+          getInvites.data.splice(index, 1)
         "
       >
         <LucideX
@@ -58,14 +58,13 @@
     <div class="py-1 flex justify-between">
       <div>
         You have an invite to join
-        <span class="font-medium">{{ invite.team_name }}</span
-        >.
+        <span class="font-medium">{{ invite.team_name }}</span>.
       </div>
     </div>
   </Alert>
   <div
-    class="flex gap-2 mb-2"
     v-if="Object.values(getTeams.data).length"
+    class="flex gap-2 mb-2"
   >
     <TeamSelector v-model="team" />
     <Dropdown
@@ -103,20 +102,20 @@
     <Button
       label="Invite"
       :icon-left="h(LucideMail, { class: 'size-4' })"
-      @click="showInvite = true"
       class="ml-auto"
+      @click="showInvite = true"
     />
   </div>
   <div
     v-else
-    class="text-center text-p-sm py-4"
+    class="text-ink-gray-8 text-center text-p-sm py-4"
   >
     No teams yet. Create one to get started.
   </div>
   <Tabs
     v-if="team"
-    :tabs
     v-model="tabIndex"
+    :tabs
   >
     <template #tab-panel="{ tab }">
       <template v-if="tab.label === 'Members'">
@@ -157,8 +156,8 @@
                       user.access_level == 2
                         ? "Manager"
                         : user.access_level == 1
-                        ? "User"
-                        : "Guest"
+                          ? "User"
+                          : "Guest"
                     )
                   }}
                   <template #suffix>
@@ -181,13 +180,11 @@
                   user.access_level == 2
                     ? "Manager"
                     : user.access_level == 1
-                    ? "User"
-                    : "Guest"
+                      ? "User"
+                      : "Guest"
                 )
               }}
-              <template v-if="user.name === $store.state.user.id"
-                >(you)</template
-              >
+              <template v-if="user.name === $store.state.user.id">(you)</template>
             </span>
           </div>
         </div>
@@ -195,7 +192,7 @@
       <template v-else>
         <div
           v-if="!invites?.data || !invites.data.length"
-          class="text-center text-p-sm py-4"
+          class="text-ink-gray-8 text-center text-p-sm py-4"
         >
           No invites found.
         </div>
@@ -213,8 +210,7 @@
                 <span class="text-base my-auto text-ink-gray-8">{{
                   invite.email
                 }}</span>
-                <span class="text-xs text-ink-gray-5"
-                  >Invited by
+                <span class="text-xs text-ink-gray-5">Invited by
                   <UserTooltip :email="invite.owner" />
                 </span>
               </div>
@@ -243,7 +239,7 @@
                     class="my-auto"
                     @click="
                       rejectInvite.submit({ key: invite.name }),
-                        invites.data.splice(index, 1)
+                      invites.data.splice(index, 1)
                     "
                   >
                     <LucideX
@@ -263,7 +259,7 @@
                     variant="outline"
                     @click="
                       acceptInvite.submit({ key: invite.name, redirect: 0 }),
-                        invites.data.splice(index, 1)
+                      invites.data.splice(index, 1)
                     "
                   >
                     <LucideCheck class="size-4" />
@@ -328,7 +324,7 @@
               @keydown="isValidEmail"
               @keydown.enter.capture.stop="extractEmails"
               @keydown.space.prevent.stop="extractEmails"
-            />
+            >
           </div>
         </div>
       </div>
@@ -386,12 +382,12 @@
               "
             />
             <FormControl
-              class="grow"
+              v-model="teamName"
               v-focus
+              class="grow"
               required
               type="text"
-              v-model="teamName"
-              @update:modelValue="createTeam.error = null"
+              @update:model-value="createTeam.error = null"
             />
           </div>
         </div>
@@ -403,8 +399,8 @@
             description="Optional - allows you to use a different bucket for this team."
           />
           <FormControl
-            :disabled="!s3Bucket"
             v-model="prefix"
+            :disabled="!s3Bucket"
             type="text"
             label="Folder"
             description="Optional - allows you to use a specific folder inside the bucket."
@@ -464,7 +460,6 @@
           />
           <div class="flex gap-1 mt-1.5">
             <EmojiPicker
-              v-model="selectedIcon"
               :emojis="
                 Object.keys(icons).map((k) => ({
                   value: k,
@@ -477,24 +472,24 @@
               "
             />
             <FormControl
-              class="grow"
+              v-model="teamName"
               v-focus
+              class="grow"
               required
               type="text"
-              v-model="teamName"
             />
           </div>
         </div>
         <template v-if="getDiskSettings.data.enabled">
           <FormControl
-            :disabled="true"
             v-model="s3Bucket"
+            :disabled="true"
             type="text"
             label="S3 Bucket"
           />
           <FormControl
-            :disabled="true"
             v-model="prefix"
+            :disabled="true"
             type="text"
             label="Folder"
           />

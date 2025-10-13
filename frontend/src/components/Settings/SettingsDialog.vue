@@ -67,15 +67,13 @@ import StorageSettings from "./StorageSettings.vue"
 import UserListSettings from "./UserListSettings.vue"
 import LucideCloudCog from "~icons/lucide/cloud-cog"
 import LucideChartBar from "~icons/lucide/chart-bar"
-import LucideCloudUpload from "~icons/lucide/cloud-upload"
 import LucideTag from "~icons/lucide/tag"
-import LucideX from "~icons/lucide/x"
 import LucideUser from "~icons/lucide/user"
 import LucideUserPlus from "~icons/lucide/user-plus"
 import TagSettings from "./TagSettings.vue"
 import BackendSettings from "./BackendSettings.vue"
 
-let tabs = [
+const tabs = [
   {
     label: "Profile",
     icon: LucideUser,
@@ -110,7 +108,7 @@ const props = defineProps({
   modelValue: Boolean,
   suggestedTab: Number,
 })
-let activeTab = ref(tabs[props.suggestedTab])
+const activeTab = ref(tabs[props.suggestedTab])
 
 const open = computed({
   get() {

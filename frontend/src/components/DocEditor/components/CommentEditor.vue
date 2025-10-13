@@ -10,8 +10,8 @@
     @keydown.esc.stop="$emit('cancel', editor)"
   >
     <TextEditor
-      :autofocus="true"
       ref="textEditor"
+      :autofocus="true"
       :editable="editable"
       :content="content"
       :mentions="allUsers.data"
@@ -22,12 +22,6 @@
         editable && 'pl-2.5 py-1.5',
       ]"
       :placeholder
-      @change="
-        (val) => {
-          $emit('change')
-          editorContent = val
-        }
-      "
       :bubble-menu="[
         'Bold',
         'Italic',
@@ -38,6 +32,12 @@
         'Separator',
         ['Bullet List', 'Numbered List'],
       ]"
+      @change="
+        (val) => {
+          $emit('change')
+          editorContent = val
+        }
+      "
     >
       <template #bottom="{ editor }">
         <div

@@ -132,9 +132,9 @@ watch(
         });
         break;
       case "Public":
-        get_files(publicRoot, "drive.api.list.shared", {
+        get_files(publicRoot, "drive.api.list.files", {
           team,
-          public: 1,
+          shared: "public",
         });
         break;
       case "Favourites":

@@ -8,10 +8,10 @@
     ></h3> -->
     <div class="flex flex-col items-center w-full">
       <Tabs
+        v-model="tab"
         class="w-full"
         as="div"
         :tabs="[{ label: 'Automatic' }, { label: 'Manual' }]"
-        v-model="tab"
       />
       <Button
         :icon="LucideX"
@@ -24,30 +24,31 @@
       <Button
         v-if="tab === 1"
         :icon="LucidePlus"
-        @click="
-          clearSnapshot(),
-            createDialog({
-              title: 'Create Version',
-              size: 'sm',
-              component: h(NewVersionDialog),
-              props: { editor },
-            })
-        "
         class="absolute right-3 bottom-3"
         variant="outline"
+        @click="
+          clearSnapshot(),
+          createDialog({
+            title: 'Create Version',
+            size: 'sm',
+            component: h(NewVersionDialog),
+            props: { editor },
+          })
+        "
       />
       <div
         v-if="
           !Object.entries(groupedVersions).length ||
-          !Object.entries(groupedVersions)[0][1].length
+            !Object.entries(groupedVersions)[0][1].length
         "
         class="text-ink-gray-5 text-sm text-center mt-1"
       >
         None yet.
       </div>
       <div
-        v-else
         v-for="[title, group] in Object.entries(groupedVersions)"
+        v-else
+        :key="title"
         class="flex flex-col gap-0.5 justify-start bg-surface-white"
       >
         <div
@@ -58,13 +59,14 @@
         </div>
 
         <Button
-          v-for="(version, i) in group"
+          v-for="version in group"
+          :key="version.name"
           :variant="version.name === current?.name ? 'outline' : 'ghost'"
           class="text-start text-sm py-4"
-          @click="renderSnapshot(version)"
           :label="
             version.manual ? version.title : formatDate(version.title).slice(10)
           "
+          @click="renderSnapshot(version)"
         />
       </div>
     </div>
@@ -106,7 +108,7 @@ const groupedVersions = computed(() => {
   }
 })
 const tab = ref(1)
-const renderSnapshot = (version, prevSnapshot) => {
+const renderSnapshot = (version) => {
   current.value = version
   props.editor.view.dispatch(
     props.editor.view.state.tr.setMeta(ySyncPluginKey, {

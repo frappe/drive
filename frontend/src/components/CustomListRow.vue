@@ -46,7 +46,7 @@ defineProps({
   contextMenu: Function,
   selections: Set,
 })
-const emit = defineEmits(["dropped"])
+defineEmits(["dropped"])
 
 const draggedItem = ref()
 

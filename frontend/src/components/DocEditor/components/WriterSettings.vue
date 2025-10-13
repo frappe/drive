@@ -1,15 +1,15 @@
 <template>
   <Dialog
     v-model="open"
-    @close="model = false"
     :options="{
       title: 'Settings',
     }"
+    @close="model = false"
   >
     <template #body-content>
       <Tabs
-        :tabs
         v-model="tabIndex"
+        :tabs
       >
         <template #tab-panel>
           <div class="overflow-y-auto ps-1 pt-4">
@@ -20,12 +20,12 @@
                 </h3>
                 <div class="flex flex-col gap-4 pb-5 pr-5">
                   <FormControl
+                    v-model="settings.versioning"
                     type="number"
                     min="1"
                     label="Versioning Frequency"
                     placeholder="Default"
                     :options="[]"
-                    v-model="settings.versioning"
                     :validate="
                       (k) =>
                         k >= 1
@@ -37,29 +37,31 @@
                     } (minutes).`"
                   />
                 </div>
-                <h3 class="text-sm font-medium text-ink-gray-7 mb-3">Styles</h3>
+                <h3 class="text-sm font-medium text-ink-gray-7 mb-3">
+                  Styles
+                </h3>
                 <div class="flex flex-col gap-4 pb-5 pr-5">
                   <FormControl
+                    v-model="settings.font_family"
                     type="select"
                     label="Font Family"
                     :options="fontOptions"
-                    v-model="settings.font_family"
                     :description="`Choose the default font family for ${
                       tabIndex === 1 ? 'this document' : 'new documents'
                     }.`"
                   />
                   <FormControl
+                    v-model="settings.font_size"
                     type="select"
                     label="Font Size"
                     :options="fontSizeOptions"
-                    v-model="settings.font_size"
                     :description="'Set the font size  of the editor (px).'"
                   />
                   <FormControl
+                    v-model="settings.line_height"
                     type="select"
                     label="Line Height"
                     :options="lineHeightOptions"
-                    v-model="settings.line_height"
                     description="Set the line height of the editor."
                   />
                   <!-- <FormControl
@@ -84,7 +86,7 @@
                       :loading="resource.loading"
                       @click="
                         resource.setValue.submit({ [key]: settings }),
-                          setDirty(false)
+                        setDirty(false)
                       "
                     />
                   </div>
@@ -101,7 +103,6 @@
 <script setup>
 import { computed, ref, reactive, watchEffect } from "vue"
 import { FormControl, Dialog, Tabs } from "frappe-ui"
-import { useStore } from "vuex"
 import { FONT_FAMILIES, dynamicList } from "@/utils/files"
 import Form from "@/components/Form.vue"
 
@@ -177,7 +178,7 @@ const settings = reactive({})
 
 watchEffect(() => {
   const base = { ...resource.value.doc[key.value] }
-  for (let k of KEYS) {
+  for (const k of KEYS) {
     settings[k] = base[k] || "global"
   }
   if (tabIndex.value === 1) settings.collab = base.collab

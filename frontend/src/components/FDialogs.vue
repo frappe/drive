@@ -8,8 +8,8 @@
       @close="dialog.remove"
     >
       <template
-        #body-content
         v-if="dialog.options.component"
+        #body-content
       >
         <component :is="dialog.options.component" />
       </template>

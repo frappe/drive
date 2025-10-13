@@ -1,7 +1,7 @@
 <template>
   <Sidebar
-    v-model:collapsed="isCollapsed"
     id="sidebar"
+    v-model:collapsed="isCollapsed"
     class="hidden sm:flex"
     :header="{
       title: 'Drive',
@@ -35,7 +35,7 @@ import StorageBar from "./StorageBar.vue"
 import { Sidebar, createResource } from "frappe-ui"
 
 import { notifCount, apps } from "@/resources/permissions"
-import { getTeams, LISTS } from "@/resources/files"
+import { getTeams } from "@/resources/files"
 import { dynamicList } from "@/utils/files"
 
 import { useStore } from "vuex"
@@ -53,9 +53,9 @@ import LucideGalleryVerticalEnd from "~icons/lucide/gallery-vertical-end"
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue"
 import ShortcutsDialog from "@/components/ShortcutsDialog.vue"
 import emitter from "@/emitter"
-import { ref, computed, watch, shallowRef, onMounted, h } from "vue"
+import { ref, computed, watch, onMounted, h } from "vue"
 import AppsIcon from "@/components/AppsIcon.vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 
 import LucideBook from "~icons/lucide/book"
 import LucideBadgeHelp from "~icons/lucide/badge-help"
@@ -64,7 +64,6 @@ import LucideMoon from "~icons/lucide/moon"
 defineEmits(["toggleMobileSidebar", "showSearchPopUp"])
 const store = useStore()
 const router = useRouter()
-const route = useRoute()
 notifCount.fetch()
 getTeams.fetch()
 apps.fetch()
@@ -72,20 +71,16 @@ apps.fetch()
 const teamExists = createResource({
   url: "drive.utils.get_default_team",
   auto: true,
-  onSuccess: (d) => {
-    !d && router.replace({ name: "Setup" })
-  },
+  onSuccess: (d) => !d && router.replace({ name: "Setup" }),
 })
 
 const isCollapsed = ref(store.state.sidebarCollapsed)
 watch(isCollapsed, (v) => store.commit("setSidebarCollapsed", v))
-const team = computed(() => route.params.team)
 
 const showSettings = ref(false)
 const showShortcuts = ref(false)
 const suggestedTab = ref(0)
 emitter.on("showSettings", (val = 0) => {
-  console.log(val)
   if (val === -1) showSettings.value = false
   else {
     showSettings.value = true
@@ -162,7 +157,7 @@ const settingsItems = computed(() => [
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute("data-theme")
-  let theme = currentTheme === "dark" ? "light" : "dark"
+  const theme = currentTheme === "dark" ? "light" : "dark"
   document.documentElement.setAttribute("data-theme", theme)
   localStorage.setItem("theme", theme)
 }
@@ -185,14 +180,14 @@ const sidebarItems = computed(() => {
     {
       items: [
         {
-          label: __("Find"),
+          label: __("Search"),
           icon: LucideSearch,
           onClick: () => emitter.emit("showSearchPopup", true),
         },
         {
           label: __("Inbox"),
           icon: LucideInbox,
-          to: "/t/" + team.value + "/inbox",
+          to: "/inbox",
           isActive: first.name === "Inbox",
           accessKey: "i",
         },

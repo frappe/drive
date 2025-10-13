@@ -1,15 +1,15 @@
 <template>
   <div class="flex gap-2">
     <Combobox
-      :options="FONT_SIZES"
       v-model="size"
+      :options="FONT_SIZES"
       :placeholder="font_size + 'px'"
       :open-on-click="true"
       class="w-[5rem]"
     />
     <Combobox
-      :options="FONT_FAMILIES"
       v-model="selected"
+      :options="FONT_FAMILIES"
       :placeholder="FONT_FAMILIES.find((k) => k.value === font_family)?.label"
       :open-on-click="true"
       class="min-w-[10rem]"

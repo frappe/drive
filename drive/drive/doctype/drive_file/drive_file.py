@@ -8,8 +8,9 @@ from frappe.utils import now
 from drive.api.activity import create_new_activity_log
 from drive.api.files import get_new_title
 from drive.api.permissions import get_user_access, user_has_permission
-from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size
+from drive.utils import generate_upward_path, get_ancestors_of, get_home_folder, update_file_size, update_clients
 from drive.utils.files import FileManager
+from drive.utils.api import prettify_file
 
 
 class DriveFile(Document):
@@ -64,8 +65,26 @@ class DriveFile(Document):
 
     def __update_modified(func):
         def decorator(self, *args, **kwargs):
+            client = kwargs.pop("client", None)
+            old_parent = self.parent_entity
             res = func(self, *args, **kwargs)
             frappe.db.set_value("Drive File", self.name, "_modified", now())
+            update_clients(self.name, self.team, func.__name__, client)
+            if client:
+                if func.__name__ == "rename":
+                    frappe.publish_realtime(
+                        "client-rename",
+                        {"entity_name": self.name, "title": self.title},
+                    )
+                elif func.__name__ == "move":
+                    frappe.publish_realtime(
+                        "list-remove",
+                        {"parent": old_parent, "entity_name": self.name},
+                    )
+                    frappe.publish_realtime(
+                        "list-add",
+                        {"file": prettify_file(self.as_dict())},
+                    )
             return res
 
         return decorator
@@ -271,10 +290,17 @@ class DriveFile(Document):
             frappe.throw("Your title can't be more than 140 characters.")
         self.title = new_title
         path = self.manager.rename(self)
-        if path:
-            self.path = path
+        self.recursive_path_move(self.path, path)
+
         self.save()
         return self
+
+    def recursive_path_move(self, old, new):
+        if new:
+            self.path = new
+        for child in self.get_children():
+            child.recursive_path_move(child.path, str(Path(new) / Path(child.path).relative_to(old)))
+        self.save()
 
     @frappe.whitelist()
     def change_color(self, new_color):

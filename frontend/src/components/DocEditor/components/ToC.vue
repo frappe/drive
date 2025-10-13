@@ -1,16 +1,17 @@
 <template>
-  <div class="hidden md:flex right-3 absolute pt-3">
+  <div class="hidden md:flex right-3 absolute max-h-96 pt-1">
     <div
       v-show="show"
-      class="p-3 table-of-contents bg-white shadow-sm rounded-sm"
+      class="p-2 table-of-contents bg-white shadow-lg rounded-sm"
     >
       <div
         v-for="anchor in anchors"
         :key="anchor.id"
-        class="hover:bg-surface-gray-2"
+        class="hover:bg-surface-gray-2 cursor-pointer max-w-52 truncate"
         :class="{
           'is-active': anchor.isActive && !anchor.isScrolledOver,
           'text-ink-gray-5': anchor.isScrolledOver,
+          'text-ink-gray-8': !anchor.isScrolledOver,
         }"
         :style="{ '--level': anchor.level - maxLevel }"
       >
@@ -18,10 +19,10 @@
           :href="'#' + anchor.id"
           class="text-sm px-0.5"
           :title="anchor.textContent"
-          @click.prevent="onAnchorClick(anchor.id)"
           :data-item-index="anchor.itemIndex"
+          @click.prevent="onAnchorClick(anchor.id)"
         >
-          <span class="max-w-40 truncate">{{ anchor.textContent }}</span>
+          {{ anchor.textContent }}
         </a>
       </div>
     </div>
@@ -35,7 +36,8 @@
         <component
           :is="show ? LucideMinus : LucideTableOfContents"
           class="size-4"
-      /></template>
+        />
+      </template>
     </Button>
   </div>
 </template>
@@ -43,16 +45,14 @@
 <script setup>
 import { TextSelection } from "@tiptap/pm/state"
 import LucideMinus from "~icons/lucide/minus"
-import LucidePlus from "~icons/lucide/plus"
 import LucideTableOfContents from "~icons/lucide/table-of-contents"
 import { ref, watch, computed } from "vue"
-import { LucideList } from "lucide-vue-next"
 
 const props = defineProps({
   editor: Object,
   anchors: {
     type: Array,
-    default: [],
+    default: () => [],
   },
 })
 const show = ref(JSON.parse(localStorage.getItem("showToc") || false))
@@ -75,7 +75,7 @@ const onAnchorClick = (id) => {
     history.pushState(null, null, `#${id}`)
   }
 
-  const editorEl = props.editor.options.element.parentElement
+  const editorEl = document.querySelector("#editorScrollContainer")
   editorEl.scrollTo({
     top: element.offsetTop - 10,
     behavior: "smooth",

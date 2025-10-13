@@ -37,7 +37,6 @@ import { Button, Input, Dialog, createResource } from "frappe-ui"
 import TagColorInput from "@/components/TagColorInput.vue"
 import { getRandomColor } from "@/utils/random-color"
 import { ref, computed } from "vue"
-import { useFocus } from "@vueuse/core"
 
 const inputElem = ref()
 

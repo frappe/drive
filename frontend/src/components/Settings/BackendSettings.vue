@@ -5,26 +5,27 @@
     </h1>
     <Button
       label="Sync"
-      @click="confirmSync"
       class="ml-auto mr-4"
+      @click="confirmSync"
     />
   </div>
   <div class="overflow-y-auto ps-1">
     <LoadingIndicator
-      class="size-5 mx-auto my-10"
       v-if="getDiskSettings.loading"
+      class="size-5 mx-auto my-10"
     />
     <div
       v-else
       class="flex flex-col gap-4 pb-5 pr-5"
     >
       <FormControl
+        v-model="generalSettings.root_folder"
         label="Root Folder Name"
         placeholder="/"
-        v-model="generalSettings.root_folder"
         description="Where to store Drive files, defaults to the root folder."
       />
       <FormControl
+        v-model="generalSettings.team_prefix"
         type="select"
         label="Team Prefix"
         :options="[
@@ -32,55 +33,56 @@
           { label: 'Team Name', value: 'team_name' },
           { label: 'None', value: 'none' },
         ]"
-        v-model="generalSettings.team_prefix"
         description="The folder name for each team, defaults to the team name."
       />
 
       <FormControl
+        v-model="generalSettings.backend_type"
         type="select"
         label="Backend Type"
         :options="[
           { label: 'Disk', value: 'disk' },
           { label: 'S3', value: 's3' },
         ]"
-        v-model="generalSettings.backend_type"
         description="Whether to store on disk or on an S3 bucket."
       />
       <div
         v-if="generalSettings.backend_type === 's3'"
         class="flex flex-col gap-4 mt-2"
       >
-        <h3 class="font-semibold text-md">S3 Settings</h3>
+        <h3 class="font-semibold text-md">
+          S3 Settings
+        </h3>
         <FormControl
+          v-model="s3Settings.aws_key"
           label="AWS Key"
           required
           placeholder="Enter AWS Key"
-          v-model="s3Settings.aws_key"
         />
         <FormControl
+          v-model="s3Settings.aws_secret"
           label="AWS Secret"
           required
           placeholder="Enter AWS Secret"
-          v-model="s3Settings.aws_secret"
           description="This isn't shown after you submit it."
           type="password"
         />
         <FormControl
+          v-model="s3Settings.bucket"
           required
           label="S3 Bucket"
           placeholder="bucket.example"
-          v-model="s3Settings.bucket"
         />
         <FormControl
+          v-model="s3Settings.endpoint_url"
           label="Endpoint URL"
           placeholder="Enter Endpoint URL"
-          v-model="s3Settings.endpoint_url"
           description="Optional, only if using a custom endpoint."
         />
         <FormControl
+          v-model="s3Settings.signature_version"
           label="Signature Version"
           placeholder="s3v4"
-          v-model="s3Settings.signature_version"
           description="Optional. Some providers only support 's3'."
         />
       </div>
@@ -89,8 +91,8 @@
         variant="solid"
         :disabled="!edited"
         :loading="updateSettings.isLoading"
-        @click="updateSettings.submit()"
         class="mt-4"
+        @click="updateSettings.submit()"
       />
     </div>
   </div>
@@ -146,7 +148,7 @@ function confirmSync() {
 getDiskSettings.fetch(null, {
   onSuccess: (data) => {
     delete data.aws_secret
-    for (let [key, value] of Object.entries(data)) {
+    for (const [key, value] of Object.entries(data)) {
       if (key in generalSettings) generalSettings[key] = value
       if (key in s3Settings) s3Settings[key] = value
     }

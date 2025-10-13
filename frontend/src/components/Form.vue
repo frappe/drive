@@ -51,7 +51,7 @@ const setDirty = (val) => (dirty.value = val)
 <template>
   <slot
     :dirty
-    :setDirty
+    :set-dirty
     :error
   />
 </template>

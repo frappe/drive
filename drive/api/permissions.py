@@ -211,6 +211,14 @@ def get_entity_with_permissions(entity_name, expected_type=None):
                 extensions=["extra", WikiLinkExtension(build_url=url_builder)],
             )
 
+    default = 0
+    if entity_name:
+        if get_user_access(entity_name, "Guest")["read"]:
+            default = -2
+        elif get_user_access(entity_name, team=1)["read"]:
+            default = -1
+    return_obj["share_count"] = default
+
     if entity.document:
         k = frappe.get_doc("Drive Document", entity.document)
         entity_doc_content = k.as_dict()
@@ -298,9 +306,10 @@ def user_has_permission(doc, ptype, user=None, team=0):
 
 
 def user_has_permission_doc(doc, ptype, user=None):
-    if ptype == "create":
+    entity = frappe.get_value("Drive File", {"document": doc.name}, "name")
+    if ptype == "create" or not entity:
         return True
-    perm = user_has_permission(frappe.get_value("Drive File", {"document": doc.name}, "name"), ptype, user)
+    perm = user_has_permission(entity, ptype, user)
     return perm
 
 

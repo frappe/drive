@@ -1,34 +1,35 @@
 <template>
   <div
-    class="inline-flex gap-1 items-center justify-center text-ink-gray-8 border hover:bg-surface-gray-3 h-7 px-2 rounded group cursor-pointer"
+    class="inline-flex gap-2 items-center text-ink-gray-8 border h-6 px-1 rounded group"
   >
-    <svg
-      v-if="entity.owner === 'You' && !allowDelete"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle
-        r="4.5"
-        cx="8"
-        cy="8"
-        :fill="tag.color"
-        :stroke="tag.color"
-        stroke-width="3"
-      />
-    </svg>
+    <div class="flex gap-1 items-center">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          r="2.5"
+          cx="6"
+          cy="6"
+          :fill="tag.color"
+          :stroke="tag.color"
+          stroke-width="3"
+        />
+      </svg>
 
-    <span class="text-sm text-ink-gray-8">
-      {{ tag.title }}
-    </span>
+      <span class="text-sm text-ink-gray-8">
+        {{ tag.title }}
+      </span>
+    </div>
     <button
-      v-if="entity.owner === 'You' && allowDelete"
+      v-if="entity.write"
       icon="x"
       @click="$resources.removeTag.submit()"
     >
-      <LucideX class="my-auto size-3.5 stroke-2" />
+      <LucideX class="my-auto size-3" />
     </button>
   </div>
 </template>

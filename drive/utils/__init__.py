@@ -282,7 +282,7 @@ def if_folder_exists(team, folder_name, parent):
     if existing_folder:
         return existing_folder.name
     else:
-        d = frappe.get_doc({"doctype": "Drive File", **values, "_modified": datetime.now()})
+        d = frappe.get_doc({"doctype": "Drive File", **values, "_modified": frappe.utils.now_datetime()})
         d.insert()
         return d.name
 
@@ -391,5 +391,25 @@ def get_teams(user=None, details=None, exclude_personal=True):
         if exclude_personal:
             return {t: team for t, team in teams_info.items() if not team.personal}
         return teams_info
-    print(teams)
     return teams
+
+
+def update_clients(entity_name, team, type, current_client=None):
+    try:
+        clients = frappe.get_list("Drive Desktop Client", {"team": team}, pluck="name")
+        for n in clients:
+            if n == current_client:
+                continue
+            client = frappe.get_doc("Drive Desktop Client", n)
+            update = frappe.get_doc(
+                {
+                    "doctype": "Drive File Update",
+                    "type": type,
+                    "entity": entity_name,
+                }
+            )
+            client.append("updates", update)
+            client.save()
+    except BaseException as e:
+        print(e)
+        frappe.log_error("There was an error updating the desktop client:", e)

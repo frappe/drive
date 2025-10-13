@@ -29,14 +29,12 @@
     <span
       class="text-xs text-ink-gray-5 line-clamp-1 ml-2"
       :class="isExpanded ? 'opacity-100' : 'opacity-0'"
-      >{{ formattedString }}</span
-    >
+    >{{ formattedString }}</span>
   </div>
 </template>
 
 <script setup>
 import { computed, inject, watch } from "vue"
-import { createResource } from "frappe-ui"
 import SidebarItem from "./SidebarItem.vue"
 import { formatSize, base2BlockSize } from "@/utils/format"
 import { storageBar } from "@/resources/files"
@@ -57,7 +55,7 @@ const formattedString = computed(() => {
 })
 
 const calculatePercent = computed(() => {
-  let num = (100 * storageBar.data.total_size) / storageMax.value
+  const num = (100 * storageBar.data.total_size) / storageMax.value
   return new Intl.NumberFormat("default", {
     style: "percent",
     minimumFractionDigits: 1,

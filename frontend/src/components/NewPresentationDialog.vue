@@ -1,7 +1,6 @@
 <template>
   <Dialog
     v-model="open"
-    @close="dialogType = ''"
     :options="{
       title: 'New Presentation',
       size: 'xs',
@@ -15,11 +14,12 @@
         },
       ],
     }"
+    @close="dialogType = ''"
   >
     <template #body-content>
       <FormControl
-        v-focus
         v-model="presentationName"
+        v-focus
         label="Name:"
         @keyup.enter="submit"
         @keydown="createPresentation.error = null"
@@ -43,14 +43,12 @@
 import { ref } from "vue"
 import { Dialog } from "frappe-ui"
 import { createPresentation } from "@/resources/files"
-import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 
 const props = defineProps({
   parent: String,
 })
 const route = useRoute()
-const store = useStore()
 const emit = defineEmits(["success"])
 
 const dialogType = defineModel()

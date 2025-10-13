@@ -6,6 +6,7 @@ from frappe.rate_limiter import rate_limit
 from drive.utils import strip_comment_spans
 
 from .permissions import user_has_permission
+import mimemapper
 
 
 @frappe.whitelist(allow_guest=True)
@@ -49,7 +50,7 @@ def edit_comment(name, content):
 @frappe.whitelist()
 def delete_comment(name, entire=True):
     comment = frappe.get_doc("Drive Comment", name)
-    if comment.owner != frappe.session.user and comment.user != "Guest":
+    if comment.owner != frappe.session.user and comment.owner != "Guest":
         frappe.throw("You can't edit comments you don't own.")
     if entire:
         for r in comment.replies:
@@ -92,13 +93,13 @@ def create_version(doc, snapshot, duration=None, manual=0, title=""):
         if versions:
             title = frappe.get_doc("Drive Doc Version", versions[0].name).title
             prev_time = datetime.strptime(title, "%Y-%m-%d %H:%M")
-            now_time = datetime.now()
+            now_time = frappe.utils.now_datetime()
             diff = now_time - prev_time
             if diff < timedelta(minutes=duration):
                 return False
             title = datetime.strftime(now_time, "%Y-%m-%d %H:%M")
         else:
-            title = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+            title = datetime.strftime(frappe.utils.now_datetime(), "%Y-%m-%d %H:%M")
 
     doc = frappe.get_doc("Drive Document", doc)
     doc.append(
@@ -123,3 +124,50 @@ def create_version(doc, snapshot, duration=None, manual=0, title=""):
         )
         doc.save()
     return doc.versions
+
+
+# To be moved to mimemapper
+QUICK_MAP = {
+    "video/quicktime": "mov",
+    "image/gif": "gif",
+}
+
+
+@frappe.whitelist()
+def get_extension(entity_name):
+    mime_type = frappe.get_value("Drive File", entity_name, "mime_type")
+    try:
+        return mimemapper.get_extension(mime_type)
+    except:
+        return QUICK_MAP.get(mime_type, "")
+
+
+@frappe.whitelist()
+def create_blog(entity_name, html, attachments=None):
+    """
+    If the blog app is installed, creates a blog
+    """
+    file = frappe.get_doc("Drive File", entity_name)
+    blogger = frappe.db.exists("Blogger", {"user": frappe.session.user})
+    if not blogger:
+        frappe.throw("Please create a Blogger for your user first.")
+
+    if not frappe.db.exists("Blog Category", {"name": "writer-export"}):
+        category = frappe.get_doc({"doctype": "Blog Category", "title": "Writer Export"})
+        category.insert()
+        print("insrted", category, category.name)
+    else:
+        category = frappe.get_doc("Blog Category", "writer-export")
+
+    blog = frappe.get_doc(
+        {
+            "doctype": "Blog Post",
+            "title": file.title,
+            "content_type": "HTML",
+            "blog_category": category.name,
+            "blogger": blogger,
+            "content_html": html,
+        }
+    )
+    blog.insert()
+    return blog.name

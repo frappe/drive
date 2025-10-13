@@ -9,6 +9,13 @@
       :key="comment.name"
     >
       <div
+        :id="'comment-' + comment.name"
+        :ref="
+          (el) => {
+            if (el) commentRefs[comment.name] = el
+            else delete commentRefs[comment.name]
+          }
+        "
         v-on-outside-click="
           (e) => {
             if (
@@ -21,27 +28,20 @@
               activeComment = null
           }
         "
-        :ref="
-          (el) => {
-            if (el) commentRefs[comment.name] = el
-            else delete commentRefs[comment.name]
-          }
-        "
-        :id="'comment-' + comment.name"
-        @click="activeComment = comment.name"
-        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-8 bg-surface-white left-1/2 -translate-x-1/2 opacity-0 transition-[top] duration-100 ease-in-out"
+        class="absolute rounded shadow w-52 md:w-72 comment-group scroll-m-24 bg-surface-white left-1/2 -translate-x-1/2 opacity-0 transition-[top] duration-100 ease-in-out"
         :class="[
           activeComment === comment.name && 'shadow-xl ',
           comment.top && 'opacity-100',
         ]"
         :style="`top: ${comment.top}px;`"
+        @click="activeComment = comment.name"
       >
         <div
           v-show="
             activeComment === comment.name &&
-            $store.state.user.id !== 'Guest' &&
-            !comment.new &&
-            (comment.owner == $store.state.user.id || entity.write)
+              $store.state.user.id !== 'Guest' &&
+              !comment.new &&
+              (comment.owner == $store.state.user.id || entity.write)
           "
           class="p-1.5 text-sm flex gap-1 border-b text-ink-gray-9"
           :class="comment.loading && !comment.edit && 'opacity-70'"
@@ -49,7 +49,7 @@
           <Button
             v-if="
               !comment.resolved &&
-              (comment.owner == $store.state.user.id || entity.write)
+                (comment.owner == $store.state.user.id || entity.write)
             "
             :disabled="comment.loading"
             variant="ghost"
@@ -64,7 +64,7 @@
           <Button
             v-if="
               comment.resolved &&
-              (comment.owner == $store.state.user.id || entity.write)
+                (comment.owner == $store.state.user.id || entity.write)
             "
             :disabled="comment.loading"
             variant="ghost"
@@ -79,7 +79,7 @@
           <Button
             v-if="
               comment.owner == $store.state.user.id ||
-              (comment.owner === 'Guest' && entity.write)
+                (comment.owner === 'Guest' && entity.write)
             "
             :disabled="comment.loading"
             variant="ghost"
@@ -96,18 +96,18 @@
           class="flex flex-col gap-5 p-3"
           :class="
             activeComment !== comment.name &&
-            comment.replies.length > 0 &&
-            'pb-1.5'
+              comment.replies.length > 0 &&
+              'pb-1.5'
           "
         >
           <div
             v-for="(reply, index) in activeComment === comment.name
               ? [
-                  comment,
-                  ...comment.replies.toSorted((a, b) =>
-                    new Date(a.creation) > new Date(b.creation) ? 1 : -1
-                  ),
-                ]
+                comment,
+                ...comment.replies.toSorted((a, b) =>
+                  new Date(a.creation) > new Date(b.creation) ? 1 : -1
+                ),
+              ]
               : [comment]"
             :key="reply.name"
             class="group w-full flex gap-3"
@@ -131,22 +131,20 @@
                 <div class="flex gap-1">
                   <label
                     class="font-medium text-ink-gray-8 max-w-[70%] truncate"
-                    >{{ $user(reply.owner)?.full_name || reply.owner }}</label
-                  >
+                  >{{ $user(reply.owner)?.full_name || reply.owner }}</label>
 
                   <label class="text-ink-gray-6 truncate">
                     &#183;
-                    {{ formatDateOrTime(reply.creation) }}</label
-                  >
+                    {{ formatDateOrTime(reply.creation) }}</label>
                 </div>
                 <Dropdown
                   class="ml-auto opacity-0"
                   :class="
                     activeComment === comment.name &&
-                    !reply.edit &&
-                    !reply.resolved &&
-                    comment.owner == $store.state.user.id &&
-                    'opacity-100'
+                      !reply.edit &&
+                      !reply.resolved &&
+                      comment.owner == $store.state.user.id &&
+                      'opacity-100'
                   "
                   :options="
                     dynamicList([
@@ -167,20 +165,20 @@
                   <Button
                     :disabled="
                       activeComment !== comment.name ||
-                      reply.edit ||
-                      reply.resolved
+                        reply.edit ||
+                        reply.resolved
                     "
                     class="!h-5 !text-xs !px-1.5 !rounded-sm opacity-0"
                     :class="
                       activeComment === comment.name &&
-                      !reply.edit &&
-                      !reply.resolved &&
-                      comment.owner == $store.state.user.id &&
-                      'opacity-100'
+                        !reply.edit &&
+                        !reply.resolved &&
+                        comment.owner == $store.state.user.id &&
+                        'opacity-100'
                     "
                     variant="ghost"
-                    @click="triggerRoot"
                     :icon="h(LucideMoreVertical, { class: 'size-3' })"
+                    @click="triggerRoot"
                   />
                 </Dropdown>
                 <LucideBadgeCheck
@@ -194,7 +192,7 @@
                   placeholder="Edit"
                   :disabled="
                     isEmpty(commentContents[reply.name]) ||
-                    commentContents[reply.name] == reply.content
+                      commentContents[reply.name] == reply.content
                   "
                   :editable="reply.edit === true"
                   :content="reply.content"
@@ -232,12 +230,12 @@
           </div>
 
           <div
-            class="flex gap-3"
             v-show="
               activeComment === comment.name &&
-              !comment.edit &&
-              !comment.resolved
+                !comment.edit &&
+                !comment.resolved
             "
+            class="flex gap-3"
           >
             <Avatar
               size="xl"
@@ -274,7 +272,7 @@
       </div>
     </template>
     <div
-      class="text-large text-ink-gray-9 font-semibold w-80 px-3 py-2 bg-white dark:bg-black bg-opacity-70 fixed"
+      class="text-large text-ink-gray-8 font-semibold w-80 px-3 py-2 bg-white dark:bg-black bg-opacity-70 fixed"
     >
       Comments
       <Button
@@ -333,8 +331,8 @@ const commentContents = reactive({})
 const findComment = (name) => {
   const mainComment = comments.value.find((k) => k.name == name)
   if (mainComment) return mainComment
-  for (let c of comments.value) {
-    let reply = c.replies.find((k) => k.name == name)
+  for (const c of comments.value) {
+    const reply = c.replies.find((k) => k.name == name)
     if (reply) return reply
   }
 }
@@ -434,12 +432,12 @@ const removeComment = (name, entire, server = true) => {
   }
 
   props.editor.commands.unsetComment(name)
-  for (let [i, val] of Object.entries(comments.value)) {
+  for (const [i, val] of Object.entries(comments.value)) {
     if (val.name === name) {
       comments.value.splice(i, 1)
       break
     }
-    for (let [k, reply] of Object.entries(val.replies)) {
+    for (const [k, reply] of Object.entries(val.replies)) {
       if (reply.name === name) {
         val.replies.splice(k, 1)
         break
@@ -478,7 +476,7 @@ const setCommentHeights = useDebounceFn(() => {
   let lastBottom = 0
   nextTick(() => {
     scrollContainer.value.style.height = `max(${scrollContainer.value.parentElement.scrollHeight}px, calc(100vh - 3rem))`
-    for (let comment of filteredComments.value) {
+    for (const comment of filteredComments.value) {
       try {
         const containerTop = scrollContainer.value.getBoundingClientRect().top
         const anchorTop =
@@ -509,7 +507,7 @@ props.editor.on("update", () => {
       }
     })
   })
-  for (let comment of comments.value)
+  for (const comment of comments.value)
     if (!currentNames.has(comment.name)) removeComment(comment.name, true)
 })
 
