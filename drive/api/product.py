@@ -223,7 +223,7 @@ def send_otp(email, login):
         ).insert(ignore_permissions=True)
         account_request.set_otp()
         try:
-            req.send_otp()
+            account_request.send_otp()
         except:
             frappe.throw("Please setup an email account in Desk.")
         return account_request.name

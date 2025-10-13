@@ -50,7 +50,7 @@ def edit_comment(name, content):
 @frappe.whitelist()
 def delete_comment(name, entire=True):
     comment = frappe.get_doc("Drive Comment", name)
-    if comment.owner != frappe.session.user and comment.user != "Guest":
+    if comment.owner != frappe.session.user and comment.owner != "Guest":
         frappe.throw("You can't edit comments you don't own.")
     if entire:
         for r in comment.replies:
