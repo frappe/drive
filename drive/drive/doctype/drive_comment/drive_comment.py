@@ -43,7 +43,8 @@ class DriveComment(Document):
                 subject=f"Frappe Drive - Comment in {doc.title}",
                 template="drive_comment",
                 args={
-                    "message": f'{from_owner} mentioned you in a comment in "{doc.title}"',
+                    "message": f'{from_owner} mentioned you in a comment.',
+                    "doc": doc.title, 
                     "link": get_link(doc),
                 },
                 now=True,
