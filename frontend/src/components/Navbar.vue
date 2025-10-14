@@ -134,7 +134,7 @@
       :entities="entities.length ? entities : rootEntity ? [rootEntity] : []"
     />
   </nav>
-  <Dialog v-model="watermarkRequired" :teleport-to="'body'" :z-index="60">
+  <Dialog v-model="watermarkRequired">
     <template #body-title>
       <h3 class="text-lg font-semibold text-ink-gray-8">Add Watermark</h3>
     </template>
@@ -153,7 +153,6 @@
       </div>
     </template>
 
-    <!-- Proper spacing via flex gap-2 -->
     <template #actions>
       <div class="p-1 flex items-center gap-2">
         <Button variant="outline" @click="watermarkRequired = false">Cancel</Button>
@@ -264,7 +263,6 @@ const defaultActions = computed(() => {
               label: "With Watermark",
               icon: LucideDownload,
               onClick: () => {
-                store.commit('setWatermark', '')
                 watermarkRequired.value = true
               },
             },
@@ -358,9 +356,10 @@ const isPrivate = computed(() =>
 function downloadWithWatermark() {
   const text = watermarkText.value?.trim()
   if (!text) return
-  entitiesDownload(route.params.team, [rootEntity.value], text)
+  entitiesDownload(route.params.team, [rootEntity.value])
   watermarkRequired.value = false
 }
+
 // Constants
 const possibleButtons = [
   {
