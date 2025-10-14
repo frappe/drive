@@ -123,6 +123,37 @@
       :editable
     />
   </div>
+
+<Dialog v-model="watermarkRequired">
+  <template #body-title>
+    <div class="text-lg font-semibold text-ink-gray-9">
+      Enter the Text
+    </div>
+  </template>
+
+  <template #body-content>
+      <FormControl
+        type="text"
+        size="sm"
+        variant="subtle"
+        placeholder="(Confidential)"
+        label="Watermark"
+        v-model="watermarkText"
+        @keydown.enter.prevent="downloadWithWatermark"
+      />
+  </template>
+
+  <template #actions>
+      <Button
+        variant="solid"
+        :disabled="!watermarkText?.trim()"
+        @click="downloadWithWatermark"
+      >
+        Download
+      </Button>
+  </template>
+</Dialog>
+
 </template>
 
 <script setup>
@@ -139,14 +170,13 @@ import {
   computed,
 } from "vue"
 import { useStore } from "vuex"
-import { createResource, LoadingIndicator, useDoc } from "frappe-ui"
+import { createResource, LoadingIndicator, useDoc, Dialog, FormControl } from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
 import { toast } from "@/utils/toasts"
 import { entitiesDownload } from "@/utils/download"
-
 import MessagesSquare from "~icons/lucide/messages-square"
 import LucideRulerDimensionLine from "~icons/lucide/ruler-dimension-line"
 import LucideUserPen from "~icons/lucide/user-pen"
@@ -390,21 +420,37 @@ const navBarActions = computed(
             icon: LucideSettings,
           },
           {
-            label: "Export",
+            label: "Download",
             icon: LucideDownload,
-            submenu: dynamicList([
+            submenu: [
               {
-                onClick: exportMedia,
-                label: "Export Media",
-                icon: LucideImageDown,
+                label: "PDF",
+                icon: LucideDownload,
+                onClick: () => {
+                  store.commit('setWatermark', '')
+                  entitiesDownload(null, [entity.value])
+                },
               },
-              {
-                onClick: exportBlog,
-                label: "Export Blog",
-                icon: LucideImageDown,
-                cond: apps.data.find(k => k.name === 'blog'),
+            {
+              label: "PDF (Watermark)",
+              icon: LucideDownload,
+              onClick: () => {
+                watermarkRequired.value = true
               },
-            ]),
+            },
+            {
+              label: "DOCX",
+              icon: LucideDownload,
+            },
+            {
+              label: "Markdown",
+              icon: LucideDownload,
+            },
+            {
+              label: "Zipped",
+              icon: LucideDownload,
+            },
+          ],
           },
           {
             onClick: clearCache,
@@ -513,6 +559,20 @@ const exportBlog = async () => {
     },
   })
 }
+
+const watermarkText = computed({
+  get: () => store.state.watermarkText || "",
+  set: (val) => store.commit('setWatermark', val ?? "")
+})
+const watermarkRequired = ref(false)
+
+function downloadWithWatermark() {
+  const text = watermarkText.value?.trim()
+  if (!text) return
+  entitiesDownload(null, [entity.value])
+  watermarkRequired.value = false
+}
+
 // Events
 window.addEventListener("offline", () => {
   toast({
