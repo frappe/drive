@@ -16,7 +16,7 @@
         class="w-full p-10 flex-grow w-full flex justify-center align-center items-center relative"
       >
         <Button
-          class="text-ink-gray-8 absolute top-4 left-4 z-10"
+          class="text-ink-gray-8 absolute top-4 left-4"
           :variant="'ghost'"
           icon="arrow-left"
           @click="closePreview"
@@ -59,12 +59,7 @@
 <script setup>
 import { useStore } from "vuex"
 import Navbar from "@/components/Navbar.vue"
-import {
-  ref,
-  computed,
-  onMounted,
-  defineProps,
-} from "vue"
+import { ref, computed, onMounted, defineProps } from "vue"
 import { Button, LoadingIndicator } from "frappe-ui"
 import FileRender from "@/components/FileRender.vue"
 import { createResource } from "frappe-ui"

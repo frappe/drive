@@ -50,7 +50,7 @@ def edit_comment(name, content):
 @frappe.whitelist()
 def delete_comment(name, entire=True):
     comment = frappe.get_doc("Drive Comment", name)
-    if comment.owner != frappe.session.user and comment.user != "Guest":
+    if comment.owner != frappe.session.user and comment.owner != "Guest":
         frappe.throw("You can't edit comments you don't own.")
     if entire:
         for r in comment.replies:
@@ -152,12 +152,12 @@ def create_blog(entity_name, html, attachments=None):
     if not blogger:
         frappe.throw("Please create a Blogger for your user first.")
 
-    if not frappe.db.exists("Blog Category", {"name": "writer_export"}):
+    if not frappe.db.exists("Blog Category", {"name": "writer-export"}):
         category = frappe.get_doc({"doctype": "Blog Category", "title": "Writer Export"})
         category.insert()
         print("insrted", category, category.name)
     else:
-        category = frappe.get_doc("Blog Category", "writer_export")
+        category = frappe.get_doc("Blog Category", "writer-export")
 
     blog = frappe.get_doc(
         {

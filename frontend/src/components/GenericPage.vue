@@ -132,10 +132,11 @@ const team = ref(
 watch(
   () => route.params.team,
   (v) => {
-    if (v) team.value = v
-    allUsers.fetch({ team: v })
-  }
+    team.value = v || ""
+  },
+  { immediate: true }
 )
+watch(team, (v) => allUsers.fetch({ team: v }), { immediate: true })
 const activeEntity = computed(() => store.state.activeEntity)
 
 const sortId = computed(

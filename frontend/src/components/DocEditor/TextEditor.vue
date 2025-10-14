@@ -37,7 +37,7 @@
     </div>
     <div
       id="editorScrollContainer"
-      class="flex w-full overflow-y-auto"
+      class="flex-1 flex w-full overflow-y-auto"
     >
       <div
         class="mx-auto cursor-text w-full flex justify-center h-full"
@@ -76,7 +76,7 @@
               })
             }
           "
-          :mentions="users"
+          :mentions="{ mentions: users, selectable: false }"
           placeholder="Start writing here..."
           :bubble-menu="settings.minimal && menuButtons"
           :extensions="editorExtensions"
@@ -139,6 +139,7 @@
 import {
   TextEditor as FTextEditor,
   TextEditorFixedMenu,
+  createResource,
   debounce,
   useFileUpload,
 } from "frappe-ui"
@@ -171,6 +172,8 @@ import H1 from "./icons/h-1.vue"
 import H2 from "./icons/h-2.vue"
 import H3 from "./icons/h-3.vue"
 import LucideMessageCircle from "~icons/lucide/message-circle"
+
+import { Doc, applyUpdate } from "yjs"
 
 import store from "@/store"
 import emitter from "@/emitter"
@@ -309,6 +312,9 @@ const editorExtensions = [
 
 let prov, doc, localstorage
 const collab = computed(() => props.settings?.collab)
+import { yDocToProsemirrorJSON } from "y-prosemirror"
+import { Editor } from "@tiptap/core"
+
 if (collab.value) {
   doc = new Y.Doc({ gc: true })
   localstorage = new IndexeddbPersistence("fdoc-" + props.entity.name, doc) // eslint-disable-line
@@ -572,6 +578,35 @@ onKeyDown("s", (e) => {
   toast({
     title: "Saving document",
   })
+})
+
+const syncToWiki = async (wiki_space, group, entity_names) => {
+  for (let k of entity_names) {
+    const data = await createResource({
+      url: "drive.api.wiki_integration.get_yjs_content",
+      params: { entity_name: k },
+    }).fetch()
+    let pre_doc = new Y.Doc({ gc: true })
+    Y.applyUpdate(pre_doc, toUint8Array(data))
+    let obj = yDocToProsemirrorJSON(pre_doc, "default")
+    let editor = new Editor({
+      content: obj,
+      extensions: textEditor.value.DEFAULT_EXTENSIONS,
+    })
+    await createResource({
+      url: "drive.api.wiki_integration.sync_to_wiki_page",
+      params: { entity_name: k, html: editor.getHTML(), wiki_space, group },
+    }).fetch()
+  }
+}
+
+window.run = () => syncToWiki(["uu9pbukv8s", "5fpvulc7so"])
+const socket = inject("socket")
+socket.on("sync_to_wiki", (data) => {
+  console.log("syncing", data.space)
+  for (let [title, pages] of Object.entries(data.groups)) {
+    syncToWiki(data.space, title, pages)
+  }
 })
 </script>
 <style>
