@@ -11,6 +11,7 @@
   }
 
   .ProseMirror table {
+    margin-top: 1rem;  
     table-layout: fixed;
     width: 100%;
     page-break-inside: avoid;
@@ -43,6 +44,47 @@
   
   .ProseMirror li::marker {
     color: var(--ink-gray-3);
+  }
+
+  .ProseMirror ul[data-type='taskList'] {
+  list-style: none;
+  padding: 0;
+
+  li {
+    align-items: flex-start;
+    display: flex;
+    margin: 0;
+
+    > label {
+      flex: 0 0 auto;
+      margin-right: 0.5rem;
+      margin-top: 0.25rem;
+      height: 1lh;
+      display: flex;
+      align-items: center;
+      user-select: none;
+    }
+
+    > div {
+      flex: 1 1 auto;
+      margin-bottom: 0;
+
+      > p {
+        margin: 0.25rem 0;
+      }
+    }
+  }
+    ul[data-type='taskList'] {
+      margin: 0;
+    }
+
+    input[type='checkbox'] {
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      color: theme('colors.gray.900');
+    }
   }
 
   .ProseMirror span[data-comment-id] {
