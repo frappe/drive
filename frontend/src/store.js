@@ -1,4 +1,4 @@
- import { createStore } from "vuex"
+import { createStore } from "vuex"
 import { call } from "frappe-ui"
 import { clear } from "idb-keyval"
 

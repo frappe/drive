@@ -1,38 +1,4 @@
 <template>
-  <Dialog v-model="watermarkRequired" :teleport-to="'body'" :z-index="60">
-    <template #body-title>
-      <h3 class="text-lg font-semibold text-ink-gray-8">Add Watermark</h3>
-    </template>
-
-    <template #body-content>
-      <div class="p-2">
-        <FormControl
-          type="text"
-          size="sm"
-          variant="subtle"
-          placeholder="(Confidential)"
-          label="Watermark"
-          v-model="watermarkText"
-          @keydown.enter.prevent="downloadWithWatermark"
-        />
-      </div>
-    </template>
-
-    <!-- Proper spacing via flex gap-2 -->
-    <template #actions>
-      <div class="p-1 flex items-center gap-2">
-        <Button variant="outline" @click="watermarkRequired = false">Cancel</Button>
-        <Button
-          variant="outline"
-          :disabled="!watermarkText?.trim()"
-          @click="downloadWithWatermark"
-        >
-          Download
-        </Button>
-      </div>
-    </template>
-  </Dialog>
- 
   <nav
     v-if="store.state.breadcrumbs?.length"
     id="navbar"
@@ -168,6 +134,39 @@
       :entities="entities.length ? entities : rootEntity ? [rootEntity] : []"
     />
   </nav>
+  <Dialog v-model="watermarkRequired" :teleport-to="'body'" :z-index="60">
+    <template #body-title>
+      <h3 class="text-lg font-semibold text-ink-gray-8">Add Watermark</h3>
+    </template>
+
+    <template #body-content>
+      <div class="p-2">
+        <FormControl
+          type="text"
+          size="sm"
+          variant="subtle"
+          placeholder="(Confidential)"
+          label="Watermark"
+          v-model="watermarkText"
+          @keydown.enter.prevent="downloadWithWatermark"
+        />
+      </div>
+    </template>
+
+    <!-- Proper spacing via flex gap-2 -->
+    <template #actions>
+      <div class="p-1 flex items-center gap-2">
+        <Button variant="outline" @click="watermarkRequired = false">Cancel</Button>
+        <Button
+          variant="outline"
+          :disabled="!watermarkText?.trim()"
+          @click="downloadWithWatermark"
+        >
+          Download
+        </Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 <script setup>
 import { Button, Breadcrumbs, LoadingIndicator, Dropdown, Dialog, FormControl } from "frappe-ui"
