@@ -535,6 +535,7 @@ const createNewComment = (editor) => {
 onKeyDown("p", (e) => {
   if (e.metaKey) {
     e.preventDefault()
+    store.commit('setWatermark',"")
     if (editor.value) printDoc(editor.value.getHTML())
   }
 })

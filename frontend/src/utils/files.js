@@ -368,16 +368,33 @@ export function enterFullScreen() {
   }
 }
 
+ 
 export function printDoc(html) {
+  const watermarkText = (store.state.watermarkText ?? '').trim();
   const content = `
             <!DOCTYPE html>
             <html>
               <head>
                 <style>${globalStyle}</style>
                 <style>${editorStyle}</style>
+                <style>
+                  .watermark {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(-30deg);
+                    opacity: 0.12;
+                    font-size: 48px;
+                    color: #999;
+                    pointer-events: none;
+                    z-index: 9999;
+                    white-space: nowrap;
+                  }
+                </style>
               </head>
               <body>
-                <div class="Prosemirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                ${watermarkText ? `<div class="watermark">${watermarkText}</div>` : ''}
+                <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
                   ${html}
                 </div>
               </body>

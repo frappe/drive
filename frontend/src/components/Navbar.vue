@@ -1,4 +1,38 @@
 <template>
+  <Dialog v-model="watermarkRequired" :teleport-to="'body'" :z-index="60">
+    <template #body-title>
+      <h3 class="text-lg font-semibold text-ink-gray-8">Add Watermark</h3>
+    </template>
+
+    <template #body-content>
+      <div class="p-2">
+        <FormControl
+          type="text"
+          size="sm"
+          variant="subtle"
+          placeholder="(Confidential)"
+          label="Watermark"
+          v-model="watermarkText"
+          @keydown.enter.prevent="downloadWithWatermark"
+        />
+      </div>
+    </template>
+
+    <!-- Proper spacing via flex gap-2 -->
+    <template #actions>
+      <div class="p-1 flex items-center gap-2">
+        <Button variant="outline" @click="watermarkRequired = false">Cancel</Button>
+        <Button
+          variant="outline"
+          :disabled="!watermarkText?.trim()"
+          @click="downloadWithWatermark"
+        >
+          Download
+        </Button>
+      </div>
+    </template>
+  </Dialog>
+ 
   <nav
     v-if="store.state.breadcrumbs?.length"
     id="navbar"
@@ -136,7 +170,7 @@
   </nav>
 </template>
 <script setup>
-import { Button, Breadcrumbs, LoadingIndicator, Dropdown } from "frappe-ui"
+import { Button, Breadcrumbs, LoadingIndicator, Dropdown, Dialog, FormControl } from "frappe-ui"
 import { useStore } from "vuex"
 import emitter from "@/emitter"
 import { ref, computed, inject, h } from "vue"
@@ -175,10 +209,17 @@ const COMPONENT_MAP = {
   Recents: LucideClock,
 }
 const store = useStore()
+const watermarkText = computed({
+  get: () => store.state.watermarkText || "",
+  set: (val) => store.commit('setWatermark', val ?? "")
+})
+
 const route = useRoute()
 const open = (url) => {
   window.open(url, "_blank")
 }
+
+const watermarkRequired = ref(false)
 
 const props = defineProps({
   rootResource: Object,
@@ -219,9 +260,24 @@ const defaultActions = computed(() => {
         {
           label: __("Download"),
           icon: LucideDownload,
-          isEnabled: () => rootEntity.value.allow_download,
-          onClick: () =>
-            entitiesDownload(route.params.team, [rootEntity.value]),
+          submenu: [
+            {
+              label: "With Watermark",
+              icon: LucideDownload,
+              onClick: () => {
+                store.commit('setWatermark', '')
+                watermarkRequired.value = true
+              },
+            },
+            {
+              label: "Without Watermark",
+              icon: LucideDownload,
+              onClick: () => {
+                store.commit('setWatermark', '')
+                entitiesDownload(route.params.team, [rootEntity.value])
+              },
+            },
+          ],
         },
         {
           label: __("Copy Link"),
@@ -300,7 +356,12 @@ const isPrivate = computed(() =>
 )
 
 // Functions
-
+function downloadWithWatermark() {
+  const text = watermarkText.value?.trim()
+  if (!text) return
+  entitiesDownload(route.params.team, [rootEntity.value], text)
+  watermarkRequired.value = false
+}
 // Constants
 const possibleButtons = [
   {

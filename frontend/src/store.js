@@ -1,4 +1,4 @@
-import { createStore } from "vuex"
+ import { createStore } from "vuex"
 import { call } from "frappe-ui"
 import { clear } from "idb-keyval"
 
@@ -44,6 +44,7 @@ const store = createStore({
     },
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     sidebarCollapsed: getJson("sidebarCollapsed", false),
+    watermarkText: getJson("watermarkText",""),
   },
   getters: {
     isLoggedIn: (state) => {
@@ -126,6 +127,10 @@ const store = createStore({
       localStorage.setItem("sidebarCollapsed", JSON.stringify(payload))
       state.sidebarCollapsed = payload
     },
+    setWatermark(state, payload) {
+    state.watermarkText = payload
+    localStorage.setItem("watermarkText", JSON.stringify(payload))
+  },
   },
   actions: {
     async logout() {
