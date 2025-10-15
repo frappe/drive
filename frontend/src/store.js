@@ -45,6 +45,8 @@ const store = createStore({
     breadcrumbs: getJson("breadcrumbs", [{ label: "Home", route: "/" }]),
     sidebarCollapsed: getJson("sidebarCollapsed", false),
     watermarkText: getJson("watermarkText",""),
+    watermarkTextAngle: getJson("watermarkText",""),
+    watermarkTextSize: getJson("watermarkText",""),
   },
   getters: {
     isLoggedIn: (state) => {
@@ -130,6 +132,14 @@ const store = createStore({
     setWatermark(state, payload) {
     state.watermarkText = payload
     localStorage.setItem("watermarkText", JSON.stringify(payload))
+  },
+    setWatermarkAngle(state, payload) {
+    state.watermarkTextAngle = payload
+    localStorage.setItem("watermarkTextAngle", JSON.stringify(payload))
+  },
+    setWatermarkSize(state, payload) {
+    state.watermarkTextSize = payload
+    localStorage.setItem("watermarkTextSize", JSON.stringify(payload))
   },
   },
   actions: {

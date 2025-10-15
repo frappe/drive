@@ -124,36 +124,65 @@
     />
   </div>
 
-<Dialog v-model="watermarkRequired">
-  <template #body-title>
-    <div class="text-lg font-semibold text-ink-gray-9">
-      Enter the Text
-    </div>
-  </template>
+  <Dialog v-model="watermarkRequired">
 
-  <template #body-content>
-      <FormControl
-        type="text"
-        size="sm"
-        variant="subtle"
-        placeholder="(Confidential)"
-        label="Watermark"
-        v-model="watermarkText"
-        @keydown.enter.prevent="downloadWithWatermark"
-      />
-  </template>
+    <template #body-title>
+      <div class="text-lg font-semibold text-ink-gray-9">Add Watermark</div>
+    </template>
 
-  <template #actions>
-      <Button
-        variant="solid"
-        :disabled="!watermarkText?.trim()"
-        @click="downloadWithWatermark"
-      >
-        Download
-      </Button>
-  </template>
-</Dialog>
+    <template #body-content>
+      <div class="p-3 space-y-4">
+        <FormControl
+          type="text"
+          size="sm"
+          variant="subtle"
+          label="Text"
+          placeholder="(Confidential)"
+          v-model="watermarkText"
+          required
+        />
+        <fieldset class="space-y-3">
+          <div class="grid grid-cols-1 gap-3">
+            <FormControl
+              type="number"
+              size="sm"
+              variant="subtle"
+              label="Text Size (px)"
+              placeholder="64"
+              :min="0"
+              :max="300"
+              :step="16"
+              v-model.number="watermarkTextSize"
+            />
+            <FormControl
+              type="number"
+              size="sm"
+              variant="subtle"
+              label="Angle (°)"
+              placeholder="-45"
+              :min="-180"
+              :max="180"
+              :step="15"
+              v-model.number="watermarkTextAngle"
+            />
+          </div>
+        </fieldset>
+      </div>
+    </template>
 
+    <template #actions>
+      <div class="p-2 flex justify-end gap-2">
+        <Button
+          variant="solid"
+          :disabled="!watermarkText?.trim()"
+          @click="downloadWithWatermark"
+        >
+          Download
+        </Button>
+      </div>
+    </template>
+
+  </Dialog>
 </template>
 
 <script setup>
@@ -170,7 +199,13 @@ import {
   computed,
 } from "vue"
 import { useStore } from "vuex"
-import { createResource, LoadingIndicator, useDoc, Dialog, FormControl } from "frappe-ui"
+import {
+  createResource,
+  LoadingIndicator,
+  useDoc,
+  Dialog,
+  FormControl,
+} from "frappe-ui"
 import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
@@ -427,30 +462,30 @@ const navBarActions = computed(
                 label: "PDF",
                 icon: LucideDownload,
                 onClick: () => {
-                  store.commit('setWatermark', '')
+                  store.commit("setWatermark", "")
                   entitiesDownload(null, [entity.value])
                 },
               },
-            {
-              label: "PDF (Watermark)",
-              icon: LucideDownload,
-              onClick: () => {
-                watermarkRequired.value = true
+              {
+                label: "PDF (Watermark)",
+                icon: LucideDownload,
+                onClick: () => {
+                  watermarkRequired.value = true
+                },
               },
-            },
-            {
-              label: "DOCX",
-              icon: LucideDownload,
-            },
-            {
-              label: "Markdown",
-              icon: LucideDownload,
-            },
-            {
-              label: "Zipped",
-              icon: LucideDownload,
-            },
-          ],
+              {
+                label: "DOCX",
+                icon: LucideDownload,
+              },
+              {
+                label: "Markdown",
+                icon: LucideDownload,
+              },
+              {
+                label: "Zipped",
+                icon: LucideDownload,
+              },
+            ],
           },
           {
             onClick: clearCache,
@@ -562,8 +597,17 @@ const exportBlog = async () => {
 
 const watermarkText = computed({
   get: () => store.state.watermarkText || "",
-  set: (val) => store.commit('setWatermark', val ?? "")
+  set: (val) => store.commit("setWatermark", val ?? ""),
 })
+const watermarkTextAngle = computed({
+  get: () => store.state.watermarkTextAngle || "",
+  set: (val) => store.commit("setWatermarkAngle", val ?? ""),
+})
+const watermarkTextSize = computed({
+  get: () => store.state.watermarkTextSize || "",
+  set: (val) => store.commit("setWatermarkSize", val ?? ""),
+})
+
 const watermarkRequired = ref(false)
 
 function downloadWithWatermark() {
