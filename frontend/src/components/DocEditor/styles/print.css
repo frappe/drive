@@ -9,7 +9,9 @@
       content: "\00A0";
     }
   }
-
+  .ProseMirror p{
+    white-space: pre-wrap;
+  }
   .ProseMirror table {
     margin-top: 1rem;  
     table-layout: fixed;
