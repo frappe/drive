@@ -123,65 +123,51 @@
       :editable
     />
   </div>
-
-  <Dialog v-model="watermarkRequired">
-
-    <template #body-title>
-      <div class="text-lg font-semibold text-ink-gray-9">Add Watermark</div>
-    </template>
-
+  <Dialog
+    v-model="watermarkRequired"
+    :options="{
+      title: 'Add watermark',
+      actions: [
+        {
+          label: 'Download',
+          variant: 'solid',
+          disabled: !watermarkObj.text?.trim(),
+          onClick: downloadWithWatermark,
+        },
+      ],
+    }"
+  >
     <template #body-content>
       <div class="p-3 space-y-4">
         <FormControl
+          v-model="watermarkObj.text"
           type="text"
-          size="sm"
-          variant="subtle"
-          label="Text"
-          placeholder="(Confidential)"
-          v-model="watermarkText"
+          label="Watermark text"
+          placeholder="Brand name"
           required
         />
-        <fieldset class="space-y-3">
-          <div class="grid grid-cols-1 gap-3">
-            <FormControl
-              type="number"
-              size="sm"
-              variant="subtle"
-              label="Text Size (px)"
-              placeholder="64"
-              :min="0"
-              :max="300"
-              :step="16"
-              v-model.number="watermarkTextSize"
-            />
-            <FormControl
-              type="number"
-              size="sm"
-              variant="subtle"
-              label="Angle (°)"
-              placeholder="-45"
-              :min="-180"
-              :max="180"
-              :step="15"
-              v-model.number="watermarkTextAngle"
-            />
-          </div>
-        </fieldset>
+
+        <FormControl
+          v-model.number="watermarkObj.size"
+          type="number"
+          label="Text size (px)"
+          placeholder="64"
+          :min="0"
+          :max="300"
+          :step="16"
+        />
+
+        <FormControl
+          v-model.number="watermarkObj.angle"
+          type="number"
+          label="Angle (°)"
+          placeholder="-45"
+          :min="-180"
+          :max="180"
+          :step="15"
+        />
       </div>
     </template>
-
-    <template #actions>
-      <div class="p-2 flex justify-end gap-2">
-        <Button
-          variant="solid"
-          :disabled="!watermarkText?.trim()"
-          @click="downloadWithWatermark"
-        >
-          Download
-        </Button>
-      </div>
-    </template>
-
   </Dialog>
 </template>
 
@@ -191,6 +177,7 @@ import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   inject,
+  reactive,
   defineAsyncComponent,
   provide,
   onBeforeUnmount,
@@ -462,7 +449,7 @@ const navBarActions = computed(
                 label: "PDF",
                 icon: LucideDownload,
                 onClick: () => {
-                  store.commit("setWatermark", "")
+                  localStorage.removeItem("watermark-obj")
                   entitiesDownload(null, [entity.value])
                 },
               },
@@ -595,26 +582,25 @@ const exportBlog = async () => {
   })
 }
 
-const watermarkText = computed({
-  get: () => store.state.watermarkText || "",
-  set: (val) => store.commit("setWatermark", val ?? ""),
+const watermarkObj = reactive({
+  text: "",
+  size: null,
+  angle: null,
 })
-const watermarkTextAngle = computed({
-  get: () => store.state.watermarkTextAngle || "",
-  set: (val) => store.commit("setWatermarkAngle", val ?? ""),
-})
-const watermarkTextSize = computed({
-  get: () => store.state.watermarkTextSize || "",
-  set: (val) => store.commit("setWatermarkSize", val ?? ""),
-})
+
+watch(
+  watermarkObj,
+  (newObj) => {
+    localStorage.setItem("watermark-obj", JSON.stringify(newObj))
+  },
+  { deep: true }
+)
 
 const watermarkRequired = ref(false)
 
 function downloadWithWatermark() {
-  const text = watermarkText.value?.trim()
-  if (!text) return
-  entitiesDownload(null, [entity.value])
   watermarkRequired.value = false
+  entitiesDownload(null, [entity.value])
 }
 
 // Events
