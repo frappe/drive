@@ -290,7 +290,9 @@ class DriveFile(Document):
             frappe.throw("Your title can't be more than 140 characters.")
         self.title = new_title
         path = self.manager.rename(self)
-        self.recursive_path_move(self.path, path)
+
+        if self.path and not self.mime_type.startswith("frappe"):
+            self.recursive_path_move(self.path, path)
 
         self.save()
         return self
