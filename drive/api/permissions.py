@@ -238,7 +238,8 @@ def get_shared_with_list(entity):
 
     for p in permissions:
         user_info = frappe.db.get_value("User", p.user, ["user_image", "full_name", "email"], as_dict=True)
-        p.update(user_info)
+        if user_info:
+            p.update(user_info)
     return permissions
 
 
