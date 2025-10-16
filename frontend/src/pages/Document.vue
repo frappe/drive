@@ -193,7 +193,12 @@ import {
   Dialog,
   FormControl,
 } from "frappe-ui"
-import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
+import {
+  setBreadCrumbs,
+  prettyData,
+  updateURLSlug,
+  savetxt,
+} from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
@@ -465,8 +470,14 @@ const navBarActions = computed(
                 icon: LucideDownload,
               },
               {
-                label: "Markdown",
+                label: "Text",
                 icon: LucideDownload,
+                onClick: () => {
+                  savetxt(
+                    editorValue.value,
+                    `${entity.value.title}.txt`
+                  )
+                },
               },
               {
                 label: "Zipped",

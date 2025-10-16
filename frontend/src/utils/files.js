@@ -18,6 +18,7 @@ import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
+import { saveAs } from "file-saver"
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -366,6 +367,15 @@ export function enterFullScreen() {
     /* IE/Edge */
     elem.msRequestFullscreen()
   }
+}
+
+export function savetxt(editor, filename) {
+  const text = editor.getText()
+    .trim()
+    .replace(/(\r\n|\n|\r)/gm, '\n')
+    .replace(/^(?:\s*|\t*)\n/gm, '');
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
+  saveAs(blob, filename)
 }
 
 export function printDoc(html) {
