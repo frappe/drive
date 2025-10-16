@@ -3,24 +3,27 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  
+
   .ProseMirror {
     p:empty::after {
       content: "\00A0";
     }
   }
-  .ProseMirror p{
+  .ProseMirror p {
     white-space: pre-wrap;
   }
+
   .ProseMirror table {
-    margin-top: 1rem;  
+    margin-top: 1rem;
     table-layout: fixed;
     width: 100%;
     page-break-inside: avoid;
     text-align: inherit;
   }
-  
-  .ProseMirror table p { margin: 0; }
+
+  .ProseMirror table p {
+    margin: 0;
+  }
   .ProseMirror td,
   .ProseMirror th {
     border-style: solid;
@@ -35,7 +38,7 @@
     background-color: var(--surface-gray-2);
     font-weight: 600;
   }
-  
+
   .ProseMirror ul {
     list-style-type: disc;
   }
@@ -43,49 +46,49 @@
   .ProseMirror ol {
     list-style-type: decimal;
   }
-  
+
   .ProseMirror li::marker {
     color: var(--ink-gray-3);
   }
 
-  .ProseMirror ul[data-type='taskList'] {
-  list-style: none;
-  padding: 0;
+  .ProseMirror ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
 
-  li {
-    align-items: flex-start;
-    display: flex;
-    margin: 0;
-
-    > label {
-      flex: 0 0 auto;
-      margin-right: 0.5rem;
-      margin-top: 0.25rem;
-      height: 1lh;
+    li {
+      align-items: flex-start;
       display: flex;
-      align-items: center;
-      user-select: none;
-    }
+      margin: 0;
 
-    > div {
-      flex: 1 1 auto;
-      margin-bottom: 0;
+      > label {
+        flex: 0 0 auto;
+        margin-right: 0.5rem;
+        margin-top: 0.25rem;
+        height: 1lh;
+        display: flex;
+        align-items: center;
+        user-select: none;
+      }
 
-      > p {
-        margin: 0.25rem 0;
+      > div {
+        flex: 1 1 auto;
+        margin-bottom: 0;
+
+        > p {
+          margin: 0.25rem 0;
+        }
       }
     }
-  }
-    ul[data-type='taskList'] {
+    ul[data-type="taskList"] {
       margin: 0;
     }
 
-    input[type='checkbox'] {
+    input[type="checkbox"] {
       cursor: pointer;
       width: 14px;
       height: 14px;
       border-radius: 4px;
-      color: theme('colors.gray.900');
+      color: theme("colors.gray.900");
     }
   }
 
@@ -99,6 +102,23 @@
   .prose-sm {
     caret-color: theme("colors.blue.600");
     padding: 1rem 2.5rem;
+  }
+
+  .ProseMirror pre {
+    background: #0d0d0d;
+    color: #fff;
+    font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+      "Roboto Mono", "Oxygen Mono", "Ubuntu Mono", "Source Code Pro",
+      "Fira Mono", "Droid Sans Mono", "Consolas", "Courier New", monospace;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    caret-color: #fff;
+  }
+  .ProseMirror pre code {
+    color: inherit;
+    padding: 0;
+    background: none;
+    font-size: 12px;
   }
 
   #page-break-div {
