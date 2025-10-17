@@ -545,7 +545,7 @@ onBeforeUnmount(() => {
 
 let toasted
 watch(isOldSchema, (v) => {
-  if (entity.value.write && v && !toasted) {
+  if (docSettings?.doc?.settings && entity.value.write && v && !toasted) {
     toast({
       title:
         "This document uses an old schema. Collaborative editing is disabled.",
