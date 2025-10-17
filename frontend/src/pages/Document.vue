@@ -138,7 +138,7 @@
     }"
   >
     <template #body-content>
-      <div class="p-3 space-y-4">
+      <div class="space-y-4">
         <FormControl
           v-model="watermarkConfig.text"
           type="text"
@@ -211,7 +211,6 @@ import LucideUserPen from "~icons/lucide/user-pen"
 import LucideEraser from "~icons/lucide/eraser"
 import LucideView from "~icons/lucide/view"
 import LucideSettings from "~icons/lucide/settings"
-import LucideImageDown from "~icons/lucide/image-down"
 import LucideDownload from "~icons/lucide/download"
 import LucideListRestart from "~icons/lucide/list-restart"
 import LucideHistory from "~icons/lucide/history"
@@ -618,8 +617,8 @@ const exportBlog = async () => {
 
 const watermarkConfig = reactive({
   text: "",
-  size: null,
-  angle: null,
+  size: 40,
+  angle: -45,
 })
 
 watch(
