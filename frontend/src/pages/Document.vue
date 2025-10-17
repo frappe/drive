@@ -123,6 +123,52 @@
       :editable
     />
   </div>
+  <Dialog
+    v-model="watermarkDialog"
+    :options="{
+      title: 'Add watermark',
+      actions: [
+        {
+          label: 'Download',
+          variant: 'solid',
+          disabled: !watermarkConfig.text?.trim(),
+          onClick: downloadWithWatermark,
+        },
+      ],
+    }"
+  >
+    <template #body-content>
+      <div class="p-3 space-y-4">
+        <FormControl
+          v-model="watermarkConfig.text"
+          type="text"
+          label="Watermark text"
+          placeholder="Brand name"
+          required
+        />
+
+        <FormControl
+          v-model.number="watermarkConfig.size"
+          type="number"
+          label="Text size (px)"
+          placeholder="64"
+          :min="0"
+          :max="300"
+          :step="16"
+        />
+
+        <FormControl
+          v-model.number="watermarkConfig.angle"
+          type="number"
+          label="Angle (°)"
+          placeholder="-45"
+          :min="-180"
+          :max="180"
+          :step="15"
+        />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -131,6 +177,7 @@ import Navbar from "@/components/Navbar.vue"
 import {
   ref,
   inject,
+  reactive,
   defineAsyncComponent,
   provide,
   onBeforeUnmount,
@@ -139,14 +186,23 @@ import {
   computed,
 } from "vue"
 import { useStore } from "vuex"
-import { createResource, LoadingIndicator, useDoc } from "frappe-ui"
-import { setBreadCrumbs, prettyData, updateURLSlug } from "@/utils/files"
+import {
+  createResource,
+  LoadingIndicator,
+  useDoc,
+  Dialog,
+  FormControl,
+} from "frappe-ui"
+import {
+  setBreadCrumbs,
+  prettyData,
+  updateURLSlug,
+} from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
 import WriterSettings from "@/components/DocEditor/components/WriterSettings.vue"
 import { toast } from "@/utils/toasts"
 import { entitiesDownload } from "@/utils/download"
-
 import MessagesSquare from "~icons/lucide/messages-square"
 import LucideRulerDimensionLine from "~icons/lucide/ruler-dimension-line"
 import LucideUserPen from "~icons/lucide/user-pen"
@@ -163,10 +219,14 @@ import LucideLock from "~icons/lucide/lock"
 import LucideLockOpen from "~icons/lucide/lock-open"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
+import LucideFolderArchive from "~icons/lucide/folder-archive"
+import LucideFileText from "~icons/lucide/file-text"
 import { dynamicList } from "@/utils/files"
 import { useTemplateRef } from "vue"
 import UsersBar from "@/components/UsersBar.vue"
 import { apps } from "../resources/permissions"
+import LucideStamp from "~icons/lucide/stamp"
+import LucideFile from "~icons/lucide/file"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -390,21 +450,34 @@ const navBarActions = computed(
             icon: LucideSettings,
           },
           {
-            label: "Export",
+            label: "Download",
             icon: LucideDownload,
-            submenu: dynamicList([
+            submenu: [
               {
-                onClick: exportMedia,
-                label: "Export Media",
-                icon: LucideImageDown,
+                label: "PDF",
+                icon: LucideFile,
+                onClick: () => {
+                  watermarkStatus.value = false
+                  entitiesDownload(null, [entity.value], watermarkStatus.value)
+                },
               },
               {
-                onClick: exportBlog,
-                label: "Export Blog",
-                icon: LucideImageDown,
-                cond: apps.data.find(k => k.name === 'blog'),
+                label: "PDF with Watermark",
+                icon: LucideStamp,
+                onClick: () => {
+                  watermarkStatus.value = true
+                  watermarkDialog.value = true
+                },
               },
-            ]),
+              {
+                label: "DOCX",
+                icon: LucideFileText,
+              },
+              {
+                label: "Folder",
+                icon: LucideFolderArchive,
+              },
+            ],
           },
           {
             onClick: clearCache,
@@ -513,6 +586,29 @@ const exportBlog = async () => {
     },
   })
 }
+
+const watermarkConfig = reactive({
+  text: "",
+  size: null,
+  angle: null,
+})
+
+watch(
+  watermarkConfig,
+  (newObj) => {
+    localStorage.setItem("watermark-obj", JSON.stringify(newObj))
+  },
+  { deep: true }
+)
+
+const watermarkDialog = ref(false)
+const watermarkStatus = ref(false)
+
+function downloadWithWatermark() {
+  watermarkDialog.value = false
+  entitiesDownload(null, [entity.value], watermarkStatus.value)
+}
+
 // Events
 window.addEventListener("offline", () => {
   toast({

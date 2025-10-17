@@ -18,6 +18,7 @@ import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
+import { saveAs } from "file-saver"
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -368,15 +369,40 @@ export function enterFullScreen() {
   }
 }
 
-export function printDoc(html) {
+export function printDoc(html, watermarkStatus) {
+  const storedData = localStorage.getItem("watermark-obj")
+  let watermarkText
+  let watermarkTextAngle
+  let watermarkTextSize
+  if (storedData) {
+    const data = JSON.parse(storedData)
+    watermarkText = data.text?.trim()
+    watermarkTextAngle = data.angle || -45 
+    watermarkTextSize = data.size || 64
+  }
   const content = `
             <!DOCTYPE html>
             <html>
               <head>
                 <style>${globalStyle}</style>
                 <style>${editorStyle}</style>
+                <style>
+                  .watermark {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(${watermarkTextAngle}deg);
+                    opacity: 0.12;
+                    font-size: ${watermarkTextSize}px;
+                    color: #999;
+                    pointer-events: none;
+                    z-index: 9999;
+                    white-space: nowrap;
+                  }
+                </style>
               </head>
               <body>
+                 ${watermarkStatus ? `<div class="watermark">${watermarkText}</div>` : null}
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
                   ${html}
                 </div>
