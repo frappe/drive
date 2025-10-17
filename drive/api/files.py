@@ -44,11 +44,6 @@ def upload_embed(doc):
     }
 
 
-def validate_drive_upload(file, team, parent, embed):
-    if frappe.session.user == "Administrator":
-        return False
-
-
 @frappe.whitelist(allow_guest=True)
 @default_team
 def upload_file(
