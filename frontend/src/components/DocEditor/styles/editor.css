@@ -1,0 +1,48 @@
+@import url("../../../assets/fonts/fonts.css");
+@import url("./comment.css");
+@import url("./print.css");
+@import "frappe-ui/src/components/TextEditor/extensions/color/color-styles.css";
+@import "frappe-ui/src/components/TextEditor/extensions/highlight/highlight-styles.css";
+
+body {
+  --font-inter: "InterVar", inherit;
+  --font-fantasy: fantasy, inherit;
+  --font-lora: "Lora", serif;
+  --font-roboto: "Roboto", inherit;
+  --font-merriweather: "Merriweather", serif;
+  --font-geist: "Geist", serif;
+  --font-ibm-plex: "IBM Plex Sans", sans-serif;
+  --font-eb-garamond: "EB Garamond", serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+  --font-comfortaa: "Comfortaa", cursive;
+  --font-caveat: "Caveat", cursive;
+  --font-nunito: "Nunito", sans-serif;
+  --font-comic-sans: "Comic Sans MS", sans-serif;
+}
+
+.prose-sm {
+  caret-color: theme("colors.blue.600");
+  padding: 1rem 2.5rem;
+}
+
+.collaboration-cursor__caret {
+  border-left: 0px solid currentColor;
+  border-right: 2px solid currentColor;
+  margin-left: 0px;
+  margin-right: -2px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  border-radius: 60px;
+  border: 2px solid #0000001a;
+  color: #ffffffdf;
+  position: absolute;
+  top: -1.5em;
+  left: 0.25em;
+  user-select: none;
+  white-space: nowrap;
+}
