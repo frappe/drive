@@ -54,6 +54,10 @@ const e = computed(() => props.entityName)
 const currentFolder = createResource({
   url: "drive.api.permissions.get_entity_with_permissions",
   transform(entity) {
+    if (entity.redirect) {
+      router.push(entity.route)
+      return null
+    }
     return prettyData([entity])[0]
   },
   onSuccess,

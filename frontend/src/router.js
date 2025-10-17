@@ -156,8 +156,8 @@ const routes = [
     name: "Document",
     meta: { documentPage: true, allowGuest: true },
     component: () => import("@/pages/Document.vue"),
-    props: true,
     beforeEnter: [manageBreadcrumbs],
+    props: true,
   },
 ]
 
