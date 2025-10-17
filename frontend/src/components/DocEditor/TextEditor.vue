@@ -580,6 +580,18 @@ onKeyDown("s", (e) => {
   })
 })
 
+const getHtml = (data) => {
+  let pre_doc = new Y.Doc({ gc: true })
+  Y.applyUpdate(pre_doc, toUint8Array(data))
+  let obj = yDocToProsemirrorJSON(pre_doc, "default")
+  console.log(obj)
+  let sub = new Editor({
+    content: obj,
+    extensions: [...textEditor.value.DEFAULT_EXTENSIONS],
+  })
+  return sub.getHTML( )
+}
+window.getHtml = getHtml
 const syncToWiki = async (wiki_space, group, entity_names) => {
   const pages = []
   for (let k of entity_names) {
@@ -587,16 +599,9 @@ const syncToWiki = async (wiki_space, group, entity_names) => {
       url: "drive.api.wiki_integration.get_yjs_content",
       params: { entity_name: k },
     }).fetch()
-    let pre_doc = new Y.Doc({ gc: true })
-    Y.applyUpdate(pre_doc, toUint8Array(data))
-    let obj = yDocToProsemirrorJSON(pre_doc, "default")
-    let editor = new Editor({
-      content: obj,
-      extensions: textEditor.value.DEFAULT_EXTENSIONS,
-    })
     let new_ = await createResource({
       url: "drive.api.wiki_integration.sync_to_wiki_page",
-      params: { entity_name: k, html: editor.getHTML(), wiki_space, group },
+      params: { entity_name: k, html: getHtml(data), wiki_space, group },
     }).fetch()
     if (new_) pages.push(new_)
   }
@@ -608,7 +613,6 @@ const syncToWiki = async (wiki_space, group, entity_names) => {
     })
 }
 
-window.run = () => syncToWiki(["uu9pbukv8s", "5fpvulc7so"])
 const socket = inject("socket")
 socket.on("sync_to_wiki", (data) => {
   for (let [title, pages] of Object.entries(data.groups)) {

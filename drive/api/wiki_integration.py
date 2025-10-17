@@ -56,11 +56,10 @@ def add_pages_to_space(wiki_space, group, pages):
 
 @frappe.whitelist()
 def sync_space(folder, wiki_space):
-    frappe.publish_realtime("chill", {"msg": "Syncing to wiki..."})
     # Get all groups (subfolders) and pages (nested documents) in this folder
     groups = frappe.get_all(
         "Drive File",
-        filters={"parent_entity": folder, "is_group": 1},
+        filters={"parent_entity": folder, "is_group": 1, "is_active": 1},
         fields=["name", "title"],
     )
     res = {}
