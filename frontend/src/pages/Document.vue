@@ -124,14 +124,14 @@
     />
   </div>
   <Dialog
-    v-model="watermarkRequired"
+    v-model="watermarkDialog"
     :options="{
       title: 'Add watermark',
       actions: [
         {
           label: 'Download',
           variant: 'solid',
-          disabled: !watermarkObj.text?.trim(),
+          disabled: !watermarkConfig.text?.trim(),
           onClick: downloadWithWatermark,
         },
       ],
@@ -140,7 +140,7 @@
     <template #body-content>
       <div class="p-3 space-y-4">
         <FormControl
-          v-model="watermarkObj.text"
+          v-model="watermarkConfig.text"
           type="text"
           label="Watermark text"
           placeholder="Brand name"
@@ -148,7 +148,7 @@
         />
 
         <FormControl
-          v-model.number="watermarkObj.size"
+          v-model.number="watermarkConfig.size"
           type="number"
           label="Text size (px)"
           placeholder="64"
@@ -158,7 +158,7 @@
         />
 
         <FormControl
-          v-model.number="watermarkObj.angle"
+          v-model.number="watermarkConfig.angle"
           type="number"
           label="Angle (°)"
           placeholder="-45"
@@ -197,7 +197,6 @@ import {
   setBreadCrumbs,
   prettyData,
   updateURLSlug,
-  savetxt,
 } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
@@ -220,10 +219,14 @@ import LucideLock from "~icons/lucide/lock"
 import LucideLockOpen from "~icons/lucide/lock-open"
 import LucideWifiOff from "~icons/lucide/wifi-off"
 import LucideFileWarning from "~icons/lucide/file-warning"
+import LucideFolderArchive from "~icons/lucide/folder-archive"
+import LucideFileText from "~icons/lucide/file-text"
 import { dynamicList } from "@/utils/files"
 import { useTemplateRef } from "vue"
 import UsersBar from "@/components/UsersBar.vue"
 import { apps } from "../resources/permissions"
+import LucideStamp from "~icons/lucide/stamp"
+import LucideFile from "~icons/lucide/file"
 
 const TextEditor = defineAsyncComponent(() =>
   import("@/components/DocEditor/TextEditor.vue")
@@ -452,36 +455,27 @@ const navBarActions = computed(
             submenu: [
               {
                 label: "PDF",
-                icon: LucideDownload,
+                icon: LucideFile,
                 onClick: () => {
-                  localStorage.removeItem("watermark-obj")
-                  entitiesDownload(null, [entity.value])
+                  watermarkStatus.value = false
+                  entitiesDownload(null, [entity.value], watermarkStatus.value)
                 },
               },
               {
-                label: "PDF (Watermark)",
-                icon: LucideDownload,
+                label: "PDF with Watermark",
+                icon: LucideStamp,
                 onClick: () => {
-                  watermarkRequired.value = true
+                  watermarkStatus.value = true
+                  watermarkDialog.value = true
                 },
               },
               {
                 label: "DOCX",
-                icon: LucideDownload,
+                icon: LucideFileText,
               },
               {
-                label: "Text",
-                icon: LucideDownload,
-                onClick: () => {
-                  savetxt(
-                    editorValue.value,
-                    `${entity.value.title}.txt`
-                  )
-                },
-              },
-              {
-                label: "Zipped",
-                icon: LucideDownload,
+                label: "Folder",
+                icon: LucideFolderArchive,
               },
             ],
           },
@@ -593,25 +587,26 @@ const exportBlog = async () => {
   })
 }
 
-const watermarkObj = reactive({
+const watermarkConfig = reactive({
   text: "",
   size: null,
   angle: null,
 })
 
 watch(
-  watermarkObj,
+  watermarkConfig,
   (newObj) => {
     localStorage.setItem("watermark-obj", JSON.stringify(newObj))
   },
   { deep: true }
 )
 
-const watermarkRequired = ref(false)
+const watermarkDialog = ref(false)
+const watermarkStatus = ref(false)
 
 function downloadWithWatermark() {
-  watermarkRequired.value = false
-  entitiesDownload(null, [entity.value])
+  watermarkDialog.value = false
+  entitiesDownload(null, [entity.value], watermarkStatus.value)
 }
 
 // Events

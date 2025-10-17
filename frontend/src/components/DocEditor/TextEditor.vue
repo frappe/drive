@@ -535,13 +535,12 @@ const createNewComment = (editor) => {
 onKeyDown("p", (e) => {
   if (e.metaKey) {
     e.preventDefault()
-    localStorage.removeItem("watermark-obj")
-    if (editor.value) printDoc(editor.value.getHTML())
+    if (editor.value) printDoc(editor.value.getHTML(),false)
   }
 })
 
-emitter.on("printFile", () => {
-  if (editor.value) printDoc(editor.value.getHTML())
+emitter.on("printFile",(watermarkStatus) => {
+  if (editor.value) printDoc(editor.value.getHTML(),watermarkStatus)
 })
 emitter.on("create-version", (title) => {
   const snap = Y.snapshot(doc)

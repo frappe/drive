@@ -369,16 +369,7 @@ export function enterFullScreen() {
   }
 }
 
-export function savetxt(editor, filename) {
-  const text = editor.getText()
-    .trim()
-    .replace(/(\r\n|\n|\r)/gm, '\n')
-    .replace(/^(?:\s*|\t*)\n/gm, '');
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
-  saveAs(blob, filename)
-}
-
-export function printDoc(html) {
+export function printDoc(html, watermarkStatus) {
   const storedData = localStorage.getItem("watermark-obj")
   let watermarkText
   let watermarkTextAngle
@@ -411,8 +402,7 @@ export function printDoc(html) {
                 </style>
               </head>
               <body>
-                <div class="watermark">${watermarkText || ""}</div>
-
+                 ${watermarkStatus ? `<div class="watermark">${watermarkText}</div>` : null}
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
                   ${html}
                 </div>

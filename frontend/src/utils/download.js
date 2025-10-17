@@ -31,11 +31,11 @@ async function getPdfFromDoc(entity_name) {
   await pdfBlob
   return pdfBlob.prop.pdf.output("arraybuffer")
 }
-export function entitiesDownload(team, entities) {
+export function entitiesDownload(team, entities, watermarkStatus) {
   if (entities.length === 1) {
     if (entities[0].mime_type === "frappe_doc") {
       if (router.currentRoute.value.name) {
-        return emitter.emit("printFile")
+        return emitter.emit("printFile",watermarkStatus)
       }
       // BROKEN
       return fetch(
