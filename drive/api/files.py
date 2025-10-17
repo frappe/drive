@@ -44,6 +44,11 @@ def upload_embed(doc):
     }
 
 
+def validate_drive_upload(file, team, parent, embed):
+    if frappe.session.user == "Administrator":
+        return False
+
+
 @frappe.whitelist(allow_guest=True)
 @default_team
 def upload_file(
@@ -65,6 +70,12 @@ def upload_file(
     :raises ValueError: If the size of the stored file does not match the specified filesize
     :return: DriveEntity doc once the entire file has been uploaded
     """
+    checks = frappe.get_hooks("validate_drive_upload")
+    for check in checks:
+        res = frappe.call(check, file=frappe.request.files["file"], team=team, parent=parent, embed=embed)
+        if res is not None and res is not True:
+            frappe.throw(res or "This upload was cancelled by a validation check.", TypeError)
+
     home_folder = get_home_folder(team)
     parent = parent or home_folder["name"]
     embed = int(embed)

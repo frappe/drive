@@ -12,7 +12,7 @@ import {
 } from "@/resources/files"
 import { getTeams } from "@/resources/files"
 import { set } from "idb-keyval"
-import editorStyle from "@/components/DocEditor/editor.css?inline"
+import editorStyle from "@/components/DocEditor/styles/editor.css?inline"
 import globalStyle from "@/index.css?inline"
 import slugify from "slugify"
 import { toast } from "@/utils/toasts.js"
