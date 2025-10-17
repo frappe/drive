@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2025-10-03 16:11+0000\n"
-"PO-Revision-Date: 2025-10-06 23:30\n"
+"POT-Creation-Date: 2025-10-10 16:11+0000\n"
+"PO-Revision-Date: 2025-10-15 02:15\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -64,16 +64,16 @@ msgstr "crwdns156806:0crwdne156806:0"
 msgid "Action Type"
 msgstr "crwdns156808:0crwdne156808:0"
 
-#: frontend/src/components/Settings/UserListSettings.vue:449
+#: frontend/src/components/Settings/UserListSettings.vue:445
 #: frontend/src/components/TagInput.vue:27
 msgid "Add"
 msgstr "crwdns159992:0crwdne159992:0"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:77
+#: frontend/src/components/Settings/ProfileSettings.vue:76
 msgid "Add Image"
 msgstr "crwdns156812:0crwdne156812:0"
 
-#: frontend/src/components/InfoPopup.vue:47
+#: frontend/src/components/InfoPopup.vue:38
 msgid "Added"
 msgstr "crwdns156814:0crwdne156814:0"
 
@@ -98,7 +98,7 @@ msgstr "crwdns156816:0crwdne156816:0"
 msgid "Allow Download"
 msgstr "crwdns160138:0crwdne160138:0"
 
-#: frontend/src/components/Sidebar.vue:106
+#: frontend/src/components/Sidebar.vue:101
 msgid "Apps"
 msgstr "crwdns158562:0crwdne158562:0"
 
@@ -117,11 +117,11 @@ msgstr "crwdns156820:0crwdne156820:0"
 msgid "Can contain whatever meta value needed for the access log. Ex: Used to store access level 1,2,3 etc on a DriveDocShare"
 msgstr "crwdns156822:0crwdne156822:0"
 
-#: frontend/src/components/InfoPopup.vue:77
+#: frontend/src/components/InfoPopup.vue:62
 msgid "Characters"
 msgstr "crwdns158566:0crwdne158566:0"
 
-#: frontend/src/components/Navbar.vue:311
+#: frontend/src/components/Navbar.vue:308
 msgid "Clear"
 msgstr "crwdns156824:0crwdne156824:0"
 
@@ -160,8 +160,8 @@ msgstr "crwdns156832:0crwdne156832:0"
 msgid "Content"
 msgstr "crwdns156834:0crwdne156834:0"
 
-#: frontend/src/components/GenericPage.vue:314
-#: frontend/src/components/Navbar.vue:230
+#: frontend/src/components/GenericPage.vue:313
+#: frontend/src/components/Navbar.vue:227
 msgid "Copy Link"
 msgstr "crwdns156836:0crwdne156836:0"
 
@@ -176,12 +176,12 @@ msgstr "crwdns156838:0crwdne156838:0"
 msgid "Defaults to \"s3v4\". Some providers only support \"s3\"."
 msgstr "crwdns156842:0crwdne156842:0"
 
-#: frontend/src/components/GenericPage.vue:381
-#: frontend/src/components/Navbar.vue:288
+#: frontend/src/components/GenericPage.vue:380
+#: frontend/src/components/Navbar.vue:285
 msgid "Delete"
 msgstr "crwdns156844:0crwdne156844:0"
 
-#: frontend/src/components/InfoPopup.vue:157
+#: frontend/src/components/InfoPopup.vue:135
 msgid "Developer"
 msgstr "crwdns158570:0crwdne158570:0"
 
@@ -218,12 +218,12 @@ msgstr "crwdns156850:0crwdne156850:0"
 msgid "Document Type"
 msgstr "crwdns156852:0crwdne156852:0"
 
-#: frontend/src/components/Sidebar.vue:130
+#: frontend/src/components/Sidebar.vue:125
 msgid "Documentation"
 msgstr "crwdns156854:0crwdne156854:0"
 
-#: frontend/src/components/GenericPage.vue:305
-#: frontend/src/components/Navbar.vue:223
+#: frontend/src/components/GenericPage.vue:304
+#: frontend/src/components/Navbar.vue:220
 msgid "Download"
 msgstr "crwdns156856:0crwdne156856:0"
 
@@ -334,7 +334,7 @@ msgstr "crwdns156890:0crwdne156890:0"
 msgid "Drive User Invitation"
 msgstr "crwdns156892:0crwdne156892:0"
 
-#: frontend/src/components/Settings/UserListSettings.vue:527
+#: frontend/src/components/Settings/UserListSettings.vue:522
 msgid "Edit"
 msgstr "crwdns159996:0crwdne159996:0"
 
@@ -353,7 +353,7 @@ msgstr "crwdns156896:0crwdne156896:0"
 msgid "Email"
 msgstr "crwdns156898:0crwdne156898:0"
 
-#: frontend/src/components/Navbar.vue:317
+#: frontend/src/components/Navbar.vue:314
 msgid "Empty"
 msgstr "crwdns156900:0crwdne156900:0"
 
@@ -399,8 +399,8 @@ msgstr "crwdns156912:0crwdne156912:0"
 msgid "Expired"
 msgstr "crwdns156914:0crwdne156914:0"
 
-#: frontend/src/components/GenericPage.vue:342
-#: frontend/src/components/Navbar.vue:259
+#: frontend/src/components/GenericPage.vue:341
+#: frontend/src/components/Navbar.vue:256
 msgid "Favourite"
 msgstr "crwdns156916:0crwdne156916:0"
 
@@ -409,11 +409,11 @@ msgstr "crwdns156916:0crwdne156916:0"
 msgid "File Size"
 msgstr "crwdns156918:0crwdne156918:0"
 
-#: frontend/src/components/Sidebar.vue:188
+#: frontend/src/components/DriveToolBar.vue:40
 msgid "Find"
 msgstr "crwdns158576:0crwdne158576:0"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:83
+#: frontend/src/components/Settings/ProfileSettings.vue:82
 msgid "First Name"
 msgstr "crwdns156920:0crwdne156920:0"
 
@@ -425,7 +425,7 @@ msgstr "crwdns156922:0crwdne156922:0"
 #. Label of the general_section (Section Break) field in DocType 'Drive Disk
 #. Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
-#: frontend/src/components/InfoPopup.vue:119
+#: frontend/src/components/InfoPopup.vue:100
 msgid "General"
 msgstr "crwdns156924:0crwdne156924:0"
 
@@ -445,7 +445,7 @@ msgstr "crwdns156930:0crwdne156930:0"
 msgid "Guest"
 msgstr "crwdns156932:0crwdne156932:0"
 
-#: frontend/src/utils/files.js:214
+#: frontend/src/utils/files.js:215
 msgid "Home"
 msgstr "crwdns156936:0crwdne156936:0"
 
@@ -465,7 +465,7 @@ msgstr "crwdns159184:0crwdne159184:0"
 msgid "In MB"
 msgstr "crwdns156940:0crwdne156940:0"
 
-#: frontend/src/components/Sidebar.vue:193
+#: frontend/src/components/Sidebar.vue:188
 msgid "Inbox"
 msgstr "crwdns158582:0crwdne158582:0"
 
@@ -517,7 +517,7 @@ msgstr "crwdns156962:0crwdne156962:0"
 msgid "Last Modified"
 msgstr "crwdns156964:0crwdne156964:0"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:88
+#: frontend/src/components/Settings/ProfileSettings.vue:87
 msgid "Last Name"
 msgstr "crwdns156966:0crwdne156966:0"
 
@@ -538,7 +538,7 @@ msgstr "crwdns159186:0crwdne159186:0"
 msgid "Loading..."
 msgstr "crwdns159188:0crwdne159188:0"
 
-#: frontend/src/components/Sidebar.vue:156
+#: frontend/src/components/Sidebar.vue:151
 msgid "Log out"
 msgstr "crwdns156968:0crwdne156968:0"
 
@@ -552,8 +552,8 @@ msgstr "crwdns156970:0crwdne156970:0"
 msgid "MIME Type"
 msgstr "crwdns156972:0crwdne156972:0"
 
-#: frontend/src/components/InfoPopup.vue:106
-#: frontend/src/components/Sidebar.vue:101
+#: frontend/src/components/InfoPopup.vue:88
+#: frontend/src/components/Sidebar.vue:96
 msgid "Manage"
 msgstr "crwdns156974:0crwdne156974:0"
 
@@ -591,17 +591,17 @@ msgstr "crwdns156982:0crwdne156982:0"
 
 #. Label of the _modified (Datetime) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
-#: frontend/src/components/DriveToolBar.vue:252
-#: frontend/src/components/InfoPopup.vue:41
+#: frontend/src/components/DriveToolBar.vue:251
+#: frontend/src/components/InfoPopup.vue:34
 msgid "Modified"
 msgstr "crwdns156984:0crwdne156984:0"
 
-#: frontend/src/components/GenericPage.vue:321
-#: frontend/src/components/Navbar.vue:241
+#: frontend/src/components/GenericPage.vue:320
+#: frontend/src/components/Navbar.vue:238
 msgid "Move"
 msgstr "crwdns156986:0crwdne156986:0"
 
-#: frontend/src/components/DriveToolBar.vue:244
+#: frontend/src/components/DriveToolBar.vue:243
 #: frontend/src/components/ListView.vue:131
 msgid "Name"
 msgstr "crwdns156988:0crwdne156988:0"
@@ -615,7 +615,7 @@ msgstr "crwdns156992:0crwdne156992:0"
 msgid "New Tag"
 msgstr "crwdns156994:0crwdne156994:0"
 
-#: frontend/src/components/Settings/UserListSettings.vue:365
+#: frontend/src/components/Settings/UserListSettings.vue:361
 msgid "New Team"
 msgstr "crwdns159998:0crwdne159998:0"
 
@@ -658,7 +658,7 @@ msgstr "crwdns157006:0crwdne157006:0"
 msgid "Only applies if S3 is turned on."
 msgstr "crwdns160144:0crwdne160144:0"
 
-#: frontend/src/components/GenericPage.vue:291
+#: frontend/src/components/GenericPage.vue:290
 msgid "Open"
 msgstr "crwdns157008:0crwdne157008:0"
 
@@ -667,12 +667,12 @@ msgstr "crwdns157008:0crwdne157008:0"
 msgid "Open in Drive"
 msgstr "crwdns159192:0crwdne159192:0"
 
-#: frontend/src/components/Sidebar.vue:146
+#: frontend/src/components/Sidebar.vue:141
 msgid "Others"
 msgstr "crwdns157010:0crwdne157010:0"
 
-#: frontend/src/components/DriveToolBar.vue:248
-#: frontend/src/components/InfoPopup.vue:19
+#: frontend/src/components/DriveToolBar.vue:247
+#: frontend/src/components/InfoPopup.vue:18
 #: frontend/src/components/ListView.vue:150
 msgid "Owner"
 msgstr "crwdns157012:0crwdne157012:0"
@@ -701,7 +701,7 @@ msgstr "crwdns160002:0crwdne160002:0"
 msgid "Personal"
 msgstr "crwdns160004:0crwdne160004:0"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:95
+#: frontend/src/components/Settings/ProfileSettings.vue:94
 msgid "Preferences"
 msgstr "crwdns157022:0crwdne157022:0"
 
@@ -710,7 +710,7 @@ msgstr "crwdns157022:0crwdne157022:0"
 msgid "Prefix"
 msgstr "crwdns160146:0crwdne160146:0"
 
-#: frontend/src/components/GenericPage.vue:285
+#: frontend/src/components/GenericPage.vue:284
 msgid "Preview"
 msgstr "crwdns157024:0crwdne157024:0"
 
@@ -750,7 +750,7 @@ msgstr "crwdns157034:0crwdne157034:0"
 msgid "Read"
 msgstr "crwdns157036:0crwdne157036:0"
 
-#: frontend/src/components/InfoPopup.vue:85
+#: frontend/src/components/InfoPopup.vue:68
 msgid "Reading time"
 msgstr "crwdns158594:0crwdne158594:0"
 
@@ -770,12 +770,12 @@ msgstr "crwdns157040:0crwdne157040:0"
 msgid "Referrer ID"
 msgstr "crwdns157042:0crwdne157042:0"
 
-#: frontend/src/components/GenericPage.vue:368
+#: frontend/src/components/GenericPage.vue:367
 msgid "Remove from Recents"
 msgstr "crwdns157044:0crwdne157044:0"
 
-#: frontend/src/components/GenericPage.vue:329
-#: frontend/src/components/Navbar.vue:247
+#: frontend/src/components/GenericPage.vue:328
+#: frontend/src/components/Navbar.vue:244
 msgid "Rename"
 msgstr "crwdns157046:0crwdne157046:0"
 
@@ -802,8 +802,8 @@ msgstr "crwdns158600:0crwdne158600:0"
 msgid "S3 Bucket"
 msgstr "crwdns157052:0crwdne157052:0"
 
-#: frontend/src/components/DriveToolBar.vue:40
-#: frontend/src/components/EmojiPicker.vue:28
+#: frontend/src/components/EmojiPicker.vue:22
+#: frontend/src/components/Sidebar.vue:183
 msgid "Search"
 msgstr "crwdns157054:0crwdne157054:0"
 
@@ -814,7 +814,7 @@ msgstr "crwdns157056:0crwdne157056:0"
 #. Label of the settings (JSON) field in DocType 'Drive Document'
 #: drive/drive/doctype/drive_document/drive_document.json
 #: frontend/src/components/Settings/SettingsDialog.vue:16
-#: frontend/src/components/Sidebar.vue:151
+#: frontend/src/components/Sidebar.vue:146
 msgid "Settings"
 msgstr "crwdns157058:0crwdne157058:0"
 
@@ -822,17 +822,17 @@ msgstr "crwdns157058:0crwdne157058:0"
 #. Label of the share (Check) field in DocType 'Drive Permission'
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
-#: frontend/src/components/GenericPage.vue:298
-#: frontend/src/components/Navbar.vue:215
+#: frontend/src/components/GenericPage.vue:297
+#: frontend/src/components/Navbar.vue:212
 msgid "Share"
 msgstr "crwdns157062:0crwdne157062:0"
 
-#: frontend/src/components/InfoPopup.vue:132 frontend/src/utils/files.js:205
+#: frontend/src/components/InfoPopup.vue:111 frontend/src/utils/files.js:206
 msgid "Shared"
 msgstr "crwdns157064:0crwdne157064:0"
 
-#: frontend/src/components/GenericPage.vue:335
-#: frontend/src/components/Navbar.vue:253
+#: frontend/src/components/GenericPage.vue:334
+#: frontend/src/components/Navbar.vue:250
 msgid "Show Info"
 msgstr "crwdns157066:0crwdne157066:0"
 
@@ -851,13 +851,13 @@ msgstr "crwdns157070:0crwdne157070:0"
 msgid "Single Click"
 msgstr "crwdns157072:0crwdne157072:0"
 
-#: frontend/src/components/DriveToolBar.vue:256
-#: frontend/src/components/InfoPopup.vue:33
+#: frontend/src/components/DriveToolBar.vue:255
+#: frontend/src/components/InfoPopup.vue:28
 #: frontend/src/components/ListView.vue:186
 msgid "Size"
 msgstr "crwdns157074:0crwdne157074:0"
 
-#: frontend/src/components/DriveToolBar.vue:272
+#: frontend/src/components/DriveToolBar.vue:271
 msgid "Smart"
 msgstr "crwdns158602:0crwdne158602:0"
 
@@ -873,7 +873,7 @@ msgstr "crwdns157078:0crwdne157078:0"
 msgid "Snapshot Size"
 msgstr "crwdns157080:0crwdne157080:0"
 
-#: frontend/src/components/InfoPopup.vue:66
+#: frontend/src/components/InfoPopup.vue:54
 msgid "Stats"
 msgstr "crwdns158604:0crwdne158604:0"
 
@@ -890,7 +890,7 @@ msgstr "crwdns157082:0crwdne157082:0"
 msgid "Storage"
 msgstr "crwdns157084:0crwdne157084:0"
 
-#: frontend/src/components/Sidebar.vue:135
+#: frontend/src/components/Sidebar.vue:130
 msgid "Support"
 msgstr "crwdns157086:0crwdne157086:0"
 
@@ -916,7 +916,7 @@ msgstr "crwdns157090:0crwdne157090:0"
 
 #. Label of the tags (Table) field in DocType 'Drive File'
 #: drive/drive/doctype/drive_file/drive_file.json
-#: frontend/src/components/InfoPopup.vue:53
+#: frontend/src/components/InfoPopup.vue:42
 #: frontend/src/components/Settings/TagSettings.vue:4
 msgid "Tags"
 msgstr "crwdns157092:0crwdne157092:0"
@@ -931,7 +931,7 @@ msgstr "crwdns157092:0crwdne157092:0"
 #: drive/drive/doctype/drive_notification/drive_notification.json
 #: drive/drive/doctype/drive_permission/drive_permission.json
 #: drive/drive/doctype/drive_user_invitation/drive_user_invitation.json
-#: frontend/src/components/Settings/StorageSettings.vue:24
+#: frontend/src/components/Settings/StorageSettings.vue:22
 msgid "Team"
 msgstr "crwdns157094:0crwdne157094:0"
 
@@ -951,7 +951,7 @@ msgstr "crwdns158606:0crwdne158606:0"
 msgid "Teams"
 msgstr "crwdns158608:0crwdne158608:0"
 
-#: frontend/src/components/TagInput.vue:22
+#: frontend/src/components/TagInput.vue:21
 msgid "This file has no tags"
 msgstr "crwdns160150:0crwdne160150:0"
 
@@ -983,8 +983,8 @@ msgstr "crwdns157100:0crwdne157100:0"
 #. Label of the type (Select) field in DocType 'Drive Notification'
 #: drive/drive/doctype/drive_file_update/drive_file_update.json
 #: drive/drive/doctype/drive_notification/drive_notification.json
-#: frontend/src/components/DriveToolBar.vue:260
-#: frontend/src/components/InfoPopup.vue:27
+#: frontend/src/components/DriveToolBar.vue:259
+#: frontend/src/components/InfoPopup.vue:24
 msgid "Type"
 msgstr "crwdns157102:0crwdne157102:0"
 
@@ -993,8 +993,8 @@ msgstr "crwdns157102:0crwdne157102:0"
 msgid "URL Args"
 msgstr "crwdns157104:0crwdne157104:0"
 
-#: frontend/src/components/GenericPage.vue:355
-#: frontend/src/components/Navbar.vue:270
+#: frontend/src/components/GenericPage.vue:354
+#: frontend/src/components/Navbar.vue:267
 msgid "Unfavourite"
 msgstr "crwdns157106:0crwdne157106:0"
 
@@ -1048,7 +1048,7 @@ msgstr "crwdns159200:0crwdne159200:0"
 msgid "With you"
 msgstr "crwdns157120:0crwdne157120:0"
 
-#: frontend/src/components/InfoPopup.vue:69
+#: frontend/src/components/InfoPopup.vue:56
 msgid "Words"
 msgstr "crwdns158612:0crwdne158612:0"
 
@@ -1068,7 +1068,7 @@ msgstr "crwdns158614:0crwdne158614:0"
 msgid "Writer Settings"
 msgstr "crwdns159202:0crwdne159202:0"
 
-#: frontend/src/components/Settings/StorageSettings.vue:21
+#: frontend/src/components/Settings/StorageSettings.vue:19
 msgid "You"
 msgstr "crwdns157124:0crwdne157124:0"
 
@@ -1121,11 +1121,11 @@ msgstr "crwdns157138:0crwdne157138:0"
 msgid "none"
 msgstr "crwdns160006:0crwdne160006:0"
 
-#: frontend/src/components/InfoPopup.vue:141
+#: frontend/src/components/InfoPopup.vue:119
 msgid "people"
 msgstr "crwdns157140:0crwdne157140:0"
 
-#: frontend/src/components/InfoPopup.vue:141
+#: frontend/src/components/InfoPopup.vue:119
 msgid "person"
 msgstr "crwdns157142:0crwdne157142:0"
 
