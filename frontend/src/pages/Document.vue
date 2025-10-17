@@ -470,10 +470,12 @@ const navBarActions = computed(
 )
 
 const toggleMinimal = (val) => {
+  const sidebar = window.document.querySelector("#sidebar")
+  if (!sidebar) return
   if (val) {
-    window.document.querySelector("#sidebar").style.display = "none"
+    sidebar.style.display = "none"
   } else {
-    window.document.querySelector("#sidebar").style.removeProperty("display")
+    sidebar.style.removeProperty("display")
   }
 }
 
