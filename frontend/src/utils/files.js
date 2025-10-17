@@ -10,6 +10,7 @@ import {
   createPresentation,
   getDocuments,
 } from "@/resources/files"
+import { createResource } from "frappe-ui"
 import { getTeams } from "@/resources/files"
 import { set } from "idb-keyval"
 import editorStyle from "@/components/DocEditor/styles/editor.css?inline"
@@ -19,6 +20,7 @@ import { toast } from "@/utils/toasts.js"
 import { useFileUpload, toast as nToast } from "frappe-ui"
 import emitter from "@/emitter"
 import { saveAs } from "file-saver"
+import jszip from "jszip"
 
 export const openEntity = (entity, new_tab = false) => {
   if (!entity.is_group) {
@@ -369,6 +371,51 @@ export function enterFullScreen() {
   }
 }
 
+export async function downloadZippedHTML(editor, foldername) {
+  const html = editor.value.getHTML()
+  let content = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>${globalStyle}</style>
+                <style>${editorStyle}</style>
+                <style>html, body {
+                  height: auto;
+                  overflow: auto;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
+                  ${html}
+                </div>
+              </body>
+            </html>
+          `
+  const zip = new jszip()
+  const urls = editor.value.commands.getEmbedUrls()
+  const getExtension = createResource({
+    url: "drive.api.docs.get_extension",
+  })
+  const parent = router.currentRoute.value.params.entityName
+  for (const i in urls) {
+    const ext = await getExtension.fetch({ entity_name: urls[i].name })
+    const pattern =
+      /src="\/api\/method\/drive\.api\.embed\.get_file_content[^"]+"/
+    content = content.replace(pattern, `src="./${i}.${ext}"`)
+    const fileUrl = `/api/method/drive.api.embed.get_file_content?embed_name=${encodeURIComponent(
+      urls[i].name
+    )}&parent_entity_name=${encodeURIComponent(parent)}`
+    const res = await fetch(fileUrl)
+    const blob = await res.blob()
+    zip.file(`${i}.${ext}`, blob)
+  }
+  console.log(editor.value.commands.getEmbedUrls())
+  zip.file("index.html", content)
+  const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" })
+  saveAs(blob, `${foldername}.zip`)
+}
+
 export function printDoc(html, watermarkStatus) {
   const storedData = localStorage.getItem("watermark-obj")
   let watermarkText
@@ -377,7 +424,7 @@ export function printDoc(html, watermarkStatus) {
   if (storedData) {
     const data = JSON.parse(storedData)
     watermarkText = data.text?.trim()
-    watermarkTextAngle = data.angle || -45 
+    watermarkTextAngle = data.angle || -45
     watermarkTextSize = data.size || 64
   }
   const content = `
@@ -402,7 +449,11 @@ export function printDoc(html, watermarkStatus) {
                 </style>
               </head>
               <body>
-                 ${watermarkStatus ? `<div class="watermark">${watermarkText}</div>` : null}
+                 ${
+                   watermarkStatus
+                     ? `<div class="watermark">${watermarkText}</div>`
+                     : null
+                 }
                 <div class="ProseMirror prose-sm" style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px; margin: 0;'>
                   ${html}
                 </div>

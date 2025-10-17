@@ -19,5 +19,8 @@
   "devDependencies": {
     "cypress": "^14.5.2",
     "cypress-file-upload": "^5.0.8"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
   }
 }

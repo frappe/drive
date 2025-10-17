@@ -197,6 +197,7 @@ import {
   setBreadCrumbs,
   prettyData,
   updateURLSlug,
+  downloadZippedHTML
 } from "@/utils/files"
 import { allUsers } from "@/resources/permissions"
 import VersionsSidebar from "@/components/DocEditor/components/VersionsSidebar.vue"
@@ -476,6 +477,9 @@ const navBarActions = computed(
               {
                 label: "Folder",
                 icon: LucideFolderArchive,
+                onClick: () => {
+                  console.log(entity.value.title)
+                  downloadZippedHTML(editorValue, entity.value.title)},
               },
             ],
           },
