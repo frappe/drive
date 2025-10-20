@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2025-10-10 16:11+0000\n"
-"PO-Revision-Date: 2025-10-15 02:15\n"
+"PO-Revision-Date: 2025-10-20 02:54\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -100,7 +100,7 @@ msgstr "اجازه دانلود"
 
 #: frontend/src/components/Sidebar.vue:101
 msgid "Apps"
-msgstr "برنامه ها"
+msgstr "برنامه‌ها"
 
 #. Label of the auto_detect_links (Check) field in DocType 'Drive Settings'
 #: drive/drive/doctype/drive_settings/drive_settings.json
@@ -560,7 +560,7 @@ msgstr "مدیریت"
 #. Label of a shortcut in the Drive Workspace
 #: drive/drive/workspace/drive/drive.json
 msgid "Manage Disk Settings"
-msgstr ""
+msgstr "مدیریت تنظیمات دیسک"
 
 #. Label of the manual (Check) field in DocType 'Drive Doc Version'
 #: drive/drive/doctype/drive_doc_version/drive_doc_version.json
@@ -712,7 +712,7 @@ msgstr "پیشوند"
 
 #: frontend/src/components/GenericPage.vue:284
 msgid "Preview"
-msgstr "پیش نمایش"
+msgstr "پیش‌نمایش"
 
 #. Label of the preview_size (Int) field in DocType 'Drive Disk Settings'
 #: drive/drive/doctype/drive_disk_settings/drive_disk_settings.json
